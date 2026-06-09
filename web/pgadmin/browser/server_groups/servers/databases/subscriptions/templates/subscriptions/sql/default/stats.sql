@@ -5,7 +5,7 @@ SELECT
     stat.last_msg_receipt_time AS {{ conn|qtIdent(_('Last message receipt')) }},
     stat.last_msg_send_time AS {{ conn|qtIdent(_('Last message send time'))}}
 FROM pg_catalog.pg_stat_subscription stat
-LEFT JOIN pg_subscription sub ON sub.subname = stat.subname
+LEFT JOIN pg_catalog.pg_subscription sub ON sub.subname = stat.subname
 {% if subid %}
     WHERE stat.subid = {{ subid }};
 {% else %}

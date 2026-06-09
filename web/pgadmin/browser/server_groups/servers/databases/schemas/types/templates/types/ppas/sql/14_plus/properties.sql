@@ -6,21 +6,21 @@ SELECT t.oid, t.typname AS name,
     t.typrelid, t.typelem, t.typarray, t.typalign, t.typstorage,
 	t.typnotnull, t.typbasetype, t.typtypmod, t.typndims,
     t.typcollation, t.typdefaultbin, t.typdefault,
-	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typinput::oid) AS typinput,
-    (SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+    (SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typoutput::oid) AS typoutput,
-	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typreceive::oid) AS typreceive,
-	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typsend::oid) AS typsend,
-	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typmodin::oid) AS typmodin,
-	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typmodout::oid) AS typmodout,
-	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typanalyze::oid) AS typanalyze,
- 	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_catalog.pg_proc pr JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typsubscript::oid) AS typsubscript,
     pg_catalog.format_type(t.oid, null) AS alias,
     pg_catalog.pg_get_userbyid(t.typowner) as typeowner, e.typname as element,

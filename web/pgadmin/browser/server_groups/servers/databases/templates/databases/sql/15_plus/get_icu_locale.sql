@@ -1,1 +1,1 @@
-SELECT colliculocale from pg_collation where collprovider = 'i'
+SELECT colliculocale from pg_catalog.pg_collation where collprovider = 'i'

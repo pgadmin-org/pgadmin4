@@ -1,5 +1,5 @@
 SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name,
-(SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END) FROM pg_inherits i WHERE i.inhrelid = cls.oid) as is_inherited,
+(SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END) FROM pg_catalog.pg_inherits i WHERE i.inhrelid = cls.oid) as is_inherited,
 CASE WHEN contype IN ('p', 'u', 'x') THEN desp.description ELSE des.description END AS description
 FROM pg_catalog.pg_index idx
     JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid

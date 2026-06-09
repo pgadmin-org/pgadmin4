@@ -115,7 +115,8 @@ def verify_event_trigger_node(self):
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT evtenabled,"
                           "evtevent, "
-                          "(select rolname from pg_authid where oid "
+                          "(select rolname from pg_catalog.pg_authid "
+                          "where oid "
                           "= pl.evtowner) as evtowner,"
                           " evtname from pg_catalog.pg_event_trigger pl "
                           "WHERE evtname = '%s'" % self.test_data['name'])

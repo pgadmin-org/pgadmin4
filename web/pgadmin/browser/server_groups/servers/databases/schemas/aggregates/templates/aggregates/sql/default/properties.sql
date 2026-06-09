@@ -17,13 +17,13 @@ SELECT aggfnoid::oid as oid, proname as name, ns.nspname as schema,
   op.oprname as sort_oper, aggfinalextra as final_extra_param, aggmfinalextra as moving_final_extra_param,
   aggtransspace as state_data_size, aggmtransspace as moving_state_data_size,
   CASE WHEN (tt.typlen = -1 AND tt.typelem != 0) THEN
-    (SELECT at.typname FROM pg_type at WHERE at.oid = tt.typelem) || '[]'
+    (SELECT at.typname FROM pg_catalog.pg_type at WHERE at.oid = tt.typelem) || '[]'
   ELSE tt.typname END as state_type,
   CASE WHEN (tf.typlen = -1 AND tf.typelem != 0) THEN
     (SELECT at.typname FROM pg_catalog.pg_type at WHERE at.oid = tf.typelem) || '[]'
   ELSE tf.typname END as final_type,
   CASE WHEN (tm.typlen = -1 AND tm.typelem != 0) THEN
-    (SELECT at.typname FROM pg_type at WHERE at.oid = tm.typelem) || '[]'
+    (SELECT at.typname FROM pg_catalog.pg_type at WHERE at.oid = tm.typelem) || '[]'
   ELSE tm.typname END as moving_state_type,
   description
 FROM pg_catalog.pg_aggregate ag

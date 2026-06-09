@@ -145,7 +145,16 @@ _build_runtime() {
       ELECTRON_ARCH="arm64"
     fi
 
-    ELECTRON_VERSION="$(npm info electron version)"
+    # Resolve the electron version from runtime/package.json, NOT from
+    # `npm info electron version`. The latter fetches whatever currently
+    # carries the `latest` dist-tag on the npm registry, which means any
+    # newly published electron release lands in shipped binaries without
+    # review. Keep the build deterministic and pinned.
+    ELECTRON_VERSION=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' "${SOURCEDIR}/runtime/package.json" | head -1)
+    if [ -z "${ELECTRON_VERSION}" ]; then
+        echo "ERROR: could not resolve electron version from runtime/package.json" >&2
+        exit 1
+    fi
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
