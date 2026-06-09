@@ -23,5 +23,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #10018 <https://github.com/pgadmin-org/pgadmin4/issues/10018>`_ -  Remove the EDB BigAnimal cloud deployment support.
+
 Bug fixes
 *********
