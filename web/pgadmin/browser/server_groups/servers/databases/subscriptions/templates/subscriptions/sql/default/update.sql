@@ -1,5 +1,11 @@
 {% if data.sync is defined %}
-{% set add_semicolon_after_slot_name = 'slot_name' %}
+{% set add_comma_after_slot_name = 'slot_name' %}
+{% endif %}
+{% if data.binary is defined or data.streaming is defined %}
+{% set add_comma_after_sync = 'sync' %}
+{% endif %}
+{% if data.streaming is defined %}
+{% set add_comma_after_binary = 'binary' %}
 {% endif %}
 {#####################################################}
 {## Change owner of subscription ##}
@@ -16,10 +22,10 @@ ALTER SUBSCRIPTION {{ conn|qtIdent(o_data.name) }} DISABLE;
 {% endif %}
 
 {% endif %}
-{###  Alter slot name of subscription ###}
-{% if data.slot_name is defined or data.sync %}
+{###  Alter parameters of subscription ###}
+{% if (data.slot_name is defined and data.slot_name != o_data.slot_name) or (data.sync is defined and data.sync != o_data.sync) or (data.binary is defined and data.binary!=o_data.binary) or (data.streaming is defined and data.streaming!=o_data.streaming) %}
 ALTER SUBSCRIPTION {{ conn|qtIdent(o_data.name) }}
-    SET ({% if data.slot_name is defined and data.slot_name != o_data.slot_name %}slot_name = {{ data.slot_name }}{% if add_semicolon_after_slot_name == 'slot_name' %}, {% endif %}{% endif %}{% if data.sync %}synchronous_commit = '{{ data.sync }}'{% endif %});
+    SET ({% if data.slot_name is defined and data.slot_name != o_data.slot_name %}slot_name = {{ data.slot_name }}{% if add_comma_after_slot_name == 'slot_name' %}, {% endif %}{% endif %}{% if data.sync is defined and data.sync != o_data.sync %}synchronous_commit = '{{ data.sync }}'{% if add_comma_after_sync == 'sync' %}, {% endif %}{% endif %}{% if data.binary is defined and data.binary!=o_data.binary %}binary = {{ data.binary|lower}}{% if add_comma_after_binary == 'binary' %}, {% endif %}{% endif %}{% if data.streaming is defined and data.streaming!=o_data.streaming %}streaming = '{{ data.streaming}}'{% endif %});
 
 {% endif %}
 {###  Enable subscription ###}
@@ -57,9 +63,3 @@ ALTER SUBSCRIPTION {{ conn|qtIdent(o_data.name) }}
     RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
-
-
-
-
-
-

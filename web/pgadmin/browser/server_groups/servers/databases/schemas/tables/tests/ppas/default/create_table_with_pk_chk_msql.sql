@@ -6,9 +6,6 @@ CREATE TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
         WITH (FILLFACTOR=11)
         DEFERRABLE INITIALLY DEFERRED,
     CONSTRAINT chk_const CHECK (col2  != null)
-)
-WITH (
-    OIDS = FALSE
 );
 
 ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"

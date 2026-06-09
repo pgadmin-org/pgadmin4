@@ -7,5 +7,5 @@ CREATE POLICY "test_update_rls_policy_$%{}[]()&*^!@""'`\/#"
     AS RESTRICTIVE
     FOR UPDATE
     TO public
-    USING (((CURRENT_USER)::text = name))
+    USING ((CURRENT_USER = name))
     WITH CHECK ((emp_id <> 0));

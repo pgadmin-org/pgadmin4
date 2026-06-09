@@ -7,4 +7,4 @@ CREATE POLICY "test_delete_rls_policy_$%{}[]()&*^!@""'`\/#"
     AS RESTRICTIVE
     FOR DELETE
     TO public
-    USING (((CURRENT_USER)::text = name));
+    USING ((CURRENT_USER = name));

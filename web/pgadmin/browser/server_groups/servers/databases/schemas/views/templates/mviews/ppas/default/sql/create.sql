@@ -7,6 +7,11 @@
 {% endif %}
 {% if data.name and data.schema and data.definition %}
 CREATE MATERIALIZED VIEW{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}
+{% if data.default_amname and data.default_amname != data.amname %}
+USING {{data.amname}}
+{% elif not data.default_amname and data.amname %}
+USING {{data.amname}}
+{% endif %}
 {% if(data.fillfactor or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') or data['vacuum_data']|length > 0) %}
 {% set ns = namespace(add_comma=false) %}
 WITH (
@@ -36,6 +41,13 @@ WITH NO DATA;
 
 ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
+{% endif %}
+{% if data.dependsonextensions %}
+{% for ext in data.dependsonextensions %}
+
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endfor %}
 {% endif %}
 {% if data.comment %}
 

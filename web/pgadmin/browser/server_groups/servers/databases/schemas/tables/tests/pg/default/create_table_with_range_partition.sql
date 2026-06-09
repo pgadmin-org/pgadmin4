@@ -7,11 +7,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_range_patition_$%{}[]()&*^!@""'`\/
     id integer,
     status text COLLATE pg_catalog."default",
     arr numeric
-) PARTITION BY RANGE (arr)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+) PARTITION BY RANGE (arr);
 
 ALTER TABLE IF EXISTS public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
     OWNER to <OWNER>;

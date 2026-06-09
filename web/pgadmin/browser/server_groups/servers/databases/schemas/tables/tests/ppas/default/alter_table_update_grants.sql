@@ -7,8 +7,8 @@ CREATE UNLOGGED TABLE IF NOT EXISTS public."table_with_advanced_options_$%{}[]()
     col1 double precision,
     col2 numrange
 )
+
 WITH (
-    OIDS = TRUE,
     FILLFACTOR = 50
 )
 TABLESPACE pg_default;

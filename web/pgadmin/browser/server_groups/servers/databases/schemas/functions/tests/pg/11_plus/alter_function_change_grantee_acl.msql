@@ -1,3 +1,0 @@
-REVOKE ALL ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() FROM <OWNER>;
-
-GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO PUBLIC;

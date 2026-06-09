@@ -19,7 +19,7 @@ SELECT
 FROM (
       SELECT
           indexrelid, i.indoption, i.indclass,
-          pg_catalog.unnest(ARRAY(SELECT pg_catalog.generate_series(1, i.indnatts) AS n)) AS attnum
+          pg_catalog.unnest(ARRAY(SELECT pg_catalog.generate_series(1, i.indnkeyatts) AS n)) AS attnum
       FROM
           pg_catalog.pg_index i
       WHERE i.indexrelid = {{idx}}::OID

@@ -14,9 +14,9 @@ This release contains a number of bug fixes and new features since the release o
 
 Supported Database Servers
 **************************
-**PostgreSQL**: 13, 14, 15, 16, 17 and 18
+**PostgreSQL**: 14, 15, 16, 17 and 18
 
-**EDB Advanced Server**: 13, 14, 15, 16, 17 and 18
+**EDB Advanced Server**: 14, 15, 16, 17 and 18
 
 Bundled PostgreSQL Utilities
 ****************************
@@ -35,6 +35,7 @@ Housekeeping
 
   | `Issue #9981 <https://github.com/pgadmin-org/pgadmin4/issues/9981>`_ -  Clarify the SSH tunnel "Prompt for identity file password?" switch label and help text to indicate it applies only to identity-file authentication.
   | `Issue #10018 <https://github.com/pgadmin-org/pgadmin4/issues/10018>`_ -  Remove the EDB BigAnimal cloud deployment support.
+  | `Issue #10050 <https://github.com/pgadmin-org/pgadmin4/issues/10050>`_ -  Rebase the version-specific SQL templates so the default targets PostgreSQL 14, the oldest supported server version, dropping the obsolete sub-14 template buckets.
 
 Bug fixes
 *********

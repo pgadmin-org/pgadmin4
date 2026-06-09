@@ -5,7 +5,8 @@
 CREATE TYPE public."range_type_$%{}[]()&*^!@""'`\/#" AS RANGE
 (
     SUBTYPE=bool,
-    SUBTYPE_OPCLASS = bool_ops
+    SUBTYPE_OPCLASS = bool_ops,
+    MULTIRANGE_TYPE_NAME = multirange_type_$%{}[]()&*^!@"'`\/#
 );
 
 ALTER TYPE public."range_type_$%{}[]()&*^!@""'`\/#"

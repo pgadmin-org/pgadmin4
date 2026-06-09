@@ -2,6 +2,92 @@
   "scenarios": [
     {
       "type": "create",
+      "name": "Create Extension",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "postgres_fdw",
+        "version": "",
+        "relocatable": true
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create function with extensions.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function1_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proretset": false,
+        "proisstrict": true,
+        "prosecdef": true,
+        "proiswindow": true,
+        "proparallel": "u",
+        "procost": "100",
+        "prorows": "0",
+        "proleakproof": true,
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "dependsonextensions": ["plpgsql", "postgres_fdw"],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function_on_depends.sql",
+      "expected_msql_file": "create_function_on_depends.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function with NO DEPENDS ON",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "dependsonextensions": ["plpgsql"]
+      },
+      "expected_sql_file": "alter_function_no_depends.sql",
+      "expected_msql_file": "alter_function_no_depends.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension",
+      "endpoint": "NODE-extension.delete",
+      "data": {
+        "ids": ["<postgres_fdw>"]
+      },
+      "preprocess_data": true
+    },
+    {
+      "type": "create",
       "name": "Create function with all options.",
       "endpoint": "NODE-function.obj",
       "msql_endpoint": "NODE-function.msql",
@@ -126,7 +212,8 @@
           ]
         }
       },
-      "expected_sql_file": "alter_function_add_parameter.sql"
+      "expected_sql_file": "alter_function_add_parameter.sql",
+      "expected_msql_file": "alter_function_add_parameter.msql"
     },
     {
       "type": "alter",
@@ -246,7 +333,9 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_func_remove_partial_pri.sql",
+      "expected_msql_file": "alter_func_remove_partial_pri.msql"
     },
     {
       "type": "alter",
@@ -311,6 +400,46 @@
       },
       "expected_sql_file": "alter_function_delete_acl.sql",
       "expected_msql_file": "alter_function_delete_acl.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "name": "Create function (atomic).",
+      "store_object_id": "True",
+      "data": {
+        "name": "Function4_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "numeric",
+        "lanname": "sql",
+        "prorows": 0,
+        "arguments": [],
+        "prosrc": "begin atomic\n    select 1;\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [],
+        "seclabels": [],
+        "prosecdef":true,
+        "acl": [],
+        "provolatile":"v",
+        "proisstrict":true,
+        "proiswindow":true,
+        "proparallel":"u",
+        "procost":"100",
+        "proleakproof":true,
+        "schema": "public"
+      },
+      "expected_sql_file": "create_atomic_func.sql",
+      "expected_msql_file": "create_atomic_func.msql"
     },
     {
       "type": "delete",

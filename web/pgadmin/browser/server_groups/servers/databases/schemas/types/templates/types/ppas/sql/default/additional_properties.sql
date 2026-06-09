@@ -26,7 +26,7 @@ FROM pg_catalog.pg_enum
 {# The SQL given below will fetch range type#}
 {% if typtype == 'r' %}
 SELECT rngsubtype, st.typname,
-    rngcollation,
+    rngcollation, mt.typname as rngmultirangetype,
     CASE WHEN n.nspname IS NOT NULL THEN pg_catalog.concat(pg_catalog.quote_ident(n.nspname), '.', pg_catalog.quote_ident(col.collname)) ELSE col.collname END AS collname,
     rngsubopc, opc.opcname,
     rngcanonical, rngsubdiff as rngsubdiff_proc,
@@ -35,6 +35,7 @@ SELECT rngsubtype, st.typname,
     ELSE '' END AS rngsubdiff
 FROM pg_catalog.pg_range
     LEFT JOIN pg_catalog.pg_type st ON st.oid=rngsubtype
+    LEFT JOIN pg_catalog.pg_type mt ON mt.oid=rngmultitypid
     LEFT JOIN pg_catalog.pg_collation col ON col.oid=rngcollation
     LEFT JOIN pg_catalog.pg_namespace n ON col.collnamespace=n.oid
     LEFT JOIN pg_catalog.pg_opclass opc ON opc.oid=rngsubopc

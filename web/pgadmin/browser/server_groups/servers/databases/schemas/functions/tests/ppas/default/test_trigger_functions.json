@@ -67,16 +67,16 @@
       "sql_endpoint": "NODE-trigger_function.sql_id",
       "data": {
         "variables": {
-          "changed": [{
+          "added": [{
             "name": "application_name",
             "value": "appname2"
+          }],
+          "changed": [{
+            "name": "array_nulls",
+            "value": true
           },{
             "name": "search_path",
             "value": "public, pg_catalog"
-          }],
-          "added": [{
-            "name": "array_nulls",
-            "value": true
           }]
         }
       },
@@ -94,7 +94,17 @@
       "sql_endpoint": "NODE-trigger_function.sql_id",
       "data": {
         "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
-        "acl": [],
+        "acl": [{
+          "grantee": "enterprisedb",
+          "grantor": "enterprisedb",
+          "privileges": [
+            {
+              "privilege": true,
+              "privilege_type": "X",
+              "with_grant": true
+            }
+          ]
+        }],
         "args": [],
         "description": "some comment",
         "funcowner": "enterprisedb",
@@ -109,7 +119,7 @@
         "prorettypename": "trigger",
         "prorows": "4321",
         "prosecdef": true,
-        "provolatile": "s",
+        "provolatile": "v",
         "prosrc": "begin\nselect 1;\nend;",
         "seclabels": [],
         "variables": [{
@@ -135,7 +145,17 @@
       "sql_endpoint": "NODE-trigger_function.sql_id",
       "data": {
         "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
-        "acl": [],
+        "acl": [{
+          "grantee": "enterprisedb",
+          "grantor": "enterprisedb",
+          "privileges": [
+            {
+              "privilege": true,
+              "privilege_type": "X",
+              "with_grant": true
+            }
+          ]
+        }],
         "args": [],
         "description": "some comment",
         "funcowner": "enterprisedb",

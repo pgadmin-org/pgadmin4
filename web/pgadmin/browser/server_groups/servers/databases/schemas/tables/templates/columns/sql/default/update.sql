@@ -17,7 +17,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{%if data.collspcname and data.collspcname != o_data.collspcname and data.cltype != '"char"' %}
+{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname and data.cltype != '"char"' %}
  COLLATE {{data.collspcname}}{% elif o_data.collspcname and data.cltype != '"char"' %} COLLATE {{o_data.collspcname}}{% endif %};
 {% endif %}
 {###  Alter column default value ###}
@@ -94,6 +94,12 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET STORAGE {%if data.attstorage == 'p' %}
 PLAIN{% elif data.attstorage == 'm'%}MAIN{% elif data.attstorage == 'e'%}
 EXTERNAL{% elif data.attstorage == 'x'%}EXTENDED{% endif %};
+
+{% endif %}
+{###  Alter column compression value ###}
+{% if data.attcompression is defined and data.attcompression is not none and data.attcompression != '' %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET COMPRESSION {{data.attcompression}};
 
 {% endif %}
 {% if data.description is defined and data.description != None %}

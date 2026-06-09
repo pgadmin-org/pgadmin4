@@ -1,6 +1,7 @@
 ALTER TABLE IF EXISTS testschema.tableforexclusion
-    ADD CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#" EXCLUDE USING gist (
-    col2 WITH <>)
+    ADD CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#" EXCLUDE USING btree (
+    col2 text_pattern_ops WITH =)
+    INCLUDE (col1)
     WITH (FILLFACTOR=12)
     WHERE (col1 > 1)
     DEFERRABLE INITIALLY DEFERRED;

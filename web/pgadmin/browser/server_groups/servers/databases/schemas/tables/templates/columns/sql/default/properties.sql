@@ -1,10 +1,27 @@
-SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
+WITH INH_TABLES AS
+    (SELECT
+     at.attname AS name, ph.inhparent AS inheritedid, ph.inhseqno,
+     pg_catalog.concat(nmsp_parent.nspname, '.',parent.relname ) AS inheritedfrom
+    FROM
+        pg_catalog.pg_attribute at
+    JOIN
+        pg_catalog.pg_inherits ph ON ph.inhparent = at.attrelid AND ph.inhrelid = 33896::oid
+    JOIN
+        pg_catalog.pg_class parent ON ph.inhparent  = parent.oid
+    JOIN
+        pg_catalog.pg_namespace nmsp_parent ON nmsp_parent.oid  = parent.relnamespace
+    GROUP BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
+    ORDER BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
+    )
+SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 		att.atttypmod, att.attacl, att.attnotnull, att.attoptions, att.attfdwoptions, att.attstattarget,
 		att.attstorage, att.attidentity,
 		pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS defval,
 		pg_catalog.format_type(ty.oid,NULL) AS typname,
         pg_catalog.format_type(ty.oid,att.atttypmod) AS displaytypname,
 		pg_catalog.format_type(ty.oid,att.atttypmod) AS cltype,
+		inh.inheritedfrom,
+		inh.inheritedid,
         CASE WHEN ty.typelem > 0 THEN ty.typelem ELSE ty.oid END as elemoid,
 		(SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = ty.typnamespace) as typnspname,
         ty.typstorage AS defaultstorage,
@@ -16,8 +33,10 @@ SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 	EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid=att.attrelid AND contype='f' AND att.attnum=ANY(conkey)) As is_fk,
 	(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
 	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column,
-	(CASE WHEN (att.attidentity in ('a', 'd')) THEN 'i' ELSE 'n' END) AS colconstype, tab.relname as relname,
+	(CASE WHEN (att.attidentity in ('a', 'd')) THEN 'i' WHEN (att.attgenerated in ('s')) THEN 'g' ELSE 'n' END) AS colconstype,
+	(CASE WHEN (att.attgenerated in ('s')) THEN pg_catalog.pg_get_expr(def.adbin, def.adrelid) END) AS genexpr, tab.relname as relname,
 	(CASE WHEN tab.relkind = 'v' THEN true ELSE false END) AS is_view_only,
+	(CASE WHEN att.attcompression = 'p' THEN 'pglz' WHEN att.attcompression = 'l' THEN 'lz4' END) AS attcompression,
 	seq.*
 FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
@@ -29,6 +48,7 @@ FROM pg_catalog.pg_attribute att
   LEFT OUTER JOIN pg_catalog.pg_namespace nspc ON coll.collnamespace=nspc.oid
   LEFT OUTER JOIN pg_catalog.pg_sequence seq ON cs.oid=seq.seqrelid
   LEFT OUTER JOIN pg_catalog.pg_class tab on tab.oid = att.attrelid
+  LEFT OUTER join INH_TABLES as INH ON att.attname = INH.name
 WHERE att.attrelid = {{tid}}::oid
 {% if clid %}
     AND att.attnum = {{clid}}::int
