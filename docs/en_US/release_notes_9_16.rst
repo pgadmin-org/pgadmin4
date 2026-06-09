@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9798 <https://github.com/pgadmin-org/pgadmin4/issues/9798>`_ -  Fixed an issue where editing or creating a database with a non-default LC_COLLATE/LC_CTYPE (e.g. LC_COLLATE=C) failed with "more than one row returned by a subquery", locking the collation/ctype inputs.
