@@ -12,7 +12,7 @@ SELECT
   coll.collname,
   nspc.nspname as collnspname,
   pg_catalog.format_type(ty.oid,NULL) AS datatype,
-  CASE WHEN pg_catalog.pg_get_indexdef(i.indexrelid, {{loop.index}}, true) = a.attname THEN FALSE ELSE TRUE END AS is_exp
+  CASE WHEN pg_catalog.pg_get_indexdef(i.indexrelid, {{loop.index}}, true) = pg_catalog.quote_ident(a.attname) THEN FALSE ELSE TRUE END AS is_exp
 FROM pg_catalog.pg_index i
 JOIN pg_catalog.pg_attribute a ON (a.attrelid = i.indexrelid AND attnum = {{loop.index}})
 JOIN pg_catalog.pg_type ty ON ty.oid=a.atttypid
