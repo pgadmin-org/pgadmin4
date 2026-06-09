@@ -163,8 +163,9 @@ suffix will be ignored.
 **PGPASS_FILE**
 
 *Default: <null>*
-This varible should be set to if you want to pass password using pgpass
-file for the servers added in pgadmin.
+Set this variable to the path of a pgpass file if you want to supply passwords
+for the servers added in pgAdmin. On startup, the file is copied into the
+container and used as the ``.pgpass`` file.
 
 **GUNICORN_ACCESS_LOGFILE**
 
