@@ -593,6 +593,7 @@ WHERE db.oid = {0}""".format(did))
                     ssh_username=self.tunnel_username,
                     ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
                     ssh_private_key_password=tunnel_password,
+                    allow_agent=False,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)
@@ -602,6 +603,7 @@ WHERE db.oid = {0}""".format(did))
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
+                    allow_agent=False,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)
