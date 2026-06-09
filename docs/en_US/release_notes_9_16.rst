@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9766 <https://github.com/pgadmin-org/pgadmin4/issues/9766>`_ -  Fixed an issue where a server's custom foreground colour was not applied to the object counts (children count) shown next to collection nodes in the object explorer.
