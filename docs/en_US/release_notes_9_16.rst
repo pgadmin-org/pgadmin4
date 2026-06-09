@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9230 <https://github.com/pgadmin-org/pgadmin4/issues/9230>`_ -  Renamed the server "Change Password" menu option and dialog to "Change Server Password" (including the connected username) to make clear it changes the PostgreSQL server password, not the pgAdmin login password.

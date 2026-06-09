@@ -126,7 +126,7 @@ define('pgadmin.node.server', [
         },{
           name: 'change_password', node: 'server', module: this,
           applies: ['object'], callback: 'change_password',
-          label: gettext('Change Password...'), priority: 10,
+          label: gettext('Change Server Password...'), priority: 10,
           enable : 'is_connected',data: {
             data_disabled: gettext('Please connect server to enable change password.'),
           },
@@ -364,7 +364,11 @@ define('pgadmin.node.server', [
               if (res.success && res.data.is_pgpass) {
                 is_pgpass_file_used = true;
               }
-              showChangeServerPassword(gettext('Change Password'), d, obj, i, is_pgpass_file_used);
+              showChangeServerPassword(
+                d.user?.name
+                  ? gettext('Change Server Password (%s)', d.user.name)
+                  : gettext('Change Server Password'),
+                d, obj, i, is_pgpass_file_used);
             }).catch(function(error) {
               pgAdmin.Browser.notifier.pgRespErrorNotify(error);
             });
