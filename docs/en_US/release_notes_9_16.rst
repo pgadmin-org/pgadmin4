@@ -20,6 +20,8 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #7641 <https://github.com/pgadmin-org/pgadmin4/issues/7641>`_ -  Allow the OAuth2 login button icon to use any Font Awesome style (e.g. ``fas fa-key``), not only brand icons.
+
 Housekeeping
 ************
 
