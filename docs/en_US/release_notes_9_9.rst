@@ -35,6 +35,7 @@ Bug fixes
 *********
 
   | `Issue #9098 <https://github.com/pgadmin-org/pgadmin4/issues/9098>`_ -  Fixed an issue where the query tool displayed 'default' instead of 'null' for null text data in the data output.
+  | `Issue #9875 <https://github.com/pgadmin-org/pgadmin4/issues/9875>`_ -  Fixed an issue where EXPLAIN and EXPLAIN ANALYZE failed to execute when blank lines separated clauses in the SQL query.
   | `Issue #9988 <https://github.com/pgadmin-org/pgadmin4/issues/9988>`_ -  Provide an actionable error when 'openid' is in OAUTH2_SCOPE but OAUTH2_SERVER_METADATA_URL is not set, instead of a cryptic Authlib failure.
   | `Issue #9125 <https://github.com/pgadmin-org/pgadmin4/issues/9125>`_ -  Fixed an issue where the pgAdmin configuration database wasn't being created on a fresh install when an external database was used for the configuration.
   | `Issue #9157 <https://github.com/pgadmin-org/pgadmin4/issues/9157>`_ -  Fixed an issue where shortcuts are not working as expected on multiple keyboard layouts.
