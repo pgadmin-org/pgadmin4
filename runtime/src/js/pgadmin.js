@@ -159,11 +159,11 @@ function openConfigure() {
   }
 }
 
-function showErrorDialog(intervalID) {
+function showErrorDialog(timeoutID) {
   if(!splashWindow.isVisible()) {
     return;
   }
-  clearTimeout(intervalID);
+  clearTimeout(timeoutID);
   splashWindow.close();
 
   new BrowserWindow({
@@ -222,7 +222,7 @@ function startDesktopMode() {
   if (pgadminServerProcess != null)
     return;
 
-  let pingIntervalID;
+  let pingTimeoutID;
   // Set the environment variables so that pgAdmin 4 server
   // starts listening on the appropriate port.
   process.env.PGADMIN_INT_PORT = serverPort;
@@ -271,7 +271,7 @@ function startDesktopMode() {
     // Log the error into the log file if process failed to launch
     misc.writeServerLog('Failed to launch pgAdmin4. Error:');
     misc.writeServerLog(err);
-    showErrorDialog(pingIntervalID);
+    showErrorDialog(pingTimeoutID);
   });
 
   let spawnEndTime = (new Date).getTime();
@@ -308,7 +308,7 @@ function startDesktopMode() {
     // If ping request is already send and response is not
     // received no need to send another request.
     if (pingInProgress) {
-      pingIntervalID = setTimeout(performPing, currentPingInterval);
+      pingTimeoutID = setTimeout(performPing, currentPingInterval);
       return;
     }
 
@@ -319,7 +319,7 @@ function startDesktopMode() {
       // Set the pgAdmin process object to misc
       misc.setProcessObject(pgadminServerProcess);
 
-      clearTimeout(pingIntervalID);
+      clearTimeout(pingTimeoutID);
       let appEndTime = (new Date).getTime();
       misc.writeServerLog('------------------------------------------');
       misc.writeServerLog('Total time taken to ping pgAdmin4 server: ' + (appEndTime - pingStartTime) / 1000 + ' Sec');
@@ -333,7 +333,7 @@ function startDesktopMode() {
       // if the connection timeout has lapsed then throw an error
       // and stop pinging the server.
       if (curTime >= endTime) {
-        showErrorDialog(pingIntervalID);
+        showErrorDialog(pingTimeoutID);
         return;
       }
 
@@ -345,7 +345,7 @@ function startDesktopMode() {
         }
       }
 
-      pingIntervalID = setTimeout(performPing, currentPingInterval);
+      pingTimeoutID = setTimeout(performPing, currentPingInterval);
       if (currentPingInterval < 1000) {
         currentPingInterval = Math.min(currentPingInterval * 2, 1000);
       }
