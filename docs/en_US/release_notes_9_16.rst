@@ -20,6 +20,8 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #9301 <https://github.com/pgadmin-org/pgadmin4/issues/9301>`_ -  Added a "Back to login" link to the Forgot Password and Reset Password pages.
+
 Housekeeping
 ************
 
