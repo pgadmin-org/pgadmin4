@@ -948,41 +948,48 @@ function Dashboard({
       label: gettext('Table based logs'),
     };
   const CustomLogHeader = () => {
-    return ( <Box className='Dashboard-cardHeader' display="flex" flexDirection="row">
-      <FormInputToggle
-        label={gettext('Log Format')}
-        className='Dashboard-searchInput'
-        value={logFormat}
-        onChange={(val) => {
-          setLogFormat(val);
-        }}
-        options={logConfigFormat}
-        controlProps={CustomLogHeaderLabel}
-        labelGridBasis={3}
-        controlGridBasis={3}
-      ></FormInputToggle>
-      <FormInputSwitch
-        label={gettext('Tabular format?')}
-        labelPlacement="end"
-        className='Dashboard-searchInput'
-        value={logCol}
-        onChange={(e) => {
-          setDashData([]);
-          setLogCol(e.target.checked);
-        }}
-        controlProps={CustomLogHeaderLabel}
-        labelGridBasis={3}
-        controlGridBasis={3}
-      ></FormInputSwitch>
-      <div className='Dashboard-download'><PgIconButton
-        size="xs"
-        className='Dashboard-downloadButton'
-        icon={<GetAppRoundedIcon />}
-        onClick={downloadServerLogs}
-        aria-label="Download"
-        title={gettext('Download logs ')}
-      ></PgIconButton></div>
-    </Box>);
+    return (
+      <Box
+        className='Dashboard-cardHeader'
+        sx={{
+          display: 'flex',
+          flexDirection: 'row'
+        }}>
+        <FormInputToggle
+          label={gettext('Log Format')}
+          className='Dashboard-searchInput'
+          value={logFormat}
+          onChange={(val) => {
+            setLogFormat(val);
+          }}
+          options={logConfigFormat}
+          controlProps={CustomLogHeaderLabel}
+          labelGridBasis={3}
+          controlGridBasis={3}
+        ></FormInputToggle>
+        <FormInputSwitch
+          label={gettext('Tabular format?')}
+          labelPlacement="end"
+          className='Dashboard-searchInput'
+          value={logCol}
+          onChange={(e) => {
+            setDashData([]);
+            setLogCol(e.target.checked);
+          }}
+          controlProps={CustomLogHeaderLabel}
+          labelGridBasis={3}
+          controlGridBasis={3}
+        ></FormInputSwitch>
+        <div className='Dashboard-download'><PgIconButton
+          size="xs"
+          className='Dashboard-downloadButton'
+          icon={<GetAppRoundedIcon />}
+          onClick={downloadServerLogs}
+          aria-label="Download"
+          title={gettext('Download logs ')}
+        ></PgIconButton></div>
+      </Box>
+    );
   };
 
 
@@ -1021,7 +1028,7 @@ function Dashboard({
   };
 
   return (
-    (<Root>
+    <Root>
       {sid && serverConnected ? (
         <Box className='Dashboard-dashboardPanel'>
           <Box className='Dashboard-panelContent'>
@@ -1133,7 +1140,12 @@ function Dashboard({
               </TabPanel>
               {/* System Statistics */}
               <TabPanel value={mainTabVal} index={4} classNameRoot='Dashboard-tabPanel systemStorage'>
-                <Box height="100%" display="flex" flexDirection="column">
+                <Box
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
                   {ssMsg === 'installed' && did === ldid ?
                     <ErrorBoundary>
                       <Box>
@@ -1203,7 +1215,7 @@ function Dashboard({
           </Box>
         </Box>
       ) : showDefaultContents() }
-    </Root>)
+    </Root>
   );
 }
 

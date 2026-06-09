@@ -20,7 +20,7 @@ import { Box } from '@mui/material';
 import gettext from 'sources/gettext';
 import Loader from 'sources/components/Loader';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -205,7 +205,9 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
           <PgIconButton data-test="dialog-help" onClick={() => props.onHelp()} icon={<HelpIcon />} title="Help for this dialog."
             disabled={props.disableDialogHelp} />
         </Box>
-        <Box className='Wizard-actionBtn' marginLeft="auto">
+        <Box className='Wizard-actionBtn' sx={{
+          marginLeft: 'auto'
+        }}>
           <DefaultButton onClick={handleBack} disabled={activeStep === 0} className='Wizard-buttonMargin' startIcon={<FastRewindIcon />}>
             {gettext('Back')}
           </DefaultButton>

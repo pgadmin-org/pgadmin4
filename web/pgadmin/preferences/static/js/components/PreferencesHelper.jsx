@@ -303,7 +303,7 @@ export function getCollectionValue(_metadata, value, initVals) {
   return val;
 }
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled('div')(({ theme }) => ({
   '& .Alert-footer': {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -348,7 +348,11 @@ export function showResetPrefModal(api, pgAdmin, preferencesStore, onReset) {
 
       return (
         <StyledBox display="flex" flexDirection="column" height="100%">
-          <Box flexGrow="1" p={2}>
+          <Box
+            sx={{
+              flexGrow: '1',
+              p: 2
+            }}>
             {HTMLReactParser(text)}
           </Box>
           <Box className='Alert-footer'>

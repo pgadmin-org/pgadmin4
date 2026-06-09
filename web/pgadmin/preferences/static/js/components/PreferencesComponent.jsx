@@ -40,7 +40,7 @@ import LeftTree from './LeftTree';
 import RightPreference from './RightPreference';
 
 // --- Styled Components ---
-const Root = styled(Box)(({ theme }) => ({
+const Root = styled('div')(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',

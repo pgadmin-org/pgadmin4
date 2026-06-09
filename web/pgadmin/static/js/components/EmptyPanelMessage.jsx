@@ -8,11 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import PropTypes from 'prop-types';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   color: theme.palette.text.primary,
   margin: '24px auto 12px',
   fontSize: '0.8rem',

@@ -19,7 +19,11 @@ import PropTypes from 'prop-types';
 export default function MainMoreToolbar({tabsData}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
   return (
-    <Box display="flex" alignItems="center">
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center'
+      }}>
       <PgIconButton title={gettext('More')} icon={<MoreVertIcon />} size="xs" noBorder onClick={(e)=>{
         e.preventDefault();
         const box = e.target.getBoundingClientRect();

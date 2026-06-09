@@ -21,7 +21,7 @@ import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
 
-const StyledEditorDiv = styled(Box)(({ theme }) => ({
+const StyledEditorDiv = styled('div')(({ theme }) => ({
   '&.Editors-textEditor': {
     position: 'absolute',
     zIndex: 1080,
@@ -265,7 +265,11 @@ export function TextEditor({row, column, onRowChange, onClose}) {
       <ResizableDiv columnIndex={column.idx}
         className='Editors-textEditor' data-label="pg-editor" resizeKey={'text'} defaultSize={{height:'80px', width:'250px'}} onKeyDown={suppressEnterKey} >
         <textarea ref={autoFocusAndSelect} className='Editors-textarea' value={localVal} onChange={onChange} onKeyDown={onkeydown} />
-        <Box display="flex" justifyContent="flex-end">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
             {gettext('Cancel')}
           </DefaultButton>
@@ -461,7 +465,12 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
           }}
           className={'jsoneditor-div'}
         />
-        <Box display="flex" justifyContent="flex-end" marginTop="0.25rem">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '0.25rem'
+          }}>
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
             {gettext('Cancel')}
           </DefaultButton>

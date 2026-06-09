@@ -1155,7 +1155,16 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
       <DebuggerContext.Provider value={DebuggerContextValue}>
         <DebuggerEventsContext.Provider value={eventBus.current}>
           <Loader message={loaderText} />
-          <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
+          <Box
+            tabIndex="0"
+            ref={containerRef}
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              flexGrow: '1'
+            }}>
             <ToolBar
               containerRef={containerRef}
             />

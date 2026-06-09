@@ -29,7 +29,7 @@ import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import { getChartColor } from '../../../../../../static/js/utils';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   width: '100%',
   height: '100%',
   overflowY: 'scroll',
@@ -433,7 +433,12 @@ export function GraphVisualiser({initColumns}) {
         </>
         }
       </Box>
-      <Box display="flex" marginLeft="3px" marginTop="3px">
+      <Box
+        sx={{
+          display: 'flex',
+          marginLeft: '3px',
+          marginTop: '3px'
+        }}>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Zoom to original')} icon={<ZoomOutMapIcon style={{height: '1.2rem'}}/>}
             onClick={()=>onResetZoom()} disabled={ graphData.datasets.length <= 0 }/>

@@ -25,7 +25,7 @@ import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { getSwitchCell } from '../../static/js/components/PgReactTableStyled';
 import { parseApiError } from '../../static/js/api_instance';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   height: '100%',
   '&.CollectionNodeProperties-emptyPanel': {
     minHeight: '100%',

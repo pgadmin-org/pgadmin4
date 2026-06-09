@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import { Resizable } from 're-resizable';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   ...theme.mixins.panelBorder.all,
   display: 'flex',
   flexDirection: 'column',
@@ -48,7 +48,13 @@ export default function SectionContainer({title, titleExtras, children, style, r
           {titleExtras}
         </div>
       </Box>
-      <Box height="100%" display="flex" flexDirection="column" minHeight={0}>
+      <Box
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0
+        }}>
         {children}
       </Box>
     </>

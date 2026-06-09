@@ -38,7 +38,9 @@ export default function InlineView({
     return <></>;
   }
   return (
-    <Grid container spacing={0} className='FormView-controlRow' rowGap="8px">
+    <Grid container spacing={0} className='FormView-controlRow' sx={{
+      rowGap: '8px'
+    }}>
       {children}
     </Grid>
   );

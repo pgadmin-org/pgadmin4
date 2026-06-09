@@ -272,16 +272,25 @@ QuerySourceIcon.propTypes = {
 };
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
-  return <ListItemButton component='li' tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query}
-    className={'QuerySources-fontSourceCode ' + (entry.status ? '' : 'QuerySources-itemError')} selected={selectedItemKey==itemKey} onClick={onClick}>
-    <Box whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" >
-      <QuerySourceIcon source={entry.query_source}/>
-      {entry.query}
-    </Box>
-    <Box fontSize="12px">
-      {formatEntryDate(entry.start_time)}
-    </Box>
-  </ListItemButton>;
+  return (
+    <ListItemButton component='li' tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query}
+      className={'QuerySources-fontSourceCode ' + (entry.status ? '' : 'QuerySources-itemError')} selected={selectedItemKey==itemKey} onClick={onClick}>
+      <Box
+        sx={{
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          overflow: 'hidden'
+        }}>
+        <QuerySourceIcon source={entry.query_source}/>
+        {entry.query}
+      </Box>
+      <Box sx={{
+        fontSize: '12px'
+      }}>
+        {formatEntryDate(entry.start_time)}
+      </Box>
+    </ListItemButton>
+  );
 }
 
 const EntryPropType = PropTypes.shape({
@@ -322,15 +331,23 @@ function QueryHistoryDetails({entry}) {
   }, [entry]);
 
   if(!entry) {
-    return <Box display="flex" height="100%">
-      <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
-    </Box>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100%'
+        }}>
+        <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
+      </Box>
+    );
   }
 
   return (
     <>
       {entry.info && <Box className='QuerySources-infoHeader'>{entry.info}</Box>}
-      <Box padding="0.5rem" data-label="history-detail">
+      <Box data-label="history-detail" sx={{
+        padding: '0.5rem'
+      }}>
         <Grid container>
           <Grid size={{ sm: 4 }}>{getDateFormatted(entry.start_time) + ' ' + getTimeFormatted(entry.start_time)}</Grid>
           <Grid size={{ sm: 4 }}>{entry?.row_affected > 0 && entry.row_affected}</Grid>
@@ -355,9 +372,16 @@ function QueryHistoryDetails({entry}) {
             className='QuerySources-queryMargin'
           />
         </Box>
-        <Box marginTop="0.5rem">
+        <Box sx={{
+          marginTop: '0.5rem'
+        }}>
           <Box>{gettext('Messages')}</Box>
-          <Box className='QuerySources-fontSourceCode' fontSize="13px" whiteSpace="pre-wrap">{_.isObject(entry.message) ? JSON.stringify(entry.message) : entry.message}</Box>
+          <Box
+            className='QuerySources-fontSourceCode'
+            sx={{
+              fontSize: '13px',
+              whiteSpace: 'pre-wrap'
+            }}>{_.isObject(entry.message) ? JSON.stringify(entry.message) : entry.message}</Box>
         </Box>
       </Box>
     </>
@@ -521,7 +545,9 @@ export function QueryHistory() {
         <>
           <Box className='QuerySources-leftRoot'>
             <Box className='QuerySources-header'>
-              <Box marginRight="auto">
+              <Box sx={{
+                marginRight: 'auto'
+              }}>
                 {gettext('Show queries generated internally by pgAdmin?')}
                 <InputSwitch value={showInternal} onChange={(e)=>{
                   setShowInternal(e.target.checked);
@@ -535,7 +561,12 @@ export function QueryHistory() {
                   className='QuerySources-removeBtnMargin' onClick={onRemoveAll}>{gettext('Remove All')}</DefaultButton>
               </Box>
             </Box>
-            <Box flexGrow="1" overflow="auto" className='QuerySources-listRoot'>
+            <Box
+              className='QuerySources-listRoot'
+              sx={{
+                flexGrow: '1',
+                overflow: 'auto'
+              }}>
               <List ref={listRef} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
                 {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
                   <ListItem key={`section-${groupKey}`} className='QuerySources-removePadding'>
@@ -551,7 +582,12 @@ export function QueryHistory() {
               </List>
             </Box>
           </Box>
-          <Box flexBasis="50%" maxWidth="50%" overflow="auto">
+          <Box
+            sx={{
+              flexBasis: '50%',
+              maxWidth: '50%',
+              overflow: 'auto'
+            }}>
             <QueryHistoryDetails entry={selectedEntry}/>
           </Box>
         </>}

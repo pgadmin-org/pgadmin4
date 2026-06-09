@@ -32,7 +32,7 @@ import {
   replaceAll,
 } from '@codemirror/search';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   position: 'absolute',
   zIndex: 99,
   right: '4px',
@@ -166,8 +166,9 @@ export default function FindDialog({editor, show, replace, onClose}) {
         onChange={(value)=>setReplaceVal(value)}
         onKeyPress={onReplaceEnter}
       />}
-
-      <Box display="flex" className='CodeMirror-marginTop'>
+      <Box className='CodeMirror-marginTop' sx={{
+        display: 'flex'
+      }}>
         <PgIconButton title={gettext('Previous')} icon={<ArrowUpwardRoundedIcon />} size="xs" noBorder onClick={onFindPrev}
           style={{marginRight: '2px'}} />
         <PgIconButton title={gettext('Next')} icon={<ArrowDownwardRoundedIcon />} size="xs" noBorder onClick={onFindNext}
@@ -177,7 +178,9 @@ export default function FindDialog({editor, show, replace, onClose}) {
             style={{marginRight: '2px'}} />
           <PgIconButton title={gettext('Replace All')} icon={<SwapCallsRoundedIcon />} size="xs" noBorder onClick={onReplaceAll}/>
         </>}
-        <Box marginLeft="auto">
+        <Box sx={{
+          marginLeft: 'auto'
+        }}>
           <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={clearAndClose}/>
         </Box>
       </Box>

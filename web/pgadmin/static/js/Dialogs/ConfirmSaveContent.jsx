@@ -11,7 +11,11 @@ import PropTypes from 'prop-types';
 export default function ConfirmSaveContent({closeModal, text, onDontSave, onSave}) {
   return (
     <ModalContent>
-      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box
+        sx={{
+          flexGrow: '1',
+          p: 2
+        }}>{typeof(text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <ModalFooter>
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();

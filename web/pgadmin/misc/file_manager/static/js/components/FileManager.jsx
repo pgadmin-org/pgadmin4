@@ -37,7 +37,7 @@ import ErrorBoundary from '../../../../../static/js/helpers/ErrorBoundary';
 import { MY_STORAGE } from './FileManagerConstants';
 import _ from 'lodash';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   backgroundColor: theme.palette.background.default,
   '& .FileManager-toolbar': {
     padding: '4px',
@@ -452,8 +452,12 @@ export class FileManagerUtils {
 function ConfirmFile({text, onYes, onNo}) {
   return (
     <Box className='FileManager-replaceOverlay'>
-      <Box margin={'8px'} className='FileManager-replaceDialog'>
-        <Box padding={'1rem'}>{text}{}</Box>
+      <Box className='FileManager-replaceDialog' sx={{
+        margin: '8px'
+      }}>
+        <Box sx={{
+          padding: '1rem'
+        }}>{text}{}</Box>
         <Box className='FileManager-footer'>
           <DefaultButton data-test="no" startIcon={<CloseIcon />} onClick={onNo} >{gettext('No')}</DefaultButton>
           <PrimaryButton data-test="yes" className='FileManager-margin' startIcon={<CheckRoundedIcon />}
@@ -771,7 +775,14 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
   return (
     <ErrorBoundary>
       <StyledBox display="flex" flexDirection="column" height="100%">
-        <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
+        <Box
+          sx={{
+            flexGrow: '1',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
           <Loader message={loaderText} />
           {Boolean(confirmText) && <ConfirmFile text={confirmText} onNo={()=>setConfirmFile([null, null])} onYes={onConfirmYes}/>}
           <Box className='FileManager-toolbar'>
@@ -869,7 +880,14 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
               </PgMenu>
             }
           </Box>
-          <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
+          <Box
+            sx={{
+              flexGrow: '1',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
             {showUploader &&
               <Uploader fmUtilsObj={fmUtilsObj}
                 onClose={async (filesUploaded)=>{

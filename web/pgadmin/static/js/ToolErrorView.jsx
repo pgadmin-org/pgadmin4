@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import { LAYOUT_EVENTS } from './helpers/Layout';
 import { styled } from '@mui/material/styles';
-import { FormHelperText, Box } from '@mui/material';
+import { FormHelperText } from '@mui/material';
 import HTMLReactParse from 'html-react-parser';
 import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   color: theme.palette.text.primary,
   margin: '24px auto 12px',
   display: 'flex',

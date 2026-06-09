@@ -26,7 +26,7 @@ import { styled } from '@mui/material/styles';
 export const ModalContext = React.createContext({});
 const MIN_HEIGHT = 190;
 const MIN_WIDTH = 500;
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .Alert-footer': {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -50,7 +50,12 @@ export function useModal() {
 function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick, okIcon = 'default'}) {
   return (
     <StyledBox display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2} whiteSpace='pre-line'>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box
+        sx={{
+          flexGrow: '1',
+          p: 2,
+          whiteSpace: 'pre-line'
+        }}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <Box className='Alert-footer'>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick}>{cancelLabel}</DefaultButton>
@@ -106,7 +111,11 @@ function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = 
       };
       return (
         <StyledBox display="flex" flexDirection="column" height="100%">
-          <Box flexGrow="1" p={2}>
+          <Box
+            sx={{
+              flexGrow: '1',
+              p: 2
+            }}>
             {typeof (text) == 'string' ? HTMLReactParser(text) : text}
           </Box>
           <Box className='Alert-footer'>
@@ -331,7 +340,9 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
                 <Box className='Modal-iconButtonStyle'><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className='Modal-icon' />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
             }
 
-            <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
+            <Box sx={{
+              marginLeft: 'auto'
+            }}><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
           </Box>
         </DialogTitle>
       }

@@ -500,7 +500,9 @@ export function StorageWrapper(props) {
       </Grid>
       {Object.keys(props.ioInfo).map((drive) => (
         <SectionContainer key={drive} title={drive} style={{minHeight: 'unset', height: 'auto', marginBottom: '0.5px'}}>
-          <Grid container spacing={0.5} p={0.5}>
+          <Grid container spacing={0.5} sx={{
+            p: 0.5
+          }}>
             {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
               <Grid key={`${type}-${innerKeyIndex}`} size={{ md: 4, sm: 6 }}>
                 <ChartContainer id={`io-graph-${type}`} title={getChartContainerTitle(type)} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>

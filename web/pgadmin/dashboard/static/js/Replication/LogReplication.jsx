@@ -165,7 +165,12 @@ export default function LogReplication({treeNodeInfo, pageVisible}) {
   }, [pageVisible ]);
 
   return (
-    <Box height="100%" display="flex" flexDirection="column">
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
       <SectionContainer
         titleExtras={<RefreshButton onClick={()=>{
           getReplicationData('replication_stats', setReplicationStats);

@@ -19,7 +19,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   position: 'absolute',
   top: 0,
   bottom: 0,
@@ -104,9 +104,17 @@ export function UploadedFile({upfile, removeFile}) {
 
   return (
     <ListItem style={{cursor: 'auto'}}>
-      <Box display="flex" alignItems="flex-start">
-        <Box overflow="hidden" style={{overflowWrap: 'break-word'}} >{upfile.file.name}</Box>
-        <Box marginLeft="auto">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start'
+        }}>
+        <Box style={{overflowWrap: 'break-word'}} sx={{
+          overflow: 'hidden'
+        }} >{upfile.file.name}</Box>
+        <Box sx={{
+          marginLeft: 'auto'
+        }}>
           <PgIconButton title={gettext('Remove from list')} icon={<CloseIcon  />} size="xs" noBorder onClick={removeFile} />
         </Box>
       </Box>
@@ -166,10 +174,19 @@ export default function Uploader({fmUtilsObj, onClose}) {
 
   return (
     <StyledBox>
-      <Box display="flex" justifyContent="flex-end">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}>
         <PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={onClose} />
       </Box>
-      <Box display="flex" flexGrow={1} overflow="hidden">
+      <Box
+        sx={{
+          display: 'flex',
+          flexGrow: 1,
+          overflow: 'hidden'
+        }}>
         <Box className='Uploader-uploadArea' {...getRootProps()}>
           <input {...getInputProps()} />
           <Box>{gettext('Drop files here, or click to select files.')}</Box>

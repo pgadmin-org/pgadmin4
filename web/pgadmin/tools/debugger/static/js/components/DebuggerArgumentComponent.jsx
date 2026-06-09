@@ -33,7 +33,7 @@ import { BROWSER_PANELS } from '../../../../../browser/static/js/constants';
 import usePreferences from '../../../../../preferences/static/js/store';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   display: 'flex',
   flexDirection: 'column',
   flexGrow: 1,
@@ -861,7 +861,9 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             {gettext('Clear All')}
           </DefaultButton>
         </Box>
-        <Box className='DebuggerArgument-actionBtn' marginLeft="auto">
+        <Box className='DebuggerArgument-actionBtn' sx={{
+          marginLeft: 'auto'
+        }}>
           <DefaultButton className='DebuggerArgument-buttonMargin' onClick={() => { props.closeModal(); }} startIcon={<CloseSharpIcon onClick={() => { props.closeModal(); }} />}>
             {gettext('Cancel')}
           </DefaultButton>

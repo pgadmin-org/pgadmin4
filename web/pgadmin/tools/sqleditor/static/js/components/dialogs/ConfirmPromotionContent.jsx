@@ -27,7 +27,11 @@ export default function ConfirmPromotionContent({ onContinue, onClose, closeModa
 
   return (
     <ModalContent>
-      <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box
+        sx={{
+          flexGrow: '1',
+          p: 2
+        }}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <StyledFooter>
         <InputCheckbox controlProps={{ label: gettext('Don\'t ask again') }} value={formData['save_user_choice']}
           onChange={(e) => setFormData((prev) => ({ ...prev, 'save_user_choice': e.target.checked }))} />

@@ -188,7 +188,12 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
       });
   }, enablePoll ? pollDelay : -1);
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      }}>
       <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <MemoryWrapper
@@ -224,7 +229,12 @@ export function MemoryWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      }}>
       <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
         <Grid size={{ md: 6 }}>
           <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
@@ -239,7 +249,11 @@ export function MemoryWrapper(props) {
           </ChartContainer>
         </Grid>
       </Grid>
-      <Box flexGrow={1} minHeight={0}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          minHeight: 0
+        }}>
         <SectionContainer title={gettext('Process memory usage')}>
           <PgTable
             columns={props.tableHeader}

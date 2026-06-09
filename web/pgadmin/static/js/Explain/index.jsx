@@ -22,7 +22,7 @@ import AIInsights from './AIInsights';
 import PropTypes from 'prop-types';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .Explain-tabPanel': {
     padding: '0 !important',
     backgroundColor: theme.palette.background.default + ' !important',

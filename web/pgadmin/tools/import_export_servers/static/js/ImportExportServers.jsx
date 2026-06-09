@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 import pgAdmin from 'sources/pgadmin';
 import Table from '../../../../static/js/components/Table';
 
-const StyledBox = styled(Box)(({theme}) =>
+const StyledBox = styled('div')(({theme}) =>
   ({
     height: '100%',
     '& .ImportExportServers-noOverflow': {

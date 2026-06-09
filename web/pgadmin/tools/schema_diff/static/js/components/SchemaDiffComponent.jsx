@@ -17,7 +17,6 @@ import url_for from 'sources/url_for';
 import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 
-import { Box } from '@mui/material';
 import { Results } from './Results';
 import { SchemaDiffCompare } from './SchemaDiffCompare';
 import EventBus from '../../../../../static/js/helpers/EventBus';
@@ -28,7 +27,7 @@ import usePreferences from '../../../../../preferences/static/js/store';
 export const SchemaDiffEventsContext = createContext();
 export const SchemaDiffContext = createContext();
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .SchemaDiff-resultPanel': {
     backgroundColor: theme.palette.default.main,
     zIndex: 5,

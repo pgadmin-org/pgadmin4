@@ -953,7 +953,16 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     <QueryToolContext.Provider value={queryToolContextValue}>
       <QueryToolConnectionContext.Provider value={queryToolConnContextValue}>
         <QueryToolEventsContext.Provider value={eventBus.current}>
-          <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
+          <Box
+            tabIndex="0"
+            ref={containerRef}
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              flexGrow: '1'
+            }}>
             <ConnectionBar
               connected={qtState.connected}
               connecting={qtState.obtaining_conn}

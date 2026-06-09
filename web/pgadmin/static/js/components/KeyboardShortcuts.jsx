@@ -76,12 +76,13 @@ export default function KeyboardShortcuts({ value, onChange, fields, name }) {
 
   return (
     <Box
-      display="flex"
-      alignItems="center"
-      flexWrap="wrap"
-      gap="5px"
-      rowGap="5px"
-    >
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '5px',
+        rowGap: '5px'
+      }}>
       {hasKeys &&
       <>
         <ToggleButtonGroup value={value?.shift ? ['shift'] : []} onChange={(e, val)=>{

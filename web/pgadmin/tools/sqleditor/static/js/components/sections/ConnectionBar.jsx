@@ -99,7 +99,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
 
   const connTitle = React.useMemo(()=>_.find(connectionList, (c)=>c.is_selected)?.conn_title, [connectionList]);
   return (
-    (<Root>
+    <Root>
       <Box className='ConnectionBar-root'>
         <PgButtonGroup size="small">
           {queryToolCtx.preferences?.sqleditor?.connection_status &&
@@ -111,9 +111,22 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
             style={{backgroundColor: queryToolCtx.params.bgcolor, color: queryToolCtx.params.fgcolor}}
           >
             <Tooltip title={queryToolCtx.params.is_query_tool ? '' : connTitle}>
-              <Box display="flex" width="100%">
-                <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">{connecting && gettext('(Obtaining connection)')}{connTitle}</Box>
-                {queryToolCtx.params.is_query_tool && <Box display="flex" alignItems="center"><KeyboardArrowDownIcon /></Box>}
+              <Box
+                sx={{
+                  display: 'flex',
+                  width: '100%'
+                }}>
+                <Box
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    marginRight: 'auto'
+                  }}>{connecting && gettext('(Obtaining connection)')}{connTitle}</Box>
+                {queryToolCtx.params.is_query_tool && <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}><KeyboardArrowDownIcon /></Box>}
               </Box>
             </Tooltip>
           </DefaultButton>
@@ -138,7 +151,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
         })}
         <PgMenuItem onClick={onNewConnClick}>{`< ${gettext('New Connection...')} >`}</PgMenuItem>
       </PgMenu>
-    </Root>)
+    </Root>
   );
 }
 

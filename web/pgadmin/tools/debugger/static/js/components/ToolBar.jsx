@@ -11,7 +11,6 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { styled } from '@mui/material/styles';
 
-import { Box } from '@mui/material';
 import FormatIndentIncreaseIcon from '@mui/icons-material/FormatIndentIncrease';
 import FormatIndentDecreaseIcon from '@mui/icons-material/FormatIndentDecrease';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
@@ -31,7 +30,7 @@ import { useKeyboardShortcuts } from '../../../../../static/js/custom_hooks';
 
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   padding: '2px 4px',
   display: 'flex',
   alignItems: 'center',

@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useEffect } from 'react';
 import { PrimaryButton } from './components/Buttons';
@@ -17,7 +16,7 @@ import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { useForceUpdate } from './custom_hooks';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   height: '30px',
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,

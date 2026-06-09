@@ -122,11 +122,22 @@ export default function AboutComponent() {
         </Grid>
       }
       { aboutData.settings &&
-        <Box flexGrow="1" display="flex" flexDirection="column" minHeight="0">
+        <Box
+          sx={{
+            flexGrow: '1',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '0'
+          }}>
           <Box>
             <InputLabel style={{fontWeight: 'bold'}}>{gettext('pgAdmin Server Configuration')}</InputLabel>
           </Box>
-          <Box flexGrow="1" paddingTop="1px" minHeight="0">
+          <Box
+            sx={{
+              flexGrow: '1',
+              paddingTop: '1px',
+              minHeight: '0'
+            }}>
             <InputSQL value={aboutData.settings}
               controlProps={{
                 readonly: true,

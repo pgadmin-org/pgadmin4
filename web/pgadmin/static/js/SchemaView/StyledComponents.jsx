@@ -7,10 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
-import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 
-export const StyledBox = styled(Box)(({theme}) => ({
+export const StyledBox = styled('div')(({theme}) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
@@ -50,7 +49,7 @@ export const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
-export const StyleDataGridBox = styled(Box)(({theme}) => ({
+export const StyleDataGridBox = styled('div')(({theme}) => ({
   '& .DataGridView-grid': {
     ...theme.mixins.panelBorder,
     backgroundColor: theme.palette.background.default,
@@ -123,7 +122,7 @@ export const StyleDataGridBox = styled(Box)(({theme}) => ({
   }
 }));
 
-export const FormContentBox = styled(Box)(({theme}) => ({
+export const FormContentBox = styled('div')(({theme}) => ({
   '& .FormView-nestedControl': {
     height: 'unset !important',
     '& .FormView-controlRow': {

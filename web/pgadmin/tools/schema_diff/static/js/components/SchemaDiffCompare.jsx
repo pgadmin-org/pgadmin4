@@ -749,7 +749,9 @@ export function SchemaDiffCompare({ params }) {
         <Grid
           container
           direction="row"
-          alignItems="center"
+          sx={{
+            alignItems: 'center'
+          }}
         >
           <Grid size={{ lg: 7, md: 7, sm: 10, xs: 10 }}>
             <InputComponent
@@ -773,7 +775,9 @@ export function SchemaDiffCompare({ params }) {
         <Grid
           container
           direction="row"
-          alignItems="center"
+          sx={{
+            alignItems: 'center'
+          }}
         >
           <Grid size={{ lg: 7, md: 7, sm: 10, xs: 10 }}>
             <InputComponent

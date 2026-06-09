@@ -404,7 +404,12 @@ export default function PGDReplication({preferences, treeNodeInfo, pageVisible, 
   const replicationLagBytesData = useMemo(()=>transformData(replicationLagBytes, preferences['pgd_replication_lag_refresh'], theme.name), [replicationLagBytes, theme.name]);
 
   return (
-    <Box height="100%" display="flex" flexDirection="column">
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
       <Grid container spacing={0.5}>
         <Grid size={{ md: 6 }}>
           <ChartContainer id='sessions-graph' title={gettext('Replication lag (Time)')}

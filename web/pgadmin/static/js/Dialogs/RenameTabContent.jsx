@@ -63,8 +63,12 @@ export default function RenameTabContent({ panelId, panelDocker, closeModal}) {
 
   return (
     <ModalContent ref={containerRef}>
-      <Box padding="8px">
-        <Box marginBottom="4px">Current: {initialTitle}</Box>
+      <Box sx={{
+        padding: '8px'
+      }}>
+        <Box sx={{
+          marginBottom: '4px'
+        }}>Current: {initialTitle}</Box>
         <InputText type="text" value={formData['title']} controlProps={{ maxLength: null }}
           onChange={(e) => onTextChange(e, 'title')} onKeyDown={(e) => onKeyDown(e)} autoFocus />
       </Box>

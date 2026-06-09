@@ -1153,7 +1153,9 @@ export function FormNote({ text, className, controlProps }) {
     <Root>
       <Box className={className}>
         <Paper elevation={0} className={controlProps?.raw ? '' : 'Form-noteRoot'}>
-          {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
+          {!controlProps?.raw && <Box sx={{
+            paddingRight: '0.25rem'
+          }}><DescriptionIcon fontSize="small" /></Box>}
           <Box>{HTMLReactParse(text || '')}</Box>
         </Paper>
       </Box>
@@ -1167,7 +1169,7 @@ FormNote.propTypes = {
 };
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   padding: theme.spacing(0.5),
   position: 'absolute',
   bottom: 0,
@@ -1258,7 +1260,7 @@ FormInputSelectThemes.propTypes = {
   labelTooltip: PropTypes.string
 };
 
-const StyledNotifierMessageBox = styled(Box)(({theme}) => ({
+const StyledNotifierMessageBox = styled('div')(({theme}) => ({
   borderWidth: '1px',
   borderStyle: 'solid',
   borderRadius: theme.shape.borderRadius,

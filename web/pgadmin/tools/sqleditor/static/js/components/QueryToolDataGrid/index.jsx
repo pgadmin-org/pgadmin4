@@ -193,14 +193,18 @@ function SelectableHeaderRenderer({column, isSelected, onColumnSelected, isCellS
           eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, column);
         }}/>
       </Box>}
-      <Box marginRight="auto">
+      <Box sx={{
+        marginRight: 'auto'
+      }}>
         <span className='QueryTool-columnName'>{column.display_name}</span><br/>
         <span>{column.display_type}</span>
       </Box>
-      <Box marginLeft="4px">{column.can_edit ?
-        <EditIcon fontSize="small" style={{fontSize: '0.875rem'}} data-label="EditIcon"/>:
-        <LockIcon fontSize="small" style={{fontSize: '0.875rem'}} data-label="LockIcon"/>
-      }</Box>
+      <Box sx={{
+        marginLeft: '4px'
+      }}>{column.can_edit ?
+          <EditIcon fontSize="small" style={{fontSize: '0.875rem'}} data-label="EditIcon"/>:
+          <LockIcon fontSize="small" style={{fontSize: '0.875rem'}} data-label="LockIcon"/>
+        }</Box>
     </Box>
   );
 }

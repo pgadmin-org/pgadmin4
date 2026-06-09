@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   borderRadius: theme.shape.borderRadius,
   padding: '0.25rem 1rem 1rem',
   minWidth: '325px',
@@ -46,13 +46,24 @@ const AUTO_HIDE_DURATION = 10000;  // In milliseconds
 function ProcessNotifyMessage({title, desc, onClose, onViewProcess, success=true, dataTestSuffix=''}) {
   return (
     <StyledBox className={(success ? 'BgProcessNotify-containerSuccess' : 'BgProcessNotify-containerError')} data-test={'process-popup-' + dataTestSuffix}>
-      <Box display="flex" justifyContent="space-between" className='BgProcessNotify-containerHeader'>
-        <Box marginRight={'1rem'}>{title}</Box>
+      <Box
+        className='BgProcessNotify-containerHeader'
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}>
+        <Box sx={{
+          marginRight: '1rem'
+        }}>{title}</Box>
         <PgIconButton size="xs" noBorder icon={<CloseIcon />} onClick={onClose} title={'Close'} className={success ? 'BgProcessNotify-iconSuccess' : 'BgProcessNotify-iconError'} />
       </Box>
       <Box className='BgProcessNotify-containerBody'>
         <Box>{desc}</Box>
-        <Box marginTop={'1rem'} display="flex">
+        <Box
+          sx={{
+            marginTop: '1rem',
+            display: 'flex'
+          }}>
           <DefaultButton startIcon={<DescriptionOutlinedIcon />} onClick={()=>{
             onViewProcess();
             onClose();

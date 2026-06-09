@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useState} from 'react';
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -35,7 +34,7 @@ import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   padding: '2px 4px',
   display: 'flex',
   alignItems: 'center',

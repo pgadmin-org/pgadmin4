@@ -360,18 +360,34 @@ export class TableNodeWidget extends React.Component {
 
     return (
       <Box className='TableNode-columnSection' key={col.attnum} data-test="column-row">
-        <Box marginRight="auto" padding="0" minHeight="0" display="flex" alignItems="center">
+        <Box
+          sx={{
+            marginRight: 'auto',
+            padding: '0',
+            minHeight: '0',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
           {this.generatePort(leftPort)}
         </Box>
         <Box className='TableNode-columnName'>
           <RowIcon icon={icon} />
-          <Box margin="auto 0">
+          <Box sx={{
+            margin: 'auto 0'
+          }}>
             <span data-test="column-name">{col.name}</span>&nbsp;
             {this.state.show_details &&
             <span data-test="column-type">{cltype + (col.colconstype == 'i' ? ` (${gettext('IDENTITY')})`:'')}</span>}
           </Box>
         </Box>
-        <Box marginLeft="auto" padding="0" minHeight="0" display="flex" alignItems="center">
+        <Box
+          sx={{
+            marginLeft: 'auto',
+            padding: '0',
+            minHeight: '0',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
           {this.generatePort(rightPort)}
         </Box>
       </Box>

@@ -212,7 +212,9 @@ export default function SchemaDialogView({
                   />
                 </Box>
             }
-            <Box marginLeft='auto'>
+            <Box sx={{
+              marginLeft: 'auto'
+            }}>
               {
                 Boolean(customCloseBtnName) &&
                   <DefaultButton data-test='Close' onClick={props.onClose}

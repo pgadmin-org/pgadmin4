@@ -181,7 +181,12 @@ function PaginationInputs({pagination, totalRowCount, clearSelection, serverCurs
   return (
     <Box className='PaginationInputs'>
       {editPageRange ?
-        <Box display="flex" gap="2px" alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: '2px',
+            alignItems: 'center'
+          }}>
           <div>{gettext('Showing rows:')}</div>
           <InputText
             type="int"
@@ -411,7 +416,12 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   return (
     <>
       <StyledDiv>
-        <Box display="flex" alignItems="center" gap="4px">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}>
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
               shortcut={queryToolPref.btn_add_row} disabled={!canEdit} onClick={addRow} />
