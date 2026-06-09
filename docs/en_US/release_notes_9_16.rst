@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9128 <https://github.com/pgadmin-org/pgadmin4/issues/9128>`_ -  Fixed an issue where the object breadcrumbs popup blocked clicks on the object explorer items beneath it.
