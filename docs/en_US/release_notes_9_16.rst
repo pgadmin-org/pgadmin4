@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #7346 <https://github.com/pgadmin-org/pgadmin4/issues/7346>`_ -  Fixed an issue where preferences set via the CLI (setup.py set-prefs) were not validated, so invalid values were stored silently; CLI preference values are now validated against the preference type and rejected (and reported) if invalid.
