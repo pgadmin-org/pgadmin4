@@ -138,7 +138,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     params: {
       ...params,
       title: _.unescape(params.title),
-      is_query_tool: params.is_query_tool == 'true',
+      is_query_tool: params.is_query_tool === true || params.is_query_tool == 'true',
       node_name: retrieveNodeName(selectedNodeInfo),
       dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       server_cursor: preferencesStore.getPreferencesForModule('sqleditor').server_cursor === true,
@@ -154,7 +154,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       bgcolor: params.bgcolor,
       conn_title: getTitle(
         pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
-        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true'),
+        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool === true || params.is_query_tool == 'true'),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
@@ -342,7 +342,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(toolContent?.fileName)eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, toolContent.fileName, true);
       }
     }
-    setQtStatePartial({ editor_disabled: false });
+    setQtStatePartial(prev => ({
+      ...prev,
+      editor_disabled: false,
+      params: {
+        ...prev.params,
+        restore: 'false'
+      }
+    }));
   };
 
   const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false, executeServerCursor=false, reexecute=false)=>{
@@ -380,7 +387,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           obtaining_conn: false,
         });
         //this condition works if user is in View/Edit Data or user does not saved server or tunnel password and disconnected the server and executing the query
-        if(!qtState.params.is_query_tool || reexecute) {
+        if((!qtState.params.is_query_tool || reexecute) && qtState.params.restore != 'true') {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor, executeServerCursor);
           let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
           pgAdmin.Browser.notifier.success(_.escape(msg));
@@ -907,6 +914,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
+      let panel = qtPanelDocker?.find(qtPanelId);
+      if (panel?.metaData?.toolUrl) {
+        panel.metaData.toolUrl = panel.metaData.toolUrl.replace('is_query_tool=false', 'is_query_tool=true');
+      }
       return {
         ...prev,
         params: {
