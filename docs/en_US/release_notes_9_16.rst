@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9814 <https://github.com/pgadmin-org/pgadmin4/issues/9814>`_ -  Disable SSH agent probing for SSH tunnels when an identity file or password is provided, preventing repeated authentication prompts/denials from the agent.
