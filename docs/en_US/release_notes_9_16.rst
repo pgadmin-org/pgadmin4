@@ -20,6 +20,8 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #9699 <https://github.com/pgadmin-org/pgadmin4/issues/9699>`_ -  Add support for closing a tab with a middle-click on its title.
+
 Housekeeping
 ************
 
