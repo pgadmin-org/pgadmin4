@@ -492,11 +492,22 @@ export function JsonTextEditor(props) {
 
   React.useEffect(() => {
     if (proceed) return;
+    // notifier.confirm() fires its cancel callback whenever the dialog
+    // closes, including when the user clicks OK. Track the confirmation so
+    // we only close the cell editor on an actual cancel and not after the
+    // user chose to continue (#9868).
+    let confirmed = false;
     pgAdmin.Browser.notifier.confirm(
       gettext('Large data'),
       gettext('This cell contains a large amount of data. Opening it in the JSON editor may make pgAdmin slow or unresponsive. Do you want to continue?'),
-      () => setProceed(true),
-      () => onClose(false),
+      () => {
+        confirmed = true;
+        setProceed(true);
+      },
+      () => {
+        if (confirmed) return;
+        onClose(false);
+      },
     );
   }, []);
 
