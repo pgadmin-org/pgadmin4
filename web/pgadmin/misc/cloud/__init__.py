@@ -19,6 +19,7 @@ from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule, html
 from pgadmin.utils.ajax import make_json_response,\
     internal_server_error, bad_request, success_return
+from pgadmin.utils.text_sanitize import sanitize_external_text
 
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.model import db, Server, Process
@@ -131,7 +132,7 @@ def deploy_on_cloud():
         return make_json_response(
             status=410,
             success=0,
-            errormsg=resp
+            errormsg=sanitize_external_text(resp)
         )
 
     # Return response
@@ -232,7 +233,7 @@ def update_cloud_server():
 
     if not status:
         return make_json_response(
-            status=410, success=0, errormsg=server
+            status=410, success=0, errormsg=sanitize_external_text(server)
         )
 
     return make_json_response(

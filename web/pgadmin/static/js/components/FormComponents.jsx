@@ -1193,6 +1193,7 @@ export function FormFooterMessage({style, ...props}) {
 FormFooterMessage.propTypes = {
   style: PropTypes.object,
   message: PropTypes.string,
+  plainText: PropTypes.bool,
 };
 
 const StyledFormInput = styled(FormInput)(() => ({

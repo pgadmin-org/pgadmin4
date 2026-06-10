@@ -38,7 +38,7 @@ from .typecast import register_binary_data_typecasters,\
     register_binary_typecasters, register_array_to_string_typecasters,\
     register_numeric_typecasters, ALL_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
-from .text_sanitize import sanitize_driver_message
+from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.utils import csv_lib as csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
@@ -694,7 +694,7 @@ WHERE db.datname = current_database()""")
                 errmsg = gettext(
                     "Failed to execute the post connection SQL "
                     "with below error message:\n{msg}").format(
-                    msg=sanitize_driver_message(status))
+                    msg=sanitize_external_text(status))
         return errmsg
 
     def __cursor(self, server_cursor=False, scrollable=False):

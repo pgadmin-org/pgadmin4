@@ -14,7 +14,7 @@ When an attacker-controlled (or malicious) PostgreSQL server returns an
 HTML-laden ErrorResponse for a post-connection-SQL query, the JSON the
 connect endpoint returns must contain the HTML-escaped (entity-encoded)
 text in `errormsg`, not the raw markup. This exercises the real
-execute_post_connection_sql → sanitize_driver_message → make_json_response
+execute_post_connection_sql → sanitize_external_text → make_json_response
 chain through the Flask test client, not a unit-level mock of either side.
 
 The test sets `post_connection_sql` to a query referencing a relation
@@ -84,7 +84,7 @@ class TestPostConnectionSqlXssEscaped(BaseTestGenerator):
         # The PostgreSQL error must have been observed and embedded.
         self.assertIn('Failed to execute the post connection SQL', errmsg)
         # The raw HTML payload must NOT survive verbatim — it must be
-        # HTML-escaped to inert entities by sanitize_driver_message.
+        # HTML-escaped to inert entities by sanitize_external_text.
         self.assertNotIn('<iframe', errmsg)
         self.assertNotIn('<script', errmsg)
         # The entity-encoded form must be present.

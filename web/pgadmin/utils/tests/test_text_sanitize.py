@@ -8,15 +8,15 @@
 ##########################################################################
 
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.utils.driver.psycopg3.text_sanitize \
-    import sanitize_driver_message
+from pgadmin.utils.text_sanitize import sanitize_external_text
 
 
-class TestSanitizeDriverMessage(BaseTestGenerator):
-    """Defense-in-depth scrub for driver-returned text used in user-facing
-    error messages. Strips C0 control characters and DEL (preserving TAB,
-    LF, CR) and HTML-escapes the result so any markup-like sequence
-    rendered downstream is inert text."""
+class TestSanitizeExternalText(BaseTestGenerator):
+    """Defense-in-depth scrub for text reaching pgAdmin from any external
+    source (PostgreSQL driver, cloud SDK, OS process). Strips C0 control
+    characters and DEL (preserving TAB, LF, CR) and HTML-escapes the
+    result so any markup-like sequence rendered downstream is inert
+    text."""
 
     scenarios = [
         ('strips NUL byte',
@@ -77,13 +77,13 @@ class TestSanitizeDriverMessage(BaseTestGenerator):
     ]
 
     def runTest(self):
-        observed = sanitize_driver_message(self.input)
+        observed = sanitize_external_text(self.input)
         self.assertEqual(observed, self.expected)
 
 
 class TestExecutePostConnectionSqlScrubsControlChars(BaseTestGenerator):
     """Wiring test: execute_post_connection_sql must route the
-    driver-returned status string through sanitize_driver_message before
+    driver-returned status string through sanitize_external_text before
     embedding it into the user-facing errmsg. The body is exercised
     directly with a small stand-in for self._execute and a patched
     current_app.logger so the test does not need a real psycopg

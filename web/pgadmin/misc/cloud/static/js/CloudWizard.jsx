@@ -407,7 +407,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               options={cloud_providers}
             ></ToggleButtons>
           </Box>
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={1} >
           <Box sx={{ position: 'relative',top: '20%'}}>
@@ -431,7 +431,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           <Box flexGrow={1}>
             {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
           </Box>
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={2} >
           {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 2 && <BigAnimalClusterType
@@ -474,7 +474,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             hostIP={hostIP}
             googleInstanceData = {googleInstanceData}
           /> }
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={4} >
           {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsDatabaseDetails
