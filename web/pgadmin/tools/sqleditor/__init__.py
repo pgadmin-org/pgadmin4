@@ -46,6 +46,8 @@ from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, service_unavailable, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.crypto import encrypt
+from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
 from pgadmin.browser.utils import underscore_escape
@@ -2681,6 +2683,16 @@ def connect_server(sid):
 
     conn = manager.connection()
     if conn.connected():
+        # The server's primary connection is already established.  However,
+        # individual tools (Query Tool, View/Edit Data, etc.) open their own
+        # connections and, when the password is not saved, rely on the
+        # password cached on the server manager.  If that cached password is
+        # missing (e.g. it was never persisted, or the tab was restored from
+        # a workspace) the tool prompts for the password.  Make sure the
+        # password the user just entered at that prompt is cached here so the
+        # tool's connection can use it, instead of being discarded and
+        # re-prompted in a loop.
+        _cache_manager_password_from_request(manager)
         return make_json_response(
             success=1,
             info=gettext("Server connected."),
@@ -2691,6 +2703,39 @@ def connect_server(sid):
     return view.connect(
         server.servergroup_id, sid
     )
+
+
+def _cache_manager_password_from_request(manager):
+    """
+    Cache the password supplied with the current request (from a tool's
+    password prompt) onto the server manager, so that connections opened by
+    tools such as the Query Tool can reuse it without prompting again.
+
+    This is a no-op when no password is supplied or when the encryption key
+    is unavailable.  When a password is supplied it overwrites any cached
+    password, so a freshly entered credential (e.g. a regenerated, short-lived
+    cloud auth token) takes effect immediately.
+    """
+    if request.form:
+        data = request.form
+    elif request.data:
+        data = json.loads(request.data)
+    else:
+        return
+
+    password = data.get('password', None)
+    if not password:
+        return
+
+    crypt_key_present, crypt_key = get_crypt_key()
+    if not crypt_key_present:
+        return
+
+    try:
+        manager._update_password(encrypt(password, crypt_key))
+        manager.update_session()
+    except Exception as e:
+        current_app.logger.exception(e)
 
 
 @blueprint.route(
