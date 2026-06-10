@@ -29,18 +29,15 @@ from pgadmin.utils.server_access import get_server_group, \
     get_server_groups_for_user
 
 
-def get_icon_css_class(group_id, group_user_id,
-                       default_val='icon-server_group'):
+def get_icon_css_class(is_shared_group, default_val='icon-server_group'):
     """
     Returns css value
-    :param group_id:
-    :param group_user_id:
+    :param is_shared_group:
     :param default_val:
     :return: default_val
     """
-    if (config.SERVER_MODE and
-        group_user_id != current_user.id and
-            ServerGroupModule.has_shared_server(group_id)):
+    if (config.SERVER_MODE
+        and is_shared_group):
         default_val = 'icon-server_group_shared'
         return default_val, True
 
@@ -66,31 +63,13 @@ class ServerGroupModule(BrowserPluginModule):
 
         return snippets
 
-    @staticmethod
-    def has_shared_server(gid):
-        """
-        To check whether given server group contains shared server or not
-        :param gid:
-        :return: True if servergroup contains shared server else false
-        """
-        servers = Server.query.filter_by(servergroup_id=gid)
-        for s in servers:
-            if s.shared:
-                return True
-        return False
-
     def get_nodes(self, *arg, **kwargs):
         """Return a JSON document listing the server groups for the user"""
 
-        if config.SERVER_MODE:
-            groups = ServerGroupView.get_all_server_groups()
-        else:
-            groups = ServerGroup.query.filter_by(
-                user_id=current_user.id
-            ).order_by("id")
+        groups = ServerGroupView.get_all_server_groups()
 
         for idx, group in enumerate(groups):
-            icon_class, is_shared = get_icon_css_class(group.id, group.user_id)
+            icon_class, is_shared = get_icon_css_class(group.is_shared_group)
             yield self.generate_browser_node(
                 "%d" % (group.id), None,
                 group.name,
@@ -201,7 +180,7 @@ class ServerGroupView(NodeView):
                 status=417,
                 success=0,
                 errormsg=gettext(
-                    'The specified server group cannot be deleted.'
+                    'The specified server group cannot be deleted. Shared servers are present in this group.'
                 )
             )
 
@@ -210,7 +189,7 @@ class ServerGroupView(NodeView):
                 status=417,
                 success=0,
                 errormsg=gettext(
-                    'The specified server group cannot be deleted.'
+                    'The specified server group cannot be deleted. The first server group is not deletable.'
                 )
             )
 
@@ -240,9 +219,7 @@ class ServerGroupView(NodeView):
         """Update the server-group properties"""
 
         # There can be only one record at most
-        servergroup = ServerGroup.query.filter_by(
-            user_id=current_user.id,
-            id=gid).first()
+        servergroup = get_server_group(gid)
 
         data = request.form if request.form else json.loads(
             request.data
@@ -259,18 +236,20 @@ class ServerGroupView(NodeView):
                 if 'name' in data:
                     servergroup.name = data['name']
                 db.session.commit()
+
             except exc.IntegrityError:
                 db.session.rollback()
                 return bad_request(gettext(
                     "The specified server group already exists."
                 ))
+
             except Exception as e:
                 db.session.rollback()
                 return make_json_response(
                     status=410, success=0, errormsg=str(e)
                 )
 
-        icon_class, is_shared = get_icon_css_class(gid, servergroup.user_id)
+        icon_class, is_shared = get_icon_css_class(servergroup.is_shared_group)
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 gid,
@@ -317,10 +296,13 @@ class ServerGroupView(NodeView):
                 db.session.add(sg)
                 db.session.commit()
 
+                # Refresh the sg object to get the id and other properties
+                sg = get_server_group(sg.id)
+
                 data['id'] = sg.id
                 data['name'] = sg.name
 
-                icon_class, is_shared = get_icon_css_class(sg.id, sg.user_id)
+                icon_class, is_shared = get_icon_css_class(sg.is_shared_group)
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
                         "%d" % sg.id,
@@ -387,18 +369,7 @@ class ServerGroupView(NodeView):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        server_groups = get_server_groups_for_user()
-
-        if hide_shared_server:
-            groups = []
-            for group in server_groups:
-                if group.user_id != current_user.id and \
-                        ServerGroupModule.has_shared_server(group.id):
-                    continue
-                groups.append(group)
-            return groups
-
-        return server_groups
+        return get_server_groups_for_user(hide_shared_server)
 
     @pga_login_required
     def nodes(self, gid=None):
@@ -406,14 +377,13 @@ class ServerGroupView(NodeView):
         nodes = []
         if gid is None:
             if config.SERVER_MODE:
-
                 groups = self.get_all_server_groups()
+
             else:
-                groups = ServerGroup.query.filter_by(user_id=current_user.id)
+                groups = get_server_groups_for_user(hide_shared=True)
 
             for group in groups:
-                icon_class, is_shared = get_icon_css_class(group.id,
-                                                           group.user_id)
+                icon_class, is_shared = get_icon_css_class(group.is_shared_group)
                 nodes.append(
                     self.blueprint.generate_browser_node(
                         "%d" % group.id,
@@ -433,8 +403,7 @@ class ServerGroupView(NodeView):
                     errormsg=gettext("Could not find the server group.")
                 )
 
-            icon_class, is_shared = get_icon_css_class(group.id,
-                                                       group.user_id)
+            icon_class, is_shared = get_icon_css_class(group.is_shared_group)
             nodes = self.blueprint.generate_browser_node(
                 "%d" % (group.id), None,
                 group.name,
