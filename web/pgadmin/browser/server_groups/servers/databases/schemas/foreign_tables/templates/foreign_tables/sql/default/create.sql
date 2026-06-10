@@ -48,7 +48,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
 {% if data.description %}
 
 COMMENT ON FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
-    IS '{{ data.description }}';
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif -%}
 {% if data.columns and data.columns|length > 0 %}
 {% for c in data.columns %}

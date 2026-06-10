@@ -6,5 +6,5 @@ ALTER DOMAIN {{ conn|qtIdent(schema, domain) }}
 
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON DOMAIN {{ conn|qtIdent(schema, domain) }}
-    IS '{{ data.description }}';{% endif %}
+    IS {{ data.description|qtLiteral(conn) }};{% endif %}
 {% endif %}

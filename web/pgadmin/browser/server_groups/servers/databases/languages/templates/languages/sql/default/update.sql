@@ -39,7 +39,7 @@ ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
 {# ============= Update language comments ============= #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
-    IS '{{ data.description }}';
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {% endif %}
 

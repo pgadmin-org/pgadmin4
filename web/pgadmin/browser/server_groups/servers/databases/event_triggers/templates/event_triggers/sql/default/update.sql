@@ -26,7 +26,7 @@ ALTER EVENT TRIGGER {{ conn|qtIdent(o_data.name) }}
 
 {% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON EVENT TRIGGER {{ conn|qtIdent(data.name) }}
-    IS '{{ data.comment }}';
+    IS {{ data.comment|qtLiteral(conn) }};
 {% endif %}
 
 {% if data.enabled and data.enabled != o_data.enabled %}

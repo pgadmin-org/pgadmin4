@@ -620,7 +620,8 @@ class DomainConstraintView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
-                              data=data, domain=domain, schema=schema)
+                              data=data, domain=domain, schema=schema,
+                              conn=self.conn)
 
         sql_header = """-- CHECK: {1}.{0}
 
@@ -696,7 +697,8 @@ class DomainConstraintView(PGChildNodeView):
 
                 SQL = render_template("/".join([self.template_path,
                                                 self._CREATE_SQL]),
-                                      data=data, domain=domain, schema=schema)
+                                      data=data, domain=domain, schema=schema,
+                                      conn=self.conn)
             if 'name' in data:
                 return True, SQL.strip('\n'), data['name']
             else:

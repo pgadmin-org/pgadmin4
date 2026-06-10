@@ -673,7 +673,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     data[arg] = old_data[arg]
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data
+                data=data, o_data=old_data, conn=self.conn
             )
         else:
             sql = self._get_create_with_grant_sql(data)

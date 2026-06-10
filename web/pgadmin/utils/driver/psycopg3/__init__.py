@@ -309,16 +309,23 @@ class Driver(BaseDriver):
 
     @staticmethod
     def qtLiteral(value, conn, force_quote=False):
-        res = value
+        if not conn:
+            raise ValueError(
+                "qtLiteral requires a connection: without one, escaping "
+                "silently degrades to returning the raw value, which is a "
+                "SQL injection sink. When using the Jinja filter, ensure "
+                "render_template is called with conn=<conn>; when calling "
+                "from Python, pass the connection as the second argument."
+            )
 
-        if conn:
-            try:
-                if not isinstance(conn, psycopg.Connection) and \
-                        not isinstance(conn, psycopg.AsyncConnection):
-                    conn = conn.conn
-                res = psycopg.sql.Literal(value).as_string(conn).strip()
-            except Exception:
-                print("Exception", value)
+        res = value
+        try:
+            if not isinstance(conn, psycopg.Connection) and \
+                    not isinstance(conn, psycopg.AsyncConnection):
+                conn = conn.conn
+            res = psycopg.sql.Literal(value).as_string(conn).strip()
+        except Exception:
+            print("Exception", value)
 
         if force_quote is True:
             # Convert the input to the string to use the startsWith(...)

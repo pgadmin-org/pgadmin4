@@ -733,7 +733,8 @@ rolmembership:{
     def list(self, gid, sid):
         status, res = self.conn.execute_dict(
             render_template(
-                self.sql_path + self._PROPERTIES_SQL
+                self.sql_path + self._PROPERTIES_SQL,
+                conn=self.conn
             )
         )
 
@@ -752,7 +753,8 @@ rolmembership:{
     def nodes(self, gid, sid):
 
         status, rset = self.conn.execute_2darray(
-            render_template(self.sql_path + self._NODES_SQL)
+            render_template(self.sql_path + self._NODES_SQL,
+                            conn=self.conn)
         )
 
         if not status:
@@ -783,7 +785,7 @@ rolmembership:{
         status, rset = self.conn.execute_2darray(
             render_template(
                 self.sql_path + self._NODES_SQL,
-                rid=rid
+                rid=rid, conn=self.conn
             )
         )
 
@@ -877,7 +879,7 @@ rolmembership:{
         status, res = self.conn.execute_dict(
             render_template(
                 self.sql_path + self._PROPERTIES_SQL,
-                rid=rid
+                rid=rid, conn=self.conn
             )
         )
 
@@ -998,7 +1000,7 @@ rolmembership:{
 
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + self._NODES_SQL,
-                            rid=rid
+                            rid=rid, conn=self.conn
                             )
         )
 
@@ -1042,7 +1044,7 @@ rolmembership:{
 
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + self._NODES_SQL,
-                            rid=rid
+                            rid=rid, conn=self.conn
                             )
         )
 
@@ -1280,7 +1282,7 @@ rolmembership:{
 
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + 'variables.sql',
-                            rid=rid
+                            rid=rid, conn=self.conn
                             )
         )
 

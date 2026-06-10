@@ -69,7 +69,7 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 {% if c.description %}
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
-    IS '{{ c.description }}';
+    IS {{ c.description|qtLiteral(conn) }};
 {% endif %}
 {% endfor -%}{% endif -%}
 {% set seclabels = data.seclabels %}

@@ -776,7 +776,8 @@ AND relkind != 'c'))"""
             data.update(parse_sec_labels_from_db(data['seclabels']))
 
         SQL = render_template("/".join([self.template_path,
-                                        self._CREATE_SQL]), data=data)
+                                        self._CREATE_SQL]),
+                              data=data, conn=self.conn)
 
         sql_header = """-- DOMAIN: {0}.{1}\n\n""".format(
             data['basensp'], data['name'])
@@ -838,7 +839,7 @@ AND relkind != 'c'))"""
         if 'fulltype' in data or 'basetype' in data or 'collname' in data:
             SQL = render_template(
                 "/".join([self.template_path, 'domain_schema_diff.sql']),
-                data=data, o_data=old_data)
+                data=data, o_data=old_data, conn=self.conn)
         else:
             if is_schema_diff:
                 data['is_schema_diff'] = True
@@ -894,7 +895,7 @@ AND relkind != 'c'))"""
         else:
             SQL = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
-                                  data=data)
+                                  data=data, conn=self.conn)
             return SQL.strip('\n'), data['name']
 
     @check_precondition

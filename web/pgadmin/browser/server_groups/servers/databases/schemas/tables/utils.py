@@ -888,7 +888,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             rules_sql += render_template("/".join(
                 [self.rules_template_path, self._CREATE_SQL]),
                 data=res_data, display_comments=display_comments,
-                add_replace_clause=True
+                add_replace_clause=True, conn=self.conn
             )
 
             # Add into main sql
