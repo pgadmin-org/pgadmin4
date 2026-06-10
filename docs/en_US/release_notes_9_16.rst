@@ -26,6 +26,10 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #3205 <https://github.com/pgadmin-org/pgadmin4/issues/3205>`_ -  Allow saving Query Tool results as JSON and XML in addition to CSV, via a drop-down on the Save results to file button.
+  | `Issue #4128 <https://github.com/pgadmin-org/pgadmin4/issues/4128>`_ -  Add a preference to choose the character encoding used when saving Query Tool results to a file.
+  | `Issue #4129 <https://github.com/pgadmin-org/pgadmin4/issues/4129>`_ -  Add a "Copy with headers?" preference to control whether column headers are included by default when copying results grid data.
+  | `Issue #6695 <https://github.com/pgadmin-org/pgadmin4/issues/6695>`_ -  Add a preference to write a UTF byte order mark (BOM) when saving Query Tool results to a file, for better interoperability with applications such as Microsoft Excel.
   | `Issue #9626 <https://github.com/pgadmin-org/pgadmin4/issues/9626>`_ -  Add support for the TOAST tuple target storage parameter in the Materialized View dialog.
   | `Issue #9646 <https://github.com/pgadmin-org/pgadmin4/issues/9646>`_ -  Make the init container security context in the Helm chart configurable via containerSecurityContext, consistent with the main container.
   | `Issue #9699 <https://github.com/pgadmin-org/pgadmin4/issues/9699>`_ -  Add support for closing a tab with a middle-click on its title.

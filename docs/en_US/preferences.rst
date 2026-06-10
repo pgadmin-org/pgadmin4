@@ -589,6 +589,13 @@ Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
   quoted in the CSV/TXT output; select *Strings*, *All*, or *None*.
 * Use the *Replace null values with* option to replace null values with
   specified string in the output file. Default is set to 'NULL'.
+* Use the *Output file encoding* drop-down listbox to specify the character
+  encoding used when saving query results to a file. The default is utf-8; an
+  encoding that is not listed can also be typed in.
+* Use the *Add byte order mark (BOM)?* switch to add a byte order mark at the
+  start of the saved file when a UTF encoding is used. This helps applications
+  such as Microsoft Excel detect the encoding correctly. This applies to the
+  CSV/TXT output only.
 
 .. image:: images/preferences_sql_display.png
     :alt: Preferences sqleditor display options
@@ -721,6 +728,9 @@ preferences for copied data.
   character for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields
   require quoting; select *All*, *None*, or *Strings*.
+* When the *Copy with headers?* switch is set to true, the column headers are
+  included by default when copying data from the results grid. This can still
+  be toggled per-copy from the results grid copy options menu.
 * When the *Striped rows?* switch is set to true, the result grid will display
   rows with alternating background colors.
 

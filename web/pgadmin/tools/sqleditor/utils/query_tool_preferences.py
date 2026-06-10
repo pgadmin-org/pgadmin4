@@ -250,6 +250,34 @@ def register_query_tool_preferences(self):
         allow_blanks=True
     )
 
+    self.csv_output_encoding = self.preference.register(
+        'CSV_output', 'csv_output_encoding',
+        gettext("Output file encoding"), 'options', 'utf-8',
+        category_label=PREF_LABEL_CSV_TXT,
+        options=[{'label': 'utf-8', 'value': 'utf-8'},
+                 {'label': 'utf-16', 'value': 'utf-16'},
+                 {'label': 'latin-1', 'value': 'latin-1'},
+                 {'label': 'windows-1252', 'value': 'windows-1252'}],
+        control_props={
+            'allowClear': False,
+            'tags': False,
+            'creatable': True
+        },
+        help_str=gettext('The character encoding used when saving query '
+                         'results to a file. Defaults to utf-8. A different '
+                         'encoding can be typed in if it is not listed.')
+    )
+
+    self.csv_add_bom = self.preference.register(
+        'CSV_output', 'csv_add_bom',
+        gettext("Add byte order mark (BOM)?"), 'boolean',
+        False, category_label=PREF_LABEL_CSV_TXT,
+        help_str=gettext('If set to True, a byte order mark (BOM) is added at '
+                         'the start of the saved file when a UTF encoding is '
+                         'used. This helps applications such as Microsoft '
+                         'Excel detect the encoding correctly.')
+    )
+
     self.results_grid_quoting = self.preference.register(
         'Results_grid', 'results_grid_quoting',
         gettext("Result copy quoting"), 'options', 'strings',
@@ -288,6 +316,16 @@ def register_query_tool_preferences(self):
             'allowClear': False,
             'tags': False
         }
+    )
+
+    self.copy_column_headers = self.preference.register(
+        'Results_grid', 'copy_column_headers',
+        gettext("Copy with headers?"), 'boolean',
+        False, category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('If set to True, the column headers are included by '
+                         'default when copying data from the results grid. '
+                         'This can still be toggled per-copy from the results '
+                         'grid copy menu.')
     )
 
     self.column_data_auto_resize = self.preference.register(

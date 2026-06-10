@@ -17,7 +17,9 @@ import os
 import secrets
 import datetime
 import asyncio
+import json
 from collections import deque
+from xml.sax.saxutils import escape as xml_escape, quoteattr as xml_quoteattr
 import psycopg
 from flask import g, current_app
 from flask_babel import gettext
@@ -52,6 +54,62 @@ if os.name == 'nt':
     )
 
 _ = gettext
+
+
+def _json_default(value):
+    """Fallback serialiser for values that json cannot encode natively
+    (dates, Decimals, intervals, etc.)."""
+    return str(value)
+
+
+def _generate_json(cur, records, results, header, replace_nulls_with,
+                   handle_null_values):
+    """Stream the result set as a JSON array of row objects.
+
+    The first batch of rows (``results``) has already been fetched by the
+    caller; subsequent batches are pulled with ``fetchmany(records)``.
+    """
+    yield '['
+    is_first_row = True
+    while results:
+        if replace_nulls_with is not None:
+            results = handle_null_values(results, replace_nulls_with)
+        for row in results:
+            row_json = json.dumps(dict(row), default=_json_default)
+            yield row_json if is_first_row else ',' + row_json
+            is_first_row = False
+        results = cur.fetchmany(records)
+    yield ']'
+
+
+def _generate_xml(cur, records, results, header, replace_nulls_with,
+                  handle_null_values):
+    """Stream the result set as XML.
+
+    Column names are emitted as escaped ``name`` attributes (rather than
+    element names) so that column names which are not valid XML element
+    names are handled safely.
+    """
+    yield '<?xml version="1.0" encoding="UTF-8"?>\n<data_output>'
+    while results:
+        if replace_nulls_with is not None:
+            results = handle_null_values(results, replace_nulls_with)
+        for row in results:
+            row_io = ['<row>']
+            for column in header:
+                value = row.get(column)
+                if value is None:
+                    row_io.append(
+                        '<column name={0} null="true"/>'.format(
+                            xml_quoteattr(column)))
+                else:
+                    row_io.append('<column name={0}>{1}</column>'.format(
+                        xml_quoteattr(column), xml_escape(str(value))))
+            row_io.append('</row>')
+            yield ''.join(row_io)
+        results = cur.fetchmany(records)
+    yield '</data_output>'
+
 
 # Register global type caster which will be applicable to all connections.
 register_global_typecasters()
@@ -912,7 +970,8 @@ WHERE db.datname = current_database()""")
             return results
 
         def gen(conn_obj, trans_obj, quote='strings', quote_char="'",
-                field_separator=',', replace_nulls_with=None):
+                field_separator=',', replace_nulls_with=None,
+                data_format='csv'):
 
             try:
                 cur.scroll(0, mode='absolute')
@@ -935,36 +994,23 @@ WHERE db.datname = current_database()""")
                 if c.to_dict()['type_code'] in ALL_JSON_TYPES:
                     json_columns.append(column_name)
 
-            res_io = StringIO()
-
-            if quote == 'strings':
-                quote = csv.QUOTE_NONNUMERIC
-            elif quote == 'all':
-                quote = csv.QUOTE_ALL
+            if data_format == 'json':
+                yield from _generate_json(cur, records, results, header,
+                                          replace_nulls_with,
+                                          handle_null_values)
+            elif data_format == 'xml':
+                yield from _generate_xml(cur, records, results, header,
+                                         replace_nulls_with,
+                                         handle_null_values)
             else:
-                quote = csv.QUOTE_NONE
-
-            csv_writer = csv.DictWriter(
-                res_io, fieldnames=header, delimiter=field_separator,
-                quoting=quote,
-                quotechar=quote_char,
-                replace_nulls_with=replace_nulls_with
-            )
-
-            csv_writer.writeheader()
-            # Replace the null values with given string if configured.
-            if replace_nulls_with is not None:
-                results = handle_null_values(results, replace_nulls_with)
-            csv_writer.writerows(results)
-
-            yield res_io.getvalue()
-
-            while True:
-                results = cur.fetchmany(records)
-
-                if not results:
-                    break
                 res_io = StringIO()
+
+                if quote == 'strings':
+                    quote = csv.QUOTE_NONNUMERIC
+                elif quote == 'all':
+                    quote = csv.QUOTE_ALL
+                else:
+                    quote = csv.QUOTE_NONE
 
                 csv_writer = csv.DictWriter(
                     res_io, fieldnames=header, delimiter=field_separator,
@@ -973,11 +1019,34 @@ WHERE db.datname = current_database()""")
                     replace_nulls_with=replace_nulls_with
                 )
 
+                csv_writer.writeheader()
                 # Replace the null values with given string if configured.
                 if replace_nulls_with is not None:
                     results = handle_null_values(results, replace_nulls_with)
                 csv_writer.writerows(results)
+
                 yield res_io.getvalue()
+
+                while True:
+                    results = cur.fetchmany(records)
+
+                    if not results:
+                        break
+                    res_io = StringIO()
+
+                    csv_writer = csv.DictWriter(
+                        res_io, fieldnames=header, delimiter=field_separator,
+                        quoting=quote,
+                        quotechar=quote_char,
+                        replace_nulls_with=replace_nulls_with
+                    )
+
+                    # Replace the null values with given string if configured.
+                    if replace_nulls_with is not None:
+                        results = handle_null_values(results,
+                                                     replace_nulls_with)
+                    csv_writer.writerows(results)
+                    yield res_io.getvalue()
 
             try:
                 # try to reset the cursor scroll back to where it was,
