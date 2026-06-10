@@ -360,6 +360,14 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
         set_param('exit_on_error', '--exit-on-error', data, args)
         set_value('exclude_schema', '--exclude-schema', data, args)
 
+        # PostgreSQL 18 and above options
+        if manager.version >= 180000:
+            set_param('only_statistics', '--statistics-only', data, args)
+            set_param('no_policies', '--no-policies', data, args)
+            set_param('no_data', '--no-data', data, args)
+            set_param('no_schema', '--no-schema', data, args)
+            set_param('no_statistics', '--no-statistics', data, args)
+
         set_multiple('schemas', '--schema', data, args, driver, conn, False)
         set_multiple('tables', '--table', data, args, driver, conn, False)
         set_multiple('functions', '--function', data, args, driver, conn,
