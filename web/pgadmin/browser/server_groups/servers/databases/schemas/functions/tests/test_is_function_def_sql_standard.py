@@ -53,6 +53,10 @@ class TestIsFunctionDefSqlStandard(BaseTestGenerator):
             data=dict(lanname='sql', prosrc='SELECT 1;'),
             expected=False
         )),
+        ('RETURN must start the body, not merely a later line', dict(
+            data=dict(lanname='sql', prosrc='SELECT 1;\nreturn x;'),
+            expected=False
+        )),
         ('Non-sql language is never SQL-standard', dict(
             data=dict(lanname='plpgsql',
                       prosrc='BEGIN\n  RETURN;\nEND;'),

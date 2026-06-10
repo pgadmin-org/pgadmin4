@@ -1765,7 +1765,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # like "returned_value") is not mistaken for a SQL-standard body.
         valid_match = [
             r"(?=.*begin)(.+?(\n)+)(?=.*atomic)|(?=.*begin)(?=.*atomic)",
-            r"^\s*return\b"
+            r"\A\s*return\b"
         ]
 
         is_func_def_sql_std = False
