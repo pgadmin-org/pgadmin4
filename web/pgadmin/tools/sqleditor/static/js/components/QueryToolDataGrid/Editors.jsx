@@ -13,7 +13,7 @@ import { DefaultButton, PrimaryButton } from '../../../../../../static/js/compon
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import gettext from 'sources/gettext';
-import JSONBigNumber from 'json-bignumber';
+import { losslessJSONParser, prettifyJSONString, prettifyJSONValue } from './json_utils';
 import JsonEditor from '../../../../../../static/js/components/JsonEditor';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
@@ -394,13 +394,17 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
 
   const value = React.useMemo(()=>{
     let newVal = row[column.key] ?? null;
-    /* If jsonb or array */
+    /* If jsonb or array. Pretty-print with a lossless JSON parser so that the
+     * original numeric representation (e.g. big integers and trailing
+     * fractional zeros like 10.00) is preserved. A plain JSON.parse/stringify
+     * round-trip would silently rewrite such numbers and corrupt unmodified
+     * values on save (#9854). */
     if(column.column_type_internal === 'jsonb' && !Array.isArray(newVal) && newVal != null) {
-      newVal = JSONBigNumber.stringify(JSONBigNumber.parse(newVal), null, 2);
+      newVal = prettifyJSONString(newVal);
     } else if (Array.isArray(newVal)) {
       let temp = newVal.map((ele)=>{
         if (typeof ele === 'object') {
-          return JSONBigNumber.stringify(ele, null, 2);
+          return prettifyJSONValue(ele);
         }
         return ele;
       });
@@ -456,6 +460,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
           setJsonEditorSize={setJsonEditorSize}
           value={localVal??''}
           options={{
+            parser: losslessJSONParser,
             onChange: onChange,
             onValidationError: (errors)=>{setHasError(Boolean(errors));}
           }}
