@@ -301,6 +301,9 @@ else:
 LOG_ROTATION_SIZE = 10  # In MBs
 LOG_ROTATION_AGE = 1440  # In minutes
 LOG_ROTATION_MAX_LOG_FILES = 90  # Maximum number of backups to retain
+# Include the authenticated username in the X-Remote-User response header so
+# it can be captured in the HTTP access log. Disabled by default.
+LOG_AUTHENTICATED_USER = False
 ##########################################################################
 # Server Connection Driver Settings
 ##########################################################################
