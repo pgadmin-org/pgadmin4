@@ -476,7 +476,8 @@ export class ResultSetUtils {
       });
   }
 
-  async saveResultsToFile(fileName, onProgress) {
+  async saveResultsToFile(fileName, onProgress, dataFormat='csv') {
+    const mimeTypes = {csv: 'text/csv', json: 'application/json', xml: 'application/xml'};
     try {
       await DownloadUtils.downloadFileStream({
         url: url_for('sqleditor.query_tool_download', {
@@ -484,8 +485,8 @@ export class ResultSetUtils {
         }),
         options: {
           method: 'POST',
-          body: JSON.stringify({filename: fileName, query_commited: this.hasQueryCommitted})
-        }}, fileName, 'text/csv', onProgress);
+          body: JSON.stringify({filename: fileName, query_commited: this.hasQueryCommitted, format: dataFormat})
+        }}, fileName, mimeTypes[dataFormat] ?? 'text/csv', onProgress);
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
     } catch (error) {
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
@@ -1052,8 +1053,9 @@ export function ResultSet() {
       setLoaderText(null);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async ()=>{
-      let extension = queryToolCtx.preferences?.sqleditor?.csv_field_separator === ',' ? '.csv': '.txt';
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async (dataFormat='csv')=>{
+      const csvExtension = queryToolCtx.preferences?.sqleditor?.csv_field_separator === ',' ? '.csv': '.txt';
+      let extension = {csv: csvExtension, json: '.json', xml: '.xml'}[dataFormat] ?? csvExtension;
       let fileName = 'data-' + new Date().getTime() + extension;
       if(!queryToolCtx.params.is_query_tool) {
         fileName = queryToolCtx.params.node_name + extension;
@@ -1061,7 +1063,7 @@ export function ResultSet() {
       setLoaderText(gettext('Downloading results...'));
       await rsu.current.saveResultsToFile(fileName, (p)=>{
         setLoaderText(gettext('Downloading results(%s)...', p));
-      });
+      }, dataFormat);
       setLoaderText('');
     });
 
