@@ -1759,10 +1759,13 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                          r"^.*(?:\"|\')(?=.*(atomic)).*$"]
 
         # valid regex, these combination a must in definition to detect a
-        # standard sql or pure sql
+        # standard sql or pure sql. The RETURN form must start the body
+        # (as a keyword) so that a plain SQL body which merely contains the
+        # substring "return" (e.g. a "RETURNING" clause or an identifier
+        # like "returned_value") is not mistaken for a SQL-standard body.
         valid_match = [
             r"(?=.*begin)(.+?(\n)+)(?=.*atomic)|(?=.*begin)(?=.*atomic)",
-            r"(?=return)"
+            r"^\s*return\b"
         ]
 
         is_func_def_sql_std = False
