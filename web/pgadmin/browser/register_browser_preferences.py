@@ -170,9 +170,9 @@ def register_browser_preferences(self):
         'keyboardshortcut',
         {
             'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 91, 'char': '['}
+            'shift': False,
+            'control': True,
+            'key': {'key_code': 219, 'char': '['}
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields
@@ -200,9 +200,9 @@ def register_browser_preferences(self):
         'keyboardshortcut',
         {
             'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 93, 'char': ']'}
+            'shift': False,
+            'control': True,
+            'key': {'key_code': 221, 'char': ']'}
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields

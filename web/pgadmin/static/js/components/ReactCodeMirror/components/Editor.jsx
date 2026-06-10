@@ -31,7 +31,7 @@ import {
   keymap,
 } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
-import { history, defaultKeymap, historyKeymap, indentLess, indentMore, deleteCharBackwardStrict } from '@codemirror/commands';
+import { history, defaultKeymap, historyKeymap, indentLess, indentMore, deleteCharBackwardStrict, copyLineDown } from '@codemirror/commands';
 import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import {
   foldGutter,
@@ -137,6 +137,12 @@ const defaultExtensions = [
     key: 'Backspace',
     preventDefault: true,
     run: deleteCharBackwardStrict,
+  },{
+    // Duplicate the current line, or the selected lines if there is a
+    // selection (issue #3834).
+    key: 'Mod-Shift-d',
+    preventDefault: true,
+    run: copyLineDown,
   }]),
   PgSQL.language.data.of({
     autocomplete: false,
