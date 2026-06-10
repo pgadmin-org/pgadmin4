@@ -100,6 +100,10 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
    * Move the switch next to *Only schemas* to limit the back up to schema-level
      database objects.
 
+   * Move the switch next to *Only statistics* to the *Yes* position to limit
+     the back up to optimizer statistics. **Note:** This option is visible only
+     for database server greater than or equal to 18.
+
    * Move the switch next to *Blobs* to the *No* position to exclude large
      objects in the backup.
 
@@ -142,6 +146,18 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
    * Move the switch next to *Table access methods* to the *Yes* position to exclude
      Table access methods. **Note:** This option is visible only for
      database server greater than or equal to 15.
+
+   * Move the switch next to *Row security policies* to the *Yes* position to
+     exclude row security policies. **Note:** This option is visible only for
+     database server greater than or equal to 18.
+
+   * Move the switch next to *Data* to the *Yes* position to exclude data from
+     the backup. **Note:** This option is visible only for database server
+     greater than or equal to 18.
+
+   * Move the switch next to *Schema* to the *Yes* position to exclude schema
+     (the data definitions) from the backup. **Note:** This option is visible
+     only for database server greater than or equal to 18.
 
 .. image:: images/backup_queries.png
     :alt: Queries option on backup dialog
@@ -258,6 +274,14 @@ tab to provide other backup options.
    * Move the switch next to *Use SET SESSION AUTHORIZATION* to the *Yes*
      position to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
+
+   * Move the switch next to *Dump statistics* to the *Yes* position to include
+     optimizer statistics in the backup. **Note:** This option is visible only
+     for database server greater than or equal to 18.
+
+   * Move the switch next to *Sequence data* to the *Yes* position to include
+     sequence data that would normally be excluded. **Note:** This option is
+     visible only for database server greater than or equal to 18.
 
    * Use the *Exclude schema* field to not dump schemas whose name matches
      pattern.
