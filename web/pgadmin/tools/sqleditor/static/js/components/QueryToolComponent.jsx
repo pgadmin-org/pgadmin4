@@ -139,6 +139,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       ...params,
       title: _.unescape(params.title),
       is_query_tool: params.is_query_tool === true || params.is_query_tool === 'true',
+      restore: params.restore === true || params.restore === 'true',
       node_name: retrieveNodeName(selectedNodeInfo),
       dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       server_cursor: preferencesStore.getPreferencesForModule('sqleditor').server_cursor === true,
@@ -290,14 +291,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
           setQtStatePartial({ editor_disabled: true });
         });
-    } else if (qtState.params.sql_id && qtState.params.restore != 'true') {
+    } else if (qtState.params.sql_id && qtState.params.restore !== true) {
       let sqlValue = localStorage.getItem(qtState.params.sql_id);
       localStorage.removeItem(qtState.params.sql_id);
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
       setQtStatePartial({ editor_disabled: false });
-    } else if (qtState.params.restore == 'true') {
+    } else if (qtState.params.restore === true) {
       restoreToolContent();
     } else {
       setQtStatePartial({ editor_disabled: false });
@@ -917,11 +918,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       let panel = qtPanelDocker?.find(qtPanelId);
       if (panel?.metaData?.toolUrl) {
         try {
-          const url = new URL(panel.metaData.toolUrl, window.location.origin);
+          const toolUrl = panel.metaData.toolUrl;
+          const isAbsolute = toolUrl.includes('://') || toolUrl.startsWith('http');
+          const url = isAbsolute ? new URL(toolUrl) : new URL(toolUrl, window.location.origin);
           url.searchParams.set('is_query_tool', 'true');
-          panel.metaData = Object.assign({}, panel.metaData, {toolUrl: url.pathname + url.search + url.hash});
+          panel.metaData = Object.assign({}, panel.metaData, {toolUrl: url.toString()});
         } catch (e) {
-          console.warn('Failed to update is_query_tool parameter:', e);
+          console.warn(`Failed to update is_query_tool parameter for toolUrl "${panel?.metaData?.toolUrl}" using origin "${window.location.origin}":`, e);
         }
       }
       return {
@@ -1017,6 +1020,7 @@ QueryToolComponent.propTypes = {
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     is_query_tool: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
+    restore: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     server_cursor: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     user: PropTypes.string,
     role: PropTypes.string,
