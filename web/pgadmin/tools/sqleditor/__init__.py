@@ -2715,23 +2715,27 @@ def _cache_manager_password_from_request(manager):
     is unavailable.  When a password is supplied it overwrites any cached
     password, so a freshly entered credential (e.g. a regenerated, short-lived
     cloud auth token) takes effect immediately.
+
+    This is best-effort: any failure (including malformed request data) is
+    logged and swallowed so it never turns the caller's "Server connected"
+    response into a 500 error.
     """
-    if request.form:
-        data = request.form
-    elif request.data:
-        data = json.loads(request.data)
-    else:
-        return
-
-    password = data.get('password', None)
-    if not password:
-        return
-
-    crypt_key_present, crypt_key = get_crypt_key()
-    if not crypt_key_present:
-        return
-
     try:
+        if request.form:
+            data = request.form
+        elif request.data:
+            data = json.loads(request.data)
+        else:
+            return
+
+        password = data.get('password', None)
+        if not password:
+            return
+
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            return
+
         manager._update_password(encrypt(password, crypt_key))
         manager.update_session()
     except Exception as e:

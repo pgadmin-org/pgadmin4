@@ -61,6 +61,12 @@ class CacheManagerPasswordTest(BaseTestGenerator):
             crypt_key_present=False,
             expect_cached=False,
         )),
+        ('When the request body is malformed JSON it is a silent no-op', dict(
+            form_data={},
+            request_data=b'{not-valid-json',
+            crypt_key_present=True,
+            expect_cached=False,
+        )),
     ]
 
     def runTest(self):
@@ -74,11 +80,12 @@ class CacheManagerPasswordTest(BaseTestGenerator):
 
         mock_request = MagicMock()
         mock_request.form = self.form_data
-        mock_request.data = None
+        mock_request.data = getattr(self, 'request_data', None)
 
         crypt_key = CRYPT_KEY if self.crypt_key_present else None
 
         with patch.object(sqleditor, 'request', mock_request), \
+            patch.object(sqleditor, 'current_app', MagicMock()), \
             patch.object(sqleditor, 'get_crypt_key',
                          return_value=(self.crypt_key_present, crypt_key)):
             sqleditor._cache_manager_password_from_request(manager)
