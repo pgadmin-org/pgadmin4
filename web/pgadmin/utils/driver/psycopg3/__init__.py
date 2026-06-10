@@ -318,14 +318,21 @@ class Driver(BaseDriver):
                 "from Python, pass the connection as the second argument."
             )
 
-        res = value
-        try:
-            if not isinstance(conn, psycopg.Connection) and \
-                    not isinstance(conn, psycopg.AsyncConnection):
-                conn = conn.conn
-            res = psycopg.sql.Literal(value).as_string(conn).strip()
-        except Exception:
-            print("Exception", value)
+        # Resolve the underlying psycopg connection. A wrapped pgAdmin
+        # Connection has the raw psycopg connection on `.conn`.
+        if not isinstance(conn, psycopg.Connection) and \
+                not isinstance(conn, psycopg.AsyncConnection):
+            conn = conn.conn
+
+        # psycopg.sql.Literal.as_string can raise for values it cannot
+        # adapt (custom types without a registered adapter, byte
+        # sequences in a non-UTF8 client encoding, etc.). The previous
+        # implementation swallowed the exception and silently returned
+        # the raw, unescaped `value` — the same SQL-injection sink the
+        # missing-conn fast-fail above guards against, but on a
+        # different failure mode. Letting the exception propagate makes
+        # any unadaptable input loud and callers can react explicitly.
+        res = psycopg.sql.Literal(value).as_string(conn).strip()
 
         if force_quote is True:
             # Convert the input to the string to use the startsWith(...)

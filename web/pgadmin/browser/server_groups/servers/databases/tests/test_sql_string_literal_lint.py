@@ -51,9 +51,24 @@ WEB_ROOT = os.path.realpath(
 # Root inside web/ that the lint walks.
 SCAN_ROOT = os.path.join(WEB_ROOT, 'pgadmin')
 
-# Single-quote-wrapped Jinja interpolation. The expression body cannot
-# contain ``}`` because ``}}`` ends the Jinja tag.
-PATTERN = re.compile(r"'\{\{[^}]+\}\}'")
+# Single-quote-wrapped Jinja interpolation. Catches every variant of
+# ``'...{{ x }}...'`` that could become a SQL string-literal injection
+# sink:
+#   * Jinja that fills the entire literal — ``'{{ x }}'``.
+#   * Jinja embedded inside a literal with neighbouring text — e.g.
+#     ``'%{{ search_text }}%'``.
+#   * Multiple interpolations inside one literal — e.g.
+#     ``pgstattuple('{{schema_name}}.{{table_name}}')``.
+#
+# The body between the outer quotes is restricted to either a complete
+# ``{{...}}`` group, or any character that is not ``'``, newline, ``{``
+# or ``}``. The ``{``/``}`` exclusion is what stops the regex from
+# crossing a Jinja control block ``{%...%}`` or comment ``{#...#}``
+# boundary — otherwise long ``{% if ... %}`` conditional templates would
+# produce huge false-positive matches that span unrelated literals.
+PATTERN = re.compile(
+    r"'[^'\n{}]*(?:\{\{[^}]+\}\}[^'\n{}]*)+'"
+)
 
 
 # Allowlist of currently-known occurrences. Each entry is
@@ -429,6 +444,155 @@ ALLOWLIST = [
     (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
       'default/search.sql', "'{{ obj_type }}'"), 1,
      "Fixed object-kind enum supplied by search_objects handler."),
+
+    # ------------------------------------------------------------------
+    # search_objects: search_text is the only request-supplied value in
+    # these templates. The handler at tools/search_objects/utils.py:120
+    # pre-doubles every apostrophe via text.replace("'", "''") before
+    # passing the value to render_template — equivalent to qtLiteral's
+    # escape semantics, but applied at the Python boundary instead of
+    # the template. Documented as fragile (manual escape) but currently
+    # safe. Follow-up: migrate to qtLiteral with explicit % wrapping.
+    # ------------------------------------------------------------------
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
+      '11_plus/search.sql', "'%{{ search_text }}%'"), 1,
+     "search_text is pre-escaped via str.replace in utils.py:120 before "
+     "render_template; follow-up: migrate to qtLiteral with explicit % "
+     "wrapping."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
+      'default/search.sql', "'%{{ search_text }}%'"), 1,
+     "search_text is pre-escaped via str.replace in utils.py:120 before "
+     "render_template; follow-up: migrate to qtLiteral with explicit % "
+     "wrapping."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
+      '11_plus/search.sql', "'%{{ search_text }}%'"), 1,
+     "search_text is pre-escaped via str.replace in utils.py:120 before "
+     "render_template; follow-up: migrate to qtLiteral with explicit % "
+     "wrapping."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
+      '12_plus/search.sql', "'%{{ search_text }}%'"), 1,
+     "search_text is pre-escaped via str.replace in utils.py:120 before "
+     "render_template; follow-up: migrate to qtLiteral with explicit % "
+     "wrapping."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
+      'default/search.sql', "'%{{ search_text }}%'"), 1,
+     "search_text is pre-escaped via str.replace in utils.py:120 before "
+     "render_template; follow-up: migrate to qtLiteral with explicit % "
+     "wrapping."),
+
+    # ------------------------------------------------------------------
+    # search_objects: the CATALOGS.LABELS_SCHEMACOL macro emits a fixed
+    # CASE expression mapping a column name (literal 'sn.schema_name')
+    # to its localised label. Both macro arguments are static — the
+    # column-name literal and the gettext function _ — so no
+    # attacker-controlled value reaches the rendered SQL.
+    # ------------------------------------------------------------------
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
+      '11_plus/search.sql',
+      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
+     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
+     "both macro arguments are hardcoded (column name + gettext fn)."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
+      'default/search.sql',
+      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
+     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
+     "both macro arguments are hardcoded (column name + gettext fn)."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
+      '11_plus/search.sql',
+      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
+     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
+     "both macro arguments are hardcoded (column name + gettext fn)."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
+      '12_plus/search.sql',
+      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
+     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
+     "both macro arguments are hardcoded (column name + gettext fn)."),
+    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
+      'default/search.sql',
+      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
+     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
+     "both macro arguments are hardcoded (column name + gettext fn)."),
+
+    # ------------------------------------------------------------------
+    # Catalog-label macros: gettext-translated display constants used
+    # inside CASE WHEN ... THEN '<label>' expressions for the catalog
+    # name column. The gettext key (English source string) is hardcoded
+    # in the template; the rendered translation is a static literal.
+    # ------------------------------------------------------------------
+    (('pgadmin/browser/server_groups/servers/databases/schemas/'
+      'templates/catalog/pg/macros/catalogs.sql',
+      "'{{ _( 'ANSI' ) }} (information_schema)'"), 2,
+     "Gettext-translated static display label for the ANSI catalog."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/'
+      'templates/catalog/pg/macros/catalogs.sql',
+      "'{{ _( 'PostgreSQL Catalog' ) }} (pg_catalog)'"), 2,
+     "Gettext-translated static display label for pg_catalog."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/'
+      'templates/catalog/pg/macros/catalogs.sql',
+      "'{{ _( 'pgAgent Job Scheduler' ) }} (pgagent)'"), 2,
+     "Gettext-translated static display label for pgAgent schema."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/'
+      'templates/catalog/ppas/macros/catalogs.sql',
+      "'{{ _( 'ANSI' ) }} (information_schema)'"), 2,
+     "Gettext-translated static display label for the ANSI catalog."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/'
+      'templates/catalog/ppas/macros/catalogs.sql',
+      "'{{ _( 'PostgreSQL Catalog' ) }} (pg_catalog)'"), 2,
+     "Gettext-translated static display label for pg_catalog."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/'
+      'templates/catalog/ppas/macros/catalogs.sql',
+      "'{{ _( 'pgAgent Job Scheduler' ) }} (pgagent)'"), 2,
+     "Gettext-translated static display label for pgAgent schema."),
+
+    # ------------------------------------------------------------------
+    # types.get_subtypes: ``opcintype`` is a pg_catalog OID joined from
+    # pg_opclass / pg_amop and rendered as a space-separated pair to
+    # match proargtypes (which uses a space-separated oidvector text
+    # form). Not user-supplied.
+    # ------------------------------------------------------------------
+    (('pgadmin/browser/server_groups/servers/databases/schemas/types/'
+      'templates/types/pg/sql/default/get_subtypes.sql',
+      "'{{opcintype}} {{opcintype}}'"), 1,
+     "opcintype is a pg_catalog OID joined from pg_opclass; the "
+     "literal is the space-separated proargtypes oidvector form."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/types/'
+      'templates/types/ppas/sql/default/get_subtypes.sql',
+      "'{{opcintype}} {{opcintype}}'"), 1,
+     "opcintype is a pg_catalog OID joined from pg_opclass; the "
+     "literal is the space-separated proargtypes oidvector form."),
+
+    # ------------------------------------------------------------------
+    # Partition CASE expression: pg_get_partkeydef(tid::oid) is the
+    # value of the CASE branch, sandwiched between the literal 'p' and
+    # the literal ''. The regex matches from 'p' through '' because
+    # those quotes share a line, but the {{ tid }} interpolation is
+    # OUTSIDE any literal — it's an argument to pg_get_partkeydef. The
+    # tid value also passes a Flask ::int route converter, so it's an
+    # integer regardless. Documented here so the lint stays
+    # well-policed even with a regex that can't distinguish
+    # "between two literals" from "inside one literal".
+    # ------------------------------------------------------------------
+    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
+      'templates/tables/sql/11_plus/properties.sql',
+      "' THEN pg_catalog.pg_get_partkeydef({{ tid }}::oid) ELSE '"), 1,
+     "{{ tid }} is the pg_class OID validated by Flask <int:tid> route "
+     "converter; the surrounding 'p' and '' are SEPARATE literals, the "
+     "regex spans two of them but the interpolation is outside any "
+     "literal."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
+      'templates/tables/sql/12_plus/properties.sql',
+      "' THEN pg_catalog.pg_get_partkeydef({{ tid }}::oid) ELSE '"), 1,
+     "{{ tid }} is the pg_class OID validated by Flask <int:tid> route "
+     "converter; the surrounding 'p' and '' are SEPARATE literals, the "
+     "regex spans two of them but the interpolation is outside any "
+     "literal."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
+      'templates/tables/sql/default/properties.sql',
+      "' THEN pg_catalog.pg_get_partkeydef({{ tid }}::oid) ELSE '"), 1,
+     "{{ tid }} is the pg_class OID validated by Flask <int:tid> route "
+     "converter; the surrounding 'p' and '' are SEPARATE literals, the "
+     "regex spans two of them but the interpolation is outside any "
+     "literal."),
 ]
 
 
