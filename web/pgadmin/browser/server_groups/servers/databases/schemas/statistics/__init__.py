@@ -363,12 +363,9 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         if row.get('columns') is None:
             row['columns'] = []
 
-        # Set has_expressions boolean based on expressions field
-        # expressions is pg_node_tree (bytea) - we just check if it exists
-        row['has_expressions'] = row.get('expressions') is not None
-
-        # Remove expressions from display (it's internal PostgreSQL format)
-        row.pop('expressions', None)
+        # expression_list is the deparsed text from pg_get_expr; keep it for
+        # SQL-tab round-trip and set has_expressions for the properties switch
+        row['has_expressions'] = row.get('expression_list') is not None
 
         # Ensure stattarget has a default value if None
         if row.get('stattarget') is None:

@@ -130,16 +130,23 @@ class StatisticsGetTestCase(BaseTestGenerator):
                 # Verify stat_types are returned
                 self.assertIn('stat_types', response_data)
         else:
+            if 'statistics_id' in self.data:
+                self.statistics_id = self.data["statistics_id"]
+            get_call = (
+                statistics_utils.api_get(self, '')
+                if self.is_list else statistics_utils.api_get(self)
+            )
             if self.mocking_required:
                 with patch(
                     self.mock_data["function_name"],
                     side_effect=[eval(self.mock_data["return_value"])]
                 ):
-                    response = statistics_utils.api_get(self)
-            elif 'statistics_id' in self.data:
-                # Non-existing statistics id
-                self.statistics_id = self.data["statistics_id"]
-                response = statistics_utils.api_get(self)
+                    response = (
+                        statistics_utils.api_get(self, '')
+                        if self.is_list else statistics_utils.api_get(self)
+                    )
+            else:
+                response = get_call
 
             # Assert response
             utils.assert_status_code(self, response)
