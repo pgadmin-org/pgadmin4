@@ -76,7 +76,7 @@ class ServerGroupModule(BrowserPluginModule):
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=True if idx > 0 else False,
+                can_delete=True if idx > 0 and not group.is_shared_group else False,
                 user_id=group.user_id,
                 is_shared=is_shared
             )
