@@ -639,6 +639,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     '<int:sgid>/<int:sid>/<int:did>',
     methods=["POST"], endpoint='update_sqleditor_connection'
 )
+@pga_login_required
 def update_sqleditor_connection(trans_id, sgid, sid, did):
     # Remove transaction Id.
     with sqleditor_close_session_lock:
@@ -710,6 +711,7 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
 
 
 @blueprint.route('/close/<int:trans_id>', methods=["DELETE"], endpoint='close')
+@pga_login_required
 def close(trans_id):
     """
     This method is used to close the asynchronous connection
