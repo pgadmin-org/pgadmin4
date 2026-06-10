@@ -1,8 +1,7 @@
 {### SQL to update extended statistics object (PostgreSQL 17+) ###}
 {### Rename statistics ###}
 {% if data.name and data.name != o_data.name %}
-ALTER STATISTICS {% if data.schema and data.schema != o_data.schema %}{{ conn|qtIdent(o_data.schema, o_data.name) }}{% else %}{{ conn|qtIdent(o_data.schema, o_data.name) }}{% endif %}
-
+ALTER STATISTICS {{ conn|qtIdent(o_data.schema, o_data.name) }}
     RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}

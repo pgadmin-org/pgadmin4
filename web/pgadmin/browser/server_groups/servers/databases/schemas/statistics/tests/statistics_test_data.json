@@ -91,6 +91,29 @@
       }
     },
     {
+      "name": "Create statistics: With expressions (PG 14+).",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000,
+        "skip_msg": "Statistics node not supported below PG 14"
+      },
+      "test_data": {
+        "name": "test_stats_expr",
+        "schema": "public",
+        "table": "test_table",
+        "expression_list": "lower(col3), (col1 + col2)",
+        "stat_types": ["ndistinct"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
       "name": "Create statistics: With invalid data - Less than 2 columns.",
       "url": "/browser/statistics/obj/",
       "is_positive_test": false,
