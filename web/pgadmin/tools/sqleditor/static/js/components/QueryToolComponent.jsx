@@ -118,6 +118,7 @@ const FIXED_PREF = {
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
   const preferencesStore = usePreferences();
+  const isQueryTool = params.is_query_tool === true || params.is_query_tool === 'true';
   const [qtState, setQtState] = useState({
     preferences: {
       browser: preferencesStore.getPreferencesForModule('browser'),
@@ -138,7 +139,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     params: {
       ...params,
       title: _.unescape(params.title),
-      is_query_tool: params.is_query_tool === true || params.is_query_tool === 'true',
+      is_query_tool: isQueryTool,
       restore: params.restore === true || params.restore === 'true',
       node_name: retrieveNodeName(selectedNodeInfo),
       dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
@@ -155,7 +156,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       bgcolor: params.bgcolor,
       conn_title: getTitle(
         pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
-        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool === true || params.is_query_tool === 'true'),
+        _.unescape(params.role) || _.unescape(params.user), isQueryTool),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
@@ -919,7 +920,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       if (panel?.metaData?.toolUrl) {
         try {
           const toolUrl = panel.metaData.toolUrl;
-          const isAbsolute = toolUrl.includes('://') || toolUrl.startsWith('http');
+          const isAbsolute = toolUrl.includes('://');
           const url = isAbsolute ? new URL(toolUrl) : new URL(toolUrl, window.location.origin);
           url.searchParams.set('is_query_tool', 'true');
           panel.metaData = Object.assign({}, panel.metaData, {toolUrl: url.toString()});
