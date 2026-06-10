@@ -116,7 +116,9 @@ export default class StatisticsSchema extends BaseUISchema {
           let tid = obj.getTableOid(state.table);
           return {
             type: 'select',
-            options: state.table ? ()=>obj.fieldOptions.getColumns({tid: tid}) : [],
+            options: (state.table && tid)
+              ? () => obj.fieldOptions.getColumns({tid: tid})
+              : (state.columns || []).map(col => ({label: col, value: col})),
             optionsReloadBasis: state.table,
           };
         },
