@@ -63,9 +63,12 @@ class TestViewDataRestoreStaleTransObj(BaseTestGenerator):
 
     def runTest(self):
         self.table = "test_table_%s" % (str(uuid.uuid4())[1:8])
+        # Note: do not give the primary key an explicit constraint name -
+        # other tests in this package create tables in the same database, and
+        # a hard-coded constraint name would collide across the suite. Letting
+        # PostgreSQL auto-name it (<table>_pkey) keeps it unique.
         table_sql = """Create Table %s(
-            id integer Not Null,
-            Constraint table_pk Primary Key(id)
+            id integer Not Null Primary Key
             );""" % self.table
         test_utils.create_table_with_query(self.server, self.db_name,
                                            table_sql)
