@@ -177,9 +177,32 @@ export default function SchemaDialogView({
     return <SaveIcon />;
   };
 
+  const onKeyDown = (e) => {
+    // Ctrl/Cmd+Enter saves and closes the dialog from anywhere within it
+    // (issue #7167). onSaveClick is a no-op when there is nothing to save or
+    // there is a validation error, so this is safe to call unconditionally.
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key === 'Enter') {
+      e.preventDefault();
+      onSaveClick();
+      return;
+    }
+
+    // Escape closes the dialog, mirroring the Close button (issue #5691).
+    // This is needed for dialogs rendered as dockable panels (Properties,
+    // Backup, and other utility dialogs); dialogs rendered inside a MUI modal
+    // already close on Escape, so skip those to avoid a double close. The
+    // !e.defaultPrevented guard lets an inner control that handles Escape
+    // (e.g. an open dropdown) consume it first.
+    if (e.key === 'Escape' && !e.defaultPrevented && props.onClose &&
+        !e.currentTarget.closest('.MuiDialog-root')) {
+      e.preventDefault();
+      props.onClose();
+    }
+  };
+
   /* I am Groot */
   return useMemo(() =>
-    <StyledBox>
+    <StyledBox onKeyDown={onKeyDown}>
       <SchemaStateContext.Provider value={schemaState}>
         <Box className='Dialog-form'>
           <FormLoader/>
