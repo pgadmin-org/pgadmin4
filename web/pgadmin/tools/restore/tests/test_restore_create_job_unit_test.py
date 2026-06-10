@@ -408,6 +408,42 @@ class RestoreCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When restore object with option - Do not restore Row security '
+         'policies, Data, Schema, Statistics and Only statistics (>= v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 no_policies=True,
+                 no_data=True,
+                 no_schema=True,
+                 no_statistics=True,
+                 only_statistics=True,
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
+             expected_cmd_opts=['--no-policies', '--no-data', '--no-schema',
+                                '--no-statistics', '--statistics-only'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=180000,
+             message='Restore object with --no-policies, --no-data, '
+                     '--no-schema, --no-statistics, --statistics-only is not '
+                     'supported by EPAS/PG server less than 18.0'
+         )),
     ]
 
     def setUp(self):

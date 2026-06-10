@@ -98,14 +98,15 @@ export class TypeObjSchema extends BaseUISchema {
       type: 'switch',
       group: gettext('Type of objects'),
       deps: ['pre_data', 'data', 'post_data', 'only_schema',
-        'only_tablespaces', 'only_roles'],
+        'only_tablespaces', 'only_roles', 'only_statistics'],
       disabled: function(state) {
         return state.pre_data ||
            state.data ||
            state.post_data ||
            state.only_schema ||
            state.only_tablespaces ||
-           state.only_roles;
+           state.only_roles ||
+           state.only_statistics;
       },
       inlineGroup: 'type_of_objects',
     }, {
@@ -114,14 +115,15 @@ export class TypeObjSchema extends BaseUISchema {
       type: 'switch',
       group: gettext('Type of objects'),
       deps: ['pre_data', 'data', 'post_data', 'only_data',
-        'only_tablespaces', 'only_roles'],
+        'only_tablespaces', 'only_roles', 'only_statistics'],
       disabled: function(state) {
         return state.pre_data ||
            state.data ||
            state.post_data ||
            state.only_data ||
            state.only_tablespaces ||
-           state.only_roles;
+           state.only_roles ||
+           state.only_statistics;
       },
       inlineGroup: 'type_of_objects',
     },  {
@@ -130,14 +132,15 @@ export class TypeObjSchema extends BaseUISchema {
       type: 'switch',
       group: gettext('Type of objects'),
       deps: ['pre_data', 'data', 'post_data', 'only_data', 'only_schema',
-        'only_roles'],
+        'only_roles', 'only_statistics'],
       disabled: function(state) {
         return state.pre_data ||
            state.data ||
            state.post_data ||
            state.only_data ||
            state.only_schema ||
-           state.only_roles;
+           state.only_roles ||
+           state.only_statistics;
       },
       visible: isVisibleForObjectBackup(obj?.top?.backupType),
       inlineGroup: 'type_of_objects',
@@ -147,7 +150,7 @@ export class TypeObjSchema extends BaseUISchema {
       type: 'switch',
       group: gettext('Type of objects'),
       deps: ['pre_data', 'data', 'post_data', 'only_data', 'only_schema',
-        'only_tablespaces'],
+        'only_tablespaces', 'only_statistics'],
       inlineGroup: 'type_of_objects',
       disabled: function(state) {
         return state.pre_data ||
@@ -155,9 +158,28 @@ export class TypeObjSchema extends BaseUISchema {
            state.post_data ||
            state.only_data ||
            state.only_schema ||
-           state.only_tablespaces;
+           state.only_tablespaces ||
+           state.only_statistics;
       },
       visible: isVisibleForObjectBackup(obj?.top?.backupType)
+    }, {
+      id: 'only_statistics',
+      label: gettext('Only statistics'),
+      type: 'switch',
+      group: gettext('Type of objects'),
+      min_version: 180000,
+      deps: ['pre_data', 'data', 'post_data', 'only_data', 'only_schema',
+        'only_tablespaces', 'only_roles'],
+      inlineGroup: 'type_of_objects',
+      disabled: function(state) {
+        return state.pre_data ||
+           state.data ||
+           state.post_data ||
+           state.only_data ||
+           state.only_schema ||
+           state.only_tablespaces ||
+           state.only_roles;
+      },
     }, {
       id: 'blobs',
       label: gettext('Blobs'),
@@ -282,6 +304,30 @@ export class SaveOptSchema extends BaseUISchema {
       group: gettext('Do not save'),
       inlineGroup: 'do_not_save',
       min_version: 150000
+    }, {
+      id: 'no_policies',
+      label: gettext('Row security policies'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'do_not_save',
+      min_version: 180000
+    }, {
+      id: 'no_data',
+      label: gettext('Data'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'do_not_save',
+      min_version: 180000
+    }, {
+      id: 'no_schema',
+      label: gettext('Schema'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'do_not_save',
+      min_version: 180000
     }];
   }
 }
@@ -384,6 +430,22 @@ export class MiscellaneousSchema extends BaseUISchema {
       disabled: false,
       group: gettext('Miscellaneous'),
       inlineGroup: 'miscellaneous',
+    }, {
+      id: 'statistics',
+      label: gettext('Dump statistics'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Miscellaneous'),
+      inlineGroup: 'miscellaneous',
+      min_version: 180000
+    }, {
+      id: 'sequence_data',
+      label: gettext('Sequence data'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Miscellaneous'),
+      inlineGroup: 'miscellaneous',
+      min_version: 180000
     }, {
       id: 'exclude_schema',
       label: gettext('Exclude schema'),
