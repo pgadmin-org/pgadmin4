@@ -190,6 +190,67 @@ def create_statistics(server, db_name, schema_name, table_name,
         raise
 
 
+def create_statistics_with_expressions(server, db_name, schema_name,
+                                       table_name, statistics_name,
+                                       expressions, stat_types):
+    """
+    Creates a statistics object using expressions rather than plain columns.
+
+    Args:
+        server: server details
+        db_name: database name
+        schema_name: schema name
+        table_name: table name
+        statistics_name: statistics object name
+        expressions: list of SQL expression strings
+        stat_types: list of statistics types (ndistinct, dependencies, mcv)
+
+    Returns:
+        statistics OID
+    """
+    connection = None
+    try:
+        connection = test_utils.get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        old_isolation_level = connection.isolation_level
+        test_utils.set_isolation_level(connection, 0)
+        pg_cursor = connection.cursor()
+
+        stat_types_str = ', '.join(stat_types)
+        exprs_str = ', '.join(f'({e})' for e in expressions)
+        query = (
+            f"CREATE STATISTICS {schema_name}.{statistics_name} "
+            f"({stat_types_str}) ON {exprs_str} "
+            f"FROM {schema_name}.{table_name}"
+        )
+        pg_cursor.execute(query)
+
+        pg_cursor.execute(
+            f"SELECT s.oid FROM pg_catalog.pg_statistic_ext s "
+            f"JOIN pg_catalog.pg_namespace n ON s.stxnamespace = n.oid "
+            f"WHERE s.stxname = '{statistics_name}' "
+            f"AND n.nspname = '{schema_name}'"
+        )
+        statistics = pg_cursor.fetchone()
+        statistics_oid = statistics[0]
+        test_utils.set_isolation_level(connection, old_isolation_level)
+        connection.commit()
+
+        return statistics_oid
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+        raise
+    finally:
+        if connection:
+            connection.close()
+
+
 def verify_statistics(server, db_name, statistics_name):
     """
     This function verifies that a statistics object exists in the database.
@@ -319,10 +380,12 @@ def get_statistics_columns(server, db_name, statistics_oid):
         )
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            f"SELECT array_agg(a.attname) FROM pg_catalog.pg_attribute a "
-            f"JOIN pg_catalog.pg_statistic_ext s ON a.attrelid = s.stxrelid "
-            f"WHERE s.oid = {statistics_oid} "
-            f"AND a.attnum = ANY(s.stxkeys)"
+            f"SELECT array_agg(a.attname ORDER BY s.stxkeys_pos) "
+            f"FROM pg_catalog.pg_statistic_ext s, "
+            f"unnest(s.stxkeys) WITH ORDINALITY AS s(attnum, stxkeys_pos) "
+            f"JOIN pg_catalog.pg_attribute a "
+            f"  ON a.attrelid = s.stxrelid AND a.attnum = s.attnum "
+            f"WHERE s.oid = {statistics_oid}"
         )
         columns = pg_cursor.fetchone()
         connection.close()

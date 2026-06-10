@@ -140,15 +140,22 @@ class StatisticsDeleteTestCase(BaseTestGenerator):
                 self.assertIsNone(statistics_response_2,
                                   "Second deleted statistics still present")
         else:
+            if 'statistics_id' in self.data:
+                self.statistics_id = self.data["statistics_id"]
             if self.mocking_required:
                 with patch(
                     self.mock_data["function_name"],
                     side_effect=[eval(self.mock_data["return_value"])]
                 ):
-                    response = statistics_utils.api_delete(self)
-            elif 'statistics_id' in self.data:
-                self.statistics_id = self.data["statistics_id"]
-                response = statistics_utils.api_delete(self)
+                    response = (
+                        statistics_utils.api_delete(self, '')
+                        if self.is_list else statistics_utils.api_delete(self)
+                    )
+            else:
+                response = (
+                    statistics_utils.api_delete(self, '')
+                    if self.is_list else statistics_utils.api_delete(self)
+                )
 
             # Assert response
             utils.assert_status_code(self, response)

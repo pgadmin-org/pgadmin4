@@ -20,7 +20,7 @@ SELECT
     CASE WHEN 'm' = ANY(s.stxkind) THEN true ELSE false END AS has_mcv,
     s.stxstattarget AS stattarget,
 {### stxexprs added in PostgreSQL 14 for expression statistics ###}
-    s.stxexprs AS expressions,
+    pg_catalog.pg_get_expr(s.stxexprs, s.stxrelid) AS expression_list,
 {### Statistics data from pg_statistic_ext_data (PostgreSQL 12+) ###}
     sd.stxdndistinct AS ndistinct_values,
     sd.stxddependencies AS dependencies_values,
