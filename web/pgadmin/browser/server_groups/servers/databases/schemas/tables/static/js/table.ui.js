@@ -262,6 +262,7 @@ export class ConstraintsSchema extends BaseUISchema {
               columns: uc.columns?.map((c)=>(
                 c.column === oldName ? {...c, column: newName} : c
               )),
+              include: uc.include?.map((c)=>(c === oldName ? newName : c)),
             }))};
           }
         }
