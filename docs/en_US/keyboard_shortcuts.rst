@@ -44,9 +44,9 @@ When using main browser window, the following keyboard shortcuts are available:
    +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + s            | Shift + Option + s | Search objects                     |
    +----------------------------+--------------------+------------------------------------+
-   | Shift + Alt + [            | Shift + Option + [ | Tabbed panel backward              |
+   | Ctrl + Alt + [             | Ctrl + Option + [  | Tabbed panel backward              |
    +----------------------------+--------------------+------------------------------------+
-   | Shift + Alt + ]            | Shift + Option + ] | Tabbed panel forward               |
+   | Ctrl + Alt + ]             | Ctrl + Option + ]  | Tabbed panel forward               |
    +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + w            | Shift + Ctrl + w   | Close tab panel                    |
    +----------------------------+--------------------+------------------------------------+
@@ -97,6 +97,8 @@ When using the syntax-highlighting SQL editors, the following shortcuts are avai
    | Ctrl + Alt + Right       | Cmd + Option + Right | Move right one word                 |
    +--------------------------+----------------------+-------------------------------------+
    | Ctrl + /                 | Cmd + /              | Comment/Uncomment code (Block)      |
+   +--------------------------+----------------------+-------------------------------------+
+   | Ctrl + Shift + d         | Cmd + Shift + d      | Duplicate current line/selection    |
    +--------------------------+----------------------+-------------------------------------+
    | Ctrl + a                 | Cmd + a              | Select all                          |
    +--------------------------+----------------------+-------------------------------------+

@@ -149,42 +149,37 @@ _.extend(pgBrowser.keyboardNavigation, {
   bindRightPanel: function(event, combo) {
     const self = this;
     const shortcutObj = this.keyboardShortcut;
-    const activeElement = document.activeElement;
+    const rootDock = document.getElementById('root');
+    if (!rootDock) return;
 
-    if (activeElement.closest('.dock-tab-btn')) {
-      const currDockTab = activeElement.closest('.dock-tab-btn');
-      const dockLayout = currDockTab.closest('.dock-layout');
-      const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
+    // Find the active workspace tab independently of where the keyboard focus
+    // currently sits. Previously this relied on document.activeElement, which
+    // breaks when focus is inside a tool's own (nested) dock layout - the SQL
+    // editor, an ERD/Schema Diff canvas - or inside the PSQL iframe, because
+    // the resolved tab id then belonged to the tool's inner tab rather than a
+    // main workspace tab (issue #7232).
+    //
+    // rc-dock renders the object explorer and the workspace as separate
+    // tab-sets, and each marks its own active tab with `dock-tab-active`, so
+    // prefer the active tab that is not the object explorer.
+    const activeTabBtns = Array.from(
+      rootDock.querySelectorAll('.dock-tab.dock-tab-active .dock-tab-btn'));
+    const activeTabBtn =
+      activeTabBtns.find(tab => !tab.id.includes('id-object-explorer')) ||
+      activeTabBtns[0];
+    if (!activeTabBtn) return;
 
-      if (dockLayoutTabs && dockLayoutTabs.length > 1) {
-        const activeTabIndex = dockLayoutTabs.indexOf(currDockTab);
-        self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
-      }
-    }
-    else if (activeElement.nodeName === 'IFRAME' || activeElement.closest('.dock-tabpane.dock-tabpane-active')) {
-      let activeTabId = '';
-      activeTabId = (activeElement.nodeName === 'IFRAME') ? activeElement.id : activeElement.closest('.dock-tabpane.dock-tabpane-active').id;
-      const dockLayout = document.getElementById('root');
-      const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
+    // Restrict navigation to the tabs of the same tab-set (dock panel) as the
+    // active tab, so cycling stays within the workspace tabs and does not
+    // include the object explorer or a tool's nested tabs.
+    const panel = activeTabBtn.closest('.dock-panel');
+    const dockLayoutTabs = panel ? Array.from(
+      panel.querySelectorAll('.dock-tab-btn'))
+      .filter(tab => tab.closest('.dock-panel') === panel) : [];
 
-      if (dockLayoutTabs && dockLayoutTabs.length > 1 && activeTabId) {
-        const activeTabIndex = dockLayoutTabs.findIndex(tab => tab.id.slice(14) === activeTabId);
-        self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
-      }
-    }
-    else if (activeElement === document.body || document.querySelector('div[data-test="app-menu-bar"]')) {
-      const activeTabs = document.getElementsByClassName('dock-tabpane dock-tabpane-active');
-
-      if (activeTabs.length > 1) {
-        const activeTabId = activeTabs[1].id;
-        const dockLayout = document.getElementById('root');
-        const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
-
-        if (dockLayoutTabs && dockLayoutTabs.length > 1 && activeTabId) {
-          const activeTabIndex = dockLayoutTabs.findIndex(tab => tab.id.slice(14) === activeTabId);
-          self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
-        }
-      }
+    if (dockLayoutTabs.length > 1) {
+      const activeTabIndex = dockLayoutTabs.indexOf(activeTabBtn);
+      self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
     }
   },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){

@@ -26,6 +26,10 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #3834 <https://github.com/pgadmin-org/pgadmin4/issues/3834>`_ -  Add a keyboard shortcut (Ctrl/Cmd+Shift+D) to duplicate the current line or selection in the SQL editor.
+  | `Issue #5196 <https://github.com/pgadmin-org/pgadmin4/issues/5196>`_ -  Allow the close/unsaved-changes confirmation and other dialogs to be operated from the keyboard (Enter to confirm/save, Escape to cancel) without tabbing to the buttons.
+  | `Issue #5691 <https://github.com/pgadmin-org/pgadmin4/issues/5691>`_ -  Allow closing the Properties, Backup and other object/utility dialogs with the Escape key.
+  | `Issue #7167 <https://github.com/pgadmin-org/pgadmin4/issues/7167>`_ -  Add Ctrl/Cmd+Enter to save and close object and utility dialogs, including the Query Tool sort/filter dialog.
   | `Issue #9626 <https://github.com/pgadmin-org/pgadmin4/issues/9626>`_ -  Add support for the TOAST tuple target storage parameter in the Materialized View dialog.
   | `Issue #9646 <https://github.com/pgadmin-org/pgadmin4/issues/9646>`_ -  Make the init container security context in the Helm chart configurable via containerSecurityContext, consistent with the main container.
   | `Issue #9699 <https://github.com/pgadmin-org/pgadmin4/issues/9699>`_ -  Add support for closing a tab with a middle-click on its title.
@@ -40,6 +44,7 @@ Bug fixes
 *********
 
   | `Issue #6308 <https://github.com/pgadmin-org/pgadmin4/issues/6308>`_ -  Fix the infinite loading spinner after an idle database connection is silently dropped, by detecting stale connections and offering a reconnect dialog.
+  | `Issue #7232 <https://github.com/pgadmin-org/pgadmin4/issues/7232>`_ -  Fix the tabbed panel forward/backward shortcut not switching the main tabs when keyboard focus is inside a tool (SQL editor, PSQL terminal, ERD or Schema Diff). The default shortcut is now Ctrl+Alt+] / [ (Ctrl+Option on macOS) to avoid colliding with the Query Tool's inner-panel navigation.
   | `Issue #9595 <https://github.com/pgadmin-org/pgadmin4/issues/9595>`_ -  Fix missing ALTER ... SET DEFAULT statements for inherited columns in the generated table SQL/EDIT script.
   | `Issue #9677 <https://github.com/pgadmin-org/pgadmin4/issues/9677>`_ -  Fix the Unlogged table toggle in table properties not generating any ALTER TABLE ... SET LOGGED/UNLOGGED statement.
   | `Issue #9828 <https://github.com/pgadmin-org/pgadmin4/issues/9828>`_ -  Fix tool calls failing against OpenAI-compatible providers that emit empty/null name, arguments, or id fields in streaming continuation deltas.
