@@ -101,6 +101,25 @@ class ValidateReadonlyQueryAcceptTestCase(BaseTestGenerator):
         ('Standard string with doubled quote', dict(
             query="SELECT 'a''b'",
         )),
+        # Parser corner cases lifted from Dave's v2 patch -- exercise
+        # whitespace / comment / paren handling around the leading
+        # keyword and confirm semicolons inside strings don't fool
+        # the statement splitter.
+        ('SELECT with leading whitespace', dict(
+            query='   \n\tSELECT 1',
+        )),
+        ('SELECT with trailing semicolon + whitespace', dict(
+            query='SELECT 1;   \n',
+        )),
+        ('SELECT with leading line comment', dict(
+            query='-- comment\nSELECT 1',
+        )),
+        ('SELECT containing semicolon in string literal', dict(
+            query="SELECT ';' AS col",
+        )),
+        ('Parenthesised SELECT with UNION', dict(
+            query='(SELECT 1) UNION (SELECT 2)',
+        )),
     ]
 
     def setUp(self):
@@ -283,6 +302,66 @@ class ValidateReadonlyQueryRejectTestCase(BaseTestGenerator):
         )),
         ('Leading REINDEX', dict(
             query='REINDEX TABLE t',
+            expected_code='INVALID_QUERY',
+        )),
+
+        # --- Sandbox-weakening / RO-bypass single statements ---
+        # These are not just generic writes -- they directly attack
+        # the BEGIN TRANSACTION READ ONLY wrapper. Pinning them here
+        # so a future allowlist edit that lets any of these through
+        # is caught loudly. (Imported from Dave's v2 patch.)
+        ('Bare COMMIT', dict(
+            query='COMMIT',
+            expected_code='INVALID_QUERY',
+        )),
+        ('Bare END', dict(
+            query='END',
+            expected_code='INVALID_QUERY',
+        )),
+        ('Bare ROLLBACK', dict(
+            query='ROLLBACK',
+            expected_code='INVALID_QUERY',
+        )),
+        ('Bare ABORT', dict(
+            query='ABORT',
+            expected_code='INVALID_QUERY',
+        )),
+        ('Bare BEGIN', dict(
+            query='BEGIN',
+            expected_code='INVALID_QUERY',
+        )),
+        ('START TRANSACTION', dict(
+            query='START TRANSACTION',
+            expected_code='INVALID_QUERY',
+        )),
+        ('SAVEPOINT', dict(
+            query='SAVEPOINT foo',
+            expected_code='INVALID_QUERY',
+        )),
+        ('SET LOCAL transaction_read_only off', dict(
+            query='SET LOCAL transaction_read_only = off',
+            expected_code='INVALID_QUERY',
+        )),
+        ('SET SESSION default_transaction_read_only off', dict(
+            query='SET SESSION default_transaction_read_only = off',
+            expected_code='INVALID_QUERY',
+        )),
+        ('DISCARD ALL', dict(
+            query='DISCARD ALL',
+            expected_code='INVALID_QUERY',
+        )),
+
+        # --- Multi-statement with allowed leading keyword + write ---
+        # Closer to a real attack shape than the trailing-COMMIT PoC:
+        # legitimate-looking SELECT/WITH prefix, then transaction
+        # teardown, then DML. Must still be rejected by the
+        # single-statement check.
+        ('Multi-stmt SELECT prefix then ROLLBACK + DELETE', dict(
+            query='SELECT 1; ROLLBACK; DELETE FROM x',
+            expected_code='INVALID_QUERY',
+        )),
+        ('Multi-stmt WITH prefix then ROLLBACK', dict(
+            query='WITH cte AS (SELECT 1) SELECT * FROM cte; ROLLBACK',
             expected_code='INVALID_QUERY',
         )),
 
