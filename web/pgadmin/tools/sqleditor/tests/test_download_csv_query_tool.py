@@ -7,6 +7,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import codecs
 from unittest.mock import patch
 
 from pgadmin.utils.route import BaseTestGenerator
@@ -276,6 +277,23 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_content_type='text/csv',
                  expected_extension='.csv')
         ),
+        (
+            # utf-16 (without endianness) self-emits a BOM, so the result
+            # must contain exactly one BOM, not two (a hand-prepended one
+            # plus the codec's own).
+            'Download CSV as utf-16 has exactly one BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-16',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
+            # A bogus, non-existent codec must be rejected up front with a
+            # clean 400, rather than blowing up mid-stream after a 200.
+            'Download CSV with an invalid output encoding returns 400',
+            dict(data_format='csv', add_bom=False, encoding='not-a-codec',
+                 expected_status=400, expected_content_type=None,
+                 expected_extension='.csv')
+        ),
     ]
 
     def setUp(self):
@@ -327,6 +345,18 @@ class TestDownloadResultFormats(BaseTestGenerator):
         self.app.logger.disabled = False
 
         headers = dict(response.headers)
+
+        # An invalid encoding must be rejected up front with a clean error
+        # status, before the streaming Response is constructed.
+        expected_status = getattr(self, 'expected_status', 200)
+        if expected_status != 200:
+            self.assertEqual(response.status_code, expected_status)
+            url = '/sqleditor/close/{0}'.format(self.trans_id)
+            response = self.tester.delete(url)
+            self.assertEqual(response.status_code, 200)
+            database_utils.disconnect_database(self, self._sid, self._did)
+            return
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.expected_content_type, headers['Content-Type'])
         self.assertIn('charset={0}'.format(self.encoding),
@@ -334,8 +364,19 @@ class TestDownloadResultFormats(BaseTestGenerator):
         self.assertIn(filename, headers['Content-Disposition'])
 
         raw = response.data
-        if self.add_bom and self.encoding.lower().startswith('utf'):
-            self.assertTrue(raw.startswith(b'\xef\xbb\xbf'))
+        normalized = self.encoding.lower().replace('-', '').replace('_', '')
+        if self.add_bom and normalized.startswith('utf'):
+            # The output must carry exactly one BOM for the encoding, never
+            # two (which happened when a BOM was hand-prepended for codecs
+            # that already self-emit one, e.g. utf-16/utf-32).
+            bom = {
+                'utf8': codecs.BOM_UTF8,
+                'utf16': codecs.BOM_UTF16,
+                'utf32': codecs.BOM_UTF32,
+            }[normalized]
+            self.assertTrue(raw.startswith(bom))
+            # No second, redundant BOM immediately after the first.
+            self.assertFalse(raw[len(bom):].startswith(bom))
         else:
             self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
 
