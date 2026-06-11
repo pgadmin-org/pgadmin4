@@ -124,17 +124,14 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 # known to the result set are dropped too. Without this
                 # guard the rendered INSERT references a non-existent
                 # column and Postgres rejects the row. Issue #9939.
+                # Also remove generated columns (GENERATED ALWAYS AS) as they
+                # cannot be inserted - PostgreSQL auto-computes their values.
                 data = {
                     k: v for k, v in data.items()
                     if k in columns_info and
-                    columns_info[k].get('is_editable', True)
+                    columns_info[k].get('is_editable', True) and
+                    not columns_info[k].get('is_generated', False)
                 }
-
-                # Remove generated columns (GENERATED ALWAYS AS) as they
-                # cannot be inserted - PostgreSQL auto-computes their values.
-                for col_name, col_info in columns_info.items():
-                    if col_info.get('is_generated', False):
-                        data.pop(col_name, None)
 
                 # Update columns value with columns having
                 # not_null=False and has no default value
@@ -182,16 +179,12 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
         elif of_type == 'updated':
             list_of_sql[of_type] = []
 
-            # Check if table has generated columns. If yes, we need to
-            # refetch row after UPDATE to get recalculated values for UI.
+            # Check if table has generated columns. If yes, we use
+            # RETURNING * to get recalculated values directly from UPDATE.
             has_generated_cols = any(
                 col_info.get('is_generated', False)
                 for col_info in columns_info.values()
             )
-
-            # Get primary keys info (same as INSERT) - needed for RETURNING
-            # clause and SELECT query to refetch updated row.
-            pk_names, primary_keys = command_obj.get_primary_keys()
 
             for each_row in changed_data[of_type]:
                 data = changed_data[of_type][each_row]['data']
@@ -200,9 +193,9 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
 
                 # Remove generated columns (GENERATED ALWAYS AS) as they
                 # cannot be updated - PostgreSQL auto-computes their values.
-                for col_name, col_info in columns_info.items():
-                    if col_info.get('is_generated', False):
-                        data.pop(col_name, None)
+                data = {k: v for k, v in data.items()
+                        if not columns_info.get(k, {}).get('is_generated',
+                                                           False)}
 
                 pk_escaped = {
                     pk: pk_val.replace('%', '%%') if hasattr(
@@ -210,9 +203,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     for pk, pk_val in row_primary_keys.items()
                 }
 
-                # Pass pk_names and has_oids for RETURNING clause in
-                # UPDATE statement.
-                # This will help to fetch the updated row's.
+                # Use RETURNING * when table has generated columns to get
+                # the complete updated row with recalculated values.
                 sql = render_template(
                     "/".join([command_obj.sql_path, 'update.sql']),
                     data_to_be_saved=data,
@@ -222,27 +214,18 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     nsp_name=command_obj.nsp_name,
                     data_type=column_type,
                     type_cast_required=type_cast_required,
-                    pk_names=pk_names if has_generated_cols else None,
-                    has_oids=command_obj.has_oids(),
+                    return_all_columns=has_generated_cols,
                     conn=conn
                 )
 
-                # For tables with generated columns, add select_sql to
-                # refetch updated row.
+                # For tables with generated columns, use 'returning_all'
+                # flag to indicate RETURNING * is used (no separate SELECT).
                 if has_generated_cols:
-                    select_sql = render_template(
-                        "/".join([command_obj.sql_path, 'select.sql']),
-                        object_name=command_obj.object_name,
-                        nsp_name=command_obj.nsp_name,
-                        pgadmin_alias=pgadmin_alias,
-                        primary_keys=primary_keys,
-                        has_oids=command_obj.has_oids()
-                    )
                     list_of_sql[of_type].append({
                         'sql': sql,
                         'data': data,
                         'client_row': each_row,
-                        'select_sql': select_sql,
+                        'returning_all': True,
                         'row_id': data.get(client_primary_key)
                     })
                 else:
@@ -336,10 +319,16 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 }
 
                 row_added = None
+                # Check if we need result data (INSERT with select_sql or
+                # UPDATE with RETURNING *)
+                needs_result = (
+                    ('select_sql' in item and item['select_sql']) or
+                    item.get('returning_all', False)
+                )
 
                 try:
-                    # Fetch oids/primary keys
-                    if 'select_sql' in item and item['select_sql']:
+                    # Fetch oids/primary keys or complete row
+                    if needs_result:
                         status, res = conn.execute_dict(
                             item['sql'], item['data'])
                     else:
@@ -352,7 +341,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 if not status:
                     return failure_handle(res, item.get('row_id', 0))
 
-                # Select added/updated row from the table
+                # For INSERT: use RETURNING to get PKs, then SELECT full row
                 if 'select_sql' in item:
                     params = {
                         pgadmin_alias[k] if k in pgadmin_alias else k: v
@@ -367,6 +356,11 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     if 'rows' in sel_res and len(sel_res['rows']) > 0:
                         row_added = {
                             item['client_row']: sel_res['rows'][0]}
+                # For UPDATE with RETURNING *: use result directly
+                elif item.get('returning_all', False):
+                    if 'rows' in res and len(res['rows']) > 0:
+                        row_added = {
+                            item['client_row']: res['rows'][0]}
 
                 rows_affected = conn.rows_affected()
                 mogrified_sql = conn.mogrify(item['sql'], item['data'])

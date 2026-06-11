@@ -5,6 +5,5 @@ UPDATE {{ conn|qtIdent(nsp_name, object_name) | replace("%", "%%") }} SET
  WHERE
 {% for pk in primary_keys %}
 {% if not loop.first %} AND {% endif %}{{ conn|qtIdent(pk) | replace("%", "%%") }} = {{ primary_keys[pk]|qtLiteral(conn) }}{% endfor %}
-{# Return primary keys to refetch row with recalculated generated column values #}
-{% if pk_names and not has_oids %} RETURNING {{pk_names | replace("%", "%%")}}{% endif %}
-{% if has_oids %} RETURNING oid{% endif %};
+{# Return complete row to get recalculated generated column values #}
+{% if return_all_columns %} RETURNING *{% endif %};
