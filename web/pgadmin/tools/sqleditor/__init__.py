@@ -8,6 +8,7 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
+import codecs
 import os
 import pickle
 import re
@@ -2179,8 +2180,29 @@ def start_query_download_tool(trans_id):
         else:
             output_encoding = 'utf-8'
             add_bom = False
-        is_utf = output_encoding.lower().replace('-', '').replace(
-            '_', '').startswith('utf')
+        # Validate the (free-text, user-configurable) encoding up front so
+        # an invalid codec returns a clean 400 here, rather than raising a
+        # LookupError mid-stream after the 200 Response has been returned.
+        try:
+            codecs.lookup(output_encoding)
+        except LookupError:
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=gettext(
+                    "Unknown output encoding '{0}'."
+                ).format(output_encoding)
+            )
+
+        normalized_encoding = output_encoding.lower().replace(
+            '-', '').replace('_', '')
+        is_utf = normalized_encoding.startswith('utf')
+        # The 'utf-16' and 'utf-32' codecs (without an explicit endianness
+        # suffix) emit their own BOM, so we must not hand-prepend one too;
+        # doing so would produce two BOMs and corrupt the output. The
+        # explicit-endian forms (utf-16-le/-be, utf-32-le/-be) and utf-8 do
+        # not self-emit a BOM, so for those we keep writing it ourselves.
+        codec_self_emits_bom = normalized_encoding in ('utf16', 'utf32')
 
         str_gen = gen(conn_obj,
                       trans_obj,
@@ -2195,7 +2217,9 @@ def start_query_download_tool(trans_id):
             for chunk in text_gen:
                 if is_first_chunk:
                     is_first_chunk = False
-                    if add_bom and is_utf:
+                    # Only hand-prepend a BOM when the codec does not emit
+                    # one itself, otherwise we'd end up with two BOMs.
+                    if add_bom and is_utf and not codec_self_emits_bom:
                         chunk = '\ufeff' + chunk
                 yield chunk.encode(output_encoding, errors='replace')
 
