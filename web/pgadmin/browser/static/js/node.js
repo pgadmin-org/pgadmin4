@@ -745,6 +745,9 @@ define('pgadmin.browser.node', [
               .${dynamic_class} span.children-count {
                 color: ${fgcolor} !important;
               }
+              .${dynamic_class} span.text-muted {
+                color: color-mix(in srgb, ${fgcolor} 65%, transparent) !important;
+              }
               `:''}
             `;
 
