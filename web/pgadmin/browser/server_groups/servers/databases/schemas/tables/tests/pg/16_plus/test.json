@@ -2338,6 +2338,105 @@
       "data": {
         "name": "simple_table_storage_$%{}[]()&*^!@\"'`\\/#"
       }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with serial columns",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_serial_cols",
+        "relowner": "<OWNER>",
+        "relacl": [],
+        "description": "round-trip SERIAL columns (issue #9896)",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id_serial",
+            "cltype": "serial",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "id_bigserial",
+            "cltype": "bigserial",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "id_smallserial",
+            "cltype": "smallserial",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "payload",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_serial_cols.sql",
+      "expected_msql_file": "create_table_with_serial_cols_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with serial columns",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_serial_cols"
+      }
     }
   ]
 }

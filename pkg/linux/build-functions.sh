@@ -77,8 +77,28 @@ _create_python_virtualenv() {
     pip3 install --upgrade pip
     pip3 install wheel
 
-    # Install the requirements
-    pip3 install --force-reinstall --no-cache-dir --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    # Install the requirements.
+    #
+    # psycopg is built from source against the system libpq (see
+    # --no-binary psycopg). Pin the C extension to the x86-64 v1
+    # baseline so the resulting .so runs on every x86_64 CPU we
+    # claim to support. Without this, gcc on a modern build host
+    # may emit AVX2/BMI2/FMA instructions that SIGILL on older
+    # CPUs (Ivy Bridge and earlier) and on default Proxmox kvm64
+    # VMs at psycopg_c.pq module-load time. Issue #9935.
+    #
+    # The flags are scoped to this pip invocation so they don't
+    # leak into any other build steps in the same shell. Other
+    # arches build with their distro defaults.
+    if [ "$(uname -m)" = "x86_64" ]; then
+        CFLAGS="${CFLAGS:-} -O2 -march=x86-64 -mtune=generic" \
+        CXXFLAGS="${CXXFLAGS:-} -O2 -march=x86-64 -mtune=generic" \
+            pip3 install --force-reinstall --no-cache-dir \
+                --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    else
+        pip3 install --force-reinstall --no-cache-dir \
+            --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    fi
 
     # Fixup the paths in the venv activation scripts
     sed -i 's/VIRTUAL_ENV=.*/VIRTUAL_ENV="\/usr\/pgadmin4\/venv"/g' venv/bin/activate
@@ -145,7 +165,16 @@ _build_runtime() {
       ELECTRON_ARCH="arm64"
     fi
 
-    ELECTRON_VERSION="$(npm info electron version)"
+    # Resolve the electron version from runtime/package.json, NOT from
+    # `npm info electron version`. The latter fetches whatever currently
+    # carries the `latest` dist-tag on the npm registry, which means any
+    # newly published electron release lands in shipped binaries without
+    # review. Keep the build deterministic and pinned.
+    ELECTRON_VERSION=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' "${SOURCEDIR}/runtime/package.json" | head -1)
+    if [ -z "${ELECTRON_VERSION}" ]; then
+        echo "ERROR: could not resolve electron version from runtime/package.json" >&2
+        exit 1
+    fi
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do

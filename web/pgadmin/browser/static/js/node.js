@@ -479,6 +479,23 @@ define('pgadmin.browser.node', [
                     'pgadmin:browser:node:' + _newNodeData._type + ':updated',
                     _item, _newNodeData, _oldNodeData
                   );
+
+                  // Trigger a specific event for server color updates
+                  // This allows tabs to update their color indicators when server colors change
+                  if (_newNodeData._type === 'server') {
+                    // Extract colors from the icon string using getServerColors utility
+                    const newColors = commonUtils.getServerColors(_newNodeData?.icon);
+
+                    pgBrowser.Events.trigger(
+                      'pgadmin:server:colors:updated',
+                      _newNodeData._id,
+                      {
+                        bgcolor: newColors.bgcolor,
+                        fgcolor: newColors.fgcolor,
+                        icon: _newNodeData.icon
+                      }
+                    );
+                  }
                 },
               }
             );
@@ -708,9 +725,8 @@ define('pgadmin.browser.node', [
 
         // Go further only if node type is a Server
         if (index !== -1) {
-          // First element will be icon and second will be colour code
-          let bgcolor = serverData.icon.split(' ')[1] || null,
-            fgcolor = serverData.icon.split(' ')[2] || '';
+          // Extract bgcolor and fgcolor from server icon
+          const { bgcolor, fgcolor } = commonUtils.getServerColors(serverData.icon);
 
           if (bgcolor) {
             let dynamic_class = 'pga_server_' + serverData._id + '_bgcolor';

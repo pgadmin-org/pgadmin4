@@ -33,7 +33,16 @@ _build_runtime() {
 
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
     # Get a fresh copy of electron
-    ELECTRON_VERSION="$(npm info electron version)"
+    # Resolve the electron version from runtime/package.json, NOT from
+    # `npm info electron version`. The latter fetches whatever currently
+    # carries the `latest` dist-tag on the npm registry, which means any
+    # newly published electron release lands in shipped binaries without
+    # review. Keep the build deterministic and pinned.
+    ELECTRON_VERSION=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' "${SOURCE_DIR}/runtime/package.json" | head -1)
+    if [ -z "${ELECTRON_VERSION}" ]; then
+        echo "ERROR: could not resolve electron version from runtime/package.json" >&2
+        exit 1
+    fi
 
     pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do
@@ -291,8 +300,36 @@ _complete_bundle() {
     pushd "${SOURCE_DIR}/web" > /dev/null || exit
         yarn set version berry
         yarn set version 4
-        yarn install
-        yarn run bundle
+        yarn install 2>&1
+
+        # Record the source commit hash before the heavy lint/webpack
+        # steps. `yarn run` needs node_modules so this runs after install,
+        # but it's a pure `git log` redirect (see web/package.json
+        # "git:hash") that costs ~nothing, so doing it up front means the
+        # commit_hash file is captured even if webpack later bails out.
+        echo "==> Recording git hash..."
+        yarn run git:hash
+
+        # Split the "bundle" script into its underlying steps and merge
+        # stderr into stdout, so a crash inside lint/webpack (e.g. an OOM
+        # kill or native-module load failure) leaves a trace in the
+        # Jenkins console instead of an empty gap before the trap fires.
+        # NODE_ENV mirrors the top-level "bundle" npm script (see
+        # web/package.json). NODE_OPTIONS bumps V8's old-space ceiling
+        # past the 3 GB default the npm script uses: at 3 GB the macOS
+        # x64 builder OS-OOM-killed webpack inside TerserPlugin (build
+        # #1294, sealing asset processing at 92%). 6 GB was too much for
+        # the x64 VM's total RAM and pushed earlier steps into low-memory
+        # failures (build #1295), so we land at 4 GB — enough headroom
+        # for Terser without starving the rest of the build. Other build
+        # paths still get 3 GB via the npm script.
+        export NODE_ENV=production
+        export NODE_OPTIONS=--max-old-space-size=4096
+        echo "==> Running ESLint..."
+        yarn run linter 2>&1
+        echo "==> Running webpack bundle..."
+        yarn run webpacker 2>&1
+        unset NODE_ENV NODE_OPTIONS
 
         curl https://curl.se/ca/cacert.pem -o cacert.pem -s
     popd > /dev/null || exit

@@ -84,7 +84,9 @@ def _get_connection(sid: int, did: int, conn_id: str):
         )
 
 
-def _connect_readonly(_manager, conn, conn_id: str) -> tuple[bool, str | None]:
+def _connect_readonly(
+    _manager, conn, conn_id: str
+) -> tuple[bool, Optional[str]]:
     """
     Establish a read-only connection.
 

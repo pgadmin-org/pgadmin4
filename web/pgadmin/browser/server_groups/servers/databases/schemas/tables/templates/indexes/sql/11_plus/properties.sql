@@ -36,7 +36,7 @@ SELECT DISTINCT ON (cls.relname)
     con.condeferred,
     am.amname,
     EXISTS (
-        SELECT 1 FROM pg_inherits inh WHERE inh.inhrelid = cls.oid
+        SELECT 1 FROM pg_catalog.pg_inherits inh WHERE inh.inhrelid = cls.oid
     ) AS is_inherited,
         substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int AS fillfactor,
         substring(array_to_string(cls.reloptions, ',') FROM 'gin_pending_list_limit=([0-9]*)')::int AS gin_pending_list_limit,

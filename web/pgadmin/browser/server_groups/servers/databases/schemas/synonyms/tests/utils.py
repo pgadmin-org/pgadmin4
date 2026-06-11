@@ -41,9 +41,10 @@ def create_synonym(server, db_name, schema_name, synonym_name, sequence_name):
         connection.commit()
 
         # Get 'oid' from newly created synonym
-        pg_cursor.execute("SELECT s.oid as name FROM"
-                          " pg_synonym s WHERE s.synname='%s'" %
-                          synonym_name)
+        pg_cursor.execute(
+            "SELECT oid as name FROM pg_catalog.pg_synonym WHERE synname=%s",
+            (synonym_name,)
+        )
         synonym = pg_cursor.fetchone()
         connection.close()
         return synonym[0]
@@ -70,8 +71,10 @@ def verify_synonym(server, db_name, synonym_name):
                                              server['host'],
                                              server['port'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT * FROM pg_synonym WHERE synname='%s'" %
-                          synonym_name)
+        pg_cursor.execute(
+            "SELECT * FROM pg_catalog.pg_synonym WHERE synname=%s",
+            (synonym_name,)
+        )
         synonym = pg_cursor.fetchone()
         connection.close()
         return synonym

@@ -122,7 +122,8 @@ def is_dbms_job_scheduler_present(self):
                                              self.server['port'])
         pg_cursor = connection.cursor()
 
-        query = """SELECT COUNT(*) FROM pg_extension WHERE extname IN
+        query = """SELECT COUNT(*) FROM pg_catalog.pg_extension
+        WHERE extname IN
         ('edb_job_scheduler', 'dbms_scheduler')"""
         pg_cursor.execute(query)
         res = pg_cursor.fetchone()

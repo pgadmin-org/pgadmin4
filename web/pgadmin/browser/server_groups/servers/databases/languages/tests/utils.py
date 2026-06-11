@@ -71,7 +71,8 @@ def verify_language(self):
         pg_cursor.execute("SELECT * from pg_catalog.pg_language where "
                           "lanname='%s'" % self.data["name"])
         pg_cursor.execute("select pl.lanname, "
-                          "(select rolname from pg_authid where oid "
+                          "(select rolname from pg_catalog.pg_authid "
+                          "where oid "
                           "= pl.lanowner) as lanowner, "
                           "pl.lanpltrusted, "
                           "( select prosrc from pg_catalog.pg_proc where "

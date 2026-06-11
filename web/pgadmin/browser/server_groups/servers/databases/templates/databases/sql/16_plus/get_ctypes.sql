@@ -1,8 +1,8 @@
 SELECT CASE WHEN datlocprovider = 'i' THEN
-	(SELECT daticulocale as cname FROM pg_database WHERE datname = current_database())
+	(SELECT daticulocale as cname FROM pg_catalog.pg_database WHERE datname = current_database())
 ELSE
-    (SELECT datcollate as cname FROM pg_database WHERE datname = current_database()
+    (SELECT datcollate as cname FROM pg_catalog.pg_database WHERE datname = current_database()
     UNION
-    SELECT datctype as cname FROM pg_database WHERE datname = current_database())
+    SELECT datctype as cname FROM pg_catalog.pg_database WHERE datname = current_database())
 END
-FROM pg_database WHERE datname = current_database();
+FROM pg_catalog.pg_database WHERE datname = current_database();

@@ -19,8 +19,8 @@ SELECT
     description AS comment,
     (
       SELECT array_agg(DISTINCT e.extname)
-      FROM pg_depend d
-      JOIN pg_extension e ON d.refobjid = e.oid
+      FROM pg_catalog.pg_depend d
+      JOIN pg_catalog.pg_extension e ON d.refobjid = e.oid
       WHERE d.objid = c.oid
     ) AS dependsonextensions,
     pg_catalog.pg_get_viewdef(c.oid, true) AS definition,
@@ -32,6 +32,8 @@ SELECT
     (SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=c.oid AND sl1.objsubid=0) AS seclabels,
     substring(pg_catalog.array_to_string(c.reloptions, ',')
       FROM 'fillfactor=([0-9]*)') AS fillfactor,
+    substring(pg_catalog.array_to_string(c.reloptions, ',')
+      FROM 'toast_tuple_target=([0-9]*)') AS toast_tuple_target,
     (substring(pg_catalog.array_to_string(c.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::BOOL AS autovacuum_enabled,
     substring(pg_catalog.array_to_string(c.reloptions, ',')
       FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold,

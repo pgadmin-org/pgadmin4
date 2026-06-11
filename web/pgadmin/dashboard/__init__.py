@@ -698,7 +698,10 @@ def terminate_session(sid=None, did=None, pid=None):
 @pga_login_required
 @check_precondition
 def check_system_statistics(sid=None, did=None):
-    sql = "SELECT * FROM pg_extension WHERE extname = 'system_stats';"
+    sql = (
+        "SELECT 1 FROM pg_catalog.pg_extension "
+        "WHERE extname = 'system_stats';"
+    )
     status, res = g.conn.execute_scalar(sql)
     if not status:
         return internal_server_error(errormsg=res)

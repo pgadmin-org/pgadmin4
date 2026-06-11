@@ -75,6 +75,53 @@ else
     fi
 fi
 
+# Decide which python interpreter to use for gunicorn.
+#
+# /venv/bin/python3-cap is a symlink to /usr/local/bin/python3-cap, a copy
+# of the system python carrying CAP_NET_BIND_SERVICE. It is needed to bind
+# to privileged ports (the default 80/443) as the non-root pgadmin user.
+#
+# Some platforms refuse to honor file capabilities, in which case execing
+# the capped binary either fails outright or silently strips the caps so
+# bind() to a port <1024 still returns EPERM:
+#
+#   - NoNewPrivs=1 (--security-opt=no-new-privileges, OpenShift's
+#     allowPrivilegeEscalation: false): the kernel silently strips file
+#     capabilities on exec.
+#   - CAP_NET_BIND_SERVICE missing from the bounding set (--cap-drop=ALL,
+#     OpenShift restricted-v2 SCC): exec of the capped binary returns
+#     EPERM.
+#
+# Detect either condition via /proc/self/status. When restricted, fall
+# back to the un-capped venv python and (if the user has not picked a
+# port) default PGADMIN_LISTEN_PORT to 8080/8443 so the server can
+# actually bind.
+PYTHON_BIN=/venv/bin/python3-cap
+restricted=0
+
+if grep -q '^NoNewPrivs:[[:space:]]*1' /proc/self/status 2>/dev/null; then
+    restricted=1
+fi
+
+if [ "$restricted" = "0" ]; then
+    cap_bnd=$(awk '/^CapBnd:/ { print $2 }' /proc/self/status 2>/dev/null)
+    if [ -n "$cap_bnd" ] && [ "$(( 0x${cap_bnd} & 0x400 ))" -eq 0 ]; then
+        restricted=1
+    fi
+fi
+
+if [ "$restricted" = "1" ] || [ ! -x /venv/bin/python3-cap ]; then
+    PYTHON_BIN=/venv/bin/python3
+    if [ -z "${PGADMIN_LISTEN_PORT}" ]; then
+        if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
+            export PGADMIN_LISTEN_PORT=8443
+        else
+            export PGADMIN_LISTEN_PORT=8080
+        fi
+        echo "Restricted security context detected; defaulting PGADMIN_LISTEN_PORT to ${PGADMIN_LISTEN_PORT}."
+    fi
+fi
+
 # usage: file_env VAR [DEFAULT] ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, for Docker's secrets feature)
@@ -148,9 +195,28 @@ EOF
 fi
 
 # Check whether the external configuration database exists if it is being used.
+#
+# The URI is read inside Python via os.environ — the shell no longer
+# participates in Python-literal quoting. `ast.literal_eval` unwraps the
+# legacy `'url'` form that the config_distro.py generation convention
+# requires; raw values pass through unchanged. On any Python failure the
+# "False" default below is preserved so first-launch user setup still
+# runs (see #9984).
 external_config_db_exists="False"
 if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI}" ]; then
-     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && $SU_EXEC /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db(\"${PGADMIN_CONFIG_CONFIG_DATABASE_URI}\"); print(val)")
+    result=$(cd /pgadmin4/pgadmin/utils && $SU_EXEC /venv/bin/python3 -c "
+import os, ast
+from check_external_config_db import check_external_config_db
+raw = os.environ['PGADMIN_CONFIG_CONFIG_DATABASE_URI']
+try:
+    uri = ast.literal_eval(raw)
+except (ValueError, SyntaxError):
+    uri = raw
+print(check_external_config_db(uri))
+" 2>/dev/null)
+    if [ -n "$result" ]; then
+        external_config_db_exists="$result"
+    fi
 fi
 
 # DRY of the code to load the PGADMIN_SERVER_JSON_FILE
@@ -275,7 +341,7 @@ else
 fi
 
 if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-    exec $SU_EXEC /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC "${PYTHON_BIN}" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
 else
-    exec $SU_EXEC /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC "${PYTHON_BIN}" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
 fi
