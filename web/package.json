@@ -165,7 +165,8 @@
     "ws": "^8.20.1",
     "qs": "^6.15.2",
     "@tootallnate/once": "^2.0.1",
-    "tar@npm:^7.5.4": "^7.5.15"
+    "tar@npm:^7.5.4": "^7.5.15",
+    "ttf2woff2/node-gyp": "^11.2.0"
   },
   "scripts": {
     "linter": "yarn run eslint -c .eslintrc.js .",
