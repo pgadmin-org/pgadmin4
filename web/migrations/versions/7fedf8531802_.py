@@ -37,7 +37,7 @@ def upgrade():
     # For internal email is a user name, so update the existing records.
     meta = sa.MetaData()
     # define table representation
-    meta.reflect(op.get_bind(), only=('user',))
+    meta.reflect(op.get_bind(), only=('user',), resolve_fks=False)
     user_table = sa.Table('user', meta)
 
     op.execute(

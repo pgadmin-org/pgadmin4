@@ -32,7 +32,7 @@ def upgrade():
     # get metadata from current connection
     meta = sa.MetaData()
     # define table representation
-    meta.reflect(op.get_bind(), only=('server',))
+    meta.reflect(op.get_bind(), only=('server',), resolve_fks=False)
     server_table = sa.Table('server', meta)
 
     op.execute(
