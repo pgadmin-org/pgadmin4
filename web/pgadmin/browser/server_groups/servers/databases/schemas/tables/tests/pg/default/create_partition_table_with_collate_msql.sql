@@ -3,10 +3,7 @@ CREATE TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     id integer,
     status text,
     arr numeric
-) PARTITION BY RANGE (status COLLATE "C" text_pattern_ops)
-WITH (
-    OIDS = FALSE
-);
+) PARTITION BY RANGE (status COLLATE "C" text_pattern_ops);
 
 ALTER TABLE IF EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     OWNER to <OWNER>;

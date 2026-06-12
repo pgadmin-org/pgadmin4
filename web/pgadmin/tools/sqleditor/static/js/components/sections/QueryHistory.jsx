@@ -124,12 +124,27 @@ export const QuerySources = {
   },
 };
 
-function getDateFormatted(date) {
-  return date.toLocaleDateString();
+// On some runtimes the default locale (derived from the OS/environment) is
+// malformed, which makes Date.prototype.toLocaleDateString/toLocaleTimeString
+// throw "RangeError: Incorrect locale information provided". As these are
+// called while rendering the Query History panel, an uncaught throw unmounts
+// the whole SQL editor and the user sees a blank white screen, losing any
+// unsaved work. Fall back to a moment-based format (moment uses its own
+// locale data and does not depend on the broken Intl default). See #7596.
+export function getDateFormatted(date) {
+  try {
+    return date.toLocaleDateString();
+  } catch {
+    return moment(date).format('L');
+  }
 }
 
-function getTimeFormatted(time) {
-  return time.toLocaleTimeString();
+export function getTimeFormatted(time) {
+  try {
+    return time.toLocaleTimeString();
+  } catch {
+    return moment(time).format('LTS');
+  }
 }
 
 class QueryHistoryUtils {

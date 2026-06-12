@@ -10,7 +10,7 @@ JOIN
 JOIN
     pg_catalog.pg_namespace nsp ON nsp.oid=pr.pronamespace
 WHERE
-    proisagg = FALSE
+    pr.prokind IN ('f', 'w')
     AND pronamespace = {{scid}}::oid
     AND typname NOT IN ('trigger', 'event_trigger')
     AND pr.oid = {{fnid}};

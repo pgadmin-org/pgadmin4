@@ -14,7 +14,7 @@ WHERE
         JOIN
             pg_catalog.pg_type typ ON typ.oid=p.prorettype
         WHERE
-            p.proisagg = FALSE
+            p.prokind = 'p'::char
             AND typname NOT IN ('trigger', 'event_trigger')
     )
 ORDER BY funcname;

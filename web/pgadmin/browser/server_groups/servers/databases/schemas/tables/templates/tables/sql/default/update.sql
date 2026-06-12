@@ -43,14 +43,6 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 {% endfor %}
 {% endif %}
 {#####################################################}
-{## Change hasOID attribute of table ##}
-{#####################################################}
-{% if data.relhasoids is defined and data.relhasoids != o_data.relhasoids %}
-ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    SET {% if data.relhasoids %}WITH{% else %}WITHOUT{% endif %} OIDS;
-
-{% endif %}
-{#####################################################}
 {## Change table persistence (UNLOGGED / LOGGED) ##}
 {#####################################################}
 {% if data.relpersistence is defined and data.relpersistence != o_data.relpersistence %}
@@ -66,6 +58,31 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     SET TABLESPACE {{conn|qtIdent(data.spcname)}};
 
 {% endif %}
+
+
+{#####################################################}
+{## Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.rlspolicy %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    ENABLE ROW LEVEL SECURITY;
+{% elif  data.rlspolicy is defined and data.rlspolicy != o_data.rlspolicy%}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    DISABLE ROW LEVEL SECURITY;
+
+{% endif %}
+
+{#####################################################}
+{## Force Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.forcerlspolicy %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    FORCE ROW LEVEL SECURITY;
+{% elif  data.forcerlspolicy is defined and data.forcerlspolicy != o_data.forcerlspolicy%}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    NO FORCE ROW LEVEL SECURITY;
+{% endif %}
+
 {#####################################################}
 {## change fillfactor settings ##}
 {#####################################################}
@@ -77,6 +94,29 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     RESET (FILLFACTOR);
 
 {% endif %}
+
+{## change parallel_workers settings ##}
+{#####################################################}
+{% if (data.parallel_workers == '' or data.parallel_workers == None) and data.parallel_workers != o_data.parallel_workers %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    RESET (parallel_workers);
+{% elif data.parallel_workers is defined and data.parallel_workers != o_data.parallel_workers %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    SET (parallel_workers={{data.parallel_workers}});
+
+{% endif %}
+
+{## change toast_tuple_target settings ##}
+{#####################################################}
+{% if (data.toast_tuple_target == '' or data.toast_tuple_target == None) and data.toast_tuple_target != o_data.toast_tuple_target %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    RESET (toast_tuple_target);
+{% elif data.toast_tuple_target is defined and data.toast_tuple_target != o_data.toast_tuple_target %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    SET (toast_tuple_target={{data.toast_tuple_target}});
+
+{% endif %}
+
 {###############################}
 {## Table AutoVacuum settings ##}
 {###############################}
@@ -133,30 +173,6 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} RESET (
 );
 {% endif %}
 {% endif %}
-
-{#####################################################}
-{## Enable Row Level Security Policy on table ##}
-{#####################################################}
-{% if data.rlspolicy %}
-ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    ENABLE ROW LEVEL SECURITY;
-{% elif  data.rlspolicy is defined and data.rlspolicy != o_data.rlspolicy%}
-ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    DISABLE ROW LEVEL SECURITY;
-
-{% endif %}
-
-{#####################################################}
-{## Force Enable Row Level Security Policy on table ##}
-{#####################################################}
-{% if data.forcerlspolicy %}
-ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    FORCE ROW LEVEL SECURITY;
-{% elif  data.forcerlspolicy is defined and data.forcerlspolicy != o_data.forcerlspolicy%}
-ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    NO FORCE ROW LEVEL SECURITY;
-{% endif %}
-
 {#####################################}
 {## Toast table AutoVacuum settings ##}
 {#####################################}
@@ -268,7 +284,6 @@ COMMENT ON TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% endif %}
 
 {% endif %}
-
 {#####################################################}
 {## Change replica identity ##}
 {#####################################################}

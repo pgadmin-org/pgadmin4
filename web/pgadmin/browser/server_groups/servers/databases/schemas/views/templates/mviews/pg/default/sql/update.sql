@@ -27,25 +27,24 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 DROP MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }};
 CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(view_schema, view_name) }}
+{% if data.amname and data.amname != o_data.amname %}
+USING {{ data.amname }}
+{% endif %}
 {% if data.fillfactor or o_data.fillfactor or data.toast_tuple_target or o_data.toast_tuple_target %}
-{% set ns = namespace(add_comma=false) %}
 WITH(
 {% if data.fillfactor %}
-    FILLFACTOR = {{ data.fillfactor }}{% set ns.add_comma = true %}
+    FILLFACTOR = {{ data.fillfactor }}{% if data.toast_tuple_target or o_data.toast_tuple_target or (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% elif o_data.fillfactor %}
-    FILLFACTOR = {{ o_data.fillfactor }}{% set ns.add_comma = true %}
+    FILLFACTOR = {{ o_data.fillfactor }}{% if data.toast_tuple_target or o_data.toast_tuple_target or (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% endif %}
 {% if data.toast_tuple_target %}
-{% if ns.add_comma %},
-{% endif %}    TOAST_TUPLE_TARGET = {{ data.toast_tuple_target }}{% set ns.add_comma = true %}
+    TOAST_TUPLE_TARGET = {{ data.toast_tuple_target }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% elif o_data.toast_tuple_target %}
-{% if ns.add_comma %},
-{% endif %}    TOAST_TUPLE_TARGET = {{ o_data.toast_tuple_target }}{% set ns.add_comma = true %}
+    TOAST_TUPLE_TARGET = {{ o_data.toast_tuple_target }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% endif %}
 
 {% if data['vacuum_data']['changed']|length > 0 %}
-{% if ns.add_comma %},
-{% endif %}{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},
+{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -70,9 +69,9 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% else %}
 {# ======= Alter Tablespace ========= #}
-{%- if data.spcoid and o_data.spcoid != data.spcoid  -%}
+{%- if data.spcname and o_data.spcname != data.spcname  -%}
 ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
-  SET TABLESPACE {{ data.spcoid }};
+  SET TABLESPACE {{ data.spcname }};
 
 {% endif %}
 {# ======= SET/RESET Fillfactor ========= #}
@@ -223,5 +222,19 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {{ SECLABEL.SET(conn, 'MATERIALIZED VIEW', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
+{% endif %}
+{% set old_exts = (o_data.dependsonextensions or []) | list %}
+{% set new_exts = data.dependsonextensions if 'dependsonextensions' in data else None %}
+{% if new_exts is not none and old_exts != new_exts %}
+{% for ext in (old_exts + new_exts) | unique %}
+
+{% if ext in new_exts and ext not in old_exts %}
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% elif ext in old_exts and ext not in new_exts %}
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    NO DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endif %}
+{% endfor %}
 {% endif %}
 {% endif %}
