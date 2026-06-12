@@ -2381,6 +2381,8 @@ def _check_server_connection_status(sgid, sid=None):
             }
         )
 
+    except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
+        raise
     except Exception as e:
         current_app.logger.exception(e)
         return make_json_response(
@@ -2447,6 +2449,8 @@ def get_new_connection_data(sgid=None, sid=None):
             }
         )
 
+    except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
+        raise
     except Exception as e:
         current_app.logger.exception(e)
         return make_json_response(
@@ -2521,6 +2525,8 @@ def get_new_connection_database(sgid, sid=None):
                     }
                 }
             )
+    except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
+        raise
     except Exception as e:
         current_app.logger.exception(e)
         return make_json_response(
@@ -2587,6 +2593,8 @@ def get_new_connection_user(sgid, sid=None):
                     }
                 }
             )
+    except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
+        raise
     except Exception as e:
         current_app.logger.exception(e)
         return make_json_response(
@@ -2651,6 +2659,8 @@ def get_new_connection_role(sgid, sid=None):
                     }
                 }
             )
+    except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
+        raise
     except Exception as e:
         current_app.logger.exception(e)
         return make_json_response(
