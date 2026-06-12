@@ -172,7 +172,9 @@ def get_llm_client(
         get_anthropic_api_url, get_anthropic_api_key, get_anthropic_model,
         get_openai_api_url, get_openai_api_key, get_openai_model,
         get_ollama_api_url, get_ollama_model,
-        get_docker_api_url, get_docker_model
+        get_docker_api_url, get_docker_model,
+        is_pref_api_url_rejected,
+        is_pref_api_key_path_rejected,
     )
 
     # Determine which provider to use
@@ -183,8 +185,34 @@ def get_llm_client(
 
     provider = provider.lower()
 
+    def _rejected_url_error(prov):
+        return LLMClientError(LLMError(
+            message=(
+                f"The configured {prov} API URL is not in the "
+                "allowed list (ALLOWED_LLM_API_URLS). Add it to "
+                "config_local.py, or clear the API URL preference "
+                "to use the system default."
+            ),
+            provider=prov,
+        ))
+
+    def _rejected_key_file_error(prov):
+        return LLMClientError(LLMError(
+            message=(
+                f"The configured {prov} API key file is not within "
+                "your private user storage. Move the key file to "
+                "your private storage directory, or clear the API "
+                "Key File preference to use the system default."
+            ),
+            provider=prov,
+        ))
+
     if provider == 'anthropic':
         from pgadmin.llm.providers.anthropic import AnthropicClient
+        if is_pref_api_url_rejected('anthropic_api_url'):
+            raise _rejected_url_error('anthropic')
+        if is_pref_api_key_path_rejected('anthropic_api_key_file'):
+            raise _rejected_key_file_error('anthropic')
         api_key = get_anthropic_api_key()
         api_url = get_anthropic_api_url()
         if not api_key and not api_url:
@@ -199,6 +227,10 @@ def get_llm_client(
 
     elif provider == 'openai':
         from pgadmin.llm.providers.openai import OpenAIClient
+        if is_pref_api_url_rejected('openai_api_url'):
+            raise _rejected_url_error('openai')
+        if is_pref_api_key_path_rejected('openai_api_key_file'):
+            raise _rejected_key_file_error('openai')
         api_key = get_openai_api_key()
         api_url = get_openai_api_url()
         if not api_key and not api_url:
@@ -213,6 +245,8 @@ def get_llm_client(
 
     elif provider == 'ollama':
         from pgadmin.llm.providers.ollama import OllamaClient
+        if is_pref_api_url_rejected('ollama_api_url'):
+            raise _rejected_url_error('ollama')
         api_url = get_ollama_api_url()
         if not api_url:
             raise LLMClientError(LLMError(
@@ -224,6 +258,8 @@ def get_llm_client(
 
     elif provider == 'docker':
         from pgadmin.llm.providers.docker import DockerClient
+        if is_pref_api_url_rejected('docker_api_url'):
+            raise _rejected_url_error('docker')
         api_url = get_docker_api_url()
         if not api_url:
             raise LLMClientError(LLMError(
