@@ -364,6 +364,69 @@ _complete_bundle() {
     chmod -R og-w "${BUNDLE_DIR}"
 }
 
+_strip_architecture() {
+    # We only ship a single architecture (matching the build machine, via
+    # ${ARCH}), but some inputs arrive as fat/universal2 Mach-O binaries.
+    # In particular relocatable-python pulls the python.org *universal2*
+    # installer, so the entire Python.framework carries both arm64 and
+    # x86_64 slices; PostgreSQL-sourced dylibs (libpq, libssl, ...) may be
+    # universal too. Strip the foreign slice from every fat Mach-O so the
+    # bundle ships lean. Electron and its helpers are downloaded
+    # single-arch already, so the loop simply skips them.
+    #
+    # NB: lipo invalidates code signatures, so this MUST run before
+    # _codesign_binaries / _codesign_bundle.
+
+    # Map the build ARCH ("arm64"/"x64") to the lipo/Mach-O arch name.
+    local LIPO_ARCH="arm64"
+    if [ "${ARCH}" == "x64" ]; then
+        LIPO_ARCH="x86_64"
+    fi
+
+    echo "Stripping foreign architectures, keeping ${LIPO_ARCH}..."
+
+    # Remove arch-specific stragglers shipped by the universal2 Python
+    # installer: a pure-x86_64 launcher and a stray, never-executed build
+    # object file. Globs keep this independent of the Python version.
+    find "${BUNDLE_DIR}/Contents/Frameworks/Python.framework" \
+        -name 'python*-intel64' -type f -delete
+    find "${BUNDLE_DIR}/Contents/Frameworks/Python.framework" \
+        -path '*/config-*-darwin/python.o' -type f -delete
+
+    # Thin every fat Mach-O in the bundle in place. -type f skips symlinks,
+    # so versioned dylib aliases are left alone and only the real file is
+    # thinned once.
+    local f archs perms
+    while IFS= read -r f; do
+        archs=$(lipo -archs "${f}" 2>/dev/null) || continue   # not Mach-O
+        case " ${archs} " in
+            *" ${LIPO_ARCH} "*) ;;                            # has our slice
+            *)
+                # No slice for our target arch — thinning can't help; this
+                # would need a rebuild from the right arch. Warn loudly.
+                echo "WARNING: ${f} lacks a ${LIPO_ARCH} slice (${archs}); leaving as-is" >&2
+                continue
+                ;;
+        esac
+        # Already single-arch (our arch) — nothing to strip.
+        if [ "$(echo "${archs}" | wc -w)" -le 1 ]; then
+            continue
+        fi
+        echo "Thinning ${f} (${archs} -> ${LIPO_ARCH})"
+        # lipo writes to a separate file, which loses the original mode
+        # (notably the +x bit the signing pass relies on), so capture and
+        # restore the permissions across the swap.
+        perms=$(stat -f '%Lp' "${f}")
+        if lipo -thin "${LIPO_ARCH}" "${f}" -output "${f}.thin"; then
+            chmod "${perms}" "${f}.thin"
+            mv -f "${f}.thin" "${f}"
+        else
+            rm -f "${f}.thin"
+            echo "WARNING: failed to thin ${f}" >&2
+        fi
+    done < <(find "${BUNDLE_DIR}" -type f)
+}
+
 _generate_sbom() {
    echo "Generating SBOM..."
    syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/sbom.json"
