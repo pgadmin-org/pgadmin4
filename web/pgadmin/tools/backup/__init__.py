@@ -294,6 +294,8 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
               data.get('only_tablespaces', None))
     set_param('only_roles', '--roles-only',
               data.get('only_roles', None))
+    set_param('only_statistics', '--statistics-only',
+              manager.version >= 180000)
 
     # Sections
     set_param('pre_data', '--section=pre-data')
@@ -317,6 +319,9 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('dns_table_access_method', '--no-table-access-method',
               manager.version >= 150000)
     set_param('dns_no_role_passwords', '--no-role-passwords')
+    set_param('no_policies', '--no-policies', manager.version >= 180000)
+    set_param('no_data', '--no-data', manager.version >= 180000)
+    set_param('no_schema', '--no-schema', manager.version >= 180000)
 
     # Query Options
     set_param('use_insert_commands', '--inserts')
@@ -353,6 +358,8 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
     set_param('use_set_session_auth', '--use-set-session-authorization')
+    set_param('statistics', '--statistics', manager.version >= 180000)
+    set_param('sequence_data', '--sequence-data', manager.version >= 180000)
     set_value('exclude_schema', '--exclude-schema')
     set_value('extra_float_digits', '--extra-float-digits', None,
               manager.version >= 120000)

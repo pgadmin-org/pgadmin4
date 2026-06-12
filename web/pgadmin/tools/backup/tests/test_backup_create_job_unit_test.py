@@ -1301,6 +1301,134 @@ class BackupCreateJobTest(BaseTestGenerator):
              expected_cmd_opts=['--globals-only'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
+         )),
+        ('When backup the object with option - Do not save Row security '
+         'policies, Data, Schema (>= v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 no_policies=True,
+                 no_data=True,
+                 no_schema=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--no-policies', '--no-data', '--no-schema'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=180000,
+             message='Backup object with --no-policies, --no-data, '
+                     '--no-schema is not supported by EPAS/PG server less '
+                     'than 18.0'
+         )),
+        ('When backup the object with option - statistics, sequence data '
+         'and only statistics (>= v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 only_statistics=True,
+                 statistics=True,
+                 sequence_data=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--statistics-only', '--statistics',
+                                '--sequence-data'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=180000,
+             message='Backup object with --statistics-only, --statistics, '
+                     '--sequence-data is not supported by EPAS/PG server less '
+                     'than 18.0'
+         )),
+        ('When backup the object with v18 options against an older server '
+         '(< v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 no_policies=True,
+                 no_data=True,
+                 no_schema=True,
+                 only_statistics=True,
+                 statistics=True,
+                 sequence_data=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[],
+             not_expected_cmd_opts=['--no-policies', '--no-data',
+                                    '--no-schema', '--statistics-only',
+                                    '--statistics', '--sequence-data'],
+             expected_exit_code=[0, None],
+             server_max_version=179999,
+             message='v18 backup options must not be emitted for EPAS/PG '
+                     'server less than 18.0'
+         )),
+        ('When backup the server with v18 options (>= v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 no_policies=True,
+                 sequence_data=True,
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--no-policies', '--sequence-data'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=180000,
+             message='Backup server with --no-policies, --sequence-data is '
+                     'not supported by EPAS/PG server less than 18.0'
          ))
     ]
 

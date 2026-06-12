@@ -26,6 +26,9 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #9064 <https://github.com/pgadmin-org/pgadmin4/issues/9064>`_ -  Add the new PostgreSQL 18 pg_dump options to the Backup dialog: Only statistics, Dump statistics, Sequence data, and Do not save Row security policies/Data/Schema.
+  | `Issue #9065 <https://github.com/pgadmin-org/pgadmin4/issues/9065>`_ -  Add the new PostgreSQL 18 pg_dumpall options (Row security policies and Sequence data, among others) to the server Backup dialog.
+  | `Issue #9066 <https://github.com/pgadmin-org/pgadmin4/issues/9066>`_ -  Add the new PostgreSQL 18 pg_restore options to the Restore dialog: Only statistics and Do not restore Row security policies/Data/Schema/Statistics.
   | `Issue #9626 <https://github.com/pgadmin-org/pgadmin4/issues/9626>`_ -  Add support for the TOAST tuple target storage parameter in the Materialized View dialog.
   | `Issue #9646 <https://github.com/pgadmin-org/pgadmin4/issues/9646>`_ -  Make the init container security context in the Helm chart configurable via containerSecurityContext, consistent with the main container.
   | `Issue #9699 <https://github.com/pgadmin-org/pgadmin4/issues/9699>`_ -  Add support for closing a tab with a middle-click on its title.

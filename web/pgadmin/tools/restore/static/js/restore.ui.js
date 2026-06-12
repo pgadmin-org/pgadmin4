@@ -99,7 +99,7 @@ export class RestoreTypeObjSchema extends BaseUISchema {
       type: 'switch',
       group: gettext('Type of objects'),
       inlineGroup: 'types_of_data',
-      deps: ['pre_data', 'data', 'post_data', 'only_schema'],
+      deps: ['pre_data', 'data', 'post_data', 'only_schema', 'only_statistics'],
       disabled: function(state) {
         if(obj.selectedNodeType == 'table') {
           state.only_data = true;
@@ -108,7 +108,8 @@ export class RestoreTypeObjSchema extends BaseUISchema {
           (state.pre_data ||
             state.data ||
             state.post_data ||
-            state.only_schema
+            state.only_schema ||
+            state.only_statistics
           );
       },
     }, {
@@ -117,7 +118,7 @@ export class RestoreTypeObjSchema extends BaseUISchema {
       type: 'switch',
       group: gettext('Type of objects'),
       inlineGroup: 'types_of_data',
-      deps: ['pre_data', 'data', 'post_data', 'only_data'],
+      deps: ['pre_data', 'data', 'post_data', 'only_data', 'only_statistics'],
       disabled: function(state) {
         if(obj.selectedNodeType == 'index' || obj.selectedNodeType == 'function') {
           state.only_schema = true;
@@ -126,7 +127,25 @@ export class RestoreTypeObjSchema extends BaseUISchema {
           (state.pre_data ||
             state.data ||
             state.post_data ||
-            state.only_data
+            state.only_data ||
+            state.only_statistics
+          );
+      },
+    }, {
+      id: 'only_statistics',
+      label: gettext('Only statistics'),
+      type: 'switch',
+      group: gettext('Type of objects'),
+      inlineGroup: 'types_of_data',
+      min_version: 180000,
+      deps: ['pre_data', 'data', 'post_data', 'only_data', 'only_schema'],
+      disabled: function(state) {
+        return (obj.selectedNodeType !== 'database' && obj.selectedNodeType !== 'schema') ||
+          (state.pre_data ||
+            state.data ||
+            state.post_data ||
+            state.only_data ||
+            state.only_schema
           );
       },
     }];
@@ -217,6 +236,38 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       group: gettext('Do not save'),
       inlineGroup: 'save_options',
       min_version: 150000
+    }, {
+      id: 'no_policies',
+      label: gettext('Row security policies'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'save_options',
+      min_version: 180000
+    }, {
+      id: 'no_data',
+      label: gettext('Data'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'save_options',
+      min_version: 180000
+    }, {
+      id: 'no_schema',
+      label: gettext('Schema'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'save_options',
+      min_version: 180000
+    }, {
+      id: 'no_statistics',
+      label: gettext('Statistics'),
+      type: 'switch',
+      disabled: false,
+      group: gettext('Do not save'),
+      inlineGroup: 'save_options',
+      min_version: 180000
     }];
   }
 }
