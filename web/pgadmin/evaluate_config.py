@@ -12,6 +12,8 @@ import sys
 import keyring
 import importlib.util
 
+from pgadmin.utils.db_utils import normalize_database_uri
+
 # User configs loaded from config_local, config_distro etc.
 custom_config_settings = {}
 
@@ -114,10 +116,9 @@ def evaluate_and_patch_config(config: dict) -> dict:
 
     # To use psycopg3 driver, need to specify +psycopg in conn URI
     if 'CONFIG_DATABASE_URI' in custom_config_settings:
-        db_uri = custom_config_settings['CONFIG_DATABASE_URI']
-        if db_uri.startswith('postgresql:'):
-            custom_config_settings['CONFIG_DATABASE_URI'] = \
-                'postgresql+psycopg:{0}'.format(db_uri[db_uri.find(':') + 1:])
+        custom_config_settings['CONFIG_DATABASE_URI'] = \
+            normalize_database_uri(
+                custom_config_settings['CONFIG_DATABASE_URI'])
 
     # Finally update config user configs
     config.update(custom_config_settings)
