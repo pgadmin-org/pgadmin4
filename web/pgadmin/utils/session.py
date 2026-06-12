@@ -115,8 +115,8 @@ def _derive_session_fernet(secret):
 def _open_session_file(path):
     """Open a session file for writing with mode 0o600 (owner-only).
 
-    Session files contain OAuth access/refresh tokens, AWS/Google/Azure/
-    BigAnimal cloud credentials, the Kerberos cache path, MFA OTP material,
+    Session files contain OAuth access/refresh tokens, AWS/Google/Azure
+    cloud credentials, the Kerberos cache path, MFA OTP material,
     and `pass_enc_key` (the symmetric KEK used to decrypt the user's saved
     Postgres server passwords). The default `open(path, 'wb')` uses the
     process umask, which on most systems leaves files world-readable

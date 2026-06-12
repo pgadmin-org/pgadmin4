@@ -121,12 +121,66 @@ export class ManageTreeNodes {
     let treeData = [];
     if (url) {
       try {
-        const res = await api.get(url);
+        const res = await api.get(url, {timeout: 30000});
         treeData = res.data.data;
       } catch (error) {
         /* react-aspen does not handle reject case */
         console.error(error);
-        pgAdmin.Browser.notifier.error(parseApiError(error)||'Node Load Error...');
+        const isConnectionLost =
+          (error.response?.status === 503 &&
+            error.response?.data?.info === 'CONNECTION_LOST') ||
+          // Axios client-side timeout has no error.response — treat it
+          // as a likely connection loss so the reconnect dialog still
+          // triggers when the server hangs on a recently-dead socket
+          // (before TCP keepalives detect it).
+          error.code === 'ECONNABORTED';
+        if (isConnectionLost) {
+          // Connection dropped while idle.  Walk up to the server node
+          // and mark it disconnected, then show a reconnect prompt so
+          // the user can re-establish instead of seeing a silent
+          // spinner.
+          let serverNode = node;
+          while (serverNode) {
+            const d = serverNode.metadata?.data ?? serverNode.data;
+            if (d?._type === 'server') break;
+            serverNode = serverNode.parentNode ?? null;
+          }
+          const sData = serverNode
+            ? (serverNode.metadata?.data ?? serverNode.data)
+            : null;
+          // When a server has multiple expanded children, every in-flight
+          // child-load request will fail independently.  Guard with a
+          // per-server flag so we only show one reconnect dialog at a
+          // time instead of stacking them.
+          if (sData?._reconnectPending) return [];
+          if (serverNode) {
+            if (sData) {
+              sData.connected = false;
+              sData._reconnectPending = true;
+            }
+            pgAdmin.Browser.tree?.addIcon(serverNode, {icon: 'icon-server-not-connected'});
+            pgAdmin.Browser.tree?.close(serverNode);
+          }
+          const clearPending = () => {
+            if (sData) sData._reconnectPending = false;
+          };
+          pgAdmin.Browser.notifier.confirm(
+            gettext('Connection lost'),
+            gettext('The connection to the server has been lost. Would you like to reconnect?'),
+            function() {
+              clearPending();
+              // Re-open (connect) the server node in the tree which
+              // will trigger the standard connect-to-server flow
+              // including any password prompts.
+              if (serverNode && pgAdmin.Browser.tree) {
+                pgAdmin.Browser.tree.toggle(serverNode);
+              }
+            },
+            clearPending,
+          );
+        } else {
+          pgAdmin.Browser.notifier.error(parseApiError(error)||'Node Load Error...');
+        }
         return [];
       }
     }

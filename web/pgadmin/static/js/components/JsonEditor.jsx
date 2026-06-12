@@ -30,7 +30,12 @@ export default function JsonEditor({setJsonEditorSize, value, options, className
         ...defaultOptions,
         ...options,
         onChange: (updatedContent) => {
-          options.onChange(currentMode.current == 'text' ? updatedContent.text : JSON.stringify(updatedContent.json));
+          // Serialize non-text modes (tree/table) with the configured parser
+          // so a lossless parser preserves the original number representation
+          // (big integers, trailing fractional zeros) instead of being
+          // rewritten by the native JSON serializer.
+          const serializer = options.parser ?? JSON;
+          options.onChange(currentMode.current == 'text' ? updatedContent.text : serializer.stringify(updatedContent.json));
           options.onValidationError(editor.current.validate());
         },
         onChangeMode: (mode) => {
