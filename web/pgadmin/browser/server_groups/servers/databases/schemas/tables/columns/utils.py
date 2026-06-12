@@ -229,10 +229,20 @@ def parse_options_for_column(db_variables):
 @get_template_path
 def get_formatted_columns(conn, tid, data, other_columns,
                           table_or_type, template_path=None,
-                          with_serial=False):
+                          with_serial=True):
     """
     This function will iterate and return formatted data for all
     the columns.
+
+    Serial-column detection is on by default: a column whose default
+    is ``nextval('<table>_<col>_seq'...)`` with an integer/smallint/
+    bigint type is the reverse-engineered form of a SERIAL declaration,
+    and we reproject it back to ``serial`` / ``smallserial`` /
+    ``bigserial`` so callers can emit valid round-trippable DDL. Pass
+    ``with_serial=False`` only if you genuinely need the raw libpq
+    representation (e.g. a low-level introspection caller that handles
+    the sequence itself). Issue #9896.
+
     :param conn: Connection Object
     :param tid: Table ID
     :param data: Data

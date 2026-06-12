@@ -495,6 +495,13 @@ export function SchemaDiffCompare({ params }) {
         'groupType': record.group_name,
         'isExpanded': false,
         'selected': false,
+        // Seed status counts so the cell expander renders them at the
+        // top-level group too — setRecordCount() will aggregate from
+        // the mid-level children at render time. Issue #9892.
+        'identicalCount': 0,
+        'differentCount': 0,
+        'sourceOnlyCount': 0,
+        'targetOnlyCount': 0,
         'children': {}
       };
       let ch_id = record.id;

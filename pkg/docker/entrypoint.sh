@@ -195,9 +195,28 @@ EOF
 fi
 
 # Check whether the external configuration database exists if it is being used.
+#
+# The URI is read inside Python via os.environ — the shell no longer
+# participates in Python-literal quoting. `ast.literal_eval` unwraps the
+# legacy `'url'` form that the config_distro.py generation convention
+# requires; raw values pass through unchanged. On any Python failure the
+# "False" default below is preserved so first-launch user setup still
+# runs (see #9984).
 external_config_db_exists="False"
 if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI}" ]; then
-     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && $SU_EXEC /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db(\"${PGADMIN_CONFIG_CONFIG_DATABASE_URI}\"); print(val)")
+    result=$(cd /pgadmin4/pgadmin/utils && $SU_EXEC /venv/bin/python3 -c "
+import os, ast
+from check_external_config_db import check_external_config_db
+raw = os.environ['PGADMIN_CONFIG_CONFIG_DATABASE_URI']
+try:
+    uri = ast.literal_eval(raw)
+except (ValueError, SyntaxError):
+    uri = raw
+print(check_external_config_db(uri))
+" 2>/dev/null)
+    if [ -n "$result" ]; then
+        external_config_db_exists="$result"
+    fi
 fi
 
 # DRY of the code to load the PGADMIN_SERVER_JSON_FILE

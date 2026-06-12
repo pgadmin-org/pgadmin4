@@ -18,11 +18,8 @@ import getApiInstance from '../../../../static/js/api_instance';
 import PropTypes from 'prop-types';
 import pgAdmin from 'sources/pgadmin';
 import {ToggleButtons, FinalSummary} from './cloud_components';
-import { PrimaryButton } from '../../../../static/js/components/Buttons';
 import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudStep1, validateCloudStep2, validateCloudStep3} from './aws';
-import {BigAnimalInstance, BigAnimalDatabase, BigAnimalClusterType, validateBigAnimal, validateBigAnimalStep2, validateBigAnimalStep3, validateBigAnimalStep4} from './biganimal';
-import { isEmptyString } from 'sources/validators';
-import { AWSIcon, BigAnimalIcon, AzureIcon, GoogleCloudIcon } from '../../../../static/js/components/ExternalIcon';
+import { AWSIcon, AzureIcon, GoogleCloudIcon } from '../../../../static/js/components/ExternalIcon';
 import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClusternameAvailbility, validateAzureStep2, validateAzureStep3} from './azure';
 import { GoogleCredentials, GoogleInstanceDetails, GoogleDatabaseDetails, validateGoogleStep2, validateGoogleStep3 } from './google';
 import EventBus from '../../../../static/js/helpers/EventBus';
@@ -34,7 +31,7 @@ export const CloudWizardEventsContext = React.createContext();
 export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}) {
   const eventBus = React.useRef(new EventBus());
 
-  let steps = [gettext('Cloud Provider'), gettext('Credentials'), gettext('Cluster Type'),
+  let steps = [gettext('Cloud Provider'), gettext('Credentials'),
     gettext('Instance Specification'), gettext('Database Details'), gettext('Review')];
   const [currentStep, setCurrentStep] = React.useState('');
   const [cloudSelection, setCloudSelection] = React.useState('');
@@ -47,10 +44,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   const [cloudProvider, setCloudProvider] = React.useState('');
   const [verificationIntiated, setVerificationIntiated] = React.useState(false);
 
-  const [bigAnimalInstanceData, setBigAnimalInstanceData] = React.useState({});
-  const [bigAnimalDatabaseData, setBigAnimalDatabaseData] = React.useState({});
-  const [bigAnimalClusterTypeData, setBigAnimalClusterTypeData] = React.useState({});
-
   const [azureCredData, setAzureCredData] = React.useState({});
   const [azureInstanceData, setAzureInstanceData] = React.useState({});
   const [azureDatabaseData, setAzureDatabaseData] = React.useState({});
@@ -60,11 +53,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   const [googleDatabaseData, setGoogleDatabaseData] = React.useState({});
 
   const axiosApi = getApiInstance();
-
-  const [verificationURI, setVerificationURI] = React.useState('');
-  const [verificationCode, setVerificationCode] = React.useState('');
-
-  const authInterval = React.useRef();
 
   React.useEffect(()=>{
     eventBus.current.registerListener('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', (msg) => {
@@ -77,7 +65,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
 
     const onWizardClosing = (panelId)=>{
       if(panelId == cloudPanelId) {
-        clearInterval(authInterval.current);
         onClose();
       }
     };
@@ -132,15 +119,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         instance_details:googleInstanceData,
         db_details: googleDatabaseData
       };
-
-    }else {
-      post_data = {
-        gid: nodeInfo.server_group._id,
-        cloud: cloudProvider,
-        cluster_details: bigAnimalClusterTypeData,
-        instance_details: bigAnimalInstanceData,
-        db_details: bigAnimalDatabaseData
-      };
     }
 
     axiosApi.post(_url, post_data)
@@ -167,33 +145,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         isError = validateCloudStep1(cloudDBCred);
         break;
       case 2:
-        break;
-      case 3:
         isError = validateCloudStep2(cloudInstanceDetails, hostIP);
         break;
-      case 4:
-        isError = validateCloudStep3(cloudDBDetails, nodeInfo);
-        break;
-      default:
-        break;
-      }
-      break;
-    case CLOUD_PROVIDERS.BIGANIMAL:
-      switch (currentStep) {
-      case 0:
-        setCloudSelection(CLOUD_PROVIDERS.BIGANIMAL);
-        break;
-      case 1:
-        isError = !verificationIntiated;
-        break;
-      case 2:
-        isError = validateBigAnimalStep2(bigAnimalClusterTypeData);
-        break;
       case 3:
-        isError = validateBigAnimalStep3(bigAnimalInstanceData);
-        break;
-      case 4:
-        isError = validateBigAnimalStep4(bigAnimalDatabaseData, nodeInfo);
+        isError = validateCloudStep3(cloudDBDetails, nodeInfo);
         break;
       default:
         break;
@@ -208,11 +163,9 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         isError = !verificationIntiated;
         break;
       case 2:
-        break;
-      case 3:
         isError = validateAzureStep2(azureInstanceData);
         break;
-      case 4:
+      case 3:
         isError = validateAzureStep3(azureDatabaseData, nodeInfo);
         break;
       default:
@@ -228,11 +181,9 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         isError = !verificationIntiated;
         break;
       case 2:
-        break;
-      case 3:
         isError = validateGoogleStep2(googleInstanceData);
         break;
-      case 4:
+      case 3:
         isError = validateGoogleStep3(googleDatabaseData, nodeInfo);
         break;
       default:
@@ -244,10 +195,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
 
   const onBeforeBack = (activeStep) => {
     return new Promise((resolve)=>{
-      if(activeStep == 3 && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
-        resolve(true);
-      }
-      else if(activeStep == 1  && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
+      if(activeStep == 1 && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
         setVerificationIntiated(false);
       }
       setErrMsg(['', '']);
@@ -271,61 +219,29 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               reject(new Error(res.data.info));
             } else {
               setErrMsg(['', '']);
-              if (activeStep == 1) {
-                resolve(true);
-              } else {
-                resolve(false);
-              }
+              resolve();
             }
           })
           .catch(() => {
             setErrMsg([MESSAGE_TYPE.ERROR, gettext('Error while checking cloud credentials')]);
             reject(new Error(gettext('Error while checking cloud credentials')));
           });
-      } else if(activeStep == 0 && cloudProvider == CLOUD_PROVIDERS.BIGANIMAL) {
-        if (!isEmptyString(verificationURI)) { resolve(); return; }
-        setErrMsg([MESSAGE_TYPE.INFO, gettext('Getting EDB BigAnimal verification URL...')]);
-        validateBigAnimal()
-          .then((res) => {
-            setVerificationURI(res);
-            setVerificationCode(res.substring(res.indexOf('=')+1));
-            setErrMsg(['', '']);
+      } else if (cloudProvider == CLOUD_PROVIDERS.AZURE
+                 && activeStep == 2) {
+        setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
+        checkClusternameAvailbility(azureInstanceData.name)
+          .then((res)=>{
+            if (res && res.success == 0 ) {
+              setErrMsg([MESSAGE_TYPE.ERROR, gettext('Specified cluster name is already used.')]);
+            }else{
+              setErrMsg(['', '']);
+            }
             resolve();
-          })
-          .catch((error) => {
-            setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
-            reject(new Error(gettext(error)));
+          }).catch((error)=>{
+            const msg = error?.message || gettext('Error while checking server name availability with Microsoft Azure.');
+            setErrMsg([MESSAGE_TYPE.ERROR, msg]);
+            reject(new Error(msg));
           });
-      } else if (cloudProvider == CLOUD_PROVIDERS.AZURE) {
-        if (activeStep == 1) {
-          // Skip the current step
-          setErrMsg(['', '']);
-          resolve(true);
-        } else if (activeStep == 2) {
-          setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
-          checkClusternameAvailbility(azureInstanceData.name)
-            .then((res)=>{
-              if (res.data && res.data.success == 0 ) {
-                setErrMsg([MESSAGE_TYPE.ERROR, gettext('Specified cluster name is already used.')]);
-              }else{
-                setErrMsg(['', '']);
-              }
-              resolve();
-            }).catch((error)=>{
-              setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
-              reject(new Error(gettext(error)));
-            });
-        } else {
-          resolve();
-        }
-      }else if (cloudProvider == CLOUD_PROVIDERS.GOOGLE) {
-        if (activeStep == 1) {
-          // Skip the current step
-          setErrMsg(['', '']);
-          resolve(true);
-        } else if (activeStep == 2) { resolve(true);} else {
-          resolve();
-        }
       }
       else {
         setErrMsg(['', '']);
@@ -333,45 +249,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
       }
     });
   };
-
-  const authenticateBigAnimal = () => {
-    let loading_icon_url = url_for(
-      'static', { 'filename': 'img/loading.gif'}
-    );
-
-    setErrMsg([MESSAGE_TYPE.INFO, gettext('EDB BigAnimal authentication process is in progress...') + '<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
-    let child = window.open(verificationURI, 'edb_biganimal_authentication');
-    let _url = url_for('biganimal.verification_ack') ;
-    let countdown = 60;
-    authInterval.current = setInterval(() => {
-      axiosApi.get(_url)
-        .then((res) => {
-          if (res.data && res.data.success == 1 ) {
-            setErrMsg([MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
-            setVerificationIntiated(true);
-            clearInterval(authInterval.current);
-          } else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'access_denied') {
-            setErrMsg([MESSAGE_TYPE.INFO, gettext('Verification failed. Access Denied...')]);
-            setVerificationIntiated(false);
-            clearInterval(authInterval.current);
-          } else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'forbidden') {
-            setErrMsg([MESSAGE_TYPE.INFO, gettext('Authentication completed successfully but you do not have permission to create the cluster.')]);
-            setVerificationIntiated(false);
-            clearInterval(authInterval.current);
-          } else if (child.closed && !verificationIntiated && countdown <= 0) {
-            setVerificationIntiated(false);
-            setErrMsg([MESSAGE_TYPE.ERROR, gettext('Authentication is aborted.')]);
-            clearInterval(authInterval.current);
-          }
-          authInterval.current = null;
-        })
-        .catch((error) => {
-          setErrMsg([MESSAGE_TYPE.ERROR, gettext(`Error while verifying EDB BigAnimal: ${error.response.data.errormsg}`)]);
-        });
-      countdown = countdown - 1;
-    }, 1000);
-  };
-
 
   const onDialogHelp = () => {
     window.open(url_for('help.static', { 'filename': 'cloud_deployment.html' }), 'pgadmin_help');
@@ -383,7 +260,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
 
   let cloud_providers = [
     {label: gettext(CLOUD_PROVIDERS_LABELS.AWS), value: CLOUD_PROVIDERS.AWS, icon: <AWSIcon  />},
-    {label: gettext(CLOUD_PROVIDERS_LABELS.BIGANIMAL), value: CLOUD_PROVIDERS.BIGANIMAL, icon: <BigAnimalIcon />},
     {label: gettext(CLOUD_PROVIDERS_LABELS.AZURE), value: CLOUD_PROVIDERS.AZURE, icon: <AzureIcon  /> },
     {label: gettext(CLOUD_PROVIDERS_LABELS.GOOGLE), value: CLOUD_PROVIDERS.GOOGLE, icon: <GoogleCloudIcon  /> }];
 
@@ -410,19 +286,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={1} >
-          <Box sx={{ position: 'relative',top: '20%'}}>
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box sx={{ marginBottom: '1em', display: 'flex'}}>
-              <Box>{gettext('The verification code to authenticate pgAdmin to EDB BigAnimal is: ')} <strong>{verificationCode}</strong>
-                <br/>{gettext('By clicking the button below, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
-              </Box>
-            </Box>}
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated}>
-              {gettext('Click here to authenticate yourself to EDB BigAnimal')}
-            </PrimaryButton>}
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box sx={{ marginBottom: '1em', display: 'flex'}}>
-              <Box ></Box>
-            </Box>}
-          </Box>
           {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
           { cloudProvider == CLOUD_PROVIDERS.AZURE &&
             <Box flexGrow={1}>
@@ -434,31 +297,13 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={2} >
-          {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 2 && <BigAnimalClusterType
-            cloudProvider={cloudProvider}
-            nodeInfo={nodeInfo}
-            nodeData={nodeData}
-            setBigAnimalClusterTypeData={setBigAnimalClusterTypeData}
-            hostIP={hostIP}
-          /> }
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
-        </WizardStep>
-        <WizardStep stepId={3} >
-          {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 3 && <AwsInstanceDetails
+          {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 2 && <AwsInstanceDetails
             cloudProvider={cloudProvider}
             nodeInfo={nodeInfo}
             nodeData={nodeData}
             setCloudInstanceDetails={setCloudInstanceDetails}
             hostIP={hostIP} /> }
-          {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 3 && <BigAnimalInstance
-            cloudProvider={cloudProvider}
-            nodeInfo={nodeInfo}
-            nodeData={nodeData}
-            setBigAnimalInstanceData={setBigAnimalInstanceData}
-            hostIP={hostIP}
-            bigAnimalClusterTypeData={bigAnimalClusterTypeData}
-          /> }
-          {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 3 && <AzureInstanceDetails
+          {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 2 && <AzureInstanceDetails
             cloudProvider={cloudProvider}
             nodeInfo={nodeInfo}
             nodeData={nodeData}
@@ -466,7 +311,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             hostIP={hostIP}
             azureInstanceData = {azureInstanceData}
           /> }
-          {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 3 && <GoogleInstanceDetails
+          {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 2 && <GoogleInstanceDetails
             cloudProvider={cloudProvider}
             nodeInfo={nodeInfo}
             nodeData={nodeData}
@@ -476,20 +321,12 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           /> }
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
-        <WizardStep stepId={4} >
+        <WizardStep stepId={3} >
           {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsDatabaseDetails
             cloudProvider={cloudProvider}
             nodeInfo={nodeInfo}
             nodeData={nodeData}
             setCloudDBDetails={setCloudDBDetails}
-          />
-          }
-          {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 4 && <BigAnimalDatabase
-            cloudProvider={cloudProvider}
-            nodeInfo={nodeInfo}
-            nodeData={nodeData}
-            setBigAnimalDatabaseData={setBigAnimalDatabaseData}
-            bigAnimalClusterTypeData={bigAnimalClusterTypeData}
           />
           }
           {cloudProvider == CLOUD_PROVIDERS.AZURE && <AzureDatabaseDetails
@@ -507,29 +344,22 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           />
           }
         </WizardStep>
-        <WizardStep stepId={5} >
+        <WizardStep stepId={4} >
           <Box sx={{ paddingBottom: '5px'}}>{gettext('Please review the details before creating the cloud instance.')}</Box>
           <Paper variant="outlined" elevation={0} sx={{ flexGrow: 1, minHeight: 0, overflow: 'auto'}}>
-            {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 5 && <FinalSummary
+            {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 4 && <FinalSummary
               cloudProvider={cloudProvider}
               instanceData={cloudInstanceDetails}
               databaseData={cloudDBDetails}
             />
             }
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 5 && <FinalSummary
-              cloudProvider={cloudProvider}
-              instanceData={bigAnimalInstanceData}
-              databaseData={bigAnimalDatabaseData}
-              clusterTypeData={bigAnimalClusterTypeData}
-            />
-            }
-            {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 5 && <FinalSummary
+            {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 4 && <FinalSummary
               cloudProvider={cloudProvider}
               instanceData={azureInstanceData}
               databaseData={azureDatabaseData}
             />
             }
-            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 5 && <FinalSummary
+            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 4 && <FinalSummary
               cloudProvider={cloudProvider}
               instanceData={googleInstanceData}
               databaseData={googleDatabaseData}
