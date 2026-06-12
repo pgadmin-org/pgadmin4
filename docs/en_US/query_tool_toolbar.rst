@@ -85,9 +85,7 @@ Query Editing Options
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
    |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd/Ctrl + F          |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Cmd + R (MAC)         |
-   |                      |                                                                                                   | Ctrl + R              |
-   |                      |                                                                                                   | (Others)              |
+   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Cmd/Ctrl + R          |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
    |                      | Select *Go to Line/Column* to go to specified line number and column position                     | Cmd/Ctrl + L          |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
