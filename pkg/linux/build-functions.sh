@@ -77,8 +77,28 @@ _create_python_virtualenv() {
     pip3 install --upgrade pip
     pip3 install wheel
 
-    # Install the requirements
-    pip3 install --force-reinstall --no-cache-dir --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    # Install the requirements.
+    #
+    # psycopg is built from source against the system libpq (see
+    # --no-binary psycopg). Pin the C extension to the x86-64 v1
+    # baseline so the resulting .so runs on every x86_64 CPU we
+    # claim to support. Without this, gcc on a modern build host
+    # may emit AVX2/BMI2/FMA instructions that SIGILL on older
+    # CPUs (Ivy Bridge and earlier) and on default Proxmox kvm64
+    # VMs at psycopg_c.pq module-load time. Issue #9935.
+    #
+    # The flags are scoped to this pip invocation so they don't
+    # leak into any other build steps in the same shell. Other
+    # arches build with their distro defaults.
+    if [ "$(uname -m)" = "x86_64" ]; then
+        CFLAGS="${CFLAGS:-} -O2 -march=x86-64 -mtune=generic" \
+        CXXFLAGS="${CXXFLAGS:-} -O2 -march=x86-64 -mtune=generic" \
+            pip3 install --force-reinstall --no-cache-dir \
+                --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    else
+        pip3 install --force-reinstall --no-cache-dir \
+            --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    fi
 
     # Fixup the paths in the venv activation scripts
     sed -i 's/VIRTUAL_ENV=.*/VIRTUAL_ENV="\/usr\/pgadmin4\/venv"/g' venv/bin/activate
