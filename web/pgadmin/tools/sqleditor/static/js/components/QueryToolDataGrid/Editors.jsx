@@ -15,6 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import gettext from 'sources/gettext';
 import JSONBigNumber from 'json-bignumber';
 import JsonEditor from '../../../../../../static/js/components/JsonEditor';
+import { shouldWarnForLargeJSON } from './json_editor_warning';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
@@ -388,7 +389,7 @@ export function CheckboxEditor({row, column, onRowChange, onClose}) {
 }
 CheckboxEditor.propTypes = EditorPropTypes;
 
-export function JsonTextEditor({row, column, onRowChange, onClose}) {
+function JsonTextEditorContent({row, column, onRowChange, onClose}) {
 
   const pgAdmin = usePgAdmin();
 
@@ -474,5 +475,43 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
       </ResizableDiv>
     </Portal>
   );
+}
+JsonTextEditorContent.propTypes = EditorPropTypes;
+
+// Wraps the JSON editor with a guard that warns before opening a very large
+// value. Rendering/parsing a huge JSON document blocks the main thread and can
+// freeze pgAdmin, so for large cells we render nothing until the user confirms
+// (#9868). The editor uses commitOnOutsideClick: false, so showing the confirm
+// dialog does not dismiss the editor.
+export function JsonTextEditor(props) {
+  const { row, column, onClose } = props;
+  const pgAdmin = usePgAdmin();
+  const [proceed, setProceed] = React.useState(
+    () => !shouldWarnForLargeJSON(row[column.key])
+  );
+
+  React.useEffect(() => {
+    if (proceed) return;
+    // notifier.confirm() fires its cancel callback whenever the dialog
+    // closes, including when the user clicks OK. Track the confirmation so
+    // we only close the cell editor on an actual cancel and not after the
+    // user chose to continue (#9868).
+    let confirmed = false;
+    pgAdmin.Browser.notifier.confirm(
+      gettext('Large data'),
+      gettext('This cell contains a large amount of data. Opening it in the JSON editor may make pgAdmin slow or unresponsive. Do you want to continue?'),
+      () => {
+        confirmed = true;
+        setProceed(true);
+      },
+      () => {
+        if (confirmed) return;
+        onClose(false);
+      },
+    );
+  }, []);
+
+  if (!proceed) return null;
+  return <JsonTextEditorContent {...props} />;
 }
 JsonTextEditor.propTypes = EditorPropTypes;
