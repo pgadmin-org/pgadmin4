@@ -103,6 +103,44 @@ def validate_api_key_path(file_path):
     return None
 
 
+def _parse_allowlist_entry(entry):
+    """
+    Parse an allowlist entry into (scheme, hostname, port).
+
+    ``port`` is the literal string ``'*'`` if the entry uses the
+    port wildcard (e.g. ``http://localhost:*``), otherwise an int.
+
+    Returns None if the entry is malformed.
+    """
+    from urllib.parse import urlparse
+
+    port_wildcard = False
+    raw = entry
+    if raw.endswith(':*'):
+        port_wildcard = True
+        raw = raw[:-2]
+
+    parsed = urlparse(raw)
+    scheme = parsed.scheme.lower()
+    hostname = parsed.hostname
+    if hostname:
+        hostname = hostname.lower()
+
+    if not scheme or not hostname or scheme not in ('http', 'https'):
+        return None
+
+    if port_wildcard:
+        return scheme, hostname, '*'
+
+    try:
+        port = parsed.port
+    except ValueError:
+        return None
+    if port is None:
+        port = 443 if scheme == 'https' else 80
+    return scheme, hostname, port
+
+
 def validate_api_url(url):
     """
     Validate that a URL is in the allowed LLM API URL list.
@@ -110,6 +148,13 @@ def validate_api_url(url):
     Compares the scheme://host:port portion of the URL against
     config.ALLOWED_LLM_API_URLS. Path is not checked — different
     providers use different paths.
+
+    Allowlist entries may use ``:*`` for the port to match any port
+    on that host (e.g. ``http://localhost:*`` matches localhost on
+    every port). This is useful for local self-hosting where the
+    user picks the port (LiteLLM, vLLM, LM Studio, etc.) — the
+    same host check still blocks link-local cloud metadata
+    endpoints like 169.254.169.254.
 
     Returns True if the URL is allowed, False otherwise.
     An empty allowlist means no restriction (admin opt-out).
@@ -144,27 +189,15 @@ def validate_api_url(url):
     if port is None:
         port = 443 if scheme == 'https' else 80
 
-    request_origin = f'{scheme}://{hostname}:{port}'
-
     for allowed in allowed_urls:
-        a_parsed = urlparse(allowed)
-        a_scheme = a_parsed.scheme.lower()
-        a_hostname = a_parsed.hostname
-        if a_hostname:
-            a_hostname = a_hostname.lower()
-        try:
-            a_port = a_parsed.port
-        except ValueError:
+        parsed_entry = _parse_allowlist_entry(allowed)
+        if parsed_entry is None:
             continue
-        if a_port is None:
-            if a_scheme in ('https', 'http'):
-                a_port = 443 if a_scheme == 'https' else 80
-            else:
-                continue
+        a_scheme, a_hostname, a_port = parsed_entry
 
-        allowed_origin = f'{a_scheme}://{a_hostname}:{a_port}'
-
-        if request_origin == allowed_origin:
+        if a_scheme != scheme or a_hostname != hostname:
+            continue
+        if a_port == '*' or a_port == port:
             return True
 
     return False
@@ -252,47 +285,116 @@ def _get_preference_value(name):
     return None
 
 
+def _resolve_pref_url(pref_name, config_default):
+    """
+    Resolve an API URL preference against the allowlist.
+
+    - User preference set and allowed: return it.
+    - User preference set but rejected: log a warning and return ''
+      WITHOUT falling back to the admin default. Silent substitution
+      hides the rejection and routes the user's request to a
+      different provider (issue #9936).
+    - No user preference: return the admin's trusted config URL.
+    """
+    pref_url = _get_preference_value(pref_name)
+    if pref_url:
+        if validate_api_url(pref_url):
+            return pref_url
+        try:
+            from flask import current_app
+            current_app.logger.warning(
+                "LLM API URL preference '%s'=%r is not in "
+                "ALLOWED_LLM_API_URLS; ignoring. Add it to the "
+                "allowlist in config_local.py to permit this URL.",
+                pref_name, pref_url
+            )
+        except Exception:
+            pass
+        return ''
+    return config_default or ''
+
+
+def is_pref_api_url_rejected(pref_name):
+    """
+    Return True if the user has set a preference URL for ``pref_name``
+    but it failed the allowlist check. Callers use this to distinguish
+    'URL not configured' from 'URL configured but blocked' so the chat
+    path can surface a clear error instead of a generic one.
+    """
+    pref_url = _get_preference_value(pref_name)
+    return bool(pref_url) and not validate_api_url(pref_url)
+
+
+def _resolve_pref_key_file(pref_name, config_default):
+    """
+    Resolve an API key file preference against the path allowlist.
+
+    - User preference set and path allowed: read and return the key.
+    - User preference set but path rejected: log a warning and return
+      None WITHOUT falling back to the admin default. Silent
+      substitution would make the user's request go through using
+      a different key than they expected (the symptom in jbro90's
+      comment on issue #9936).
+    - No user preference: read from the admin's trusted config path.
+
+    Returns the key string, or None.
+    """
+    pref_file = _get_preference_value(pref_name)
+    if pref_file:
+        safe_path = validate_api_key_path(pref_file)
+        if safe_path is None:
+            try:
+                from flask import current_app
+                current_app.logger.warning(
+                    "LLM API key file preference '%s'=%r is not "
+                    "within the allowed user storage directory; "
+                    "ignoring. Place the key file in your private "
+                    "user storage to use it.",
+                    pref_name, pref_file
+                )
+            except Exception:
+                pass
+            return None
+        return _read_api_key_from_file(safe_path)
+    return _read_api_key_from_file(config_default, _trusted=True)
+
+
+def is_pref_api_key_path_rejected(pref_name):
+    """
+    Return True if the user has set an API key file preference for
+    ``pref_name`` but the path failed the directory allowlist check.
+
+    Used by client.py to distinguish 'no key configured' from 'key
+    path is rejected' when surfacing an error to the user.
+    """
+    pref_file = _get_preference_value(pref_name)
+    return bool(pref_file) and validate_api_key_path(pref_file) is None
+
+
 def get_anthropic_api_url():
     """
     Get the Anthropic API URL.
 
-    Checks user preferences first, then falls back to system configuration.
-    User-preference URLs are validated against the SSRF allowlist.
+    Checks the user preference first, then falls back to system
+    configuration ONLY when no preference is set. A preference URL
+    that fails the SSRF allowlist check is dropped (and a warning is
+    logged) — it is NOT silently substituted with the admin default.
 
     Returns:
-        The URL string, or empty string if not configured.
+        The URL string, or empty string if not configured or rejected.
     """
-    # Check user preference first
-    pref_url = _get_preference_value('anthropic_api_url')
-    if pref_url:
-        if validate_api_url(pref_url):
-            return pref_url
-        # Preference URL not in allowlist — fall through to config
-
-    # Fall back to system configuration (trusted admin URL)
-    return config.ANTHROPIC_API_URL or ''
+    return _resolve_pref_url(
+        'anthropic_api_url', config.ANTHROPIC_API_URL
+    )
 
 
 def get_anthropic_api_key():
     """
-    Get the Anthropic API key.
-
-    Checks user preferences first, then falls back to system configuration.
-
-    Returns:
-        The API key string, or None if not configured or file doesn't exist.
+    Get the Anthropic API key. See :func:`_resolve_pref_key_file`
+    for resolution and rejection rules.
     """
-    # Check user preference first
-    pref_file = _get_preference_value('anthropic_api_key_file')
-    if pref_file:
-        if validate_api_key_path(pref_file) is not None:
-            key = _read_api_key_from_file(pref_file)
-            if key:
-                return key
-
-    # Fall back to system configuration (trusted admin path)
-    return _read_api_key_from_file(
-        config.ANTHROPIC_API_KEY_FILE, _trusted=True
+    return _resolve_pref_key_file(
+        'anthropic_api_key_file', config.ANTHROPIC_API_KEY_FILE
     )
 
 
@@ -316,45 +418,19 @@ def get_anthropic_model():
 
 def get_openai_api_url():
     """
-    Get the OpenAI API URL.
-
-    Checks user preferences first, then falls back to system configuration.
-    User-preference URLs are validated against the SSRF allowlist.
-
-    Returns:
-        The URL string, or empty string if not configured.
+    Get the OpenAI API URL. See :func:`get_anthropic_api_url` for
+    the resolution and rejection rules.
     """
-    # Check user preference first
-    pref_url = _get_preference_value('openai_api_url')
-    if pref_url:
-        if validate_api_url(pref_url):
-            return pref_url
-        # Preference URL not in allowlist — fall through to config
-
-    # Fall back to system configuration (trusted admin URL)
-    return config.OPENAI_API_URL or ''
+    return _resolve_pref_url('openai_api_url', config.OPENAI_API_URL)
 
 
 def get_openai_api_key():
     """
-    Get the OpenAI API key.
-
-    Checks user preferences first, then falls back to system configuration.
-
-    Returns:
-        The API key string, or None if not configured or file doesn't exist.
+    Get the OpenAI API key. See :func:`_resolve_pref_key_file` for
+    resolution and rejection rules.
     """
-    # Check user preference first
-    pref_file = _get_preference_value('openai_api_key_file')
-    if pref_file:
-        if validate_api_key_path(pref_file) is not None:
-            key = _read_api_key_from_file(pref_file)
-            if key:
-                return key
-
-    # Fall back to system configuration (trusted admin path)
-    return _read_api_key_from_file(
-        config.OPENAI_API_KEY_FILE, _trusted=True
+    return _resolve_pref_key_file(
+        'openai_api_key_file', config.OPENAI_API_KEY_FILE
     )
 
 
@@ -378,23 +454,10 @@ def get_openai_model():
 
 def get_ollama_api_url():
     """
-    Get the Ollama API URL.
-
-    Checks user preferences first, then falls back to system configuration.
-    User-preference URLs are validated against the SSRF allowlist.
-
-    Returns:
-        The URL string, or empty string if not configured.
+    Get the Ollama API URL. See :func:`get_anthropic_api_url` for
+    the resolution and rejection rules.
     """
-    # Check user preference first
-    pref_url = _get_preference_value('ollama_api_url')
-    if pref_url:
-        if validate_api_url(pref_url):
-            return pref_url
-        # Preference URL not in allowlist — fall through to config
-
-    # Fall back to system configuration (trusted admin URL)
-    return config.OLLAMA_API_URL or ''
+    return _resolve_pref_url('ollama_api_url', config.OLLAMA_API_URL)
 
 
 def get_ollama_model():
@@ -417,23 +480,10 @@ def get_ollama_model():
 
 def get_docker_api_url():
     """
-    Get the Docker Model Runner API URL.
-
-    Checks user preferences first, then falls back to system configuration.
-    User-preference URLs are validated against the SSRF allowlist.
-
-    Returns:
-        The URL string, or empty string if not configured.
+    Get the Docker Model Runner API URL. See
+    :func:`get_anthropic_api_url` for resolution and rejection rules.
     """
-    # Check user preference first
-    pref_url = _get_preference_value('docker_api_url')
-    if pref_url:
-        if validate_api_url(pref_url):
-            return pref_url
-        # Preference URL not in allowlist — fall through to config
-
-    # Fall back to system configuration (trusted admin URL)
-    return config.DOCKER_API_URL or ''
+    return _resolve_pref_url('docker_api_url', config.DOCKER_API_URL)
 
 
 def get_docker_model():

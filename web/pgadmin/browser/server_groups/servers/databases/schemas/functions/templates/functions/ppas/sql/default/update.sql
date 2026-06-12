@@ -40,16 +40,21 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 
     {% if data.procost %}COST {{data.procost}}{% elif o_data.procost %}COST {{o_data.procost}}{% endif %}{% if data.prorows and data.prorows != '0' %}
 
-    ROWS {{data.prorows}}{% elif data.prorows is not defined and o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}} {%endif -%}{% if set_variables and set_variables|length > 0 %}{% for v in set_variables %}
+    ROWS {{data.prorows}}{% elif data.prorows is not defined and o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}} {%endif %}
+
+    {% if data.prosupportfunc %}SUPPORT {{ data.prosupportfunc }}{% elif data.prosupportfunc is not defined and o_data.prosupportfunc %}SUPPORT {{ o_data.prosupportfunc }}{% endif -%}{% if set_variables and set_variables|length > 0 %}{% for v in set_variables %}
 
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor -%}
     {% endif %}
 
+{% if data.is_pure_sql %}{{ data.prosrc }}
+{% else %}
 AS {% if (data.lanname == 'c' or o_data.lanname == 'c') and ('probin' in data or 'prosrc_c' in data) %}
 {% if 'probin' in data %}{{ data.probin|qtLiteral(conn) }}{% else %}{{ o_data.probin|qtLiteral(conn) }}{% endif %}, {% if 'prosrc_c' in data %}{{ data.prosrc_c|qtLiteral(conn) }}{% else %}{{ o_data.prosrc_c|qtLiteral(conn) }}{% endif %}{% elif 'prosrc' in data %}
 $BODY${{ data.prosrc }}$BODY${% elif o_data.lanname == 'c' %}
 {{ o_data.probin|qtLiteral(conn) }}, {{ o_data.prosrc_c|qtLiteral(conn) }}{% else %}
 $BODY${{ o_data.prosrc }}$BODY${% endif -%};
+{% endif -%}
 {% endif -%}
 {% if data.funcowner %}
 
@@ -124,5 +129,21 @@ COMMENT ON FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proar
 ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proargtypenames }})
     SET SCHEMA {{ conn|qtIdent(data.pronamespace) }};
 {% endif -%}
+
+{% set old_exts = (o_data.dependsonextensions or []) | list %}
+{% set new_exts = data.dependsonextensions if 'dependsonextensions' in data else None %}
+
+{% if new_exts is not none and old_exts != new_exts %}
+{% for ext in (old_exts + new_exts) | unique %}
+
+{% if ext in new_exts and ext not in old_exts %}
+ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{ o_data.proargtypenames }})
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% elif ext in old_exts and ext not in new_exts %}
+ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{ o_data.proargtypenames }})
+    NO DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endif %}
+{% endfor %}
+{% endif %}
 
 {% endif %}

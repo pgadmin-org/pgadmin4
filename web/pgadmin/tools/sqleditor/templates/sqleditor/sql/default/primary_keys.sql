@@ -11,7 +11,7 @@ WHERE
 attnum = ANY (
 (SELECT con.conkey FROM pg_catalog.pg_class rel LEFT OUTER JOIN pg_catalog.pg_constraint con ON con.conrelid=rel.oid
 JOIN pg_catalog.pg_namespace as nsp ON nsp.oid=REL.relnamespace
-AND con.contype='p' WHERE rel.relkind IN ('r','s','t') AND
+AND con.contype='p' WHERE rel.relkind IN ('r','s','t', 'p') AND
 {% if obj_id %}
     rel.oid = ({{obj_id}})::oid
 {% elif table_name and table_nspname%}

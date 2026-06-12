@@ -17,7 +17,7 @@ SELECT  pg_proc.oid,
         WHEN proaccess = '-' THEN 'Private'
         ELSE 'Unknown' END AS visibility
 FROM pg_catalog.pg_proc, pg_catalog.pg_namespace, pg_catalog.pg_language lng
-WHERE protype = '0'::char
+WHERE prokind IN ('f', 'w')
 AND pronamespace = {{pkgid}}::oid
 AND pg_proc.pronamespace = pg_namespace.oid
 AND lng.oid=prolang

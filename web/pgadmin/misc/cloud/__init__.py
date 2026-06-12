@@ -24,8 +24,6 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.model import db, Server, Process
 from pgadmin.misc.cloud.utils import get_my_ip
 
-from pgadmin.misc.cloud.biganimal import deploy_on_biganimal,\
-    clear_biganimal_session
 from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
 from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
 from pgadmin.misc.cloud.google import clear_google_session, deploy_on_google
@@ -64,9 +62,6 @@ class CloudModule(PgAdminModule):
         super().register(app, options)
 
         from .azure import blueprint as module
-        app.register_blueprint(module)
-
-        from .biganimal import blueprint as module
         app.register_blueprint(module)
 
         from .rds import blueprint as module
@@ -117,8 +112,6 @@ def deploy_on_cloud():
     data = json.loads(request.data)
     if data['cloud'] == 'aws':
         status, p, resp = deploy_on_rds(data)
-    elif data['cloud'] == 'biganimal':
-        status, p, resp = deploy_on_biganimal(data)
     elif data['cloud'] == 'azure':
         status, p, resp = deploy_on_azure(data)
     elif data['cloud'] == 'google':
@@ -200,7 +193,6 @@ def update_server(data):
 def clear_cloud_session(pid=None):
     """Clear cloud sessions."""
     clear_aws_session()
-    clear_biganimal_session()
     clear_azure_session(pid)
     clear_google_session()
 

@@ -10,6 +10,12 @@ CREATE COLLATION{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|
 {% if data.provider %}
 {% set options = options + ['PROVIDER = ' ~ data.provider|qtLiteral(conn)] %}
 {% endif %}
+{% if data.is_deterministic is defined %}
+{% set options = options + ['DETERMINISTIC = ' ~ data.is_deterministic|qtLiteral(conn)] %}
+{% endif %}
+{% if data.rules %}
+{% set options = options + ['RULES = ' ~ data.rules|qtLiteral(conn)] %}
+{% endif %}
 {% if data.version %}
 {% set options = options + ['VERSION = ' ~ data.version|qtLiteral(conn)] %}
 {% endif %}
@@ -21,6 +27,12 @@ CREATE COLLATION{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|
 {% endif %}
 {% if data.provider %}
 {% set options = options + ['PROVIDER = ' ~ data.provider|qtLiteral(conn)] %}
+{% endif %}
+{% if data.is_deterministic is defined %}
+{% set options = options + ['DETERMINISTIC = ' ~ data.is_deterministic|qtLiteral(conn)] %}
+{% endif %}
+{% if data.rules %}
+{% set options = options + ['RULES = ' ~ data.rules|qtLiteral(conn)] %}
 {% endif %}
 {% if data.version %}
 {% set options = options + ['VERSION = ' ~ data.version|qtLiteral(conn)] %}

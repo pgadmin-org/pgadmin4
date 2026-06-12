@@ -138,6 +138,12 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={},
             id_token_claims=None,
         )),
+        ('OAuth2 openid Scope Without Metadata URL Fails Fast', dict(
+            oauth2_provider='oidc-no-metadata',
+            kind='openid_without_metadata_url',
+            profile={},
+            id_token_claims=None,
+        )),
     ]
 
     @classmethod
@@ -320,6 +326,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self._test_session_state_after_redirect(self.oauth2_provider)
         elif self.kind == 'callback_missing_provider_state':
             self._test_oauth2_callback_missing_provider_state()
+        elif self.kind == 'openid_without_metadata_url':
+            self._test_openid_scope_without_metadata_url_fails_fast()
         else:
             self.fail(f'Unknown test kind: {self.kind}')
 
@@ -775,6 +783,72 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         # Allow a redirect (302) or a 4xx error response — anything except
         # an unhandled exception.
         self.assertLess(res.status_code, 500)
+
+    def _test_openid_scope_without_metadata_url_fails_fast(self):
+        """'openid' in OAUTH2_SCOPE without OAUTH2_SERVER_METADATA_URL must
+        fail fast with actionable guidance, before any network round-trip.
+
+        Also covers the whitespace-only metadata URL bypass and proves the
+        check does not false-positive when the metadata URL is set.
+        """
+        app_config.OAUTH2_CONFIG = [{
+            'OAUTH2_NAME': 'oidc-no-metadata',
+            'OAUTH2_DISPLAY_NAME': 'OIDC No Metadata',
+            'OAUTH2_CLIENT_ID': 'testclientid',
+            'OAUTH2_CLIENT_SECRET': 'testclientsec',
+            'OAUTH2_TOKEN_URL': 'https://idp.example/token',
+            'OAUTH2_AUTHORIZATION_URL': 'https://idp.example/auth',
+            'OAUTH2_API_BASE_URL': 'https://idp.example/',
+            'OAUTH2_SCOPE': 'openid email profile',
+            # OAUTH2_SERVER_METADATA_URL deliberately omitted.
+        }]
+
+        with patch('pgadmin.authenticate.oauth2.OAuth.register'):
+            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+            auth = OAuth2Authentication()
+
+        provider_name = 'oidc-no-metadata'
+
+        # The client must never be touched — the pre-flight raises first.
+        client = MagicMock()
+
+        with self.app.test_request_context():
+            # (a) Metadata URL entirely absent -> RuntimeError.
+            provider = {
+                'OAUTH2_SCOPE': 'openid email profile',
+            }
+            with self.assertRaises(RuntimeError) as cm:
+                auth._authorize_access_token(provider_name, provider, client)
+            msg = str(cm.exception)
+            self.assertIn('OAUTH2_SERVER_METADATA_URL', msg)
+            self.assertIn(provider_name, msg)
+
+            # (b) Whitespace-only metadata URL must be treated as missing.
+            provider = {
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL': '   ',
+            }
+            with self.assertRaises(RuntimeError):
+                auth._authorize_access_token(provider_name, provider, client)
+
+            client.authorize_access_token.assert_not_called()
+
+            # (c) No false-positive: metadata URL set -> pre-flight passes
+            # and the call proceeds to the (mocked) client.
+            provider = {
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://idp.example/.well-known/openid-configuration',
+            }
+            auth._authorize_access_token(provider_name, provider, client)
+            client.authorize_access_token.assert_called_once()
+
+            # (d) No false-positive: 'openid' absent -> pre-flight skipped
+            # even without a metadata URL.
+            client.reset_mock()
+            provider = {'OAUTH2_SCOPE': 'email profile'}
+            auth._authorize_access_token(provider_name, provider, client)
+            client.authorize_access_token.assert_called_once()
 
     def tearDown(self):
         self.tester.logout()
