@@ -33,7 +33,7 @@ def upgrade():
     session.commit()
 
     meta = sa.MetaData()
-    meta.reflect(op.get_bind(), only=('user_macros',))
+    meta.reflect(op.get_bind(), only=('user_macros',), resolve_fks=False)
     user_macros_table = sa.Table('user_macros', meta)
 
     # Create a select statement
@@ -61,7 +61,7 @@ def upgrade():
         sa.PrimaryKeyConstraint('id',))
 
     # Reflect the new table structure
-    meta.reflect(op.get_bind(), only=('user_macros',))
+    meta.reflect(op.get_bind(), only=('user_macros',), resolve_fks=False)
     new_user_macros_table = sa.Table('user_macros', meta)
 
     # Bulk insert the fetched data into the new user_macros table

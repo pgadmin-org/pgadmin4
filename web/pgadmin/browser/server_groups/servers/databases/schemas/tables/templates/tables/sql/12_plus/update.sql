@@ -43,6 +43,14 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 {% endfor %}
 {% endif %}
 {#####################################################}
+{## Change table persistence (UNLOGGED / LOGGED) ##}
+{#####################################################}
+{% if data.relpersistence is defined and data.relpersistence != o_data.relpersistence %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    SET {% if data.relpersistence %}UNLOGGED{% else %}LOGGED{% endif %};
+
+{% endif %}
+{#####################################################}
 {## Change tablespace ##}
 {#####################################################}
 {% if data.spcname and data.spcname != o_data.spcname %}
