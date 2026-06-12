@@ -8,6 +8,7 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
+import codecs
 import os
 import pickle
 import re
@@ -2166,20 +2167,82 @@ def start_query_download_tool(trans_id):
                 }
             )
 
+        # Output format: csv (default), json or xml.
+        data_format = (data.get('format') or 'csv').lower()
+        if data_format not in ('csv', 'json', 'xml'):
+            data_format = 'csv'
+
+        # Encoding and BOM apply to the CSV/text output only; the structured
+        # formats are always emitted as UTF-8.
+        if data_format == 'csv':
+            output_encoding = blueprint.csv_output_encoding.get() or 'utf-8'
+            add_bom = blueprint.csv_add_bom.get()
+        else:
+            output_encoding = 'utf-8'
+            add_bom = False
+        # Validate the (free-text, user-configurable) encoding up front so
+        # an invalid codec returns a clean 400 here, rather than raising a
+        # LookupError mid-stream after the 200 Response has been returned.
+        try:
+            codecs.lookup(output_encoding)
+        except LookupError:
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=gettext(
+                    "Unknown output encoding '{0}'."
+                ).format(output_encoding)
+            )
+
+        normalized_encoding = output_encoding.lower().replace(
+            '-', '').replace('_', '')
+        is_utf = normalized_encoding.startswith('utf')
+        # The 'utf-16' and 'utf-32' codecs (without an explicit endianness
+        # suffix) emit their own BOM, so we must not hand-prepend one too;
+        # doing so would produce two BOMs and corrupt the output. The
+        # explicit-endian forms (utf-16-le/-be, utf-32-le/-be) and utf-8 do
+        # not self-emit a BOM, so for those we keep writing it ourselves.
+        codec_self_emits_bom = normalized_encoding in ('utf16', 'utf32')
+
+        str_gen = gen(conn_obj,
+                      trans_obj,
+                      quote=blueprint.csv_quoting.get(),
+                      quote_char=blueprint.csv_quote_char.get(),
+                      field_separator=blueprint.csv_field_separator.get(),
+                      replace_nulls_with=blueprint.replace_nulls_with.get(),
+                      data_format=data_format)
+
+        def encoded_gen(text_gen):
+            is_first_chunk = True
+            for chunk in text_gen:
+                if is_first_chunk:
+                    is_first_chunk = False
+                    # Only hand-prepend a BOM when the codec does not emit
+                    # one itself, otherwise we'd end up with two BOMs.
+                    if add_bom and is_utf and not codec_self_emits_bom:
+                        chunk = '\ufeff' + chunk
+                yield chunk.encode(output_encoding, errors='replace')
+
+        if data_format == 'json':
+            base_mimetype = 'application/json'
+        elif data_format == 'xml':
+            base_mimetype = 'application/xml'
+        elif blueprint.csv_field_separator.get() == ',':
+            base_mimetype = 'text/csv'
+        else:
+            base_mimetype = 'text/plain'
+
         r = Response(
-            gen(conn_obj,
-                trans_obj,
-                quote=blueprint.csv_quoting.get(),
-                quote_char=blueprint.csv_quote_char.get(),
-                field_separator=blueprint.csv_field_separator.get(),
-                replace_nulls_with=blueprint.replace_nulls_with.get()),
-            mimetype='text/csv' if
-            blueprint.csv_field_separator.get() == ','
-            else 'text/plain'
+            encoded_gen(str_gen),
+            mimetype='{0}; charset={1}'.format(base_mimetype, output_encoding)
         )
 
         import time
-        extn = 'csv' if blueprint.csv_field_separator.get() == ',' else 'txt'
+        if data_format == 'csv':
+            extn = 'csv' if blueprint.csv_field_separator.get() == ',' \
+                else 'txt'
+        else:
+            extn = data_format
         filename = data['filename'] if data.get('filename', '') != "" else \
             '{0}.{1}'.format(int(time.time()), extn)
 
