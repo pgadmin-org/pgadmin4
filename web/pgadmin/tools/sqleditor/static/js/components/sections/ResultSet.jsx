@@ -1257,8 +1257,17 @@ export function ResultSet() {
     try {
       /* Convert the added info to actual rows */
       let added = {...dataChangeStore.added};
+      /* Strip read-only columns (expression/alias columns in Query Tool)
+       * from the new-row payload so the backend doesn't try to INSERT
+       * them into the base table. Issue #9939. */
+      let nonEditableKeys = new Set(
+        columns.filter((c)=>c.can_edit === false).map((c)=>c.key)
+      );
       Object.keys(added).forEach((clientPK)=>{
-        added[clientPK].data = _.find(rows, (r)=>rowKeyGetter(r)==clientPK);
+        let rowData = _.find(rows, (r)=>rowKeyGetter(r)==clientPK);
+        added[clientPK].data = _.omitBy(
+          rowData, (_v, k)=>nonEditableKeys.has(k)
+        );
       });
       let {data: respData} = await rsu.current.saveData({
         updated: dataChangeStore.updated,

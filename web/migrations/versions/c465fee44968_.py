@@ -31,7 +31,7 @@ def upgrade():
 
     meta = sa.MetaData()
     # define table representation
-    meta.reflect(op.get_bind(), only=('user',))
+    meta.reflect(op.get_bind(), only=('user',), resolve_fks=False)
     user_table = sa.Table('user', meta)
 
     op.execute(

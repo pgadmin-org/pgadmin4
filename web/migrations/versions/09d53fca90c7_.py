@@ -125,7 +125,7 @@ def upgrade():
         # get metadata from current connection
         meta = sa.MetaData()
         # define table representation
-        meta.reflect(op.get_bind(), only=('role',))
+        meta.reflect(op.get_bind(), only=('role',), resolve_fks=False)
         role_table = sa.Table('role', meta)
 
         op.execute(
@@ -168,7 +168,7 @@ def upgrade():
     # get metadata from current connection
     meta = sa.MetaData()
     # define table representation
-    meta.reflect(op.get_bind(), only=('version',))
+    meta.reflect(op.get_bind(), only=('version',), resolve_fks=False)
     version_table = sa.Table('version', meta)
 
     op.execute(
