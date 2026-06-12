@@ -10,6 +10,7 @@
         "username": "postgres",
         "name": "test_create_subscription",
         "connect": false,
+        "connect_timeout": 10,
         "copy_data": false,
         "create_slot": false,
         "db": "postgres",
@@ -18,13 +19,14 @@
         "host": "localhost",
         "slot_name": "None",
         "service": "",
-        "port": 5432,
+        "port": 5434,
         "password": "edb",
-        "sync": "off",
-        "connect_timeout": 10,
+        "sync": "remote_apply",
+        "binary": true,
+        "streaming": true,
         "sslmode": "prefer",
         "pub": [
-          "sample__1"
+          "test_pub"
         ]
       },
       "expected_sql_file": "create_subscription.sql",
@@ -32,46 +34,23 @@
     },
     {
       "type": "alter",
-      "name": "Alter  Subscription",
+      "name": "Alter  parameters of subscription",
       "endpoint": "NODE-subscription.obj_id",
       "sql_endpoint": "NODE-subscription.sql_id",
       "msql_endpoint": "NODE-subscription.msql_id",
       "data": {
-        "name": "test_alter_subscription"
+        "binary": false,
+        "streaming": false
       },
-      "expected_sql_file": "alter_subscription.sql",
-      "expected_msql_file": "alter_subscription_msql.sql"
-    },
-    {
-      "type": "alter",
-      "name": "Alter  sync of subscription",
-      "endpoint": "NODE-subscription.obj_id",
-      "sql_endpoint": "NODE-subscription.sql_id",
-      "msql_endpoint": "NODE-subscription.msql_id",
-      "data": {
-        "sync": "remote_apply"
-      },
-      "expected_sql_file": "alter_sync.sql",
-      "expected_msql_file": "alter_sync_msql.sql"
-    },
-    {
-      "type": "alter",
-      "name": "Alter  maintainance DB in connection string of subscription",
-      "endpoint": "NODE-subscription.obj_id",
-      "sql_endpoint": "NODE-subscription.sql_id",
-      "msql_endpoint": "NODE-subscription.msql_id",
-      "data": {
-        "db": "edb"
-      },
-      "expected_sql_file": "alter_maintenance_db.sql",
-      "expected_msql_file": "alter_maintenance_db_msql.sql"
+      "expected_sql_file": "alter_parameters.sql",
+      "expected_msql_file": "alter_parameters_msql.sql"
     },
     {
       "type": "delete",
       "name": "Drop subscription",
       "endpoint": "NODE-subscription.delete_id",
       "data": {
-        "name": "test_alter_subscription"
+        "name": "test_create_subscription"
       }
     }
   ]

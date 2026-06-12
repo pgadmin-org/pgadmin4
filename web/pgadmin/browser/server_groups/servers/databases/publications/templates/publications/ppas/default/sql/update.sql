@@ -19,6 +19,12 @@ ALTER PUBLICATION {{ conn|qtIdent(o_data.name) }} SET
     (publish = '{% if data.evnt_insert %}insert{% if add_comma_after_insert == 'insert' %}, {% endif %}{% endif %}{% if data.evnt_update %}update{% if add_comma_after_update == 'update' %}, {% endif %}{% endif %}{% if data.evnt_delete %}delete{% if add_comma_after_delete == 'delete' %}, {% endif %}{% endif %}{% if data.evnt_truncate %}truncate{% endif %}');
 
 {% endif %}
+{###  Alter publication partition root ###}
+{% if data.publish_via_partition_root is defined and data.publish_via_partition_root != o_data.publish_via_partition_root%}
+ALTER PUBLICATION {{ conn|qtIdent(o_data.name) }} SET
+    (publish_via_partition_root = {{ data.publish_via_partition_root|lower }});
+
+{% endif %}
 {###  Alter drop publication table ###}
 {% if drop_table %}
 ALTER PUBLICATION {{ conn|qtIdent(o_data.name) }}

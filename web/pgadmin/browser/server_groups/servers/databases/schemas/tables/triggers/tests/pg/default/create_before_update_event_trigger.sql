@@ -2,7 +2,7 @@
 
 -- DROP TRIGGER IF EXISTS "trig_be4r_update_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
-CREATE TRIGGER "trig_be4r_update_$%{}[]()&*^!@""'`\/#"
+CREATE OR REPLACE TRIGGER "trig_be4r_update_$%{}[]()&*^!@""'`\/#"
     BEFORE UPDATE OF col1
     ON public.tablefortrigger
     FOR EACH ROW

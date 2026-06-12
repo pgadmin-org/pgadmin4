@@ -14,9 +14,9 @@ This release contains a number of bug fixes and new features since the release o
 
 Supported Database Servers
 **************************
-**PostgreSQL**: 13, 14, 15, 16, 17 and 18
+**PostgreSQL**: 14, 15, 16, 17 and 18
 
-**EDB Advanced Server**: 13, 14, 15, 16, 17 and 18
+**EDB Advanced Server**: 14, 15, 16, 17 and 18
 
 Bundled PostgreSQL Utilities
 ****************************
@@ -36,6 +36,7 @@ Housekeeping
   | `Issue #9981 <https://github.com/pgadmin-org/pgadmin4/issues/9981>`_ -  Clarify the SSH tunnel "Prompt for identity file password?" switch label and help text to indicate it applies only to identity-file authentication.
   | `Issue #10018 <https://github.com/pgadmin-org/pgadmin4/issues/10018>`_ -  Remove the EDB BigAnimal cloud deployment support.
   | `Issue #10049 <https://github.com/pgadmin-org/pgadmin4/issues/10049>`_ -  Bump vulnerable transitive dependencies (tar, flatted) to clear security advisories.
+  | `Issue #10050 <https://github.com/pgadmin-org/pgadmin4/issues/10050>`_ -  Rebase the version-specific SQL templates so the default targets PostgreSQL 14, the oldest supported server version, dropping the obsolete sub-14 template buckets.
   | `Issue #10063 <https://github.com/pgadmin-org/pgadmin4/issues/10063>`_ -  Strip the foreign-architecture slice from the macOS bundle so single-arch builds no longer ship the universal2 Python framework's unused arm64/x86_64 code.
 
 Bug fixes

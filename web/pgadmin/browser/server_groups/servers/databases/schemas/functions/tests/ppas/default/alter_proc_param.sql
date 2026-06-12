@@ -3,16 +3,16 @@
 -- DROP PROCEDURE IF EXISTS public."Proc1_$%{}[]()&*^!@""'`\/#"(integer);
 
 CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
-	i1 integer)
-    VOLATILE SECURITY DEFINER PARALLEL UNSAFE
-    COST 100
+	IN i1 integer)
+LANGUAGE 'plpgsql'
     SET application_name='pgadmin'
-AS  begin
+AS $BODY$
+begin
 select 1;
 end;
-
-ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"
+$BODY$;
+ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     OWNER TO enterprisedb;
 
-COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"
+COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     IS 'some comment';

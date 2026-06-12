@@ -10,6 +10,6 @@ FROM
 JOIN
     pg_catalog.pg_namespace nsp ON nsp.oid=pr.pronamespace
 WHERE
-    proisagg = FALSE
+    pr.prokind = 'p'::char
     AND pronamespace = {{scid}}::oid
     AND pr.oid = {{fnid}}::oid;
