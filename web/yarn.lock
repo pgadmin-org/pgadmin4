@@ -10104,6 +10104,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lossless-json@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "lossless-json@npm:4.3.0"
+  checksum: 10c0/b561eb7f77ef99dbaa0df32fa2407ddcc2c61a0d53297240f0fdd6c2e5f2e0f7d224fb055f84e76467f5ec65547540662c265fcf7a1705497a2d44e323c517df
+  languageName: node
+  linkType: hard
+
 "lower-case@npm:^2.0.2":
   version: 2.0.2
   resolution: "lower-case@npm:2.0.2"
@@ -12792,6 +12799,7 @@ __metadata:
     leaflet: "npm:^1.9.4"
     loader-utils: "npm:^3.3.1"
     lodash: "npm:4.*"
+    lossless-json: "npm:^4.3.0"
     marked: "npm:^18.0.2"
     mini-css-extract-plugin: "npm:^2.10.2"
     moment: "npm:^2.30.1"
