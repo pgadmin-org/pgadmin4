@@ -190,6 +190,12 @@ function buildAndSetMenus(menus, pgAdminMainScreen, configStore, callbacks={}) {
 }
 
 export function refreshMenus(pgAdminMainScreen, configStore, callbacks={}) {
+  // cachedMenus is only populated once the renderer sends its menu definition
+  // via the 'setMenus' IPC. A refresh can be triggered before that happens
+  // (e.g. an auto-update event, or the window being closed while the UI is
+  // still loading). In that case there are no menus to rebuild, so bail out
+  // to avoid dereferencing an undefined menu list.
+  if (!cachedMenus) return;
   buildAndSetMenus(cachedMenus, pgAdminMainScreen, configStore, callbacks);
 }
 
