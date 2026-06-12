@@ -11,10 +11,18 @@ SELECT
         JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
         WHERE dtb.oid = {{ did }}::oid)
     END as spcname,
+    (SELECT st.setting from pg_catalog.pg_show_all_settings() st
+    WHERE st.name = 'default_table_access_method') as default_amname,
     c.relacl,
     nsp.nspname as schema,
     pg_catalog.pg_get_userbyid(c.relowner) AS owner,
     description AS comment,
+    (
+      SELECT array_agg(DISTINCT e.extname)
+      FROM pg_catalog.pg_depend d
+      JOIN pg_catalog.pg_extension e ON d.refobjid = e.oid
+      WHERE d.objid = c.oid
+    ) AS dependsonextensions,
     pg_catalog.pg_get_viewdef(c.oid, true) AS definition,
     {# ============= Checks if it is system view ================ #}
     {% if vid and datlastsysoid %}
@@ -24,6 +32,8 @@ SELECT
     (SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=c.oid AND sl1.objsubid=0) AS seclabels,
     substring(pg_catalog.array_to_string(c.reloptions, ',')
       FROM 'fillfactor=([0-9]*)') AS fillfactor,
+    substring(pg_catalog.array_to_string(c.reloptions, ',')
+      FROM 'toast_tuple_target=([0-9]*)') AS toast_tuple_target,
     (substring(pg_catalog.array_to_string(c.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::BOOL AS autovacuum_enabled,
     substring(pg_catalog.array_to_string(c.reloptions, ',')
       FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold,
@@ -62,7 +72,7 @@ SELECT
       FROM 'autovacuum_freeze_max_age=([0-9]*)') AS toast_autovacuum_freeze_max_age,
     substring(pg_catalog.array_to_string(tst.reloptions, ',')
       FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
-    c.reloptions AS reloptions, tst.reloptions AS toast_reloptions,
+    c.reloptions AS reloptions, tst.reloptions AS toast_reloptions, am.amname,
     (CASE WHEN c.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable
 FROM
     pg_catalog.pg_class c
@@ -70,6 +80,7 @@ LEFT OUTER JOIN pg_catalog.pg_namespace nsp on nsp.oid = c.relnamespace
 LEFT OUTER JOIN pg_catalog.pg_tablespace spc on spc.oid=c.reltablespace
 LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=c.oid and des.objsubid=0 AND des.classoid='pg_class'::regclass)
 LEFT OUTER JOIN pg_catalog.pg_class tst ON tst.oid = c.reltoastrelid
+LEFT OUTER JOIN pg_catalog.pg_am am ON am.oid = c.relam
     WHERE ((c.relhasrules AND (EXISTS (
         SELECT
             r.rulename

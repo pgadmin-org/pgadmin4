@@ -298,6 +298,89 @@ describe('TableSchema', () => {
     });
   });
 
+  it('depChange column rename propagation', () => {
+    jest.spyOn(schemaObj, 'getServerVersion').mockReturnValue(110000);
+    schemaObj.constraintsObj.top = schemaObj;
+
+    let actionObj = {
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      path: ['columns', 0, 'name'],
+      oldState: {
+        columns: [{ name: 'old_col' }],
+      },
+    };
+
+    // Foreign key local_column should be renamed (Create path only).
+    let fkState = {
+      oid: undefined,
+      is_partitioned: false,
+      columns: [{ name: 'new_col' }],
+      foreign_key: [{
+        name: 'fk1',
+        columns: [
+          { local_column: 'old_col', referenced: 'r1' },
+          { local_column: 'other', referenced: 'r2' },
+        ],
+      }],
+    };
+    expect(getFieldDepChange(schemaObj.constraintsObj, 'foreign_key')(
+      fkState, ['columns'], null, actionObj)).toEqual({
+      foreign_key: [{
+        name: 'fk1',
+        columns: [
+          { local_column: 'new_col', referenced: 'r1' },
+          { local_column: 'other', referenced: 'r2' },
+        ],
+      }],
+    });
+
+    // Unique constraint columns should be renamed.
+    let ucState = {
+      oid: undefined,
+      is_partitioned: false,
+      columns: [{ name: 'new_col' }],
+      unique_constraint: [{
+        name: 'uc1',
+        columns: [
+          { column: 'old_col' },
+          { column: 'other' },
+        ],
+        include: ['inc1', 'inc2'],
+      }],
+    };
+    expect(getFieldDepChange(schemaObj.constraintsObj, 'unique_constraint')(
+      ucState, ['columns'], null, actionObj)).toEqual({
+      unique_constraint: [{
+        name: 'uc1',
+        columns: [
+          { column: 'new_col' },
+          { column: 'other' },
+        ],
+        include: ['inc1', 'inc2'],
+      }],
+    });
+
+    // Unique constraint INCLUDE list should be renamed too (Fix #9060).
+    let ucIncludeState = {
+      oid: undefined,
+      is_partitioned: false,
+      columns: [{ name: 'new_col' }],
+      unique_constraint: [{
+        name: 'uc2',
+        columns: [{ column: 'keycol' }],
+        include: ['old_col', 'inc2'],
+      }],
+    };
+    expect(getFieldDepChange(schemaObj.constraintsObj, 'unique_constraint')(
+      ucIncludeState, ['columns'], null, actionObj)).toEqual({
+      unique_constraint: [{
+        name: 'uc2',
+        columns: [{ column: 'keycol' }],
+        include: ['new_col', 'inc2'],
+      }],
+    });
+  });
+
   it('validate', () => {
     let state = {is_partitioned: true};
     let setError = jest.fn();

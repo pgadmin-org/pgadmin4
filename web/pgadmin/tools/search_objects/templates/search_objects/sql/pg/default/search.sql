@@ -119,18 +119,35 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
-{% if all_obj or obj_type in ['trigger_function', 'function'] %}
+{% if all_obj or obj_type in ['trigger_function', 'function', 'procedure'] %}
     SELECT
         CASE
-        WHEN t.typname IN ('trigger', 'event_trigger') THEN 'trigger_function'
-        ELSE 'function' END::text AS obj_type, p.proname AS obj_name,
-    ':schema.'|| n.oid || ':/' || n.nspname || '/' || case when t.typname = 'trigger' then ':trigger_function.' else ':function.' end || p.oid ||':/' || p.proname AS obj_path, n.nspname AS schema_name,
-    CASE WHEN t.typname IN ('trigger', 'event_trigger') THEN {{ show_node_prefs['trigger_function'] }} ELSE {{ show_node_prefs['function'] }} END AS show_node,
-    pg_catalog.pg_get_function_identity_arguments(p.oid) AS other_info
-    from pg_catalog.pg_proc p
-    left join pg_catalog.pg_namespace n on p.pronamespace = n.oid
-    left join pg_catalog.pg_type t on p.prorettype = t.oid
-    WHERE ({{ CATALOGS.DB_SUPPORT('n') }}) AND NOT p.proisagg
+            WHEN t.typname IN ('trigger', 'event_trigger') THEN 'trigger_function'
+            WHEN p.prokind = 'p' THEN 'procedure'
+            ELSE 'function'
+        END::text AS obj_type, p.proname AS obj_name,
+        ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
+        CASE
+            WHEN t.typname IN ('trigger', 'event_trigger') THEN ':trigger_function.'
+            WHEN p.prokind = 'p' THEN ':procedure.'
+            ELSE ':function.'
+        END || p.oid ||':/' || p.proname AS obj_path, n.nspname AS schema_name,
+        CASE
+            WHEN t.typname IN ('trigger', 'event_trigger') THEN {{ show_node_prefs['trigger_function'] }}
+            WHEN p.prokind = 'p' THEN {{ show_node_prefs['procedure'] }}
+            ELSE {{ show_node_prefs['function'] }}
+        END AS show_node,
+        pg_catalog.pg_get_function_identity_arguments(p.oid) AS other_info
+    from pg_catalog.pg_proc p join pg_catalog.pg_namespace n
+    on p.pronamespace = n.oid join pg_catalog.pg_type t
+    on p.prorettype = t.oid join pg_catalog.pg_language lng
+    ON lng.oid=p.prolang
+    WHERE p.prokind IN ('f', 'w', 'p')
+    AND CASE
+        WHEN t.typname IN ('trigger', 'event_trigger') THEN lng.lanname NOT IN ('edbspl', 'sql', 'internal')
+        ELSE true
+        END
+    AND ({{ CATALOGS.DB_SUPPORT('n') }}) AND p.prokind != 'a'
 {% endif %}
 {% if all_obj %}
     UNION
@@ -329,7 +346,6 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
-
 {% if 'subscription' not in skip_obj_type%}
 {% if all_obj or obj_type in ['subscription'] %}
     SELECT 'subscription'::text AS obj_type, subname AS obj_name, ':subscription.'||pub.oid||':/' || subname AS obj_path, ''::text AS schema_name,

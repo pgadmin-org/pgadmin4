@@ -1,8 +1,9 @@
 SELECT t.oid, t.tgname as name, t.tgenabled AS is_enable_trigger, des.description
 FROM pg_catalog.pg_trigger t
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=t.oid AND des.classoid='pg_trigger'::regclass)
-WHERE NOT tgisinternal
+    WHERE NOT tgisinternal
     AND tgrelid = {{tid}}::OID
+    AND tgpackageoid = 0
 {% if trid %}
     AND t.oid = {{trid}}::OID
 {% endif %}

@@ -41,6 +41,7 @@ from flask_wtf.csrf import CSRFError
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
+from pgadmin.utils.db_utils import normalize_database_uri
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -337,7 +338,8 @@ def create_app(app_name=None):
     ##########################################################################
     if config.CONFIG_DATABASE_URI is not None and \
             len(config.CONFIG_DATABASE_URI) > 0:
-        app.config['SQLALCHEMY_DATABASE_URI'] = config.CONFIG_DATABASE_URI
+        app.config['SQLALCHEMY_DATABASE_URI'] = \
+            normalize_database_uri(config.CONFIG_DATABASE_URI)
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
             .format(config.SQLITE_PATH.replace('\\', '/'),
@@ -495,7 +497,15 @@ def create_app(app_name=None):
             run_migration_for_sqlite()
 
         # Delete all the adhoc(temporary) servers from the pgAdmin database.
-        delete_adhoc_servers()
+        # Adhoc servers are created by interactive tools (Schema Diff,
+        # Query Tool ad-hoc connections, etc.) — they have no meaning
+        # in CLI sessions (`setup.py update-user`, etc.) and accessing
+        # `current_user` inside the user-scoped cleanup branch would
+        # fail with `AttributeError: 'PgAdmin' object has no attribute
+        # 'login_manager'` because Flask-Security has not yet been
+        # initialised at this point in create_app.
+        if not cli_mode:
+            delete_adhoc_servers()
 
     Mail(app)
 

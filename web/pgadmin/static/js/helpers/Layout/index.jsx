@@ -54,6 +54,13 @@ export function TabTitle({id, closable, defaultInternal}) {
     layoutDocker.eventBus.fireEvent(LAYOUT_EVENTS.CONTEXT, e, id);
   }, []);
 
+  const onMouseDown = useCallback((e)=>{
+    if(closable && e.button === 1) {
+      e.preventDefault();
+      layoutDocker.close(id);
+    }
+  }, [closable, id, layoutDocker]);
+
   useEffect(()=>{
     // Initialize visibility immediately once the effect runs and layoutObj is available
     setIsVisible(layoutDocker?.isTabVisible(id) ?? false);
@@ -119,7 +126,7 @@ export function TabTitle({id, closable, defaultInternal}) {
   }, []);
 
   return (
-    <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} width="100%">
+    <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} onMouseDown={onMouseDown} width="100%">
       {attrs.icon && <span className={`dock-tab-icon ${attrs.icon}`}></span>}
       {showServerColorIndicator && attrs.bgcolor && !isVisible && (
         <Box

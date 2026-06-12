@@ -10,7 +10,7 @@ JOIN
 LEFT OUTER JOIN
     pg_catalog.pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass)
 WHERE
-    proisagg = FALSE
+    pr.prokind IN ('f', 'w')
 {% if fnid %}
     AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
@@ -22,6 +22,5 @@ WHERE
         WHERE objid = pr.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
     AND typname IN ('trigger', 'event_trigger')
-    AND lanname NOT IN ('sql', 'internal')
 ORDER BY
     proname;
