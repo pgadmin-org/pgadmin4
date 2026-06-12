@@ -41,6 +41,7 @@ Bug fixes
 *********
 
   | `Issue #6308 <https://github.com/pgadmin-org/pgadmin4/issues/6308>`_ -  Fix the infinite loading spinner after an idle database connection is silently dropped, by detecting stale connections and offering a reconnect dialog.
+  | `Issue #9091 <https://github.com/pgadmin-org/pgadmin4/issues/9091>`_ -  Fix the Query Tool re-prompting for an unsaved password in a loop and rejecting the re-entered password, by caching the entered password on the server manager when the primary connection is already established.
   | `Issue #9595 <https://github.com/pgadmin-org/pgadmin4/issues/9595>`_ -  Fix missing ALTER ... SET DEFAULT statements for inherited columns in the generated table SQL/EDIT script.
   | `Issue #9677 <https://github.com/pgadmin-org/pgadmin4/issues/9677>`_ -  Fix the Unlogged table toggle in table properties not generating any ALTER TABLE ... SET LOGGED/UNLOGGED statement.
   | `Issue #9762 <https://github.com/pgadmin-org/pgadmin4/issues/9762>`_ -  Fix the "Cannot read properties of undefined (reading 'map')" crash in the desktop runtime when a menu refresh is triggered before the application menus have been received.
