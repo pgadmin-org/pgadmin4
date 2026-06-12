@@ -118,6 +118,18 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 if command_obj.has_oids():
                     data.pop('oid', None)
 
+                # Drop any column the client included that isn't a real
+                # editable column of the underlying table (e.g.
+                # `first_name || ' ' || last_name as the_name`). Keys not
+                # known to the result set are dropped too. Without this
+                # guard the rendered INSERT references a non-existent
+                # column and Postgres rejects the row. Issue #9939.
+                data = {
+                    k: v for k, v in data.items()
+                    if k in columns_info and
+                    columns_info[k].get('is_editable', True)
+                }
+
                 # Update columns value with columns having
                 # not_null=False and has no default value
                 column_data.update(data)

@@ -92,6 +92,7 @@ _build_runtime
 _create_python_env
 _build_docs
 _complete_bundle
+_strip_architecture
 _generate_sbom
 _codesign_binaries
 _codesign_bundle

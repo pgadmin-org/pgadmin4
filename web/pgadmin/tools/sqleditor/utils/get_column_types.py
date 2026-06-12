@@ -50,6 +50,11 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids,
         col_type['type_name'] = None
         col_type['internal_size'] = col['internal_size']
         col_type['display_size'] = col['display_size']
+        # Propagate per-column editability so the save path can refuse to
+        # write expression/alias columns that don't exist in the base table.
+        # View Data Tool columns are always real table columns: default True.
+        col_type['is_editable'] = col.get('is_editable', True) \
+            if is_query_tool else True
         column_types[col['name']] = col_type
 
         if rset['rows']:

@@ -66,8 +66,10 @@ def upgrade():
     # get metadata from current connection
     meta = sa.MetaData()
     # define table representation
-    meta.reflect(op.get_bind(), only=('user_preferences', 'module_preference',
-                                      'preference_category', 'preferences'))
+    meta.reflect(op.get_bind(),
+                 only=('user_preferences', 'module_preference',
+                       'preference_category', 'preferences'),
+                 resolve_fks=False)
     module_pref_table = sa.Table('module_preference', meta)
 
     module_id = session.query(ModulePreference).filter_by(

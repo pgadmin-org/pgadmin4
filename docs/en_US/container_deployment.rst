@@ -163,8 +163,9 @@ suffix will be ignored.
 **PGPASS_FILE**
 
 *Default: <null>*
-This varible should be set to if you want to pass password using pgpass
-file for the servers added in pgadmin.
+Set this variable to the path of a pgpass file if you want to supply passwords
+for the servers added in pgAdmin. On startup, the file is copied into the
+container and used as the ``.pgpass`` file.
 
 **GUNICORN_ACCESS_LOGFILE**
 
@@ -564,3 +565,84 @@ the container is typically launched per the example below:
         -e "SCRIPT_NAME=/pgadmin4" \
         -l "traefik.frontend.pgadmin4.rule=Host(`host.example.com`) && PathPrefix(`/pgadmin4`)" \
         -d dpage/pgadmin4
+
+Sharing the data volume across containers (Kubernetes init containers)
+----------------------------------------------------------------------
+
+A common Kubernetes pattern is to bootstrap a pgAdmin deployment with one or
+more init containers that share the ``/var/lib/pgadmin`` volume with the main
+pgAdmin container — for example, an init container that runs
+``setup.py load-servers`` to import a ``servers.json`` definition file at
+each rollout.
+
+**The image tag of any such sidecar/init container must NOT be newer than
+the main pgAdmin container's tag.** pgAdmin's configuration database
+(``pgadmin4.db``) is migrated forward only — destructive operations such as
+dropping a column are part of normal upgrades. If an init container running
+``pgadmin4:latest`` (or any newer tag) executes ``setup.py`` against a
+``pgadmin4.db`` that the main, older pgAdmin will then read, the init
+container's migrations will advance the schema past what the main container's
+ORM understands, and the main container will fail at runtime with errors
+like ``no such column: <table>.<column>``.
+
+The safe configuration is to pin **both** the main container and every
+sidecar/init container that touches the data volume to the **same**
+explicit version tag, and upgrade them together:
+
+.. code-block:: yaml
+
+    # Deployment manifest (spec.template.spec): pin every container that
+    # touches the data volume to the same explicit tag. Do NOT use :latest.
+    spec:
+      template:
+        spec:
+          initContainers:
+            - name: import-servers-json
+              image: docker.io/dpage/pgadmin4:9.14   # match the main container
+              # ... rest of the init container spec ...
+          containers:
+            - name: pgadmin
+              image: docker.io/dpage/pgadmin4:9.14   # main pgAdmin container
+
+If you deploy pgAdmin with a Helm chart, set the equivalent image-tag values
+for both the main container and every init/sidecar container rather than the
+raw fields shown above. When upgrading pgAdmin, change every reference to the
+image tag at the same time so that the main container and any sidecar/init
+containers move forward together.
+
+Use ``strategy: Recreate``, not ``RollingUpdate``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Even when every container's image tag is pinned correctly, **a rolling
+upgrade across pgAdmin versions is unsafe** when the old and new pods share
+a data volume. Kubernetes' default ``RollingUpdate`` strategy starts the
+new pod, waits for it to become healthy, and only *then* terminates the
+old pod. During that overlap window:
+
+1. The new pod's startup runs ``db_upgrade()`` and applies any pending
+   migrations to the shared ``pgadmin4.db`` — including destructive ones
+   (column drops, table renames, type changes).
+2. The new pod becomes healthy. The old pod is still alive and still has
+   ``pgadmin4.db`` open with its older ORM schema metadata.
+3. Until Kubernetes terminates the old pod, requests routed to it
+   generate queries that reference the pre-migration schema. Those
+   queries now fail at runtime against the migrated database — for
+   example, ``no such column: <table>.<column>`` when a column was
+   dropped in this release.
+
+Because pgAdmin's migrations are forward-only with single-step destructive
+operations (a column dropped in release N+1 is gone immediately, not after
+a deprecation cycle), there is no safe way for an N-version pod to keep
+serving against a migrated N+1 schema. Set the deployment strategy to
+``Recreate``, which terminates the old pod *before* starting the new one:
+
+.. code-block:: yaml
+
+    spec:
+      strategy:
+        type: Recreate   # not RollingUpdate
+
+The trade-off is a few seconds of downtime during each upgrade, in
+exchange for not serving traffic from a pod whose ORM is misaligned with
+the database schema underneath it. This is the supported upgrade
+strategy for pgAdmin K8s deployments today.
