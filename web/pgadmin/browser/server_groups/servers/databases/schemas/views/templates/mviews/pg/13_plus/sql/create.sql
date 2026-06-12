@@ -12,11 +12,13 @@ USING {{data.amname}}
 {% elif not data.default_amname and data.amname %}
 USING {{data.amname}}
 {% endif %}
-{% if(data.fillfactor or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') or data['vacuum_data']|length > 0) %}
+{% if(data.fillfactor or data.toast_tuple_target or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') or data['vacuum_data']|length > 0) %}
 {% set ns = namespace(add_comma=false) %}
 WITH (
 {% if data.fillfactor %}
-    FILLFACTOR = {{ data.fillfactor }}{% set ns.add_comma = true%}{% endif %}{% if data.autovacuum_enabled in ('t', 'f') %}
+    FILLFACTOR = {{ data.fillfactor }}{% set ns.add_comma = true%}{% endif %}{% if data.toast_tuple_target %}
+{% if ns.add_comma %},
+{% endif %}    TOAST_TUPLE_TARGET = {{ data.toast_tuple_target }}{% set ns.add_comma = true%}{% endif %}{% if data.autovacuum_enabled in ('t', 'f') %}
 {% if ns.add_comma %},
 {% endif %}
     autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}TRUE{% else %}FALSE{% endif %}{% set ns.add_comma = true%}{% endif %}{% if data.toast_autovacuum_enabled in ('t', 'f')  %}

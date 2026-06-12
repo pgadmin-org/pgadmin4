@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
 import Expand from '../../img/fonticon/open_in_full.svg?svgr';
 import Collapse from '../../img/fonticon/close_fullscreen.svg?svgr';
 import AWS from '../../img/aws.svg?svgr';
-import BigAnimal from '../../img/biganimal.svg?svgr';
 import Azure from '../../img/azure.svg?svgr';
 import SQLFileSvg from '../../img/sql_file.svg?svgr';
 import SQLQuerySvg from '../../img/sql_query.svg?svgr';
@@ -90,9 +89,6 @@ RowFilterIcon.propTypes = {style: PropTypes.object};
 
 export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '2.2rem',width: '3.2rem', ...style}} data-label="AWSIcon" />;
 AWSIcon.propTypes = {style: PropTypes.object};
-
-export const BigAnimalIcon = ({style})=><ExternalIcon Icon={BigAnimal} style={{height: '2.2rem',width: '3.2rem', ...style}} data-label="BigAnimalIcon" />;
-BigAnimalIcon.propTypes = {style: PropTypes.object};
 
 export const AzureIcon = ({style})=><ExternalIcon Icon={Azure} style={{height: '2.2rem', width: '3.2rem', ...style}} data-label="AzureIcon" />;
 AzureIcon.propTypes = {style: PropTypes.object};
