@@ -72,7 +72,8 @@ def get_server_group(gid,hide_shared=False):
     Returns the group if the user owns it, or if it contains shared servers.
     Returns None otherwise.
     """
-    sg = get_server_groups_for_user(servergroup_id=gid, hide_shared=hide_shared )
+    sg = get_server_groups_for_user(servergroup_id=gid,
+                                    hide_shared=hide_shared )
 
     if sg:
         return sg[0]
@@ -87,18 +88,23 @@ def get_server_groups_for_user(hide_shared=False, servergroup_id=None):
         hide_shared: If True, only return groups owned by the current user.
         servergroup_id: If provided, filter to a specific server group ID.
 
-    See get_server_groups_for_user_query() docstring for the underlying query logic.
+    See get_server_groups_for_user_query() docstring for the underlying query
+    logic.
     """
 
-    sg = get_server_groups_for_user_query(hide_shared=hide_shared, servergroup_id=servergroup_id).all()
+    sg = ( get_server_groups_for_user_query(hide_shared=hide_shared,
+                                          servergroup_id=servergroup_id)
+            .all()
+    )
 
     result_list = []
 
-    for group, is_shared  in sg:
+    for group, is_shared in sg:
         group.is_shared_group = is_shared
         result_list.append(group)
 
     return result_list
+
 
 def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     """Return a query for server groups visible to the current user.
@@ -114,13 +120,16 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     user with the same ownership and sharing configuration.
     """
     if not config.SERVER_MODE:
-        return ( ServerGroup.query.add_columns( literal(0).label('is_shared_group') )
+        return ( ServerGroup.query.add_columns(
+                    literal(0).label('is_shared_group')
+                )
                 .filter( ServerGroup.user_id == current_user.id)
         )
 
 
     query = ServerGroup.query.add_columns(
-                (ServerGroup.user_id != current_user.id).label('is_shared_group')
+                (ServerGroup.user_id != current_user.id)
+                .label('is_shared_group')
             )
 
     if hide_shared:
@@ -130,7 +139,7 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
             db.session.query(Server.id)
             .filter(
                 Server.servergroup_id == ServerGroup.id,
-                Server.shared == True
+                Server.shared
             )
             .exists()
         )
