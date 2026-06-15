@@ -14,7 +14,7 @@ helpers enforce that users can only access servers they own or that
 have been explicitly shared with them via SharedServer entries.
 """
 
-from sqlalchemy import or_, case, exists
+from sqlalchemy import or_, case, exists, literal
 from flask_security import current_user
 
 from pgadmin.model import db, Server, ServerGroup
@@ -114,7 +114,7 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     user with the same ownership and sharing configuration.
     """
     if not config.SERVER_MODE:
-        return ( ServerGroup.query.add_columns( (0).label('is_shared_group') )
+        return ( ServerGroup.query.add_columns( literal(0).label('is_shared_group') )
                 .filter( ServerGroup.user_id == current_user.id)
         )
 
