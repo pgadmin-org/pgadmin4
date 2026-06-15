@@ -12058,9 +12058,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-checkbox-tree@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "react-checkbox-tree@npm:2.0.1"
+"react-checkbox-tree@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "react-checkbox-tree@npm:2.0.2"
   dependencies:
     classnames: "npm:^2.2.5"
     fast-equals: "npm:^6.0.0"
@@ -12068,7 +12068,7 @@ __metadata:
     prop-types: "npm:^15.5.8"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/dbe2486e163b67996f0188527ef17acec5b3ab70cfb3593ddf24dbc2f5474e1c790ef98b4060bd1d91c2392e735c4c142057c0f1a9ff01f8d7d1704fdc8a3bb4
+  checksum: 10c0/39ba25b9b66856f4f20421adcecb6c70c49690f98373cc7bcdc5f2f1c1dcb602bf6998dbaa33427532dac45f79cb7d9ee0d36a62386429ab00c351030d1fd1b8
   languageName: node
   linkType: hard
 
@@ -12816,7 +12816,7 @@ __metadata:
     react: "npm:^19.2.5"
     react-arborist: "npm:^3.5.0"
     react-aspen: "npm:^1.2.0"
-    react-checkbox-tree: "npm:^2.0.1"
+    react-checkbox-tree: "npm:^2.0.2"
     react-data-grid: "https://github.com/pgadmin-org/react-data-grid.git#8ddaa7bed99c8329e39b8ff37ba156f7fc8e85d4"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
