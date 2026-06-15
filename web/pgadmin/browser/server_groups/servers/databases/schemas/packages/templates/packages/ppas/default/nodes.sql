@@ -12,4 +12,5 @@ AND nsp.oid = {{pkgid}}::oid
         WHERE objid = nsp.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
 AND nspobjecttype = 0
+AND nspcompoundtrigger = false
 ORDER BY nspname;

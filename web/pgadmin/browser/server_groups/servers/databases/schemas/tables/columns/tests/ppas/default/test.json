@@ -2,11 +2,11 @@
   "scenarios": [
     {
       "type": "create",
-      "name": "Create Table for testing column node (v.10+)",
+      "name": "Create Table for testing column node (v.12+)",
       "endpoint": "NODE-table.obj",
       "sql_endpoint": "NODE-table.sql_id",
       "data": {
-        "name": "table_2_$%{}[]()&*^!@\"'`\\/#",
+        "name": "table_3_$%{}[]()&*^!@\"'`\\/#",
         "is_partitioned": false,
         "columns": [],
         "schema": "testschema"
@@ -50,7 +50,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enteprisedb",
+              "grantor": "enterprisedb",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -89,7 +89,6 @@
       "data": {
         "attnum": 1,
         "name": "new_col_1_$%{}[]()&*^!@\"'`\\/#",
-        "cltype": "real",
         "attacl": {
           "changed": [
             {
@@ -289,12 +288,84 @@
     },
     {
       "type": "create",
-      "name": "Create Column (Numeric type with Length Precision & Variables)",
+      "name": "Create Column (Integer/Numeric type) with Generated feature",
       "endpoint": "NODE-column.obj",
       "sql_endpoint": "NODE-column.sql_id",
       "msql_endpoint": "NODE-column.msql",
       "data": {
         "name": "col_4_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for create",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": "",
+        "attprecision": "",
+        "attidentity": "a",
+        "colconstype": "g",
+        "genexpr": "1 + 2 + 3",
+        "attoptions": [],
+        "seclabels": []
+      },
+      "expected_sql_file": "create_column_int_generated.sql",
+      "expected_msql_file": "create_column_int_generated.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column (Integer/Numeric type) with Generated feature",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "attnum": 4,
+        "name": "new_col_4_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for alter",
+        "attacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_column_generated.sql",
+      "expected_msql_file": "alter_column_generated.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column (Integer/Numeric type)",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "new_col_4_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Column (Numeric type with Length Precision & Variables)",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col_5_$%{}[]()&*^!@\"'`\\/#",
         "description": "Comment for create",
         "min_val": 0,
         "max_val": 1000,
@@ -323,8 +394,8 @@
       "sql_endpoint": "NODE-column.sql_id",
       "msql_endpoint": "NODE-column.msql_id",
       "data": {
-        "name": "new_col_4_$%{}[]()&*^!@\"'`\\/#",
-        "attnum": 4,
+        "name": "new_col_5_$%{}[]()&*^!@\"'`\\/#",
+        "attnum": 5,
         "attlen": "15",
         "attprecision": "6",
         "description": "Comment for alter",
@@ -381,7 +452,120 @@
       "endpoint": "NODE-column.obj_id",
       "sql_endpoint": "NODE-column.sql_id",
       "data": {
-        "name": "new_col_4_$%{}[]()&*^!@\"'`\\/#"
+        "name": "new_col_5_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Dummy Column (Integer/Numeric type)",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "dummy1",
+        "description": "Comment for create",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": "",
+        "attprecision": "",
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "1"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Dummy Column (Integer/Numeric type)",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "dummy2",
+        "description": "Comment for create",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": "",
+        "attprecision": "",
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "1"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Column (Integer/Numeric type) with Generated feature with columns",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col_8_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for create",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": "",
+        "attprecision": "",
+        "attidentity": "a",
+        "colconstype": "g",
+        "genexpr": "dummy1 + dummy2",
+        "attoptions": [],
+        "seclabels": []
+      },
+      "expected_sql_file": "create_column_int_generated_with_existing_columns.sql",
+      "expected_msql_file": "create_column_int_generated_with_existing_columns.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column (Integer/Numeric type) with Generated feature with columns",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "attnum": 8,
+        "name": "new_col_8_$%{}[]()&*^!@\"'`\\/#",
+        "genexpr": "dummy1 - dummy2",
+        "description": "Comment for alter",
+        "attacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_column_generated_with_existing_columns.sql",
+      "expected_msql_file": "alter_column_generated_with_existing_columns.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column (Integer/Numeric type) with Generated feature with columns",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "new_col_8_$%{}[]()&*^!@\"'`\\/#"
       }
     },
     {
@@ -391,7 +575,7 @@
       "sql_endpoint": "NODE-column.sql_id",
       "msql_endpoint": "NODE-column.msql",
       "data": {
-        "name": "col_5_$%{}[]()&*^!@\"'`\\/#",
+        "name": "col_9_$%{}[]()&*^!@\"'`\\/#",
         "description": "Comment for create",
         "cltype": "bigint",
         "attacl": [],
@@ -420,8 +604,8 @@
       "sql_endpoint": "NODE-column.sql_id",
       "msql_endpoint": "NODE-column.msql_id",
       "data": {
-        "attnum": 5,
-        "name": "new_col_5_$%{}[]()&*^!@\"'`\\/#",
+        "attnum": 9,
+        "name": "new_col_9_$%{}[]()&*^!@\"'`\\/#",
         "description": "Comment for alter",
         "seqincrement": "2",
         "seqmax": "200",
@@ -439,7 +623,7 @@
       "sql_endpoint": "NODE-column.sql_id",
       "msql_endpoint": "NODE-column.msql_id",
       "data": {
-        "attnum": 5,
+        "attnum": 9,
         "colconstype": "n"
       },
       "expected_sql_file": "alter_column_drop_identity_by_default.sql",
@@ -451,7 +635,7 @@
       "endpoint": "NODE-column.obj_id",
       "sql_endpoint": "NODE-column.sql_id",
       "data": {
-        "name": "new_col_5_$%{}[]()&*^!@\"'`\\/#"
+        "name": "new_col_9_$%{}[]()&*^!@\"'`\\/#"
       }
     },
     {
@@ -524,6 +708,218 @@
       "sql_endpoint": "NODE-column.sql_id",
       "data": {
         "name": "col_6_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Column with text & default value",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col__1_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "text",
+        "attacl": [],
+        "description": "test comment",
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": "",
+        "attprecision": "",
+        "attidentity": "a",
+        "colconstype": "n",
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "'xyz'"
+      },
+      "expected_sql_file": "create_column_text_with_default_value.sql",
+      "expected_msql_file": "create_column_text_with_default_value.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column with text & update default value",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "name": "col__1_$%{}[]()&*^!@\"'`\\/#",
+        "defval": "'changed default value'",
+        "attacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_column_text_with_default_value.sql",
+      "expected_msql_file": "alter_column_text_with_default_value.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with identity (ALWAYS)",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "col__1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Column with time with time zone & default value using function",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col__2_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "time with time zone",
+        "attacl": [],
+        "description": "test comment",
+        "min_val_attlen": 0,
+        "max_val_attlen": 6,
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": "4",
+        "attprecision": null,
+        "attidentity": "a",
+        "colconstype": "n",
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "now()"
+      },
+      "expected_sql_file": "create_column_timestamp_with_default_value_using_function.sql",
+      "expected_msql_file": "create_column_timestamp_with_default_value_using_function.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column with time with time zone & update length",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "name": "col__2_$%{}[]()&*^!@\"'`\\/#",
+        "attlen": "6",
+        "attnotnull": true,
+        "description": "test comment modification"
+      },
+      "expected_sql_file": "alter_column_timestamp_with_default_value_using_function.sql",
+      "expected_msql_file": "alter_column_timestamp_with_default_value_using_function.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with identity (ALWAYS)",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "col__2_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Column with interger_array and options",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col__3_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "integer[]",
+        "attacl": [],
+        "description": "comment",
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": "",
+        "attprecision": "",
+        "attidentity": "a",
+        "colconstype": "n",
+        "attoptions": [
+          {
+            "name": "n_distinct",
+            "value": "1"
+          }
+        ],
+        "seclabels": []
+      },
+      "expected_sql_file": "create_column_with_interger_array_and_options.sql",
+      "expected_msql_file": "create_column_with_interger_array_and_options.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column with interger_array and options",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "name": "col__3_$%{}[]()&*^!@\"'`\\/#",
+        "attoptions": {
+          "changed": [
+            {
+              "name": "n_distinct",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_column_with_interger_array_and_options.sql",
+      "expected_msql_file": "alter_column_with_interger_array_and_options.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with identity (ALWAYS)",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "col__3_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Column with compression",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col_comp_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "character varying",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": "",
+        "attprecision": "",
+        "attcompression": "pglz",
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "1"
+      },
+      "expected_sql_file": "create_column_comp.sql",
+      "expected_msql_file": "create_column_comp.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column compression type",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "name": "col_comp_$%{}[]()&*^!@\"'`\\/#",
+        "attcompression": "lz4"
+      },
+      "expected_sql_file": "alter_column_compression.sql",
+      "expected_msql_file": "alter_column_compression.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with compression",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "col_comp_$%{}[]()&*^!@\"'`\\/#"
       }
     }
   ]

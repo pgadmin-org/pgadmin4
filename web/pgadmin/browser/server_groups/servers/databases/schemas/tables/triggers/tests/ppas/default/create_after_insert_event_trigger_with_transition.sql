@@ -2,7 +2,7 @@
 
 -- DROP TRIGGER IF EXISTS "trig_after_insert_events_with_transition_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
-CREATE TRIGGER "trig_after_insert_events_with_transition_$%{}[]()&*^!@""'`\/#"
+CREATE OR REPLACE TRIGGER "trig_after_insert_events_with_transition_$%{}[]()&*^!@""'`\/#"
     AFTER INSERT
     ON public.tablefortrigger
     REFERENCING NEW TABLE AS inserted

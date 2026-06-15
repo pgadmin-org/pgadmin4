@@ -27,6 +27,9 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 DROP MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }};
 CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(view_schema, view_name) }}
+{% if data.amname and data.amname != o_data.amname %}
+USING {{ data.amname }}
+{% endif %}
 {% if data.fillfactor or o_data.fillfactor %}
 WITH(
 {% if data.fillfactor %}
@@ -200,5 +203,19 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {{ SECLABEL.SET(conn, 'MATERIALIZED VIEW', data.name, r.provider, r.label, data.schema) }}
 {% endfor %}
 {% endif %}
+{% endif %}
+{% set old_exts = (o_data.dependsonextensions or []) | list %}
+{% set new_exts = data.dependsonextensions if 'dependsonextensions' in data else None %}
+{% if new_exts is not none and old_exts != new_exts %}
+{% for ext in (old_exts + new_exts) | unique %}
+
+{% if ext in new_exts and ext not in old_exts %}
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% elif ext in old_exts and ext not in new_exts %}
+ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    NO DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endif %}
+{% endfor %}
 {% endif %}
 {% endif %}

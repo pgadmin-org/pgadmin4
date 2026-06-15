@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import ForgotPasswordImage from '../../img/forgot_password.svg?svgr';
 import { InputText } from '../components/FormComponents';
@@ -5,7 +6,7 @@ import BasePage, { SecurityButton } from './BasePage';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 
-export default function PasswordResetPage({csrfToken, actionUrl, ...props}) {
+export default function PasswordResetPage({csrfToken, actionUrl, loginUrl, ...props}) {
   const [form, setForm] = useState(({password: '', password_confirm: ''}));
 
   const onTextChange = (n, val)=>{
@@ -21,6 +22,9 @@ export default function PasswordResetPage({csrfToken, actionUrl, ...props}) {
         <InputText name="password_confirm" value={form.password_confirm} onChange={(v)=>onTextChange('password_confirm', v)} type="password" placeholder={gettext('Retype Password')}
           controlProps={{autoComplete: 'new-password'}} />
         <SecurityButton value="Reset Password">{gettext('Reset Password')}</SecurityButton>
+        {loginUrl && <Box textAlign="center">
+          <a style={{color: 'inherit'}} href={loginUrl}>{gettext('Back to login')}</a>
+        </Box>}
       </form>
     </BasePage>
   );
@@ -28,5 +32,6 @@ export default function PasswordResetPage({csrfToken, actionUrl, ...props}) {
 
 PasswordResetPage.propTypes = {
   csrfToken: PropTypes.string,
-  actionUrl: PropTypes.string
+  actionUrl: PropTypes.string,
+  loginUrl: PropTypes.string
 };

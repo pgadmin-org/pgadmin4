@@ -526,7 +526,7 @@ export default class ERDCore {
     let newForeingKeys = [];
     tableData.foreign_key?.forEach((theFkRow)=>{
       let theFk = theFkRow.columns[0];
-      let attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
+      let attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column)?.attnum;
       /* Skip all those whose attnum and table matches to the link */
       if(linkData.local_column_attnum != attnum || linkData.referenced_table_uid != theFk.references) {
         newForeingKeys.push(theFkRow);

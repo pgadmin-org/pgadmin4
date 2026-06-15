@@ -1,6 +1,7 @@
-SELECT t.oid, t.typname AS name, des.description
+SELECT t.oid, t.typname AS name, des.description, ra.rngmultitypid as rngmultirangetype
 FROM pg_catalog.pg_type t
     LEFT OUTER JOIN pg_catalog.pg_type e ON e.oid=t.typelem
+    LEFT OUTER JOIN pg_catalog.pg_range ra ON ra.rngtypid=t.oid
     LEFT OUTER JOIN pg_catalog.pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'
     LEFT OUTER JOIN pg_catalog.pg_namespace nsp ON nsp.oid = t.typnamespace
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=t.oid AND des.classoid='pg_type'::regclass)
