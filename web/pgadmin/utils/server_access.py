@@ -65,14 +65,14 @@ def get_server(sid, only_owned=False):
     ).first()
 
 
-def get_server_group(gid):
+def get_server_group(gid,hide_shared=False):
     """Fetch a server group by ID, verifying user access.
 
     See get_server_groups_for_user() docstring for the underlying access logic.
     Returns the group if the user owns it, or if it contains shared servers.
     Returns None otherwise.
     """
-    sg = get_server_groups_for_user(servergroup_id=gid)
+    sg = get_server_groups_for_user(servergroup_id=gid, hide_shared=hide_shared )
 
     if sg:
         return sg[0]

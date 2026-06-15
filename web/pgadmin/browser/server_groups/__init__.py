@@ -218,8 +218,8 @@ class ServerGroupView(NodeView):
     def update(self, gid):
         """Update the server-group properties"""
 
-        # There can be only one record at most
-        servergroup = get_server_group(gid)
+        # There can be only one record at most (only owned)
+        servergroup = get_server_group(gid, hide_shared=True)
 
         data = request.form if request.form else json.loads(
             request.data
