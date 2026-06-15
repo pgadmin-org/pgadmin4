@@ -88,7 +88,7 @@ $ make bundle
 
 On Windows systems (where "make" is not available), the following commands can be used:
 
-```
+```bat
 C:\> cd $PGADMIN4_SRC\web
 C:\$PGADMIN4_SRC\web> yarn install
 C:\$PGADMIN4_SRC\web> yarn run bundle
