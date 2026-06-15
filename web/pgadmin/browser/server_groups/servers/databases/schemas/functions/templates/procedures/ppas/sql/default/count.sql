@@ -8,6 +8,6 @@ JOIN
 JOIN
     pg_catalog.pg_language lng ON lng.oid=prolang
 WHERE
-    proisagg = FALSE
+    pr.prokind = 'p'::char
     AND typname NOT IN ('trigger', 'event_trigger')
     AND pronamespace = {{scid}}::oid;

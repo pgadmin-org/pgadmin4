@@ -2,7 +2,7 @@
 
 -- DROP TRIGGER IF EXISTS "trig_test_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
-CREATE TRIGGER "trig_test_$%{}[]()&*^!@""'`\/#"
+CREATE OR REPLACE TRIGGER "trig_test_$%{}[]()&*^!@""'`\/#"
     BEFORE INSERT
     ON public.tablefortrigger
     FOR EACH ROW

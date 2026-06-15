@@ -14,7 +14,7 @@ WHERE
         JOIN
             pg_catalog.pg_type typ ON typ.oid=p.prorettype
         WHERE
-            p.proisagg = FALSE
+            p.prokind IN ('f', 'w')
             AND typname = 'trigger'
     )
 ORDER BY funcname;

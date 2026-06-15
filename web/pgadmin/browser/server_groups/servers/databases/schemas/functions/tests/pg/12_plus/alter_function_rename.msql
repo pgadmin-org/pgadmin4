@@ -1,2 +1,0 @@
-ALTER FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"()
-    RENAME TO "Function3_$%{}[]()&*^!@""'`\/#";

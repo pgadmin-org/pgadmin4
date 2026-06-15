@@ -3,8 +3,8 @@ CREATE TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
     col1 character varying(10)[],
     col2 date
 )
+
 WITH (
-    OIDS = FALSE,
     autovacuum_enabled = TRUE,
     autovacuum_analyze_scale_factor = 0.2,
     autovacuum_analyze_threshold = 55,

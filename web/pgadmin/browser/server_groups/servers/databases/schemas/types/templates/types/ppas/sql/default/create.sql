@@ -23,7 +23,8 @@ CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% els
     COLLATION = {{ data.collname }}{% endif %}{% if data.opcname  %},
     SUBTYPE_OPCLASS = {{ data.opcname }}{% endif %}{% if data.rngcanonical %},
     CANONICAL = {{ data.rngcanonical }}{% endif %}{% if data.rngsubdiff %},
-    SUBTYPE_DIFF = {{ data.rngsubdiff }}{% endif %}
+    SUBTYPE_DIFF = {{ data.rngsubdiff }}{% endif %}{% if data.rngmultirangetype %},
+    MULTIRANGE_TYPE_NAME = {{ data.rngmultirangetype }}{% endif %}
 
 );
 {% endif %}
@@ -38,7 +39,8 @@ CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% els
     SEND = {{data.typsend}}{% endif %}{% if data.typmodin %},
     TYPMOD_IN = {{data.typmodin}}{% endif %}{% if data.typmodout %},
     TYPMOD_OUT = {{data.typmodout}}{% endif %}{% if data.typanalyze %},
-    ANALYZE = {{data.typanalyze}}{% endif %}{% if data.typlen %},
+    ANALYZE = {{data.typanalyze}}{% endif %}{% if data.typsubscript %},
+    SUBSCRIPT = {{data.typsubscript}}{% endif %}{% if data.typlen %},
     INTERNALLENGTH = {{data.typlen}}{% endif %}{% if data.typbyval %},
     PASSEDBYVALUE{% endif %}{% if data.typalign %},
     ALIGNMENT =  {{data.typalign}}{% endif %}{% if data.typstorage %},

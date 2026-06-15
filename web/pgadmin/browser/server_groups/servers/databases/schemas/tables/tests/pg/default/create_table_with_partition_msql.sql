@@ -3,10 +3,7 @@ CREATE TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     id integer,
     status text,
     arr numeric
-) PARTITION BY LIST (status)
-WITH (
-    OIDS = FALSE
-);
+) PARTITION BY LIST (status);
 
 ALTER TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     OWNER to <OWNER>;
