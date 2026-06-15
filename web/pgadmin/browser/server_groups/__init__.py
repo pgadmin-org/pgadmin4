@@ -367,7 +367,8 @@ class ServerGroupView(NodeView):
         # Don't display shared server if user has
         # selected 'Hide shared server'
         pref = Preferences.module('browser')
-        hide_shared_server = pref.preference('hide_shared_server').get()
+        pref_item = pref.preference('hide_shared_server')
+        hide_shared_server = pref_item.get() if pref_item is not None else True
 
         return get_server_groups_for_user(hide_shared_server)
 
