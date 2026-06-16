@@ -239,6 +239,14 @@ latex_documents = [
 # https://groups.google.com/forum/#!topic/sphinx-users/ZlQ95_QikXo
 latex_elements = {
     'fncychap': r'\usepackage[Sonny]{fncychap}',
+    # pdflatex's default utf8 inputenc covers Latin-1/Latin-Extended-A but
+    # not the Vietnamese precomposed code points that appear in CVE
+    # reporter names. Declare the specific characters we use rather than
+    # switching engines.
+    'preamble': r'''
+\DeclareUnicodeCharacter{1EA1}{\d{a}}
+\DeclareUnicodeCharacter{1EC1}{\`{\^e}}
+''',
 }
 
 
