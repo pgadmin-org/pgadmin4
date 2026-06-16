@@ -728,6 +728,7 @@ class ManagePreferences:
         prefs = ManagePreferences.fetch_prefs(True)
         app = create_app(config.APP_NAME + '-cli')
         invalid_prefs = []
+        invalid_value_prefs = []
         valid_prefs = []
         with app.app_context():
             from pgadmin.preferences import save_pref
@@ -749,11 +750,13 @@ class ManagePreferences:
                         'name': final_opt[2],
                         'user_id': user_id,
                         'value': val}
-                    save_pref(_row)
-                    valid_prefs.append(_row)
+                    if save_pref(_row):
+                        valid_prefs.append(_row)
 
-                    if not json:
-                        table.add_row(jsonlib.dumps(_row))
+                        if not json:
+                            table.add_row(jsonlib.dumps(_row))
+                    else:
+                        invalid_value_prefs.append(f)
                 else:
                     invalid_prefs.append(f)
 
@@ -761,6 +764,11 @@ class ManagePreferences:
                 print("Preference(s) [red]{0}[/red] not found.".format(
                     (', ').join(
                         invalid_prefs)))
+
+            if len(invalid_value_prefs) >= 1:
+                print("Invalid value provided for preference(s) "
+                      "[red]{0}[/red].".format(
+                          (', ').join(invalid_value_prefs)))
 
             if not json and console:
                 print(table)

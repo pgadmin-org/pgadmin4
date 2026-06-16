@@ -44,6 +44,7 @@ Bug fixes
 *********
 
   | `Issue #6308 <https://github.com/pgadmin-org/pgadmin4/issues/6308>`_ -  Fix the infinite loading spinner after an idle database connection is silently dropped, by detecting stale connections and offering a reconnect dialog.
+  | `Issue #7346 <https://github.com/pgadmin-org/pgadmin4/issues/7346>`_ -  Fixed an issue where preferences set via the CLI (setup.py set-prefs) were not validated, so invalid values were stored silently; CLI preference values are now validated against the preference type and rejected (and reported) if invalid.
   | `Issue #7596 <https://github.com/pgadmin-org/pgadmin4/issues/7596>`_ -  Fix the Query Tool turning into a blank white screen when the runtime has a malformed default locale, by guarding the Query History date/time formatting against the resulting RangeError.
   | `Issue #8318 <https://github.com/pgadmin-org/pgadmin4/issues/8318>`_ -  Fixed an error ("i.default.find(...) is undefined") that prevented deleting a table or relationship link in the ERD tool when a foreign key referenced a column that had been renamed.
   | `Issue #9060 <https://github.com/pgadmin-org/pgadmin4/issues/9060>`_ -  Fixed an issue in the Create Table dialog where renaming a column did not update the column references in foreign key and unique constraint definitions for the new table.
