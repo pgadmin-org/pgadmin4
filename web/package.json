@@ -108,7 +108,7 @@
     "convert-units": "^2.3.4",
     "date-fns": "^4.1.0",
     "diff-arrays-of-objects": "^1.1.10",
-    "dompurify": "^3.4.1",
+    "dompurify": "^3.4.9",
     "hotkeys-js": "^4.0.3",
     "html-to-image": "1.11.11",
     "immutability-helper": "^3.1.1",
