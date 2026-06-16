@@ -27,6 +27,7 @@ New features
 ************
 
   | `Issue #2431 <https://github.com/pgadmin-org/pgadmin4/issues/2431>`_ -  Added an option to colourize panel and tab headers based on the connected server's colour, making it easier to tell which server a tab is connected to at a glance.
+  | `Issue #7641 <https://github.com/pgadmin-org/pgadmin4/issues/7641>`_ -  Allow the OAuth2 login button icon to use any Font Awesome style (e.g. ``fas fa-key``), not only brand icons.
   | `Issue #9301 <https://github.com/pgadmin-org/pgadmin4/issues/9301>`_ -  Added a "Back to login" link to the Forgot Password and Reset Password pages.
   | `Issue #9626 <https://github.com/pgadmin-org/pgadmin4/issues/9626>`_ -  Add support for the TOAST tuple target storage parameter in the Materialized View dialog.
   | `Issue #9646 <https://github.com/pgadmin-org/pgadmin4/issues/9646>`_ -  Make the init container security context in the Helm chart configurable via containerSecurityContext, consistent with the main container.
@@ -46,11 +47,13 @@ Housekeeping
   | `Issue #10049 <https://github.com/pgadmin-org/pgadmin4/issues/10049>`_ -  Bump vulnerable transitive dependencies (tar, flatted) to clear security advisories.
   | `Issue #10050 <https://github.com/pgadmin-org/pgadmin4/issues/10050>`_ -  Rebase the version-specific SQL templates so the default targets PostgreSQL 14, the oldest supported server version, dropping the obsolete sub-14 template buckets.
   | `Issue #10063 <https://github.com/pgadmin-org/pgadmin4/issues/10063>`_ -  Strip the foreign-architecture slice from the macOS bundle so single-arch builds no longer ship the universal2 Python framework's unused arm64/x86_64 code.
+  | `Issue #10094 <https://github.com/pgadmin-org/pgadmin4/issues/10094>`_ -  Update the Italian translation for v9.16.
 
 Bug fixes
 *********
 
   | `Issue #6308 <https://github.com/pgadmin-org/pgadmin4/issues/6308>`_ -  Fix the infinite loading spinner after an idle database connection is silently dropped, by detecting stale connections and offering a reconnect dialog.
+  | `Issue #7346 <https://github.com/pgadmin-org/pgadmin4/issues/7346>`_ -  Fixed an issue where preferences set via the CLI (setup.py set-prefs) were not validated, so invalid values were stored silently; CLI preference values are now validated against the preference type and rejected (and reported) if invalid.
   | `Issue #7596 <https://github.com/pgadmin-org/pgadmin4/issues/7596>`_ -  Fix the Query Tool turning into a blank white screen when the runtime has a malformed default locale, by guarding the Query History date/time formatting against the resulting RangeError.
   | `Issue #8318 <https://github.com/pgadmin-org/pgadmin4/issues/8318>`_ -  Fixed an error ("i.default.find(...) is undefined") that prevented deleting a table or relationship link in the ERD tool when a foreign key referenced a column that had been renamed.
   | `Issue #9060 <https://github.com/pgadmin-org/pgadmin4/issues/9060>`_ -  Fixed an issue in the Create Table dialog where renaming a column did not update the column references in foreign key and unique constraint definitions for the new table.
@@ -59,6 +62,7 @@ Bug fixes
   | `Issue #9595 <https://github.com/pgadmin-org/pgadmin4/issues/9595>`_ -  Fix missing ALTER ... SET DEFAULT statements for inherited columns in the generated table SQL/EDIT script.
   | `Issue #9677 <https://github.com/pgadmin-org/pgadmin4/issues/9677>`_ -  Fix the Unlogged table toggle in table properties not generating any ALTER TABLE ... SET LOGGED/UNLOGGED statement.
   | `Issue #9701 <https://github.com/pgadmin-org/pgadmin4/issues/9701>`_ -  Ensure pgAdmin uses psycopg3 rather than psycopg2 when connecting to the configuration database via PGADMIN_CONFIG_CONFIG_DATABASE_URI.
+  | `Issue #9744 <https://github.com/pgadmin-org/pgadmin4/issues/9744>`_ -  Fix a View/Edit Data crash when the session contains a transaction object that is not filter-capable (e.g. left by the Query Tool or persisted by an older version), which could prevent the desktop application from loading after an upgrade.
   | `Issue #9762 <https://github.com/pgadmin-org/pgadmin4/issues/9762>`_ -  Fix the "Cannot read properties of undefined (reading 'map')" crash in the desktop runtime when a menu refresh is triggered before the application menus have been received.
   | `Issue #9766 <https://github.com/pgadmin-org/pgadmin4/issues/9766>`_ -  Fixed an issue where a server's custom foreground colour was not applied to the object counts (children count) and column type labels shown in the object explorer.
   | `Issue #9782 <https://github.com/pgadmin-org/pgadmin4/issues/9782>`_ -  Optimise pgAdmin startup time by replacing the fixed server-ping interval with adaptive pinging that backs off when no servers are configured.
@@ -106,7 +110,7 @@ Non-breaking ``dependabot`` updates aggregated for v9.16.
 Python:
 
   | ``certifi`` 2026.4.22 -> 2026.5.20
-  | ``cryptography`` 47.0 -> 48.0
+  | ``cryptography`` 47.0 -> 49.0
   | ``Flask-Security-Too`` 5.4 -> 5.6 (``python_version <= '3.9'``)
   | ``google-auth-oauthlib`` 1.3.1 -> 1.4.0 (``python_version > '3.9'``; Python 3.9 stays on 1.3.1)
   | ``requests`` >=2.33.1 -> >=2.34.2 (``python_version > '3.9'``)
@@ -124,6 +128,6 @@ JavaScript (``web/``):
 
 JavaScript (``runtime/``):
 
-  | ``axios`` 1.16.0 -> 1.17.0
+  | ``axios`` 1.16.0 -> 1.18.0
   | ``electron`` 41.5.0 -> 42.3.3
   | ``eslint`` 10.3.0 -> 10.4.1

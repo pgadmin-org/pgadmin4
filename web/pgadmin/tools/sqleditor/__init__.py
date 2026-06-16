@@ -321,7 +321,15 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     if str(trans_id) in sql_grid_data:
         old_trans_obj = pickle.loads(
             sql_grid_data[str(trans_id)]['command_obj'])
-        if old_trans_obj.did == did and old_trans_obj.obj_id == obj_id:
+        # Only restore the filter/sorting when the previously stored object is
+        # a filter-capable (View/Edit Data) command. The same trans_id may
+        # have been used by a non-filter command such as the Query Tool, or by
+        # an incompatible object persisted by an older version - neither
+        # carries the _row_filter/_data_sorting attributes, and blindly
+        # accessing them raises an AttributeError that prevents the tool (and,
+        # in desktop mode, the application) from loading.
+        if isinstance(old_trans_obj, SQLFilter) and \
+                old_trans_obj.did == did and old_trans_obj.obj_id == obj_id:
             command_obj.set_filter(old_trans_obj._row_filter)
             command_obj.set_data_sorting(
                 dict(data_sorting=old_trans_obj._data_sorting), True)
