@@ -26,6 +26,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #7641 <https://github.com/pgadmin-org/pgadmin4/issues/7641>`_ -  Allow the OAuth2 login button icon to use any Font Awesome style (e.g. ``fas fa-key``), not only brand icons.
   | `Issue #9301 <https://github.com/pgadmin-org/pgadmin4/issues/9301>`_ -  Added a "Back to login" link to the Forgot Password and Reset Password pages.
   | `Issue #9626 <https://github.com/pgadmin-org/pgadmin4/issues/9626>`_ -  Add support for the TOAST tuple target storage parameter in the Materialized View dialog.
   | `Issue #9646 <https://github.com/pgadmin-org/pgadmin4/issues/9646>`_ -  Make the init container security context in the Helm chart configurable via containerSecurityContext, consistent with the main container.
