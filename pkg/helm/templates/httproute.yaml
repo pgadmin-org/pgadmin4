@@ -1,0 +1,36 @@
+{{- if .Values.httpRoute.enabled }}
+{{- if not .Values.httpRoute.parentRefs }}
+{{- fail "httpRoute.parentRefs must be set when httpRoute.enabled is true" }}
+{{- end }}
+apiVersion: {{ .Values.httpRoute.apiVersion | default "gateway.networking.k8s.io/v1" }}
+kind: HTTPRoute
+metadata:
+  name: {{ template "pgadmin4.fullname" . }}
+  {{- with .Values.commonLabels }}
+  labels: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.httpRoute.annotations .Values.commonAnnotations }}
+  annotations: {{ merge .Values.httpRoute.annotations .Values.commonAnnotations | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs: {{- toYaml .Values.httpRoute.parentRefs | nindent 4 }}
+  {{- $hostnames := .Values.httpRoute.hostnames }}
+  {{- if and (not $hostnames) .Values.ingress.hostname }}
+  {{- $hostnames = list (tpl .Values.ingress.hostname .) }}
+  {{- end }}
+  {{- with $hostnames }}
+  hostnames: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+  {{- if .Values.httpRoute.rules }}
+  {{- toYaml .Values.httpRoute.rules | nindent 4 }}
+  {{- else }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ template "pgadmin4.fullname" . }}
+          port: {{ .Values.service.port }}
+  {{- end }}
+{{- end }}
