@@ -27,7 +27,7 @@ depends_on = None
 def upgrade():
     # Get metadata from current connection
     meta = sa.MetaData()
-    meta.reflect(op.get_bind(), only=('role',))
+    meta.reflect(op.get_bind(), only=('role',), resolve_fks=False)
     role_table = sa.Table('role', meta)
 
     # Get all roles with permissions

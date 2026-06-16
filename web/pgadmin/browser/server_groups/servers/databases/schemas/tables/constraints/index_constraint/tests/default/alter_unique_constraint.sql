@@ -4,6 +4,7 @@
 
 ALTER TABLE IF EXISTS testschema.tablefor_unique_cons
     ADD CONSTRAINT "UC_$%{}[]()&*^!@""'`\/#a" UNIQUE (col1)
+    INCLUDE (col2)
     WITH (FILLFACTOR=90)
     DEFERRABLE INITIALLY DEFERRED;
 

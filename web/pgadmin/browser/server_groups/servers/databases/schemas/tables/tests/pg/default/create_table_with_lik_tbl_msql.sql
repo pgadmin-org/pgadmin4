@@ -6,12 +6,11 @@ CREATE TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
         INCLUDING INDEXES
         INCLUDING STORAGE
         INCLUDING COMMENTS
+        INCLUDING COMPRESSION
+        INCLUDING GENERATED
         INCLUDING IDENTITY
         INCLUDING STATISTICS
 
-)
-WITH (
-    OIDS = FALSE
 );
 
 ALTER TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"

@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS {{conn|qtIdent(data.schema, data.name)}} (
     LIKE {{conn|qtIdent(data.schema, data.orig_name)}} INCLUDING ALL
 ) PARTITION BY {{ data.partition_scheme }};
-{{partition_sql}}
+{{partition_sql}}{{partition_data.default_partition_header}}
+CREATE TABLE IF NOT EXISTS {{conn|qtIdent(data.schema, data.default_partition_name)}} PARTITION OF {{conn|qtIdent(data.schema, data.name)}} DEFAULT;
+
 INSERT INTO {{conn|qtIdent(data.schema, data.name)}}(
 {% if data.columns and data.columns|length > 0 %}
 {% for c in data.columns %} {{c.name}}{% if not loop.last %},{% endif %}{% endfor %}{% endif %})

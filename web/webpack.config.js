@@ -290,14 +290,14 @@ module.exports = [{
         },
       },
       generator: {
-        filename: 'img/[name].[ext]',
+        filename: 'img/[name][ext]',
       },
       exclude: /vendor/,
     },{
       test: /\.(eot|ttf|woff|woff2)$/,
       type: 'asset/resource',
       generator: {
-        filename: 'fonts/[name].[ext]',
+        filename: 'fonts/[name][ext]',
       },
       include: [
         /node_modules/,

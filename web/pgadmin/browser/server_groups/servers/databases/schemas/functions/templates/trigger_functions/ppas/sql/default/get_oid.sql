@@ -12,7 +12,7 @@ JOIN
     pg_catalog.pg_namespace nsp ON nsp.oid=pr.pronamespace
     AND nsp.nspname={{ nspname|qtLiteral(conn) }}
 WHERE
-    proisagg = FALSE
+    pr.prokind IN ('f', 'w')
     AND typname IN ('trigger', 'event_trigger')
     AND lanname NOT IN ('sql', 'internal')
     AND pr.proname = {{ name|qtLiteral(conn) }};

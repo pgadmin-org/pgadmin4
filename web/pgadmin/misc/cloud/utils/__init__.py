@@ -73,8 +73,6 @@ class CloudProcessDesc(IProcessDesc):
             self.provider = 'Azure Database'
         elif _provider == 'google':
             self.provider = 'Google Cloud SQL'
-        else:
-            self.provider = 'EDB BigAnimal'
 
     @property
     def message(self):

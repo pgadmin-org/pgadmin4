@@ -21,6 +21,9 @@ const StyledBox = styled(Box)(({theme}) => ({
   width: 'auto',
   maxWidth: '99%',
   zIndex: 1004,
+  // The breadcrumbs popup is purely informational; let clicks pass through
+  // to the tree items beneath it. #9128
+  pointerEvents: 'none',
   padding: '0.25rem 0.5rem',
   fontSize: '0.95em',
   color: theme.palette.background.default,

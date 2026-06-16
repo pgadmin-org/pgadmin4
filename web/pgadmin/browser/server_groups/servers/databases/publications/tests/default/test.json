@@ -65,6 +65,7 @@
         "evnt_delete": false,
         "evnt_truncate": false,
         "pubowner": "<OWNER>",
+        "publish_via_partition_root": false,
         "all_table": true,
         "pubtable": ""
       },
@@ -116,6 +117,7 @@
         "evnt_delete": true,
         "evnt_truncate": true,
         "pubowner": "<OWNER>",
+        "publish_via_partition_root": false,
         "all_table": false,
         "only_table": false,
         "pubtable": [

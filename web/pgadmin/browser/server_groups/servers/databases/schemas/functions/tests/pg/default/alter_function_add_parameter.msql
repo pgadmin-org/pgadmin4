@@ -4,6 +4,7 @@ CREATE OR REPLACE FUNCTION public."Function3_$%{}[]()&*^!@""'`\/#"()
     VOLATILE
     PARALLEL UNSAFE
     COST 100
+    
     SET application_name='appname'
     SET enable_sort='true'
 AS $BODY$
