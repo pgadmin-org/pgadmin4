@@ -13,6 +13,14 @@ SELECT aggfnoid::oid as oid, proname as name, ns.nspname as schema,
   CASE WHEN aggmtransfn = '-'::regproc THEN null ELSE aggmtransfn END as moving_state_func,
   CASE WHEN aggmfinalfn = '-'::regproc THEN null ELSE aggmfinalfn END as moving_final_func,
   CASE WHEN aggminvtransfn = '-'::regproc THEN null ELSE aggminvtransfn END as moving_inverse_func,
+  CASE WHEN ag.aggfinalmodify = 'r' THEN 'READ_ONLY'
+    WHEN ag.aggfinalmodify = 's' THEN 'SHAREABLE'
+    WHEN ag.aggfinalmodify = 'w' THEN 'READ_WRITE'
+    ELSE 'unknown' END as final_func_modify,
+  CASE WHEN ag.aggmfinalmodify = 'r' THEN 'READ_ONLY'
+    WHEN ag.aggmfinalmodify = 's' THEN 'SHAREABLE'
+    WHEN ag.aggmfinalmodify = 'w' THEN 'READ_WRITE'
+    ELSE 'unknown' END as moving_final_func_modify,
   agginitval as initial_val, aggminitval as moving_initial_val,
   op.oprname as sort_oper, aggfinalextra as final_extra_param, aggmfinalextra as moving_final_extra_param,
   aggtransspace as state_data_size, aggmtransspace as moving_state_data_size,

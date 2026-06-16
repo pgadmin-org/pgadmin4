@@ -1,10 +1,10 @@
-SELECT DISTINCT dep.deptype, dep.classid, cl.relkind, ad.adbin, ad.adsrc,
+SELECT DISTINCT dep.deptype, dep.classid, cl.relkind, ad.adbin, pg_get_expr(ad.adbin, ad.adrelid) as adsrc,
     CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind::text || COALESCE(dep.objsubid::text, '') ELSE cl.relkind::text END
-        WHEN tg.oid IS NOT NULL THEN 'Tr'::text
+        WHEN tg.oid IS NOT NULL THEN CASE WHEN tg.tgpackageoid != 0 THEN 'Tc'::text ELSE 'Tr'::text END
         WHEN ty.oid IS NOT NULL THEN CASE WHEN ty.typtype = 'd' THEN 'd'::text ELSE 'Ty'::text END
-        WHEN ns.oid IS NOT NULL THEN CASE WHEN ns.nspparent != 0 THEN 'Pa'::text ELSE 'n'::text END
+        WHEN ns.oid IS NOT NULL THEN CASE WHEN ns.nspparent != 0 AND ns.nspcompoundtrigger = false THEN 'Pa'::text ELSE 'n'::text END
         WHEN pr.oid IS NOT NULL AND (prtyp.typname = 'trigger' OR prtyp.typname = 'event_trigger') THEN 'Pt'::text
-        WHEN pr.oid IS NOT NULL THEN 'Pf'::text
+        WHEN pr.oid IS NOT NULL THEN CASE WHEN pr.prokind = 'p' THEN 'Pp'::text ELSE 'Pf'::text END
         WHEN la.oid IS NOT NULL THEN 'l'::text
         WHEN rw.oid IS NOT NULL THEN 'Rl'::text
         WHEN co.oid IS NOT NULL THEN CASE WHEN co.contypid > 0 THEN 'Cd' ELSE 'C'::text || contype::text END

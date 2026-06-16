@@ -11,9 +11,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
     col5 numeric(20,10),
     col6 timestamp(5) with time zone
 )
-WITH (
-    OIDS = FALSE
-)
+
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"

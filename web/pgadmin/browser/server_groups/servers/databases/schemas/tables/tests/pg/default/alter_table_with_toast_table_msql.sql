@@ -5,7 +5,6 @@ ALTER TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
 ALTER TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#" RESET (
     autovacuum_enabled
 );
-
 ALTER TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#" SET (
     toast.autovacuum_enabled = false,
     toast.autovacuum_freeze_max_age = 2000000,

@@ -1,6 +1,6 @@
 {% if data %}
 CREATE OPERATOR {{data.schema}}.{{data.name}} (
-    PROCEDURE = {{data.operproc}}{% if data.lefttype %},
+    FUNCTION = {{data.operproc}}{% if data.lefttype %},
     LEFTARG = {{data.lefttype}}{% endif %}{% if data.righttype %},
     RIGHTARG = {{data.righttype}}{% endif %}{% if data.commutator %},
     COMMUTATOR = {{data.commutator}}{% endif %}{% if data.negator %},

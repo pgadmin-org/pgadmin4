@@ -10,5 +10,6 @@ FROM
 LEFT OUTER JOIN pg_catalog.pg_namespace snsp ON (nsp.nspparent = snsp.oid)
 WHERE nsp.nspparent = {{ node_id }}::oid
 AND nsp.nspobjecttype = 0
+AND nsp.nspcompoundtrigger = false
 ORDER BY nsp.nspname;
 {% endif %}
