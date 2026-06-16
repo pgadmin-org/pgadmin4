@@ -14,7 +14,7 @@ helpers enforce that users can only access servers they own or that
 have been explicitly shared with them via SharedServer entries.
 """
 
-from sqlalchemy import or_, case, exists, literal
+from sqlalchemy import or_, case, exists, func, literal
 from flask_security import current_user
 
 from pgadmin.model import db, Server, ServerGroup
@@ -92,15 +92,15 @@ def get_server_groups_for_user(hide_shared=False, servergroup_id=None):
     logic.
     """
 
-    sg = ( get_server_groups_for_user_query(hide_shared=hide_shared,
+    sg = get_server_groups_for_user_query(hide_shared=hide_shared,
                                           servergroup_id=servergroup_id)
-            .all()
-    )
 
     result_list = []
 
-    for group, is_shared in sg:
-        group.is_shared_group = is_shared
+    for row in sg.all():
+        group = row.ServerGroup
+        group.is_shared_group = row.is_shared_group
+        group.is_first_user_group = row.is_first_user_group
         result_list.append(group)
 
     return result_list
@@ -119,9 +119,27 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     users' private groups — admins see the same set as a regular
     user with the same ownership and sharing configuration.
     """
+
+    ServerGroupAlias = db.aliased(ServerGroup)
+
+    min_id_subquery = (
+        db.session.query(func.min(ServerGroupAlias.id))
+        .filter(
+            ServerGroupAlias.user_id == current_user.id
+        )
+        .correlate(ServerGroup)
+        .scalar_subquery()
+    )
+
+    is_first_user_group = (
+        (ServerGroup.id == min_id_subquery)
+        .label('is_first_user_group')
+    )
+
     if not config.SERVER_MODE:
         return ( ServerGroup.query.add_columns(
-                    literal(0).label('is_shared_group')
+                    literal(0).label('is_shared_group'),
+                    is_first_user_group
                 )
                 .filter( ServerGroup.user_id == current_user.id)
         )
@@ -129,7 +147,8 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
 
     query = ServerGroup.query.add_columns(
                 (ServerGroup.user_id != current_user.id)
-                .label('is_shared_group')
+                    .label('is_shared_group'),
+                is_first_user_group
             )
 
     if hide_shared:
