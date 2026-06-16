@@ -248,6 +248,7 @@ def get_node_sql_with_type(node_id, node_type, server_prop,
     '/<int:sid>/<int:did>/<int:node_id>/<node_type>/',
     methods=['GET'], endpoint='objects'
 )
+@permissions_required(AllPermissionTypes.tools_grant_wizard)
 @pga_login_required
 @check_precondition
 def properties(sid, did, node_id, node_type):
@@ -404,6 +405,7 @@ def set_priv_for_package(server_prop, data, acls):
     '/sql/<int:sid>/<int:did>/',
     methods=['POST'], endpoint='modified_sql'
 )
+@permissions_required(AllPermissionTypes.tools_grant_wizard)
 @pga_login_required
 @check_precondition
 def msql(sid, did):
@@ -538,6 +540,7 @@ def parse_priv(data, acls, server_prop):
 @blueprint.route(
     '/<int:sid>/<int:did>/', methods=['POST'], endpoint='apply'
 )
+@permissions_required(AllPermissionTypes.tools_grant_wizard)
 @pga_login_required
 @check_precondition
 def save(sid, did):

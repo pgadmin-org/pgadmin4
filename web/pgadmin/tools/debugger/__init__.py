@@ -1786,6 +1786,7 @@ def select_frame(trans_id, frame_id):
     '/get_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['GET'], endpoint='get_arguments'
 )
+@permissions_required(AllPermissionTypes.tools_debugger)
 @pga_login_required
 def get_arguments_sqlite(sid, did, scid, func_id):
     """
@@ -1879,6 +1880,7 @@ def get_array_string(data, i):
     '/set_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['POST'], endpoint='set_arguments'
 )
+@permissions_required(AllPermissionTypes.tools_debugger)
 @pga_login_required
 def set_arguments_sqlite(sid, did, scid, func_id):
     """
@@ -1977,6 +1979,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
     '/clear_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['POST'], endpoint='clear_arguments'
 )
+@permissions_required(AllPermissionTypes.tools_debugger)
 @pga_login_required
 def clear_arguments_sqlite(sid, did, scid, func_id):
     """
