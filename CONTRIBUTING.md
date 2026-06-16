@@ -18,6 +18,12 @@ Thank you for your interest in contributing to pgAdmin 4.
 
 Before starting work, please review the project documentation and familiarize yourself with the architecture and development workflow.
 
+### Architecture
+
+pgAdmin 4 is written as a web application with Python (Flask) on the server side and ReactJS, HTML5 with CSS for the client side processing and UI.
+
+Although developed using web technologies, pgAdmin 4 can be deployed either on a web server using a browser, or standalone on a workstation. The [runtime/](file:///d:/t3%20code/pgadmin4/runtime) subdirectory contains an Electron-based runtime application intended to allow this, which will fork a Python server process and display the UI.
+
 If you are new to the codebase, consider starting with smaller bug fixes or documentation improvements before working on larger changes.
 
 ## Reporting Issues
@@ -57,9 +63,11 @@ When opening a pull request:
 - Clearly describe the change.
 - Explain the reason for the change.
 - Include screenshots or recordings for UI-related changes when applicable.
-- Submit any changes as Pull Requests against the `master` branch of the `pgadmin-org/pgadmin4` repository.
+- Submit any changes as Pull Requests against the `master` branch of the [pgadmin-org/pgadmin4](https://github.com/pgadmin-org/pgadmin4) repository.
 
 ## Development Setup
+
+In the following documentation and examples, `$PGADMIN4_SRC` is used to denote the top-level directory of your copy of the pgAdmin source tree (either from a tarball or a git checkout).
 
 ### Prerequisites
 
@@ -313,7 +321,7 @@ For development discussions, use:
 
 For support options, visit the [pgAdmin support page](https://www.pgadmin.org/support/).
 
-Use the GitHub issue tracker for reporting bugs and requesting features, but please follow the guidelines outlined in the "Reporting Issues" section above.
+Use the [GitHub issue tracker](https://github.com/pgadmin-org/pgadmin4/issues) for reporting bugs and requesting features, but please follow the guidelines outlined in the "Reporting Issues" section above.
 
 ## License
 
