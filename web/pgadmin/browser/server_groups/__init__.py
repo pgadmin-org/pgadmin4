@@ -68,16 +68,18 @@ class ServerGroupModule(BrowserPluginModule):
 
         groups = ServerGroupView.get_all_server_groups()
 
-        for idx, group in enumerate(groups):
+        for group in groups:
             icon_class, is_shared = get_icon_css_class(group.is_shared_group)
             yield self.generate_browser_node(
-                "%d" % (group.id), None,
+                "%d" % (group.id),
+                None,
                 group.name,
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=True if idx > 0 and not group.is_shared_group else False,
-                user_id=group.user_id,
+                can_delete=(not (group.is_first_user_group
+                                or group.is_shared_group)),
+                can_edit=(not group.is_shared_group),
                 is_shared=is_shared
             )
 
@@ -258,7 +260,9 @@ class ServerGroupView(NodeView):
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=True,  # This is user created hence can delete
+                can_delete=(not (servergroup.is_first_user_group
+                                or servergroup.is_shared_group)),
+                can_edit=(not servergroup.is_shared_group),
                 is_shared=is_shared
             )
         )
@@ -311,8 +315,8 @@ class ServerGroupView(NodeView):
                         icon_class,
                         True,
                         self.node_type,
-                        # This is user created hence can deleted
-                        can_delete=True,
+                        can_delete=(not (sg.is_first_user_group
+                                        or sg.is_shared_group)),
                         is_shared=is_shared
                     )
                 )
@@ -393,6 +397,8 @@ class ServerGroupView(NodeView):
                         icon_class,
                         True,
                         self.node_type,
+                        can_delete=(not (group.is_first_user_group
+                                        or group.is_shared_group)),
                         is_shared=is_shared
                     )
                 )
@@ -406,11 +412,14 @@ class ServerGroupView(NodeView):
 
             icon_class, is_shared = get_icon_css_class(group.is_shared_group)
             nodes = self.blueprint.generate_browser_node(
-                "%d" % (group.id), None,
+                "%d" % (group.id),
+                None,
                 group.name,
                 icon_class,
                 True,
                 self.node_type,
+                can_delete=(not (group.is_first_user_group
+                                or group.is_shared_group)),
                 is_shared=is_shared
             )
 

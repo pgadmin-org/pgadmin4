@@ -7,12 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 import ServerGroupSchema from './server_group.ui';
-import _ from 'lodash';
 
 define('pgadmin.node.server_group', [
   'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.user_management.current_user', 'pgadmin.browser', 'pgadmin.browser.node',
-], function(gettext, url_for, pgAdmin, current_user) {
+], function(gettext, url_for, pgAdmin) {
 
   if (!pgAdmin.Browser.Nodes['server_group']) {
     pgAdmin.Browser.Nodes['server_group'] = pgAdmin.Browser.Node.extend({
@@ -39,17 +38,14 @@ define('pgadmin.node.server_group', [
         }]);
       },
       getSchema: ()=>new ServerGroupSchema(),
+      canEdit: function(itemData) {
+        return (itemData && itemData.can_edit);
+      },
       canDrop: function(itemData) {
-        let serverOwner = itemData.user_id;
-        return !(serverOwner != current_user.id && !_.isUndefined(serverOwner));
+        return (itemData && itemData.can_delete);
       },
       dropAsRemove: true,
-      canDelete: function(i) {
-        let s = pgAdmin.Browser.tree.siblings(i, true);
 
-        /* This is the only server group - we can't remove it*/
-        return !(!s || s.length == 0);
-      },
     });
   }
 
