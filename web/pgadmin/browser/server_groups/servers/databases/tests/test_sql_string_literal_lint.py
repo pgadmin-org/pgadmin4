@@ -134,10 +134,6 @@ ALLOWLIST = [
       "'{{constraint_type}}'"), 1,
      "Single-char pg_constraint.contype code, hardcoded by handler."),
     (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/index_constraint/sql/11_plus/properties.sql',
-      "'{{constraint_type}}'"), 1,
-     "Single-char pg_constraint.contype code, hardcoded by handler."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
       'templates/index_constraint/sql/default/properties.sql',
       "'{{constraint_type}}'"), 1,
      "Single-char pg_constraint.contype code, hardcoded by handler."),
@@ -193,26 +189,6 @@ ALLOWLIST = [
     # consistency follow-up; not a privilege-escalation sink.
     # ------------------------------------------------------------------
     (('pgadmin/browser/server_groups/servers/databases/schemas/aggregates/'
-      'templates/aggregates/sql/11_plus/create.sql',
-      "'{{data.initial_val}}'"), 1,
-     "CREATE AGGREGATE requires CREATE on schema; user already has SQL "
-     "access. Tracked as consistency follow-up."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/aggregates/'
-      'templates/aggregates/sql/11_plus/create.sql',
-      "'{{data.moving_initial_val}}'"), 1,
-     "CREATE AGGREGATE requires CREATE on schema; user already has SQL "
-     "access. Tracked as consistency follow-up."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/aggregates/'
-      'templates/aggregates/sql/12_plus/create.sql',
-      "'{{data.initial_val}}'"), 1,
-     "CREATE AGGREGATE requires CREATE on schema; user already has SQL "
-     "access. Tracked as consistency follow-up."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/aggregates/'
-      'templates/aggregates/sql/12_plus/create.sql',
-      "'{{data.moving_initial_val}}'"), 1,
-     "CREATE AGGREGATE requires CREATE on schema; user already has SQL "
-     "access. Tracked as consistency follow-up."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/aggregates/'
       'templates/aggregates/sql/default/create.sql',
       "'{{data.initial_val}}'"), 1,
      "CREATE AGGREGATE requires CREATE on schema; user already has SQL "
@@ -236,23 +212,15 @@ ALLOWLIST = [
       "'{{ data.sync }}'"), 1,
      "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
     (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
+      'templates/subscriptions/sql/default/create.sql',
+      "'{{ data.streaming}}'"), 1,
+     "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
+    (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
       'templates/subscriptions/sql/default/update.sql',
       "'{{ data.sync }}'"), 1,
      "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
     (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
-      'templates/subscriptions/sql/14_plus/create.sql',
-      "'{{ data.sync }}'"), 1,
-     "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
-    (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
-      'templates/subscriptions/sql/14_plus/create.sql',
-      "'{{ data.streaming}}'"), 1,
-     "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
-    (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
-      'templates/subscriptions/sql/14_plus/update.sql',
-      "'{{ data.sync }}'"), 1,
-     "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
-    (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
-      'templates/subscriptions/sql/14_plus/update.sql',
+      'templates/subscriptions/sql/default/update.sql',
       "'{{ data.streaming}}'"), 1,
      "Bounded enum from form schema; CREATE SUBSCRIPTION needs superuser."),
     (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
@@ -392,26 +360,23 @@ ALLOWLIST = [
       'function.sql', "'{{ icon }}'"), 1,
      "Hardcoded display constant supplied by grant_wizard handler."),
     (('pgadmin/tools/grant_wizard/templates/grant_wizard/pg/default/sql/'
+      'function.sql', "'{{ kind }}'"), 1,
+     "Hardcoded pg_proc.prokind char supplied by grant_wizard handler."),
+    (('pgadmin/tools/grant_wizard/templates/grant_wizard/pg/default/sql/'
       'view.sql', "'{{ ntype }}'"), 1,
      "Hardcoded display constant supplied by grant_wizard handler."),
     (('pgadmin/tools/grant_wizard/templates/grant_wizard/pg/default/sql/'
       'view.sql', "'{{ node_type }}'"), 1,
      "Hardcoded pg_class.relkind char supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/pg/11_plus/sql/'
+    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
       'function.sql', "'{{ func_type }}'"), 1,
      "Hardcoded display constant supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/pg/11_plus/sql/'
+    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
       'function.sql', "'{{ icon }}'"), 1,
      "Hardcoded display constant supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/pg/11_plus/sql/'
+    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
       'function.sql', "'{{ kind }}'"), 1,
      "Hardcoded pg_proc.prokind char supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
-      'function.sql', "'{{ func_type }}'"), 1,
-     "Hardcoded display constant supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
-      'function.sql', "'{{ icon }}'"), 1,
-     "Hardcoded display constant supplied by grant_wizard handler."),
     (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
       'view.sql', "'{{ ntype }}'"), 1,
      "Hardcoded display constant supplied by grant_wizard handler."),
@@ -421,26 +386,11 @@ ALLOWLIST = [
     (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/default/sql/'
       'view.sql', "'{{ node_type }}'"), 1,
      "Hardcoded pg_class.relkind char supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/11_plus/sql/'
-      'function.sql', "'{{ func_type }}'"), 1,
-     "Hardcoded display constant supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/11_plus/sql/'
-      'function.sql', "'{{ icon }}'"), 1,
-     "Hardcoded display constant supplied by grant_wizard handler."),
-    (('pgadmin/tools/grant_wizard/templates/grant_wizard/ppas/11_plus/sql/'
-      'function.sql', "'{{ kind }}'"), 1,
-     "Hardcoded pg_proc.prokind char supplied by grant_wizard handler."),
 
     # ------------------------------------------------------------------
     # search_objects: ``obj_type`` is one of the fixed object-kind strings
     # baked into the search handler's own dispatch table.
     # ------------------------------------------------------------------
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
-      '11_plus/search.sql', "'{{ obj_type }}'"), 1,
-     "Fixed object-kind enum supplied by search_objects handler."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
-      '12_plus/search.sql', "'{{ obj_type }}'"), 1,
-     "Fixed object-kind enum supplied by search_objects handler."),
     (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
       'default/search.sql', "'{{ obj_type }}'"), 1,
      "Fixed object-kind enum supplied by search_objects handler."),
@@ -455,22 +405,7 @@ ALLOWLIST = [
     # safe. Follow-up: migrate to qtLiteral with explicit % wrapping.
     # ------------------------------------------------------------------
     (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
-      '11_plus/search.sql', "'%{{ search_text }}%'"), 1,
-     "search_text is pre-escaped via str.replace in utils.py:120 before "
-     "render_template; follow-up: migrate to qtLiteral with explicit % "
-     "wrapping."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
       'default/search.sql', "'%{{ search_text }}%'"), 1,
-     "search_text is pre-escaped via str.replace in utils.py:120 before "
-     "render_template; follow-up: migrate to qtLiteral with explicit % "
-     "wrapping."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
-      '11_plus/search.sql', "'%{{ search_text }}%'"), 1,
-     "search_text is pre-escaped via str.replace in utils.py:120 before "
-     "render_template; follow-up: migrate to qtLiteral with explicit % "
-     "wrapping."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
-      '12_plus/search.sql', "'%{{ search_text }}%'"), 1,
      "search_text is pre-escaped via str.replace in utils.py:120 before "
      "render_template; follow-up: migrate to qtLiteral with explicit % "
      "wrapping."),
@@ -488,22 +423,7 @@ ALLOWLIST = [
     # attacker-controlled value reaches the rendered SQL.
     # ------------------------------------------------------------------
     (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
-      '11_plus/search.sql',
-      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
-     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
-     "both macro arguments are hardcoded (column name + gettext fn)."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/pg/'
       'default/search.sql',
-      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
-     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
-     "both macro arguments are hardcoded (column name + gettext fn)."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
-      '11_plus/search.sql',
-      "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
-     "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
-     "both macro arguments are hardcoded (column name + gettext fn)."),
-    (('pgadmin/tools/search_objects/templates/search_objects/sql/ppas/'
-      '12_plus/search.sql',
       "'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'"), 1,
      "CATALOGS.LABELS_SCHEMACOL emits a static CASE expression; "
      "both macro arguments are hardcoded (column name + gettext fn)."),
@@ -572,20 +492,6 @@ ALLOWLIST = [
     # well-policed even with a regex that can't distinguish
     # "between two literals" from "inside one literal".
     # ------------------------------------------------------------------
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/tables/sql/11_plus/properties.sql',
-      "' THEN pg_catalog.pg_get_partkeydef({{ tid }}::oid) ELSE '"), 1,
-     "{{ tid }} is the pg_class OID validated by Flask <int:tid> route "
-     "converter; the surrounding 'p' and '' are SEPARATE literals, the "
-     "regex spans two of them but the interpolation is outside any "
-     "literal."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/tables/sql/12_plus/properties.sql',
-      "' THEN pg_catalog.pg_get_partkeydef({{ tid }}::oid) ELSE '"), 1,
-     "{{ tid }} is the pg_class OID validated by Flask <int:tid> route "
-     "converter; the surrounding 'p' and '' are SEPARATE literals, the "
-     "regex spans two of them but the interpolation is outside any "
-     "literal."),
     (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
       'templates/tables/sql/default/properties.sql',
       "' THEN pg_catalog.pg_get_partkeydef({{ tid }}::oid) ELSE '"), 1,
