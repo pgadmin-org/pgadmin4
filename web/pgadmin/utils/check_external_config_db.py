@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+from db_utils import normalize_database_uri
 from sqlalchemy import create_engine, inspect
 
 
@@ -15,13 +16,12 @@ def check_external_config_db(database_uri):
     Check if external config database exists if it
     is being used.
     """
-    engine = create_engine(database_uri)
+    engine = create_engine(normalize_database_uri(database_uri))
+    connection = None
     try:
         connection = engine.connect()
-        if inspect(engine).has_table("server"):
-            return True
-        return False
-    except Exception:
+        return inspect(engine).has_table("server")
         return False
     finally:
-        connection.close()
+        if connection:
+            connection.close()

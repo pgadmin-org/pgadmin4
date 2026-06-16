@@ -780,12 +780,16 @@ class OpenAIClient(LLMClient):
                         'id': '', 'name': '', 'arguments': ''
                     }
                 tc = tool_calls_data[idx]
-                if 'id' in tc_delta:
+                # Some providers emit empty/null fields in continuation
+                # deltas to keep the schema stable; skip them so a later
+                # null doesn't clobber the real id/name captured earlier
+                # (see the OpenAI SDK, which skips nulls the same way).
+                if tc_delta.get('id'):
                     tc['id'] = tc_delta['id']
-                func = tc_delta.get('function', {})
-                if 'name' in func:
+                func = tc_delta.get('function') or {}
+                if func.get('name'):
                     tc['name'] = func['name']
-                if 'arguments' in func:
+                if func.get('arguments'):
                     tc['arguments'] += func['arguments']
 
         # Build final response

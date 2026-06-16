@@ -94,3 +94,17 @@ ALTER INDEX IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 
 {% endfor %}
 {% endif %}
+{% set old_exts = (o_data.dependsonextensions or []) | list %}
+{% set new_exts = data.dependsonextensions if 'dependsonextensions' in data else None %}
+{% if new_exts is not none and old_exts != new_exts %}
+{% for ext in (old_exts + new_exts) | unique %}
+
+{% if ext in new_exts and ext not in old_exts %}
+ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% elif ext in old_exts and ext not in new_exts %}
+ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
+    NO DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endif %}
+{% endfor %}
+{% endif %}

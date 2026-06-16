@@ -741,8 +741,12 @@ define('pgadmin.browser.node', [
                 background: ${bgcolor} !important;
               }
               ${fgcolor ? `
-              .${dynamic_class} span.file-name, .${dynamic_class} span.file-name:hover, .${dynamic_class} span.file-name.pseudo-active {
+              .${dynamic_class} span.file-name, .${dynamic_class} span.file-name:hover, .${dynamic_class} span.file-name.pseudo-active,
+              .${dynamic_class} span.children-count {
                 color: ${fgcolor} !important;
+              }
+              .${dynamic_class} span.text-muted {
+                color: color-mix(in srgb, ${fgcolor} 65%, transparent) !important;
               }
               `:''}
             `;

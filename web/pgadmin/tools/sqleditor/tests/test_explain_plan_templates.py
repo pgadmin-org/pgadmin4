@@ -20,7 +20,7 @@ from pgadmin import tools
 class TestExplainPlanTemplates(BaseTestGenerator):
     scenarios = [
         (
-            'When rendering Postgres 10 template, '
+            'When rendering the default template, '
             'when summary is present,'
             'it returns the explain plan with summary',
             dict(
@@ -40,11 +40,11 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             )
         ),
         (
-            'When rendering Postgres 12 template, '
+            'When rendering the default template, '
             'when settings is present,'
             'it returns the explain plan with settings',
             dict(
-                template_path='sqleditor/sql/12_plus/explain_plan.sql',
+                template_path='sqleditor/sql/default/explain_plan.sql',
                 input_parameters=dict(
                     sql='SELECT * FROM places',
                     format='json',
@@ -62,11 +62,11 @@ class TestExplainPlanTemplates(BaseTestGenerator):
             )
         ),
         (
-            'When rendering Postgres 13 template, '
+            'When rendering the default template, '
             'when wal is present,'
             'it returns the explain plan with wal',
             dict(
-                template_path='sqleditor/sql/13_plus/explain_plan.sql',
+                template_path='sqleditor/sql/default/explain_plan.sql',
                 input_parameters=dict(
                     sql='SELECT * FROM places',
                     format='json',

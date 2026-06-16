@@ -13,7 +13,6 @@ import { DefaultButton, PrimaryButton } from '../../../../static/js/components/B
 import PropTypes from 'prop-types';
 import { getAWSSummary } from './aws';
 import  {getAzureSummary} from './azure';
-import { getBigAnimalSummary } from './biganimal';
 import gettext from 'sources/gettext';
 import { getGoogleSummary } from './google';
 import { CLOUD_PROVIDERS_LABELS } from './cloud_constants';
@@ -56,10 +55,7 @@ export function FinalSummary(props) {
   let summary = [],
     summaryHeader = ['Cloud Details', 'Version and Instance Details', 'Storage Details', 'Database Details'];
 
-  if (props.cloudProvider == 'biganimal') {
-    summary = getBigAnimalSummary(props.cloudProvider, props.clusterTypeData, props.instanceData, props.databaseData);
-    summaryHeader = ['Cloud Details',  'Cluster Details' ,'Version Details', 'Storage Details', 'Database Details'];
-  } else if(props.cloudProvider == 'azure') {
+  if(props.cloudProvider == 'azure') {
     summaryHeader.push('Network Connectivity','Availability');
     summary = getAzureSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }else if(props.cloudProvider == 'google') {
@@ -98,5 +94,4 @@ FinalSummary.propTypes = {
   cloudProvider: PropTypes.string,
   instanceData: PropTypes.object,
   databaseData: PropTypes.object,
-  clusterTypeData: PropTypes.object,
 };

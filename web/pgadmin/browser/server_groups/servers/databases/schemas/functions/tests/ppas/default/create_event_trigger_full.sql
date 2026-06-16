@@ -18,5 +18,9 @@ $BODY$;
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     OWNER TO enterprisedb;
 
+GRANT EXECUTE ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"() TO enterprisedb WITH GRANT OPTION;
+
+REVOKE ALL ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"() FROM PUBLIC;
+
 COMMENT ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     IS 'some comment';

@@ -1706,7 +1706,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         return sql
 
     @BaseTableView.check_precondition
-    def fetch_tables(self, sid, did, scid, tid=None, with_serial_cols=False):
+    def fetch_tables(self, sid, did, scid, tid=None, with_serial_cols=True):
         """
         This function will fetch the list of all the tables
         and will be used by schema diff.
@@ -1715,7 +1715,9 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         :param did: Database Id
         :param scid: Schema Id
         :param tid: Table Id
-        :param with_serial_cols:
+        :param with_serial_cols: when True (default), reverse-engineer
+            SERIAL columns back to ``serial`` / ``smallserial`` /
+            ``bigserial`` so emitted DDL is round-trippable. Issue #9896.
         :return: Table dataset
         """
 

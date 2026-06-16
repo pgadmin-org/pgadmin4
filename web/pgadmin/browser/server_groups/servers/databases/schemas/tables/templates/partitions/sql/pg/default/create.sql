@@ -21,6 +21,13 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE{% if add_not_exists
     {{ data.partition_value }}{% if data.is_partitioned is defined and data.is_partitioned %}
 
     PARTITION BY {{ data.partition_scheme }}{% endif %}
+{% if data.default_amname and data.default_amname != data.amname and data.amname is not none %}
+
+USING {{data.amname}}
+{% elif not data.default_amname and data.amname %}
+
+USING {{data.amname}}
+{% endif %}
 {% if data.fillfactor or data.autovacuum_custom or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum or data.toast_autovacuum_enabled in ('t', 'f') or (data.autovacuum_enabled in ('t', 'f') and data.vacuum_table|length > 0) or (data.toast_autovacuum_enabled in ('t', 'f') and data.vacuum_toast|length > 0) %}
 {% set ns = namespace(add_comma=false) %}
 

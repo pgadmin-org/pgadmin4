@@ -822,7 +822,10 @@ OAUTH2_CONFIG = [
         # URL is used for authentication,
         # Ex: https://github.com/login/oauth/authorize
         'OAUTH2_AUTHORIZATION_URL': None,
-        # server metadata url might optional for your provider
+        # OpenID Connect discovery URL for the provider. Required when
+        # OAUTH2_SCOPE contains 'openid' (so pgAdmin can fetch the JWKS
+        # to verify the id_token); optional otherwise.
+        # Example: https://<issuer>/.well-known/openid-configuration
         'OAUTH2_SERVER_METADATA_URL': None,
         # Oauth base url, ex: https://api.github.com/
         'OAUTH2_API_BASE_URL': None,
@@ -1058,11 +1061,26 @@ DOCKER_API_MODEL = ''
 # This prevents SSRF attacks via user-controlled API URL fields.
 # Set to an empty list to disable URL restriction (not recommended).
 # Add entries for custom providers (LiteLLM, LM Studio, corporate proxies).
+#
+# Use ``:*`` to match any port on a host — useful for local self-hosting
+# where the user chooses the port. The host check still rejects
+# link-local addresses like 169.254.169.254 used by cloud metadata.
+#
+# Note: the loopback ``:*`` entries below let any logged-in user have
+# the pgAdmin server connect to any port on its own loopback interface.
+# On multi-user SERVER_MODE deployments, consider replacing them with
+# the specific ports you run (e.g. ``http://localhost:11434``) to avoid
+# exposing other local services to LLM requests.
 ALLOWED_LLM_API_URLS = [
     'https://api.anthropic.com:443',
     'https://api.openai.com:443',
-    'http://localhost:11434',     # Ollama default
-    'http://localhost:12434',     # Docker Model Runner default
+    # Loopback addresses on any port: covers Ollama (11434), Docker
+    # Model Runner (12434), LiteLLM (4000), vLLM (8000), LM Studio
+    # (1234), text-generation-webui (5000), and any self-hosted
+    # OpenAI-compatible endpoint the user runs on their own machine.
+    'http://localhost:*',
+    'http://127.0.0.1:*',
+    'http://[::1]:*',
 ]
 
 # Maximum Tool Iterations

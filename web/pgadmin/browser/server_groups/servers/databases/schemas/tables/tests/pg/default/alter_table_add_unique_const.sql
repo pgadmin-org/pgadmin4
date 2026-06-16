@@ -13,9 +13,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'
         WITH (FILLFACTOR=13),
     CONSTRAINT chk_const CHECK (col2 <> NULL::bpchar)
 )
-WITH (
-    OIDS = FALSE
-)
+
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"

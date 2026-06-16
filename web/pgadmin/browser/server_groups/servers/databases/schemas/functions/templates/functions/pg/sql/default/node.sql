@@ -10,7 +10,7 @@ JOIN
 LEFT OUTER JOIN
     pg_catalog.pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass)
 WHERE
-    proisagg = FALSE
+   pr.prokind IN ('f', 'w')
 {% if fnid %}
     AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}

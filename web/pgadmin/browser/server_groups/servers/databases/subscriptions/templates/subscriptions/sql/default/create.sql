@@ -21,4 +21,4 @@ CREATE SUBSCRIPTION {{ conn|qtIdent(data.name) }}
 
     WITH ({% if data.connect is defined %}connect = {{ data.connect|lower}}, {% endif %}enabled = {{ data.enabled|lower}}, {% if data.copy_data is defined %}copy_data = {{ data.copy_data|lower}}{% if add_semicolon_after_copy_data == 'copy_data' %}, {% endif %}{% endif %}
 {% if data.create_slot is defined %}create_slot = {{ data.create_slot|lower }}{% if add_semicolon_after_create_slot == 'create_slot' %}, {% endif %}{% endif %}
-{% if data.slot_name is defined  and data.slot_name != ''%}slot_name = {{ data.slot_name }}{% if add_semicolon_after_slot_name == 'slot_name' %}, {% endif %}{% endif %}{% if data.sync %}synchronous_commit = '{{ data.sync }}'{% endif %});
+{% if data.slot_name is defined  and data.slot_name != ''%}slot_name = {{ data.slot_name }}{% if add_semicolon_after_slot_name == 'slot_name' %}, {% endif %}{% endif %}{% if data.sync %}synchronous_commit = '{{ data.sync }}', {% endif %}binary = {{ data.binary|lower}}, streaming = '{{ data.streaming}}');

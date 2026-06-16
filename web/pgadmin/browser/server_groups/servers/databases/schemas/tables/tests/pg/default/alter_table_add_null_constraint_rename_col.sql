@@ -12,9 +12,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
     col6 time(5) without time zone,
     CONSTRAINT "simple_table_$%{}[]()&*^!@""'`\/#_pkey" PRIMARY KEY (col1_rename)
 )
-WITH (
-    OIDS = FALSE
-)
+
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
