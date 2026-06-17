@@ -730,6 +730,18 @@ class ManagePreferences:
         invalid_prefs = []
         invalid_value_prefs = []
         valid_prefs = []
+        # Module preference objects are registered lazily via
+        # register_before_app_start() callbacks; pgAdmin4.py runs them at
+        # web-app startup, but the CLI never does. save_cli() now validates
+        # against the registered preference type, so we have to trigger
+        # registration ourselves. PGADMIN_RUNTIME must be set first because
+        # some register_preferences() methods (e.g. browser) check it; we
+        # use False so the full server-mode preference set (including
+        # keyboard shortcuts) is exposed to the CLI. run_before_app_start()
+        # enters both an app context and a test_request_context internally,
+        # which registration callbacks that touch current_user require.
+        app.PGADMIN_RUNTIME = False
+        app.run_before_app_start()
         with app.app_context():
             from pgadmin.preferences import save_pref
             for opt in pref_options:
@@ -750,13 +762,14 @@ class ManagePreferences:
                         'name': final_opt[2],
                         'user_id': user_id,
                         'value': val}
-                    if save_pref(_row):
+                    ok, msg = save_pref(_row)
+                    if ok:
                         valid_prefs.append(_row)
 
                         if not json:
                             table.add_row(jsonlib.dumps(_row))
                     else:
-                        invalid_value_prefs.append(f)
+                        invalid_value_prefs.append((f, msg))
                 else:
                     invalid_prefs.append(f)
 
@@ -765,10 +778,8 @@ class ManagePreferences:
                     (', ').join(
                         invalid_prefs)))
 
-            if len(invalid_value_prefs) >= 1:
-                print("Invalid value provided for preference(s) "
-                      "[red]{0}[/red].".format(
-                          (', ').join(invalid_value_prefs)))
+            for name, msg in invalid_value_prefs:
+                print("Could not set [red]{0}[/red]: {1}".format(name, msg))
 
             if not json and console:
                 print(table)
