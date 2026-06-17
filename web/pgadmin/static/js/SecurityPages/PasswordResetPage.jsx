@@ -22,10 +22,10 @@ export default function PasswordResetPage({csrfToken, actionUrl, loginUrl, ...pr
         <InputText name="password_confirm" value={form.password_confirm} onChange={(v)=>onTextChange('password_confirm', v)} type="password" placeholder={gettext('Retype Password')}
           controlProps={{autoComplete: 'new-password'}} />
         <SecurityButton value="Reset Password">{gettext('Reset Password')}</SecurityButton>
-        {loginUrl && <Box textAlign="center">
-          <a style={{color: 'inherit'}} href={loginUrl}>{gettext('Back to login')}</a>
-        </Box>}
       </form>
+      {loginUrl && <Box textAlign="center">
+        <a style={{color: 'inherit'}} href={loginUrl}>{gettext('Back to login')}</a>
+      </Box>}
     </BasePage>
   );
 }
