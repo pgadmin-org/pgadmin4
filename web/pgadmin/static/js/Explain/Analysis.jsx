@@ -4,6 +4,7 @@ import _ from 'lodash';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import HTMLReactParse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import Table from '../components/Table';
@@ -55,7 +56,7 @@ function NodeText({displayText, extraInfo}) {
       <ArrowRightAltIcon fontSize="small" style={{marginLeft: '-24px'}} /> {displayText}
       {extraInfo?.length > 0 && <ul style={{fontSize: '13px'}}>
         {extraInfo.map((item, i)=>{
-          return <li key={i} style={{opacity: '0.8'}}>{HTMLReactParse(item)}</li>;
+          return <li key={i} style={{opacity: '0.8'}}>{HTMLReactParse(DOMPurify.sanitize(item))}</li>;
         })}
       </ul>}
     </>);

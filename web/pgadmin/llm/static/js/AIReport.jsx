@@ -445,7 +445,7 @@ export default function AIReport({
           errMsg = err.message;
         }
         setError(errMsg);
-        pgAdmin.Browser.notifier.error(errMsg);
+        pgAdmin.Browser.notifier.errorText(errMsg);
       })
       .finally(() => {
         setLoading(false);

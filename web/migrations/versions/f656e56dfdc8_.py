@@ -53,7 +53,7 @@ def migrate_connection_params(table_name):
 
     # define table representation
     meta = sa.MetaData()
-    meta.reflect(op.get_bind(), only=(table_name,))
+    meta.reflect(op.get_bind(), only=(table_name,), resolve_fks=False)
     server_table = sa.Table(table_name, meta)
 
     # Create a select statement

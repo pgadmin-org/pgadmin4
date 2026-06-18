@@ -69,7 +69,7 @@ export default function SchemaDiffComponent({params}) {
       'trans_id': params.transId})
     )
       .catch((err) => {
-        pgAdmin.Browser.notifier.error(gettext(`Error in schema diff initialize ${err.response.data}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`Error in schema diff initialize ${err.response.data}`));
       });
   };
 

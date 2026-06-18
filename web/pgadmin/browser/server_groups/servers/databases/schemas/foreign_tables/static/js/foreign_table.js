@@ -168,7 +168,7 @@ define('pgadmin.node.foreign_table', ['pgadmin.tables.js/enable_disable_triggers
                     t.updateAndReselectNode(i, data);
                   }
                   if (res.success == 2) {
-                    pgBrowser.notifier.error(res.info);
+                    pgBrowser.notifier.errorText(res.info);
                   }
                 })
                 .catch((error)=>{

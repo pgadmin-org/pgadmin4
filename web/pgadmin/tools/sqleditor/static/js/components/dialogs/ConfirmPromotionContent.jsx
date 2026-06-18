@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import HTMLReactParser from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import { InputCheckbox } from '../../../../../../static/js/components/FormComponents';
@@ -27,7 +28,7 @@ export default function ConfirmPromotionContent({ onContinue, onClose, closeModa
 
   return (
     <ModalContent>
-      <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(DOMPurify.sanitize(text)) : text}</Box>
       <StyledFooter>
         <InputCheckbox controlProps={{ label: gettext('Don\'t ask again') }} value={formData['save_user_choice']}
           onChange={(e) => setFormData((prev) => ({ ...prev, 'save_user_choice': e.target.checked }))} />

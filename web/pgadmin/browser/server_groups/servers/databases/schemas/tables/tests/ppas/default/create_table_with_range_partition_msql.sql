@@ -3,10 +3,7 @@ CREATE TABLE public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
     id integer,
     status text,
     arr numeric
-) PARTITION BY RANGE (arr)
-WITH (
-    OIDS = FALSE
-);
+) PARTITION BY RANGE (arr);
 
 ALTER TABLE IF EXISTS public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;

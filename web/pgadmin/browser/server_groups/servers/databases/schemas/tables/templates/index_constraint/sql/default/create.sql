@@ -1,7 +1,10 @@
 ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.table) }}
     ADD{% if data.name %} CONSTRAINT {{ conn|qtIdent(data.name) }}{% endif%} {{constraint_name}} {% if data.index %}USING INDEX {{ conn|qtIdent(data.index) }}{% else %}
 ({% for columnobj in data.columns %}{% if loop.index != 1 %}
-, {% endif %}{{ conn|qtIdent(columnobj.column)}}{% endfor %}){% if data.fillfactor %}
+, {% endif %}{{ conn|qtIdent(columnobj.column)}}{% endfor %}){% if data.include|length > 0 %}
+
+    INCLUDE ({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
+{% if data.fillfactor %}
 
     WITH (FILLFACTOR={{data.fillfactor}}){% endif %}{% if data.spcname and data.spcname != "pg_default" %}
 

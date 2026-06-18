@@ -115,7 +115,9 @@ export function appAutoUpdateNotifier(desc, type, onClick, hideDuration=null, ti
   } else if(type == 'info') {
     pgAdmin.Browser.notifier.info(desc, hideDuration);
   } else if(type == 'error') {
-    pgAdmin.Browser.notifier.error(desc, hideDuration);
+    // `desc` here can be a runtime error string from the Electron auto-
+    // updater (`data.errMsg`), so render as plain text.
+    pgAdmin.Browser.notifier.errorText(desc, hideDuration);
   }
 
   // Remove from active keys for valid hideDuration passed in args

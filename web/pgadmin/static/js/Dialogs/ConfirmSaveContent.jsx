@@ -6,12 +6,13 @@ import CloseIcon from '@mui/icons-material/CloseRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import HTMLReactParser from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 
 export default function ConfirmSaveContent({closeModal, text, onDontSave, onSave}) {
   return (
     <ModalContent>
-      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(DOMPurify.sanitize(text)) : text}</Box>
       <ModalFooter>
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();

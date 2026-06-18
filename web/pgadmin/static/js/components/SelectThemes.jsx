@@ -14,6 +14,7 @@ import {InputSelect } from './FormComponents';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import HTMLReactParse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 
 
 export default function SelectThemes({onChange, helpMessage, ...props}) {
@@ -27,7 +28,7 @@ export default function SelectThemes({onChange, helpMessage, ...props}) {
       </Box>
       <Box>
         { previewSrc && <>
-          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
+          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
           <img style={{display: 'block', margin: 'auto', paddingTop: '4px'}} src={previewSrc} alt={gettext('Preview not available...')} />
         </> }
       </Box>

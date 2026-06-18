@@ -1,3 +1,0 @@
-REVOKE ALL ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) FROM enterprisedb;
-
-GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;

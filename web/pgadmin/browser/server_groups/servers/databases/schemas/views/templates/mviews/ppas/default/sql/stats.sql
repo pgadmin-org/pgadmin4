@@ -40,7 +40,7 @@ SELECT
     free_space AS {{ conn|qtIdent(_('Free space')) }},
     free_percent AS {{ conn|qtIdent(_('Free percent')) }}
 FROM
-    pgstattuple('{{schema_name}}.{{mview_name}}'), pg_catalog.pg_stat_all_tables stat
+    pgstattuple({{ vid }}::oid::regclass), pg_catalog.pg_stat_all_tables stat
 {% else %}
 FROM
     pg_catalog.pg_stat_all_tables stat

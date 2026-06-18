@@ -73,7 +73,7 @@ function SQL({nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}) {
             }
           })
           .catch((e) => {
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Error'),
               gettext(e.response.data.errormsg)
             );

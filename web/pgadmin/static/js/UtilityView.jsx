@@ -48,7 +48,7 @@ export default function UtilityView({dockerObj}) {
               onClose={onClose}
               onSave={dialogProps.onSave ?? ((data)=>{
                 if(data.errormsg) {
-                  pgAdmin.Browser.notifier.alert(
+                  pgAdmin.Browser.notifier.alertText(
                     gettext('Error'),
                     gettext(data.errormsg)
                   );

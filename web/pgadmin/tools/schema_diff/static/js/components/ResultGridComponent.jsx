@@ -159,14 +159,38 @@ function useFocusRef(isSelected) {
   };
 }
 
-function setRecordCount(row, filterParams) {
+/*
+ * Recompute the four status counts for ``row`` based on its descendants.
+ *
+ * Three row shapes can appear in the schema-diff results tree:
+ *   - Leaf row:  has a ``status`` (Identical/Different/Source Only/Target
+ *                Only); contributes 1 to the matching count when it's
+ *                visible under ``filterParams``.
+ *   - Mid-level row (object-type group, e.g. "Functions"): children are
+ *     leaves. Counts are the sum of those leaves.
+ *   - Top-level row (object-group, e.g. "Schema Objects"): children are
+ *     mid-level rows. Counts are the sum of the mid-level rows' counts.
+ *
+ * Originally this function only handled the leaf-children case, which
+ * left top-level group rows showing blank counts even when their
+ * descendants had differences. Issue #9892.
+ */
+export function setRecordCount(row, filterParams) {
   row['identicalCount'] = 0;
   row['differentCount'] = 0;
   row['sourceOnlyCount'] = 0;
   row['targetOnlyCount'] = 0;
 
   row.children.map((ch) => {
-    if (filterParams.includes(ch.status)) {
+    if ('identicalCount' in ch) {
+      // Mid-level child: refresh its counts (in case filterParams
+      // changed since the last render) and roll them up.
+      setRecordCount(ch, filterParams);
+      row['identicalCount'] += ch['identicalCount'];
+      row['differentCount'] += ch['differentCount'];
+      row['sourceOnlyCount'] += ch['sourceOnlyCount'];
+      row['targetOnlyCount'] += ch['targetOnlyCount'];
+    } else if (filterParams.includes(ch.status)) {
       if (ch.status == FILTER_NAME.IDENTICAL) {
         row['identicalCount'] = row['identicalCount'] + 1;
       } else if (ch.status == FILTER_NAME.DIFFERENT) {
@@ -720,7 +744,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
           };
           eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
         }).catch((err) => {
-          pgAdmin.Browser.notifier.alert(err.message);
+          pgAdmin.Browser.notifier.alertText(err.message);
         });
       } else {
         eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, {});

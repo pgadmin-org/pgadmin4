@@ -1044,7 +1044,7 @@ export function ResultSet() {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_IDLE);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
       } catch(e) {
-        pgAdmin.Browser.notifier.error(parseApiError(e));
+        pgAdmin.Browser.notifier.errorText(parseApiError(e));
       }
     });
 
@@ -1257,8 +1257,17 @@ export function ResultSet() {
     try {
       /* Convert the added info to actual rows */
       let added = {...dataChangeStore.added};
+      /* Strip read-only columns (expression/alias columns in Query Tool)
+       * from the new-row payload so the backend doesn't try to INSERT
+       * them into the base table. Issue #9939. */
+      let nonEditableKeys = new Set(
+        columns.filter((c)=>c.can_edit === false).map((c)=>c.key)
+      );
       Object.keys(added).forEach((clientPK)=>{
-        added[clientPK].data = _.find(rows, (r)=>rowKeyGetter(r)==clientPK);
+        let rowData = _.find(rows, (r)=>rowKeyGetter(r)==clientPK);
+        added[clientPK].data = _.omitBy(
+          rowData, (_v, k)=>nonEditableKeys.has(k)
+        );
       });
       let {data: respData} = await rsu.current.saveData({
         updated: dataChangeStore.updated,
@@ -1288,7 +1297,7 @@ export function ResultSet() {
       if(!respData.data.status) {
         pageDataOutOfSync.current = false;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
-        pgAdmin.Browser.notifier.error(respData.data.result, 20000);
+        pgAdmin.Browser.notifier.errorText(respData.data.result, 20000);
         // If the transaction is not idle, notify the user that previous queries are not rolled back,
         // only the failed save queries.
         if (respData.data.transaction_status != CONNECTION_STATUS.TRANSACTION_STATUS_IDLE) {

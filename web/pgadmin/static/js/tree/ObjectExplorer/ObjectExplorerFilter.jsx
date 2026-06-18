@@ -107,7 +107,7 @@ export default function ObjectExplorerFilter() {
       onClose();
     } catch(error) {
       console.error('Error applying object explorer filter:', error);
-      pgAdmin.Browser.notifier.error(parseApiError(error));
+      pgAdmin.Browser.notifier.errorText(parseApiError(error));
       setLoadingText('');
     }
   };

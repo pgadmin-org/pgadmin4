@@ -165,12 +165,15 @@ class _Preference():
 
         return False, None
 
-    def set(self, value):
+    def set(self, value, user_id=None):
         """
         set
-        Set the value into the configuration table for this current user.
+        Set the value into the configuration table for this current user
+        (or the given user_id, when called outside a request context).
 
         :param value: Value to be set
+        :param user_id: User to set the preference for; defaults to the
+                        current user.
 
         :returns: nothing.
         """
@@ -217,14 +220,15 @@ class _Preference():
                 "Invalid value for {0} option.".format(
                     error_map.get(self._type, self._type)))
 
+        uid = user_id if user_id is not None else current_user.id
         pref = UserPrefTable.query.filter_by(
             pid=self.pid
-        ).filter_by(uid=current_user.id).first()
+        ).filter_by(uid=uid).first()
 
         value = "{}".format(value)
         if pref is None:
             pref = UserPrefTable(
-                uid=current_user.id, pid=self.pid, value=value
+                uid=uid, pid=self.pid, value=value
             )
             db.session.add(pref)
         else:
@@ -597,30 +601,53 @@ class Preferences():
     @classmethod
     def save_cli(cls, mid, cid, pid, user_id, value):
         """
-        save
-        Update the value for the preference in the configuration database.
+        save_cli
+        Validate and update the value for the preference in the
+        configuration database for the given user (used by the CLI).
 
         :param mid: Module ID
         :param cid: Category ID
         :param pid: Preference ID
+        :param user_id: User to set the preference for
         :param value: Value for the options
         """
+        # Find the entry for this module in the configuration database.
+        module = ModulePrefTable.query.filter_by(id=mid).first()
 
-        pref = UserPrefTable.query.filter_by(
-            pid=pid
-        ).filter_by(uid=user_id).first()
+        if module is None:
+            return False, gettext("Could not find the specified module.")
 
-        value = "{}".format(value)
-        if pref is None:
-            pref = UserPrefTable(
-                uid=user_id, pid=pid, value=value
-            )
-            db.session.add(pref)
-        else:
-            pref.value = value
-        db.session.commit()
+        m = cls.modules.get(module.name)
+        if m is None:
+            return False, gettext(
+                "Module '{0}' is no longer in use."
+            ).format(module.name)
 
-        return True, None
+        category = None
+        for c in m.categories:
+            cat = m.categories[c]
+            if cid == cat['id']:
+                category = cat
+                break
+
+        if category is None:
+            return False, gettext(
+                "Module '{0}' does not have category with id '{1}'"
+            ).format(module.name, cid)
+
+        preference = None
+        for p in category['preferences']:
+            pref = (category['preferences'])[p]
+            if pref.pid == pid:
+                preference = pref
+                break
+
+        if preference is None:
+            return False, gettext("Could not find the specified preference.")
+
+        # Delegate to set() so the value is validated against the
+        # preference type, just like the GUI path.
+        return preference.set(value, user_id=user_id)
 
     @classmethod
     def save(cls, mid, cid, pid, value):

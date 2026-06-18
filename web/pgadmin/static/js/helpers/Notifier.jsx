@@ -9,17 +9,11 @@
 
 import { SnackbarProvider, SnackbarContent } from 'notistack';
 import { styled } from '@mui/material/styles';
-import {Box} from '@mui/material';
-import CloseIcon from '@mui/icons-material/CloseRounded';
-import { DefaultButton, PrimaryButton } from '../components/Buttons';
-import HTMLReactParser from 'html-react-parser';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { NotifierMessage, MESSAGE_TYPE } from '../components/FormComponents';
 import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
-import _ from 'lodash';
 import { useModal } from './ModalProvider';
 import { parseApiError } from '../api_instance';
 
@@ -51,28 +45,6 @@ FinalNotifyContent.propTypes = {
   children: CustomPropTypes.children,
 };
 
-function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
-  return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2}>{HTMLReactParser(text)}</Box>
-      <Box className='Notifier-footer'>
-        {confirm &&
-          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
-        }
-        <PrimaryButton className='Notifier-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
-      </Box>
-    </Box>
-  );
-}
-AlertContent.propTypes = {
-  text: PropTypes.string,
-  confirm: PropTypes.bool,
-  onOkClick: PropTypes.func,
-  onCancelClick: PropTypes.func,
-  okLabel: PropTypes.string,
-  cancelLabel: PropTypes.string,
-};
-
 // This can be called from iframe,
 // so need to separate the context to avoid hooks error
 class SnackbarNotifier {
@@ -90,9 +62,9 @@ class SnackbarNotifier {
     }
   }
 
-  callNotify(msg, type, autoHideDuration) {
+  callNotify(msg, type, autoHideDuration, {plainText = false} = {}) {
     this.notify(
-      <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={true} />,
+      <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={true} plainText={plainText} />,
       autoHideDuration
     );
   }
@@ -120,6 +92,22 @@ class Notifier {
     this.snackbar.callNotify(msg, MESSAGE_TYPE.ERROR, autoHideDuration);
   }
 
+  // Plain-text snackbar variants. Use these when `msg` is, or may contain,
+  // text from an untrusted source (PostgreSQL server, driver, remote API,
+  // user input). Newlines are preserved; no HTML is interpreted.
+  successText(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.SUCCESS, autoHideDuration, {plainText: true});
+  }
+  warningText(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.WARNING, autoHideDuration, {plainText: true});
+  }
+  infoText(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.INFO, autoHideDuration, {plainText: true});
+  }
+  errorText(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.ERROR, autoHideDuration, {plainText: true});
+  }
+
   // proxy
   notify(...args) {
     this.snackbar.notify(...args);
@@ -127,12 +115,12 @@ class Notifier {
 
   pgRespErrorNotify(error, prefixMsg='') {
     if (error.response?.status === 410) {
-      this.alert(
+      this.alertText(
         gettext('Error: Object not found - %s.', error.response.statusText),
         parseApiError(error)
       );
     } else {
-      this.error(prefixMsg + ' ' + parseApiError(error));
+      this.errorText(prefixMsg + ' ' + parseApiError(error));
     }
   }
 
@@ -160,17 +148,17 @@ class Notifier {
         onJSONResult && typeof(onJSONResult) == 'function') {
         return onJSONResult(resp.result);
       }
-      msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
+      msg = resp.result || resp.errormsg || 'Unknown error';
     } else {
       if (type === 'error') {
-        this.alert('Error', promptmsg);
+        this.alertText('Error', promptmsg);
       }
       return;
     }
     if(type == 'error-noalert' && onJSONResult && typeof(onJSONResult) == 'function') {
       return onJSONResult();
     }
-    this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
+    this.alertText(promptmsg, msg);
     onJSONResult?.('ALERT_CALLED');
   }
 
@@ -178,6 +166,12 @@ class Notifier {
     /* Use this if you want to use pgAdmin global notifier.
     Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
     this.modal.alert(title, text, onOkClick, okLabel);
+  }
+
+  // Plain-text modal alert. Use whenever `text` may contain untrusted
+  // content (driver / API error messages, server-supplied strings, etc.).
+  alertText(title, text, onOkClick, okLabel=gettext('OK')) {
+    this.modal.alert(title, text, onOkClick, okLabel, {plainText: true});
   }
 
   confirm(title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'), okIcon='default', modalId=null) {

@@ -821,7 +821,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
                 is_valid_options = True
 
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),
-                              fsid=fsid)
+                              fsid=fsid, conn=self.conn)
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=fs_rv_acl_res)

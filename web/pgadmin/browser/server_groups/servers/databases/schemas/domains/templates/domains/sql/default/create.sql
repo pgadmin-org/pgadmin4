@@ -20,14 +20,14 @@ ALTER DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
 {% if c.description %}
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
-    IS '{{ c.description }}';
+    IS {{ c.description|qtLiteral(conn) }};
 {% endif %}
 {% endfor -%}
 {% endif %}
 
 {% if data.description %}
 COMMENT ON DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
-    IS '{{ data.description }}';{% endif -%}
+    IS {{ data.description|qtLiteral(conn) }};{% endif -%}
 
 {% if data.seclabels %}
 {% for r in data.seclabels %}

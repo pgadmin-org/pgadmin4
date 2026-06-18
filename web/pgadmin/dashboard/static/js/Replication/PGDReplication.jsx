@@ -303,7 +303,7 @@ export default function PGDReplication({preferences, treeNodeInfo, pageVisible, 
       })
       .catch((error)=>{
         console.error(error);
-        pgAdmin.Browser.notifier.error(parseApiError(error));
+        pgAdmin.Browser.notifier.errorText(parseApiError(error));
       });
   };
 

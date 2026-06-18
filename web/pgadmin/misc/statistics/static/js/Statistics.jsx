@@ -192,7 +192,7 @@ function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
                 }, 100);
               });
             } else {
-              pgAdmin.Browser.notifier.alert(
+              pgAdmin.Browser.notifier.alertText(
                 gettext('Failed to retrieve data from the server.'),
                 parseApiError(err)
               );

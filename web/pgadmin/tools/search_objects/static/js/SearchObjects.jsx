@@ -360,7 +360,7 @@ export default function SearchObjects({nodeData}) {
       })
       .catch((err)=>{
         setLoaderText(null);
-        pgAdmin.Browser.notifier.error(parseApiError(err));
+        pgAdmin.Browser.notifier.errorText(parseApiError(err));
       });
   };
 
@@ -388,11 +388,11 @@ export default function SearchObjects({nodeData}) {
             resolve(typeOpt);
           })
           .catch((err)=>{
-            pgAdmin.Browser.notifier.error(parseApiError(err));
+            pgAdmin.Browser.notifier.errorText(parseApiError(err));
             reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
       } catch (error) {
-        pgAdmin.Browser.notifier.error(parseApiError(error));
+        pgAdmin.Browser.notifier.errorText(parseApiError(error));
         reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
       }
     });

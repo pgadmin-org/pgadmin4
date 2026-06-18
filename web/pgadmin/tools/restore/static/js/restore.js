@@ -131,7 +131,7 @@ define('tools.restore', [
         method: 'GET'
       }).then((res)=>{
         if (!res.data.success) {
-          pgAdmin.Browser.notifier.alert(
+          pgAdmin.Browser.notifier.alertText(
             gettext('Utility not found'),
             gettext(res.data.errormsg)
           );

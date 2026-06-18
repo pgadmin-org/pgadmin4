@@ -168,7 +168,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
            + 'On clicking the ok button, debugger panel will be closed.');
         }
 
-        pgAdmin.Browser.notifier.alert(header_msg, err_msg, () => {
+        pgAdmin.Browser.notifier.alertText(header_msg, err_msg, () => {
           if (panelId) {
             panelDocker.close(panelId, true);
           }
@@ -224,7 +224,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           // If status is Busy then poll the result by recursive call to the poll function
           messages(transId);
         } else if (res.data.data.status === 'NotConnected') {
-          pgAdmin.Browser.notifier.alert(
+          pgAdmin.Browser.notifier.alertText(
             gettext('Not connected to the server or the connection to the server has been closed.'),
             res.data.result
           );
@@ -563,7 +563,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
     //Set the notification message to inform the user that execution is
     // completed with error.
     if (!params.directDebugger.is_user_aborted_debugging) {
-      pgAdmin.Browser.notifier.error(res.data.info, 3000);
+      pgAdmin.Browser.notifier.errorText(res.data.info, 3000);
     }
 
     // Update the message tab of the debugger
@@ -683,7 +683,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
               // Update the message tab of the debugger
               updateMessages(res.data.data.status_message);
             } else if (res.data.status === 'NotConnected') {
-              pgAdmin.Browser.notifier.alert(
+              pgAdmin.Browser.notifier.alertText(
                 gettext('Debugger poll end execution error'),
                 res.data.result
               );
@@ -876,7 +876,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
       try {
         updateBreakpoint(transId);
       } catch (err) {
-        pgAdmin.Browser.notifier.alert(gettext('Error in update'), err);
+        pgAdmin.Browser.notifier.alertText(gettext('Error in update'), err?.message ?? String(err));
       }
 
     }
@@ -1029,7 +1029,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           if (res.data.data.result) {
             pgAdmin.Browser.notifier.success(res.data.data.info, 3000);
           } else {
-            pgAdmin.Browser.notifier.error(res.data.data.info, 3000);
+            pgAdmin.Browser.notifier.errorText(res.data.data.info, 3000);
           }
         }
       })

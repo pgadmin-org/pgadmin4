@@ -165,12 +165,19 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         return wrap
 
-    def _formatter(self, did, scid, tid, data, with_serial_cols=False):
+    def _formatter(self, did, scid, tid, data, with_serial_cols=True):
         """
         Args:
             data: dict of query result
             scid: schema oid
             tid: table oid
+            with_serial_cols: when True (default), reverse-engineer
+                ``integer + nextval('<table>_<col>_seq')`` columns back
+                to their ``serial`` / ``smallserial`` / ``bigserial``
+                declaration so emitted DDL round-trips on a clean
+                target. Pass ``False`` only for low-level introspection
+                callers that handle the sequence themselves.
+                Issue #9896.
 
         Returns:
             It will return formatted output of query result
@@ -488,7 +495,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         return condition
 
-    def fetch_tables(self, sid, did, scid, tid=None, with_serial_cols=False):
+    def fetch_tables(self, sid, did, scid, tid=None, with_serial_cols=True):
         """
         This function will fetch the list of all the tables
         and will be used by schema diff.
@@ -888,7 +895,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             rules_sql += render_template("/".join(
                 [self.rules_template_path, self._CREATE_SQL]),
                 data=res_data, display_comments=display_comments,
-                add_replace_clause=True
+                add_replace_clause=True, conn=self.conn
             )
 
             # Add into main sql

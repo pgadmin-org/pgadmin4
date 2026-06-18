@@ -18,6 +18,7 @@ FROM pg_catalog.pg_trigger t
     LEFT OUTER JOIN pg_catalog.pg_language l ON l.oid=p.prolang
 WHERE NOT tgisinternal
     AND tgrelid = {{tid}}::OID
+    AND tgpackageoid = 0
 {% if trid %}
     AND t.oid = {{trid}}::OID
 {% endif %}

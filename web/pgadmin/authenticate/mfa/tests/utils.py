@@ -8,7 +8,7 @@
 ##############################################################################
 import types
 
-from flask import Flask, Response
+from flask import Flask, Response, current_app
 import config
 
 from pgadmin.authenticate.mfa import init_app as mfa_init_app
@@ -86,6 +86,21 @@ def test_create_dummy_app(name=__name__):
         pass  # We don't need the logout url when dummy auth is enabled.
 
     app.register_logout_hook = types.MethodType(__dummy_logout_hook, app)
+
+    # pgAdmin's real create_app() registers an @app.context_processor
+    # that exposes 'current_app' to Jinja, and Flask-WTF (loaded by the
+    # real app) registers a 'csrf_token' global. Neither is a Flask
+    # default. Templates inherited from production -- e.g.
+    # mfa/validate.html -> security/render_page.html -> base.html --
+    # reference both, so the dummy app needs the same surface to let
+    # those templates render. The csrf_token stub returns a fixed
+    # marker string; tests asserting on the rendered HTML can rely on
+    # it being present and stable.
+    @app.context_processor
+    def __inject_current_app():
+        return {'current_app': current_app}
+
+    app.jinja_env.globals['csrf_token'] = lambda: 'dummy-csrf-token'
 
     return app
 

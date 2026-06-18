@@ -11,6 +11,10 @@
           "name": "col1",
           "cltype": "integer",
           "is_primary_key": false
+        }, {
+          "name": "col2",
+          "cltype": "integer",
+          "is_primary_key": false
         }],
         "is_partitioned": false,
         "schema": "testschema",
@@ -37,7 +41,7 @@
       }
     }, {
       "type": "create",
-      "name": "Create Primary Key Constraint",
+      "name": "Create Primary Key Constraint -- 11 Plus",
       "endpoint": "NODE-primary_key.obj",
       "sql_endpoint": "NODE-primary_key.sql_id",
       "msql_endpoint": "NODE-primary_key.msql",
@@ -46,6 +50,7 @@
         "comment": "Comment for create",
         "fillfactor": 20,
         "columns": [{"column":"col1"}],
+        "include": ["col2"],
         "condeferrable": true,
         "condeferred": true
       },
@@ -53,7 +58,7 @@
       "expected_msql_file": "create_pkey_constraint_msql.sql"
     }, {
       "type": "alter",
-      "name": "Alter Primary Key Constraint",
+      "name": "Alter Primary Key Constraint -- 11 Plus",
       "endpoint": "NODE-primary_key.obj_id",
       "sql_endpoint": "NODE-primary_key.sql_id",
       "msql_endpoint": "NODE-primary_key.msql_id",
@@ -77,14 +82,14 @@
       "expected_msql_file": "alter_pkey_reset_fillfactor_msql.sql"
     }, {
       "type": "delete",
-      "name": "Drop Primary Key Constraint",
+      "name": "Drop Primary Key Constraint -- 11 plus",
       "endpoint": "NODE-primary_key.delete_id",
       "data": {
         "name": "Pk_$%{}[]()&*^!@\"'`\\/#a"
       }
     }, {
       "type": "create",
-      "name": "Create Primary Key Constraint with Index",
+      "name": "Create Primary Key Constraint with Index -- 11 plus",
       "endpoint": "NODE-primary_key.obj",
       "sql_endpoint": "NODE-primary_key.sql_id",
       "msql_endpoint": "NODE-primary_key.msql",
@@ -97,7 +102,7 @@
       "expected_msql_file": "create_pkey_constraint_with_index_msql.sql"
     }, {
       "type": "alter",
-      "name": "Alter Primary Key Constraint with Index",
+      "name": "Alter Primary Key Constraint with Index -- 11 plus",
       "endpoint": "NODE-primary_key.obj_id",
       "sql_endpoint": "NODE-primary_key.sql_id",
       "msql_endpoint": "NODE-primary_key.msql_id",
@@ -110,21 +115,14 @@
       "expected_msql_file": "alter_pkey_constraint_with_index_msql.sql"
     }, {
       "type": "delete",
-      "name": "Drop Primary Key Constraint with Index",
+      "name": "Drop Primary Key Constraint with Index -- 11 plus",
       "endpoint": "NODE-primary_key.delete_id",
       "data": {
         "name": "Pk_$%{}[]()&*^!@\"'`\\/#a"
       }
     }, {
       "type": "delete",
-      "name": "Drop Index",
-      "endpoint": "NODE-index.delete_id",
-      "data": {
-        "name": "uindex"
-      }
-    }, {
-      "type": "delete",
-      "name": "Drop Index Constraint Table",
+      "name": "Drop Index Constraint Table -- 11 plus",
       "endpoint": "NODE-table.delete_id",
       "data": {
         "name": "tablefor_primary_key_cons"

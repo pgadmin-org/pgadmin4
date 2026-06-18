@@ -202,7 +202,7 @@ define('pgadmin.node.table', [
                     t.updateAndReselectNode(i, data);
                   }
                   if (res.success == 2) {
-                    pgAdmin.Browser.notifier.error(res.info);
+                    pgAdmin.Browser.notifier.errorText(res.info);
                   }
                 })
                 .catch((error)=>{

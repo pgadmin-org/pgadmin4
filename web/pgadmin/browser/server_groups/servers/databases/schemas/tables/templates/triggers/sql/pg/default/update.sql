@@ -8,7 +8,7 @@ ALTER TRIGGER {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.nspname,
 {% if data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL' %}
 CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
 {% else %}
-CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|qtIdent(data.name) }}
+CREATE{% if not data.is_constraint_trigger %} OR REPLACE{% endif %}{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|qtIdent(data.name) }}
 {% endif %}
     {% if data.fires is defined %}{{data.fires}} {% else %}{{o_data.fires}} {% endif %}{% if data.evnt_insert is not defined %}{% if o_data.evnt_insert %}INSERT{% set or_flag = True %}
 {% endif %}{% else %}{% if data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% endif %}{% if data.evnt_delete is not defined %}{% if o_data.evnt_delete %}

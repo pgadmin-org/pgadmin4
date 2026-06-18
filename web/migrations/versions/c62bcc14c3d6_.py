@@ -27,7 +27,7 @@ depends_on = None
 def upgrade():
     # Add 'change_password' permission to all roles except 'Administrator'.
     meta = sa.MetaData()
-    meta.reflect(op.get_bind(), only=('role', 'setting'))
+    meta.reflect(op.get_bind(), only=('role', 'setting'), resolve_fks=False)
     role_table = sa.Table('role', meta)
 
     perm = role_table.c.permissions

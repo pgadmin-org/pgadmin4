@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import ForgotPasswordImage from '../../img/forgot_password.svg?svgr';
 import { InputText } from '../components/FormComponents';
@@ -5,7 +6,7 @@ import BasePage, { SecurityButton } from './BasePage';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 
-export default function ForgotPasswordPage({csrfToken, actionUrl, ...props}) {
+export default function ForgotPasswordPage({csrfToken, actionUrl, loginUrl, ...props}) {
   const [form, setForm] = useState(({email: ''}));
 
   const onTextChange = (n, val)=>{
@@ -21,6 +22,9 @@ export default function ForgotPasswordPage({csrfToken, actionUrl, ...props}) {
           controlProps={{autoComplete: null}} />
         <SecurityButton name="internal_button" value="Recover Password" disabled={!form.email}>{gettext('Recover Password')}</SecurityButton>
       </form>
+      {loginUrl && <Box textAlign="center">
+        <a style={{color: 'inherit'}} href={loginUrl}>{gettext('Back to login')}</a>
+      </Box>}
     </BasePage>
   );
 }
@@ -28,4 +32,5 @@ export default function ForgotPasswordPage({csrfToken, actionUrl, ...props}) {
 ForgotPasswordPage.propTypes = {
   csrfToken: PropTypes.string,
   actionUrl: PropTypes.string,
+  loginUrl: PropTypes.string,
 };

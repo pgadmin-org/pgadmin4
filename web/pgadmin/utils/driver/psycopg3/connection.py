@@ -17,7 +17,6 @@ import os
 import secrets
 import datetime
 import asyncio
-import copy
 from collections import deque
 import psycopg
 from flask import g, current_app
@@ -38,6 +37,7 @@ from .typecast import register_binary_data_typecasters,\
     register_binary_typecasters, register_array_to_string_typecasters,\
     register_numeric_typecasters, ALL_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
+from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.utils import csv_lib as csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
@@ -281,7 +281,6 @@ class Connection(BaseConnection):
         password, encpass, is_update_password = \
             self._check_user_password(kwargs)
 
-        passfile = kwargs['passfile'] if 'passfile' in kwargs else None
         tunnel_password = kwargs['tunnel_password'] if 'tunnel_password' in \
                                                        kwargs else ''
 
@@ -313,14 +312,28 @@ class Connection(BaseConnection):
         if is_error:
             return False, errmsg
 
-        # If no password credential is found then connect request might
-        # come from Query tool, ViewData grid, debugger etc tools.
-        # we will check for pgpass file availability from connection manager
-        # if it's present then we will use it
-        if not password and not encpass and not passfile:
-            passfile = manager.get_connection_param_value('passfile')
-            if manager.passexec:
+        # If no password credential is found then connect request might come
+        # from Query tool, ViewData grid, debugger, etc. In that case, fall
+        # back to using the password returned from manager.passexec.
+        passfile = manager.get_connection_param_value('passfile')
+        if not password and not encpass and manager.passexec:
+            if not passfile:
                 password = manager.passexec.get()
+            else:
+                current_app.logger.warning(
+                    'Ignoring passexec in favor of the specified passfile '
+                    f'({passfile!r}).'
+                )
+
+        # create_connection_string() automatically picks up the passfile from
+        # connection parameters. Warn if that differs from the passfile kwarg.
+        passfile_kwarg = kwargs.get('passfile', None)
+        if passfile_kwarg and passfile_kwarg != passfile:
+            current_app.logger.warning(
+                'Conflicting passfiles specified through keyword arguments '
+                f'({passfile_kwarg!r}) and connection parameters '
+                f'({passfile!r}); using the latter.'
+            )
 
         try:
             database = self.db
@@ -683,10 +696,17 @@ WHERE db.datname = current_database()""")
         if manager.post_connection_sql and manager.post_connection_sql != '':
             status = self._execute(cur, manager.post_connection_sql)
             if status is not None:
-                errmsg = gettext(("Failed to execute the post connection SQL "
-                                  "with below error message:\n{msg}").format(
-                    msg=status))
-                current_app.logger.error(errmsg)
+                # Log the raw PG-returned text so the server log stays
+                # human-readable. HTML-escape only the value that crosses
+                # into the JSON response, where downstream consumers may
+                # render it as HTML.
+                current_app.logger.error(
+                    "Failed to execute the post connection SQL "
+                    "with below error message:\n%s", status)
+                errmsg = gettext(
+                    "Failed to execute the post connection SQL "
+                    "with below error message:\n{msg}").format(
+                    msg=sanitize_external_text(status))
         return errmsg
 
     def __cursor(self, server_cursor=False, scrollable=False):
@@ -1487,7 +1507,43 @@ Failed to reset the connection to the server due to following error:
         return self.__async_query_error
 
     def ping(self):
-        return self.execute_scalar('SELECT 1')
+        """
+        Check if the connection is actually alive by executing a lightweight
+        query.  Unlike connected(), which only inspects local state, this
+        sends traffic to the server and will detect stale / half-open TCP
+        connections that were silently dropped by firewalls or the OS while
+        pgAdmin was idle.
+
+        Returns True if alive, False otherwise.
+        """
+        if not self.connected():
+            return False
+
+        try:
+            # Check the transaction status before executing the ping
+            # query.  If a query is already in progress (ACTIVE) or we
+            # are inside a transaction block (INTRANS / INERROR), running
+            # SELECT 1 would fail or disrupt the ongoing operation.  In
+            # those states the connection is evidently alive, so just
+            # return True.
+            #   0 = IDLE     — safe to send a query
+            #   1 = ACTIVE   — command in progress, connection is alive
+            #   2 = INTRANS  — in transaction block, connection is alive
+            #   3 = INERROR  — in failed transaction, connection is alive
+            if self.conn.info.transaction_status != 0:
+                return True
+
+            cur = self.conn.cursor()
+            cur.execute("SELECT 1")
+            cur.close()
+            return True
+        except Exception:
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+            self.conn = None
+            return False
 
     def _release(self):
         if self.wasConnected:
