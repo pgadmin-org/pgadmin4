@@ -427,6 +427,36 @@ _strip_architecture() {
     done < <(find "${BUNDLE_DIR}" -type f)
 }
 
+_prune_dangling_symlinks() {
+    # Gatekeeper walks every symlink in the bundle and rejects the whole app
+    # with "invalid destination for symbolic link in bundle" if any link does
+    # not resolve to a real file inside the app. Notarisation does NOT catch
+    # this, so a broken link slips through stapling and only surfaces as a
+    # Gatekeeper failure on the end user's machine.
+    #
+    # The embedded Python.framework ships such links: an arm64-only build still
+    # carries a bin/python*-intel64 launcher symlink (whose target we delete in
+    # _strip_architecture), and the bundled Tcl/Tk frameworks carry
+    # PrivateHeaders links pointing at a Versions/Current that has none. Rather
+    # than hunt individual offenders, prune EVERY dangling symlink so a future
+    # stray link cannot reintroduce the bug.
+    #
+    # NB: this MUST run after _strip_architecture (which orphans links by
+    # deleting their targets) and before _codesign_binaries / _codesign_bundle.
+
+    echo "Pruning dangling symlinks before signing..."
+    # -type l selects symlinks; "! -exec test -e {} \;" keeps only those whose
+    # target does not exist (test -e follows the link). BSD find on macOS.
+    find "${BUNDLE_DIR}" -type l ! -exec test -e {} \; -print -delete
+
+    # Belt and braces: fail the build if anything still dangles, so this can
+    # never silently slip past notarisation into a shipped bundle again.
+    if find "${BUNDLE_DIR}" -type l ! -exec test -e {} \; -print | grep -q .; then
+        echo "ERROR: bundle still contains dangling symlinks (Gatekeeper will reject)" >&2
+        exit 1
+    fi
+}
+
 _generate_sbom() {
    echo "Generating SBOM..."
    syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/sbom.json"
