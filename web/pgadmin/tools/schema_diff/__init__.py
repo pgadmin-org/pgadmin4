@@ -307,10 +307,10 @@ def servers():
                 "connected": connected
             }
 
-            if server.servers.name in res:
-                res[server.servers.name].append(server_info)
+            if server.servergroup.name in res:
+                res[server.servergroup.name].append(server_info)
             else:
-                res[server.servers.name] = [server_info]
+                res[server.servergroup.name] = [server_info]
 
     except Exception as e:
         app.logger.exception(e)
