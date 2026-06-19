@@ -14,7 +14,7 @@ helpers enforce that users can only access servers they own or that
 have been explicitly shared with them via SharedServer entries.
 """
 
-from sqlalchemy import or_
+from sqlalchemy import or_, case, exists, func, literal
 from flask_security import current_user
 
 from pgadmin.model import db, Server, ServerGroup
@@ -65,58 +65,122 @@ def get_server(sid, only_owned=False):
     ).first()
 
 
-def get_server_group(gid):
+def get_server_group(gid,hide_shared=False):
     """Fetch a server group by ID, verifying user access.
 
-    Returns the group if:
-    - Desktop mode, OR
-    - The user owns it, OR
-    - It contains shared servers (Server.shared=True).
-
-    Returns None otherwise. The Administrator role does not grant
-    access to other users' private groups.
+    See get_server_groups_for_user() docstring for the underlying access logic.
+    Returns the group if the user owns it, or if it contains shared servers.
+    Returns None otherwise.
     """
-    if not config.SERVER_MODE:
-        return ServerGroup.query.filter_by(id=gid).first()
+    sg = get_server_groups_for_user(servergroup_id=gid,
+                                    hide_shared=hide_shared)
 
-    return ServerGroup.query.filter(
-        ServerGroup.id == gid,
-        or_(
-            ServerGroup.user_id == current_user.id,
-            ServerGroup.id.in_(
-                db.session.query(Server.servergroup_id).filter(
-                    Server.shared
-                )
-            )
-        )
-    ).first()
+    if sg:
+        return sg[0]
+
+    return None
 
 
-def get_server_groups_for_user():
-    """Return server groups visible to the current user.
+def get_server_groups_for_user(hide_shared=False, servergroup_id=None):
+    """Return a list for server groups visible to the current user.
+
+    Args:
+        hide_shared: If True, only return groups owned by the current user.
+        servergroup_id: If provided, filter to a specific server group ID.
+
+    See get_server_groups_for_user_query() docstring for the underlying query
+    logic.
+    """
+
+    sg = get_server_groups_for_user_query(hide_shared=hide_shared,
+                                          servergroup_id=servergroup_id)
+
+    result_list = []
+
+    for row in sg.all():
+        group = row.ServerGroup
+        group.is_shared_group = row.is_shared_group
+        group.is_first_user_group = row.is_first_user_group
+        result_list.append(group)
+
+    return result_list
+
+
+def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
+    """Return a query for server groups visible to the current user.
 
     Includes groups owned by the user plus groups containing shared
     servers (Server.shared=True, visible to all authenticated users).
+
+    is_shared_group is an additional column indicating if the group is a group
+    not owned by the user and contains shared servers.
 
     The Administrator role does not grant visibility into other
     users' private groups — admins see the same set as a regular
     user with the same ownership and sharing configuration.
     """
-    if not config.SERVER_MODE:
-        return ServerGroup.query.filter_by(
-            user_id=current_user.id
-        ).all()
 
-    return ServerGroup.query.filter(
-        or_(
-            ServerGroup.user_id == current_user.id,
-            ServerGroup.id.in_(
-                db.session.query(Server.servergroup_id).filter(
-                    Server.shared
-                )
+    ServerGroupAlias = db.aliased(ServerGroup)
+
+    min_id_subquery = (
+        db.session.query(func.min(ServerGroupAlias.id))
+        .filter(
+            ServerGroupAlias.user_id == current_user.id
+        )
+        .correlate(ServerGroup)
+        .scalar_subquery()
+    )
+
+    is_first_user_group = (
+        (ServerGroup.id == min_id_subquery)
+        .label('is_first_user_group')
+    )
+
+    if not config.SERVER_MODE:
+        query = ServerGroup.query.add_columns(
+            literal(0).label('is_shared_group'),
+            is_first_user_group
+        ).filter(ServerGroup.user_id == current_user.id)
+
+        if servergroup_id is not None:
+            query = query.filter(ServerGroup.id == servergroup_id)
+
+        return query.order_by(ServerGroup.id)
+
+    query = ServerGroup.query.add_columns(
+        (ServerGroup.user_id != current_user.id)
+        .label('is_shared_group'),
+        is_first_user_group
+    )
+
+    if hide_shared:
+        query = query.filter(ServerGroup.user_id == current_user.id)
+    else:
+        has_shared_servers = (
+            db.session.query(Server.id)
+            .filter(
+                Server.servergroup_id == ServerGroup.id,
+                Server.shared
+            )
+            .exists()
+        )
+
+        query = query.filter(
+            or_(
+                ServerGroup.user_id == current_user.id,
+                has_shared_servers
             )
         )
-    ).all()
+
+    if servergroup_id is not None:
+        query = query.filter(ServerGroup.id == servergroup_id)
+
+    query = query.order_by(
+        case((ServerGroup.user_id == current_user.id, 0),else_=1),
+        ServerGroup.id
+    )
+
+    return query
 
 
 def get_user_server_query():
