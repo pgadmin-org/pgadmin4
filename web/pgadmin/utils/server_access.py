@@ -73,7 +73,7 @@ def get_server_group(gid,hide_shared=False):
     Returns None otherwise.
     """
     sg = get_server_groups_for_user(servergroup_id=gid,
-                                    hide_shared=hide_shared )
+                                    hide_shared=hide_shared)
 
     if sg:
         return sg[0]
@@ -137,19 +137,18 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     )
 
     if not config.SERVER_MODE:
-        return ( ServerGroup.query.add_columns(
-                    literal(0).label('is_shared_group'),
-                    is_first_user_group
+        return (ServerGroup.query.add_columns(
+                literal(0).label('is_shared_group'),
+                is_first_user_group
                 )
-                .filter( ServerGroup.user_id == current_user.id)
-        )
-
+                .filter(ServerGroup.user_id == current_user.id)
+                )
 
     query = ServerGroup.query.add_columns(
-                (ServerGroup.user_id != current_user.id)
-                    .label('is_shared_group'),
-                is_first_user_group
-            )
+        (ServerGroup.user_id != current_user.id)
+        .label('is_shared_group'),
+        is_first_user_group
+    )
 
     if hide_shared:
         query = query.filter(ServerGroup.user_id == current_user.id)

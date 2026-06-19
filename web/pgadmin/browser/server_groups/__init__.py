@@ -36,8 +36,7 @@ def get_icon_css_class(is_shared_group, default_val='icon-server_group'):
     :param default_val:
     :return: default_val
     """
-    if (config.SERVER_MODE
-        and is_shared_group):
+    if (config.SERVER_MODE and is_shared_group):
         default_val = 'icon-server_group_shared'
         return default_val, True
 
@@ -77,8 +76,9 @@ class ServerGroupModule(BrowserPluginModule):
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=(not (group.is_first_user_group
-                                or group.is_shared_group)),
+                can_delete=(
+                    not (group.is_first_user_group or group.is_shared_group)
+                ),
                 can_edit=(not group.is_shared_group),
                 is_shared=is_shared
             )
@@ -182,7 +182,8 @@ class ServerGroupView(NodeView):
                 status=417,
                 success=0,
                 errormsg=gettext(
-                    'The specified server group cannot be deleted. Shared servers are present in this group.'
+                    'The specified server group cannot be deleted.'
+                    ' Shared servers are present in this group.'
                 )
             )
 
@@ -191,7 +192,8 @@ class ServerGroupView(NodeView):
                 status=417,
                 success=0,
                 errormsg=gettext(
-                    'The specified server group cannot be deleted. The first server group is not deletable.'
+                    'The specified server group cannot be deleted.'
+                    ' The first server group is not deletable.'
                 )
             )
 
@@ -260,8 +262,12 @@ class ServerGroupView(NodeView):
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=(not (servergroup.is_first_user_group
-                                or servergroup.is_shared_group)),
+                can_delete=(
+                    not (
+                        servergroup.is_first_user_group or
+                        servergroup.is_shared_group
+                    )
+                ),
                 can_edit=(not servergroup.is_shared_group),
                 is_shared=is_shared
             )
@@ -315,8 +321,13 @@ class ServerGroupView(NodeView):
                         icon_class,
                         True,
                         self.node_type,
-                        can_delete=(not (sg.is_first_user_group
-                                        or sg.is_shared_group)),
+                        can_delete=(
+                            not (
+                                sg.is_first_user_group or
+                                sg.is_shared_group
+                            )
+                        ),
+                        can_edit=(not sg.is_shared_group),
                         is_shared=is_shared
                     )
                 )
@@ -372,7 +383,9 @@ class ServerGroupView(NodeView):
         # selected 'Hide shared server'
         pref = Preferences.module('browser')
         pref_item = pref.preference('hide_shared_server')
-        hide_shared_server = pref_item.get() if pref_item is not None else True
+        hide_shared_server = (
+            pref_item.get() if pref_item is not None else False
+        )
 
         return get_server_groups_for_user(hide_shared_server)
 
@@ -388,7 +401,8 @@ class ServerGroupView(NodeView):
                 groups = get_server_groups_for_user(hide_shared=True)
 
             for group in groups:
-                icon_class, is_shared = get_icon_css_class(group.is_shared_group)
+                icon_class,
+                is_shared = get_icon_css_class(group.is_shared_group)
                 nodes.append(
                     self.blueprint.generate_browser_node(
                         "%d" % group.id,
@@ -397,8 +411,13 @@ class ServerGroupView(NodeView):
                         icon_class,
                         True,
                         self.node_type,
-                        can_delete=(not (group.is_first_user_group
-                                        or group.is_shared_group)),
+                        can_delete=(
+                            not (
+                                group.is_first_user_group or
+                                group.is_shared_group
+                            )
+                        ),
+                        can_edit=(not group.is_shared_group),
                         is_shared=is_shared
                     )
                 )
@@ -418,8 +437,13 @@ class ServerGroupView(NodeView):
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=(not (group.is_first_user_group
-                                or group.is_shared_group)),
+                can_delete=(
+                    not (
+                        group.is_first_user_group or
+                        group.is_shared_group
+                    )
+                ),
+                can_edit=(not group.is_shared_group),
                 is_shared=is_shared
             )
 
