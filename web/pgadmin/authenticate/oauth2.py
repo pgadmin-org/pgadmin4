@@ -31,6 +31,58 @@ from pgadmin.model import db
 OAUTH2_LOGOUT = 'oauth2.logout'
 OAUTH2_AUTHORIZE = 'oauth2.authorize'
 
+# OAuth2 settings that legitimately live at the top level of the
+# configuration. Every other OAUTH2_* setting belongs *inside* an entry
+# of the OAUTH2_CONFIG list and is ignored if set at the top level.
+_TOP_LEVEL_OAUTH2_SETTINGS = {'OAUTH2_CONFIG', 'OAUTH2_AUTO_CREATE_USER'}
+
+
+def warn_on_misplaced_oauth2_config(app):
+    """Warn when per-provider OAuth2 settings have been supplied as
+    top-level configuration variables instead of inside an OAUTH2_CONFIG
+    entry.
+
+    pgAdmin only reads provider settings from the OAUTH2_CONFIG list, so
+    values such as a top-level OAUTH2_CLIENT_ID or OAUTH2_SSL_CERT_VERIFICATION
+    are silently ignored. This is an easy trap in container deployments:
+    every other setting is configured as PGADMIN_CONFIG_<KEY>, so it is
+    natural to assume PGADMIN_CONFIG_OAUTH2_CLIENT_ID and friends will work
+    the same way, when in fact OAuth2 must be configured through a single
+    PGADMIN_CONFIG_OAUTH2_CONFIG holding the provider list. Surfacing this
+    loudly turns a silent misconfiguration into a diagnosable one (see
+    issue #10053).
+    """
+    misplaced = sorted(
+        key for key in dir(config)
+        if key.startswith('OAUTH2_') and
+        key not in _TOP_LEVEL_OAUTH2_SETTINGS
+    )
+    if not misplaced:
+        return
+
+    # If at least one provider is actually configured in OAUTH2_CONFIG we
+    # assume the deployment knows what it is doing and stay quiet, even if
+    # some stray top-level keys are also present.
+    providers_configured = any(
+        isinstance(provider, dict) and provider.get('OAUTH2_NAME')
+        for provider in (getattr(config, 'OAUTH2_CONFIG', None) or [])
+    )
+    if providers_configured:
+        return
+
+    app.logger.warning(
+        "OAuth2: the following settings are defined at the top level of the "
+        "configuration but pgAdmin reads OAuth2 provider settings only from "
+        "the OAUTH2_CONFIG list, so they are being ignored: %s. If you are "
+        "configuring OAuth2 through individual PGADMIN_CONFIG_OAUTH2_* "
+        "environment variables, this will not work; configure a single "
+        "PGADMIN_CONFIG_OAUTH2_CONFIG holding the provider list instead, "
+        "e.g. PGADMIN_CONFIG_OAUTH2_CONFIG='[{\"OAUTH2_NAME\": \"...\", "
+        "\"OAUTH2_CLIENT_ID\": \"...\"}]'. See the OAuth2 documentation for "
+        "details.",
+        ", ".join(misplaced)
+    )
+
 
 class Oauth2Module(PgAdminModule):
     def register(self, app, options):
@@ -113,6 +165,8 @@ def init_app(app):
 
     app.register_blueprint(blueprint)
     app.login_manager.logout_view = OAUTH2_LOGOUT
+
+    warn_on_misplaced_oauth2_config(app)
 
 
 class OAuth2Authentication(BaseAuthentication):
