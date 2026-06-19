@@ -873,6 +873,20 @@ def create_app(app_name=None):
 
     @app.after_request
     def after_request(response):
+        if config.LOG_AUTHENTICATED_USER:
+            if current_user.is_authenticated and current_user.username:
+                # HTTP headers are latin-1 only, so transliterate anything
+                # outside that range to avoid gunicorn 500s for unicode names.
+                safe = current_user.username.encode(
+                    'latin-1', 'replace').decode('latin-1')
+                # CR/LF and other control chars are valid latin-1 but Werkzeug
+                # rejects them in header values (would 500 every request for
+                # that user), so drop any non-printable characters too.
+                safe = ''.join(c for c in safe if c.isprintable())
+                response.headers['X-Remote-User'] = safe
+            else:
+                response.headers.pop('X-Remote-User', None)
+
         if 'key' in request.args:
             domain = dict()
             if config.COOKIE_DEFAULT_DOMAIN and \
