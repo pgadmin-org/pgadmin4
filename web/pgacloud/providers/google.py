@@ -8,11 +8,22 @@
 # ##########################################################################
 import json
 import os
+import sys
 import time
 
 from utils.io import debug, error, output
 from utils.misc import get_my_ip, get_random_id
 from providers._abstract import AbsProvider
+
+# pgAdmin only authenticates to Google via google-auth, never the
+# long-deprecated oauth2client. googleapiclient still tries to import
+# oauth2client optionally, and on packaged installs the venv inherits the
+# system site-packages (--system-site-packages, see issue #7173) where a
+# stale oauth2client and an incompatible pyOpenSSL may be present. That
+# optional import drags in the broken pyOpenSSL and crashes with "module
+# 'lib' has no attribute 'GEN_EMAIL'". Blocking the module here makes
+# googleapiclient fall back to google-auth cleanly. See issue #10110.
+sys.modules.setdefault('oauth2client', None)
 
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
