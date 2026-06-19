@@ -304,10 +304,12 @@ class ServerGroupView(NodeView):
                     user_id=current_user.id,
                     name=data['name'])
                 db.session.add(sg)
+                db.session.flush()
+                group_id = sg.id
                 db.session.commit()
 
-                # Refresh the sg object to get the id and other properties
-                sg = get_server_group(sg.id)
+                # Reload with access metadata attached
+                sg = get_server_group(group_id)
 
                 data['id'] = sg.id
                 data['name'] = sg.name
@@ -401,8 +403,9 @@ class ServerGroupView(NodeView):
                 groups = get_server_groups_for_user(hide_shared=True)
 
             for group in groups:
-                icon_class,
-                is_shared = get_icon_css_class(group.is_shared_group)
+                icon_class, is_shared = get_icon_css_class(
+                    group.is_shared_group
+                )
                 nodes.append(
                     self.blueprint.generate_browser_node(
                         "%d" % group.id,
