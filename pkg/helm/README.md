@@ -40,6 +40,12 @@ The chart should dump its version and appVersion in the Chart.yaml file every re
 | `ingress.enabled` | Ingress resource creation | `false` |
 | `ingress.hostname` | Ingress resource hostname | `"pgadmin4.local"` |
 | `ingress.tlsSecret` | Ingress tls secret name | `""` |
+| `httpRoute.enabled` | Gateway API HTTPRoute resource creation | `false` |
+| `httpRoute.apiVersion` | HTTPRoute apiVersion (override for v1beta1 implementations) | `"gateway.networking.k8s.io/v1"` |
+| `httpRoute.parentRefs` | Gateway(s) the route attaches to (required when `httpRoute.enabled` is true) | `[]` |
+| `httpRoute.hostnames` | HTTPRoute hostnames (falls back to `ingress.hostname` when empty) | `[]` |
+| `httpRoute.annotations` | HTTPRoute annotations | `{}` |
+| `httpRoute.rules` | Custom routing rules (defaults to a single `/` PathPrefix rule to the service) | `[]` |
 | `strategy.type` | Deployment strategy type (RollingUpdate or Recreate) | Kubernetes default (RollingUpdate) |
 | `strategy.rollingUpdate.maxSurge` | Maximum number of pods that can be created over the desired replicas | Kubernetes default (25%) |
 | `strategy.rollingUpdate.maxUnavailable` | Maximum number of pods that can be unavailable during the update | Kubernetes default (25%) |
