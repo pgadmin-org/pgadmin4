@@ -68,6 +68,8 @@ class Oauth2MisplacedConfigTestCase(BaseTestGenerator):
     ]
 
     def runTest(self):
+        """Run a single misplaced-config scenario and assert whether a
+        startup warning is emitted, and that it lists the expected keys."""
         app = MagicMock()
         app.logger = MagicMock()
         fake_config = SimpleNamespace(**self.config_attrs)
