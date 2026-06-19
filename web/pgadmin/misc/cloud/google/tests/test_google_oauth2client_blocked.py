@@ -38,7 +38,7 @@ class TestOauth2ClientBlockedOnGoogleImport(
         _SkipServerSetUpMixin, BaseTestGenerator):
     """Importing cloud.google must keep googleapiclient off oauth2client."""
 
-    scenarios = [('default', dict())]
+    scenarios = (('default', {}),)
 
     def runTest(self):
         # Importing the module installs the sentinel as a side effect.
