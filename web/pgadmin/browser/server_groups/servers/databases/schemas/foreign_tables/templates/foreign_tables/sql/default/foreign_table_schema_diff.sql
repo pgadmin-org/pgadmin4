@@ -54,11 +54,11 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}
 {% if data.description %}
 
 COMMENT ON FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}
-    IS '{{ data.description }}';
-{ % elif o_data.description %}
+    IS {{ data.description|qtLiteral(conn) }};
+{% elif o_data.description %}
 
 COMMENT ON FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}
-    IS '{{ o_data.description }}';
+    IS {{ o_data.description|qtLiteral(conn) }};
 {% endif -%}
 {% if acl %}
 

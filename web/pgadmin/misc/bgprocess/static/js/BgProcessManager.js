@@ -134,7 +134,7 @@ export default class BgProcessManager {
         this._eventManager.fireEvent(BgProcessManagerEvents.LIST_UPDATED);
       })
       .catch((err)=>{
-        pgAdmin.Browser.notifier.error(parseApiError(err));
+        pgAdmin.Browser.notifier.errorText(parseApiError(err));
       });
   }
 
@@ -155,7 +155,7 @@ export default class BgProcessManager {
           /* Object not available */
             removeJob(jobId);
           } else {
-            pgAdmin.Browser.notifier.error(parseApiError(err));
+            pgAdmin.Browser.notifier.errorText(parseApiError(err));
           }
         });
     });

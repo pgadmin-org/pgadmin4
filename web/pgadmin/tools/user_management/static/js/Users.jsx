@@ -95,7 +95,7 @@ export default function Users({roles}) {
         pgAdmin.Browser.notifier.success(gettext('User deleted successfully.'));
         updateList();
       } catch (error) {
-        pgAdmin.Browser.notifier.error(parseApiError(error));
+        pgAdmin.Browser.notifier.errorText(parseApiError(error));
       }
       setLoading('');
     };
@@ -134,7 +134,7 @@ export default function Users({roles}) {
           }
         }
         catch (error) {
-          pgAdmin.Browser.notifier.error(parseApiError(error));
+          pgAdmin.Browser.notifier.errorText(parseApiError(error));
         }
         setLoading('');
       });
@@ -252,7 +252,7 @@ export default function Users({roles}) {
       const res = await api.get(url_for('user_management.users'));
       setTableData(res.data);
     } catch (error) {
-      pgAdmin.Browser.notifier.error(parseApiError(error));
+      pgAdmin.Browser.notifier.errorText(parseApiError(error));
     }
     setLoading('');
   };
@@ -265,7 +265,7 @@ export default function Users({roles}) {
       updateList();
     } catch (error) {
       setLoading('');
-      pgAdmin.Browser.notifier.error(parseApiError(error));
+      pgAdmin.Browser.notifier.errorText(parseApiError(error));
     }
   };
 

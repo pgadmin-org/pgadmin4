@@ -14,6 +14,7 @@ from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.user_login_check import pga_login_required
 import json
 from flask import session, current_app, request
@@ -116,7 +117,8 @@ def verify_credentials():
             session['azure']['azure_tenant_id'] = tenant_id
         if not status and 'double check your tenant name' in error:
             error = 'Authentication failed.Please double check tenant id.'
-    return make_json_response(success=status, errormsg=error)
+    return make_json_response(
+        success=status, errormsg=sanitize_external_text(error))
 
 
 @blueprint.route('/get_azure_verification_codes/',
@@ -144,12 +146,12 @@ def check_cluster_name_availability():
         azure.check_cluster_name_availability(data['name'])
     if server_name_available:
         return make_json_response(success=server_name_available,
-                                  errormsg=error)
+                                  errormsg=sanitize_external_text(error))
     else:
         return make_json_response(
             status=410,
             success=0,
-            errormsg=error)
+            errormsg=sanitize_external_text(error))
 
 
 @blueprint.route('/subscriptions/',

@@ -19,6 +19,7 @@ Uses pgAdmin's SQL template infrastructure for version-aware queries.
 import secrets
 from typing import Optional
 
+import sqlparse
 from flask import render_template
 
 from pgadmin.utils.driver import get_driver
@@ -36,6 +37,23 @@ INDEXES_TEMPLATE_PATH = 'indexes/sql'
 
 # Application name prefix for LLM connections
 LLM_APP_NAME_PREFIX = 'pgAdmin 4 - LLM'
+
+
+# Statement keywords permitted at the start of an LLM-supplied query.
+# The BEGIN TRANSACTION READ ONLY wrapper around the query is only
+# effective if the LLM cannot exit that transaction. A multi-statement
+# payload such as `COMMIT; <write>; SELECT 1` would otherwise terminate
+# the read-only transaction (via COMMIT/END/ROLLBACK/ABORT) and run
+# subsequent statements in autocommit mode. The allowlist below, in
+# combination with the single-statement check, ensures the LLM cannot
+# emit transaction-control statements, SET/RESET, DML/DDL, CALL, COPY,
+# or anything else that could escape or weaken the read-only sandbox.
+# EXPLAIN ANALYZE on a SELECT remains supported; EXPLAIN ANALYZE on a
+# write statement is blocked by PostgreSQL itself inside the read-only
+# transaction.
+_ALLOWED_LEADING_KEYWORDS = frozenset({
+    'SELECT', 'WITH', 'EXPLAIN', 'SHOW', 'VALUES', 'TABLE',
+})
 
 
 class DatabaseToolError(Exception):
@@ -125,6 +143,96 @@ def _connect_readonly(
 
     except Exception as e:
         return False, str(e)
+
+
+def _first_real_keyword(statement) -> str:
+    """
+    Return the first non-trivial leaf token of a parsed statement.
+
+    Whitespace, comments, and punctuation are skipped so that a leading
+    open-parenthesis (e.g. ``(SELECT 1) UNION (SELECT 2)``) or a leading
+    comment block does not mask the real leading keyword. The result is
+    upper-cased; an empty string is returned for an empty statement.
+    """
+    for tok in statement.flatten():
+        if tok.is_whitespace:
+            continue
+        ttype = str(tok.ttype) if tok.ttype is not None else ''
+        if 'Comment' in ttype or 'Punctuation' in ttype:
+            continue
+        return (tok.normalized or '').upper()
+    return ''
+
+
+def _validate_readonly_query(query: str) -> None:
+    """
+    Ensure an LLM-supplied query is a single, read-only statement.
+
+    This is the load-bearing defense against an attacker escaping the
+    read-only transaction wrapper by emitting multiple statements. The
+    PostgreSQL simple-query protocol cheerfully runs a whole
+    semicolon-separated batch in one round-trip, so a payload such as
+    ``COMMIT; <write>; SELECT 1`` would terminate the read-only
+    transaction (via the leading ``COMMIT``) and execute the remaining
+    statements in autocommit mode. The trailing ``ROLLBACK`` would then
+    be a no-op.
+
+    Validation rules:
+
+    * The input must contain exactly one non-empty statement.
+    * The leading keyword must be in :data:`_ALLOWED_LEADING_KEYWORDS`.
+
+    PostgreSQL is left to enforce the rest -- ``EXPLAIN ANALYZE`` on a
+    write statement, data-modifying CTEs, and volatile function side
+    effects are all rejected at runtime by the read-only transaction.
+
+    Args:
+        query: SQL query supplied by the LLM tool call.
+
+    Raises:
+        DatabaseToolError: If the query is empty, contains more than
+            one statement, or is not a read-only statement.
+    """
+    if not query or not query.strip():
+        raise DatabaseToolError(
+            "Query is empty",
+            code="INVALID_QUERY"
+        )
+
+    try:
+        parsed = sqlparse.parse(query)
+    except Exception as e:
+        raise DatabaseToolError(
+            f"Failed to parse query: {e}",
+            code="INVALID_QUERY"
+        )
+
+    statements = [
+        s for s in parsed
+        if s.token_first(skip_cm=True, skip_ws=True) is not None
+    ]
+
+    if not statements:
+        raise DatabaseToolError(
+            "Query contains no SQL statement",
+            code="INVALID_QUERY"
+        )
+
+    if len(statements) > 1:
+        raise DatabaseToolError(
+            "Only a single SQL statement is allowed; multi-statement "
+            "queries are rejected",
+            code="INVALID_QUERY"
+        )
+
+    keyword = _first_real_keyword(statements[0])
+    if keyword not in _ALLOWED_LEADING_KEYWORDS:
+        raise DatabaseToolError(
+            f"Statement type '{keyword or 'UNKNOWN'}' is not permitted; "
+            "only read-only statements (SELECT, WITH, EXPLAIN, SHOW, "
+            "VALUES, TABLE) are allowed",
+            code="INVALID_QUERY"
+        )
 
 
 def _execute_readonly_query(conn, query: str) -> dict:
@@ -231,9 +339,16 @@ def execute_readonly_query(
         - truncated: True if results were limited
 
     Raises:
-        DatabaseToolError: If the query fails or connection
-            cannot be established
+        DatabaseToolError: If the query is rejected by validation, the
+            query fails at runtime, or a connection cannot be
+            established.
     """
+    # Validate the LLM-supplied query before allocating a connection.
+    # The BEGIN TRANSACTION READ ONLY wrapper below is only effective
+    # if the query is a single read-only statement; see
+    # _validate_readonly_query for the threat model and rules.
+    _validate_readonly_query(query)
+
     # Generate unique connection ID for this LLM query
     conn_id = f"llm_{secrets.choice(range(1, 9999999))}"
 

@@ -39,7 +39,7 @@ let xMargin = 25,
 
 const DEFAULT_ARROW_SIZE = 2;
 
-function nodeExplainTableData(_planData, _ctx) {
+export function nodeExplainTableData(_planData, _ctx) {
   let node_info,
     display_text = [],
     tooltip = [],
@@ -166,11 +166,11 @@ function nodeExplainTableData(_planData, _ctx) {
   }
 
   if ('Recheck Cond' in _planData) {
-    node_extra_info.push('<strong>' + gettext('Recheck Cond') + '</strong>: ' + _planData['Recheck Cond']);
+    node_extra_info.push('<strong>' + gettext('Recheck Cond') + '</strong>: ' + _.escape(_planData['Recheck Cond']));
   }
 
   if ('Exact Heap Blocks' in _planData) {
-    node_extra_info.push('<strong>' + gettext('Heap Blocks') + '</strong>: exact=' + _planData['Exact Heap Blocks']);
+    node_extra_info.push('<strong>' + gettext('Heap Blocks') + '</strong>: exact=' + _.escape(_planData['Exact Heap Blocks']));
   }
 
   info.rows.push({

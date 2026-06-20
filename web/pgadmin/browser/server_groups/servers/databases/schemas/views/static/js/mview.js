@@ -201,7 +201,7 @@ define('pgadmin.node.mview', [
         api.get(obj.generate_url(i, 'check_utility_exists' , d, true))
           .then(({data: res})=>{
             if (!res.success) {
-              pgAdmin.Browser.notifier.alert(
+              pgAdmin.Browser.notifier.alertText(
                 gettext('Utility not found'),
                 res.errormsg
               );
@@ -214,7 +214,7 @@ define('pgadmin.node.mview', [
                   //Do nothing as we are creating the job and exiting from the main dialog
                   pgBrowser.BgProcessManager.startProcess(refreshed_res.data.job_id, refreshed_res.data.desc);
                 } else {
-                  pgAdmin.Browser.notifier.alert(
+                  pgAdmin.Browser.notifier.alertText(
                     gettext('Failed to create materialized view refresh job.'),
                     refreshed_res.errormsg
                   );

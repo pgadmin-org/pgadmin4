@@ -3,7 +3,7 @@ import gettext from 'sources/gettext';
 import { LAYOUT_EVENTS } from './helpers/Layout';
 import { styled } from '@mui/material/styles';
 import { FormHelperText, Box } from '@mui/material';
-import HTMLReactParse from 'html-react-parser';
+import { SafeMessage } from './components/SafeMessage';
 import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -24,9 +24,9 @@ export default function ToolErrorView({error, panelId, panelDocker}){
     }
   });
 
-  let err_msg = gettext(`An error occurred while opening the tool: ${error}`);
+  let err_msg = gettext('An error occurred while opening the tool: %s', error ?? '');
   return  (<StyledBox>
-    <FormHelperText variant="outlined" error= {true}  style={{marginLeft: '4px'}} >{HTMLReactParse(err_msg)}</FormHelperText>
+    <FormHelperText variant="outlined" error={true} style={{marginLeft: '4px'}}><SafeMessage text={err_msg} /></FormHelperText>
   </StyledBox>);
 }
 

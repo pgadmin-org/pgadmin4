@@ -178,6 +178,17 @@ jobs:
           . venv/bin/activate
           python web/regression/runtests.py --pkg browser.server_groups.servers.tests --modules test_server_data_isolation
 
+      - name: Run SQL Editor unauth-pickle regression test
+        # Regression guard for the CSRF-only-no-auth chain on
+        # /sqleditor/close and /sqleditor/.../update_connection: both
+        # endpoints reach pickle.loads via close_sqleditor_session() /
+        # check_transaction_status(), so they must require an
+        # authenticated session. This test is a no-op in DESKTOP mode
+        # (auto-re-authentication) so it can only run here.
+        run: |
+          . venv/bin/activate
+          python web/regression/runtests.py --pkg tools.sqleditor --modules test_close_requires_auth
+
       - name: Archive server log
         if: success() || failure()
         uses: actions/upload-artifact@v4

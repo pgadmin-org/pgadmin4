@@ -489,7 +489,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       }, 100);
     }).catch(function (er) {
       setLoaderText('');
-      pgAdmin.Browser.notifier.alert(
+      pgAdmin.Browser.notifier.alertText(
         gettext('Clear failed'),
         er.responseJSON.errormsg
       );
@@ -737,7 +737,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               .then(function () {/*This is intentional (SonarQube)*/ })
               .catch((error) => {
                 setLoaderText('');
-                pgAdmin.Browser.notifier.alert(
+                pgAdmin.Browser.notifier.alertText(
                   gettext('Error occurred: '),
                   parseApiError(error)
                 );
@@ -748,7 +748,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           })
           .catch(function (error) {
             setLoaderText('');
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Debugger Target Initialization Error'),
               parseApiError(error)
             );
@@ -769,7 +769,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         })
           .catch(function (error) {
             props.closeModal();
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Debugger Listener Startup Error'),
               parseApiError(error)
             );
@@ -793,7 +793,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           })
           .catch(function (error) {
             setLoaderText('');
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Debugger Listener Startup Set Arguments Error'),
               parseApiError(error)
             );
@@ -801,7 +801,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       }
     } catch (err) {
       setLoaderText('');
-      pgAdmin.Browser.notifier.alert(
+      pgAdmin.Browser.notifier.alertText(
         gettext('Debugger Error'),
         gettext(err.message)
       );

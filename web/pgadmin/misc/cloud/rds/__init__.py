@@ -18,6 +18,7 @@ from flask import session, current_app, request
 from pgadmin.user_login_check import pga_login_required
 from werkzeug.datastructures import Headers
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils.ajax import make_json_response,\
@@ -79,7 +80,7 @@ def verify_credentials():
         status = True
         msg = 'verified'
 
-    return make_json_response(success=status, info=msg)
+    return make_json_response(success=status, info=sanitize_external_text(msg))
 
 
 @blueprint.route('/db_instances/',
@@ -168,7 +169,7 @@ def get_regions():
         return make_json_response(
             status=410,
             success=0,
-            errormsg=str(e)
+            errormsg=sanitize_external_text(str(e))
         )
 
 

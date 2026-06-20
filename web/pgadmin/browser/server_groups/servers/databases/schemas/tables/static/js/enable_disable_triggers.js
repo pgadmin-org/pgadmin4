@@ -39,7 +39,7 @@ function setTriggers(tree, generateUrl, args, params) {
       try {
         const err = xhr.response.data;
         if (err.success === 0) {
-          pgAdmin.Browser.notifier.error(err.errormsg);
+          pgAdmin.Browser.notifier.errorText(err.errormsg);
         }
       } catch (e) {
         console.warn(e.stack || e);

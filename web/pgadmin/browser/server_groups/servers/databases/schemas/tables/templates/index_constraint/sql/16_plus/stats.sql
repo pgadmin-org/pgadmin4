@@ -19,7 +19,7 @@ SELECT
     avg_leaf_density AS {{ conn|qtIdent(_('Average leaf density')) }},
     leaf_fragmentation AS {{ conn|qtIdent(_('Leaf fragmentation')) }}
 FROM
-    pgstatindex('{{conn|qtIdent(schema)}}.{{conn|qtIdent(name)}}'), pg_catalog.pg_stat_all_indexes stat
+    pgstatindex({{ cid }}::oid::regclass), pg_catalog.pg_stat_all_indexes stat
 {% else %}
 FROM
     pg_catalog.pg_stat_all_indexes stat

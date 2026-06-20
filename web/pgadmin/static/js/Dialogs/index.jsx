@@ -88,10 +88,10 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
       masterPassCallbacks(masterpass_callback_queue);
       if(isKeyring) {
         if(error){
-          pgAdmin.Browser.notifier.alert(gettext('Migration failed'),
+          pgAdmin.Browser.notifier.alertText(gettext('Migration failed'),
             gettext(`Passwords previously saved cannot be re-encrypted using the encryption key stored in the ${res.data.data.keyring_name} due to ${error}.`));
         }else{
-          pgAdmin.Browser.notifier.alert(gettext('Migration successful'),
+          pgAdmin.Browser.notifier.alertText(gettext('Migration successful'),
             gettext(`Passwords previously saved are re-encrypted using encryption key stored in the ${res.data.data.keyring_name}.`));
         }
       }
@@ -112,7 +112,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
 
   if(master_password_hook){
     if(errmsg){
-      pgAdmin.Browser.notifier.error(errmsg);
+      pgAdmin.Browser.notifier.errorText(errmsg);
       return true;
     }else{
       pgAdmin.Browser.notifier.confirm(gettext('Reset Master Password'),
@@ -127,7 +127,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
               pgAdmin.Browser.notifier.info('The master password has been reset.');
             })
             .catch((err) => {
-              pgAdmin.Browser.notifier.error(err.message);
+              pgAdmin.Browser.notifier.errorText(err.message);
             });
           return true;
         },
@@ -159,7 +159,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
                     }
                   })
                   .catch((err) => {
-                    pgAdmin.Browser.notifier.error(err.message);
+                    pgAdmin.Browser.notifier.errorText(err.message);
                   });
                 return true;
               },

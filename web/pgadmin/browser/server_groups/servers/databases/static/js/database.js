@@ -550,7 +550,7 @@ define('pgadmin.node.database', [
 
             } else {
               try {
-                pgAdmin.Browser.notifier.error(res.errormsg);
+                pgAdmin.Browser.notifier.errorText(res.errormsg);
               } catch (e) {
                 console.warn(e.stack || e);
               }

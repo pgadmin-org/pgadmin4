@@ -56,7 +56,7 @@ describe('#enableTriggers', () => {
     tree.addChild(schema1, tableNoData);
 
     jest.spyOn(pgAdmin.Browser.notifier, 'success');
-    jest.spyOn(pgAdmin.Browser.notifier, 'error');
+    jest.spyOn(pgAdmin.Browser.notifier, 'errorText');
 
     generateUrlSpy = jest.fn();
     generateUrlSpy.mockReturnValue('/some/place');
@@ -137,11 +137,11 @@ describe('#enableTriggers', () => {
         });
 
         it('displays an error alert', async () => {
-          pgAdmin.Browser.notifier.error.mockClear();
+          pgAdmin.Browser.notifier.errorText.mockClear();
           tree.selectNode([{id: 'table1'}]);
           enableTriggers(tree, generateUrlSpy, {});
           await waitFor(()=>{
-            expect(pgAdmin.Browser.notifier.error).toHaveBeenCalledWith('some error message');
+            expect(pgAdmin.Browser.notifier.errorText).toHaveBeenCalledWith('some error message');
           });
         });
 
@@ -260,11 +260,11 @@ describe('#disableTriggers', () => {
         });
 
         it('displays an error alert', async () => {
-          pgAdmin.Browser.notifier.error.mockClear();
+          pgAdmin.Browser.notifier.errorText.mockClear();
           tree.selectNode([{id: 'table1'}]);
           disableTriggers(tree, generateUrlSpy, {});
           await waitFor(()=>{
-            expect(pgAdmin.Browser.notifier.error).toHaveBeenCalledWith('some error message');
+            expect(pgAdmin.Browser.notifier.errorText).toHaveBeenCalledWith('some error message');
           });
         });
 

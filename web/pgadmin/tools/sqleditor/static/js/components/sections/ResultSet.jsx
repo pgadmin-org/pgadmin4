@@ -1044,7 +1044,7 @@ export function ResultSet() {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_IDLE);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
       } catch(e) {
-        pgAdmin.Browser.notifier.error(parseApiError(e));
+        pgAdmin.Browser.notifier.errorText(parseApiError(e));
       }
     });
 
@@ -1297,7 +1297,7 @@ export function ResultSet() {
       if(!respData.data.status) {
         pageDataOutOfSync.current = false;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
-        pgAdmin.Browser.notifier.error(respData.data.result, 20000);
+        pgAdmin.Browser.notifier.errorText(respData.data.result, 20000);
         // If the transaction is not idle, notify the user that previous queries are not rolled back,
         // only the failed save queries.
         if (respData.data.transaction_status != CONNECTION_STATUS.TRANSACTION_STATUS_IDLE) {

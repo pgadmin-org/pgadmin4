@@ -393,7 +393,7 @@ export default class DebuggerModule {
             );
           })
           .catch(function (e) {
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Debugger Target Initialization Error'),
               e.responseJSON.errormsg
             );
@@ -401,7 +401,7 @@ export default class DebuggerModule {
       }
     })
       .catch((err) => {
-        pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.response.data.errormsg);
+        pgAdmin.Browser.notifier.alertText(gettext('Debugger Error'), err.response.data.errormsg);
       });
   }
 
@@ -561,7 +561,7 @@ export default class DebuggerModule {
           }
         );
       } else if (err.success == 0) {
-        pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.errormsg);
+        pgAdmin.Browser.notifier.alertText(gettext('Debugger Error'), err.errormsg);
       }
     } catch (e) {
       console.warn(e.stack || e);
@@ -611,7 +611,7 @@ export default class DebuggerModule {
     try {
       let err = xhr.response.data;
       if (err.success == 0) {
-        pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.errormsg);
+        pgAdmin.Browser.notifier.alertText(gettext('Debugger Error'), err.errormsg);
       }
     } catch (e) {
       console.warn(e.stack || e);

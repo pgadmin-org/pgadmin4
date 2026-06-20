@@ -19,6 +19,7 @@ from pgadmin.utils.ajax import plain_text_response, unauthorized, \
 from pgadmin.misc.bgprocess import BatchProcess
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.utils import PgAdminModule, filename_with_file_manager_path
+from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.user_login_check import pga_login_required
 from flask import session, current_app, request
 from flask_babel import gettext as _
@@ -102,9 +103,9 @@ def verify_credentials():
         client_secret_path = \
             filename_with_file_manager_path(client_secret_path)
     except PermissionError as e:
-        return unauthorized(errormsg=str(e))
+        return unauthorized(errormsg=sanitize_external_text(str(e)))
     except Exception as e:
-        return bad_request(errormsg=str(e))
+        return bad_request(errormsg=sanitize_external_text(str(e)))
 
     if client_secret_path and os.path.exists(client_secret_path):
         with open(client_secret_path, 'r') as json_file:
@@ -139,7 +140,10 @@ def verify_credentials():
         error = 'Client secret path not found'
         session.pop('google', None)
 
-    return make_json_response(success=status, errormsg=error, data=res_data)
+    return make_json_response(
+        success=status,
+        errormsg=sanitize_external_text(error),
+        data=res_data)
 
 
 @blueprint.route('/callback',
@@ -173,7 +177,8 @@ def verification_ack():
     if google_obj is not None:
         verified, error = google_obj.verification_ack()
         _save_google_to_session(google_obj)
-        return make_json_response(success=verified, errormsg=error)
+        return make_json_response(
+            success=verified, errormsg=sanitize_external_text(error))
     else:
         return make_json_response(success=verified,
                                   errormsg='Authentication is failed.')
@@ -191,7 +196,7 @@ def get_projects():
     if google_obj is not None:
         projects_list, error = google_obj.get_projects()
         if error:
-            return bad_request(errormsg=error)
+            return bad_request(errormsg=sanitize_external_text(error))
         return make_json_response(data=projects_list)
 
 
@@ -209,7 +214,7 @@ def get_regions(project_id):
         regions_list, error = google_obj.get_regions(project_id)
         _save_google_to_session(google_obj)
         if error:
-            return bad_request(errormsg=error)
+            return bad_request(errormsg=sanitize_external_text(error))
         return make_json_response(data=regions_list)
     else:
         return make_json_response(data=[])
@@ -251,7 +256,7 @@ def get_instance_types(project_id, region, instance_class):
         instance_types_list, error = (
             instance_types_dict.get(instance_class, []))
         if error:
-            return bad_request(errormsg=error)
+            return bad_request(errormsg=sanitize_external_text(error))
         return make_json_response(data=instance_types_list)
     else:
         return make_json_response(data=[])
@@ -269,7 +274,7 @@ def get_database_versions():
     if google_obj is not None:
         db_version_list, error = google_obj.get_database_versions()
         if error:
-            return bad_request(errormsg=error)
+            return bad_request(errormsg=sanitize_external_text(error))
         return make_json_response(data=db_version_list)
     else:
         return make_json_response(data=[])

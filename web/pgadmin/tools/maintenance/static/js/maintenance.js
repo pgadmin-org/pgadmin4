@@ -174,7 +174,7 @@ define([
       })
         .then(function(res) {
           if (!res.data.success) {
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Utility not found'),
               res.data.errormsg
             );

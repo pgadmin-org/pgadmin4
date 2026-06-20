@@ -180,14 +180,14 @@ export default function CollectionNodeProperties({
         })
         .then(function (res) {
           if (res.success == 0) {
-            pgAdmin.Browser.notifier.alert(res.errormsg, res.info);
+            pgAdmin.Browser.notifier.alertText(res.errormsg, res.info);
           }
           pgAdmin.Browser.tree.refresh(selItem);
           setIsStale(true);
           setSelectedObject({});
         })
         .catch(function (error) {
-          pgAdmin.Browser.notifier.alert(
+          pgAdmin.Browser.notifier.alertText(
             gettext('Error deleting %s', selectedItemData._label.toLowerCase()),
             _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );
@@ -275,7 +275,7 @@ export default function CollectionNodeProperties({
         .catch((err) => {
           setData([]);
           setLoaderText('');
-          pgAdmin.Browser.notifier.alert(
+          pgAdmin.Browser.notifier.alertText(
             gettext('Failed to retrieve data from the server.'),
             parseApiError(err)
           );

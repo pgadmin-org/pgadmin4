@@ -27,7 +27,7 @@ export default function AboutComponent() {
     api.get(about_url).then((res)=>{
       setAboutData(res.data.data);
     }).catch((err)=>{
-      pgAdmin.Browser.notifier.error(err);
+      pgAdmin.Browser.notifier.errorText(err);
     });
   }, []);
 

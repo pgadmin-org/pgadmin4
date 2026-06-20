@@ -445,7 +445,7 @@ export function QueryHistory() {
       setSelectedItemKey(qhu.current.getNextItemKey());
     } catch (error) {
       console.error(error);
-      pgAdmin.Browser.notifier.error(gettext('Failed to fetch query history.') + parseApiError(error));
+      pgAdmin.Browser.notifier.errorText(gettext('Failed to fetch query history.') + parseApiError(error));
     }
     setLoaderText('');
 
@@ -484,7 +484,7 @@ export function QueryHistory() {
       setSelectedItemKey(qhu.current.clear(selectedItemKey));
     } catch (error) {
       console.error(error);
-      pgAdmin.Browser.notifier.error(gettext('Failed to remove query history.') + parseApiError(error));
+      pgAdmin.Browser.notifier.errorText(gettext('Failed to remove query history.') + parseApiError(error));
     }
     setLoaderText('');
   };
@@ -503,7 +503,7 @@ export function QueryHistory() {
           setSelectedItemKey(null);
         } catch (error) {
           console.error(error);
-          pgAdmin.Browser.notifier.error(gettext('Failed to remove query history.') + parseApiError(error));
+          pgAdmin.Browser.notifier.errorText(gettext('Failed to remove query history.') + parseApiError(error));
         }
         setLoaderText('');
       },

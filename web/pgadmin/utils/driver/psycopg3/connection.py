@@ -37,6 +37,7 @@ from .typecast import register_binary_data_typecasters,\
     register_binary_typecasters, register_array_to_string_typecasters,\
     register_numeric_typecasters, ALL_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
+from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.utils import csv_lib as csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
@@ -695,10 +696,17 @@ WHERE db.datname = current_database()""")
         if manager.post_connection_sql and manager.post_connection_sql != '':
             status = self._execute(cur, manager.post_connection_sql)
             if status is not None:
-                errmsg = gettext(("Failed to execute the post connection SQL "
-                                  "with below error message:\n{msg}").format(
-                    msg=status))
-                current_app.logger.error(errmsg)
+                # Log the raw PG-returned text so the server log stays
+                # human-readable. HTML-escape only the value that crosses
+                # into the JSON response, where downstream consumers may
+                # render it as HTML.
+                current_app.logger.error(
+                    "Failed to execute the post connection SQL "
+                    "with below error message:\n%s", status)
+                errmsg = gettext(
+                    "Failed to execute the post connection SQL "
+                    "with below error message:\n{msg}").format(
+                    msg=sanitize_external_text(status))
         return errmsg
 
     def __cursor(self, server_cursor=False, scrollable=False):

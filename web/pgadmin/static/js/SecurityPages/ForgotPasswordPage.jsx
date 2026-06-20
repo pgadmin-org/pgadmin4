@@ -21,10 +21,10 @@ export default function ForgotPasswordPage({csrfToken, actionUrl, loginUrl, ...p
         <InputText name="email" value={form.email} onChange={(v)=>onTextChange('email', v)} placeholder={gettext('Email Address')} autoFocus
           controlProps={{autoComplete: null}} />
         <SecurityButton name="internal_button" value="Recover Password" disabled={!form.email}>{gettext('Recover Password')}</SecurityButton>
-        {loginUrl && <Box textAlign="center">
-          <a style={{color: 'inherit'}} href={loginUrl}>{gettext('Back to login')}</a>
-        </Box>}
       </form>
+      {loginUrl && <Box textAlign="center">
+        <a style={{color: 'inherit'}} href={loginUrl}>{gettext('Back to login')}</a>
+      </Box>}
     </BasePage>
   );
 }

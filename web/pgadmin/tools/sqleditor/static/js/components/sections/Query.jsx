@@ -197,7 +197,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       } else {
         console.error('Failed to load file:', result.error);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false, storage);
-        pgAdmin.Browser.notifier.error(result.error);
+        pgAdmin.Browser.notifier.errorText(result.error);
       }
     } );
 

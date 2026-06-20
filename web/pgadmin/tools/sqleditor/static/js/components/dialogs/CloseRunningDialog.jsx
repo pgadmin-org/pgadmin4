@@ -5,12 +5,13 @@ import { DefaultButton, PrimaryButton } from '../../../../../../static/js/compon
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import HTMLReactParser from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 
 export default function CloseRunningDialog({closeModal, text, onYes}) {
   return (
     <ModalContent>
-      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(DOMPurify.sanitize(text)) : text}</Box>
       <ModalFooter>
         <DefaultButton data-test="no" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();

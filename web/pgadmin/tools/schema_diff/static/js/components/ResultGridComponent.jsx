@@ -744,7 +744,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
           };
           eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
         }).catch((err) => {
-          pgAdmin.Browser.notifier.alert(err.message);
+          pgAdmin.Browser.notifier.alertText(err.message);
         });
       } else {
         eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, {});

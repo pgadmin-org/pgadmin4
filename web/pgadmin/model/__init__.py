@@ -252,6 +252,20 @@ class ServerGroup(db.Model, UserScopedMixin):
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
 
+    servers = db.relationship(
+        'Server',
+        back_populates='servergroup',
+        lazy='select',
+        cascade=CASCADE_STR
+    )
+
+    sharedservers = db.relationship(
+        'SharedServer',
+        back_populates='servergroup',
+        lazy='select',
+        cascade=CASCADE_STR
+    )
+
     @property
     def serialize(self):
         """Return object data in easily serializable format"""
@@ -276,6 +290,11 @@ class Server(db.Model, UserScopedMixin):
         db.ForeignKey('servergroup.id'),
         nullable=False
     )
+    servergroup = db.relationship(
+        'ServerGroup',
+        back_populates='servers',
+        lazy='joined'
+    )
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=True)
     port = db.Column(
@@ -293,11 +312,6 @@ class Server(db.Model, UserScopedMixin):
     role = db.Column(db.String(64), nullable=True)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
-    servers = db.relationship(
-        'ServerGroup',
-        backref=db.backref('server', cascade=CASCADE_STR),
-        lazy='joined'
-    )
     db_res = db.Column(db.Text(), nullable=True)
     db_res_type = db.Column(db.String(32), default='databases')
     passexec_cmd = db.Column(db.Text(), nullable=True)
@@ -530,6 +544,11 @@ class SharedServer(db.Model, UserScopedMixin):
         db.ForeignKey('servergroup.id'),
         nullable=False
     )
+    servergroup = db.relationship(
+        'ServerGroup',
+        back_populates='sharedservers',
+        lazy='joined'
+    )
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=True)
     port = db.Column(
@@ -546,11 +565,6 @@ class SharedServer(db.Model, UserScopedMixin):
     role = db.Column(db.String(64), nullable=True)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
-    servers = db.relationship(
-        'ServerGroup',
-        backref=db.backref('sharedserver', cascade=CASCADE_STR),
-        lazy='joined'
-    )
     bgcolor = db.Column(db.String(10), nullable=True)
     fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)

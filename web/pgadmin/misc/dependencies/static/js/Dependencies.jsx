@@ -127,7 +127,7 @@ function Dependencies({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStal
             }
           })
           .catch((e) => {
-            pgAdmin.Browser.notifier.alert(
+            pgAdmin.Browser.notifier.alertText(
               gettext('Failed to retrieve data from the server.'),
               parseApiError(e)
             );

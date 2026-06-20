@@ -1615,7 +1615,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 render_template(
                     'schemas/pg/#{0}#/sql/get_name.sql'.format(
                         self.manager.version),
-                    scid=scid
+                    scid=scid, conn=self.conn
                 )
             )
             if not status:

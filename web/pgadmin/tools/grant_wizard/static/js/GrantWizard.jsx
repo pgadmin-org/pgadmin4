@@ -189,7 +189,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       })
       .catch((error) => {
         setLoaderText('');
-        pgAdmin.Browser.notifier.error(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
       });
   };
 

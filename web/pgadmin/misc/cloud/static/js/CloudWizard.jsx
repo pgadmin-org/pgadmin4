@@ -83,7 +83,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         }
       })
       .catch((error) => {
-        pgAdmin.Browser.notifier.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
       });
   }, [cloudProvider]);
 
@@ -128,7 +128,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         onClose();
       })
       .catch((error) => {
-        pgAdmin.Browser.notifier.error(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
       });
   };
 
@@ -283,7 +283,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               options={cloud_providers}
             ></ToggleButtons>
           </Box>
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={1} >
           {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
@@ -294,7 +294,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           <Box flexGrow={1}>
             {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
           </Box>
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={2} >
           {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 2 && <AwsInstanceDetails
@@ -319,7 +319,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             hostIP={hostIP}
             googleInstanceData = {googleInstanceData}
           /> }
-          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={3} >
           {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsDatabaseDetails

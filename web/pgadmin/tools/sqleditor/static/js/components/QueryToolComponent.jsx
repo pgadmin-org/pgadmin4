@@ -602,7 +602,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
     } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
-      pgAdmin.Browser.notifier.error(error.response.data.errormsg);
+      pgAdmin.Browser.notifier.errorText(error.response.data.errormsg);
 
     }else if(error?.response?.status == 428) {
       connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{

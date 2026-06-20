@@ -106,6 +106,25 @@ ingress:
   annotations: {}
   # If set, enables TLS configuration in the Ingress resource.
   tlsSecret: ""
+httpRoute:
+  # Enable a Gateway API HTTPRoute as an alternative to the Ingress above.
+  enabled: false
+  # apiVersion for the HTTPRoute resource. Override if your Gateway API
+  # implementation still serves the resource under v1beta1.
+  apiVersion: gateway.networking.k8s.io/v1
+  # parentRefs is required when httpRoute.enabled is true. It references the
+  # Gateway (and optionally a listener) that should route to pgAdmin.
+  parentRefs: []
+  #  - name: my-gateway
+  #    namespace: gateway-system
+  #    sectionName: https
+  # hostnames for the route. When empty, falls back to ingress.hostname.
+  hostnames: []
+  #  - pgadmin4.example.com
+  annotations: {}
+  # Custom routing rules. When empty, a single rule forwards all traffic
+  # ("/" PathPrefix) to the pgAdmin service.
+  rules: []
 startupProbe:
   enabled: false
   httpGet:

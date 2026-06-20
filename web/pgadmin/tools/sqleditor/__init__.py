@@ -321,7 +321,15 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     if str(trans_id) in sql_grid_data:
         old_trans_obj = pickle.loads(
             sql_grid_data[str(trans_id)]['command_obj'])
-        if old_trans_obj.did == did and old_trans_obj.obj_id == obj_id:
+        # Only restore the filter/sorting when the previously stored object is
+        # a filter-capable (View/Edit Data) command. The same trans_id may
+        # have been used by a non-filter command such as the Query Tool, or by
+        # an incompatible object persisted by an older version - neither
+        # carries the _row_filter/_data_sorting attributes, and blindly
+        # accessing them raises an AttributeError that prevents the tool (and,
+        # in desktop mode, the application) from loading.
+        if isinstance(old_trans_obj, SQLFilter) and \
+                old_trans_obj.did == did and old_trans_obj.obj_id == obj_id:
             command_obj.set_filter(old_trans_obj._row_filter)
             command_obj.set_data_sorting(
                 dict(data_sorting=old_trans_obj._data_sorting), True)
@@ -641,6 +649,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     '<int:sgid>/<int:sid>/<int:did>',
     methods=["POST"], endpoint='update_sqleditor_connection'
 )
+@pga_login_required
 def update_sqleditor_connection(trans_id, sgid, sid, did):
     # Remove transaction Id.
     with sqleditor_close_session_lock:
@@ -712,6 +721,7 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
 
 
 @blueprint.route('/close/<int:trans_id>', methods=["DELETE"], endpoint='close')
+@pga_login_required
 def close(trans_id):
     """
     This method is used to close the asynchronous connection
@@ -2424,7 +2434,7 @@ def get_new_connection_data(sgid=None, sid=None):
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()
-            server_group_data[server.servers.name].append({
+            server_group_data[server.servergroup.name].append({
                 'label': server.name,
                 "value": server.id,
                 'image': server_icon_and_background(connected, manager,

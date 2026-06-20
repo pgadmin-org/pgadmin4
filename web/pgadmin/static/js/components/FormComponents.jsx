@@ -26,6 +26,8 @@ import Select, { components as RSComponents } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
+import DOMPurify from 'dompurify';
+import { SafeMessage } from './SafeMessage';
 
 import { DateTimePicker, DatePicker, TimePicker} from '@mui/x-date-pickers';
 import * as DateFns from 'date-fns';
@@ -138,7 +140,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
           <FormControl error={Boolean(error)} fullWidth>
             {React.cloneElement(children, { cid, helpid })}
           </FormControl>
-          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
+          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
         </StyledGrid>
       </>)
     );
@@ -162,8 +164,8 @@ export function FormInput({ children, error, className, label, helpMessage, requ
         <FormControl error={Boolean(error)} fullWidth>
           {React.cloneElement(children, { cid, helpid })}
         </FormControl>
-        <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
-        {errorMessage && <FormHelperText variant="outlined" error= {true} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{HTMLReactParse(errorMessage)}</FormHelperText> }
+        <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
+        {errorMessage && <FormHelperText variant="outlined" error={true} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}><SafeMessage text={errorMessage} /></FormHelperText> }
       </Grid>
     </StyledGrid>
   );
@@ -1154,7 +1156,7 @@ export function FormNote({ text, className, controlProps }) {
       <Box className={className}>
         <Paper elevation={0} className={controlProps?.raw ? '' : 'Form-noteRoot'}>
           {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
-          <Box>{HTMLReactParse(text || '')}</Box>
+          <Box>{HTMLReactParse(DOMPurify.sanitize(text || ''))}</Box>
         </Paper>
       </Box>
     </Root>
@@ -1191,6 +1193,7 @@ export function FormFooterMessage({style, ...props}) {
 FormFooterMessage.propTypes = {
   style: PropTypes.object,
   message: PropTypes.string,
+  plainText: PropTypes.bool,
 };
 
 const StyledFormInput = styled(FormInput)(() => ({
@@ -1310,12 +1313,15 @@ const StyledNotifierMessageBox = styled(Box)(({theme}) => ({
 }));
 
 export function NotifierMessage({
-  type = MESSAGE_TYPE.SUCCESS, message, style, closable = true, showIcon=true, textCenter=false,
+  type = MESSAGE_TYPE.SUCCESS, message, style, closable = true, showIcon=true, textCenter=false, plainText=false,
   onClose = () => {/*This is intentional (SonarQube)*/ }}) {
+  const body = plainText
+    ? <SafeMessage text={message} />
+    : HTMLReactParse(DOMPurify.sanitize(message || ''));
   return (
     <StyledNotifierMessageBox className={`FormFooter-container${type}`} style={style} data-test="notifier-message">
       {showIcon && <FormIcon type={type} className={`FormFooter-icon${type}`} />}
-      <Box className={textCenter ? 'FormFooter-messageCenter' : 'FormFooter-message'}>{HTMLReactParse(message || '')}</Box>
+      <Box className={textCenter ? 'FormFooter-messageCenter' : 'FormFooter-message'}>{body}</Box>
       {closable && <IconButton title={gettext('Close Message')} className={'FormFooter-closeButton ' + `FormFooter-icon${type}`} onClick={onClose}>
         <FormIcon close={true} />
       </IconButton>}
@@ -1329,6 +1335,7 @@ NotifierMessage.propTypes = {
   closable: PropTypes.bool,
   showIcon: PropTypes.bool,
   textCenter: PropTypes.bool,
+  plainText: PropTypes.bool,
   onClose: PropTypes.func,
   style: PropTypes.object,
 };

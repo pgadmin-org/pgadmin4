@@ -18,6 +18,8 @@ import CustomPropTypes from '../custom_prop_types';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import HTMLReactParser from 'html-react-parser';
+import DOMPurify from 'dompurify';
+import { SafeMessage } from '../components/SafeMessage';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Rnd } from 'react-rnd';
 import { ExpandDialogIcon, MinimizeDialogIcon, DisconnectedIcon } from '../components/ExternalIcon';
@@ -47,10 +49,15 @@ export function useModal() {
   return React.useContext(ModalContext);
 }
 
-function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick, okIcon = 'default'}) {
+export function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick, okIcon = 'default', plainText = false}) {
+  const body = (typeof text === 'string')
+    ? (plainText
+      ? <SafeMessage text={text} />
+      : HTMLReactParser(DOMPurify.sanitize(text)))
+    : text;
   return (
     <StyledBox display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2} whiteSpace='pre-line'>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box flexGrow="1" p={2} whiteSpace='pre-line'>{body}</Box>
       <Box className='Alert-footer'>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick}>{cancelLabel}</DefaultButton>
@@ -67,10 +74,12 @@ AlertContent.propTypes = {
   onCancelClick: PropTypes.func,
   okLabel: PropTypes.string,
   cancelLabel: PropTypes.string,
-  okIcon : PropTypes.string
+  okIcon : PropTypes.string,
+  plainText: PropTypes.bool,
 };
 
-function alert(title, text, onOkClick, okLabel = gettext('OK')) {
+function alert(title, text, onOkClick, okLabel = gettext('OK'), options = {}) {
+  const {plainText = false} = options;
   // bind the modal provider before calling
   this.showModal(title, (closeModal) => {
     const onOkClickClose = () => {
@@ -78,7 +87,7 @@ function alert(title, text, onOkClick, okLabel = gettext('OK')) {
       closeModal();
     };
     return (
-      <AlertContent text={text} onOkClick={onOkClickClose} okLabel={okLabel} />
+      <AlertContent text={text} onOkClick={onOkClickClose} okLabel={okLabel} plainText={plainText} />
     );
   });
 }
@@ -107,7 +116,7 @@ function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = 
       return (
         <StyledBox display="flex" flexDirection="column" height="100%">
           <Box flexGrow="1" p={2}>
-            {typeof (text) == 'string' ? HTMLReactParser(text) : text}
+            {typeof (text) == 'string' ? HTMLReactParser(DOMPurify.sanitize(text)) : text}
           </Box>
           <Box className='Alert-footer'>
             <DefaultButton className='Alert-margin' startIcon={<CloseIcon />} onClick={() => handleOkClose(onCancelClick)} autoFocus>{cancelLabel}</DefaultButton>

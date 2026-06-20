@@ -117,7 +117,7 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
           if (res.data?.data?.error) {
             // Server returned an error message - clear options and show error
             setOptionsState((prev) => ({ options: [], reloadBasis: prev.reloadBasis + 1 }));
-            pgAdmin.Browser.notifier.error(res.data.data.error);
+            pgAdmin.Browser.notifier.errorText(res.data.data.error);
           } else if (res.data?.data?.models) {
             const models = res.data.data.models;
             // Clear the cache so next time preferences opens, it uses the refreshed data
@@ -134,7 +134,7 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
           // Network or other error - clear options and show error
           setOptionsState((prev) => ({ options: [], reloadBasis: prev.reloadBasis + 1 }));
           const errMsg = err.response?.data?.errormsg || err.message || gettext('Failed to refresh models');
-          pgAdmin.Browser.notifier.error(errMsg);
+          pgAdmin.Browser.notifier.errorText(errMsg);
         })
         .finally(() => {
           setIsRefreshing(false);
@@ -149,7 +149,7 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
         .catch((err) => {
           setOptionsState((prev) => ({ options: [], reloadBasis: prev.reloadBasis + 1 }));
           const errMsg = err.message || gettext('Failed to refresh options');
-          pgAdmin.Browser.notifier.error(errMsg);
+          pgAdmin.Browser.notifier.errorText(errMsg);
         })
         .finally(() => {
           setIsRefreshing(false);

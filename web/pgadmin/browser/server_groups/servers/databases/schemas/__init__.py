@@ -800,7 +800,8 @@ It may have been removed by another user.
                 SQL = render_template(
                     "/".join([self.template_path, 'sql/get_name.sql']),
                     _=gettext,
-                    scid=scid
+                    scid=scid,
+                    conn=self.conn
                 )
 
                 status, name = self.conn.execute_scalar(SQL)

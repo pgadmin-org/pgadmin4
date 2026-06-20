@@ -46,9 +46,16 @@ export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csr
           }
           {authSources?.includes?.(authSourcesEnum.OAUTH2) &&
           oauth2Config.map((oauth)=>{
+            // Allow the configured icon to specify its own Font Awesome style
+            // (e.g. 'fas fa-key'). Default to the brands style ('fab') when
+            // only an icon name is given, for backward compatibility.
+            const iconStyles = ['fab', 'fas', 'far', 'fal', 'fat', 'fad',
+              'fa-brands', 'fa-solid', 'fa-regular', 'fa-light', 'fa-thin', 'fa-duotone'];
+            const hasStyle = oauth.OAUTH2_ICON?.split(/\s+/).some((c)=>iconStyles.includes(c));
+            const iconClassName = hasStyle ? oauth.OAUTH2_ICON : 'fab '+oauth.OAUTH2_ICON;
             return (
               <SecurityButton key={oauth.OAUTH2_NAME} name="oauth2_button" value={oauth.OAUTH2_NAME} style={{backgroundColor: oauth.OAUTH2_BUTTON_COLOR}}>
-                <Icon className={'fab '+oauth.OAUTH2_ICON} style={{ fontSize: '1.5em', marginRight: '8px' }} />{gettext('Login with %s', oauth.OAUTH2_DISPLAY_NAME)}
+                <Icon className={iconClassName} style={{ fontSize: '1.5em', marginRight: '8px' }} />{gettext('Login with %s', oauth.OAUTH2_DISPLAY_NAME)}
               </SecurityButton>
             );
           })
