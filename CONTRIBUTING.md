@@ -8,6 +8,7 @@ Thank you for your interest in contributing to pgAdmin 4.
 - Reporting Issues
 - Making Changes
 - Pull Requests
+- AI-assisted Contributions
 - Development Setup
 - Database Migrations
 - Security Issues
@@ -22,9 +23,13 @@ Before starting work, please review the project documentation and familiarize yo
 
 pgAdmin 4 is written as a web application with Python (Flask) on the server side and ReactJS, HTML5 with CSS for the client side processing and UI.
 
-Although developed using web technologies, pgAdmin 4 can be deployed either on a web server using a browser, or standalone on a workstation. The [runtime/](file:///d:/t3%20code/pgadmin4/runtime) subdirectory contains an Electron-based runtime application intended to allow this, which will fork a Python server process and display the UI.
+Although developed using web technologies, pgAdmin 4 can be deployed either on a web server using a browser, or standalone on a workstation. The [runtime/](runtime/) subdirectory contains an Electron-based runtime application intended to allow this, which will fork a Python server process and display the UI.
+
+For a fuller introduction to the codebase, see the [code overview](docs/en_US/code_overview.rst).
 
 If you are new to the codebase, consider starting with smaller bug fixes or documentation improvements before working on larger changes.
+
+The Sphinx documentation also includes contributor guidance for [coding standards](docs/en_US/coding_standards.rst), [submitting pull requests](docs/en_US/submitting_pull_requests.rst), [code review](docs/en_US/code_review.rst), and [translations](docs/en_US/translations.rst).
 
 ## Reporting Issues
 
@@ -44,7 +49,7 @@ For feature requests, describe the problem being solved and the expected behavio
 When working on a contribution:
 
 - Keep changes focused and easy to review.
-- Follow existing coding patterns and conventions.
+- Follow existing coding patterns and conventions, including the [coding standards](docs/en_US/coding_standards.rst).
 - Avoid unrelated refactoring and changes in the same commit.
 - Keep commit messages clear and descriptive.
 - Update tests or documentation when necessary.
@@ -64,6 +69,14 @@ When opening a pull request:
 - Explain the reason for the change.
 - Include screenshots or recordings for UI-related changes when applicable.
 - Submit any changes as Pull Requests against the `master` branch of the [pgadmin-org/pgadmin4](https://github.com/pgadmin-org/pgadmin4) repository.
+
+Use a clear pull request title that describes the change. Short prefixes such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, and `chore:` are useful when they match the change being made. Branch names are contributor-local and do not need to follow a project-specific naming convention.
+
+For more detail, see the [pull request submission guide](docs/en_US/submitting_pull_requests.rst) and [code review guide](docs/en_US/code_review.rst).
+
+## AI-assisted Contributions
+
+Contributors are responsible for understanding, testing, and standing behind everything they submit, whether or not AI tools were used. Please do not open large numbers of auto-generated issues or pull requests without first discussing that work with the maintainers.
 
 ## Development Setup
 
