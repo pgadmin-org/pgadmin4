@@ -69,7 +69,7 @@
     "yarn-audit-html": "7.3.2"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.4"
+    "sharp": "^0.35.1"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
