@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class OptionsSchema extends BaseUISchema {
+class OptionsSchema extends BaseUISchema {
   constructor(optionID='option', valueID='value') {
     super({
       [optionID]: undefined,
@@ -33,3 +34,5 @@ export default class OptionsSchema extends BaseUISchema {
     }];
   }
 }
+export default registerSchema(OptionsSchema);
+

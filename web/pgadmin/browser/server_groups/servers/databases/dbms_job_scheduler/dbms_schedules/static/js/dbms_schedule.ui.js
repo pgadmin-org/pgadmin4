@@ -9,11 +9,12 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 import moment from 'moment';
 import { getRepeatSchema } from '../../../static/js/dbms_job_scheduler_common.ui';
 
-export default class DBMSScheduleSchema extends BaseUISchema {
+class DBMSScheduleSchema extends BaseUISchema {
   constructor() {
     super({
       jsscid: null,
@@ -87,3 +88,5 @@ export default class DBMSScheduleSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(DBMSScheduleSchema);
+

@@ -9,6 +9,8 @@
 
 import { useEffect, useReducer } from 'react';
 import _ from 'lodash';
+import gettext from 'sources/gettext';
+import pgAdmin from 'sources/pgadmin';
 
 import { prepareData } from '../common';
 import {
@@ -16,6 +18,72 @@ import {
   SchemaState,
   sessDataReducer,
 } from '../SchemaState';
+
+/**
+ * Drain a list of deferred-dep queue items.
+ *
+ * Each item is `{action, promise, listener}` produced by
+ * `DepListener.getDeferredDepChange`. We wait for each promise to settle
+ * and then dispatch a DEFERRED_DEPCHANGE action carrying the resolved
+ * callback. Two protocol guards:
+ *
+ *   1. The resolved value MUST be a function (the callback that returns
+ *      the data delta). If it's anything else, we warn and skip — this
+ *      catches the common protocol mistake of resolving with a data
+ *      object directly.
+ *   2. Rejected promises surface to the user through
+ *      `pgAdmin.Browser.notifier.error` so a backend failure can't
+ *      leave the dialog in a half-applied state with no feedback.
+ *      Schemas that want graceful in-place recovery should resolve
+ *      with a reset callback rather than rejecting.
+ *
+ * Exported so it can be unit-tested without rendering a full SchemaView.
+ */
+export const drainDeferredQueue = (items, dispatch) => {
+  items.forEach((item) => {
+    Promise.resolve(item.promise).then(
+      (resFunc) => {
+        if (typeof resFunc !== 'function') {
+          // Protocol violation: the schema author resolved with
+          // something other than a (tmpstate) => deltaObj callback.
+          // Loud console.error so it trips dev/QA test suites; not a
+          // notifier toast because this is a code bug, not a runtime
+          // failure the end user can act on.
+          console.error(
+            'deferredDepChange promise must resolve to a callback function; '
+            + 'got %o. The dispatch is skipped — see useSchemaState '
+            + 'drainDeferredQueue for the protocol.',
+            resFunc,
+          );
+          return;
+        }
+        dispatch({
+          type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
+          path: item.action.path,
+          depChange: item.action.depChange,
+          listener: {
+            ...item.listener,
+            callback: resFunc,
+          },
+        });
+      },
+      (err) => {
+        const msg = err?.message || String(err) || 'unknown error';
+        const userMsg = gettext('Dependent update failed: ') + msg;
+        const notifier = pgAdmin?.Browser?.notifier;
+        if (typeof notifier?.error === 'function') {
+          notifier.error(userMsg);
+        } else {
+          // Notifier unavailable (very early init, isolated test
+          // harness, etc.). Surface to console.error rather than
+          // silently dropping the rejection — the latter is the bug
+          // this drainer exists to prevent.
+          console.error('deferredDepChange:', userMsg, err);
+        }
+      },
+    );
+  });
+};
 
 
 export const useSchemaState = ({
@@ -49,7 +117,32 @@ export const useSchemaState = ({
       ...action,
       depChange: (...args) => state.getDepChange(...args),
       deferredDepChange: (...args) => state.getDeferredDepChange(...args),
+      // Sentinel for the reducer's path-action guard: any path-bearing
+      // action that reaches the reducer WITHOUT this flag was
+      // dispatched directly via sessDispatch, bypassing the
+      // changedPath accumulator. Under canary builds the reducer
+      // logs that as a warning so the bypass shows up in CI.
+      __viaListener: true,
     };
+    /*
+     * Remember which paths these actions target so the upcoming validate
+     * cycle can prune its options walk (incremental mode). React batches
+     * multiple dispatches into one validate (one __changeId tick), so a
+     * single scalar would lose all but the last path — leading the
+     * incremental walker to prune rows that actually did change.
+     * Accumulate into an array; SchemaState.validate consumes it.
+     *
+     * Real triggering case: two `setUnpreparedData` calls from sibling
+     * fixedRows promises resolving in the same microtask tick (e.g.
+     * VacuumSettingsSchema's vacuum_table + vacuum_toast). One validate
+     * runs with both paths' data already in sessData.
+     */
+    if (action.path) {
+      if (!Array.isArray(state.__pendingChangedPaths)) {
+        state.__pendingChangedPaths = [];
+      }
+      state.__pendingChangedPaths.push(action.path);
+    }
     /*
      * All the session changes coming before init should be queued up.
      * They will be processed later when form is ready.
@@ -117,20 +210,22 @@ export const useSchemaState = ({
       type: SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE,
     });
 
-    items.forEach((item) => {
-      item.promise.then((resFunc) => {
-        sessDispatch({
-          type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
-          path: item.action.path,
-          depChange: item.action.depChange,
-          listener: {
-            ...item.listener,
-            callback: resFunc,
-          },
-        });
-      });
-    });
-  }, [sessData.__deferred__?.length]);
+    // Route the drain's DEFERRED_DEPCHANGE dispatches through the
+    // listener wrapper so they (a) carry the __viaListener sentinel
+    // the reducer's bypass guard expects and (b) push their paths
+    // into __pendingChangedPaths so the next validate's mustVisit
+    // includes them. Pre-fix, the drain called sessDispatch directly
+    // — every deferred resolve tripped the bypass guard and
+    // silently skipped the accumulator.
+    drainDeferredQueue(items, sessDispatchWithListener);
+    // Depend on the array reference rather than its length. With React
+    // automatic batching the queue's length can round-trip through 0 in
+    // the same commit (CLEAR followed by a fresh APPEND), and a
+    // length-based dep would compare equal across renders and miss the
+    // second drain. The reducer creates a new __deferred__ array on
+    // every dispatch, so ref-equality changes whenever the queue does;
+    // the early `length == 0` return keeps the no-op case free.
+  }, [sessData.__deferred__]);
 
   state.reload = reload;
   state.reset = resetData;

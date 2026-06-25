@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class DomainConstraintSchema extends BaseUISchema {
+class DomainConstraintSchema extends BaseUISchema {
   constructor(initValues) {
     super({
       name: undefined,
@@ -57,3 +58,5 @@ export default class DomainConstraintSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(DomainConstraintSchema);
+

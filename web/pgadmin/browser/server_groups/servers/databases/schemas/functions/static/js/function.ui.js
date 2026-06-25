@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 import _ from 'lodash';
@@ -90,7 +91,7 @@ export class DefaultArgumentSchema extends BaseUISchema {
   }
 }
 
-export default class FunctionSchema extends BaseUISchema {
+class FunctionSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, getNodeVariableSchema, fieldOptions={}, node_info={}, type='function', initValues={}) {
     super({
       name: undefined,
@@ -473,3 +474,5 @@ export default class FunctionSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(FunctionSchema);
+

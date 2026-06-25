@@ -14,6 +14,7 @@ const babel = require('@babel/eslint-plugin');
 const babelParser = require('@babel/eslint-parser');
 const ts = require('typescript-eslint');
 const unusedImports = require('eslint-plugin-unused-imports');
+const pgadminLocal = require('./eslint-plugins/local-rules');
 
 
 module.exports = [
@@ -59,12 +60,24 @@ module.exports = [
         'global': 'readonly',
         'jest': 'readonly',
         'process': 'readonly',
+        // `pgAdmin` is provided to the browser bundle via the
+        // ProvidePlugin in webpack.config.js. Lint sees it as
+        // undefined; declare it so source code (e.g.
+        // bench-fixture.js) doesn't need per-line disables.
+        'pgAdmin': 'readonly',
+        // `expect` is a Jest global used at module scope in
+        // setup-jest.js (outside any describe/it block). The
+        // eslint-plugin-jest config supplies it inside test
+        // blocks; module-scope usage in the harness needs an
+        // explicit declaration.
+        'expect': 'readonly',
       },
     },
     'plugins': {
       'react': reactjs,
       '@babel': babel,
       'unused-imports': unusedImports,
+      'pgadmin-local': pgadminLocal,
     },
     'rules': {
       'indent': [
@@ -106,7 +119,8 @@ module.exports = [
           'args': 'after-used',
           'argsIgnorePattern': '^_',
         },
-      ]
+      ],
+      'pgadmin-local/register-schema': 'error',
     },
     'settings': {
       'react': {

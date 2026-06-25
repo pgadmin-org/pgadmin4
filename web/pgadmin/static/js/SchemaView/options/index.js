@@ -21,7 +21,8 @@ import {
 } from '../common';
 import {
   evaluateFieldOptions,
-  evaluateFieldsOption, 
+  evaluateFieldsOption,
+  pathOverlaps,
   registerOptionEvaluator,
   schemaOptionsEvalulator,
 } from './registry';
@@ -31,8 +32,9 @@ export {
   booleanEvaluator,
   canAddOrDelete,
   evaluateFieldOptions,
-  evaluateFieldsOption, 
+  evaluateFieldsOption,
   evalIfNotDisabled,
+  pathOverlaps,
   registerOptionEvaluator,
   schemaOptionsEvalulator,
 };

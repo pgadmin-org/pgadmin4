@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { emptyValidator } from 'sources/validators';
 
-export default class SynonymSchema extends BaseUISchema {
+class SynonymSchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       targettype: 'r',
@@ -134,3 +135,5 @@ export default class SynonymSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(SynonymSchema);
+

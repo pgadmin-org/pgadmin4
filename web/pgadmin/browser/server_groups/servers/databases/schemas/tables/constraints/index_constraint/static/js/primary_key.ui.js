@@ -8,13 +8,14 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import TableSchema from '../../../../static/js/table.ui';
 
 
-export default class PrimaryKeySchema extends BaseUISchema {
+class PrimaryKeySchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}) {
     super({
       name: undefined,
@@ -271,3 +272,5 @@ export default class PrimaryKeySchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(PrimaryKeySchema);
+

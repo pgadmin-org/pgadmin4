@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from '../../../../../../static/js/validators';
 
-export default class DirectorySchema extends BaseUISchema {
+class DirectorySchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, treeNodeInfo, fieldOptions={}, initValues={}) {
     super({
       diruser: undefined,
@@ -84,3 +85,5 @@ export default class DirectorySchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(DirectorySchema);
+

@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 import _ from 'lodash';
@@ -38,6 +39,11 @@ export class DomainConstSchema extends BaseUISchema {
       }, {
         id: 'convalidated', label: gettext('Validate?'), cell: 'checkbox',
         type: 'checkbox',
+        // readonly reads obj.top.origData.constraints — declare the parent
+        // path so incremental option walks re-evaluate this row when the
+        // origData constraints collection changes (e.g. on initialise
+        // after save).
+        deps: [['constraints']],
         readonly: function(state) {
           let currCon = _.find(
             obj.top.origData.constraints, (con) => con.conoid == state.conoid
@@ -65,7 +71,7 @@ export class DomainConstSchema extends BaseUISchema {
   }
 }
 
-export default class DomainSchema extends BaseUISchema {
+class DomainSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
@@ -224,3 +230,5 @@ export default class DomainSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(DomainSchema);
+

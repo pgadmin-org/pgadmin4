@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from 'top/browser/server_groups/servers/static/js/sec_label.ui';
 import _ from 'lodash';
 import { ConstraintsSchema, getPrivilegesForTableAndLikeObjects } from '../../../static/js/table.ui';
@@ -76,7 +77,7 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
   );
 }
 
-export default class PartitionTableSchema extends BaseUISchema {
+class PartitionTableSchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}, schemas={}, getPrivilegeRoleSchema={}, getColumns=()=>[],
     getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}) {
     super({
@@ -124,6 +125,11 @@ export default class PartitionTableSchema extends BaseUISchema {
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
     this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, fieldOptions.table_amname_list, getAttachTables);
     this.constraintsObj = this.schemas.constraints();
+
+    // Same audit basis as TableSchema — re-uses the same nested ColumnSchema
+    // + PartitionsSchema + PartitionKeysSchema row schemas, all already
+    // deps-audited.
+    this.incrementalOptions = true;
   }
 
   get idAttribute() {
@@ -452,3 +458,5 @@ export default class PartitionTableSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(PartitionTableSchema);
+

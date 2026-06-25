@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class CatalogObjectSchema extends BaseUISchema {
+class CatalogObjectSchema extends BaseUISchema {
   constructor() {
     super({
       name: undefined,
@@ -42,3 +43,5 @@ export default class CatalogObjectSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(CatalogObjectSchema);
+

@@ -11,6 +11,7 @@ import _ from 'lodash';
 
 import { DataGridFormHeader } from 'sources/SchemaView/DataGridView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import { isEmptyString } from 'sources/validators';
@@ -184,7 +185,11 @@ class IndexColumnSchema extends BaseUISchema {
         },
         node: 'index',
         url_jump_after_node: 'schema',
-        deps: ['amname'],
+        // The cell-filter reads obj.top?.sessData.amname (the parent Index
+        // row's amname), not a sibling column's amname. Use an absolute
+        // path so the dep registers against the parent field; the relative
+        // form was dead (column rows don't have an `amname` field).
+        deps: [['amname']],
       },{
         id: 'sort_order', label: gettext('Sort order'), type: 'select', cell: 'select',
         options: [
@@ -351,7 +356,7 @@ export class WithSchema extends BaseUISchema {
   }
 }
 
-export default class IndexSchema extends BaseUISchema {
+class IndexSchema extends BaseUISchema {
   constructor(fieldOptions = {}, nodeData = {}, initValues={}) {
     super({
       name: undefined,
@@ -383,6 +388,11 @@ export default class IndexSchema extends BaseUISchema {
     this.indexColumnSchema = new IndexColumnSchema(this.node_info);
     this.indexHeaderSchema.indexColumnSchema = this.indexColumnSchema;
     this.withSchema = new WithSchema(this.node_info);
+
+    // Opt into SchemaView's incremental option evaluation. Safe after the
+    // op_class parent-amname dep was declared (commit 91fcd6b09 +
+    // e80f9d7ee). See web/regression/perf-bench/README.md.
+    this.incrementalOptions = true;
   }
 
   get idAttribute() {
@@ -476,35 +486,25 @@ export default class IndexSchema extends BaseUISchema {
           };
         },
         deferredDepChange: (state, source, topState, actionObj) => {
-          const setColumns = (resolve)=>{
-            resolve(()=>{
-              state.columns.splice(0, state.columns?.length);
-              return {
-                columns: state.columns,
-              };
-            });
-          };
-          if((state.amname != actionObj?.oldState.amname) && state.columns?.length > 0) {
-            return new Promise((resolve)=>{
-              pgAdmin.Browser.notifier.confirm(
-                gettext('Warning'),
-                gettext('Changing access method will clear columns collection. Do you want to continue?'),
-                function () {
-                  setColumns(resolve);
-                },
-                function() {
-                  resolve(()=>{
-                    state.amname = actionObj?.oldState.amname;
-                    return {
-                      amname: state.amname,
-                    };
-                  });
-                }
-              );
-            });
-          } else {
-            return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
+          // No-op when amname didn't change or there's nothing to clear.
+          // Returning undefined opts out of the deferred queue.
+          // actionObj.oldState is guaranteed by the reducer to be the
+          // pre-dispatch clone; no need for optional chaining (and the
+          // cancel branch below accesses it unconditionally).
+          if (state.amname === actionObj.oldState.amname
+              || !state.columns?.length) {
+            return undefined;
           }
+          return new Promise((resolve)=>{
+            pgAdmin.Browser.notifier.confirm(
+              gettext('Warning'),
+              gettext('Changing access method will clear columns collection. Do you want to continue?'),
+              // Confirmed — clear the columns collection.
+              () => resolve(() => ({ columns: [] })),
+              // Cancelled — revert amname to its previous value.
+              () => resolve(() => ({ amname: actionObj.oldState.amname })),
+            );
+          });
         },
       },
       {
@@ -682,3 +682,5 @@ export default class IndexSchema extends BaseUISchema {
     return null;
   }
 }
+export default registerSchema(IndexSchema);
+

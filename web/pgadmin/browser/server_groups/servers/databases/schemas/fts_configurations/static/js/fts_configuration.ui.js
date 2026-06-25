@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { DataGridFormHeader } from 'sources/SchemaView/DataGridView';
 import { isEmptyString } from '../../../../../../../../static/js/validators';
 
@@ -74,7 +75,7 @@ class TokenSchema extends BaseUISchema {
   }
 }
 
-export default class FTSConfigurationSchema extends BaseUISchema {
+class FTSConfigurationSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,        // FTS Configuration name
@@ -189,3 +190,5 @@ export default class FTSConfigurationSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(FTSConfigurationSchema);
+

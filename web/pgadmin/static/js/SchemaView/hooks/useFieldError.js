@@ -38,7 +38,8 @@ export const useFieldError = (path, schemaState, subscriberManager) => {
     return subscriberManager.current?.add(
       schemaState,  ['errors'], 'states', checkPathError
     );
-  });
+    // Pin deps; see useFieldValue for the rationale.
+  }, [path, schemaState, subscriberManager]);
 
   const errors = schemaState?.errors || {};
   const error = (

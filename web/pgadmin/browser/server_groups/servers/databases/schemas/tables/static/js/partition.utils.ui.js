@@ -163,6 +163,11 @@ export class PartitionsSchema extends BaseUISchema {
         {label: gettext('Attach'), value: true},
         {label: gettext('Create'), value: false},
       ], controlProps: {allowClear: false},
+      // editable/readonly call obj.top.isNew(), which reads the parent
+      // table's idAttribute ('oid'). Declare it so incremental option
+      // walks still revisit this row when the parent transitions
+      // new -> saved.
+      deps: [['oid']],
       editable: function(state) {
         return obj.isNew(state) && !obj.top.isNew();
       },
@@ -229,6 +234,10 @@ export class PartitionsSchema extends BaseUISchema {
     },{
       id: 'is_default', label: gettext('Default'), type: 'switch', cell:'switch',
       width: 55, enableResizing: false, min_version: 110000,
+      // editable/readonly read parent partition_type + obj.isNew(state)
+      // (own row's oid). Declare parent partition_type + parent oid so
+      // incremental option walks pick this row up when either changes.
+      deps: [['partition_type'], ['oid']],
       editable: function(state) {
         return (obj.top && (obj.top.sessData.partition_type == 'range' ||
             obj.top.sessData.partition_type == 'list') && obj.isNew(state)
@@ -241,7 +250,13 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_from', label: gettext('From'), type:'text', cell: 'text',
-      deps: ['is_default'],
+      // editable/disabled read this.top.sessData.partition_type (parent
+      // schema) + this.isNew(state) (own row's oid) + state.is_default
+      // (same-row). Without declaring partition_type + oid, the
+      // incremental walker prunes sibling rows whose options would
+      // have changed under a full walk — see audit divergence on
+      // partitions.0.values_from.
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.isEditable(state, 'range');
       },
@@ -251,7 +266,7 @@ export class PartitionsSchema extends BaseUISchema {
     },
     {
       id: 'values_to', label: gettext('To'), type:'text', cell: 'text',
-      deps: ['is_default'],
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.isEditable(state, 'range');
       },
@@ -260,7 +275,7 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_in', label: gettext('In'), type:'text', cell: 'text',
-      deps: ['is_default'],
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.isEditable(state, 'list');
       },
@@ -269,6 +284,7 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_modulus', label: gettext('Modulus'), type:'int', cell: 'int',
+      deps: [['partition_type'], ['oid'], 'is_default'],
       editable: function(state) {
         return obj.isEditable(state, 'hash');
       },
@@ -277,6 +293,9 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_remainder', label: gettext('Remainder'), type:'int', cell: 'int',
+      // editable/disabled read parent partition_type + obj.isNew(state)
+      // (own row's oid); is_default is same-row.
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state);
       },
@@ -324,7 +343,10 @@ export class PartitionsSchema extends BaseUISchema {
       schema: this.subPartitionsObj,
       editable: true, type: 'collection',
       group: 'Partition', mode: ['properties', 'create', 'edit'],
-      deps: ['is_sub_partitioned', 'sub_partition_type', ['typname']],
+      // canAddRow reads obj.top.sessData.columns (parent table's columns
+      // collection). Declare [['columns']] so any change inside columns
+      // re-evaluates canAddRow under incremental walks.
+      deps: ['is_sub_partitioned', 'sub_partition_type', ['typname'], ['columns']],
       canEdit: false, canDelete: true,
       canAdd: function(state) {
         return obj.isNew(state) && state.is_sub_partitioned;

@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from 'sources/SchemaView';
@@ -145,7 +146,7 @@ export class ForeignKeyColumnSchema extends BaseUISchema {
   }
 }
 
-export default class ForeignKeySchema extends BaseUISchema {
+class ForeignKeySchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}, getColumns=()=>[], initValues={}, inErd=false) {
     super({
       name: undefined,
@@ -428,3 +429,5 @@ export default class ForeignKeySchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(ForeignKeySchema);
+

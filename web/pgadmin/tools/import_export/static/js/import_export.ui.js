@@ -8,11 +8,12 @@
 //////////////////////////////////////////////////////////////
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 import { isEmptyString } from 'sources/validators';
 
 
-export default class ImportExportSchema extends BaseUISchema {
+class ImportExportSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues={}) {
     super({
       null_string: undefined,
@@ -416,3 +417,5 @@ export default class ImportExportSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(ImportExportSchema);
+
