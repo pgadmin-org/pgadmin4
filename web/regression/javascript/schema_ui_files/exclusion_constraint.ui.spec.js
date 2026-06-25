@@ -203,8 +203,10 @@ describe('ExclusionConstraintSchema', ()=>{
 
     it('btree', (done)=>{
       confirmSpy.mockClear();
-      let state = {amname: 'btree'};
-      let deferredPromise = deferredDepChange(state);
+      let state = {amname: 'btree', columns: [{column: 'c1'}]};
+      let deferredPromise = deferredDepChange(state, null, null, {
+        oldState: { amname: 'gist' },
+      });
       deferredPromise.then((depChange)=>{
         expect(schemaObj.exColumnSchema.setOperClassOptions).toHaveBeenCalledWith(operClassOptions);
         expect(depChange()).toEqual({
@@ -218,8 +220,10 @@ describe('ExclusionConstraintSchema', ()=>{
 
     it('not btree', (done)=>{
       confirmSpy.mockClear();
-      let state = {amname: 'gist'};
-      let deferredPromise = deferredDepChange(state);
+      let state = {amname: 'gist', columns: [{column: 'c1'}]};
+      let deferredPromise = deferredDepChange(state, null, null, {
+        oldState: { amname: 'btree' },
+      });
       deferredPromise.then((depChange)=>{
         expect(schemaObj.exColumnSchema.setOperClassOptions).toHaveBeenCalledWith([]);
         expect(depChange()).toEqual({
@@ -233,7 +237,7 @@ describe('ExclusionConstraintSchema', ()=>{
 
     it('press no', (done)=>{
       confirmSpy.mockClear();
-      let state = {amname: 'gist'};
+      let state = {amname: 'gist', columns: [{column: 'c1'}]};
       let deferredPromise = deferredDepChange(state, null, null, {
         oldState: {
           amname: 'btree',

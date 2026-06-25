@@ -156,7 +156,10 @@ export default class Reorder extends Feature {
     preview(rowRef);
 
     if (index == this.hoverIndex) {
-      classList?.append('DataGridView-tableRowHovered');
+      // `classList` is an Array (see `let classList = []` in row.jsx)
+      // — Array.prototype has no `.append`, so `.append` would
+      // silently no-op via the optional chain.
+      classList?.push('DataGridView-tableRowHovered');
     }
 
     row.dragHandlerId = handlerId;

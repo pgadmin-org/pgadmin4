@@ -133,6 +133,45 @@ describe('ColumnSchema', ()=>{
     expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(false);
   });
 
+  // The case above sets both `attnum=-1` AND `inheritedfrom` before
+  // checking the inherited path, which masked the real bug: in CREATE
+  // mode (no attnum) for a child table inheriting from a parent, the
+  // `isNew(state) → return false` shortcut fired BEFORE the
+  // `inheritedfrom` check, leaving Name/datatype editable on columns
+  // that should mirror the parent.
+  it('inSchemaWithColumnCheck — inherited column in CREATE mode is ' +
+     'disabled (the `inheritedfrom` check must run before the ' +
+     'create-mode shortcut, not after it)', ()=>{
+    schemaObj.nodeInfo = {schema: {}};
+
+    // Sanity: fresh non-inherited column in create mode is editable.
+    let fresh = {};
+    expect(schemaObj.isNew(fresh)).toBe(true);
+    expect(schemaObj.inSchemaWithColumnCheck(fresh)).toBe(false);
+
+    // BUG CASE: child table inherits from parent. Inherited columns
+    // arrive with `inheritedfrom` set; `attnum` is undefined (no
+    // server-side identity yet → isNew=true). They should be disabled
+    // in BOTH create and edit modes (Name/datatype mirror the parent).
+    let inheritedInCreate = { inheritedfrom: 140391 };
+    expect(schemaObj.isNew(inheritedInCreate)).toBe(true);
+    expect(schemaObj.inSchemaWithColumnCheck(inheritedInCreate)).toBe(true);
+
+    // Companion: same column in EDIT mode — also disabled.
+    let inheritedInEdit = { inheritedfrom: 140391, attnum: 5 };
+    expect(schemaObj.isNew(inheritedInEdit)).toBe(false);
+    expect(schemaObj.inSchemaWithColumnCheck(inheritedInEdit)).toBe(true);
+
+    // An `OF TYPE`-inherited column carries `inheritedfromtype`, NOT
+    // `inheritedfrom` — that case is editable (the cltype field's
+    // dedicated `editable` callback unwraps it).
+    // `inSchemaWithColumnCheck` only locks `inheritedfrom`; this assert
+    // pins that contract.
+    let ofType = { inheritedfromtype: 16384 };
+    expect(schemaObj.isNew(ofType)).toBe(true);
+    expect(schemaObj.inSchemaWithColumnCheck(ofType)).toBe(false);
+  });
+
   it('editableCheckForTable', ()=>{
     let state = {};
     schemaObj.nodeInfo = {};
