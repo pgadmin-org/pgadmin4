@@ -16,7 +16,7 @@ Authlib==1.6.*; python_version <= '3.9'
 Authlib==1.7.*; python_version > '3.9'
 azure-identity==1.25.3
 azure-mgmt-rdbms==10.1.1
-azure-mgmt-resource==25.0.0
+azure-mgmt-resource==26.0.0
 azure-mgmt-subscription==3.1.1
 bcrypt==5.0.*
 boto3==1.42.*; python_version <= '3.9'
