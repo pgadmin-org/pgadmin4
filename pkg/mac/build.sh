@@ -94,6 +94,7 @@ _build_docs
 _complete_bundle
 _strip_architecture
 _prune_dangling_symlinks
+_verify_bundle_linkage
 _generate_sbom
 _codesign_binaries
 _codesign_bundle

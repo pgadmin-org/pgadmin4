@@ -457,6 +457,68 @@ _prune_dangling_symlinks() {
     fi
 }
 
+_verify_bundle_linkage() {
+    # Belt and braces: make sure nothing in the finished bundle links against
+    # a library that lives outside it on the build host. Such a reference
+    # resolves on the build machine but the path is absent on an end user's
+    # Mac (or, for a Homebrew dylib, present-but-rejected by hardened-runtime
+    # library validation for having a different Team ID), so the app dies on
+    # startup before it can even import config.
+    #
+    # The known offender is the Python cryptography module. When no binary
+    # wheel is published for the build architecture (cryptography 49 dropped
+    # the Intel/universal2 macOS wheel, leaving arm64 only), pip compiles it
+    # from source, and its openssl-sys crate links whatever OpenSSL it
+    # discovers on the build host rather than the one we ship: it ignores the
+    # CFLAGS/LDFLAGS the build exports and falls back to Homebrew, baking
+    # e.g. /usr/local/opt/openssl@3/lib/libssl.3.dylib into _rust.abi3.so.
+    # _fixup_imports deliberately skips _rust.abi3.so, so the dangling
+    # reference would otherwise sail through to a shipped DMG. See issue
+    # #10123.
+    #
+    # Everything legitimate in the bundle is either an OS library (/usr/lib,
+    # /System) or a bundle-relative reference (@loader_path, @rpath,
+    # @executable_path), so any absolute install-name under a build-host
+    # prefix is, by definition, wrong.
+    #
+    # NB: run after _complete_bundle (which does the install-name rewriting
+    # via _fixup_imports) so we validate the final, relocated state.
+
+    echo "Verifying bundle library references..."
+
+    # Build-host prefixes that must never appear in a shipped bundle. SLAVE_HOME
+    # (the Jenkins workspace root, under which the self-built OpenSSL and
+    # PostgreSQL live) is only added when set, i.e. on the CI builders.
+    local PREFIXES='/usr/local|/opt/homebrew|/opt/local'
+    if [ -n "${SLAVE_HOME}" ]; then
+        PREFIXES="${PREFIXES}|${SLAVE_HOME}"
+    fi
+
+    local found="" f deps
+    while IFS= read -r f; do
+        # otool prints the filename header then one line per dependency; drop
+        # the header, take the install-name column, and keep only build-host
+        # paths. grep exits non-zero (no match) for a clean binary, which is
+        # the common case, so fall through to the next file.
+        deps=$(otool -L "${f}" 2>/dev/null | tail -n +2 | awk '{print $1}' | \
+            grep -E "^(${PREFIXES})") || continue
+        echo "ERROR: ${f} links against build-host libraries:" >&2
+        echo "${deps}" | sed 's/^/    /' >&2
+        found="yes"
+    done < <(find "${BUNDLE_DIR}" \( -name '*.so' -o -name '*.dylib' \) -type f)
+
+    if [ -n "${found}" ]; then
+        echo "ERROR: the bundle links against libraries outside it; those paths" >&2
+        echo "       will not exist (or will fail library validation) on end-user" >&2
+        echo "       machines and the app will not start. See issue #10123." >&2
+        echo "       Ensure the affected module links the bundled OpenSSL, e.g." >&2
+        echo "       set OPENSSL_DIR (and OPENSSL_STATIC) for the cryptography" >&2
+        echo "       build so openssl-sys does not pick up Homebrew's copy." >&2
+        exit 1
+    fi
+    echo "Bundle library references OK."
+}
+
 _generate_sbom() {
    echo "Generating SBOM..."
    syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/sbom.json"
