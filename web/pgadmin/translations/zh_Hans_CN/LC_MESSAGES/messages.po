@@ -3966,13 +3966,13 @@ msgstr "外部表..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:93
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:98
 msgid "Truncate"
-msgstr "截断"
+msgstr "清空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:84
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:93
 msgid "Truncate Cascade"
-msgstr "级联截断"
+msgstr "级联清空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:89
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:98
@@ -5013,7 +5013,7 @@ msgstr "--{0} 的定义不完整"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2008
 msgid "Table truncated"
-msgstr "表被截断"
+msgstr "表被清空"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2075
 #, python-brace-format
@@ -6024,7 +6024,7 @@ msgstr "行数"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:218
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:191
 msgid "Truncate Table"
-msgstr "截断表"
+msgstr "清空表"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:219
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:192
@@ -19658,7 +19658,7 @@ msgstr ""
 #~ msgstr "打开上下文菜单"
 
 #~ msgid "Are you sure you want to truncate table %s?"
-#~ msgstr "你确定你想要截断表 %s?"
+#~ msgstr "你确定你想要清空表 %s?"
 
 #~ msgid ""
 #~ "Delete database with the force option"
