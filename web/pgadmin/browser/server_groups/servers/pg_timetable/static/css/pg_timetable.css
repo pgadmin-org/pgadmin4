@@ -1,0 +1,24 @@
+/* Node icon displayed directly inside the left-hand navigation explorer tree */
+.icon-pg_timetable_chain {
+    background-image: none !important;
+}
+
+.icon-pg_timetable_chain:before {
+    font-family: 'Font Awesome 5 Free', 'FontAwesome';
+    font-weight: 900;
+    content: "\f017"; /* Unicode character string representing a clock/stopwatch icon */
+    color: #2b6cb0;   /* Theme-compliant dark blue tint matching server elements */
+    font-size: 14px;
+    display: inline-block;
+}
+
+/* Modifier state icon adjustment applied when the targeted chain is disabled or offline */
+.icon-pg_timetable_chain-disabled:before {
+    color: #a0aec0;   /* Muted gray tint indicating an inactive cron state */
+    content: "\f017";
+}
+
+/* Context menu header overlay utility styling */
+.ajs-content .icon-pg_timetable_chain:before {
+    padding-right: 8px;
+}
