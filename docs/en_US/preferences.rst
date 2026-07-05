@@ -635,6 +635,33 @@ a graphical EXPLAIN.
 * When the *Verbose output?* switch is set to *True*, graphical explain details
   will include extended information about the query execution plan.
 
+Use the fields on the *Geometry Viewer* panel to configure a custom map tile
+provider used as a base layer when viewing geometry data.
+
+* Use the *Custom tile provider URL* field to specify the URL template of a
+  custom XYZ tile provider, e.g.
+  ``https://myserver.example.com/tiles/{z}/{x}/{y}.png``. The template must
+  contain the ``{x}``, ``{y}`` and ``{z}`` placeholders, and may contain
+  ``{s}`` for subdomains (a, b, c). Leave the field empty to disable the
+  custom tile provider.
+
+* Use the *Custom tile provider name* field to specify the display name of
+  the custom tile provider in the layer selector of the Geometry Viewer.
+
+* Use the *Custom tile provider CRS* field to specify the coordinate
+  reference system of the custom tile provider. If it is not EPSG:3857
+  (Web Mercator), the built-in tile layers will be hidden as they cannot be
+  mixed with other coordinate systems.
+
+* Use the *Custom tile provider attribution* field to specify the
+  attribution text shown on the map. It may contain HTML links.
+
+* Use the *Custom tile provider max zoom* field to specify the maximum zoom
+  level of the custom tile provider.
+
+When a custom tile provider is configured, it is selected as the default
+base layer of the Geometry Viewer.
+
 .. image:: images/preferences_graph_visualiser.png
     :alt: Preferences sqleditor graph visualiser section
     :align: center
