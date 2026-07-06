@@ -69,6 +69,14 @@ describe('GeometryViewerUtils', ()=>{
       });
       expect(provider.attribution).toBe('safe');
     });
+
+    it('sanitizes script content out of the custom tile name', ()=>{
+      const provider = getCustomTileProvider({
+        custom_tile_url: VALID_URL,
+        custom_tile_name: 'safe<script>alert(1)</script>',
+      });
+      expect(provider.name).toBe('safe');
+    });
   });
 
   describe('getMapCrs', ()=>{

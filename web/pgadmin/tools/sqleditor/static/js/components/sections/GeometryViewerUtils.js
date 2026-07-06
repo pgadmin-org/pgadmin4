@@ -31,7 +31,7 @@ export function getCustomTileProvider(prefs) {
   const crs = prefs.custom_tile_crs || 'EPSG:3857';
   return {
     url: url,
-    name: (prefs.custom_tile_name ?? '').trim() || gettext('Custom'),
+    name: DOMPurify.sanitize((prefs.custom_tile_name ?? '').trim() || gettext('Custom')),
     crs: crs,
     attribution: DOMPurify.sanitize(prefs.custom_tile_attribution || ''),
     maxZoom: prefs.custom_tile_max_zoom ?? DEFAULT_MAX_ZOOM,
