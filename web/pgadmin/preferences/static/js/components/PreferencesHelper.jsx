@@ -86,6 +86,7 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
 
     // Ensure type is set after specific handling
     element.type = type;
+    element.controlProps = element.control_props ?? {};
     if (type === 'selectFile') {
       // Binary Path specific handling
       note = gettext('Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore utilities can be found for the corresponding database server version. The default path will be used for server versions that do not have a path specified.');
@@ -102,7 +103,6 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
         addBinaryPathNote = true;
       }
     } else if (type === 'select') {
-      element.controlProps = element.control_props ?? {};
       fieldValues[element.id] = element.value;
 
       if (element.name === 'theme') {

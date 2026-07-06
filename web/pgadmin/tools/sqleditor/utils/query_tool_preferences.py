@@ -9,9 +9,9 @@
 
 """Register preferences for query tool"""
 from flask_babel import gettext
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
-    PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS,\
-    PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID,\
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
+    PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS, \
+    PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID, \
     PREF_LABEL_GRAPH_VISUALISER, PREF_LABEL_GEOMETRY_VIEWER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields
 from config import DATA_RESULT_ROWS_PER_PAGE
@@ -829,7 +829,8 @@ def register_query_tool_preferences(self):
         gettext("Custom tile provider URL"), 'text', '',
         category_label=PREF_LABEL_GEOMETRY_VIEWER,
         control_props={
-            'placeholder': 'https://{s}.tile.example.com/{z}/{x}/{y}.png'
+            'placeholder': 'https://{s}.tile.example.com/{z}/{x}/{y}.png',
+            'maxLength': 1024
         },
         help_str=gettext('URL template of a custom XYZ tile provider used '
                          'as a base layer in the Geometry Viewer, e.g. '
