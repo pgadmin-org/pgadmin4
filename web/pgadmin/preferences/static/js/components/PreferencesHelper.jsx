@@ -334,12 +334,11 @@ export function showResetPrefModal(api, pgAdmin, preferencesStore, onReset) {
           preferencesStore.cache(); // Refresh preferences cache
           onReset();
           if (reloadNow) {
-            reloadPgAdmin();
+            await reloadPgAdmin();
           } else {
-            pgAdmin.Browser.tree.destroy().then(() => {
-              pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:destroyed', undefined, undefined);
-              modalClose(); // Close modal after tree destruction if no full reload
-            });
+            await pgAdmin.Browser.tree.destroy();
+            pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:destroyed', undefined, undefined);
+            modalClose(); // Close modal after tree destruction if no full reload
           }
         } catch (err) {
           pgAdmin.Browser.notifier.alert(err.response?.data || err.message || gettext('Failed to reset preferences.'));
