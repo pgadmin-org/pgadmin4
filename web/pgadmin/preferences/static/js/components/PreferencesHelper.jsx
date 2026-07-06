@@ -232,7 +232,7 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
       element.editable = false;
 
       const storedValue = preferencesStore.getPreferences(node.label.toLowerCase(), element.name)?.value;
-      fieldValues[element.id] = storedValue || element.value;
+      fieldValues[element.id] = storedValue ?? element.value;
     } else if (type === 'threshold') {
       element.type = 'threshold';
       const _val = element.value.split('|');
