@@ -97,7 +97,11 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
       element.canEdit = false;
       element.editable = false;
       element.disabled = true; // Binary paths are managed in a collection, not directly editable here
-      fieldValues[element.id] = JSON.parse(element.value);
+      try {
+        fieldValues[element.id] = JSON.parse(element.value);
+      } catch {
+        fieldValues[element.id] = [];
+      }
       if (!addBinaryPathNote) { // Add note only once for binary path section
         fieldItems.push(...getNoteField(node, subNode, nodeData, note));
         addBinaryPathNote = true;
