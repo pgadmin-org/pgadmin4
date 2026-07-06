@@ -19,6 +19,7 @@ import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
+import { NotifierMessage, MESSAGE_TYPE } from '../../../../../../static/js/components/FormComponents';
 import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
 import usePreferences from '../../../../../../preferences/static/js/store';
@@ -289,6 +290,10 @@ GeoJsonLayer.propTypes = {
 };
 
 function TheMap({data, customTileProvider}) {
+  // customTileProvider is passed separately (not via data.infoList) so an
+  // invalid tile URL only shows a small inline warning near the layers
+  // control instead of the full-panel EmptyPanelMessage overlay, which must
+  // stay reserved for genuinely empty results.
   const mapObj = useMap();
   const resetLayersKey = useRef(0);
   const zoomControlWithHome = useRef(null);
@@ -377,6 +382,20 @@ function TheMap({data, customTileProvider}) {
           </LayersControl.BaseLayer>
         ))}
       </LayersControl>}
+      {data.selectedSRID === 4326 && customTileProvider?.invalid &&
+        <NotifierMessage
+          type={MESSAGE_TYPE.WARNING}
+          message={gettext('Custom tile provider URL is invalid and was ignored. It must start with http(s):// and contain the {x}, {y} and {z} placeholders.')}
+          closable={false}
+          style={{
+            position: 'absolute',
+            top: 44,
+            right: 8,
+            zIndex: 1000,
+            maxWidth: 280,
+          }}
+        />
+      }
       <GeoJsonLayer key={resetLayersKey.current} data={data} setHomeCoordinates={setHomeCoordinates} />
     </>
   );
@@ -420,12 +439,8 @@ export function GeometryViewer({rows, columns, column}) {
           : [gettext('No spatial data found. At least one geometry or geography column is required for visualization.')],
       };
     }
-    const parsed = parseData(rows, columns, column);
-    if (customTileProvider?.invalid) {
-      parsed.infoList.push(gettext('Custom tile provider URL is invalid and was ignored. It must start with http(s):// and contain the {x}, {y} and {z} placeholders.'));
-    }
-    return parsed;
-  }, [rows, columns, column, currentColumnKey, customTileProvider]);
+    return parseData(rows, columns, column);
+  }, [rows, columns, column, currentColumnKey]);
 
   useEffect(()=>{
     let timeoutId;
