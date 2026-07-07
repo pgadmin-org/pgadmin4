@@ -1,0 +1,26 @@
+.icon-pgt_chaintask {
+  background-image: url('{{ url_for('NODE-pgt_chaintask.static', filename='img/pgt_chaintask.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-pgt_chaintask-disabled {
+  background-image: url('{{ url_for('NODE-pgt_chaintask.static', filename='img/pgt_chaintask-disabled.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-coll-pgt_chaintask {
+  background-image: url('{{ url_for('NODE-pgt_chaintask.static', filename='img/coll-pgt_chaintask.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
