@@ -1,0 +1,447 @@
+{
+  "pgt_chain_create": [
+    {
+      "name": "Create chain: With valid data.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "chain_name": "test_chain_add%s",
+        "live": true,
+        "max_instances": null,
+        "timeout": 0,
+        "self_destruct": false,
+        "exclusive_execution": false,
+        "client_name": "",
+        "on_error": null,
+        "run_at": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create chain: With invalid data (missing chain_name).",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "live": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (chain_name).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create chain: With valid data while server down.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "chain_name": "test_chain_add%s",
+        "live": true
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create chain: With tasks and parameters.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "chain_name": "test_chain_add%s",
+        "live": true,
+        "ctasks": [
+          {
+            "task_name": "test_task_1",
+            "task_order": 10,
+            "kind": "SQL",
+            "command": "SELECT 1;",
+            "ignore_error": false,
+            "parameters": [
+              {
+                "order_id": 1,
+                "value": "param_value"
+              }
+            ]
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_chain_get": [
+    {
+      "name": "Get chain: With existing chain.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get chains: With existing chains.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get chain: With non-existing chain.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "chain_id": 99999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the pgTimeTable chain on the server.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get chain: With existing chain while server down.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgt_chain_put": [
+    {
+      "name": "Update chain: With description.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "chain_name": "updated_chain_name"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update chain: Disable chain.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "live": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update chain: With existing chain while server down.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "chain_name": "updated_chain_name"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_void",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_chain_delete": [
+    {
+      "name": "Delete chain: With existing chain.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete chains: With existing chains.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "pgt_chain_sql": [
+    {
+      "name": "Get chain sql: With existing chain.",
+      "url": "/browser/pgt_chain/sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get chain sql: With non-existing chain.",
+      "url": "/browser/pgt_chain/sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "chain_id": 99999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the object on the server.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get chain sql: With existing chain while server down.",
+      "url": "/browser/pgt_chain/sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_chain_get_nodes": [
+    {
+      "name": "Get chain nodes: With existing chain.",
+      "url": "/browser/pgt_chain/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get chains nodes: With existing chains.",
+      "url": "/browser/pgt_chain/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get chain nodes: With non-existing chain.",
+      "url": "/browser/pgt_chain/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "chain_id": 99999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the pgTimeTable chain on the server.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get chain nodes: With existing chain while server down.",
+      "url": "/browser/pgt_chain/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgt_chain_msql": [
+    {
+      "name": "Get chain msql: With existing chain and updated name.",
+      "url": "/browser/pgt_chain/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "chain_name": "updated_chain_name"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get chain msql: With existing chain disable.",
+      "url": "/browser/pgt_chain/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "live": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_chain_get_statistics": [
+    {
+      "name": "Get chain stats: With existing chain.",
+      "url": "/browser/pgt_chain/stats/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get chain stats: With existing chain while server down.",
+      "url": "/browser/pgt_chain/stats/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_chain_run_now": [
+    {
+      "name": "Run chain now: With existing chain.",
+      "url": "/browser/pgt_chain/run_now/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ]
+}
