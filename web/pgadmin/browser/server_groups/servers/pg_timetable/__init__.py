@@ -359,6 +359,10 @@ SELECT EXISTS(
             request.data.decode('utf-8')
         )
 
+        status, res = self.conn.execute_void('BEGIN')
+        if not status:
+            return internal_server_error(errormsg=res)
+
         chain_fields = {k: data[k] for k in ['chain_name', 'live', 'max_instances', 'timeout', 'self_destruct', 'exclusive_execution', 'client_name', 'on_error', 'run_at'] if k in data}
         if chain_fields:
             sets = []
@@ -374,9 +378,13 @@ SELECT EXISTS(
             sql = f"UPDATE timetable.chain SET {', '.join(sets)} WHERE chain_id = %s"
             status, res = self.conn.execute_void(sql, params)
             if not status:
+                self.conn.execute_void('ROLLBACK')
                 return internal_server_error(errormsg=res)
 
-        self._process_ctasks(chain_id, data.get('ctasks', {}))
+        status, res = self._process_ctasks(chain_id, data.get('ctasks', {}))
+        if not status:
+            self.conn.execute_void('ROLLBACK')
+            return internal_server_error(errormsg=res)
 
         status, res = self.conn.execute_dict(
             render_template(
@@ -386,7 +394,12 @@ SELECT EXISTS(
         )
 
         if not status:
+            self.conn.execute_void('ROLLBACK')
             return internal_server_error(errormsg=res)
+
+        status, commit_res = self.conn.execute_void('COMMIT')
+        if not status:
+            return internal_server_error(errormsg=commit_res)
 
         row = res['rows'][0]
 
@@ -403,15 +416,17 @@ SELECT EXISTS(
 
     def _process_ctasks(self, chain_id, ctasks):
         if not isinstance(ctasks, dict):
-            return
+            return True, None
 
         for task in ctasks.get('deleted', []):
             tid = task.get('task_id') if isinstance(task, dict) else task
             if tid:
-                self.conn.execute_void(
+                status, res = self.conn.execute_void(
                     "DELETE FROM timetable.task WHERE task_id = %s AND chain_id = %s",
                     (tid, chain_id)
                 )
+                if not status:
+                    return status, res
 
         has_connstr = self.manager.db_info['timetable']['has_connstr']
         for task in ctasks.get('changed', []):
@@ -440,9 +455,13 @@ SELECT EXISTS(
             if sets:
                 params.extend([tid, chain_id])
                 sql = f"UPDATE timetable.task SET {', '.join(sets)} WHERE task_id = %s AND chain_id = %s"
-                self.conn.execute_void(sql, params)
+                status, res = self.conn.execute_void(sql, params)
+                if not status:
+                    return status, res
             if 'parameters' in task:
-                self._upsert_task_params(tid, task['parameters'])
+                status, res = self._upsert_task_params(tid, task['parameters'])
+                if not status:
+                    return status, res
 
         for task in ctasks.get('added', []):
             if not isinstance(task, dict):
@@ -461,19 +480,27 @@ SELECT EXISTS(
             placeholders = ', '.join(['%s'] * len(values))
             sql = f"INSERT INTO timetable.task ({', '.join(fields)}) VALUES ({placeholders}) RETURNING task_id"
             status, tid = self.conn.execute_scalar(sql, values)
-            if status and tid:
-                self._upsert_task_params(tid, task.get('parameters', []))
+            if not status:
+                return status, tid
+            if tid:
+                status, res = self._upsert_task_params(tid, task.get('parameters', []))
+                if not status:
+                    return status, res
+
+        return True, None
 
     def _upsert_task_params(self, task_id, parameters):
         if not parameters:
-            return
+            return True, None
         if isinstance(parameters, dict):
             parameters = parameters.get('added', []) + parameters.get('changed', [])
         if not parameters:
-            return
-        self.conn.execute_void(
+            return True, None
+        status, res = self.conn.execute_void(
             "DELETE FROM timetable.parameter WHERE task_id = %s", (task_id,)
         )
+        if not status:
+            return status, res
         for idx, param in enumerate(parameters):
             if not isinstance(param, dict):
                 param = {'order_id': idx + 1, 'value': str(param)}
@@ -490,7 +517,10 @@ SELECT EXISTS(
             except (ValueError, TypeError):
                 sql = "INSERT INTO timetable.parameter(task_id, order_id, value) VALUES (%s, %s, to_jsonb(%s::text))"
                 params = (task_id, order_id, val)
-            self.conn.execute_void(sql, params)
+            status, res = self.conn.execute_void(sql, params)
+            if not status:
+                return status, res
+        return True, None
 
     @check_precondition
     def delete(self, gid, sid, chain_id=None):

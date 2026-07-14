@@ -1,6 +1,6 @@
 SELECT
     task_id, chain_id, task_name, task_order,
-    CASE WHEN kind::text = 'SQL' THEN true ELSE false END AS kind
+    kind::text AS kind
 FROM
     timetable.task
 WHERE
