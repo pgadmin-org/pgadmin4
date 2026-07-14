@@ -74,6 +74,8 @@ SELECT EXISTS(
             column_name='database_connection'
     ) has_connstr""")
 
+            if not status:
+                return False
             manager.db_info['timetable'] = res['rows'][0]
             return True
         return False
@@ -329,9 +331,13 @@ SELECT EXISTS(
             )
         )
 
-        self.conn.execute_void('END')
         if not status:
+            self.conn.execute_void('ROLLBACK')
             return internal_server_error(errormsg=res)
+
+        status, commit_res = self.conn.execute_void('COMMIT')
+        if not status:
+            return internal_server_error(errormsg=commit_res)
 
         row = res['rows'][0]
 
@@ -407,6 +413,7 @@ SELECT EXISTS(
                     (tid, chain_id)
                 )
 
+        has_connstr = self.manager.db_info['timetable']['has_connstr']
         for task in ctasks.get('changed', []):
             if not isinstance(task, dict):
                 continue
@@ -419,9 +426,10 @@ SELECT EXISTS(
                 'task_name': 'task_name',
                 'task_order': 'task_order',
                 'command': 'command',
-                'database_connection': 'database_connection',
                 'ignore_error': 'ignore_error',
             }
+            if has_connstr:
+                field_map['database_connection'] = 'database_connection'
             if 'kind' in task:
                 sets.append("kind = %s::timetable.command_kind")
                 params.append(task['kind'])
@@ -436,7 +444,6 @@ SELECT EXISTS(
             if 'parameters' in task:
                 self._upsert_task_params(tid, task['parameters'])
 
-        has_connstr = self.manager.db_info['timetable']['has_connstr']
         for task in ctasks.get('added', []):
             if not isinstance(task, dict):
                 continue
@@ -544,7 +551,7 @@ SELECT EXISTS(
         """
         pref = Preferences.module('browser')
         rows_threshold = pref.preference(
-            'pgagent_row_threshold'
+            'pgtimetable_row_threshold'
         )
 
         status, res = self.conn.execute_dict(
