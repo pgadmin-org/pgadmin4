@@ -1,18 +1,17 @@
 {% macro INSERT(has_connstr, chain_id, data, conn) -%}
 INSERT INTO timetable.task(
-    chain_id, task_name, task_order, command, kind, database_connection
+    chain_id, task_name, task_order, command, kind{% if has_connstr %}, database_connection{% endif %}
     {% if data.ignore_error is defined %}, ignore_error{% endif %}
 ) VALUES (
     {{ chain_id|qtLiteral(conn) }}::integer,
     {{ data.task_name|qtLiteral(conn) }}::text,
     {{ data.task_order|qtLiteral(conn) }}::integer,
     {{ data.command|qtLiteral(conn) }}::text,
-    {{ data.kind|qtLiteral(conn) }}::timetable.command_kind
-    {% if has_connstr and data.database_connection %},
-    {{ data.database_connection|qtLiteral(conn) }}::text{% else %}NULL{% endif %}
+    {{ data.kind|qtLiteral(conn) }}::timetable.command_kind,
+    {% if has_connstr %}, {% if data.database_connection %}{{ data.database_connection|qtLiteral(conn) }}::text{% else %}NULL{% endif %}{% endif %}
     {% if data.ignore_error is defined %},
     {% if data.ignore_error %}true{% else %}false{% endif %}{% endif %}
-) RETURNING task_id;
+) RETURNING task_id
 {%- endmacro %}
 {% macro UPDATE(has_connstr, chain_id, task_id, data, conn) -%}
 {% set has_task_fields = 'task_name' in data or 'task_order' in data or 'command' in data or 'kind' in data or 'ignore_error' in data or 'database_connection' in data %}
@@ -47,20 +46,7 @@ SELECT
     t.task_id, t.chain_id, t.task_name, t.task_order,
     t.kind::text AS kind,
     t.command, t.database_connection, t.ignore_error,
-    COALESCE(
-        (
-            SELECT jsonb_agg(
-                jsonb_build_object(
-                    'order_id', p.order_id,
-                    'value', p.value #>> '{}'
-                )
-                ORDER BY p.order_id
-            )
-            FROM timetable.parameter p
-            WHERE p.task_id = t.task_id
-        ),
-        '[]'::jsonb
-    ) AS parameters
+    NULL AS parameters
 FROM
     timetable.task t
 WHERE
