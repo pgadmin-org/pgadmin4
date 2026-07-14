@@ -7,14 +7,14 @@ INSERT INTO timetable.task(
     {{ data.task_name|qtLiteral(conn) }}::text,
     {{ data.task_order|qtLiteral(conn) }}::integer,
     {{ data.command|qtLiteral(conn) }}::text,
-    {{ data.kind|qtLiteral(conn) }}::timetable.command_kind,
+    {{ data.kind|qtLiteral(conn) }}::timetable.command_kind
     {% if has_connstr %}, {% if data.database_connection %}{{ data.database_connection|qtLiteral(conn) }}::text{% else %}NULL{% endif %}{% endif %}
     {% if data.ignore_error is defined %},
     {% if data.ignore_error %}true{% else %}false{% endif %}{% endif %}
 ) RETURNING task_id
 {%- endmacro %}
 {% macro UPDATE(has_connstr, chain_id, task_id, data, conn) -%}
-{% set has_task_fields = 'task_name' in data or 'task_order' in data or 'command' in data or 'kind' in data or 'ignore_error' in data or 'database_connection' in data %}
+{% set has_task_fields = 'task_name' in data or 'task_order' in data or 'command' in data or 'kind' in data or 'ignore_error' in data or (has_connstr and 'database_connection' in data) %}
 {% if has_task_fields %}
 {% set comma = joiner(', ') %}
 UPDATE timetable.task
@@ -24,16 +24,20 @@ SET
     task_order = {{ data.task_order|qtLiteral(conn) }}::integer{% endif %}{% if 'command' in data %}{{ comma() }}
     command = {{ data.command|qtLiteral(conn) }}::text{% endif %}{% if 'kind' in data %}{{ comma() }}
     kind = {{ data.kind|qtLiteral(conn) }}::timetable.command_kind{% endif %}{% if 'ignore_error' in data %}{{ comma() }}
-    ignore_error = {% if data.ignore_error %}true{% else %}false{% endif %}{% endif %}{% if 'database_connection' in data %}{{ comma() }}
+    ignore_error = {% if data.ignore_error %}true{% else %}false{% endif %}{% endif %}{% if has_connstr and 'database_connection' in data %}{{ comma() }}
     database_connection = {{ data.database_connection|qtLiteral(conn) }}::text{% endif %}
  WHERE task_id = {{ task_id|qtLiteral(conn) }}::integer AND chain_id = {{ chain_id|qtLiteral(conn) }}::integer;
 {% endif %}
 {% if 'parameters' in data %}
 DELETE FROM timetable.parameter WHERE task_id = {{ task_id|qtLiteral(conn) }}::integer;
-{% for param in data.parameters %}
+{% if data.parameters|length > 0 %}
 INSERT INTO timetable.parameter(task_id, order_id, value)
-VALUES ({{ task_id|qtLiteral(conn) }}::integer, {{ param.order_id|qtLiteral(conn) }}::integer, {% if param._is_json %}{{ param.value|qtLiteral(conn) }}::jsonb{% else %}to_jsonb({{ param.value|qtLiteral(conn) }}::text){% endif %});
+VALUES
+{% for param in data.parameters %}
+({{ task_id|qtLiteral(conn) }}::integer, {{ param.order_id|qtLiteral(conn) }}::integer, {% if param._is_json %}{{ param.value|qtLiteral(conn) }}::jsonb{% else %}to_jsonb({{ param.value|qtLiteral(conn) }}::text){% endif %}){% if not loop.last %},{% endif %}
 {% endfor %}
+;
+{% endif %}
 {% endif %}
 {%- endmacro %}
 {% macro DELETE(chain_id, task_id, conn) -%}
@@ -54,5 +58,5 @@ WHERE
     t.task_id = {{ task_id|qtLiteral(conn) }}::integer AND
 {% endif %}
     t.chain_id = {{ chain_id|qtLiteral(conn) }}::integer
-ORDER BY t.task_name;
+ORDER BY t.task_order, t.task_name;
 {%- endmacro %}
