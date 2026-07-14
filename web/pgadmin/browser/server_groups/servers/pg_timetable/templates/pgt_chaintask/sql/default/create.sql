@@ -9,8 +9,7 @@ WITH tid AS (
     FROM tid,
     (VALUES
     {% for param in data.parameters %}
-        ({{ param.order_id|qtLiteral(conn) }}::integer, {% if param._is_json %}{{ param.value|qtLiteral(conn) }}::jsonb{% else %}to_jsonb({{ param.value|qtLiteral(conn) }}::text){% endif %})
-        {% if not loop.last %},{% endif %}
+        ({{ param.order_id|qtLiteral(conn) }}::integer, {% if param._is_json %}{{ param.value|qtLiteral(conn) }}::jsonb{% else %}to_jsonb({{ param.value|qtLiteral(conn) }}::text){% endif %}){% if not loop.last %},{% endif %}
     {% endfor %}
     ) AS p(order_id, val)
     RETURNING task_id

@@ -170,7 +170,7 @@ class ChainView(PGChildNodeView):
             self.template_path = 'pgt_chain/sql/default'
 
             if 'timetable' not in self.manager.db_info:
-                _, res = self.conn.execute_dict("""
+                status, res = self.conn.execute_dict("""
 SELECT EXISTS(
         SELECT 1 FROM information_schema.columns
         WHERE
@@ -178,6 +178,8 @@ SELECT EXISTS(
             column_name='database_connection'
     ) has_connstr""")
 
+                if not status:
+                    return internal_server_error(errormsg=res)
                 self.manager.db_info['timetable'] = res['rows'][0]
 
             return f(self, *args, **kwargs)
@@ -271,7 +273,7 @@ SELECT EXISTS(
 
     @check_precondition
     def create(self, gid, sid):
-        """Create the pgAgent job."""
+        """Create the pgTimeTable chain."""
         required_args = [
             'chain_name'
         ]
@@ -492,21 +494,15 @@ SELECT EXISTS(
     def _upsert_task_params(self, task_id, parameters):
         if not parameters:
             return True, None
-        if isinstance(parameters, dict):
-            parameters = parameters.get('added', []) + parameters.get('changed', [])
-        if not parameters:
-            return True, None
-        status, res = self.conn.execute_void(
-            "DELETE FROM timetable.parameter WHERE task_id = %s", (task_id,)
-        )
-        if not status:
-            return status, res
-        for idx, param in enumerate(parameters):
+
+        def _insert_param(idx, param):
             if not isinstance(param, dict):
                 param = {'order_id': idx + 1, 'value': str(param)}
+            param.pop('_t', None)
             order_id = param.get('order_id')
             if order_id is None:
                 order_id = idx + 1
+            order_id = int(order_id)
             val = param.get('value', '')
             if val is None:
                 val = ''
@@ -517,14 +513,28 @@ SELECT EXISTS(
             except (ValueError, TypeError):
                 sql = "INSERT INTO timetable.parameter(task_id, order_id, value) VALUES (%s, %s, to_jsonb(%s::text))"
                 params = (task_id, order_id, val)
-            status, res = self.conn.execute_void(sql, params)
+            return self.conn.execute_void(sql, params)
+
+        status, res = self.conn.execute_void(
+            "DELETE FROM timetable.parameter WHERE task_id = %s", (task_id,)
+        )
+        if not status:
+            return status, res
+
+        if isinstance(parameters, dict):
+            all_params = parameters.get('changed', []) + parameters.get('added', [])
+        else:
+            all_params = parameters
+
+        for idx, param in enumerate(all_params):
+            status, res = _insert_param(idx, param)
             if not status:
                 return status, res
         return True, None
 
     @check_precondition
     def delete(self, gid, sid, chain_id=None):
-        """Delete the pgAgent Job."""
+        """Delete the pgTimeTable chain."""
 
         if chain_id is None:
             data = request.form if request.form else json.loads(
@@ -646,8 +656,8 @@ SELECT EXISTS(
     @check_precondition
     def run_now(self, gid, sid, chain_id):
         """
-        This function will set the next run to now, to inform the pgAgent to
-        run the job now.
+        This function will set the next run to now, to inform pgTimeTable to
+        run the chain now.
         """
         status, res = self.conn.execute_void(
             render_template(
