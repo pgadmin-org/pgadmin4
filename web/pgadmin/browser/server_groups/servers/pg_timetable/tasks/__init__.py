@@ -575,7 +575,7 @@ SELECT EXISTS(
         """
         pref = Preferences.module('browser')
         rows_threshold = pref.preference(
-            'pgagent_row_threshold'
+            'pgtimetable_row_threshold'
         )
 
         status, res = self.conn.execute_dict(
