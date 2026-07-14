@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""Implements pgAgent Job Step Node"""
+"""Implements pgTimeTable Chain Task Node"""
 
 import json
 from functools import wraps
@@ -107,7 +107,7 @@ class ChainTaskView(PGChildNodeView):
 
         A view class for ChainTask node derived from PGChildNodeView.
         This class is responsible for all the stuff related to view like
-        updating job step node, showing properties, showing sql in sql pane.
+        updating chain task, showing properties, showing sql in sql pane.
 
     Methods:
     -------
@@ -120,29 +120,29 @@ class ChainTaskView(PGChildNodeView):
         manager,conn & template_path properties to self
 
     * list()
-      - This function is used to list all the job step nodes within that
+      - This function is used to list all the chain tasks within that
       collection.
 
     * nodes()
       - This function will used to create all the child node within that
       collection.
-        Here it will create all the job step node.
+        Here it will create all the chain task nodes.
 
     * properties(gid, sid, chain_id, task_id)
-      - This function will show the properties of the selected job step node
+      - This function will show the properties of the selected chain task
 
     * update(gid, sid, chain_id, task_id)
-      - This function will update the data for the selected job step node
+      - This function will update the data for the selected chain task
 
     * msql(gid, sid, chain_id, task_id)
       - This function is used to return modified SQL for the selected
-      job step node
+      chain task
 
     * sql(gid, sid, chain_id, jscid)
       - Dummy response for sql panel
 
     * delete(gid, sid, chain_id, jscid)
-      - Drops job step
+      - Drops chain task
     """
 
     node_type = blueprint.node_type
@@ -168,7 +168,7 @@ class ChainTaskView(PGChildNodeView):
         'stats': [{'get': 'statistics'}]
     })
 
-    def _init_(self, **kwargs):
+    def __init__(self, **kwargs):
         """
         Method is used to initialize the ChainTaskView and its base view.
         Initialize all the variables create/used dynamically like conn,
@@ -220,13 +220,13 @@ SELECT EXISTS(
     @check_precondition
     def list(self, gid, sid, chain_id):
         """
-        This function is used to list all the job step nodes within
+        This function is used to list all the chain tasks within
         that collection.
 
         Args:
             gid: Server Group ID
             sid: Server ID
-            chain_id: Job ID
+            chain_id: Chain ID
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
@@ -253,12 +253,12 @@ SELECT EXISTS(
         """
         This function is used to create all the child nodes
         within the collection.
-        Here it will create all the job step nodes.
+        Here it will create all the chain tasks.
 
         Args:
             gid: Server Group ID
             sid: Server ID
-            chain_id: Job ID
+            chain_id: Chain ID
         """
         res = []
         sql = render_template(
@@ -311,12 +311,12 @@ SELECT EXISTS(
     @check_precondition
     def properties(self, gid, sid, chain_id, task_id):
         """
-        This function will show the properties of the selected job step node.
+        This function will show the properties of the selected chain task.
 
         Args:
             gid: Server Group ID
             sid: Server ID
-            chain_id: Job ID
+            chain_id: Chain ID
             task_id: ChainTask ID
         """
         sql = render_template(
@@ -346,27 +346,16 @@ SELECT EXISTS(
     @check_precondition
     def create(self, gid, sid, chain_id):
         """
-        This function will update the data for the selected job step node.
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            chain_id: Job ID
+        This function will create the chain task.
         """
-        data = {}
-        if request.args:
-            for k, v in request.args.items():
-                try:
-                    data[k] = json.loads(
-                        v.decode('utf-8') if hasattr(v, 'decode') else v
-                    )
-                except ValueError:
-                    data[k] = v
-        else:
-            data = json.loads(request.data.decode())
+        data = request.form if request.form else json.loads(
+            request.data.decode('utf-8')
+        )
 
         if 'parameters' in data:
             params_raw = data.get('parameters', [])
+            if isinstance(params_raw, str):
+                params_raw = json.loads(params_raw)
             if isinstance(params_raw, dict):
                 params_raw = params_raw.get('added', []) + params_raw.get('changed', [])
             cleaned = []
@@ -409,7 +398,7 @@ SELECT EXISTS(
         if len(res['rows']) == 0:
             return gone(
                 errormsg=gettext(
-                    "Job step creation failed."
+                    "Chain task creation failed."
                 )
             )
         row = res['rows'][0]
@@ -425,12 +414,12 @@ SELECT EXISTS(
     @check_precondition
     def update(self, gid, sid, chain_id, task_id):
         """
-        This function will update the data for the selected job step node.
+        This function will update the data for the selected chain task.
 
         Args:
             gid: Server Group ID
             sid: Server ID
-            chain_id: Job ID
+            chain_id: Chain ID
             task_id: ChainTask ID
         """
         data = request.form if request.form else json.loads(
@@ -439,19 +428,26 @@ SELECT EXISTS(
 
         if 'parameters' in data:
             params_raw = data.get('parameters', [])
+            if isinstance(params_raw, str):
+                params_raw = json.loads(params_raw)
+
             if isinstance(params_raw, dict):
-                params_raw = params_raw.get('added', []) + params_raw.get('changed', [])
+                params_list = params_raw.get('changed', []) + params_raw.get('added', [])
+            else:
+                params_list = params_raw
+
             cleaned = []
-            for idx, param in enumerate(params_raw):
+            for idx, param in enumerate(params_list):
                 if not isinstance(param, dict):
-                    cleaned.append({'order_id': idx + 1, 'value': str(param), '_is_json': False})
-                else:
-                    try:
-                        json.loads(param.get('value', ''))
-                        param['_is_json'] = True
-                    except (ValueError, TypeError):
-                        param['_is_json'] = False
-                    cleaned.append(param)
+                    param = {'order_id': idx + 1, 'value': str(param)}
+                param.pop('_t', None)
+                param.setdefault('value', '')
+                try:
+                    json.loads(param['value'])
+                    param['_is_json'] = True
+                except (ValueError, TypeError):
+                    param['_is_json'] = False
+                cleaned.append(param)
             data['parameters'] = cleaned
 
         sql = render_template(
@@ -482,7 +478,7 @@ SELECT EXISTS(
         if len(res['rows']) == 0:
             return gone(
                 errormsg=gettext(
-                    "Job step update failed."
+                    "Chain task update failed."
                 )
             )
         row = res['rows'][0]
@@ -498,7 +494,7 @@ SELECT EXISTS(
 
     @check_precondition
     def delete(self, gid, sid, chain_id, task_id=None):
-        """Delete the Job step."""
+        """Delete the chain task."""
 
         if task_id is None:
             data = request.form if request.form else json.loads(
@@ -523,13 +519,13 @@ SELECT EXISTS(
     def msql(self, gid, sid, chain_id, task_id=None):
         """
         This function is used to return modified SQL for the selected
-        job step node.
+        chain task.
 
         Args:
             gid: Server Group ID
             sid: Server ID
-            chain_id: Job ID
-            task_id: Job Step ID
+            chain_id: Chain ID
+            task_id: Chain Task ID
         """
         data = {}
         sql = ''
@@ -538,6 +534,30 @@ SELECT EXISTS(
                 data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
+
+        if 'parameters' in data:
+            params_raw = data.get('parameters', [])
+            if isinstance(params_raw, str):
+                params_raw = json.loads(params_raw)
+
+            if isinstance(params_raw, dict):
+                params_list = params_raw.get('changed', []) + params_raw.get('added', [])
+            else:
+                params_list = params_raw
+
+            cleaned = []
+            for idx, param in enumerate(params_list):
+                if not isinstance(param, dict):
+                    param = {'order_id': idx + 1, 'value': str(param)}
+                param.pop('_t', None)
+                param.setdefault('value', '')
+                try:
+                    json.loads(param['value'])
+                    param['_is_json'] = True
+                except (ValueError, TypeError):
+                    param['_is_json'] = False
+                cleaned.append(param)
+            data['parameters'] = cleaned
 
         if task_id is None:
             sql = render_template(

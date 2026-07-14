@@ -18,9 +18,9 @@ export function getNodePgtChainTaskSchema(treeNodeInfo, itemNodeData) {
     constructor() {
       super({ order_id: null, value: '' });
     }
-    get idAttribute() { return 'order_id'; }
     get baseFields() {
       return [
+        { id: '_t', type: 'boolean' },
         { id: 'order_id', label: gettext('Order'), type: 'int', noEmpty: true, cell: 'int', width: 20 },
         { id: 'value', label: gettext('Value'), type: 'multiline', cell: 'text' },
       ];
@@ -75,9 +75,9 @@ export default class PgtChainTaskSchema extends BaseUISchema {
         constructor() {
           super({ order_id: null, value: '' });
         }
-        get idAttribute() { return 'order_id'; }
         get baseFields() {
           return [
+            { id: '_t', type: 'boolean' },
             { id: 'order_id', label: gettext('Order'), type: 'int', noEmpty: true, cell: 'int', width: 20 },
             { id: 'value', label: gettext('Value'), type: 'multiline', cell: 'text' },
           ];
@@ -166,12 +166,21 @@ For more information, please see the documentation on <a href="https://www.postg
         deps: ['kind'],
         schema: this.fieldOptions.paramSchema,
         canEdit: true, canAdd: true, canDelete: true,
+        uniqueCol: ['order_id'],
         columns: ['order_id', 'value'],
         depChange: (state, source, topState, actionObj) => {
+          if (state?.parameters) {
+            state.parameters.forEach(p => { p._t = true; });
+          }
           if (actionObj.type === SCHEMA_STATE_ACTIONS.ADD_ROW && state?.parameters) {
             const params = state.parameters;
-            const lastOrder = params.reduce((max, p) => Math.max(max, p.order_id || 0), 0);
-            params[params.length - 1].order_id = lastOrder + 1;
+            const addedParam = actionObj.value?.cid
+              ? params.find(p => p.cid === actionObj.value.cid)
+              : params[params.length - 1];
+            if (addedParam) {
+              const lastOrder = params.reduce((max, p) => Math.max(max, p.order_id || 0), 0);
+              addedParam.order_id = lastOrder + 1;
+            }
           }
           return state;
         },
