@@ -201,7 +201,7 @@ class ChainTaskView(PGChildNodeView):
             self.template_path = 'pgt_chaintask/sql/default'
 
             if 'timetable' not in self.manager.db_info:
-                _, res = self.conn.execute_dict("""
+                status, res = self.conn.execute_dict("""
 SELECT EXISTS(
         SELECT 1 FROM information_schema.columns
         WHERE
@@ -209,6 +209,8 @@ SELECT EXISTS(
             column_name='database_connection'
     ) has_connstr""")
 
+                if not status:
+                    return internal_server_error(errormsg=res)
                 self.manager.db_info['timetable'] = res['rows'][0]
 
             return f(*args, **kwargs)
