@@ -144,8 +144,29 @@ CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 # such as JavaScript, CSS, or pretty much anything that the browser loads.
 # see https://content-security-policy.com/#source_list for more info
 # e.g. "default-src https: data: 'unsafe-inline' 'unsafe-eval';"
-CONTENT_SECURITY_POLICY = "default-src ws: http: data: blob: 'unsafe-inline'" \
-                          " 'unsafe-eval';"
+#
+# A per-request nonce is used in place of 'unsafe-inline' for scripts. The
+# literal token {nonce} anywhere in the policy is replaced at runtime with a
+# freshly generated nonce that is also emitted on pgAdmin's inline <script>
+# tags. To go back to the old permissive policy, set:
+#   CONTENT_SECURITY_POLICY = "default-src ws: http: data: blob:" \
+#                             " 'unsafe-inline' 'unsafe-eval';"
+# Notes:
+#  - 'unsafe-inline' is retained for style-src because pgAdmin's UI (React/MUI)
+#    injects styles at runtime that are not nonce tagged.
+#  - 'unsafe-eval' is NOT listed: production bundles do not need it. Development
+#    webpack bundles are built with the 'eval' devtool and DO need it, so when
+#    running the dev server add it to script-src in config_local.py, e.g.:
+#       CONTENT_SECURITY_POLICY = (
+#           "default-src 'self' ws: http: data: blob:;"
+#           " script-src 'self' 'nonce-{nonce}' 'unsafe-eval';"
+#           " style-src 'self' 'unsafe-inline';"
+#       )
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self' ws: http: data: blob:;"
+    " script-src 'self' 'nonce-{nonce}';"
+    " style-src 'self' 'unsafe-inline';"
+)
 
 # STRICT_TRANSPORT_SECURITY_ENABLED when set to True will set the
 # Strict-Transport-Security header
