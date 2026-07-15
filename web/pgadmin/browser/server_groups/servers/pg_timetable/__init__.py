@@ -369,11 +369,14 @@ SELECT EXISTS(
         if chain_fields:
             sets = []
             params = []
-            bool_keys = ['live', 'self_destruct', 'exclusive_execution']
+            bool_keys = {'live', 'self_destruct', 'exclusive_execution'}
+            null_if_empty = {'run_at', 'client_name', 'on_error'}
             for key, val in chain_fields.items():
                 sets.append(f"{key} = %s")
                 if key in bool_keys:
                     params.append('t' if val else 'f')
+                elif key in null_if_empty and not val:
+                    params.append(None)
                 else:
                     params.append(val)
             params.append(chain_id)
