@@ -154,9 +154,9 @@ CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 # Notes:
 #  - 'unsafe-inline' is retained for style-src because pgAdmin's UI (React/MUI)
 #    injects styles at runtime that are not nonce tagged.
-#  - 'unsafe-eval' is NOT listed: production bundles do not need it. Development
-#    webpack bundles are built with the 'eval' devtool and DO need it, so when
-#    running the dev server add it to script-src in config_local.py, e.g.:
+#  - 'unsafe-eval' is NOT listed: production bundles do not need it.
+#    Development webpack bundles are built with the 'eval' devtool and DO
+#    need it, so when running the dev server add it in config_local.py, e.g.:
 #       CONTENT_SECURITY_POLICY = (
 #           "default-src 'self' ws: http: data: blob:;"
 #           " script-src 'self' 'nonce-{nonce}' 'unsafe-eval';"
