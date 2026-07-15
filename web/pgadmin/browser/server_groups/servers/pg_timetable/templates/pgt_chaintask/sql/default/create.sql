@@ -1,6 +1,6 @@
 {% import 'macros/pgt_chaintask.macros' as TASK %}
 WITH tid AS (
-    {{ TASK.INSERT(has_connstr, chain_id, data, conn) }}
+    {{ TASK.INSERT(has_connstr, chain_id, data, conn) | replace(';', '') }}
 )
 {% if 'parameters' in data and data.parameters|length > 0 %}
 , ins AS (

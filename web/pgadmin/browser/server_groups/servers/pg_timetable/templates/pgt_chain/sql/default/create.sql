@@ -8,10 +8,10 @@ INSERT INTO timetable.chain(
 ) VALUES (
     {{ data.chain_name|qtLiteral(conn) }}::text,
     {% if data.run_at and data.run_at|length > 0 %}{{ data.run_at|qtLiteral(conn) }}::text{% else %}NULL{% endif %},
-    {{ data.client_name|qtLiteral(conn) }}::text,
+    {% if data.client_name and data.client_name|length > 0 %}{{ data.client_name|qtLiteral(conn) }}::text{% else %}NULL{% endif %},
     {% if data.live %}true{% else %}false{% endif %},
-    {% if data.max_instances is not none %}{{ data.max_instances|qtLiteral(conn) }}::integer{% else %}NULL{% endif %},
-    {% if data.timeout is not none %}{{ data.timeout|qtLiteral(conn) }}::integer{% else %}0{% endif %},
+    {% if data.max_instances is defined and data.max_instances is not none %}{{ data.max_instances|qtLiteral(conn) }}::integer{% else %}NULL{% endif %},
+    {% if data.timeout is defined and data.timeout is not none %}{{ data.timeout|qtLiteral(conn) }}::integer{% else %}0{% endif %},
     {% if data.self_destruct %}true{% else %}false{% endif %},
     {% if data.exclusive_execution %}true{% else %}false{% endif %},
     {% if data.on_error and data.on_error|length > 0 %}{{ data.on_error|qtLiteral(conn) }}::text{% else %}NULL{% endif %}

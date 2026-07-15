@@ -21,6 +21,7 @@ class PgtChainGetMsqlTestCase(BaseTestGenerator):
                                          pgt_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         flag, msg = pgt_utils.is_valid_server_to_run_pgtimetable(self)
         if not flag:
             self.skipTest(msg)
