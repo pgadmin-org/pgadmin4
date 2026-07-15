@@ -278,30 +278,30 @@ SELECT EXISTS(
                 return gone(errormsg=self.STEP_NOT_FOUND)
 
             row = result['rows'][0]
-            return make_json_response(
-                self.blueprint.generate_browser_node(
-                    row['task_id'],
-                    row['chain_id'],
-                    row['task_name'],
-                    icon="icon-pgt_chaintask",
-                    enabled=True,
-                    kind=row['kind'],
-                    description=row['task_name']
-                )
+            label = f"{int(row['task_order']):04d} {row['task_name']}"
+            node = self.blueprint.generate_browser_node(
+                row['task_id'],
+                row['chain_id'],
+                label,
+                icon="icon-pgt_chaintask",
+                enabled=True,
+                kind=row['kind'],
+                description=row['task_name']
             )
+            return make_json_response(node)
 
         for row in result['rows']:
-            res.append(
-                self.blueprint.generate_browser_node(
-                    row['task_id'],
-                    row['chain_id'],
-                    row['task_name'],
-                    icon="icon-pgt_chaintask",
-                    enabled=True,
-                    kind=row['kind'],
-                    description=row['task_name']
-                )
+            label = f"{int(row['task_order']):04d} {row['task_name']}"
+            node = self.blueprint.generate_browser_node(
+                row['task_id'],
+                row['chain_id'],
+                label,
+                icon="icon-pgt_chaintask",
+                enabled=True,
+                kind=row['kind'],
+                description=row['task_name']
             )
+            res.append(node)
 
         return make_json_response(
             data=res,
@@ -402,14 +402,14 @@ SELECT EXISTS(
                 )
             )
         row = res['rows'][0]
-        return jsonify(
-            node=self.blueprint.generate_browser_node(
-                row['task_id'],
-                row['chain_id'],
-                row['task_name'],
-                icon="icon-pgt_chaintask"
-            )
+        label = f"{int(row['task_order']):04d} {row['task_name']}"
+        node = self.blueprint.generate_browser_node(
+            row['task_id'],
+            row['chain_id'],
+            label,
+            icon="icon-pgt_chaintask"
         )
+        return jsonify(node=node)
 
     @check_precondition
     def update(self, gid, sid, chain_id, task_id):
@@ -482,15 +482,15 @@ SELECT EXISTS(
                 )
             )
         row = res['rows'][0]
-        return jsonify(
-            node=self.blueprint.generate_browser_node(
-                task_id,
-                chain_id,
-                row['task_name'],
-                icon="icon-pgt_chaintask",
-                description=row['task_name']
-            )
+        label = f"{int(row['task_order']):04d} {row['task_name']}"
+        node = self.blueprint.generate_browser_node(
+            task_id,
+            chain_id,
+            label,
+            icon="icon-pgt_chaintask",
+            description=row['task_name']
         )
+        return jsonify(node=node)
 
     @check_precondition
     def delete(self, gid, sid, chain_id, task_id=None):

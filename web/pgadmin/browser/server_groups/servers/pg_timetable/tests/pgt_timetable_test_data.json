@@ -68,6 +68,7 @@
       "test_data": {
         "chain_name": "test_chain_add%s",
         "live": true,
+        "client_name": "",
         "ctasks": [
           {
             "task_name": "test_task_1",

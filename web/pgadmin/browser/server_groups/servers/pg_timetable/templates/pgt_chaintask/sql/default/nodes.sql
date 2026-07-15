@@ -8,4 +8,4 @@ WHERE
     task_id = {{ task_id|qtLiteral(conn) }}::integer AND
 {% endif %}
     chain_id = {{ chain_id|qtLiteral(conn) }}::integer
-ORDER BY task_order;
+ORDER BY task_order, task_name;
