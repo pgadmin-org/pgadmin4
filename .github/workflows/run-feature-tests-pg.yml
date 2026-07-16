@@ -154,7 +154,7 @@ jobs:
       - name: Upgrade yarn
         run: |
           yarn set version berry
-          yarn set version 4
+          yarn set version $(node -p "require('./web/package.json').packageManager.split('@')[1]")
 
       - name: Build the JS bundle
         run: |
