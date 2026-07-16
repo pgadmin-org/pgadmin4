@@ -572,6 +572,21 @@ SELECT EXISTS(
             except ValueError:
                 data[k] = v
 
+        # Preserve _is_json marker for JSON parameter values in ctasks
+        if isinstance(data.get('ctasks'), list):
+            for task in data['ctasks']:
+                if not isinstance(task, dict):
+                    continue
+                for param in task.get('parameters', []):
+                    if not isinstance(param, dict):
+                        continue
+                    val = param.get('value')
+                    if isinstance(val, (dict, list)):
+                        param['value'] = json.dumps(val, indent=2)
+                        param['_is_json'] = True
+                    elif '_is_json' not in param:
+                        param['_is_json'] = False
+
         return make_json_response(
             data=render_template(
                 "/".join([
