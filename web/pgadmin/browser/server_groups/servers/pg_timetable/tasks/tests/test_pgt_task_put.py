@@ -54,6 +54,8 @@ class PgtTaskPutTestCase(BaseTestGenerator):
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
                     response = tasks_utils.api_put(self)
+            else
+                response = task_utils.api_put(self)
 
             utils.assert_status_code(self, response)
             utils.assert_error_message(self, response)
