@@ -210,6 +210,10 @@ _build_runtime() {
     # Install the runtime node_modules
     pushd "${BUNDLEDIR}/resources/app" > /dev/null || exit
         YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+        if [ -z "${YARN_VERSION}" ]; then
+            echo "ERROR: Could not determine Yarn version from package.json packageManager field."
+            exit 1
+        fi
         yarn set version "${YARN_VERSION}"
         yarn workspaces focus --production
 
@@ -258,6 +262,10 @@ _copy_code() {
 
     pushd "${SOURCEDIR}/web" > /dev/null || exit
         YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+        if [ -z "${YARN_VERSION}" ]; then
+            echo "ERROR: Could not determine Yarn version from package.json packageManager field."
+            exit 1
+        fi
         yarn set version "${YARN_VERSION}"
         yarn install
         yarn run bundle
