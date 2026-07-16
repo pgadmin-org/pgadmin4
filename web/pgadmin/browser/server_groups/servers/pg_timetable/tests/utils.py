@@ -154,6 +154,7 @@ def is_pgtimetable_installed_on_server(self):
 
 
 def create_pgtimetable_chain(self, name):
+    connection = None
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -178,15 +179,18 @@ def create_pgtimetable_chain(self, name):
         chain_id = pg_cursor.fetchone()
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
-        connection.close()
         return chain_id[0]
     except Exception:
         traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
 
 
 def delete_pgtimetable_chain(self, chain_id=None):
     if chain_id is None:
         chain_id = self.chain_id
+    connection = None
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -209,12 +213,15 @@ def delete_pgtimetable_chain(self, chain_id=None):
         )
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
-        connection.close()
     except Exception:
         traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
 
 
 def verify_pgtimetable_chain(self):
+    connection = None
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -231,13 +238,16 @@ def verify_pgtimetable_chain(self):
         )
         result = pg_cursor.fetchone()
         count = result[0]
-        connection.close()
         return count is not None and int(count) != 0
     except Exception:
         traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
 
 
 def create_pgtimetable_task(self, task_name, chain_id):
+    connection = None
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -261,15 +271,18 @@ def create_pgtimetable_task(self, task_name, chain_id):
         task_id = pg_cursor.fetchone()
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
-        connection.close()
         return task_id[0]
     except Exception:
         traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
 
 
 def delete_pgtimetable_task(self, task_id=None):
     if task_id is None:
         task_id = self.task_id
+    connection = None
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -292,12 +305,15 @@ def delete_pgtimetable_task(self, task_id=None):
         )
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
-        connection.close()
     except Exception:
         traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
 
 
 def verify_pgtimetable_task(self):
+    connection = None
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -314,7 +330,9 @@ def verify_pgtimetable_task(self):
         )
         result = pg_cursor.fetchone()
         count = result[0]
-        connection.close()
         return count is not None and int(count) != 0
     except Exception:
         traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
