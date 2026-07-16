@@ -209,8 +209,8 @@ _build_runtime() {
 
     # Install the runtime node_modules
     pushd "${BUNDLEDIR}/resources/app" > /dev/null || exit
-        yarn set version berry
-        yarn set version 4
+        YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+        yarn set version "${YARN_VERSION}"
         yarn workspaces focus --production
 
         # remove the yarn cache
@@ -257,8 +257,8 @@ _copy_code() {
     find "${SERVERROOT}/usr/${APP_NAME}/venv/" -name "_tkinter*" -print0 | xargs -0 rm -rf
 
     pushd "${SOURCEDIR}/web" > /dev/null || exit
-        yarn set version berry
-        yarn set version 4
+        YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+        yarn set version "${YARN_VERSION}"
         yarn install
         yarn run bundle
     popd > /dev/null || exit
