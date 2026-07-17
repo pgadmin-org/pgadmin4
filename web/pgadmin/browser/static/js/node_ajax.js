@@ -77,6 +77,13 @@ export function generateNodeUrl(treeNodeInfo, actionType, itemNodeData, withId, 
 }
 
 
+/* Tracks AJAX requests that are currently in flight, keyed by the resolved
+ * URL + query params. This lets concurrent callers asking for the same options
+ * (e.g. every row's Data Type dropdown mounting at once) share a single HTTP
+ * request instead of each firing their own before the cache is populated.
+ */
+const _inflightAjaxRequests = new Map();
+
 /* Get the nodes list as options required by select controls
  * The options are cached for performance reasons.
  */
@@ -114,15 +121,28 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
       let data = cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel);
 
       if (_.isUndefined(data) || _.isNull(data)) {
-        api.get(fullUrl, {
-          params: otherParams.urlParams,
-        }).then((res)=>{
-          data = res.data;
-          if(res.data.data) {
-            data = res.data.data;
-          }
-          otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
-          resolve(transform(data));
+        // Share a single in-flight request among all concurrent callers asking
+        // for the same URL + params, so we don't fire duplicate GETs before the
+        // first response lands and populates the cache.
+        let inflightKey = fullUrl + '#' + JSON.stringify(otherParams.urlParams || {});
+        let request = _inflightAjaxRequests.get(inflightKey);
+        if (!request) {
+          request = api.get(fullUrl, {
+            params: otherParams.urlParams,
+          }).then((res)=>{
+            let resData = res.data;
+            if(res.data.data) {
+              resData = res.data.data;
+            }
+            otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, resData);
+            return resData;
+          }).finally(()=>{
+            _inflightAjaxRequests.delete(inflightKey);
+          });
+          _inflightAjaxRequests.set(inflightKey, request);
+        }
+        request.then((resData)=>{
+          resolve(transform(resData));
         }).catch((err)=>{
           reject(err instanceof Error ? err : Error('Something went wrong'));
         });
