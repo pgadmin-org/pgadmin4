@@ -278,7 +278,7 @@ SELECT EXISTS(
                 return gone(errormsg=self.STEP_NOT_FOUND)
 
             row = result['rows'][0]
-            label = f"{int(row['task_order']):04d} {row['task_name']}"
+            label = f"{int(row['task_order']):04d}: {row['task_name']}"
             node = self.blueprint.generate_browser_node(
                 row['task_id'],
                 row['chain_id'],
@@ -291,7 +291,7 @@ SELECT EXISTS(
             return make_json_response(node)
 
         for row in result['rows']:
-            label = f"{int(row['task_order']):04d} {row['task_name']}"
+            label = f"{int(row['task_order']):04d}: {row['task_name']}"
             node = self.blueprint.generate_browser_node(
                 row['task_id'],
                 row['chain_id'],
@@ -402,7 +402,7 @@ SELECT EXISTS(
                 )
             )
         row = res['rows'][0]
-        label = f"{int(row['task_order']):04d} {row['task_name']}"
+        label = f"{int(row['task_order']):04d}: {row['task_name']}"
         node = self.blueprint.generate_browser_node(
             row['task_id'],
             row['chain_id'],
@@ -482,7 +482,7 @@ SELECT EXISTS(
                 )
             )
         row = res['rows'][0]
-        label = f"{int(row['task_order']):04d} {row['task_name']}"
+        label = f"{int(row['task_order']):04d}: {row['task_name']}"
         node = self.blueprint.generate_browser_node(
             task_id,
             chain_id,
