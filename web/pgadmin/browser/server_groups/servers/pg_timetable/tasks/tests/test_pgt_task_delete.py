@@ -8,6 +8,8 @@
 ##########################################################################
 
 import uuid
+from unittest.mock import patch
+
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from pgadmin.browser.server_groups.servers.pg_timetable.tests import \
@@ -54,10 +56,18 @@ class PgtTaskDeleteTestCase(BaseTestGenerator):
 
             utils.assert_status_code(self, response)
 
-        is_present = pgt_utils.verify_pgtimetable_task(self)
-        self.assertFalse(
-            is_present,
-            "pgTimetable task was not deleted successfully")
+            is_present = pgt_utils.verify_pgtimetable_task(self)
+            self.assertFalse(
+                is_present,
+                "pgTimetable task was not deleted successfully")
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    response = tasks_utils.api_delete(self)
+
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         """Clean up code"""
