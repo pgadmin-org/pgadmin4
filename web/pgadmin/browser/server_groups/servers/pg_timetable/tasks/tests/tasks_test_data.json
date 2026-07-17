@@ -99,6 +99,24 @@
         "test_result_data": {}
       },
       "is_list": true
+    },
+    {
+      "name": "Delete task: With existing task while server is down.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_void",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
     }
   ],
   "pgt_task_put": [
