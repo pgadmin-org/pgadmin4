@@ -151,6 +151,7 @@ def is_pgtimetable_installed_on_server(self):
         return True, None
     except Exception:
         traceback.print_exc(file=sys.stderr)
+        return False, "Error checking pgTimetable installation."
 
 
 def create_pgtimetable_chain(self, name):
