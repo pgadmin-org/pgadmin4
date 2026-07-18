@@ -5,25 +5,24 @@
 `pgTimeTable Chains`:index:
 ***************************************
 
-pgTimeTable is a PostgreSQL-based scheduling agent that runs and manages what are called `Chains`
-each chain is composed of a set of Tasks to run order by the sequence they should run.
+pgTimeTable is a PostgreSQL-based scheduling agent that runs and manages what are called `Chains`.
+Each chain is composed of a set of Tasks to be executed in the order they should run.
 A chain is assigned a single schedule using an extended cron-style format.
-
 This UI has been tested with pgTimeTable 6.3.0 and above.
 
 A task may be a series of *SQL* statements, a *BUILTIN* pgTimeTable command (such as sending email)
 or an operating system *PROGRAM* program/batch/shell script.
 
 Switches on the *pgTimeTable Chain* dialog (accessed
-through the *Properties* context menu) allow you to modify a chain or disable the whole chain
-as well as modifying tasks within the chain.
+through the *Properties* context menu) allow you to modify a chain or disable the whole chain,
+as well as modify tasks within the chain.
 
 When you highlight the name of a defined chain in the pgAdmin tree control, the
 *Properties* tab of the main pgAdmin window will display details about the chain,
-and the *Statistics* tab will display details about the chains's execution.
+and the *Statistics* tab will display details about the chain's execution.
 There are also statistics about each task.
 
-pgTimeTable supports ability to have more than one job agent running at a time.
+pgTimeTable supports the ability to have more than one job agent running at a time.
 Job agents can be deployed on various platforms and binaries are readily available to 
 deploy on Linux, Windows, and Mac.
 
@@ -38,8 +37,8 @@ on GitHub for details.
 
 Viewing pgTimeTable
 ********************
-To enable viewing of the pgTimeTable node, enable it on the File->Preferences->Nodes.
-It will only show if the schema *timetable* and associated tables exists in your maintenance database.
+To enable viewing of the *pgTimeTable Chains* node, enable it on the File -> Preferences -> Nodes.
+It will only show if the schema *timetable* and associated tables exist in your maintenance database.
 
 Creating a Chain
 ****************
@@ -98,10 +97,10 @@ chain:
   * *ABORT* - Abort the chain on error.
 
 * Use the *Schedule* field to specify a cron-style schedule for the chain.
-  The format consists of a single field with 5 slots. As with regular cron
-  you can use a , to run multiple and wildcard for all.
+  The format consists of a single field with 5 slots. As with regular cron,
+  you can use a comma (`,`) for multiple values and an asterisk (`*`) as a wildcard for all.
   E.g. `20 1,5 * * *` would run at 1:20 and 5:20 AM.
-  The timezone is always the timezone of the server pgTimetable database resides on.
+  The timezone is always the timezone of the server the pgTimeTable database resides on.
 
   .. code-block:: text
 
@@ -230,10 +229,10 @@ Click the compose icon to close the task definition dialog, then click *Save*
 on the chain dialog to save all changes.
 
 Refer to `pgTimeTable samples <https://cybertec-postgresql.github.io/pg_timetable/latest/samples/>`_
-for kind of parameters expected for each type.
+for the kind of parameters expected for each type.
 
 
-Both the Chain and Tasks have a statistics tab, which shows results of past run of tasks.
+Both the Chain and Tasks have a statistics tab, which show the results of past runs of tasks.
 
 
 .. image:: images/pgtimetable_task_statistics.png
