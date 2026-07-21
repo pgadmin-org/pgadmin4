@@ -11,6 +11,7 @@ import { SchemaState } from './SchemaState';
 import { SchemaStateContext } from './context';
 import { SCHEMA_STATE_ACTIONS } from './common';
 import { sessDataReducer } from './reducer';
+import { registerSchema, getRegisteredSchemas } from './schema_registry';
 
 
 export {
@@ -18,4 +19,6 @@ export {
   SchemaState,
   SchemaStateContext,
   sessDataReducer,
+  registerSchema,
+  getRegisteredSchemas,
 };

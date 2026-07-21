@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { emptyValidator } from '../../../../../../static/js/validators';
 
-export default class ResourceGroupSchema extends BaseUISchema {
+class ResourceGroupSchema extends BaseUISchema {
   constructor(initValues) {
     super({
       oid: undefined,
@@ -70,3 +71,5 @@ export default class ResourceGroupSchema extends BaseUISchema {
     return null;
   }
 }
+export default registerSchema(ResourceGroupSchema);
+

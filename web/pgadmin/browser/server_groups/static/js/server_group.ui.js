@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
 
-export default class ServerGroupSchema extends BaseUISchema {
+class ServerGroupSchema extends BaseUISchema {
   constructor() {
     super({
       id: undefined,
@@ -33,3 +34,5 @@ export default class ServerGroupSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(ServerGroupSchema);
+

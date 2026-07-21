@@ -11,6 +11,7 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import url_for from 'sources/url_for';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import getApiInstance from '../../../../static/js/api_instance';
 import pgAdmin from 'sources/pgadmin';
 
@@ -19,7 +20,7 @@ export function getBinaryPathSchema() {
   return new BinaryPathSchema();
 }
 
-export default class BinaryPathSchema extends BaseUISchema {
+class BinaryPathSchema extends BaseUISchema {
   constructor() {
     super({
       isDefault: false,
@@ -80,3 +81,5 @@ export default class BinaryPathSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(BinaryPathSchema);
+

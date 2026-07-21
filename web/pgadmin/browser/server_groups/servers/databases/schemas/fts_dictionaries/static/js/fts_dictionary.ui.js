@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import OptionsSchema from '../../../../../static/js/options.ui';
 
-export default class FTSDictionarySchema extends BaseUISchema {
+class FTSDictionarySchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,        // FTS Dictionary name
@@ -74,3 +75,5 @@ export default class FTSDictionarySchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(FTSDictionarySchema);
+

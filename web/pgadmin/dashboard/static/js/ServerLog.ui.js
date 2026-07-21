@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class ServerLog extends BaseUISchema {
+class ServerLog extends BaseUISchema {
   constructor(initValues) {
     super({
       ...initValues,
@@ -49,3 +50,5 @@ export default class ServerLog extends BaseUISchema {
   }
 
 }
+export default registerSchema(ServerLog);
+

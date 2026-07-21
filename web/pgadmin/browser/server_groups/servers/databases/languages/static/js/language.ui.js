@@ -8,11 +8,12 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 import SecLabelSchema from '../../../../static/js/sec_label.ui';
 import _ from 'lodash';
 
-export default class LanguageSchema extends BaseUISchema {
+class LanguageSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
@@ -230,4 +231,6 @@ export default class LanguageSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(LanguageSchema);
+
 

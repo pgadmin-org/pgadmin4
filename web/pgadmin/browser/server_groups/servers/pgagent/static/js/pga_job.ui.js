@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import PgaJobScheduleSchema from '../../schedules/static/js/pga_schedule.ui';
 
-export default class PgaJobSchema extends BaseUISchema {
+class PgaJobSchema extends BaseUISchema {
   constructor(fieldOptions={}, getPgaJobStepSchema=()=>[], initValues={}) {
     super({
       jobname: '',
@@ -121,3 +122,5 @@ export default class PgaJobSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(PgaJobSchema);
+

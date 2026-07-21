@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import _ from 'lodash';
 
 export class DefaultWithSchema extends BaseUISchema {
@@ -156,7 +157,7 @@ export class PublicationTableSchema extends BaseUISchema {
   }
 }
 
-export default class PublicationSchema extends BaseUISchema {
+class PublicationSchema extends BaseUISchema {
   constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
@@ -309,3 +310,5 @@ export default class PublicationSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(PublicationSchema);
+

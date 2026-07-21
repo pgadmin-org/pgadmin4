@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import _ from 'lodash';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../static/js/node_ajax';
 import { isEmptyString } from '../../../../../static/js/validators';
 
@@ -44,7 +45,7 @@ export function getNodeVariableSchema(nodeObj, treeNodeInfo, itemNodeData, hasDa
   );
 }
 
-export default class VariableSchema extends BaseUISchema {
+class VariableSchema extends BaseUISchema {
   constructor(vnameOptions, databaseOptions, roleOptions, keys) {
     super({
       name: undefined,
@@ -232,3 +233,5 @@ export default class VariableSchema extends BaseUISchema {
 
   }
 }
+export default registerSchema(VariableSchema);
+

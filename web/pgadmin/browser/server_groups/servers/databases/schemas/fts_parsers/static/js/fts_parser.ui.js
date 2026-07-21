@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class FTSParserSchema extends BaseUISchema {
+class FTSParserSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues={}) {
     super({
       name: null,
@@ -138,3 +139,5 @@ export default class FTSParserSchema extends BaseUISchema {
     }];
   }
 }
+export default registerSchema(FTSParserSchema);
+

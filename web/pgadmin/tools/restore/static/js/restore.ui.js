@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 import { isEmptyString } from 'sources/validators';
 
@@ -310,7 +311,7 @@ export function getRestoreMiscellaneousSchema(fieldOptions) {
 }
 
 //Restore Schema
-export default class RestoreSchema extends BaseUISchema {
+class RestoreSchema extends BaseUISchema {
 
   constructor(restoreSectionSchema, restoreTypeObjSchema, restoreSaveOptSchema, restoreDisableOptionSchema, restoreMiscellaneousSchema, fieldOptions = {}, treeNodeInfo={}, pgBrowser=null) {
     super({
@@ -536,3 +537,5 @@ export default class RestoreSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(RestoreSchema);
+

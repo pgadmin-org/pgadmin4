@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { getNodeListByName } from '../../../../../../static/js/node_ajax';
 import { isEmptyString } from 'sources/validators';
 
@@ -25,7 +26,7 @@ export function getNodePgaJobStepSchema(treeNodeInfo, itemNodeData) {
     }
   );
 }
-export default class PgaJobStepSchema extends BaseUISchema {
+class PgaJobStepSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       jstid: null,
@@ -227,3 +228,5 @@ export default class PgaJobStepSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(PgaJobStepSchema);
+

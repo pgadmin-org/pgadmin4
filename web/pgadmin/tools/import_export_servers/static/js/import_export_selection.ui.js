@@ -8,9 +8,10 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
-export default class ImportExportSelectionSchema extends BaseUISchema {
+class ImportExportSelectionSchema extends BaseUISchema {
   constructor(initData = {}) {
     super({
       imp_exp: 'i',
@@ -93,3 +94,5 @@ export default class ImportExportSelectionSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(ImportExportSelectionSchema);
+

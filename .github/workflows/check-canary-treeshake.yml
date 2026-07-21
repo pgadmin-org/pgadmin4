@@ -1,0 +1,66 @@
+name: Verify canary tree-shake
+
+# Builds a non-canary production bundle (CANARY_BUILD unset) and
+# greps the resulting app.bundle.js for canary-only symbols. If any
+# appear, the build-time DefinePlugin gate failed and the canary
+# (~7 KiB) is shipping to end users along with the 2x walk cost on
+# every keystroke. The script exits non-zero on any leak.
+#
+# Lightweight: no PostgreSQL service, no pgAdmin runtime, no Python.
+# Just node + webpack + grep. Runs on every PR + master push.
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  verify-canary-treeshake:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - uses: actions/checkout@v4
+
+      - name: Upgrade yarn
+        run: |
+          yarn set version berry
+          yarn set version 4
+
+      - name: Install Node modules
+        run: |
+          cd web
+          yarn install
+
+      - name: Build NON-canary production bundle
+        run: |
+          cd web
+          # CANARY_BUILD intentionally NOT set — DefinePlugin should
+          # substitute process.env.__CANARY_BUILD__ → literal false
+          # and webpack should DCE the canary path + tree-shake the
+          # canary module's import.
+          NODE_ENV=production NODE_OPTIONS=--max-old-space-size=4096 \
+            ./node_modules/.bin/webpack --config webpack.config.js
+
+      - name: Verify canary is tree-shaken
+        run: |
+          cd web
+          ./scripts/verify-canary-treeshake.sh
+
+      - name: Archive bundle on failure (for triage)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaked-canary-bundle
+          path: web/pgadmin/static/js/generated/app.bundle.js
+          if-no-files-found: ignore

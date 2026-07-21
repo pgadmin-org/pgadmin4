@@ -1,10 +1,11 @@
 import _ from 'lodash';
 
 import { isValueEqual } from '../common';
+import { measure, record } from '../perf';
 import { flatPathGenerator } from './common';
 
 
-export const createStore = (initialState) => {
+export const createStore = (initialState, storeName = 'store') => {
   let state = initialState;
 
   const listeners = new Set();
@@ -14,17 +15,21 @@ export const createStore = (initialState) => {
   // Exposed functions
   // Don't attempt to manipulate the state directly.
   const getState = () => state;
-  const setState = (nextState) => {
+  const setState = (nextState) => measure(`store.${storeName}.setState`, () => {
     const prevState = state;
     state = _.clone(nextState);
 
-    if (isValueEqual(state, prevState)) return;
+    const topEqStart = performance.now();
+    const topEq = isValueEqual(state, prevState);
+    record(`store.${storeName}.topEqualityCheck`, performance.now() - topEqStart);
+    if (topEq) return;
 
     listeners.forEach((listener) => {
       listener();
     });
 
     const changeMemo = new Map();
+    let fanout = 0;
 
     pathListeners.forEach((pathListener) => {
       const [ path, listener ] = pathListener;
@@ -46,10 +51,14 @@ export const createStore = (initialState) => {
       const [isSame, pathNextValue, pathPrevValue] = changeMemo.get(flatPath);
 
       if (!isSame) {
+        fanout++;
         listener(pathNextValue, pathPrevValue);
       }
     });
-  };
+
+    record(`store.${storeName}.subscribers`, pathListeners.size);
+    record(`store.${storeName}.fanout`, fanout);
+  });
   const get = (path = []) => (_.get(state, path));
   const set = (arg) =>  {
     let nextState = _.isFunction(arg) ? arg(_.cloneDeep(state)) : arg;

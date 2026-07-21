@@ -9,10 +9,11 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 import { getActionSchema } from '../../../static/js/dbms_job_scheduler_common.ui';
 
-export default class DBMSProgramSchema extends BaseUISchema {
+class DBMSProgramSchema extends BaseUISchema {
   constructor(fieldOptions={}) {
     super({
       jsprid: null,
@@ -74,3 +75,5 @@ export default class DBMSProgramSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(DBMSProgramSchema);
+

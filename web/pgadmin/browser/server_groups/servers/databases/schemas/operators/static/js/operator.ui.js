@@ -8,9 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 
-export default class OperatorSchema extends BaseUISchema {
+class OperatorSchema extends BaseUISchema {
   constructor(fieldOptions = {},initValues={}) {
     super({
       name: undefined,
@@ -122,4 +123,6 @@ export default class OperatorSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(OperatorSchema);
+
 

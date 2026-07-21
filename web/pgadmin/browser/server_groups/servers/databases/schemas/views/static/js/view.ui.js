@@ -10,12 +10,13 @@
 import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 import { getPrivilegesForTableAndLikeObjects } from '../../../tables/static/js/table.ui';
 
 
-export default class ViewSchema extends BaseUISchema {
+class ViewSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues={}) {
     super({
       owner: undefined,
@@ -180,3 +181,5 @@ export default class ViewSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(ViewSchema);
+

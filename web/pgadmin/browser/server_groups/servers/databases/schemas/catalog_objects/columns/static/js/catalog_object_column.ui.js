@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
 
-export default class CatalogObjectColumnSchema extends BaseUISchema {
+class CatalogObjectColumnSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       attname: undefined,
@@ -64,3 +65,5 @@ export default class CatalogObjectColumnSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(CatalogObjectColumnSchema);
+

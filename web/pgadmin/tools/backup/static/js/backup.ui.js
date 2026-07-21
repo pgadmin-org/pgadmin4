@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
 export class SectionSchema extends BaseUISchema {
@@ -482,7 +483,7 @@ export function getExcludePatternsSchema() {
   return new ExcludePatternsSchema();
 }
 
-export default class BackupSchema extends BaseUISchema {
+class BackupSchema extends BaseUISchema {
   constructor(sectionSchema, typeObjSchema, saveOptSchema, disabledOptionSchema, miscellaneousSchema, excludePatternsSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server', objects={}) {
     super({
       file: undefined,
@@ -787,3 +788,5 @@ export default class BackupSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(BackupSchema);
+

@@ -8,10 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 import { isEmptyString } from 'sources/validators';
 
-export default class CollationSchema extends BaseUISchema {
+class CollationSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues={}, nodeInfo={}) {
     super({
       name: undefined,
@@ -281,3 +282,5 @@ export default class CollationSchema extends BaseUISchema {
   }
 
 }
+export default registerSchema(CollationSchema);
+

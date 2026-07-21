@@ -8,9 +8,10 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
-export default class CheckConstraintSchema extends BaseUISchema {
+class CheckConstraintSchema extends BaseUISchema {
   constructor() {
     super({
       name: undefined,
@@ -100,3 +101,5 @@ export default class CheckConstraintSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(CheckConstraintSchema);
+

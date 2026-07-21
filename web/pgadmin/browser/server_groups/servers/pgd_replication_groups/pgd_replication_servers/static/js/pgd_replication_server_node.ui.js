@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class PgdReplicationServerNodeSchema extends BaseUISchema {
+class PgdReplicationServerNodeSchema extends BaseUISchema {
   get idAttribute() {
     return 'node_id';
   }
@@ -38,3 +39,5 @@ export default class PgdReplicationServerNodeSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(PgdReplicationServerNodeSchema);
+

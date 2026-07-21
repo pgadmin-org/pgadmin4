@@ -16,7 +16,10 @@ export const useFieldValue = (path, schemaState, subscriberManager) => {
     if (!schemaState || !subscriberManager?.current) return;
 
     return subscriberManager.current?.add(schemaState, path, 'value');
-  });
+    // Pin deps so the subscription is only re-added when something
+    // observable changes. Path is compared by reference — callers that
+    // want stability across renders must memoize it.
+  }, [path, schemaState, subscriberManager]);
 
   return schemaState?.value(path);
 };

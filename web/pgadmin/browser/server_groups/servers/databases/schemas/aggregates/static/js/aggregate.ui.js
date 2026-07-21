@@ -8,9 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 
-export default class AggregateSchema extends BaseUISchema {
+class AggregateSchema extends BaseUISchema {
   constructor(fieldOptions = {},initValues={}) {
     super({
       name: undefined,
@@ -183,3 +184,5 @@ export default class AggregateSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(AggregateSchema);
+

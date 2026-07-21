@@ -9,6 +9,7 @@
 
 import _ from 'lodash';
 import { isModeSupportedByField } from '../common';
+import { measure } from '../perf';
 import { FIELD_OPTIONS, booleanEvaluator } from './common';
 
 
@@ -56,14 +57,144 @@ export function evaluateFieldOptions({
   });
 }
 
-export function schemaOptionsEvalulator({
-  schema, data, accessPath=[], viewHelperProps, options, parentOptions=null,
-  inGrid=false
+// Returns true when one path is a prefix of (or equal to) the other.
+// We compare stringified keys so numeric indices match either way (lodash
+// stores them as numbers, dispatchers sometimes hand back strings).
+export function pathOverlaps(currentPath, changedPath) {
+  const shorter = currentPath.length < changedPath.length
+    ? currentPath : changedPath;
+  const longer = shorter === currentPath ? changedPath : currentPath;
+  for (let i = 0; i < shorter.length; i++) {
+    if (String(shorter[i]) !== String(longer[i])) return false;
+  }
+  return true;
+}
+
+let __evalDepth = 0;
+export function schemaOptionsEvalulator(opts) {
+  // Canary gate (build-time eliminated in production). The DefinePlugin
+  // substitutes `process.env.__CANARY_BUILD__` at build time:
+  //   - production build (no CANARY_BUILD env): becomes `false`, the
+  //     entire branch (including the imported runOptionsCanary) is
+  //     dead-code-eliminated, the import is tree-shaken.
+  //   - canary build (CANARY_BUILD=true): becomes `true`, branch kept.
+  //   - test env: process.env is read at runtime; setup-jest.js sets
+  //     CANARY_BUILD=true so the audit path is testable.
+  // Only the OUTERMOST call routes to the canary — recursive calls
+  // from nested-fieldset / collection branches go through this function
+  // again but at __evalDepth > 0, so they skip the canary check and run
+  // normally. This avoids exponential cost on nested schemas.
+  if (
+    process.env.__CANARY_BUILD__
+    && __evalDepth === 0
+    && typeof window !== 'undefined'
+    && window.__INCREMENTAL_AUDIT__
+  ) {
+    // Increment depth BEFORE calling the canary, so the canary's two
+    // inner walks (which call back into this function) see
+    // __evalDepth > 0 and skip the audit branch + the measure
+    // wrapper. Without this guard the canary would recurse infinitely.
+    //
+    // require() inside the conditional rather than a top-level import:
+    // webpack's static analyzer can tree-shake the canary module when
+    // process.env.__CANARY_BUILD__ is substituted to literal `false` at
+    // build time. A top-level `import` would pull canary.js into the
+    // bundle unconditionally because the symbol is referenced from
+    // dead-but-statically-visible code; require() inside a dead branch
+    // gets eliminated wholesale.
+    __evalDepth++;
+    try {
+      const { runOptionsCanary } = require('./canary');
+      return measure(
+        'schemaOptionsEvalulator', () => runOptionsCanary(opts)
+      );
+    } finally {
+      __evalDepth--;
+    }
+  }
+
+  // Measure only the outermost call; this function recurses through itself
+  // for nested schemas and collection rows.
+  if (__evalDepth === 0) {
+    __evalDepth++;
+    try {
+      return measure('schemaOptionsEvalulator', () => _schemaOptionsEvalulatorImpl(opts));
+    } finally {
+      __evalDepth--;
+    }
+  }
+  return _schemaOptionsEvalulatorImpl(opts);
+}
+
+// Walker is now FUNCTIONAL — it returns a new options object for this
+// schema level instead of mutating an input. Unvisited collection rows
+// keep their previous object reference (structural sharing); visited
+// subtrees get fresh objects. The caller (SchemaState.updateOptions)
+// passes `prevOptions` and uses the returned value as the new state.
+//
+// `options` (legacy) is accepted as an alias for `prevOptions` so
+// existing callers / external consumers that still pass `options` get
+// the previous-walk semantics they were used to — but we no longer
+// mutate that object.
+function _schemaOptionsEvalulatorImpl({
+  schema, data, accessPath=[], viewHelperProps,
+  options=null, prevOptions=null,
+  parentOptions=null, inGrid=false,
+  // Incremental option evaluation: when set, skip walking collection
+  // rows whose path does not overlap the changed path. Initial mount and
+  // any caller that doesn't pass these args keeps the full-walk
+  // behaviour. `globalPath` mirrors the data tree so we can compare
+  // against `changedPath`; `accessPath` continues to navigate the
+  // options tree. `depDests` carries the dest paths of any DepListener
+  // entry whose source overlaps `changedPath` — they must also be
+  // visited so cross-row declared deps stay correct.
+  changedPath=null, globalPath=[], depDests=null,
 }) {
+  // Incremental mode is opt-in. It's enabled either per-dialog (via
+  // viewHelperProps.incrementalOptions) or globally via the
+  // window.__INCREMENTAL_OPTIONS__ toggle (handy for benchmarks /
+  // canarying without rebuilding the dialog plumbing).
+  //
+  // KNOWN LIMITATION — leave incremental off until the host schema has
+  // Default-on: any dispatch with a concrete changedPath uses the
+  // incremental walk. The audit harness (registered_schemas_audit.spec.js)
+  // is the production gate — it ratchets KNOWN_DIVERGING toward zero,
+  // and we flipped the default once it reached empty. Dialogs/schemas
+  // that genuinely need full-walk semantics can opt out by setting
+  // `incrementalOptions: false` on viewHelperProps or the schema
+  // instance; the global `window.__INCREMENTAL_OPTIONS__ = false`
+  // escape hatch disables it everywhere for emergency rollback.
+  //
+  // What incremental pruning means: rows are skipped by
+  // `pathOverlaps(rowGlobalPath, p)` for every `p` in `mustVisit`
+  // (changedPath + dest paths of DepListener entries whose source
+  // overlaps changedPath). Cross-row deps declared via `field.deps`
+  // are handled correctly — they register as DepListener entries and
+  // join mustVisit. Schemas with UNDECLARED cross-row reads would
+  // silently miss the affected rows; the audit harness catches this
+  // pattern before it ships.
+  const incremental = (
+    Array.isArray(changedPath)
+    && viewHelperProps?.incrementalOptions !== false
+    && (typeof window === 'undefined'
+        || window.__INCREMENTAL_OPTIONS__ !== false)
+  );
+
+  const mustVisit = incremental
+    ? [changedPath].concat(Array.isArray(depDests) ? depDests : [])
+    : null;
+
+  // `prev` is the read-only previous options snapshot at this level.
+  // We start `out` as a shallow clone so untouched keys (set by
+  // sibling fields in this loop, or pre-existing entries for unvisited
+  // collections we haven't written yet) keep their references.
+  const prev = prevOptions || options || {};
+  const out = { ...prev };
+
   schema?.fields?.forEach((field) => {
-    // We could have multiple entries of same `field.id` for each mode, hence -
-    // we should process the options only if the current field is support for
-    // the given mode.
+    // We could have multiple entries of same `field.id` for each mode,
+    // hence — we should process the options only if the current field is
+    // supported for the given mode.
     if (!isModeSupportedByField(field, viewHelperProps)) return;
 
     switch (field.type) {
@@ -74,14 +205,19 @@ export function schemaOptionsEvalulator({
         if (!field.schema) return;
         if (!field.schema.top) field.schema.top = schema.top || schema;
 
-        const path = field.id ? [...accessPath, field.id] : accessPath;
-
-        schemaOptionsEvalulator({
-          schema: field.schema, data, path, viewHelperProps, options,
-          parentOptions
+        // nested-* groups share their parent's data level. Recurse and
+        // merge the returned dict into `out` (nested fields take
+        // priority over siblings already accumulated).
+        const nested = schemaOptionsEvalulator({
+          schema: field.schema, data,
+          accessPath: field.id ? [...accessPath, field.id] : accessPath,
+          viewHelperProps, prevOptions: out,
+          parentOptions, changedPath, globalPath, depDests,
         });
+        // `nested` already contains everything we had in `out` (it was
+        // seeded as prevOptions) plus the nested fields' contributions.
+        Object.assign(out, nested);
       }
-
       break;
 
     case 'collection':
@@ -89,64 +225,94 @@ export function schemaOptionsEvalulator({
         if (!field.schema) return;
         if (!field.schema.top) field.schema.top = schema.top || schema;
 
-        const fieldPath = [...accessPath, field.id];
-        const fieldOptionsPath = [...fieldPath, FIELD_OPTIONS];
-        const fieldOptions = _.get(options, fieldOptionsPath, {});
-        const rows = data[field.id];
+        const fieldGlobalPath = [...globalPath, field.id];
+        // Per-collection slot in prev → shallow clone so unvisited rows
+        // retain their reference.
+        const prevColl = (prev[field.id] && typeof prev[field.id] === 'object')
+          ? prev[field.id] : {};
+        const nextColl = { ...prevColl };
 
+        // Field-level options (canAdd, canEdit, etc.) — always fresh.
+        const fieldOptions = {};
         evaluateFieldOptions({
           schema, value: data, viewHelperProps, field,
           options: fieldOptions, parentOptions,
         });
+        nextColl[FIELD_OPTIONS] = fieldOptions;
 
-        _.set(options, fieldOptionsPath, fieldOptions);
-
+        const rows = data[field.id];
         rows?.forEach((row, idx) => {
-          const schemaPath = [...fieldPath, idx];
-          const schemaOptions = _.get(options, schemaPath, {});
+          const rowGlobalPath = [...fieldGlobalPath, idx];
 
-          _.set(options, schemaPath, schemaOptions);
+          // Incremental prune: skip rows whose subtree the change cannot
+          // affect. A row matters when ANY must-visit path either reaches
+          // INTO it (typing a cell inside this row, or a declared dep
+          // points into it) or sits ABOVE it (a structural change at or
+          // above the collection — e.g. ADD_ROW with
+          // `changedPath = ['columns']`).
+          //
+          // Guard: only prune when prevColl[idx] HAS a prior result we
+          // can inherit. If undefined (typical for the first dispatch
+          // after an Edit-mode mount populated data.columns but the
+          // initial-walk options haven't been propagated as prevOptions
+          // yet, OR for any race between the React state-store write
+          // and the next dispatch), we MUST walk the row — otherwise
+          // nextColl[idx] stays undefined and downstream consumers
+          // (DataGridView features.onRow, canEditRow / canDeleteRow
+          // checks) see missing options for legitimately-present rows.
+          if (incremental
+              && prevColl[idx] !== undefined
+              && !mustVisit.some((p) => pathOverlaps(rowGlobalPath, p))) {
+            // nextColl[idx] already === prevColl[idx] via spread; we
+            // intentionally do NOTHING so the reference is preserved.
+            return;
+          }
 
-          schemaOptionsEvalulator({
+          // Visited row: walk the row schema (returns new sub-options).
+          const subOpts = schemaOptionsEvalulator({
             schema: field.schema, data: row, accessPath: [],
-            viewHelperProps, options: schemaOptions,
-            parentOptions: fieldOptions, inGrid: true
+            viewHelperProps, prevOptions: prevColl[idx],
+            parentOptions: fieldOptions, inGrid: true,
+            changedPath, globalPath: rowGlobalPath, depDests,
           });
 
-          const rowPath = [...schemaPath, FIELD_OPTIONS];
-          const rowOptions = _.get(options, rowPath, {});
-          _.set(options, rowPath, rowOptions);
-
+          // Per-row options (canEditRow, etc.).
+          const rowFieldOptions = {};
           evaluateFieldOption({
             option: 'row', schema: field.schema, value: row, viewHelperProps,
-            field, options: rowOptions, parentOptions: fieldOptions
+            field, options: rowFieldOptions, parentOptions: fieldOptions,
           });
+
+          nextColl[idx] = { ...subOpts, [FIELD_OPTIONS]: rowFieldOptions };
         });
 
+        out[field.id] = nextColl;
       }
       break;
 
     default:
       {
-        const fieldPath = [...accessPath, field.id];
-        const fieldOptionsPath = [...fieldPath, FIELD_OPTIONS];
-        const fieldOptions = _.get(options, fieldOptionsPath, {});
-
+        // Leaf field: compute fresh fieldOptions; the per-leaf slot is
+        // a new object every time we visit (walker always evaluates
+        // top-level leaves). For leaves inside an UNVISITED row, we
+        // never get here — the collection branch above keeps the row's
+        // entire reference.
+        const fieldOptions = {};
         evaluateFieldOptions({
-          schema, value: data, viewHelperProps, field, options: fieldOptions,
-          parentOptions,
+          schema, value: data, viewHelperProps, field,
+          options: fieldOptions, parentOptions,
         });
-
         if (inGrid) {
           evaluateFieldOption({
             option: 'cell', schema, value: data, viewHelperProps, field,
             options: fieldOptions, parentOptions,
           });
         }
-
-        _.set(options, fieldOptionsPath, fieldOptions);
+        out[field.id] = { [FIELD_OPTIONS]: fieldOptions };
       }
       break;
     }
   });
+
+  return out;
 }

@@ -15,7 +15,6 @@ import { evalFunc } from 'sources/utils';
 
 import { MappedCellControl } from '../MappedControl';
 import { SCHEMA_STATE_ACTIONS, SchemaStateContext } from '../SchemaState';
-import { flatternObject } from '../common';
 import {
   useFieldOptions, useFieldValue, useSchemaStateSubscriber
 } from '../hooks';
@@ -38,7 +37,15 @@ export function getMappedCell({field}) {
       colAccessPath, schemaState, subscriberManager
     );
     let value = useFieldValue(colAccessPath, schemaState, subscriberManager);
-    let rowValue = useFieldValue(rowAccessPath, schemaState);
+    // The whole-row value is only consulted when `field.cell` is a
+    // function (passed to evalFunc below) or when the field has no id
+    // (the error branch swaps rowValue for row.original). For the common
+    // case — string `field.cell` with a valid id — we don't need to read
+    // it at all. Skipping the hook removes ~one _.get(data, rowAccessPath)
+    // per cell per render.
+    let rowValue = (_.isFunction(field.cell) && field.id)
+      ? schemaState.value(rowAccessPath)
+      : undefined;
     const rerenderCellOnDepChange = (...args) => {
       subscriberManager.current?.signal(...args);
     };
@@ -97,9 +104,23 @@ export function getMappedCell({field}) {
       props.cell = 'unknown';
     }
 
+    // useMemo deps used to be `...flatternObject(colOptions)` — a recursive
+    // walk + sort over the full options object on every render. The options
+    // that actually drive cell rendering are a fixed, small set (the four
+    // registered dynamic options below), so list them explicitly. Anything
+    // else a cell needs to react to should come through `depVals` via
+    // `field.deps`.
     return useMemo(
       () => <MappedCellControl {...props}/>,
-      [...(depVals || []), ...flatternObject(colOptions), value, row.index]
+      [
+        ...(depVals || []),
+        colOptions.disabled,
+        colOptions.visible,
+        colOptions.readonly,
+        colOptions.editable,
+        value,
+        row.index,
+      ]
     );
   };
 

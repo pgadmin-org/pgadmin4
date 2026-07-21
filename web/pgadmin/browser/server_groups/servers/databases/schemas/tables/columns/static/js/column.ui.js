@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import VariableSchema from 'top/browser/server_groups/servers/static/js/variable.ui';
 import SecLabelSchema from 'top/browser/server_groups/servers/static/js/sec_label.ui';
 import _ from 'lodash';
@@ -30,7 +31,7 @@ export function getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   );
 }
 
-export default class ColumnSchema extends BaseUISchema {
+class ColumnSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, nodeInfo, cltypeOptions, collspcnameOptions, geometryTypes, inErd=false) {
     super({
       name: undefined,
@@ -176,7 +177,10 @@ export default class ColumnSchema extends BaseUISchema {
       // Need to show this field only when creating new table
       // [in SubNode control]
       id: 'is_primary_key', label: gettext('Primary key?'),
-      cell: 'switch', type: 'switch',  width: 100, enableResizing: false, deps:['name', ['primary_key']],
+      cell: 'switch', type: 'switch',  width: 100, enableResizing: false,
+      // readonly/editable also read top.sessData['oid'] and ['is_partitioned'];
+      // declare them so option re-eval still fires under incremental walks.
+      deps:['name', ['primary_key'], ['oid'], ['is_partitioned']],
       visible: ()=>{
         return obj.top?.nodeInfo && _.isUndefined(
           obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||
@@ -750,3 +754,5 @@ export default class ColumnSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(ColumnSchema);
+

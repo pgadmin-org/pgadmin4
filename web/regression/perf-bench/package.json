@@ -1,0 +1,11 @@
+{
+  "name": "datagridview-bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "playwright test --reporter=line"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

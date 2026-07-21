@@ -9,11 +9,12 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 
 
-export default class EventTriggerSchema extends BaseUISchema {
+class EventTriggerSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       oid: undefined,
@@ -128,3 +129,5 @@ export default class EventTriggerSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(EventTriggerSchema);
+

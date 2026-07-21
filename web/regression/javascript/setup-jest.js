@@ -1,6 +1,13 @@
 import '@testing-library/jest-dom';
 const { TextEncoder, TextDecoder } = require('util');
 
+// Enable the build-time canary gate in test environments. The
+// production wrapper in registry.js reads `process.env.__CANARY_BUILD__`;
+// in canary builds webpack's DefinePlugin substitutes a literal `true`,
+// in production builds it substitutes `false` (and DCE removes the
+// import). Tests don't go through webpack, so set it directly here.
+process.env.__CANARY_BUILD__ = 'true';
+
 class BroadcastChannelMock {
   onmessage() {/* mock */}
   postMessage(data) {
@@ -10,7 +17,35 @@ class BroadcastChannelMock {
 
 global.BroadcastChannel = BroadcastChannelMock;
 
+// ESLint 9's flat-config schema uses `structuredClone` to deep-copy
+// rule option objects in RuleTester. Node's structuredClone lives on
+// the Node globalThis, but jest's jsdom env wraps tests in its own
+// global with no copy of it. Patch the test global so RuleTester
+// specs (regression/javascript/eslint-rules/) work without forcing a
+// node test env that would break the rest of setup-jest.
+if (typeof global.structuredClone !== 'function') {
+  global.structuredClone = (value) => JSON.parse(JSON.stringify(value));
+}
+
 global.__webpack_public_path__ = '';
+
+// AMD-style `define()` calls slip into a handful of pgAdmin browser
+// modules (role.js registers itself with `define('pgadmin.node.role',
+// [...], cb)`). Jest's CommonJS-ish loader doesn't provide it, so any
+// import chain that touches these modules ReferenceErrors out — the
+// registered_schemas_audit harness hits this on roleReassign.js. A
+// no-op stub is enough: the audit doesn't care about side effects of
+// the registration, only that the module can be imported.
+global.define = (...args) => {
+  // AMD signatures: define(factory), define(deps, factory),
+  // define(name, factory), define(name, deps, factory). The factory is
+  // always the last arg.
+  const factory = args[args.length - 1];
+  if (typeof factory === 'function') {
+    try { factory(); } catch { /* swallow registration errors */ }
+  }
+};
+global.define.amd = false;  // some modules check amd capability
 
 global.matchMedia =  (query)=>({
   matches: false,
@@ -41,12 +76,34 @@ global.beforeAll(() => {
   jest.spyOn(console, 'error');
 });
 
+// Reset the audit harness's variant-rotation counter between
+// tests so dispatch ordering is reproducible within a Jest worker.
+//
+// We don't require() the audit harness here — that would pay the
+// import cost on every Jest worker (including the ~80% that don't
+// touch SchemaView) AND require()ing from inside beforeEach trips
+// the zustand-mock's top-level afterEach() registration. Instead,
+// resolve the module path once (no load), then check the require
+// cache in each beforeEach. If a SchemaView spec earlier loaded the
+// audit harness, its cached exports include _resetMutationCounter;
+// non-SchemaView workers see an empty cache hit and skip.
+const _auditHarnessPath = require.resolve(
+  '../../pgadmin/static/js/SchemaView/SchemaState/audit_harness',
+);
+let _resetAuditMutationCounter = null;
+
 global.beforeEach(() => {
   console.error.mockClear();
+  if (!_resetAuditMutationCounter) {
+    const cached = require.cache[_auditHarnessPath];
+    if (cached && typeof cached.exports._resetMutationCounter === 'function') {
+      _resetAuditMutationCounter = cached.exports._resetMutationCounter;
+    }
+  }
+  if (_resetAuditMutationCounter) _resetAuditMutationCounter();
 });
 
 global.afterEach(() => {
-  // eslint-disable-next-line no-undef
   expect(console.error).not.toHaveBeenCalled();
 });
 

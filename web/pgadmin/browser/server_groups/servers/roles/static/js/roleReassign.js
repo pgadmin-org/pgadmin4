@@ -9,13 +9,14 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import url_for from 'sources/url_for';
 import { getNodeListByName, generateNodeUrl } from '../../../../../static/js/node_ajax';
 import pgBrowser from 'top/browser/static/js/browser';
 import { isEmptyString } from 'sources/validators';
 import pgAdmin from 'sources/pgadmin';
 
-export default class RoleReassign extends BaseUISchema{
+class RoleReassign extends BaseUISchema{
   constructor(fieldOptions={}, initValues={}){
     super({
       role_op: 'reassign',
@@ -177,6 +178,8 @@ export default class RoleReassign extends BaseUISchema{
     return false;
   }
 }
+export default registerSchema(RoleReassign);
+
 
 function getUISchema(treeNodeInfo, itemNodeData ) {
   return new RoleReassign(

@@ -19,6 +19,8 @@ import {
 
 import BaseUISchema from '../base_schema.ui';
 import { isModeSupportedByField, isObjectEqual, isValueEqual } from '../common';
+import { pathOverlaps } from '../options';
+import { measure } from '../perf';
 
 
 export const SCHEMA_STATE_ACTIONS = {
@@ -27,6 +29,14 @@ export const SCHEMA_STATE_ACTIONS = {
   ADD_ROW: 'add_row',
   DELETE_ROW: 'delete_row',
   MOVE_ROW: 'move_row',
+  // RERENDER is reserved but currently UNUSED. No `case` in the
+  // reducer (so it falls through to the default __changeId++ which
+  // forces a re-validate without state change), and no production
+  // call site dispatches it. If a future caller starts using it,
+  // they MUST add it to the reducer's PATH_BEARING_ACTIONS set in
+  // reducer.js so the bypass guard catches accidental raw
+  // sessDispatch usage — leaving it out lets dispatches slip past
+  // the __pendingChangedPaths accumulator silently.
   RERENDER: 'rerender',
   CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
   DEFERRED_DEPCHANGE: 'deferred_depchange',
@@ -116,6 +126,15 @@ export function getCollectionDiffInEditMode(
 export function getSchemaDataDiff(
   topSchema, initData, sessData, mode, keepCid,
   stringify=false, includeSkipChange=true
+) {
+  return measure('getSchemaDataDiff', () => _getSchemaDataDiffImpl(
+    topSchema, initData, sessData, mode, keepCid, stringify, includeSkipChange
+  ));
+}
+
+function _getSchemaDataDiffImpl(
+  topSchema, initData, sessData, mode, keepCid,
+  stringify, includeSkipChange
 ) {
   const isEditMode = mode === 'edit';
 
@@ -246,27 +265,88 @@ export function getSchemaDataDiff(
   return res;
 }
 
+// Decide whether `checkUniqueCol` needs to re-run for this collection
+// given the incremental must-visit set.
+//
+// Run if ANY mustVisit path either:
+//   - sits at or above the collection's path (structural change, or a
+//     pre-existing uniqueness error that was added to mustVisit by
+//     SchemaState.validate), OR
+//   - points at a direct row-field whose id is in `field.uniqueCol`
+//     (a change to a uniqueness-participating value).
+//
+// A deep path inside a nested sub-collection (length > currPath+2) does
+// NOT trigger the outer collection's uniqueCol — the value reachable at
+// that path can't be a member of the outer row schema's fields.
+function shouldRunUniqueCol(field, currPath, mustVisit) {
+  if (!Array.isArray(mustVisit)) return true;  // full walk
+  if (!Array.isArray(field.uniqueCol) || field.uniqueCol.length === 0)
+    return false;
+  return mustVisit.some((p) => {
+    if (!Array.isArray(p)) return false;
+    if (p.length <= currPath.length) {
+      // p is a prefix of (or equal to) currPath -> structural or above.
+      for (let i = 0; i < p.length; i++) {
+        if (String(p[i]) !== String(currPath[i])) return false;
+      }
+      return true;
+    }
+    // p deeper than currPath. Must be an immediate row.field path.
+    for (let i = 0; i < currPath.length; i++) {
+      if (String(p[i]) !== String(currPath[i])) return false;
+    }
+    if (p.length !== currPath.length + 2) return false;
+    return field.uniqueCol.includes(p[p.length - 1]);
+  });
+}
+
 export function validateCollectionSchema(
-  field, sessData, accessPath, setError
+  field, sessData, accessPath, setError, mustVisit=null, collectAll=false
 ) {
   const rows = sessData[field.id] || [];
   const currPath = accessPath.concat(field.id);
+  let anyError = false;
 
   if(rows.length > field.maxCount) {
     setError(currPath, gettext('Maximum %s \'%s\' allowed',field.maxCount, field.label));
-    return true;
+    if (!collectAll) return true;
+    anyError = true;
   }
 
   // Loop through data.
   for(const [rownum, row] of rows.entries()) {
-    if(validateSchema(
-      field.schema, row, setError, currPath.concat(rownum), field.label
-    )) {
-      return true;
+    const rowGlobalPath = currPath.concat(rownum);
+    // Incremental prune: skip rows whose path doesn't overlap any
+    // must-visit path. `mustVisit=null` means full walk.
+    if (Array.isArray(mustVisit)
+        && !mustVisit.some((p) => pathOverlaps(rowGlobalPath, p))) {
+      continue;
+    }
+    let rowHadError = false;
+    try {
+      rowHadError = validateSchema(
+        field.schema, row, setError, rowGlobalPath, field.label, mustVisit, collectAll
+      );
+    } catch (e) {
+      // collectAll mode is used for discovery (audit + multi-path
+      // tracker); a single row's validate() throwing should not abort
+      // iteration over siblings — we want to learn about every
+      // erroring row in one pass. Legacy callers (collectAll=false)
+      // see the original throw-propagating behavior.
+      if (!collectAll) throw e;
+      rowHadError = true;
+    }
+    if (rowHadError) {
+      if (!collectAll) return true;
+      anyError = true;
     }
   }
 
-  // Validate duplicate rows.
+  // Validate duplicate rows. Skip the O(N) scan when the change can't
+  // affect uniqueness (typing a non-uniqueCol field, or a deep change
+  // inside a nested sub-collection).
+  if (!shouldRunUniqueCol(field, currPath, mustVisit)) return anyError;
+
   const dupInd = checkUniqueCol(rows, field.uniqueCol);
 
   if(dupInd > 0) {
@@ -285,13 +365,77 @@ export function validateCollectionSchema(
     return true;
   }
 
-  return false;
+  return anyError;
 }
 
+let __validateDepth = 0;
+// `collectAll` (default false for back-compat): when true, the walker
+// does NOT short-circuit at the first error — it iterates every
+// field and every row, calling setError for each one. The return
+// value is still hadError (boolean) but reflects "any error
+// anywhere" rather than "first error".
+//
+// Used by:
+//   - SchemaState.validate, so the multi-path mustVisit tracker
+//     learns about ALL error paths from the initial full walk
+//     (not just the first short-circuit point).
+//   - validation_canary's two inner walks, so the diff reflects
+//     true coverage of missed errors instead of short-circuit
+//     timing artifacts.
 export function validateSchema(
-  schema, sessData, setError, accessPath=[], collLabel=null
+  schema, sessData, setError, accessPath=[], collLabel=null, mustVisit=null,
+  collectAll=false
+) {
+  // Only measure the outermost entry. The impl recurses through itself for
+  // nested schemas, and we don't want to double-count.
+  if (__validateDepth === 0) {
+    __validateDepth++;
+    try {
+      // Canary gate (build-time eliminated in production). DefinePlugin
+      // substitutes `process.env.__CANARY_BUILD__` at build time:
+      //   - production (no CANARY_BUILD env): becomes `false`, the
+      //     entire branch (including the require'd canary module) is
+      //     dead-code-eliminated and tree-shaken.
+      //   - canary build (CANARY_BUILD=true): becomes `true`, branch
+      //     kept; runtime gate is window.__INCREMENTAL_AUDIT__.
+      //   - test env: setup-jest.js sets CANARY_BUILD=true so the
+      //     audit path is testable.
+      // Depth was just incremented above; the canary's two inner
+      // validateSchema calls enter at depth>0 and skip the gate.
+      if (
+        process.env.__CANARY_BUILD__
+        && typeof window !== 'undefined'
+        && window.__INCREMENTAL_AUDIT__
+      ) {
+        const { runValidationCanary } = require('./validation_canary');
+        return measure('validateSchema', () => runValidationCanary({
+          schema, sessData, setError, accessPath, collLabel, mustVisit,
+          collectAll,
+        }));
+      }
+      return measure('validateSchema', () => _validateSchemaImpl(
+        schema, sessData, setError, accessPath, collLabel, mustVisit, collectAll
+      ));
+    } finally {
+      __validateDepth--;
+    }
+  }
+  return _validateSchemaImpl(
+    schema, sessData, setError, accessPath, collLabel, mustVisit, collectAll
+  );
+}
+
+function _validateSchemaImpl(
+  schema, sessData, setError, accessPath=[], collLabel=null, mustVisit=null,
+  collectAll=false
 ) {
   sessData = sessData || {};
+  let anyError = false;
+  // Short-circuit helper. Returns true if the caller should keep going
+  // even after a hit. When collectAll is false (legacy), we exit at
+  // the first error (preserving the historical signature). When it's
+  // true, we accumulate `anyError` and continue.
+  const stopHere = () => !collectAll;
 
   for(const field of schema.fields) {
     // Skip id validation
@@ -304,12 +448,19 @@ export function validateSchema(
 
       // A collection is an array.
       if(field.type === 'collection') {
-        if (validateCollectionSchema(field, sessData, accessPath, setError))
-          return true;
+        if (validateCollectionSchema(
+          field, sessData, accessPath, setError, mustVisit, collectAll
+        )) {
+          if (stopHere()) return true;
+          anyError = true;
+        }
       }
       // A nested schema ? Recurse
-      else if(validateSchema(field.schema, sessData, setError, accessPath)) {
-        return true;
+      else if(validateSchema(
+        field.schema, sessData, setError, accessPath, null, mustVisit, collectAll
+      )) {
+        if (stopHere()) return true;
+        anyError = true;
       }
     } else {
       // Normal field, default validations.
@@ -330,29 +481,37 @@ export function validateSchema(
           collLabel && gettext('%s in %s', field.label, collLabel)
         ) || field.noEmptyLabel || field.label;
 
-        if (setErrorOnMessage(emptyValidator(label, value)))
-          return true;
+        if (setErrorOnMessage(emptyValidator(label, value))) {
+          if (stopHere()) return true;
+          anyError = true;
+          continue;
+        }
       }
 
       if(field.type === 'int') {
         if (setErrorOnMessage(
           integerValidator(field.label, value) ||
           minMaxValidator(field.label, value, field.min, field.max)
-        ))
-          return true;
+        )) {
+          if (stopHere()) return true;
+          anyError = true;
+        }
       } else if(field.type === 'numeric') {
         if (setErrorOnMessage(
           numberValidator(field.label, value) ||
           minMaxValidator(field.label, value, field.min, field.max)
-        ))
-          return true;
+        )) {
+          if (stopHere()) return true;
+          anyError = true;
+        }
       }
     }
   }
 
-  return schema.validate(
+  const userValidatorHadError = schema.validate(
     sessData, (id, message) => setError(accessPath.concat(id), message)
   );
+  return userValidatorHadError || anyError;
 }
 
 export const getDepChange = (currPath, newState, oldState, action) => {

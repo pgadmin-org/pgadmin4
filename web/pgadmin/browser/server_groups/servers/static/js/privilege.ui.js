@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { getNodeListByName } from '../../../../static/js/node_ajax';
 
 export function getNodePrivilegeRoleSchema(nodeObj, treeNodeInfo, itemNodeData, privileges) {
@@ -23,7 +24,7 @@ export function getNodePrivilegeRoleSchema(nodeObj, treeNodeInfo, itemNodeData, 
   );
 }
 
-export default class PrivilegeRoleSchema extends BaseUISchema {
+class PrivilegeRoleSchema extends BaseUISchema {
   constructor(granteeOptions, grantorOptions, nodeInfo, supportedPrivs) {
     super({
       grantee: undefined,
@@ -86,3 +87,5 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(PrivilegeRoleSchema);
+

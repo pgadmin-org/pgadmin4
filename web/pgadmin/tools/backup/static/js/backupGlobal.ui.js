@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
 export class MiscellaneousSchema extends BaseUISchema {
@@ -45,7 +46,7 @@ export function getMiscellaneousSchema() {
   return new MiscellaneousSchema();
 }
 
-export default class BackupGlobalSchema extends BaseUISchema {
+class BackupGlobalSchema extends BaseUISchema {
   constructor(miscellaneousSchema, fieldOptions = {}) {
     super({
       id: null,
@@ -113,3 +114,5 @@ export default class BackupGlobalSchema extends BaseUISchema {
   }
 
 }
+export default registerSchema(BackupGlobalSchema);
+

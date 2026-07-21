@@ -10,13 +10,14 @@ import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import {getDatabaseLabel, generateTitle} from './sqleditor_title';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import usePreferences from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { getNodeListByName } from '../../../../browser/static/js/node_ajax';
 
-export default class DataFilterSchema extends BaseUISchema {
+class DataFilterSchema extends BaseUISchema {
   constructor(getColumns) {
     super({
       filter_sql: ''
@@ -70,6 +71,8 @@ export default class DataFilterSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(DataFilterSchema);
+
 
 export function showViewData(
   queryToolMod,

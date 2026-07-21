@@ -8,8 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 import { BaseUISchema } from '../../../../static/js/SchemaView';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class PreferencesSchema extends BaseUISchema {
+class PreferencesSchema extends BaseUISchema {
   constructor(initValues = {}, schemaFields = []) {
     super({
       ...initValues
@@ -30,3 +31,5 @@ export default class PreferencesSchema extends BaseUISchema {
     return this.schemaFields;
   }
 }
+export default registerSchema(PreferencesSchema);
+

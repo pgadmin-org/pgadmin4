@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
-export default class PackageSchema extends BaseUISchema {
+class PackageSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
@@ -158,3 +159,5 @@ export default class PackageSchema extends BaseUISchema {
     return null;
   }
 }
+export default registerSchema(PackageSchema);
+

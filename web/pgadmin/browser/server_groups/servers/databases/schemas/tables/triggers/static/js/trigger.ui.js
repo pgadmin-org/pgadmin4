@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
 export class EventSchema extends BaseUISchema {
@@ -117,7 +118,7 @@ export class EventSchema extends BaseUISchema {
 }
 
 
-export default class TriggerSchema extends BaseUISchema {
+class TriggerSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
@@ -474,4 +475,6 @@ export default class TriggerSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(TriggerSchema);
+
 
