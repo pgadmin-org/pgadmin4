@@ -283,10 +283,20 @@ def get_formatted_columns(conn, tid, data, other_columns,
             # name (#10100, #10101). Identity columns carry an internal
             # dependency too, but never a nextval() default, and are
             # additionally excluded via attidentity.
+            #
+            # Ownership and default are independent dependencies in
+            # PostgreSQL: a column can own one sequence (pg_depend
+            # deptype='a', -> ``seqrelid``) while its DEFAULT's nextval()
+            # call names a completely different one (pg_depend deptype='n'
+            # from the pg_attrdef entry, -> ``defseqrelid``). SERIAL only
+            # applies when both dependencies point at the same sequence, so
+            # this split-ownership/default case keeps its original,
+            # explicit nextval() default instead of being rewritten.
             defval = col.get('defval', '') or ''
 
             if col.get('seqrelid') and defval.startswith("nextval('") \
                     and not col.get('attidentity') \
+                    and col.get('seqrelid') == col.get('defseqrelid') \
                     and col['typname'] in ('integer', 'smallint', 'bigint'):
 
                 serial_type = {
