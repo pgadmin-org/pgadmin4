@@ -18,7 +18,7 @@ from unittest.mock import MagicMock, patch
 from pgadmin.utils.route import BaseTestGenerator
 
 UTILS_MODULE = ('pgadmin.browser.server_groups.servers.databases.schemas.'
-                 'tables.columns.utils')
+                'tables.columns.utils')
 
 
 def _make_column(**overrides):
@@ -29,7 +29,8 @@ def _make_column(**overrides):
         attfdwoptions=None, attstattarget=-1, attstorage='p',
         attidentity='', defval=None, typname='integer',
         displaytypname='integer', cltype='integer',
-        inheritedfrom=None, inheritedid=None, elemoid=23, typnspname='pg_catalog',
+        inheritedfrom=None, inheritedid=None, elemoid=23,
+        typnspname='pg_catalog',
         defaultstorage='p', description=None, indkey=None, isdup=False,
         collspcname='', is_fk=False, seclabels=None, is_sys_column=False,
         colconstype='n', genexpr=None, relname='t', is_view_only=False,
