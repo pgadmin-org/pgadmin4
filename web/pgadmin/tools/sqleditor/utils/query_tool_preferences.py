@@ -120,6 +120,21 @@ def register_query_tool_preferences(self):
                          "First/Last 100 Rows options, data is always sorted.")
     )
 
+    self.view_data_default_row_limit = self.preference.register(
+        'Options', 'view_data_default_row_limit',
+        gettext("Default row limit for View Data"), 'integer', 0,
+        min_val=0,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            "Specify the maximum number of rows to fetch when using the "
+            "View/Edit Data - All Rows option. This appends a LIMIT clause "
+            "to the generated query, which can significantly improve "
+            "performance on very large tables. Set to 0 (the default) to "
+            "fetch all rows with no limit (the existing behavior). This "
+            "does not affect the First/Last 100 Rows options."
+        )
+    )
+
     self.show_prompt_save_data_changes = self.preference.register(
         'Options', 'prompt_save_data_changes',
         gettext("Prompt to save unsaved data changes?"), 'boolean', True,
