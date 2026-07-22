@@ -177,6 +177,21 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
             list_of_sql[of_type] = []
             for each_row in changed_data[of_type]:
                 data = changed_data[of_type][each_row]['data']
+                # Drop any column that isn't a real editable column of the
+                # underlying table (e.g. an expression/alias column such as
+                # `first_name || ' ' || last_name as the_name`). Such columns
+                # carry the read-only lock icon in the grid, but without this
+                # guard the rendered UPDATE references a non-existent column
+                # and Postgres rejects the change. Issue #10103.
+                data = {
+                    k: v for k, v in data.items()
+                    if k in columns_info and
+                    columns_info[k].get('is_editable', True)
+                }
+                # Nothing editable left to persist for this row, skip it so we
+                # don't render an invalid `SET` clause.
+                if not data:
+                    continue
                 pk_escaped = {
                     pk: pk_val.replace('%', '%%') if hasattr(
                         pk_val, 'replace') else pk_val
