@@ -112,21 +112,22 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
   }, [filters]);
 
   const selectFilterOption = (option) => {
-    let newOptions = [];
-    setSelectedFilters((prev) => {
-      let newSelectdOptions = [...prev];
-      let removeIndex = newSelectdOptions.indexOf(option);
-      if (prev.includes(option)) {
-        newSelectdOptions.splice(removeIndex, 1);
-      } else {
-        newSelectdOptions.push(option);
-      }
-      newOptions = [...newSelectdOptions];
-      return newSelectdOptions;
-    });
+    // Derive the new selection synchronously from the current state.
+    // The new array must be computed here (not inside a setState updater)
+    // because React invokes functional updaters lazily during render, so a
+    // value assigned inside the updater is not yet available when the event
+    // below fires. Reading it there previously broadcast an empty filter
+    // list, which blanked the results tree on every chip toggle. #10102
+    let newSelectedOptions = [...selectedFilters];
+    let removeIndex = newSelectedOptions.indexOf(option);
+    if (removeIndex !== -1) {
+      newSelectedOptions.splice(removeIndex, 1);
+    } else {
+      newSelectedOptions.push(option);
+    }
 
-    let filterParam = newOptions;
-    eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_FILTER, { filterParams: filterParam });
+    setSelectedFilters(newSelectedOptions);
+    eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_FILTER, { filterParams: newSelectedOptions });
   };
 
   const selectCompareOption = (option) => {
