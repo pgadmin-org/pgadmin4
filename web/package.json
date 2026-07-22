@@ -7,7 +7,7 @@
   ],
   "license": "PostgreSQL",
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.6",
     "@babel/eslint-parser": "^7.28.6",
     "@babel/eslint-plugin": "^7.27.1",
     "@babel/plugin-syntax-jsx": "^7.28.6",
@@ -63,13 +63,13 @@
     "typescript-eslint": "^8.59.0",
     "url-loader": "^4.1.1",
     "webfonts-loader": "^8.1.1",
-    "webpack": "^5.106.2",
+    "webpack": "^5.107.2",
     "webpack-bundle-analyzer": "^5.3.0",
     "webpack-cli": "^6.0.1",
     "yarn-audit-html": "7.3.2"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.4"
+    "sharp": "^0.35.1"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
@@ -98,7 +98,7 @@
     "ajv": "^8.18.0",
     "anti-trojan-source": "^1.8.1",
     "aspen-decorations": "^1.1.1",
-    "axios": "^1.16.0",
+    "axios": "^1.18.0",
     "babelify": "~10.0.0",
     "bignumber.js": "^10.0.2",
     "brace": "^0.11.1",
@@ -108,7 +108,7 @@
     "convert-units": "^2.3.4",
     "date-fns": "^4.1.0",
     "diff-arrays-of-objects": "^1.1.10",
-    "dompurify": "^3.4.1",
+    "dompurify": "^3.4.12",
     "hotkeys-js": "^4.0.3",
     "html-to-image": "1.11.11",
     "immutability-helper": "^3.1.1",
@@ -130,7 +130,7 @@
     "react": "^19.2.5",
     "react-arborist": "^3.5.0",
     "react-aspen": "^1.2.0",
-    "react-checkbox-tree": "^2.0.1",
+    "react-checkbox-tree": "^2.0.2",
     "react-data-grid": "https://github.com/pgadmin-org/react-data-grid.git#8ddaa7bed99c8329e39b8ff37ba156f7fc8e85d4",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
@@ -167,7 +167,11 @@
     "qs": "^6.15.2",
     "@tootallnate/once": "^2.0.1",
     "tar@npm:^7.5.4": "^7.5.15",
-    "ttf2woff2/node-gyp": "^11.2.0"
+    "ttf2woff2/node-gyp": "^11.2.0",
+    "js-yaml@npm:^3.13.1": "^3.15.0",
+    "form-data@npm:^4.0.5": "^4.0.6",
+    "brace-expansion@npm:^1.1.7": "^1.1.16",
+    "brace-expansion@npm:^5.0.5": "^5.0.7"
   },
   "scripts": {
     "linter": "yarn run eslint -c .eslintrc.js .",
