@@ -138,8 +138,26 @@ def evaluate_and_patch_config(config: dict) -> dict:
         config.setdefault('KEYRING_NAME', '')
     else:
         k_name = keyring.get_keyring().name
-        # Setup USE_OS_SECRET_STORAGE false as no keyring backend available
-        if k_name == 'fail Keyring':
+        # A keyring backend may be selected (e.g. SecretService on Linux)
+        # yet be completely unusable at runtime - for example in a headless
+        # or RDP session where there is no running D-Bus / GNOME Keyring.
+        # In that case every keyring call raises and the crypt key is never
+        # set, surfacing as a bare CryptKeyMissing on every operation.
+        # Probe the backend with a harmless read of an entry that never
+        # exists; if the backend is healthy this returns None without
+        # prompting, and if it is unusable it raises. When it is not usable,
+        # disable OS secret storage so pgAdmin falls back to the
+        # master-password / in-app crypt key mechanism.
+        keyring_usable = k_name != 'fail Keyring'
+        if keyring_usable:
+            try:
+                keyring.get_password(
+                    'pgAdmin4', 'entry_to_check_keyring_access')
+            except Exception:
+                keyring_usable = False
+
+        if not keyring_usable:
+            # Setup USE_OS_SECRET_STORAGE false as no usable keyring backend
             config['USE_OS_SECRET_STORAGE'] = False
             config['KEYRING_NAME'] = ''
         else:
