@@ -221,6 +221,7 @@ REM Main build sequence Ends
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
+    SET "YARN_VERSION="
     FOR /f "delims=" %%v IN ('node -p "require('./package.json').packageManager.split('@')[1]"') DO SET "YARN_VERSION=%%v"
     IF "%YARN_VERSION%"=="" (
         ECHO ERROR: Could not determine Yarn version from package.json packageManager field.
@@ -281,6 +282,7 @@ REM Main build sequence Ends
 
     CD "%BUILDROOT%\runtime\resources\app\"
 
+    SET "YARN_VERSION="
     FOR /f "delims=" %%v IN ('node -p "require('./package.json').packageManager.split('@')[1]"') DO SET "YARN_VERSION=%%v"
     IF "%YARN_VERSION%"=="" (
         ECHO ERROR: Could not determine Yarn version from package.json packageManager field.
