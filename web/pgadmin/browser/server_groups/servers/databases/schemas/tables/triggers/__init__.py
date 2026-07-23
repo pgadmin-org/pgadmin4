@@ -322,7 +322,8 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template("/".join(
                 [self.trigger_function_template_path, self._NODE_SQL]),
                 scid=trigger_function_schema_oid,
-                fnid=rset['rows'][0]['tfuncoid']
+                fnid=rset['rows'][0]['tfuncoid'],
+                conn=self.conn
             )
             status, res = self.conn.execute_2darray(sql)
             if not status:

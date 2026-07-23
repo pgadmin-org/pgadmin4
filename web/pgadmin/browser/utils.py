@@ -343,6 +343,12 @@ class NodeView(View, metaclass=type(MethodView)):
         """Build a list of treeview nodes from the child nodes."""
         children = self.get_children_nodes(*args, **kwargs)
 
+        # get_children_nodes may return a Flask Response (e.g. an error
+        # response) instead of a list of nodes. In that case return it as-is
+        # rather than trying to iterate/sort it.
+        if isinstance(children, flask.Response):
+            return children
+
         # Return sorted nodes based on label
         return make_json_response(
             data=sorted(
@@ -453,10 +459,18 @@ class PGChildNodeView(NodeView):
                 )
             )
 
+        children = self.get_children_nodes(manager, **kwargs)
+
+        # get_children_nodes may return a Flask Response (e.g. an error
+        # response) instead of a list of nodes. In that case return it as-is
+        # rather than trying to iterate/sort it.
+        if isinstance(children, flask.Response):
+            return children
+
         # Return sorted nodes based on label
         return make_json_response(
             data=sorted(
-                self.get_children_nodes(manager, **kwargs),
+                children,
                 key=lambda c: c['label']
             )
         )
