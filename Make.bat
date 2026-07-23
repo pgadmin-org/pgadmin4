@@ -221,8 +221,13 @@ REM Main build sequence Ends
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
+    FOR /f "delims=" %%v IN ('node -p "require('./package.json').packageManager.split('@')[1]"') DO SET "YARN_VERSION=%%v"
+    IF "%YARN_VERSION%"=="" (
+        ECHO ERROR: Could not determine Yarn version from package.json packageManager field.
+        EXIT /B 1
+    )
     CALL yarn set version berry || EXIT /B 1
-    CALL yarn set version 4 || EXIT /B 1
+    CALL yarn set version %YARN_VERSION% || EXIT /B 1
     CALL yarn install || EXIT /B 1
     CALL npm rebuild || EXIT /B 1
 
@@ -276,8 +281,13 @@ REM Main build sequence Ends
 
     CD "%BUILDROOT%\runtime\resources\app\"
 
+    FOR /f "delims=" %%v IN ('node -p "require('./package.json').packageManager.split('@')[1]"') DO SET "YARN_VERSION=%%v"
+    IF "%YARN_VERSION%"=="" (
+        ECHO ERROR: Could not determine Yarn version from package.json packageManager field.
+        EXIT /B 1
+    )
     CALL yarn set version berry || EXIT /B 1
-    CALL yarn set version 4 || EXIT /B 1
+    CALL yarn set version %YARN_VERSION% || EXIT /B 1
     CALL yarn workspaces focus --production || EXIT /B 1
 
     ECHO Removing yarn cache...
