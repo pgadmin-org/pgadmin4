@@ -2712,7 +2712,7 @@ def connect_server(sid):
         # password the user just entered at that prompt is cached here so the
         # tool's connection can use it, instead of being discarded and
         # re-prompted in a loop.
-        _cache_manager_password_from_request(manager)
+        _cache_manager_password_from_request(manager, server)
         return make_json_response(
             success=1,
             info=gettext("Server connected."),
@@ -2725,7 +2725,7 @@ def connect_server(sid):
     )
 
 
-def _cache_manager_password_from_request(manager):
+def _cache_manager_password_from_request(manager, server=None):
     """
     Cache the password supplied with the current request (from a tool's
     password prompt) onto the server manager, so that connections opened by
@@ -2735,6 +2735,13 @@ def _cache_manager_password_from_request(manager):
     is unavailable.  When a password is supplied it overwrites any cached
     password, so a freshly entered credential (e.g. a regenerated, short-lived
     cloud auth token) takes effect immediately.
+
+    When "Save Password" is requested and allowed, the freshly entered
+    password is also persisted to the server record (overwriting any stale
+    stored ciphertext).  Without this, a rotated/regenerated password entered
+    at the prompt would work for the current session only and the tool would
+    keep re-using the stale saved password and re-prompt on the next
+    connection.
 
     This is best-effort: any failure (including malformed request data) is
     logged and swallowed so it never turns the caller's "Server connected"
@@ -2756,10 +2763,38 @@ def _cache_manager_password_from_request(manager):
         if not crypt_key_present:
             return
 
-        manager._update_password(encrypt(password, crypt_key))
+        enc_password = encrypt(password, crypt_key)
+        manager._update_password(enc_password)
         manager.update_session()
+
+        # Persist the freshly entered password if the user asked to save it,
+        # so the stale stored ciphertext is replaced.
+        save_password = data.get('save_password', False)
+        if save_password in ('true', 'True', '1', 1, True) and \
+                ALLOW_SAVE_PASSWORD and server is not None:
+            _persist_saved_password(server, enc_password)
     except Exception as e:
         current_app.logger.exception(e)
+
+
+def _persist_saved_password(server, enc_password):
+    """
+    Persist the encrypted password to the server record (owned or shared),
+    replacing any stale stored ciphertext.
+    """
+    from pgadmin.model import db
+    from pgadmin.browser.server_groups.servers import ServerModule
+
+    target = server
+    if server.shared and server.user_id != current_user.id:
+        shared_server = ServerModule.get_shared_server(
+            server, server.servergroup_id)
+        if shared_server is not None:
+            target = shared_server
+
+    setattr(target, 'save_password', 1)
+    setattr(target, 'password', enc_password)
+    db.session.commit()
 
 
 @blueprint.route(
