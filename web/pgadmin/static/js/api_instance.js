@@ -31,10 +31,19 @@ export default function getApiInstance(headers={}) {
 const _inflightGetRequests = new Map();
 
 /* Builds a key that is independent of object key insertion order, so that
- * {a:1, b:2} and {b:2, a:1} (and nested variants) resolve to the same key. */
+ * {a:1, b:2} and {b:2, a:1} (and nested variants) resolve to the same key.
+ * Params are expected to be plain JSON-like query values (primitives, plain
+ * objects, arrays); exotic inputs like Date/Map/cyclic objects are not valid
+ * GET query params and are out of scope here.
+ * Primitives are type-tagged so that values that share a JSON form but differ
+ * in type never collide, e.g. the number 1 vs the string "1", or an array hole
+ * ([undefined]) vs the empty array ([]). */
 function stableStringify(value) {
+  if (value === undefined) {
+    return 'undefined';
+  }
   if (value === null || typeof value !== 'object') {
-    return JSON.stringify(value);
+    return typeof value + ':' + JSON.stringify(value);
   }
   if (Array.isArray(value)) {
     return '[' + value.map(stableStringify).join(',') + ']';
@@ -50,7 +59,15 @@ function stableStringify(value) {
  * later calls fetch fresh data. Each caller attaches its own then/catch, so
  * response handling (transform, caching, etc.) stays per-caller. */
 export function getInflight(api, url, config={}) {
-  const key = url + '#' + stableStringify(config.params ?? {});
+  // Key on url + params + any per-request headers, so callers that differ only
+  // in headers (e.g. a different Authorization) never share a response. The
+  // instance-level headers set by getApiInstance() are the session-global CSRF
+  // token and Content-type, identical across concurrent callers, so they don't
+  // need to be in the key; anything caller-specific should be passed here via
+  // config.headers.
+  const key = url
+    + '#' + stableStringify(config.params ?? {})
+    + '#' + stableStringify(config.headers ?? {});
   let request = _inflightGetRequests.get(key);
   if (!request) {
     request = api.get(url, config).finally(() => {
