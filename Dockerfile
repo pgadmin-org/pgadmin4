@@ -43,7 +43,7 @@ RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
     npm install -g corepack && \
     corepack enable && \
     yarn set version berry && \
-    yarn set version 4 && \
+    yarn set version "$(node -p "require('./package.json').packageManager.split('@')[1]")" && \
     yarn install && \
     yarn run bundle && \
     rm -rf yarn.lock \

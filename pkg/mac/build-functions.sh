@@ -66,8 +66,13 @@ _build_runtime() {
 
     # Install the runtime node_modules, then replace the package.json
     pushd "${BUNDLE_DIR}/Contents/Resources/app/" > /dev/null || exit
+        YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+        if [ -z "${YARN_VERSION}" ]; then
+            echo "ERROR: Could not determine Yarn version from package.json packageManager field."
+            exit 1
+        fi
         yarn set version berry
-        yarn set version 4
+        yarn set version "${YARN_VERSION}"
         yarn workspaces focus --production
 
         # remove the yarn cache
@@ -298,8 +303,13 @@ _complete_bundle() {
 
     # Build node modules
     pushd "${SOURCE_DIR}/web" > /dev/null || exit
+        YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+        if [ -z "${YARN_VERSION}" ]; then
+            echo "ERROR: Could not determine Yarn version from package.json packageManager field."
+            exit 1
+        fi
         yarn set version berry
-        yarn set version 4
+        yarn set version "${YARN_VERSION}"
         yarn install 2>&1
 
         # Record the source commit hash before the heavy lint/webpack
