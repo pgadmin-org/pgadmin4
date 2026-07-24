@@ -943,6 +943,7 @@ def initialize_target(debug_type, trans_id, sid, did,
 @blueprint.route(
     '/close/<int:trans_id>', methods=["DELETE"], endpoint='close'
 )
+@pga_login_required
 def close(trans_id):
     """
     close(trans_id)

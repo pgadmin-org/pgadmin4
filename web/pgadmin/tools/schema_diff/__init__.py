@@ -238,6 +238,7 @@ def initialize(trans_id):
 @blueprint.route('/close/<int:trans_id>',
                  methods=["DELETE"],
                  endpoint='close')
+@pga_login_required
 def close(trans_id):
     """
     Remove the session details for the particular transaction id.
