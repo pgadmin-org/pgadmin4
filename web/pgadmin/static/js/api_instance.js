@@ -23,6 +23,44 @@ export default function getApiInstance(headers={}) {
   });
 }
 
+/* Tracks GET requests that are currently in flight, keyed by the resolved URL +
+ * params. This lets concurrent callers asking for the exact same resource
+ * (e.g. every column row's Data Type dropdown mounting at once on a wide table)
+ * share a single HTTP request instead of each firing their own identical GET.
+ */
+const _inflightGetRequests = new Map();
+
+/* Builds a key that is independent of object key insertion order, so that
+ * {a:1, b:2} and {b:2, a:1} (and nested variants) resolve to the same key. */
+function stableStringify(value) {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    return '[' + value.map(stableStringify).join(',') + ']';
+  }
+  return '{' + Object.keys(value).sort().map(
+    (key) => JSON.stringify(key) + ':' + stableStringify(value[key])
+  ).join(',') + '}';
+}
+
+/* Like api.get(url, config), but shares a single in-flight request among all
+ * concurrent callers requesting the same url + params. The shared entry is
+ * removed once the request settles (success or failure), so it never leaks and
+ * later calls fetch fresh data. Each caller attaches its own then/catch, so
+ * response handling (transform, caching, etc.) stays per-caller. */
+export function getInflight(api, url, config={}) {
+  const key = url + '#' + stableStringify(config.params ?? {});
+  let request = _inflightGetRequests.get(key);
+  if (!request) {
+    request = api.get(url, config).finally(() => {
+      _inflightGetRequests.delete(key);
+    });
+    _inflightGetRequests.set(key, request);
+  }
+  return request;
+}
+
 export function parseApiError(error, withData=false) {
   if (error.response) {
     // The request was made and the server responded with a status code
