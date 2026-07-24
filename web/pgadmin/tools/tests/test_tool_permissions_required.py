@@ -30,6 +30,20 @@ the permission gate fires before the route body runs. It is deliberately a
 single consolidated 'blanket' check so that a newly-added route in any of
 these blueprints which forgets the decorator is caught here.
 
+Also covers three further front-door-only gaps found auditing the same
+pattern beyond the original CVE fix's scope:
+
+  * AI Reports (tools_ai): the Security/Performance/Design report routes
+    in the llm blueprint had no server-side permission check at all --
+    only the frontend menu was hidden behind AllPermissionTypes.TOOLS_AI
+    (see llm/static/js/ai_tools.js). A denied user could call any of the
+    14 report/report-stream routes directly and have real server/
+    database/schema content sent to the configured external LLM
+    provider.
+  * import_export_servers: only 'save' was gated; 'get_servers' and
+    'load_servers' relied on @pga_login_required alone.
+  * search_objects: only 'search' was gated; 'types' was not.
+
 The permission check is the outermost decorator, so it runs before any
 connection/transaction lookup; dummy path parameters (ids of 1, a random
 trans_id) are sufficient to reach and trip it.
@@ -134,6 +148,67 @@ class ToolPermissionRequiredTestCase(BaseTestGenerator):
         ('debugger.clear_arguments requires tools_debugger',
          dict(method='post', endpoint='debugger.clear_arguments',
               url_kwargs=dict(sid=1, did=1, scid=1, func_id=1))),
+
+        # --- AI Reports: Security/Performance/Design, all levels ---
+        ('llm.security_report requires tools_ai',
+         dict(method='get', endpoint='llm.security_report',
+              url_kwargs=dict(sid=1))),
+        ('llm.security_report_stream requires tools_ai',
+         dict(method='get', endpoint='llm.security_report_stream',
+              url_kwargs=dict(sid=1))),
+        ('llm.database_security_report requires tools_ai',
+         dict(method='get', endpoint='llm.database_security_report',
+              url_kwargs=dict(sid=1, did=1))),
+        ('llm.database_security_report_stream requires tools_ai',
+         dict(method='get',
+              endpoint='llm.database_security_report_stream',
+              url_kwargs=dict(sid=1, did=1))),
+        ('llm.schema_security_report requires tools_ai',
+         dict(method='get', endpoint='llm.schema_security_report',
+              url_kwargs=dict(sid=1, did=1, scid=1))),
+        ('llm.schema_security_report_stream requires tools_ai',
+         dict(method='get', endpoint='llm.schema_security_report_stream',
+              url_kwargs=dict(sid=1, did=1, scid=1))),
+        ('llm.performance_report requires tools_ai',
+         dict(method='get', endpoint='llm.performance_report',
+              url_kwargs=dict(sid=1))),
+        ('llm.performance_report_stream requires tools_ai',
+         dict(method='get', endpoint='llm.performance_report_stream',
+              url_kwargs=dict(sid=1))),
+        ('llm.database_performance_report requires tools_ai',
+         dict(method='get', endpoint='llm.database_performance_report',
+              url_kwargs=dict(sid=1, did=1))),
+        ('llm.database_performance_report_stream requires tools_ai',
+         dict(method='get',
+              endpoint='llm.database_performance_report_stream',
+              url_kwargs=dict(sid=1, did=1))),
+        ('llm.database_design_report requires tools_ai',
+         dict(method='get', endpoint='llm.database_design_report',
+              url_kwargs=dict(sid=1, did=1))),
+        ('llm.database_design_report_stream requires tools_ai',
+         dict(method='get', endpoint='llm.database_design_report_stream',
+              url_kwargs=dict(sid=1, did=1))),
+        ('llm.schema_design_report requires tools_ai',
+         dict(method='get', endpoint='llm.schema_design_report',
+              url_kwargs=dict(sid=1, did=1, scid=1))),
+        ('llm.schema_design_report_stream requires tools_ai',
+         dict(method='get', endpoint='llm.schema_design_report_stream',
+              url_kwargs=dict(sid=1, did=1, scid=1))),
+
+        # --- Import/Export Servers: front-door-only gap ---
+        ('import_export_servers.get_servers requires '
+         'tools_import_export_servers',
+         dict(method='get', endpoint='import_export_servers.get_servers',
+              url_kwargs=dict())),
+        ('import_export_servers.load_servers requires '
+         'tools_import_export_servers',
+         dict(method='post', endpoint='import_export_servers.load_servers',
+              url_kwargs=dict())),
+
+        # --- Search Objects: front-door-only gap ---
+        ('search_objects.types requires tools_search_objects',
+         dict(method='get', endpoint='search_objects.types',
+              url_kwargs=dict(sid=1, did=1))),
     ]
 
     def setUp(self):
