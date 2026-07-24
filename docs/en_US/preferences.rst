@@ -662,6 +662,12 @@ provider used as a base layer when viewing geometry data.
 When a custom tile provider is configured, it is selected as the default
 base layer of the Geometry Viewer.
 
+An administrator may set a system-wide default for these fields via the
+``DEFAULT_GEOMETRY_VIEWER_PROVIDER`` setting in :ref:`config_py`. It applies
+to any user who has not saved their own values for the fields above; a
+user's own preferences, once saved, always take precedence over the
+system-wide default.
+
 .. image:: images/preferences_graph_visualiser.png
     :alt: Preferences sqleditor graph visualiser section
     :align: center

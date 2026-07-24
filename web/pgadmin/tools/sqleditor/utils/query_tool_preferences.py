@@ -14,7 +14,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
     PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID, \
     PREF_LABEL_GRAPH_VISUALISER, PREF_LABEL_GEOMETRY_VIEWER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields
-from config import DATA_RESULT_ROWS_PER_PAGE
+from config import DATA_RESULT_ROWS_PER_PAGE, DEFAULT_GEOMETRY_VIEWER_PROVIDER
 
 
 def register_query_tool_preferences(self):
@@ -841,7 +841,8 @@ def register_query_tool_preferences(self):
 
     self.custom_tile_url = self.preference.register(
         'geometry_viewer', 'custom_tile_url',
-        gettext("Custom tile provider URL"), 'text', '',
+        gettext("Custom tile provider URL"), 'text',
+        DEFAULT_GEOMETRY_VIEWER_PROVIDER['url'],
         category_label=PREF_LABEL_GEOMETRY_VIEWER,
         control_props={
             'placeholder': 'https://{s}.tile.example.com/{z}/{x}/{y}.png',
@@ -853,13 +854,16 @@ def register_query_tool_preferences(self):
                          '.png. The template must contain the {x}, {y} and '
                          '{z} placeholders, and may contain {s} for '
                          'subdomains (a, b, c). Leave empty to disable the '
-                         'custom tile provider.'),
+                         'custom tile provider. Defaults to the '
+                         'administrator-configured '
+                         'DEFAULT_GEOMETRY_VIEWER_PROVIDER, if any.'),
         allow_blanks=True
     )
 
     self.custom_tile_name = self.preference.register(
         'geometry_viewer', 'custom_tile_name',
-        gettext("Custom tile provider name"), 'text', 'Custom',
+        gettext("Custom tile provider name"), 'text',
+        DEFAULT_GEOMETRY_VIEWER_PROVIDER['name'],
         category_label=PREF_LABEL_GEOMETRY_VIEWER,
         help_str=gettext('Display name of the custom tile provider in the '
                          'layer selector of the Geometry Viewer.'),
@@ -868,7 +872,8 @@ def register_query_tool_preferences(self):
 
     self.custom_tile_crs = self.preference.register(
         'geometry_viewer', 'custom_tile_crs',
-        gettext("Custom tile provider CRS"), 'options', 'EPSG:3857',
+        gettext("Custom tile provider CRS"), 'options',
+        DEFAULT_GEOMETRY_VIEWER_PROVIDER['crs'],
         category_label=PREF_LABEL_GEOMETRY_VIEWER,
         options=[{'label': gettext('EPSG:3857 (Web Mercator)'),
                   'value': 'EPSG:3857'},
@@ -886,7 +891,8 @@ def register_query_tool_preferences(self):
 
     self.custom_tile_attribution = self.preference.register(
         'geometry_viewer', 'custom_tile_attribution',
-        gettext("Custom tile provider attribution"), 'text', '',
+        gettext("Custom tile provider attribution"), 'text',
+        DEFAULT_GEOMETRY_VIEWER_PROVIDER['attribution'],
         category_label=PREF_LABEL_GEOMETRY_VIEWER,
         help_str=gettext('Attribution text shown on the map for the custom '
                          'tile provider. May contain HTML links.'),
@@ -895,7 +901,8 @@ def register_query_tool_preferences(self):
 
     self.custom_tile_max_zoom = self.preference.register(
         'geometry_viewer', 'custom_tile_max_zoom',
-        gettext("Custom tile provider max zoom"), 'integer', 18,
+        gettext("Custom tile provider max zoom"), 'integer',
+        DEFAULT_GEOMETRY_VIEWER_PROVIDER['max_zoom'],
         min_val=0, max_val=25,
         category_label=PREF_LABEL_GEOMETRY_VIEWER,
         help_str=gettext('Maximum zoom level of the custom tile provider.')
