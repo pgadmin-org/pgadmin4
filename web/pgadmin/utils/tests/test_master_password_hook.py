@@ -87,6 +87,43 @@ class TestMasterPasswordHookConfinesUsername(BaseTestGenerator):
         self.assertEqual(output, 'secret-key')
 
 
+class TestMasterPasswordHookQuotedPath(BaseTestGenerator):
+    """A quoted hook program path (needed when the path contains spaces,
+    e.g. 'C:\\Program Files\\hook.exe' on Windows) must be tokenised as a
+    single argv element with the quotes stripped, and any backslashes in
+    the path must survive untouched."""
+
+    scenarios = [
+        ('quoted path with spaces, posix-style',
+         dict(cmd='"/opt/my secrets/get-secret" %u',
+              expected_argv0='/opt/my secrets/get-secret')),
+        ('quoted windows path with backslashes and spaces',
+         dict(cmd='"C:\\Program Files\\hook.exe" %u',
+              expected_argv0='C:\\Program Files\\hook.exe')),
+        ('unquoted windows path, no spaces',
+         dict(cmd='C:\\hook.exe %u', expected_argv0='C:\\hook.exe')),
+    ]
+
+    def runTest(self):
+        captured = {}
+
+        def fake_popen(args, *a, **kw):
+            captured['args'] = args
+            return _FakeProc()
+
+        fake_user = MagicMock()
+        fake_user.username = 'alice'
+
+        with patch.object(mp, 'current_user', fake_user), \
+                patch.object(mp.config, 'MASTER_PASSWORD_HOOK', self.cmd), \
+                patch('subprocess.Popen', side_effect=fake_popen):
+            mp.get_master_password_from_master_hook()
+
+        self.assertEqual(captured['args'][0], self.expected_argv0)
+        self.assertEqual(captured['args'][1], 'alice')
+        self.assertEqual(len(captured['args']), 2)
+
+
 class TestMasterPasswordHookNoShellExecution(BaseTestGenerator):
     """End-to-end PoC regression (POSIX only): a username containing shell
     syntax must not cause command execution. Mirrors the reported proof of

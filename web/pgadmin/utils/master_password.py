@@ -192,7 +192,6 @@ def get_master_password_from_master_hook():
 
     :return: Output of the command, or None on failure.
     """
-    import os
     import shlex
     import subprocess
 
@@ -204,10 +203,16 @@ def get_master_password_from_master_hook():
         # untrusted username into the individual arguments. Substituting
         # before tokenising would let metacharacters in the username alter
         # the command, so the order here is security-critical.
-        args = [
-            token.replace('%u', current_user.username)
-            for token in shlex.split(cmd, posix=(os.name != 'nt'))
-        ]
+        #
+        # posix=True strips quotes correctly on both platforms (unlike
+        # posix=False, which never strips quotes at all and breaks any
+        # quoted path or argument on Windows). escape='' disables backslash
+        # escaping so Windows paths (e.g. C:\Program Files\hook.exe) are not
+        # mangled.
+        lex = shlex.shlex(cmd, posix=True)
+        lex.whitespace_split = True
+        lex.escape = ''
+        args = [token.replace('%u', current_user.username) for token in lex]
         if not args:
             return None
 
