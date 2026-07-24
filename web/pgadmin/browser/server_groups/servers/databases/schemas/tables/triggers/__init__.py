@@ -327,7 +327,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             )
             status, res = self.conn.execute_2darray(sql)
             if not status:
-                return internal_server_error(errormsg=rset)
+                return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
                 return gone(gettext(
