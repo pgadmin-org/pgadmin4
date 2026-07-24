@@ -561,6 +561,7 @@ def create_import_export_job(sid):
 
 
 @blueprint.route('/get_settings/', methods=['GET'], endpoint='get_settings')
+@permissions_required(AllPermissionTypes.tools_import_export_data)
 @pga_login_required
 def get_import_export_settings():
     settings = get_setting('import_export_setting', None)
@@ -574,6 +575,7 @@ def get_import_export_settings():
 @blueprint.route(
     '/utility_exists/<int:sid>', endpoint='utility_exists'
 )
+@permissions_required(AllPermissionTypes.tools_import_export_data)
 @pga_login_required
 def check_utility_exists(sid):
     """

@@ -186,6 +186,12 @@ def adhoc_connect_server():
                 server.user_id = current_user.id
                 server.shared = False
                 server.shared_username = None
+                # The clone also inherits the source server's stored
+                # credentials; drop them so a non-owner can't persist
+                # another user's secret material under their own row.
+                server.password = None
+                server.save_password = False
+                server.tunnel_password = None
 
                 # Replace the following with the new/changed value.
                 server.maintenance_db = new_db

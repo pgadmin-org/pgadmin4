@@ -63,6 +63,18 @@ class ToolSocketPermissionRequiredTestCase(BaseTestGenerator):
         ('psql start_process requires tools_psql_tool',
          dict(namespace='/pty', event='start_process',
               params=dict(sid=1, did=1))),
+        ('psql socket_input requires tools_psql_tool',
+         dict(namespace='/pty', event='socket_input',
+              params=dict(key_name='a'))),
+        ('psql socket_set_role requires tools_psql_tool',
+         dict(namespace='/pty', event='socket_set_role',
+              params=dict(role='public'))),
+        ('psql resize requires tools_psql_tool',
+         dict(namespace='/pty', event='resize',
+              params=dict(rows=24, cols=80))),
+        ('erd tables requires tools_erd_tool',
+         dict(namespace='/erd', event='tables',
+              params=dict(trans_id=1, sid=1, did=1))),
     ]
 
     def setUp(self):
