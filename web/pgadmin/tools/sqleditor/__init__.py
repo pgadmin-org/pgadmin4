@@ -2434,7 +2434,7 @@ def get_new_connection_data(sgid=None, sid=None):
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()
-            server_group_data[server.servers.name].append({
+            server_group_data[server.servergroup.name].append({
                 'label': server.name,
                 "value": server.id,
                 'image': server_icon_and_background(connected, manager,

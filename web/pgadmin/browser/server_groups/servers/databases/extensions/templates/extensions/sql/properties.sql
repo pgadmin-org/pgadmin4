@@ -7,7 +7,7 @@ SELECT
 FROM
     pg_catalog.pg_extension x
     LEFT JOIN pg_catalog.pg_namespace n ON x.extnamespace=n.oid
-    JOIN pg_catalog.pg_available_extensions() e(name, default_version, comment) ON x.extname=e.name
+    JOIN pg_catalog.pg_available_extensions() e ON x.extname=e.name
 {%- if eid %}
  WHERE x.oid = {{eid}}::oid
 {% elif ename %}

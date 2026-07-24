@@ -10,17 +10,22 @@
     "start": "electron .",
     "linter": "yarn run eslint -c .eslintrc.js ."
   },
-  "packageManager": "yarn@4.9.2",
+  "packageManager": "yarn@4.15.0",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "electron": "^42.3.3",
-    "eslint": "^10.4.1",
+    "electron": "^43.1.1",
+    "eslint": "^10.7.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.6.0"
+    "globals": "^17.7.0"
   },
   "dependencies": {
-    "axios": "^1.18.0",
+    "axios": "^1.18.1",
     "electron-context-menu": "^4.1.2",
     "electron-store": "^11.0.2"
+  },
+  "resolutions": {
+    "brace-expansion@npm:^5.0.5": "^5.0.7",
+    "undici@npm:^7.24.4": "^7.28.0",
+    "form-data@npm:^4.0.5": "^4.0.6"
   }
 }

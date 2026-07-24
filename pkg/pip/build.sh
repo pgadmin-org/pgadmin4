@@ -56,8 +56,13 @@ do
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
+YARN_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+if [ -z "${YARN_VERSION}" ]; then
+    echo "ERROR: Could not determine Yarn version from package.json packageManager field."
+    exit 1
+fi
 yarn set version berry
-yarn set version 4
+yarn set version "${YARN_VERSION}"
 yarn install
 yarn run bundle
 

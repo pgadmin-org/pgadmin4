@@ -306,7 +306,7 @@ export default class CustomEditorView extends EditorView {
   static getSelectionFromState(state) {
     // function to get selection from EditorState
     const lineSep = state.facet(eol);
-    return state.selection.ranges.map((range)=>state.sliceDoc(range.from, range.to)).join(lineSep) ?? '';
+    return state.selection.ranges.map((range)=>state.doc.sliceString(range.from, range.to, lineSep)).join(lineSep) ?? '';
   }
 
   replaceSelection(newValue) {
