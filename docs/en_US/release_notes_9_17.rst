@@ -22,7 +22,7 @@ New features
 
   | `Issue #9990 <https://github.com/pgadmin-org/pgadmin4/issues/9990>`_ -  Include the authenticated user's identity in the HTTP access log.
   | `Issue #9942 <https://github.com/pgadmin-org/pgadmin4/issues/9942>`_ -  Add an opt-in Gateway API HTTPRoute template to the Helm chart as an alternative to the existing Ingress.
-  | `Issue #10104 <https://github.com/pgadmin-org/pgadmin4/issues/10104>`_ -  Add a preference to cap the row count fetched by the plain "View Data" action, so it is usable on large tables without always doing a full SELECT *.
+  | `Issue #10104 <https://github.com/pgadmin-org/pgadmin4/issues/10104>`_ -  Add a preference to cap the row count fetched by the plain "View Data" action, so it is usable on large tables without always doing a full ``SELECT *``.
   | `Issue #10142 <https://github.com/pgadmin-org/pgadmin4/issues/10142>`_ -  Add support for a custom XYZ tile provider (URL, name, CRS, attribution, max zoom) in the Geometry Viewer, alongside the existing built-in base layers.
 
 Housekeeping
