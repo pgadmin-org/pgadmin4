@@ -17,8 +17,6 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
-from pgadmin.browser.server_groups.servers.databases.utils \
-    import make_object_name
 from functools import wraps
 import re
 
@@ -234,14 +232,18 @@ def get_formatted_columns(conn, tid, data, other_columns,
     This function will iterate and return formatted data for all
     the columns.
 
-    Serial-column detection is on by default: a column whose default
-    is ``nextval('<table>_<col>_seq'...)`` with an integer/smallint/
-    bigint type is the reverse-engineered form of a SERIAL declaration,
-    and we reproject it back to ``serial`` / ``smallserial`` /
-    ``bigserial`` so callers can emit valid round-trippable DDL. Pass
-    ``with_serial=False`` only if you genuinely need the raw libpq
-    representation (e.g. a low-level introspection caller that handles
-    the sequence itself). Issue #9896.
+    Serial-column detection is on by default: a column that owns the
+    sequence referenced by its ``nextval(...)`` default (with an
+    integer/smallint/bigint type) is the reverse-engineered form of a
+    SERIAL declaration, and we reproject it back to ``serial`` /
+    ``smallserial`` / ``bigserial`` so callers can emit valid
+    round-trippable DDL. Ownership is determined from ``pg_depend`` (the
+    ``seqrelid`` exposed by properties.sql), not by guessing the
+    sequence name, so it stays correct across renames and never rewrites
+    an unrelated column. Pass ``with_serial=False`` only if you genuinely
+    need the raw libpq representation (e.g. a low-level introspection
+    caller that handles the sequence itself). Issues #9896, #10100,
+    #10101.
 
     :param conn: Connection Object
     :param tid: Table ID
@@ -269,14 +271,32 @@ def get_formatted_columns(conn, tid, data, other_columns,
                     other_col['inheritedfrom']
 
         if with_serial:
-            # Here we assume if a column is serial
-            serial_seq_name = make_object_name(
-                data['name'], col['name'], 'seq')
-            # replace the escaped quotes for comparison
-            defval = (col.get('defval', '') or '').replace("''", "'").\
-                replace('""', '"')
+            # A column is SERIAL only when it genuinely owns the sequence
+            # referenced by its DEFAULT. properties.sql LEFT JOINs
+            # pg_depend (a sequence's pg_class depending on this column's
+            # pg_attribute) and surfaces the owned sequence oid as
+            # ``seqrelid`` - that dependency is the authoritative
+            # ownership signal. Relying on it (instead of guessing the
+            # ``<table>_<col>_seq`` name) keeps detection correct after a
+            # table/column/sequence rename and never rewrites an
+            # unrelated column whose default happens to match the guessed
+            # name (#10100, #10101). Identity columns carry an internal
+            # dependency too, but never a nextval() default, and are
+            # additionally excluded via attidentity.
+            #
+            # Ownership and default are independent dependencies in
+            # PostgreSQL: a column can own one sequence (pg_depend
+            # deptype='a', -> ``seqrelid``) while its DEFAULT's nextval()
+            # call names a completely different one (pg_depend deptype='n'
+            # from the pg_attrdef entry, -> ``defseqrelid``). SERIAL only
+            # applies when both dependencies point at the same sequence, so
+            # this split-ownership/default case keeps its original,
+            # explicit nextval() default instead of being rewritten.
+            defval = col.get('defval', '') or ''
 
-            if serial_seq_name in defval and defval.startswith("nextval('")\
+            if col.get('seqrelid') and defval.startswith("nextval('") \
+                    and not col.get('attidentity') \
+                    and col.get('seqrelid') == col.get('defseqrelid') \
                     and col['typname'] in ('integer', 'smallint', 'bigint'):
 
                 serial_type = {

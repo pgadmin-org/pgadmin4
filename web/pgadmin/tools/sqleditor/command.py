@@ -363,6 +363,14 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
 
         if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS):
             self.limit = 100
+        elif self.cmd_type == VIEW_ALL_ROWS:
+            # Apply the user-configurable default row limit (if any) for the
+            # "All Rows" option. A value of 0 (the default) means no limit,
+            # preserving the existing behaviour of fetching all rows.
+            default_row_limit = Preferences.module('sqleditor').preference(
+                'view_data_default_row_limit').get()
+            if default_row_limit and default_row_limit > 0:
+                self.limit = default_row_limit
 
         self.thread_native_id = None
         self.server_cursor = kwargs['server_cursor'] if\
