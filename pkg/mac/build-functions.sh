@@ -515,7 +515,10 @@ _verify_bundle_linkage() {
         echo "ERROR: ${f} links against build-host libraries:" >&2
         echo "${deps}" | sed 's/^/    /' >&2
         found="yes"
-    done < <(find "${BUNDLE_DIR}" \( -name '*.so' -o -name '*.dylib' \) -type f)
+    done < <(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
+        grep -v "(for architecture" | \
+        grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | \
+        awk -F":" '{print $1}' | uniq)
 
     if [ -n "${found}" ]; then
         echo "ERROR: the bundle links against libraries outside it; those paths" >&2
