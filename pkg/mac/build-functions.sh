@@ -515,7 +515,7 @@ _verify_bundle_linkage() {
         echo "ERROR: ${f} links against build-host libraries:" >&2
         echo "${deps}" | sed 's/^/    /' >&2
         found="yes"
-    done < <(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
+    done < <(find "${BUNDLE_DIR}" -type f -exec file "{}" \; | \
         grep -v "(for architecture" | \
         grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | \
         awk -F":" '{print $1}' | uniq)
