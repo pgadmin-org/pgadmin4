@@ -271,6 +271,13 @@ class Connection(BaseConnection):
                     'decrypted. The user will be prompted for the password. '
                     'Error: {0}'.format(str(e))
                 )
+                # Clear the cached ciphertext so it isn't silently reused
+                # on the next connect() attempt, which would just hit
+                # this same decode failure again, and (since a stale but
+                # still-truthy encpass would otherwise remain cached)
+                # skip the passexec fallback below.
+                self.password = None
+                manager.password = None
                 return False, '', None
         return False, '', password
 
