@@ -14,7 +14,7 @@ helpers enforce that users can only access servers they own or that
 have been explicitly shared with them via SharedServer entries.
 """
 
-from sqlalchemy import or_, case, exists, func, literal
+from sqlalchemy import or_, case, func, literal
 from flask_security import current_user
 
 from pgadmin.model import db, Server, ServerGroup
