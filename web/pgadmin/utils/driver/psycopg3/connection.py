@@ -830,7 +830,7 @@ WHERE db.datname = current_database()""")
                 25,
                 'Psycopg3 Cursor: {0}'.format(str(e)))
 
-    def __internal_blocking_execute(self, cur, query, params):
+    def __internal_blocking_execute(self, cur, query, params, prepare=None):
         """
         This function executes the query using cursor's execute function,
         but in case of asynchronous connection we need to wait for the
@@ -841,10 +841,17 @@ WHERE db.datname = current_database()""")
             cur: Cursor object
             query: SQL query to run.
             params: Extra parameters
+            prepare: force the query through PostgreSQL's PREPARE step
+                (extended query protocol) when True. Unlike the simple
+                query protocol, the server rejects more than one SQL
+                statement in a single Parse message, so this is used by
+                callers that must guarantee a single statement is
+                executed regardless of how a client-side SQL lexer
+                would have classified the text.
         """
 
         query = query.encode(self.python_encoding)
-        cur.execute(query, params)
+        cur.execute(query, params, prepare=prepare)
 
     def execute_on_server_as_csv(self, records=2000):
         """
@@ -1246,7 +1253,7 @@ WHERE db.datname = current_database()""")
         )
 
     def execute_2darray(self, query, params=None,
-                        formatted_exception_msg=False):
+                        formatted_exception_msg=False, prepare=None):
         status, cur = self.__cursor()
         self.row_count = 0
 
@@ -1270,14 +1277,16 @@ WHERE db.datname = current_database()""")
             )
         )
         try:
-            self.__internal_blocking_execute(cur, query, params)
+            self.__internal_blocking_execute(
+                cur, query, params, prepare=prepare
+            )
         except psycopg.Error as pe:
             cur.close_cursor()
             if not self.connected() and self.auto_reconnect and \
                     not self.reconnecting:
                 return self.__attempt_execution_reconnect(
                     self.execute_2darray, query, params,
-                    formatted_exception_msg
+                    formatted_exception_msg, prepare
                 )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
