@@ -281,12 +281,18 @@ def _is_query_parens_balanced(query):
     skip content inside those constructs either, or an attacker can
     hide an unbalanced ) inside them to bypass validation.
 
-    Backslash escapes (\\x) are always handled inside single-quoted
-    strings. psql enables this for E'...' strings unconditionally
-    and for all strings when standard_conforming_strings=off. By
-    always handling backslashes, we match psql in all modes. This
-    may reject some valid queries (e.g. '\\') with scs=on) but
-    will never accept a dangerous one.
+    Backslash handling inside single-quoted strings is ambiguous:
+    psql treats \\ as a plain character when
+    standard_conforming_strings=on (the default since PG 9.1, and
+    the default on every PostgreSQL version pgAdmin 4 supports), but
+    as an escape character when scs=off or inside E'...' strings.
+    Silently picking one interpretation can let a crafted query be
+    accepted here while psql parses it differently (e.g. a \\'
+    that we treat as "still inside the string" while psql, under
+    the default scs=on, treats it as the string's closing quote,
+    exposing a real ')' immediately after). Rather than guess the
+    server's scs setting, we reject any query containing a
+    backslash inside a single-quoted string outright.
     """
     depth = 0
     i = 0
@@ -296,14 +302,15 @@ def _is_query_parens_balanced(query):
         ch = query[i]
 
         # Single-quoted string literal: skip to closing quote.
-        # Handles both '' and \' escape sequences to match psql's
-        # strtokx which enables backslash escaping for E-strings
-        # (always) and all strings when scs=off.
+        # Handles the '' escape sequence to match psql's strtokx.
+        # A bare backslash is rejected outright (see docstring):
+        # its meaning depends on standard_conforming_strings, which
+        # we cannot reliably know here, so we refuse to guess.
         if ch == "'":
             i += 1
             while i < length:
                 if query[i] == '\\':
-                    i += 2  # backslash escape: skip next char
+                    return False  # ambiguous escape: reject
                 elif query[i] == "'":
                     if i + 1 < length and query[i + 1] == "'":
                         i += 2  # '' escape
