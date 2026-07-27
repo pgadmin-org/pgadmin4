@@ -547,6 +547,26 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 DATA_RESULT_ROWS_PER_PAGE = 1000
 
 ##########################################################################
+# System-wide default for the Geometry Viewer's custom tile provider
+# (Query Tool > Data Output > Geometry Viewer). Applies to any user who
+# has not saved their own "Custom tile provider ..." preference; a
+# per-user preference, once set, always takes precedence over this
+# default. Leave "url" empty to keep using the built-in tile layers by
+# default (the pre-existing behaviour).
+#
+# "crs" must be one of "EPSG:3857" (Web Mercator), "EPSG:4326", or
+# "EPSG:3395" - the only coordinate reference systems the Geometry
+# Viewer's tile layer selector supports.
+##########################################################################
+DEFAULT_GEOMETRY_VIEWER_PROVIDER = {
+    "url": "",
+    "name": "Custom",
+    "crs": "EPSG:3857",
+    "attribution": "",
+    "max_zoom": 18
+}
+
+##########################################################################
 # Allow users to display Gravatar image for their username in Server mode
 ##########################################################################
 SHOW_GRAVATAR_IMAGE = True
