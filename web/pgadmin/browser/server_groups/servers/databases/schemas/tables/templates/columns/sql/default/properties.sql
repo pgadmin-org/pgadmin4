@@ -37,6 +37,14 @@ SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, a
 	(CASE WHEN (att.attgenerated in ('s')) THEN pg_catalog.pg_get_expr(def.adbin, def.adrelid) END) AS genexpr, tab.relname as relname,
 	(CASE WHEN tab.relkind = 'v' THEN true ELSE false END) AS is_view_only,
 	(CASE WHEN att.attcompression = 'p' THEN 'pglz' WHEN att.attcompression = 'l' THEN 'lz4' END) AS attcompression,
+	(SELECT dsd.refobjid
+	 FROM pg_catalog.pg_depend dsd
+	   JOIN pg_catalog.pg_class dsc ON dsd.refclassid='pg_catalog.pg_class'::regclass
+	     AND dsd.refobjid=dsc.oid AND dsc.relkind='S'
+	 WHERE dsd.classid='pg_catalog.pg_attrdef'::regclass
+	   AND dsd.objid=def.oid AND dsd.deptype='n'
+	 ORDER BY dsd.refobjid
+	 LIMIT 1) AS defseqrelid,
 	seq.*
 FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_type ty ON ty.oid=atttypid

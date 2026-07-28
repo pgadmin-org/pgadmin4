@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import ReactDOMServer from 'react-dom/server';
 import _ from 'lodash';
 import { MapContainer, TileLayer, LayersControl, GeoJSON, useMap } from 'react-leaflet';
-import Leaflet, { CRS } from 'leaflet';
+import Leaflet from 'leaflet';
 import {Geometry as WkxGeometry} from 'wkx';
 import {Buffer} from 'buffer';
 import gettext from 'sources/gettext';
@@ -21,6 +21,8 @@ import { Box } from '@mui/material';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
+import usePreferences from '../../../../../../preferences/static/js/store';
+import { getCustomTileProvider, getMapCrs, getBaseLayers } from './GeometryViewerUtils';
 
 const StyledBox = styled(Box)(({theme}) => ({
   position: 'relative',
@@ -286,7 +288,7 @@ GeoJsonLayer.propTypes = {
   setHomeCoordinates: PropTypes.func,
 };
 
-function TheMap({data}) {
+function TheMap({data, customTileProvider}) {
   const mapObj = useMap();
   const resetLayersKey = useRef(0);
   const zoomControlWithHome = useRef(null);
@@ -364,62 +366,16 @@ function TheMap({data}) {
       )}
       {data.selectedSRID === 4326 &&
       <LayersControl position="topright">
-        <LayersControl.BaseLayer checked name={gettext('Empty')}>
-          <TileLayer
-            url=""
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer checked name={gettext('Street')}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maxZoom={19}
-            attribution='&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name={gettext('Topography')}>
-          <TileLayer
-            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-            maxZoom={17}
-            attribution={
-              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-              + ' &copy; <a href="http://viewfinderpanoramas.org" target="_blank">SRTM</a>,'
-              + ' &copy; <a href="https://opentopomap.org" target="_blank">OpenTopoMap</a>'
-            }
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name={gettext('Gray Style')}>
-          <TileLayer
-            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
-            maxZoom={19}
-            attribution={
-              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-              + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
-            }
-            subdomains='abcd'
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name={gettext('Light Color')}>
-          <TileLayer
-            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.pn"
-            maxZoom={19}
-            attribution={
-              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-              + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
-            }
-            subdomains='abcd'
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name={gettext('Dark Matter')}>
-          <TileLayer
-            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}{r}.png"
-            maxZoom={19}
-            attribution={
-              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-              + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
-            }
-            subdomains='abcd'
-          />
-        </LayersControl.BaseLayer>
+        {getBaseLayers(customTileProvider).map((layer)=>(
+          <LayersControl.BaseLayer key={`${layer.name}::${layer.url}`} name={layer.name} checked={layer.checked}>
+            <TileLayer
+              url={layer.url}
+              {...(!_.isUndefined(layer.maxZoom) ? {maxZoom: layer.maxZoom} : {})}
+              {...(layer.attribution ? {attribution: layer.attribution} : {})}
+              {...(layer.subdomains ? {subdomains: layer.subdomains} : {})}
+            />
+          </LayersControl.BaseLayer>
+        ))}
       </LayersControl>}
       <GeoJsonLayer key={resetLayersKey.current} data={data} setHomeCoordinates={setHomeCoordinates} />
     </>
@@ -432,6 +388,7 @@ TheMap.propTypes = {
     getPopupContent: PropTypes.func,
     infoList: PropTypes.array,
   }),
+  customTileProvider: PropTypes.object,
 };
 
 
@@ -440,6 +397,14 @@ export function GeometryViewer({rows, columns, column}) {
   const mapRef = React.useRef();
   const contentRef = React.useRef();
   const queryToolCtx = React.useContext(QueryToolContext);
+  // Subscribed to the preferences store so a preference change while the
+  // viewer tab is open takes effect immediately (the props are frozen at
+  // tab-open time, hence not passed from the parent).
+  const prefStore = usePreferences();
+
+  const customTileProvider = useMemo(() => {
+    return getCustomTileProvider(prefStore.getPreferencesForModule('sqleditor'));
+  }, [prefStore.version]);
 
   const currentColumnKey = useMemo(() => column?.key, [column]);
 
@@ -455,8 +420,12 @@ export function GeometryViewer({rows, columns, column}) {
           : [gettext('No spatial data found. At least one geometry or geography column is required for visualization.')],
       };
     }
-    return parseData(rows, columns, column);
-  }, [rows, columns, column, currentColumnKey]);
+    const parsed = parseData(rows, columns, column);
+    if (customTileProvider?.invalid) {
+      parsed.infoList.push(gettext('Custom tile provider URL is invalid and was ignored. It must start with http(s):// and contain the {x}, {y} and {z} placeholders.'));
+    }
+    return parsed;
+  }, [rows, columns, column, currentColumnKey, customTileProvider]);
 
   useEffect(()=>{
     let timeoutId;
@@ -477,18 +446,23 @@ export function GeometryViewer({rows, columns, column}) {
     };
   }, [queryToolCtx]);
 
-  // Dynamic CRS is not supported. Use srid and column key as key and recreate the map on change
+  // Dynamic CRS and TileLayer options are not supported. Use srid, column
+  // key and the custom tile provider config as key and recreate the map on
+  // change.
+  const providerKey = customTileProvider && !customTileProvider.invalid
+    ? `${customTileProvider.crs}|${customTileProvider.url}|${customTileProvider.name}|${customTileProvider.maxZoom}|${customTileProvider.attribution}`
+    : 'default';
   return (
-    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${currentColumnKey || 'none'}`}>
+    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${currentColumnKey || 'none'}-${providerKey}`}>
       <MapContainer
-        crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
+        crs={getMapCrs(data.selectedSRID, customTileProvider)}
         zoom={2} center={[20, 100]}
         zoomControl={false}
         preferCanvas={true}
         className='GeometryViewer-mapContainer'
         ref={mapRef}
       >
-        <TheMap data={data}/>
+        <TheMap data={data} customTileProvider={customTileProvider}/>
       </MapContainer>
     </StyledBox>
   );

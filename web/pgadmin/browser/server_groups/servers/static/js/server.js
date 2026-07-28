@@ -822,8 +822,7 @@ define('pgadmin.node.server', [
         label = data.label;
 
       let disconnect = function() {
-        d.label = `<span class='text-muted'>[Disconnecting...]</span> ${label}`;
-        t.setLabel(i,{label:d.label});
+        t.setLabel(i, {label: `[Disconnecting...] ${label}`, className: 'text-muted'});
         t.close(i);
         getApiInstance().delete(
           obj.generate_url(i, 'connect', d, true),

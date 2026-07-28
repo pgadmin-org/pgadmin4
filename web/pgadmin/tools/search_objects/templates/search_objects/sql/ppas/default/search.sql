@@ -508,7 +508,7 @@ FROM (
     {{ show_node_prefs['extension'] }} AS show_node, NULL AS other_info
     FROM pg_catalog.pg_extension x
     JOIN pg_catalog.pg_namespace n on x.extnamespace=n.oid
-    join pg_catalog.pg_available_extensions() e(name, default_version, comment) ON x.extname=e.name
+    join pg_catalog.pg_available_extensions() e ON x.extname=e.name
 {% endif %}
 {% if all_obj %}
     UNION

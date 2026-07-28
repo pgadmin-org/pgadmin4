@@ -8,16 +8,58 @@
 ##########################################################################
 
 """Register preferences for query tool"""
+import config
 from flask_babel import gettext
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
-    PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS,\
-    PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID,\
-    PREF_LABEL_GRAPH_VISUALISER
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
+    PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS, \
+    PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID, \
+    PREF_LABEL_GRAPH_VISUALISER, PREF_LABEL_GEOMETRY_VIEWER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields
 from config import DATA_RESULT_ROWS_PER_PAGE
 
+GEOMETRY_VIEWER_CRS_CHOICES = ('EPSG:3857', 'EPSG:4326', 'EPSG:3395')
+
+
+def resolve_geometry_viewer_provider_defaults():
+    """Resolve config.DEFAULT_GEOMETRY_VIEWER_PROVIDER into safe defaults
+    for the geometry_viewer preferences.
+
+    config_local.py/config_distro.py/PGADMIN_CONFIG_* replace this single
+    config.py variable wholesale rather than merging individual keys, so
+    an administrator overriding only some fields, or setting the wrong
+    type entirely (e.g. a string instead of a dict), must not crash
+    preference registration for the rest, and an out-of-range/unsupported
+    value must not silently reach the frontend unvalidated.
+    """
+    provider = config.DEFAULT_GEOMETRY_VIEWER_PROVIDER
+    if not isinstance(provider, dict):
+        provider = {}
+
+    def _str_default(key, fallback):
+        value = provider.get(key, fallback)
+        return value if isinstance(value, str) else fallback
+
+    crs = provider.get('crs', 'EPSG:3857')
+    if crs not in GEOMETRY_VIEWER_CRS_CHOICES:
+        crs = 'EPSG:3857'
+
+    max_zoom = provider.get('max_zoom', 18)
+    if not isinstance(max_zoom, int) or isinstance(max_zoom, bool) or \
+            not 0 <= max_zoom <= 25:
+        max_zoom = 18
+
+    return {
+        'url': _str_default('url', ''),
+        'name': _str_default('name', 'Custom'),
+        'crs': crs,
+        'attribution': _str_default('attribution', ''),
+        'max_zoom': max_zoom,
+    }
+
 
 def register_query_tool_preferences(self):
+    geometry_viewer_defaults = resolve_geometry_viewer_provider_defaults()
+
     self.explain_verbose = self.preference.register(
         'Explain', 'explain_verbose',
         gettext("Verbose output?"), 'boolean', False,
@@ -118,6 +160,21 @@ def register_query_tool_preferences(self):
                          "View/Edit Data - All Rows option will be sorted by "
                          "the Primary Key columns by default. When using the "
                          "First/Last 100 Rows options, data is always sorted.")
+    )
+
+    self.view_data_default_row_limit = self.preference.register(
+        'Options', 'view_data_default_row_limit',
+        gettext("Default row limit for View Data"), 'integer', 0,
+        min_val=0,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            "Specify the maximum number of rows to fetch when using the "
+            "View/Edit Data - All Rows option. This appends a LIMIT clause "
+            "to the generated query, which can significantly improve "
+            "performance on very large tables. Set to 0 (the default) to "
+            "fetch all rows with no limit (the existing behavior). This "
+            "does not affect the First/Last 100 Rows options."
+        )
     )
 
     self.show_prompt_save_data_changes = self.preference.register(
@@ -822,4 +879,73 @@ def register_query_tool_preferences(self):
                          'that will be plotted on a chart. Increasing this '
                          'limit may impact performance if charts are plotted '
                          'with very high numbers of rows.')
+    )
+
+    self.custom_tile_url = self.preference.register(
+        'geometry_viewer', 'custom_tile_url',
+        gettext("Custom tile provider URL"), 'text',
+        geometry_viewer_defaults['url'],
+        category_label=PREF_LABEL_GEOMETRY_VIEWER,
+        control_props={
+            'placeholder': 'https://{s}.tile.example.com/{z}/{x}/{y}.png',
+            'maxLength': 1024
+        },
+        help_str=gettext('URL template of a custom XYZ tile provider used '
+                         'as a base layer in the Geometry Viewer, e.g. '
+                         'https://myserver.example.com/tiles/{z}/{x}/{y}'
+                         '.png. The template must contain the {x}, {y} and '
+                         '{z} placeholders, and may contain {s} for '
+                         'subdomains (a, b, c). Leave empty to disable the '
+                         'custom tile provider. Defaults to the '
+                         'administrator-configured '
+                         'DEFAULT_GEOMETRY_VIEWER_PROVIDER, if any.'),
+        allow_blanks=True
+    )
+
+    self.custom_tile_name = self.preference.register(
+        'geometry_viewer', 'custom_tile_name',
+        gettext("Custom tile provider name"), 'text',
+        geometry_viewer_defaults['name'],
+        category_label=PREF_LABEL_GEOMETRY_VIEWER,
+        help_str=gettext('Display name of the custom tile provider in the '
+                         'layer selector of the Geometry Viewer.'),
+        allow_blanks=True
+    )
+
+    self.custom_tile_crs = self.preference.register(
+        'geometry_viewer', 'custom_tile_crs',
+        gettext("Custom tile provider CRS"), 'options',
+        geometry_viewer_defaults['crs'],
+        category_label=PREF_LABEL_GEOMETRY_VIEWER,
+        options=[{'label': gettext('EPSG:3857 (Web Mercator)'),
+                  'value': 'EPSG:3857'},
+                 {'label': gettext('EPSG:4326'), 'value': 'EPSG:4326'},
+                 {'label': gettext('EPSG:3395'), 'value': 'EPSG:3395'}],
+        control_props={
+            'allowClear': False,
+            'tags': False
+        },
+        help_str=gettext('Coordinate reference system of the custom tile '
+                         'provider. If it is not EPSG:3857 (Web Mercator), '
+                         'the built-in tile layers will be hidden as they '
+                         'cannot be mixed with other coordinate systems.')
+    )
+
+    self.custom_tile_attribution = self.preference.register(
+        'geometry_viewer', 'custom_tile_attribution',
+        gettext("Custom tile provider attribution"), 'text',
+        geometry_viewer_defaults['attribution'],
+        category_label=PREF_LABEL_GEOMETRY_VIEWER,
+        help_str=gettext('Attribution text shown on the map for the custom '
+                         'tile provider. May contain HTML links.'),
+        allow_blanks=True
+    )
+
+    self.custom_tile_max_zoom = self.preference.register(
+        'geometry_viewer', 'custom_tile_max_zoom',
+        gettext("Custom tile provider max zoom"), 'integer',
+        geometry_viewer_defaults['max_zoom'],
+        min_val=0, max_val=25,
+        category_label=PREF_LABEL_GEOMETRY_VIEWER,
+        help_str=gettext('Maximum zoom level of the custom tile provider.')
     )

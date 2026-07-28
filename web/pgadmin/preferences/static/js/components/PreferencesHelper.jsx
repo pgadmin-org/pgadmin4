@@ -86,6 +86,7 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
 
     // Ensure type is set after specific handling
     element.type = type;
+    element.controlProps = {...(element.control_props ?? {}), ...element.controlProps};
     if (type === 'selectFile') {
       // Binary Path specific handling
       note = gettext('Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore utilities can be found for the corresponding database server version. The default path will be used for server versions that do not have a path specified.');
@@ -96,13 +97,16 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
       element.canEdit = false;
       element.editable = false;
       element.disabled = true; // Binary paths are managed in a collection, not directly editable here
-      fieldValues[element.id] = JSON.parse(element.value);
+      try {
+        fieldValues[element.id] = JSON.parse(element.value);
+      } catch {
+        fieldValues[element.id] = [];
+      }
       if (!addBinaryPathNote) { // Add note only once for binary path section
         fieldItems.push(...getNoteField(node, subNode, nodeData, note));
         addBinaryPathNote = true;
       }
     } else if (type === 'select') {
-      element.controlProps = element.control_props ?? {};
       fieldValues[element.id] = element.value;
 
       if (element.name === 'theme') {
@@ -228,7 +232,7 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
       element.editable = false;
 
       const storedValue = preferencesStore.getPreferences(node.label.toLowerCase(), element.name)?.value;
-      fieldValues[element.id] = storedValue || element.value;
+      fieldValues[element.id] = storedValue ?? element.value;
     } else if (type === 'threshold') {
       element.type = 'threshold';
       const _val = element.value.split('|');
@@ -330,12 +334,11 @@ export function showResetPrefModal(api, pgAdmin, preferencesStore, onReset) {
           preferencesStore.cache(); // Refresh preferences cache
           onReset();
           if (reloadNow) {
-            reloadPgAdmin();
+            await reloadPgAdmin();
           } else {
-            pgAdmin.Browser.tree.destroy().then(() => {
-              pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:destroyed', undefined, undefined);
-              modalClose(); // Close modal after tree destruction if no full reload
-            });
+            await pgAdmin.Browser.tree.destroy();
+            pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:destroyed', undefined, undefined);
+            modalClose(); // Close modal after tree destruction if no full reload
           }
         } catch (err) {
           pgAdmin.Browser.notifier.alert(err.response?.data || err.message || gettext('Failed to reset preferences.'));

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-13 00:42+0530\n"
+"POT-Creation-Date: 2026-07-25 00:51+0530\n"
 "PO-Revision-Date: 2024-11-12 07:15+0800\n"
 "Last-Translator: Kuo, Chao-Yi <Kuo.ChaoYi@gmail.com>\n"
 "Language: zh_Hant_TW\n"
@@ -35,7 +35,7 @@ msgstr "自動檢測到{0}安裝在資料目錄{1}"
 msgid "403 FORBIDDEN"
 msgstr "403已禁止"
 
-#: pgadmin/__init__.py:960
+#: pgadmin/__init__.py:974
 msgid " You need to refresh the page."
 msgstr ""
 
@@ -79,7 +79,7 @@ msgstr "應用程式模式"
 #: pgadmin/about/static/js/AboutComponent.jsx:54
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:26
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:576
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:765
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:780
 msgid "Commit"
 msgstr "提交"
 
@@ -122,16 +122,16 @@ msgstr "pgAdmin伺服器組態"
 msgid "About %s"
 msgstr "關於 %s"
 
-#: pgadmin/authenticate/__init__.py:135 pgadmin/model/__init__.py:232
+#: pgadmin/authenticate/__init__.py:169 pgadmin/model/__init__.py:232
 msgid "Your account is locked. Please contact the Administrator."
 msgstr "你的帳戶已被鎖定，請聯絡管理員。"
 
-#: pgadmin/authenticate/__init__.py:152
+#: pgadmin/authenticate/__init__.py:186
 #, python-brace-format
 msgid "{0} more attempts remaining."
 msgstr "剩餘{0}次。"
 
-#: pgadmin/authenticate/__init__.py:156
+#: pgadmin/authenticate/__init__.py:190
 #, python-brace-format
 msgid "{0} more attempt remaining."
 msgstr "剩餘{0}次。"
@@ -221,11 +221,11 @@ msgstr "找到多個結果。"
 msgid "Could not find the specified user."
 msgstr "無法找到指定使用者。"
 
-#: pgadmin/authenticate/oauth2.py:67
+#: pgadmin/authenticate/oauth2.py:119
 msgid "Login session expired. Please try again."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:301
+#: pgadmin/authenticate/oauth2.py:355
 #, python-format
 msgid ""
 "OAuth2 provider '%(name)s' is configured with 'openid' in OAUTH2_SCOPE "
@@ -236,60 +236,60 @@ msgid ""
 "OAUTH2_SCOPE."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:488
+#: pgadmin/authenticate/oauth2.py:542
 msgid "No OAuth2 provider available."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:519
+#: pgadmin/authenticate/oauth2.py:573
 msgid "No profile data found from OIDC provider."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:525
+#: pgadmin/authenticate/oauth2.py:579
 msgid "No profile data found."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:535
+#: pgadmin/authenticate/oauth2.py:589
 msgid ""
 "Could not extract username from OIDC claims. Please ensure your OIDC "
 "provider returns standard claims (email, preferred_username, or sub)."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:541
+#: pgadmin/authenticate/oauth2.py:595
 msgid ""
 "An email id or OAUTH2_USERNAME_CLAIM is required to login into pgAdmin. "
 "Please update your OAuth2 profile for email id or set "
 "OAUTH2_USERNAME_CLAIM config parameter."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:719
+#: pgadmin/authenticate/oauth2.py:773
 msgid "No OAuth2 provider selected."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:724
+#: pgadmin/authenticate/oauth2.py:778
 msgid "Please set the configuration parameters properly."
 msgstr "請正確設定組態參數。"
 
-#: pgadmin/authenticate/oauth2.py:747
+#: pgadmin/authenticate/oauth2.py:801
 msgid "No Email/Username found. Please contact your administrator."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:752
+#: pgadmin/authenticate/oauth2.py:806
 msgid "Additional claim config is None, no check to do."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:756
+#: pgadmin/authenticate/oauth2.py:810
 msgid "Additional claim check config is not a dict."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:759
+#: pgadmin/authenticate/oauth2.py:813
 msgid "Additional claim check config dict is empty."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:771
+#: pgadmin/authenticate/oauth2.py:825
 msgid "Claim match found. Authorized access."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:773
+#: pgadmin/authenticate/oauth2.py:827
 msgid "No match was found."
 msgstr ""
 
@@ -824,7 +824,7 @@ msgstr ""
 #: pgadmin/browser/register_browser_preferences.py:468
 #: pgadmin/browser/static/js/collection.js:57
 #: pgadmin/browser/static/js/node.js:215
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:236
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:240
 #: pgadmin/tools/sqleditor/__init__.py:96
 #: pgadmin/tools/sqleditor/static/js/SQLEditorModule.js:104
 #: pgadmin/tools/user_management/PgAdminPermissions.py:57
@@ -966,8 +966,8 @@ msgid "Cursor blink rate"
 msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:151
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:203
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:257
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:218
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:272
 msgid "None"
 msgstr "無"
 
@@ -1175,7 +1175,7 @@ msgstr ""
 msgid "Unimplemented method ({0}) for this url ({1})"
 msgstr "未實現的方法 ({0}) 為此 url ({1})"
 
-#: pgadmin/browser/utils.py:422
+#: pgadmin/browser/utils.py:428
 msgid "Required properties are missing."
 msgstr "缺少必需的屬性。"
 
@@ -1192,35 +1192,42 @@ msgstr "缺少必需的屬性。"
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:125
 #: pgadmin/browser/templates/browser/js/messages.js:21
 #: pgadmin/browser/templates/browser/js/messages.js:41
-#: pgadmin/browser/utils.py:452 pgadmin/static/js/utils.js:455
-#: pgadmin/tools/backup/__init__.py:587
+#: pgadmin/browser/utils.py:458 pgadmin/static/js/utils.js:455
+#: pgadmin/tools/backup/__init__.py:589
 #: pgadmin/tools/grant_wizard/__init__.py:101
-#: pgadmin/tools/sqleditor/__init__.py:952
-#: pgadmin/tools/sqleditor/__init__.py:1126
-#: pgadmin/tools/sqleditor/__init__.py:1572 pgadmin/utils/exception.py:37
+#: pgadmin/tools/sqleditor/__init__.py:961
+#: pgadmin/tools/sqleditor/__init__.py:1135
+#: pgadmin/tools/sqleditor/__init__.py:1581 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr "到伺服器的連接已丟失。"
 
-#: pgadmin/browser/utils.py:740
+#: pgadmin/browser/utils.py:754
 #, python-brace-format
 msgid "Could not find the specified {}."
 msgstr "找不到指定的 {}。"
 
-#: pgadmin/browser/server_groups/__init__.py:204
-#: pgadmin/browser/server_groups/__init__.py:213
-msgid "The specified server group cannot be deleted."
-msgstr "無法刪除指定的伺服器組。"
+#: pgadmin/browser/server_groups/__init__.py:185
+msgid ""
+"The specified server group cannot be deleted. Shared servers are present "
+"in this group."
+msgstr ""
 
-#: pgadmin/browser/server_groups/__init__.py:265
-#: pgadmin/browser/server_groups/__init__.py:340
+#: pgadmin/browser/server_groups/__init__.py:195
+msgid ""
+"The specified server group cannot be deleted. The first server group is "
+"not deletable."
+msgstr ""
+
+#: pgadmin/browser/server_groups/__init__.py:247
+#: pgadmin/browser/server_groups/__init__.py:339
 msgid "The specified server group already exists."
 msgstr "指定的伺服器組已存在。"
 
-#: pgadmin/browser/server_groups/__init__.py:354
+#: pgadmin/browser/server_groups/__init__.py:353
 msgid "No server group name was specified"
 msgstr "沒有指定伺服器組名稱"
 
-#: pgadmin/browser/server_groups/__init__.py:433
+#: pgadmin/browser/server_groups/__init__.py:432
 msgid "Could not find the server group."
 msgstr "找不到伺服器組。"
 
@@ -1255,17 +1262,17 @@ msgstr "伺服器已經被刪除"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:850
 #: pgadmin/misc/workspaces/__init__.py:173
-#: pgadmin/tools/debugger/__init__.py:1811
-#: pgadmin/tools/debugger/__init__.py:1904
-#: pgadmin/tools/debugger/__init__.py:2002
-#: pgadmin/tools/schema_diff/__init__.py:342
-#: pgadmin/tools/schema_diff/__init__.py:386
-#: pgadmin/tools/schema_diff/__init__.py:403
-#: pgadmin/tools/schema_diff/__init__.py:429
-#: pgadmin/tools/sqleditor/__init__.py:236
-#: pgadmin/tools/sqleditor/__init__.py:528
-#: pgadmin/tools/sqleditor/__init__.py:2368
-#: pgadmin/tools/sqleditor/__init__.py:2691
+#: pgadmin/tools/debugger/__init__.py:1813
+#: pgadmin/tools/debugger/__init__.py:1907
+#: pgadmin/tools/debugger/__init__.py:2006
+#: pgadmin/tools/schema_diff/__init__.py:346
+#: pgadmin/tools/schema_diff/__init__.py:391
+#: pgadmin/tools/schema_diff/__init__.py:409
+#: pgadmin/tools/schema_diff/__init__.py:436
+#: pgadmin/tools/sqleditor/__init__.py:237
+#: pgadmin/tools/sqleditor/__init__.py:537
+#: pgadmin/tools/sqleditor/__init__.py:2377
+#: pgadmin/tools/sqleditor/__init__.py:2700
 msgid "Could not find the required server."
 msgstr "找不到所需的伺服器。"
 
@@ -1373,7 +1380,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:556
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:379
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:342
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:598
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:599
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:977
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:576
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:475
@@ -1408,8 +1415,8 @@ msgid "Please enter the server details to connect"
 msgstr "請輸入要連接的伺服器詳細資訊"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1788
-#: pgadmin/tools/schema_diff/__init__.py:378
-#: pgadmin/tools/sqleditor/__init__.py:2710
+#: pgadmin/tools/schema_diff/__init__.py:383
+#: pgadmin/tools/sqleditor/__init__.py:2719
 msgid "Server connected."
 msgstr "伺服器已連接。"
 
@@ -1597,7 +1604,7 @@ msgstr "無法刪除資料庫。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:773
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:509
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:441
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:678
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:679
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1188
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:709
 #: pgadmin/browser/server_groups/servers/directories/__init__.py:395
@@ -3901,7 +3908,7 @@ msgstr "不為 NULL?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:600
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:605
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:610
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:51
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:22
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:33
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:215
@@ -5318,7 +5325,7 @@ msgstr ""
 "    -- 在這裡輸入任意必要的程式碼\n"
 "END;"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:204
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:208
 msgid "Constraints dropped."
 msgstr "約束已刪除。"
 
@@ -7028,11 +7035,11 @@ msgid "Triggers"
 msgstr "觸發器"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:318
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:333
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:334
 msgid "Could not find the specified trigger function"
 msgstr "找不到指定的觸發函數"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:699
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:700
 msgid "Trigger is dropped"
 msgstr "觸發器被刪除"
 
@@ -7634,7 +7641,7 @@ msgid "Drop (Force)"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:111
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:566
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:565
 msgid "Disconnect from database"
 msgstr "斷開資料庫"
 
@@ -7670,20 +7677,20 @@ msgid "Are you sure you want to disconnect from all databases?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:277
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:572
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:571
 #: pgadmin/browser/server_groups/servers/static/js/server.js:264
-#: pgadmin/browser/server_groups/servers/static/js/server.js:885
+#: pgadmin/browser/server_groups/servers/static/js/server.js:884
 msgid "Disconnect"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:278
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:573
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:572
 #: pgadmin/browser/server_groups/servers/static/js/server.js:265
-#: pgadmin/browser/server_groups/servers/static/js/server.js:886
+#: pgadmin/browser/server_groups/servers/static/js/server.js:885
 #: pgadmin/browser/static/js/node.js:638
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:918
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:329
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:357
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:360
 #: pgadmin/static/js/Dialogs/ConfirmSaveContent.jsx:19
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:111
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:117
@@ -7722,7 +7729,7 @@ msgstr "資料庫已連接。"
 msgid "Error: Object not found - %s."
 msgstr "錯誤：未找到物件 - %s。"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:567
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:566
 #, python-format
 msgid "Are you sure you want to disconnect from the database - <b>%s</b>?"
 msgstr ""
@@ -9435,7 +9442,7 @@ msgid "Database server is already connected."
 msgstr "資料庫伺服器已連接。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:107
-#: pgadmin/browser/server_groups/servers/static/js/server.js:881
+#: pgadmin/browser/server_groups/servers/static/js/server.js:880
 msgid "Disconnect from server"
 msgstr "斷開伺服器連接"
 
@@ -9572,7 +9579,7 @@ msgstr "連接到伺服器。"
 msgid "Connect to Server"
 msgstr "連接到伺服器"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:882
+#: pgadmin/browser/server_groups/servers/static/js/server.js:881
 #, python-format
 msgid "Are you sure you want to disconnect from the server <b>%s</b>?"
 msgstr ""
@@ -10075,11 +10082,11 @@ msgstr "Xact 開始"
 msgid "Streaming Replication"
 msgstr "流複製"
 
-#: pgadmin/browser/server_groups/static/js/server_group.js:22
+#: pgadmin/browser/server_groups/static/js/server_group.js:21
 msgid "Server Group"
 msgstr "伺服器組"
 
-#: pgadmin/browser/server_groups/static/js/server_group.js:36
+#: pgadmin/browser/server_groups/static/js/server_group.js:35
 msgid "Server Group..."
 msgstr "伺服器組..."
 
@@ -11088,7 +11095,7 @@ msgstr "表格線寬度"
 msgid "Set the width of the lines on the line chart."
 msgstr "設定表格線的寬度."
 
-#: pgadmin/dashboard/__init__.py:529 pgadmin/utils/constants.py:67
+#: pgadmin/dashboard/__init__.py:529 pgadmin/utils/constants.py:68
 msgid "Server ID not specified."
 msgstr ""
 
@@ -12038,7 +12045,7 @@ msgid ""
 " major.minor version number."
 msgstr "PostgreSQL文件的路徑。$VERSION$將取代為major.minor版本號。"
 
-#: pgadmin/llm/__init__.py:64 pgadmin/utils/constants.py:35
+#: pgadmin/llm/__init__.py:64 pgadmin/utils/constants.py:36
 msgid "AI"
 msgstr ""
 
@@ -12458,7 +12465,7 @@ msgid "in"
 msgstr ""
 
 #: pgadmin/misc/__init__.py:44
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:245
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:249
 #: pgadmin/tools/backup/static/js/backup.ui.js:371
 #: pgadmin/tools/backup/static/js/backup.ui.js:378
 #: pgadmin/tools/backup/static/js/backup.ui.js:385
@@ -12727,7 +12734,7 @@ msgstr "處理程序監視器 - %s"
 msgid "Time Taken (sec)"
 msgstr "耗時(秒)"
 
-#: pgadmin/misc/cloud/__init__.py:84 pgadmin/misc/cloud/google/__init__.py:84
+#: pgadmin/misc/cloud/__init__.py:84 pgadmin/misc/cloud/google/__init__.py:97
 #: pgadmin/misc/file_manager/__init__.py:257 pgadmin/settings/__init__.py:108
 #: pgadmin/tools/backup/__init__.py:205 pgadmin/tools/debugger/__init__.py:266
 #: pgadmin/tools/grant_wizard/__init__.py:123
@@ -13739,7 +13746,7 @@ msgid "Save"
 msgstr "保存"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:370
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:322
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:326
 msgid "Reset all preferences"
 msgstr ""
 
@@ -13747,7 +13754,7 @@ msgstr ""
 msgid "This setting is used to show/hide nodes in the Object Explorer."
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:91
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:92
 msgid ""
 "Enter the directory in which the psql, pg_dump, pg_dumpall, and "
 "pg_restore utilities can be found for the corresponding database server "
@@ -13755,25 +13762,25 @@ msgid ""
 "have a path specified."
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:236
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:240
 #: pgadmin/utils/constants.py:28
 msgid "Results grid"
 msgstr "結果網格"
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:245
-#: pgadmin/utils/constants.py:33
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:249
+#: pgadmin/utils/constants.py:34
 msgid "User Interface"
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:341
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:344
 msgid "Failed to reset preferences."
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:360
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:363
 msgid "Save & Reload"
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:363
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:366
 msgid "Save & Reload Later"
 msgstr ""
 
@@ -14397,9 +14404,9 @@ msgid "Join Filter"
 msgstr "加入過濾器"
 
 #: pgadmin/static/js/Explain/index.jsx:141
-#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:187
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:188
-#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:212
+#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:189
+#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:213
 msgid "Filter"
 msgstr "篩選"
 
@@ -14515,7 +14522,7 @@ msgstr ""
 
 #: pgadmin/static/js/SchemaView/DataGridView/header.jsx:91
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:416
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:592
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:607
 msgid "Add row"
 msgstr "新增行"
 
@@ -14573,8 +14580,8 @@ msgstr "信箱地址"
 msgid "Recover Password"
 msgstr "重設密碼"
 
-#: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:25
-#: pgadmin/static/js/SecurityPages/PasswordResetPage.jsx:26
+#: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:26
+#: pgadmin/static/js/SecurityPages/PasswordResetPage.jsx:27
 msgid "Back to login"
 msgstr ""
 
@@ -14591,7 +14598,7 @@ msgstr "信箱/使用者名稱"
 msgid "Forgotten your password?"
 msgstr "忘記了你的密碼？"
 
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:51
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:58
 #, python-format
 msgid "Login with %s"
 msgstr "使用 %s 登錄"
@@ -14735,6 +14742,13 @@ msgstr "全部替換"
 
 #: pgadmin/static/js/generated/psql_tool.js:1
 msgid "psql"
+msgstr ""
+
+#: pgadmin/static/js/generated/vendor.others.js:112
+msgid ""
+"{${u.default.instancePath}=\"\", ${u.default.parentData}, "
+"${u.default.parentDataProperty}, "
+"${u.default.rootData}=${u.default.data}${e.dynamicRef?d._"
 msgstr ""
 
 #: pgadmin/static/js/helpers/MainMoreToolbar.jsx:23
@@ -15114,6 +15128,7 @@ msgid "Format"
 msgstr "格式"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:537
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:34
 msgid "Custom"
 msgstr "自訂"
 
@@ -15271,17 +15286,17 @@ msgid "Edit grid values"
 msgstr "編輯網格值"
 
 #: pgadmin/tools/debugger/__init__.py:181
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:504
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:519
 msgid "Previous tab"
 msgstr "上一個選項卡"
 
 #: pgadmin/tools/debugger/__init__.py:199
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:522
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:537
 msgid "Next tab"
 msgstr "下一個選項卡"
 
 #: pgadmin/tools/debugger/__init__.py:217
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:540
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:555
 msgid "Switch panel"
 msgstr ""
 
@@ -15348,25 +15363,25 @@ msgid ""
 "provided."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1290
+#: pgadmin/tools/debugger/__init__.py:1291
 msgid "Debugging aborted successfully."
 msgstr "偵錯成功中止。"
 
-#: pgadmin/tools/debugger/__init__.py:1700
+#: pgadmin/tools/debugger/__init__.py:1701
 msgid "Value deposited successfully"
 msgstr "值成功地組態"
 
-#: pgadmin/tools/debugger/__init__.py:1702
+#: pgadmin/tools/debugger/__init__.py:1703
 msgid "Error setting the value"
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:2106
-#: pgadmin/tools/debugger/__init__.py:2165
+#: pgadmin/tools/debugger/__init__.py:2110
+#: pgadmin/tools/debugger/__init__.py:2169
 msgid "Execution completed with an error."
 msgstr "執行已完成, 但出現錯誤。"
 
-#: pgadmin/tools/debugger/__init__.py:2120
-#: pgadmin/tools/debugger/__init__.py:2181
+#: pgadmin/tools/debugger/__init__.py:2124
+#: pgadmin/tools/debugger/__init__.py:2185
 msgid "Execution Completed."
 msgstr "執行完成。"
 
@@ -16061,7 +16076,7 @@ msgstr "獲取中……"
 msgid "Failed to get data. Please delete this table."
 msgstr "獲取資料出錯，請刪除此資料表。"
 
-#: pgadmin/tools/grant_wizard/__init__.py:383
+#: pgadmin/tools/grant_wizard/__init__.py:384
 #, python-brace-format
 msgid "Unable to fetch the {} objects"
 msgstr "無法獲取 {} 物件"
@@ -16156,7 +16171,7 @@ msgid "Export Data"
 msgstr "匯出資料"
 
 #: pgadmin/tools/import_export/__init__.py:385
-#: pgadmin/tools/maintenance/__init__.py:229 pgadmin/utils/constants.py:166
+#: pgadmin/tools/maintenance/__init__.py:229 pgadmin/utils/constants.py:167
 msgid "Could not find the specified server."
 msgstr "找不到指定的伺服器。"
 
@@ -16750,24 +16765,24 @@ msgstr "維護操作"
 msgid "Verbose Messages"
 msgstr "詳細消息"
 
-#: pgadmin/tools/psql/__init__.py:58
+#: pgadmin/tools/psql/__init__.py:60
 msgid "PSQL"
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:323
+#: pgadmin/tools/psql/__init__.py:326
 msgid ""
 "PSQL utility not found. Specify the valid binary path in the preferences "
 "for the appropriate server version, or select \"Set as default\" to use "
 "an existing binary path."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:435
+#: pgadmin/tools/psql/__init__.py:438
 msgid ""
 "Connection terminated. To create a new connection, please open another "
 "psql tool."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:498 pgadmin/tools/psql/__init__.py:532
+#: pgadmin/tools/psql/__init__.py:502 pgadmin/tools/psql/__init__.py:537
 msgid "Invalid session.\r\n"
 msgstr "無效工作階段\r\n"
 
@@ -16915,53 +16930,53 @@ msgid ""
 "the Compare button in the Schema Diff tab."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:522
+#: pgadmin/tools/schema_diff/__init__.py:530
 msgid "Failed to fetch schemas from the server."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:739
+#: pgadmin/tools/schema_diff/__init__.py:748
 msgid "Selected object is not supported for DDL comparison."
 msgstr "DDL 比較不支援選定物件。"
 
-#: pgadmin/tools/schema_diff/__init__.py:756
+#: pgadmin/tools/schema_diff/__init__.py:765
 msgid "Could not find the source server."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:762
+#: pgadmin/tools/schema_diff/__init__.py:771
 msgid "Could not find the target server."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:767
+#: pgadmin/tools/schema_diff/__init__.py:776
 msgid "Server(s) disconnected."
 msgstr "伺服器已斷開連接。"
 
-#: pgadmin/tools/schema_diff/__init__.py:770
+#: pgadmin/tools/schema_diff/__init__.py:779
 msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
 msgstr "模式差異不支援 Postgres 伺服器和 EDB Postgres 高級伺服器之間的比較。"
 
-#: pgadmin/tools/schema_diff/__init__.py:784
+#: pgadmin/tools/schema_diff/__init__.py:793
 msgid "Source and Target database server must be of the same major version."
 msgstr "源資料庫伺服器和目標資料庫伺服器必須具有相同的主版本。"
 
-#: pgadmin/tools/schema_diff/__init__.py:835
+#: pgadmin/tools/schema_diff/__init__.py:844
 #, python-brace-format
 msgid "Comparing {0}"
 msgstr "正在比較{0}"
 
-#: pgadmin/tools/schema_diff/__init__.py:849
+#: pgadmin/tools/schema_diff/__init__.py:858
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:366
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:370
 msgid "Database Objects"
 msgstr "資料庫物件"
 
-#: pgadmin/tools/schema_diff/__init__.py:899
+#: pgadmin/tools/schema_diff/__init__.py:908
 #, python-brace-format
 msgid "Comparing {0} "
 msgstr "正在比較 {0} "
 
-#: pgadmin/tools/schema_diff/__init__.py:902
+#: pgadmin/tools/schema_diff/__init__.py:911
 #, python-brace-format
 msgid "Comparing {0} of schema '{1}'"
 msgstr "正在比較{0}的架構\"{1}\""
@@ -17015,13 +17030,13 @@ msgstr "源"
 msgid "Difference"
 msgstr "差異"
 
-#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:174
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:175
-#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:196
+#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:176
+#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:197
 msgid "Compare"
 msgstr "對比"
 
-#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:181
+#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:182
 msgid "Generate Script"
 msgstr "生成指令碼"
 
@@ -17179,64 +17194,64 @@ msgstr "交易狀態檢查失敗。"
 msgid "Query tool"
 msgstr "查詢工具"
 
-#: pgadmin/tools/sqleditor/__init__.py:1135
+#: pgadmin/tools/sqleditor/__init__.py:1144
 msgid "******* Error *******"
 msgstr "******* 錯誤 *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:1554
+#: pgadmin/tools/sqleditor/__init__.py:1563
 msgid "No primary key found for this object, so unable to save records."
 msgstr "該物件沒有找到主鍵，所以無法保存記錄."
 
-#: pgadmin/tools/sqleditor/__init__.py:1893
+#: pgadmin/tools/sqleditor/__init__.py:1902
 #: pgadmin/tools/sqleditor/utils/query_tool_connection_check.py:67
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:115
 msgid "Either transaction object or session object not found."
 msgstr "找不到交易物件或工作階段物件。"
 
-#: pgadmin/tools/sqleditor/__init__.py:2135
+#: pgadmin/tools/sqleditor/__init__.py:2144
 msgid "Could not find the required parameter (query)."
 msgstr "找不到所需的參數（查詢）。"
 
-#: pgadmin/tools/sqleditor/__init__.py:2245
+#: pgadmin/tools/sqleditor/__init__.py:2254
 msgid "No active result cursor."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2254
+#: pgadmin/tools/sqleditor/__init__.py:2263
 msgid "Could not find the required parameters (rowpos, colpos)."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2262
+#: pgadmin/tools/sqleditor/__init__.py:2271
 msgid "The selected cell contains NULL."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2942
-#: pgadmin/tools/sqleditor/__init__.py:3165
+#: pgadmin/tools/sqleditor/__init__.py:2951
+#: pgadmin/tools/sqleditor/__init__.py:3174
 msgid ""
 "AI features are not configured. Please configure an LLM provider in "
 "Preferences > AI."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2960
+#: pgadmin/tools/sqleditor/__init__.py:2969
 msgid "Database connection not available."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2972
+#: pgadmin/tools/sqleditor/__init__.py:2981
 msgid "Please provide a message."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2984
+#: pgadmin/tools/sqleditor/__init__.py:2993
 msgid "Analyzing your request..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:3026
+#: pgadmin/tools/sqleditor/__init__.py:3035
 msgid "Querying the database..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:3188
+#: pgadmin/tools/sqleditor/__init__.py:3197
 msgid "Please provide an EXPLAIN plan to analyze."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:3197
+#: pgadmin/tools/sqleditor/__init__.py:3206
 msgid "Analyzing query plan..."
 msgstr ""
 
@@ -17249,11 +17264,11 @@ msgstr "尚未針對此物件類型 \"{0}\" 實現此功能。"
 msgid "The specified object could not be found."
 msgstr "找不到指定的物件。"
 
-#: pgadmin/tools/sqleditor/command.py:398
+#: pgadmin/tools/sqleditor/command.py:406
 msgid "Data cannot be saved for the current object."
 msgstr "當前物件的資料不能保存."
 
-#: pgadmin/tools/sqleditor/command.py:898
+#: pgadmin/tools/sqleditor/command.py:906
 msgid "Resultset is not updatable."
 msgstr "結果集不可更新。"
 
@@ -17464,7 +17479,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:22
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:578
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:783
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:798
 msgid "Rollback"
 msgstr "回滾"
 
@@ -17514,63 +17529,70 @@ msgstr "（獲取連接）"
 msgid "New query tool for current connection"
 msgstr "打開此連接的新查詢窗口"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:104
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:106
 #, python-format
 msgid "%s of %s geometries rendered."
 msgstr "%s 的 %s 幾何對像已渲染."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:107
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:109
 msgid "3D geometries not rendered."
 msgstr "未渲染3D幾何圖形。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:110
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:112
 msgid "Unsupported geometries not rendered."
 msgstr "未渲染不受支援的幾何圖形。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:126
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:128
 msgid "Empty row."
 msgstr "空行。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:185
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:187
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
 msgstr "未渲染具有非 SRID %s幾何。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:367
-msgid "Empty"
-msgstr "空"
-
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:372
-msgid "Street"
-msgstr "街"
-
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:379
-msgid "Topography"
-msgstr "地勢"
-
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:390
-msgid "Gray Style"
-msgstr "灰度樣式"
-
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:401
-msgid "Light Color"
-msgstr "淺色"
-
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:412
-msgid "Dark Matter"
-msgstr "深度關係"
-
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:454
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:419
 msgid ""
 "Query complete. Use the Geometry Viewer button in the Data Output tab to "
 "visualize results."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:455
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:420
 msgid ""
 "No spatial data found. At least one geometry or geography column is "
 "required for visualization."
 msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:425
+#, python-brace-format
+msgid ""
+"Custom tile provider URL is invalid and was ignored. It must start with "
+"http(s):// and contain the {x}, {y} and {z} placeholders."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:65
+msgid "Empty"
+msgstr "空"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:72
+msgid "Street"
+msgstr "街"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:78
+msgid "Topography"
+msgstr "地勢"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:86
+msgid "Gray Style"
+msgstr "灰度樣式"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:93
+msgid "Light Color"
+msgstr "淺色"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewerUtils.js:100
+msgid "Dark Matter"
+msgstr "深度關係"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
 msgid "<Row Number>"
@@ -17667,7 +17689,7 @@ msgid "Sort/Filter"
 msgstr "篩選器"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:545
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:660
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:675
 msgid "Filter options"
 msgstr "過濾選項"
 
@@ -17688,23 +17710,23 @@ msgid "100 rows"
 msgstr "100行"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:556
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:694
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:709
 msgid "Cancel query"
 msgstr "取消查詢"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:558
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:377
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:392
 msgid "Execute script"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:560
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:447
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:395
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:462
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:410
 msgid "Execute query"
 msgstr "執行查詢"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:562
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:677
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:692
 msgid "Execute options"
 msgstr "執行選項"
 
@@ -17928,19 +17950,19 @@ msgstr "處理程序ID"
 msgid "Payload"
 msgstr "負載"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:211
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:221
 msgid "File saved successfully."
 msgstr "檔案保存成功。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:284
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:294
 msgid "Save query changes?"
 msgstr "保存查詢變更？"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:287
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:297
 msgid "The query text has changed. Do you want to save changes?"
 msgstr "查詢文字已變更，你要保存變更嗎？"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:418
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:428
 msgid "Promote to Query Tool"
 msgstr ""
 
@@ -18138,6 +18160,7 @@ msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr "自動提交已關閉。每次更改都需要提交至資料庫。"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1513
+#: pgadmin/utils/constants.py:33
 msgid "Geometry Viewer"
 msgstr "幾何查看器"
 
@@ -18409,137 +18432,150 @@ msgstr ""
 "行\"選項時，始終對資料進行排序。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:125
+msgid "Default row limit for View Data"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:129
+msgid ""
+"Specify the maximum number of rows to fetch when using the View/Edit Data"
+" - All Rows option. This appends a LIMIT clause to the generated query, "
+"which can significantly improve performance on very large tables. Set to "
+"0 (the default) to fetch all rows with no limit (the existing behavior). "
+"This does not affect the First/Last 100 Rows options."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
 msgid "Prompt to save unsaved data changes?"
 msgstr "提示保存未保存的資料更改？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:128
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:143
 msgid ""
 "Specifies whether or not to prompt the user to save unsaved data on data "
 "grid exit."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:135
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
 msgid "Prompt to commit/rollback active transactions?"
 msgstr "提示提交/回滾活動狀態的交易？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:139
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:154
 msgid ""
 "Specifies whether or not to prompt the user to commit or rollback an "
 "active transaction on Query Tool exit."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:146
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:161
 msgid "Copy SQL from main window to query tool?"
 msgstr "從主窗口中複製SQL到查詢窗口嗎？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:165
 msgid ""
 "Specifies whether or not to copy SQL to the Query Tool from the main "
 "window."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:157
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:172
 msgid "Open the file in a new tab?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:161
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:176
 msgid "Specifies whether or not to open the file in a new tab."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:167
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
 msgid "Show View/Edit Data Promotion Warning?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:171
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:186
 msgid ""
 "If set to True, the View/Edit Data tool will show a confirmation dialog "
 "to promote to Query Tool when the query is edited."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:178
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:193
 msgid "Underline query at cursor?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:197
 msgid ""
 "If set to True, the Query Tool will parse and underline the query at the "
 "cursor position."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:189
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:204
 msgid "Underlined query execute warning?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:193
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:208
 msgid ""
 "If set to True, the Query Tool will display a warning when clicking the "
 "Execute Query button. The warning will appear only if \"Underline query "
 "at cursor?\" is set to False."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:201
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:216
 msgid "CSV quoting"
 msgstr "CSV引用"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:204
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:258
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:219
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:273
 msgid "All"
 msgstr "所有"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:205
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:259
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:220
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:274
 msgid "Strings"
 msgstr "字串"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:214
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:229
 msgid "CSV quote character"
 msgstr "CSV引用符號"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:228
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:243
 msgid "CSV field separator"
 msgstr "CSV欄位分隔符"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:233
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:286
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:248
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:301
 msgid "Tab"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:244
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:259
 msgid "Replace null values with"
 msgstr "將空值取代為"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:246
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:261
 msgid ""
 "Specifies the string that represents a null value while downloading query"
 " results as CSV. You can specify any arbitrary string to represent a null"
 " value, with quotes if desired."
 msgstr "指定在以 CSV 形式下載查詢結果時表示空值的字串。您可以指定任何任意字串來表示空值, 並在需要時使用引號。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:255
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:270
 msgid "Result copy quoting"
 msgstr "複製結果時包含引用"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:268
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:283
 msgid "Result copy quote character. Not applied when copying a single cell."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:281
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:296
 msgid "Result copy field separator"
 msgstr "複製結果時包含欄位分隔符"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:295
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:310
 msgid "Columns sized by"
 msgstr "列數"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:296
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:311
 msgid "Column data"
 msgstr "列資料"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:297
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:312
 msgid "Column name"
 msgstr "列名稱"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:300
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:315
 msgid ""
 "If set to 'Column data', columns will auto-size to the maximum width of "
 "the data in the column as loaded in the first batch. If set to 'Column "
@@ -18547,158 +18583,223 @@ msgid ""
 "name."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:310
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:325
 msgid "Maximum column width"
 msgstr "最大列寬"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:313
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:328
 msgid ""
 "Specify the maximum width of the column in pixels when 'Columns sized by'"
 " is set to 'Column data'."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:320
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:335
 msgid "Data result rows per page"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:323
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:338
 msgid ""
 "Specify the number of records to fetch in one batch. Changing this value "
 "will override the DATA_RESULT_ROWS_PER_PAGE setting from the config file."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:331
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:346
 msgid "Striped rows?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:333
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:348
 msgid ""
 "If set to True, the result grid will display rows with alternating "
 "background colors."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:339
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:354
 msgid "Max column data display length"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:341
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:356
 msgid "Maximum number of characters to display in a data cell."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:347
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:362
 msgid "Connection status"
 msgstr "連接狀態"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:349
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:364
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
 "and transaction status."
 msgstr "如果設定為 True, 查詢工具將監視並顯示連接和交易狀態。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:356
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:371
 msgid "Connection status refresh rate"
 msgstr "連接狀態更新頻率"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:360
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:375
 msgid "The number of seconds between connection/transaction status polls."
 msgstr "連接/交易狀態輪詢之間的秒數。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:367
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:382
 msgid "Show query success notification?"
 msgstr "顯示查詢成功提示？"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:369
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:384
 msgid ""
 "If set to True, the Query Tool will show notifications on successful "
 "query execution."
 msgstr "如果設定為True，查詢窗口將顯示查詢執行成功的提示。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:414
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:429
 msgid "Save data changes"
 msgstr "保存資料更改"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:432
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:447
 msgid "EXPLAIN query"
 msgstr "解釋查詢"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:450
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:465
 msgid "EXPLAIN ANALYZE query"
 msgstr "解釋最佳化查詢"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:468
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:483
 msgid "Clear query"
 msgstr "清理查詢"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:486
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:501
 msgid "Download results"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:558
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:573
 msgid "Open file"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:575
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:590
 msgid "Save file"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:609
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:624
 msgid "Paste rows"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:626
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:641
 msgid "Delete rows"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:643
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:658
 msgid "Filter dialog"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:711
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:726
 msgid "Edit options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:729
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:744
 msgid "Toggle case of selected text"
 msgstr "切換所選文字的大小寫"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:746
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:761
 msgid "Keywords in uppercase"
 msgstr "關鍵詞使用大寫"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:747
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:755
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:762
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:770
 msgid "Auto completion"
 msgstr "自動完成"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:748
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:763
 msgid "If set to True, keywords will be displayed in upper case for autocomplete."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:754
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:769
 msgid "Autocomplete on key press"
 msgstr "按鍵自動完成"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:756
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:771
 msgid ""
 "If set to True, autocomplete will be available on key press along with "
 "CTRL/CMD + Space. If set to False, autocomplete is only activated when "
 "CTRL/CMD + Space is pressed."
 msgstr "如果設定為True，按鍵按下將提供自動完成，如果設定為False則只在CTRL/CMD+Space按下時才提供自動完成。"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:801
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:816
 msgid "Auto complete"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:819
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:834
 msgid "Row Limit"
 msgstr "行數限制"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:821
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:836
 msgid ""
 "This setting specifies the maximum number of rows that will be plotted on"
 " a chart. Increasing this limit may impact performance if charts are "
 "plotted with very high numbers of rows."
 msgstr "這個設定指定圖表上將繪製的最大行數。如果要繪製具有很高行數的圖表，則增加此限制可能會影響性能。"
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:844
+msgid "Custom tile provider URL"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:850
+#, python-brace-format
+msgid ""
+"URL template of a custom XYZ tile provider used as a base layer in the "
+"Geometry Viewer, e.g. https://myserver.example.com/tiles/{z}/{x}/{y}.png."
+" The template must contain the {x}, {y} and {z} placeholders, and may "
+"contain {s} for subdomains (a, b, c). Leave empty to disable the custom "
+"tile provider."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:862
+msgid "Custom tile provider name"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:864
+msgid ""
+"Display name of the custom tile provider in the layer selector of the "
+"Geometry Viewer."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:871
+msgid "Custom tile provider CRS"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:873
+msgid "EPSG:3857 (Web Mercator)"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:875
+msgid "EPSG:4326"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:876
+msgid "EPSG:3395"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:881
+msgid ""
+"Coordinate reference system of the custom tile provider. If it is not "
+"EPSG:3857 (Web Mercator), the built-in tile layers will be hidden as they"
+" cannot be mixed with other coordinate systems."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:889
+msgid "Custom tile provider attribution"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:891
+msgid ""
+"Attribution text shown on the map for the custom tile provider. May "
+"contain HTML links."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:898
+msgid "Custom tile provider max zoom"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:901
+msgid "Maximum zoom level of the custom tile provider."
+msgstr ""
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:52
 msgid "Manage Server"
@@ -19054,92 +19155,92 @@ msgstr "選項卡設定"
 msgid "Refresh rates"
 msgstr "更新頻率"
 
-#: pgadmin/utils/constants.py:34
+#: pgadmin/utils/constants.py:35
 msgid "File Downloads"
 msgstr ""
 
-#: pgadmin/utils/constants.py:41
+#: pgadmin/utils/constants.py:42
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "未連接到伺服器或與伺服器的連接已關閉。"
 
-#: pgadmin/utils/constants.py:56
+#: pgadmin/utils/constants.py:57
 msgid "Transaction ID not found in the session."
 msgstr "交易 ID 在該工作階段中找不到."
 
-#: pgadmin/utils/constants.py:58
+#: pgadmin/utils/constants.py:59
 msgid "FAIL TO PROMOTE VIEW/EDIT DATA TO QUERY TOOL"
 msgstr ""
 
-#: pgadmin/utils/constants.py:63
+#: pgadmin/utils/constants.py:64
 msgid "Error fetching role information from the database server."
 msgstr ""
 "從資料庫伺服器獲取角色資訊時出錯。\n"
 "{0}"
 
-#: pgadmin/utils/constants.py:65
+#: pgadmin/utils/constants.py:66
 msgid "Unable to fetch data."
 msgstr "無法獲取資料。"
 
-#: pgadmin/utils/constants.py:85
+#: pgadmin/utils/constants.py:86
 msgid "EDB Advanced Server 13"
 msgstr ""
 
-#: pgadmin/utils/constants.py:88
+#: pgadmin/utils/constants.py:89
 msgid "EDB Advanced Server 14"
 msgstr "EDB 高級伺服器14"
 
-#: pgadmin/utils/constants.py:91
+#: pgadmin/utils/constants.py:92
 msgid "EDB Advanced Server 15"
 msgstr "EDB 高級伺服器15"
 
-#: pgadmin/utils/constants.py:94
+#: pgadmin/utils/constants.py:95
 msgid "EDB Advanced Server 16"
 msgstr ""
 
-#: pgadmin/utils/constants.py:97
+#: pgadmin/utils/constants.py:98
 msgid "EDB Advanced Server 17"
 msgstr ""
 
-#: pgadmin/utils/constants.py:100
+#: pgadmin/utils/constants.py:101
 msgid "EDB Advanced Server 18"
 msgstr ""
 
-#: pgadmin/utils/constants.py:105
+#: pgadmin/utils/constants.py:106
 msgid "PostgreSQL 13"
 msgstr ""
 
-#: pgadmin/utils/constants.py:108
+#: pgadmin/utils/constants.py:109
 msgid "PostgreSQL 14"
 msgstr ""
 
-#: pgadmin/utils/constants.py:111
+#: pgadmin/utils/constants.py:112
 msgid "PostgreSQL 15"
 msgstr ""
 
-#: pgadmin/utils/constants.py:114
+#: pgadmin/utils/constants.py:115
 msgid "PostgreSQL 16"
 msgstr ""
 
-#: pgadmin/utils/constants.py:117
+#: pgadmin/utils/constants.py:118
 msgid "PostgreSQL 17"
 msgstr ""
 
-#: pgadmin/utils/constants.py:120
+#: pgadmin/utils/constants.py:121
 msgid "PostgreSQL 18"
 msgstr ""
 
-#: pgadmin/utils/constants.py:128
+#: pgadmin/utils/constants.py:129
 msgid ""
 "Unable to find a dll needed by the utility. Ensure .dll files needed by "
 "the utility are in the same folder as your executable."
 msgstr ""
 
-#: pgadmin/utils/constants.py:134
+#: pgadmin/utils/constants.py:135
 #, python-format
 msgid "The specified user ID (%s) could not be found."
 msgstr "找不到指定的使用者 ID（%s）。"
 
-#: pgadmin/utils/constants.py:143
+#: pgadmin/utils/constants.py:144
 msgid ""
 "Access denied: You’re having limited access. You’re not allowed to "
 "Rename, Delete or Create any files/folders"
@@ -19164,26 +19265,26 @@ msgstr "心跳記錄成功。"
 msgid "Stopped Heartbeat logging."
 msgstr "停止心跳記錄。"
 
-#: pgadmin/utils/preferences.py:217
+#: pgadmin/utils/preferences.py:220
 #, python-brace-format
 msgid "Invalid value for {0} option."
 msgstr "選項{0}的值無效。"
 
-#: pgadmin/utils/preferences.py:642
+#: pgadmin/utils/preferences.py:618 pgadmin/utils/preferences.py:669
 msgid "Could not find the specified module."
 msgstr "找不到指定的模組。"
 
-#: pgadmin/utils/preferences.py:648
+#: pgadmin/utils/preferences.py:623 pgadmin/utils/preferences.py:675
 #, python-brace-format
 msgid "Module '{0}' is no longer in use."
 msgstr "模組'{0}'不再使用."
 
-#: pgadmin/utils/preferences.py:661
+#: pgadmin/utils/preferences.py:635 pgadmin/utils/preferences.py:688
 #, python-brace-format
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "模組'{0}'沒有 id 為'{1}'類別"
 
-#: pgadmin/utils/preferences.py:675
+#: pgadmin/utils/preferences.py:646 pgadmin/utils/preferences.py:702
 msgid "Could not find the specified preference."
 msgstr "找不到指定的首選項。"
 
@@ -21165,4 +21266,7 @@ msgstr ""
 
 #~ msgid "An error occurred while opening the tool: ${error}"
 #~ msgstr ""
+
+#~ msgid "The specified server group cannot be deleted."
+#~ msgstr "無法刪除指定的伺服器組。"
 

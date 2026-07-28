@@ -143,13 +143,23 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     if(queryToolCtx.params.is_query_tool) {
       let external = null;
       let query = editor.current?.getSelection();
+      /* getSelection() flattens all selection ranges joined by the line
+       * separator (to support running non-continuous highlighted blocks).
+       * When nothing is actually highlighted this can still yield a
+       * whitespace-only string (e.g. several empty cursors joined by
+       * newlines), which is truthy and would suppress the cursor /
+       * whole-editor fallbacks below - making ALT+F5 (Execute query) do
+       * nothing. Treat a whitespace-only selection as no selection. #10109 */
+      if(!query?.trim()) {
+        query = '';
+      }
       if(!_.isEmpty(macroSQL)) {
         const regex = /\$SELECTION\$/gi;
         query =  macroSQL.replace(regex, query);
         external = true;
       } else if(executeCursor || explainObject) {
         /* Execute query at cursor position or explain query at cursor position */
-        query = query || editor.current?.getQueryAt(editor.current?.state.selection.head).value || '';
+        query = query || editor.current?.getQueryAt(editor.current?.state.selection.main.head).value || '';
       } else {
         /* Normal execution */
         query = query || editor.current?.getValue() || '';
@@ -443,7 +453,12 @@ export default function Query({onTextSelect, setQtStatePartial}) {
 
   const checkUnderlineQueryCursorWarning = () => {
     let query = editor.current?.getSelection();
-    query = query || editor.current?.getQueryAt(editor.current?.state.selection.head).value || '';
+    /* Ignore a whitespace-only selection so the warning previews the query
+     * under the cursor, matching triggerExecution. #10109 */
+    if(!query?.trim()) {
+      query = '';
+    }
+    query = query || editor.current?.getQueryAt(editor.current?.state.selection.main.head).value || '';
     query && queryToolCtx.modal.showModal(gettext('Execute query'), (closeModal) =>{
       return (<ConfirmExecuteQueryContent
         closeModal={closeModal}

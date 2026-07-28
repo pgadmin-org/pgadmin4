@@ -101,6 +101,11 @@ properties of the geometries directly in map, just click the specific geometry:
       viewer will render geometries with the same SRID in the map. If SRID=4326 the
       OSM tile layer will be added into the map.
 
+    - *Custom tile provider:* A custom map tile provider ({z}/{x}/{y} URL template,
+      in EPSG:3857, EPSG:4326 or EPSG:3395) can be configured as a base layer via
+      *Preferences > Query Tool > Geometry Viewer*. When configured, it is
+      selected as the default base layer.
+
     - *Data size:* For performance reasons, the viewer will render no more than
       100000 geometries, totaling up to 20MB.
 

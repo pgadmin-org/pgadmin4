@@ -10,6 +10,7 @@
 # Google Cloud Deployment Implementation
 import json
 import os
+import sys
 from urllib.parse import unquote
 
 from config import root
@@ -25,6 +26,18 @@ from flask import session, current_app, request
 from flask_babel import gettext as _
 
 from oauthlib.oauth2 import AccessDeniedError
+
+# pgAdmin only authenticates to Google via google-auth and
+# google-auth-oauthlib, never the long-deprecated oauth2client.
+# googleapiclient still tries to import oauth2client optionally, and on
+# packaged installs the venv inherits the system site-packages
+# (--system-site-packages, see issue #7173) where a stale oauth2client and
+# an incompatible pyOpenSSL may be present. That optional import drags in
+# the broken pyOpenSSL and aborts startup with "module 'lib' has no
+# attribute 'GEN_EMAIL'". Blocking the module here makes googleapiclient
+# fall back to google-auth cleanly. See issue #10110.
+sys.modules.setdefault('oauth2client', None)
+
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
