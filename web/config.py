@@ -656,6 +656,14 @@ USE_OS_SECRET_STORAGE = True
 # You can pass the current username as an argument to the external script
 # by specifying %u in config value.
 # E.g. - MASTER_PASSWORD_HOOK = '<PATH>/passwdgen_script.sh %u'
+#
+# The command is split into arguments and executed directly, without a
+# shell, so shell features (pipes, redirection, environment-variable
+# expansion, globbing) in this value are not interpreted; put any such
+# logic inside the hook script itself. On Windows, a batch file must be
+# invoked via an executable wrapper rather than directly. If the path to
+# the script/program contains spaces, quote it, e.g. -
+# MASTER_PASSWORD_HOOK = '"<PATH WITH SPACES>/passwdgen_script.exe" %u'
 ##########################################################################
 MASTER_PASSWORD_HOOK = None
 

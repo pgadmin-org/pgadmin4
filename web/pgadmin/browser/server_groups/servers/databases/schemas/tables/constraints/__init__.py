@@ -19,6 +19,7 @@ from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
+from pgadmin.user_login_check import pga_login_required
 
 from config import PG_DEFAULT_DRIVER
 from .type import ConstraintRegistry
@@ -112,6 +113,7 @@ blueprint = ConstraintsModule(__name__)
 
 
 @blueprint.route('/nodes/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/')
+@pga_login_required
 def nodes(**kwargs):
     """
     Returns all constraint as a tree node.
@@ -137,6 +139,7 @@ def nodes(**kwargs):
 
 
 @blueprint.route('/obj/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/')
+@pga_login_required
 def proplist(**kwargs):
     """
     Returns all constraint with properties.
@@ -164,6 +167,7 @@ def proplist(**kwargs):
                  methods=['DELETE'])
 @blueprint.route('/delete/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/',
                  methods=['DELETE'])
+@pga_login_required
 def delete(**kwargs):
     """
     Delete multiple constraints under the table.

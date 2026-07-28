@@ -179,16 +179,44 @@ def process_masterpass_disabled():
 
 def get_master_password_from_master_hook():
     """
-    This method executes specified command & returns output.
-    :param command: Shell command with absolute path
-    :return: Output of command.
+    This method executes the configured MASTER_PASSWORD_HOOK command and
+    returns its output.
+
+    The hook is parsed into an argument vector and executed *without* a shell
+    (shell=False). The username (which may originate from an external
+    authentication source such as OAuth/OIDC, Kerberos or webserver auth, and
+    is therefore untrusted) is substituted for %u only after the trusted hook
+    string has been tokenised, so it is always confined to a single argument.
+    Any shell metacharacters it contains are then inert rather than
+    interpreted, which prevents OS command injection via the username.
+
+    :return: Output of the command, or None on failure.
     """
+    import shlex
     import subprocess
+
     cmd = config.MASTER_PASSWORD_HOOK
-    command = cmd.replace('%u', current_user.username) \
-        if '%u' in cmd else cmd
+    if not cmd:
+        return None
     try:
-        p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+        # Tokenise the admin-configured hook first, then substitute the
+        # untrusted username into the individual arguments. Substituting
+        # before tokenising would let metacharacters in the username alter
+        # the command, so the order here is security-critical.
+        #
+        # posix=True strips quotes correctly on both platforms (unlike
+        # posix=False, which never strips quotes at all and breaks any
+        # quoted path or argument on Windows). escape='' disables backslash
+        # escaping so Windows paths (e.g. C:\Program Files\hook.exe) are not
+        # mangled.
+        lex = shlex.shlex(cmd, posix=True)
+        lex.whitespace_split = True
+        lex.escape = ''
+        args = [token.replace('%u', current_user.username) for token in lex]
+        if not args:
+            return None
+
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
         out, err = p.communicate()
         if p.returncode == 0:
             output = out.decode() if hasattr(out, 'decode') else out
@@ -196,7 +224,7 @@ def get_master_password_from_master_hook():
             return output
         else:
             error = "Command '{0}' failed, exit-code={1} error = {2}".format(
-                command, p.returncode, str(err))
+                cmd, p.returncode, str(err))
             current_app.logger.error(error)
     except Exception as e:
         current_app.logger.exception(

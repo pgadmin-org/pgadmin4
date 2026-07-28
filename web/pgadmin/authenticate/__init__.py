@@ -82,6 +82,40 @@ def socket_login_required(f):
     return wrapped
 
 
+def socket_permissions_required(*fsperms):
+    """Socket.IO equivalent of flask_security's permissions_required.
+
+    Refuses the event unless the current user is authenticated and holds
+    all of the named pgAdmin permissions (via their roles). This mirrors
+    the HTTP @permissions_required decorator so that Socket.IO handlers
+    enforce the same tool-level RBAC as the routes: an authenticated user
+    must not be able to reach a sensitive handler (e.g. the schema diff
+    comparison or the PSQL pseudo-terminal) for a tool whose permission
+    they have been denied.
+
+    has_permission() is used in preference to flask_principal's
+    Permission().can() because it reads the user's roles directly and
+    does not depend on the principal identity having been loaded onto the
+    socket request context; it also honours pgAdmin's Administrator
+    bypass (see CustomUserMixin).
+    """
+    def wrapper(f):
+        @functools.wraps(f)
+        def wrapped(*args, **kwargs):
+            if not current_user.is_authenticated:
+                disconnect()
+                raise ConnectionRefusedError("Unauthorised !")
+
+            for fsperm in fsperms:
+                if not current_user.has_permission(fsperm):
+                    disconnect()
+                    raise ConnectionRefusedError("Forbidden !")
+
+            return f(*args, **kwargs)
+        return wrapped
+    return wrapper
+
+
 class AuthenticateModule(pga_utils.PgAdminModule):
     def get_exposed_url_endpoints(self):
         return ['authenticate.login']

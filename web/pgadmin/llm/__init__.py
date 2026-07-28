@@ -14,6 +14,7 @@ import logging
 import ssl
 from flask import request
 from flask_babel import gettext
+from flask_security import permissions_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.ajax import make_json_response, internal_server_error
@@ -22,6 +23,8 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.csrf import pgCSRFProtect
 import config
 from pgadmin.llm.utils import LLMApiError
+from pgadmin.tools.user_management.PgAdminPermissions import \
+    AllPermissionTypes
 
 # Try to use certifi for proper SSL certificate handling
 try:
@@ -1047,6 +1050,7 @@ def _fetch_docker_models(api_url):
     methods=["GET"],
     endpoint='security_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_security_report(sid):
     """
@@ -1113,6 +1117,7 @@ def generate_security_report(sid):
     endpoint='security_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_security_report_stream(sid):
     """
@@ -1298,6 +1303,7 @@ def _gather_security_config(conn, manager):
     methods=["GET"],
     endpoint='database_security_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_database_security_report(sid, did):
     """
@@ -1366,6 +1372,7 @@ def generate_database_security_report(sid, did):
     endpoint='database_security_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_database_security_report_stream(sid, did):
     """
@@ -1426,6 +1433,7 @@ def generate_database_security_report_stream(sid, did):
     methods=["GET"],
     endpoint='schema_security_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_schema_security_report(sid, did, scid):
     """
@@ -1508,6 +1516,7 @@ def generate_schema_security_report(sid, did, scid):
     endpoint='schema_security_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_schema_security_report_stream(sid, did, scid):
     """
@@ -1582,6 +1591,7 @@ def generate_schema_security_report_stream(sid, did, scid):
     methods=["GET"],
     endpoint='performance_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_performance_report(sid):
     """
@@ -1648,6 +1658,7 @@ def generate_performance_report(sid):
     endpoint='performance_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_performance_report_stream(sid):
     """
@@ -1706,6 +1717,7 @@ def generate_performance_report_stream(sid):
     methods=["GET"],
     endpoint='database_performance_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_database_performance_report(sid, did):
     """
@@ -1774,6 +1786,7 @@ def generate_database_performance_report(sid, did):
     endpoint='database_performance_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_database_performance_report_stream(sid, did):
     """
@@ -1834,6 +1847,7 @@ def generate_database_performance_report_stream(sid, did):
     methods=["GET"],
     endpoint='database_design_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_database_design_report(sid, did):
     """
@@ -1902,6 +1916,7 @@ def generate_database_design_report(sid, did):
     endpoint='database_design_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_database_design_report_stream(sid, did):
     """
@@ -1962,6 +1977,7 @@ def generate_database_design_report_stream(sid, did):
     methods=["GET"],
     endpoint='schema_design_report'
 )
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_schema_design_report(sid, did, scid):
     """
@@ -2044,6 +2060,7 @@ def generate_schema_design_report(sid, did, scid):
     endpoint='schema_design_report_stream'
 )
 @pgCSRFProtect.exempt
+@permissions_required(AllPermissionTypes.tools_ai)
 @pga_login_required
 def generate_schema_design_report_stream(sid, did, scid):
     """

@@ -155,32 +155,6 @@ ALLOWLIST = [
      "Single-char pg_constraint.contype code, hardcoded by handler."),
 
     # ------------------------------------------------------------------
-    # Index stat lookups for an already-existing table. ``schema`` and
-    # ``table`` come from the browser tree node and ultimately from
-    # pg_catalog. Cannot contain apostrophes for any object pgAdmin was
-    # able to discover via its own browse queries (which use qtLiteral on
-    # the way in), so this is not a SQL injection sink. A correctness
-    # follow-up (legitimately named objects containing apostrophes) is
-    # tracked separately.
-    # ------------------------------------------------------------------
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/indexes/sql/default/coll_stats.sql',
-      "'{{schema}}'"), 1,
-     "Schema name from pg_catalog via browser tree, not request input."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/indexes/sql/default/coll_stats.sql',
-      "'{{table}}'"), 1,
-     "Table name from pg_catalog via browser tree, not request input."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/indexes/sql/16_plus/coll_stats.sql',
-      "'{{schema}}'"), 1,
-     "Schema name from pg_catalog via browser tree, not request input."),
-    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
-      'templates/indexes/sql/16_plus/coll_stats.sql',
-      "'{{table}}'"), 1,
-     "Table name from pg_catalog via browser tree, not request input."),
-
-    # ------------------------------------------------------------------
     # Aggregate initial-condition strings. ``initial_val`` and
     # ``moving_initial_val`` come from the aggregate-creation form. The
     # session executing the SQL must already hold ``CREATE`` on the
@@ -299,36 +273,6 @@ ALLOWLIST = [
       'templates/subscriptions/sql/18_plus/update.sql',
       "'{{ data.origin }}'"), 1,
      "Bounded enum (any/none); CREATE SUBSCRIPTION needs superuser."),
-
-    # ------------------------------------------------------------------
-    # Subscription / publication name lookups. ``subname``, ``pubname``
-    # and ``pname`` come from the browser tree (resolved from OID
-    # references in pg_catalog), not from request body input.
-    # ------------------------------------------------------------------
-    (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
-      'templates/subscriptions/sql/default/get_position.sql',
-      "'{{ subname }}'"), 1,
-     "Subscription name from pg_catalog via browser tree."),
-    (('pgadmin/browser/server_groups/servers/databases/subscriptions/'
-      'templates/subscriptions/sql/default/dependencies.sql',
-      "'{{subname}}'"), 1,
-     "Subscription name from pg_catalog via browser tree."),
-    (('pgadmin/browser/server_groups/servers/databases/publications/'
-      'templates/publications/pg/default/sql/get_position.sql',
-      "'{{ pubname }}'"), 1,
-     "Publication name from pg_catalog via browser tree."),
-    (('pgadmin/browser/server_groups/servers/databases/publications/'
-      'templates/publications/pg/default/sql/dependencies.sql',
-      "'{{ pname }}'"), 1,
-     "Publication name from pg_catalog via browser tree."),
-    (('pgadmin/browser/server_groups/servers/databases/publications/'
-      'templates/publications/ppas/default/sql/get_position.sql',
-      "'{{ pubname }}'"), 1,
-     "Publication name from pg_catalog via browser tree."),
-    (('pgadmin/browser/server_groups/servers/databases/publications/'
-      'templates/publications/ppas/default/sql/dependencies.sql',
-      "'{{ pname }}'"), 1,
-     "Publication name from pg_catalog via browser tree."),
 
     # ------------------------------------------------------------------
     # DBMS job scheduler ``CREATE`` templates emit lines that are entirely

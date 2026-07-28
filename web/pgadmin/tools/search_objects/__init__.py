@@ -62,6 +62,7 @@ def index():
 
 
 @blueprint.route("types/<int:sid>/<int:did>", endpoint='types')
+@permissions_required(AllPermissionTypes.tools_search_objects)
 @pga_login_required
 def types(sid, did):
     so_obj = SearchObjectsHelper(sid, did, blueprint.show_system_objects())

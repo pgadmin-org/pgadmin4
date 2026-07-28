@@ -28,7 +28,7 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
     ERROR_MSG_TRANS_ID_NOT_FOUND
 from sqlalchemy import or_
-from pgadmin.authenticate import socket_login_required
+from pgadmin.authenticate import socket_permissions_required
 from pgadmin import socketio
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.utils.server_access import \
@@ -207,6 +207,7 @@ def update_session_diff_transaction(trans_id, session_obj, diff_model_obj):
     methods=["GET"],
     endpoint="initialize"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def initialize(trans_id):
     """
@@ -237,6 +238,7 @@ def initialize(trans_id):
 @blueprint.route('/close/<int:trans_id>',
                  methods=["DELETE"],
                  endpoint='close')
+@pga_login_required
 def close(trans_id):
     """
     Remove the session details for the particular transaction id.
@@ -270,6 +272,7 @@ def close(trans_id):
     methods=["GET"],
     endpoint="servers"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def servers():
     """
@@ -323,6 +326,7 @@ def servers():
     methods=["GET"],
     endpoint="get_server"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def get_server(sid, did):
     """
@@ -366,6 +370,7 @@ def get_server(sid, did):
     methods=["POST"],
     endpoint="connect_server"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def connect_server(sid):
     # Check if server is already connected then no need to reconnect again.
@@ -394,6 +399,7 @@ def connect_server(sid):
     methods=["POST"],
     endpoint="connect_database"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def connect_database(sid, did):
     server = get_server_access(sid)
@@ -411,6 +417,7 @@ def connect_database(sid, did):
     methods=["GET"],
     endpoint="databases"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def databases(sid):
     """
@@ -454,6 +461,7 @@ def databases(sid):
     methods=["GET"],
     endpoint="schemas"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def schemas(sid, did):
     """
@@ -478,7 +486,7 @@ def schemas(sid, did):
 
 
 @socketio.on('compare_database', namespace=SOCKETIO_NAMESPACE)
-@socket_login_required
+@socket_permissions_required(AllPermissionTypes.tools_schema_diff)
 def compare_database(params):
     """
     This function will compare the two databases.
@@ -637,7 +645,7 @@ def compare_database(params):
 
 
 @socketio.on('compare_schema', namespace=SOCKETIO_NAMESPACE)
-@socket_login_required
+@socket_permissions_required(AllPermissionTypes.tools_schema_diff)
 def compare_schema(params):
     """
     This function will compare the two schema.
@@ -707,6 +715,7 @@ def compare_schema(params):
     methods=["GET"],
     endpoint="ddl_compare"
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
 @pga_login_required
 def ddl_compare(trans_id, source_sid, source_did, source_scid,
                 target_sid, target_did, target_scid, source_oid,
