@@ -1807,6 +1807,7 @@ def get_test_user(self, user_details,
 
         # Create test_client for this user, and login through it.
         test_client = self.app.test_client()
+        test_client.setApp(self.app)
         user = create_user(user_details)
         if user is not None:
             test_client.test_config_data = dict({
