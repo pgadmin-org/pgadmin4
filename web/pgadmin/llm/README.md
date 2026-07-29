@@ -13,15 +13,17 @@ This module provides AI/LLM functionality for pgAdmin, including database securi
 
 - **Anthropic Claude** (recommended)
 - **OpenAI GPT**
+- **GLM (Z.ai)**
 - **Ollama** (local models)
 
 ## Configuration
 
 Configure LLM providers in `config.py`:
 
-- `DEFAULT_LLM_PROVIDER`: Set to 'anthropic', 'openai', or 'ollama'
+- `DEFAULT_LLM_PROVIDER`: Set to 'anthropic', 'openai', 'glm', or 'ollama'
 - `ANTHROPIC_API_KEY_FILE`: Path to file containing Anthropic API key
 - `OPENAI_API_KEY_FILE`: Path to file containing OpenAI API key
+- `GLM_API_KEY_FILE`: Path to file containing GLM API key
 - `OLLAMA_API_URL`: URL for Ollama server (e.g., 'http://localhost:11434')
 
 If API keys are not found, the LLM features will be gracefully disabled.
