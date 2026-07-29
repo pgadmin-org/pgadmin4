@@ -210,6 +210,12 @@ def create_app(app_name=None):
         # we don't want it to redirect to main page after password
         # change operation so we will open the same password change page again.
         config.SECURITY_POST_CHANGE_VIEW = 'browser.change_password'
+    else:
+        # Desktop mode: re-check the keyring backend picked at config-load
+        # time is actually usable, without blocking startup on a possible
+        # hang (see pgadmin/keyring_probe.py for why).
+        from pgadmin.utils.keyring_probe import start_async_probe
+        start_async_probe(config.__dict__)
 
     """Create the Flask application, startup logging and dynamically load
     additional modules (blueprints) that are found in this directory."""
