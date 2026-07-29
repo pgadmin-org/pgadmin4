@@ -252,8 +252,10 @@ class LLMModule(PgAdminModule):
             category_label=gettext('GLM (Z.ai)'),
             help_str=gettext(
                 'URL for the GLM API endpoint. Leave empty to use '
-                'the default (https://open.bigmodel.cn/api/paas/v4). '
-                'Set a custom URL to use a GLM-compatible API provider.'
+                'the default (https://api.z.ai/api/paas/v4). Use '
+                'https://api.z.ai/api/coding/paas/v4 for a Coding Plan '
+                'subscription, or set a custom URL to use another '
+                'GLM-compatible API provider.'
             )
         )
 
@@ -281,7 +283,7 @@ class LLMModule(PgAdminModule):
             help_str=gettext(
                 'The GLM model to use. Models are loaded dynamically '
                 'from your API key. You can also type a custom model name. '
-                'Leave empty to use the default (glm-4.5).'
+                'A model must be selected; there is no default.'
             ),
             control_props={
                 'allowClear': True,
@@ -1094,9 +1096,11 @@ def _fetch_glm_models(api_key, api_url=''):
     Fetch models from GLM (Z.ai) API.
     Returns a list of model options with label and value.
     """
+    from pgadmin.llm.providers.glm import DEFAULT_API_BASE_URL
+
     return _fetch_openai_models(
         api_key=api_key,
-        api_url=api_url or 'https://open.bigmodel.cn/api/paas/v4'
+        api_url=api_url or DEFAULT_API_BASE_URL
     )
 
 

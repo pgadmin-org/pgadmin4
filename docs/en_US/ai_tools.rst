@@ -65,9 +65,9 @@ Select your preferred LLM provider from the dropdown:
 **GLM (Z.ai)**
   Use GLM models from Z.ai through the provider's OpenAI-compatible API.
 
-  * **API URL**: Custom API endpoint URL (leave empty for default: https://open.bigmodel.cn/api/paas/v4).
+  * **API URL**: Custom API endpoint URL (leave empty for default: https://api.z.ai/api/paas/v4). Use https://api.z.ai/api/coding/paas/v4 with a Z.ai Coding Plan subscription.
   * **API Key File**: Path to a file containing your Z.ai API key. This path refers to the filesystem where the pgAdmin server is running (e.g., inside the container if using Docker). The ``~`` prefix is expanded to the home directory of the user running the pgAdmin server process.
-  * **Model**: Select from available GLM models (e.g., glm-4.5).
+  * **Model**: Select from available GLM models (e.g., glm-4.7). There is no default; a model must be selected before the AI features can be used.
 
 **Ollama**
   Use locally-hosted open-source models via Ollama. Requires a running Ollama instance.

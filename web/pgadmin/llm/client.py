@@ -258,6 +258,16 @@ def get_llm_client(
                 provider="glm"
             ))
         model_name = model or get_glm_model()
+        if not model_name:
+            # GLM has no default model: the catalogue differs across the
+            # Z.ai open platform, Coding Plan subscriptions and Zhipu's
+            # China platform. Say so, rather than letting an unset model
+            # reach the API and come back as an opaque 404.
+            raise LLMClientError(LLMError(
+                message="No GLM model selected. Choose one in "
+                        "Preferences > AI > GLM (Z.ai).",
+                provider="glm"
+            ))
         return GLMClient(
             api_key=api_key, model=model_name, api_url=api_url
         )

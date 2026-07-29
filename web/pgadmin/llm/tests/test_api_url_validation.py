@@ -30,6 +30,7 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
+                'https://api.z.ai:443',
                 'https://open.bigmodel.cn:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
@@ -37,13 +38,23 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             expected=True,
         )),
         ('Allowed GLM URL', dict(
-            url='https://open.bigmodel.cn/api/paas/v4/models',
+            url='https://api.z.ai/api/paas/v4/models',
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
+                'https://api.z.ai:443',
                 'https://open.bigmodel.cn:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
+            ],
+            expected=True,
+        )),
+        # Allowlist entries match on scheme+host+port, so one api.z.ai
+        # entry has to cover the Coding Plan path as well.
+        ('Allowed GLM Coding Plan URL', dict(
+            url='https://api.z.ai/api/coding/paas/v4/models',
+            allowed_urls=[
+                'https://api.z.ai:443',
             ],
             expected=True,
         )),
@@ -52,7 +63,7 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
-                'https://open.bigmodel.cn:443',
+                'https://api.z.ai:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
             ],
@@ -63,7 +74,7 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
-                'https://open.bigmodel.cn:443',
+                'https://api.z.ai:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
             ],
@@ -291,9 +302,9 @@ class GetApiUrlResolutionTestCase(BaseTestGenerator):
             getter='get_glm_api_url',
             pref_value='http://evil.com:9999/',
             config_attr='GLM_API_URL',
-            config_value='https://open.bigmodel.cn/api/paas/v4',
+            config_value='https://api.z.ai/api/paas/v4',
             allowed_urls=[
-                'https://open.bigmodel.cn:443',
+                'https://api.z.ai:443',
             ],
             expect='',
         )),
@@ -592,7 +603,7 @@ class GetLLMClientRejectedUrlTestCase(BaseTestGenerator):
             provider='glm',
             pref_name='glm_api_url',
             pref_value='http://10.0.0.1:8080/',
-            allowed_urls=['https://open.bigmodel.cn:443'],
+            allowed_urls=['https://api.z.ai:443'],
         )),
         ('Ollama rejected URL surfaces clear error', dict(
             provider='ollama',

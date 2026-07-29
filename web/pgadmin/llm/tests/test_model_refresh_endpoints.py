@@ -400,7 +400,7 @@ class RefreshGLMHappyPathTestCase(BaseTestGenerator):
         ('Valid key file and URL returns models', dict(
             post_data={
                 'api_key_file': '/tmp/fake-key',
-                'api_url': 'https://open.bigmodel.cn/api/paas/v4',
+                'api_url': 'https://api.z.ai/api/paas/v4',
             },
         )),
     ]

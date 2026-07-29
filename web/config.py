@@ -1067,7 +1067,8 @@ OPENAI_API_MODEL = ''
 
 # GLM (Z.ai) Configuration
 # URL for the GLM API endpoint. Leave empty to use the default
-# (https://open.bigmodel.cn/api/paas/v4).
+# (https://api.z.ai/api/paas/v4). Set this to
+# https://api.z.ai/api/coding/paas/v4 for a Z.ai Coding Plan
 GLM_API_URL = ''
 
 # Path to a file containing the GLM API key. The file should contain
@@ -1075,8 +1076,11 @@ GLM_API_URL = ''
 # Default: ~/.zai-api-key
 GLM_API_KEY_FILE = '~/.zai-api-key'
 
-# The GLM model to use for AI features.
-# Examples: glm-4.5, glm-4.5-air
+# The GLM model to use for AI features. There is no default: the models
+# available differ between the Z.ai open platform, Coding Plan
+# subscriptions and Zhipu's China platform, so one must be selected
+# here or in the user's preferences.
+# Examples: glm-4.6, glm-4.7, glm-5
 GLM_API_MODEL = ''
 
 # Ollama Configuration
@@ -1120,7 +1124,7 @@ DOCKER_API_MODEL = ''
 ALLOWED_LLM_API_URLS = [
     'https://api.anthropic.com:443',
     'https://api.openai.com:443',
-    'https://open.bigmodel.cn:443',
+    'https://api.z.ai:443',
     # Loopback addresses on any port: covers Ollama (11434), Docker
     # Model Runner (12434), LiteLLM (4000), vLLM (8000), LM Studio
     # (1234), text-generation-webui (5000), and any self-hosted
