@@ -30,6 +30,18 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
+                'https://open.bigmodel.cn:443',
+                'http://localhost:11434',
+                'http://localhost:12434',
+            ],
+            expected=True,
+        )),
+        ('Allowed GLM URL', dict(
+            url='https://open.bigmodel.cn/api/paas/v4/models',
+            allowed_urls=[
+                'https://api.anthropic.com:443',
+                'https://api.openai.com:443',
+                'https://open.bigmodel.cn:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
             ],
@@ -40,6 +52,7 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
+                'https://open.bigmodel.cn:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
             ],
@@ -50,6 +63,7 @@ class ValidateApiUrlTestCase(BaseTestGenerator):
             allowed_urls=[
                 'https://api.anthropic.com:443',
                 'https://api.openai.com:443',
+                'https://open.bigmodel.cn:443',
                 'http://localhost:11434',
                 'http://localhost:12434',
             ],
@@ -273,6 +287,16 @@ class GetApiUrlResolutionTestCase(BaseTestGenerator):
             ],
             expect='',
         )),
+        ('GLM: rejected pref returns "" (no fallback)', dict(
+            getter='get_glm_api_url',
+            pref_value='http://evil.com:9999/',
+            config_attr='GLM_API_URL',
+            config_value='https://open.bigmodel.cn/api/paas/v4',
+            allowed_urls=[
+                'https://open.bigmodel.cn:443',
+            ],
+            expect='',
+        )),
         ('Docker: rejected pref returns "" (no fallback)', dict(
             getter='get_docker_api_url',
             pref_value='http://192.168.1.1:12434/',
@@ -394,6 +418,15 @@ class GetApiKeyResolutionTestCase(BaseTestGenerator):
             read_admin_returns='sk-admin-fallback',
             expect=None,
         )),
+        ('GLM: rejected pref path returns None', dict(
+            getter='get_glm_api_key',
+            pref_value='/tmp/malicious-zai.key',
+            config_attr='GLM_API_KEY_FILE',
+            config_value='/etc/pgadmin/admin.key',
+            path_valid=False,
+            read_admin_returns='sk-admin-fallback',
+            expect=None,
+        )),
         ('Anthropic: allowed pref path returns user key', dict(
             getter='get_anthropic_api_key',
             pref_value='/home/u/private/anthropic.key',
@@ -506,6 +539,11 @@ class GetLLMClientRejectedKeyFileTestCase(BaseTestGenerator):
             pref_key='anthropic_api_key_file',
             pref_value='/tmp/leak.key',
         )),
+        ('GLM rejected key file', dict(
+            provider='glm',
+            pref_key='glm_api_key_file',
+            pref_value='/tmp/leak-zai.key',
+        )),
     ]
 
     def setUp(self):
@@ -549,6 +587,12 @@ class GetLLMClientRejectedUrlTestCase(BaseTestGenerator):
             pref_name='anthropic_api_url',
             pref_value='http://10.0.0.1:8080/',
             allowed_urls=['https://api.anthropic.com:443'],
+        )),
+        ('GLM rejected URL surfaces clear error', dict(
+            provider='glm',
+            pref_name='glm_api_url',
+            pref_value='http://10.0.0.1:8080/',
+            allowed_urls=['https://open.bigmodel.cn:443'],
         )),
         ('Ollama rejected URL surfaces clear error', dict(
             provider='ollama',

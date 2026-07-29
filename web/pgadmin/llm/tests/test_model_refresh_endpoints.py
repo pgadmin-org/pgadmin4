@@ -154,6 +154,77 @@ class RefreshOpenAIEndpointTestCase(BaseTestGenerator):
                 p.stop()
 
 
+class RefreshGLMEndpointTestCase(BaseTestGenerator):
+    """Integration tests for GLM refresh endpoint error handling"""
+
+    scenarios = [
+        ('Bad api_key_file returns generic error', dict(
+            post_data={'api_key_file': '/etc/passwd', 'api_url': ''},
+            mock_validate_path_return=None,
+            mock_validate_url_return='skip',
+            expect_error_contains='not permitted',
+        )),
+        ('Disallowed api_url returns rejection', dict(
+            post_data={
+                'api_key_file': '',
+                'api_url': 'http://169.254.169.254/'
+            },
+            mock_validate_path_return='skip',
+            mock_validate_url_return=False,
+            expect_error_contains='not in the allowed list',
+        )),
+    ]
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        patches = [
+            patch(
+                'pgadmin.authenticate.mfa.utils.mfa_required',
+                lambda f: f
+            ),
+        ]
+
+        if self.mock_validate_path_return != 'skip':
+            patches.append(patch(
+                'pgadmin.llm.utils.validate_api_key_path',
+                return_value=self.mock_validate_path_return
+            ))
+
+        if hasattr(self, 'mock_validate_url_return') and \
+                self.mock_validate_url_return != 'skip':
+            patches.append(patch(
+                'pgadmin.llm.utils.validate_api_url',
+                return_value=self.mock_validate_url_return
+            ))
+
+        for p in patches:
+            p.start()
+
+        try:
+            response = self.tester.post(
+                '/llm/models/glm/refresh',
+                data=json.dumps(self.post_data),
+                content_type='application/json',
+                follow_redirects=True
+            )
+
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertIn('error', data['data'])
+            self.assertIn(
+                self.expect_error_contains,
+                data['data']['error']
+            )
+            self.assertNotIn(
+                'root:', data['data'].get('error', '')
+            )
+        finally:
+            for p in patches:
+                p.stop()
+
+
 class RefreshOllamaEndpointTestCase(BaseTestGenerator):
     """Integration tests for Ollama refresh endpoint error handling"""
 
@@ -311,6 +382,47 @@ class RefreshOpenAIHappyPathTestCase(BaseTestGenerator):
         ):
             response = self.tester.post(
                 '/llm/models/openai/refresh',
+                data=json.dumps(self.post_data),
+                content_type='application/json',
+                follow_redirects=True
+            )
+
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertNotIn('error', data['data'])
+            self.assertEqual(data['data']['models'], _FAKE_MODELS)
+
+
+class RefreshGLMHappyPathTestCase(BaseTestGenerator):
+    """Happy-path test: GLM refresh returns models when input valid."""
+
+    scenarios = [
+        ('Valid key file and URL returns models', dict(
+            post_data={
+                'api_key_file': '/tmp/fake-key',
+                'api_url': 'https://open.bigmodel.cn/api/paas/v4',
+            },
+        )),
+    ]
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        with patch(
+            'pgadmin.authenticate.mfa.utils.mfa_required', lambda f: f
+        ), patch(
+            'pgadmin.llm.utils.validate_api_url', return_value=True
+        ), patch(
+            'pgadmin.llm.utils.validate_api_key_path',
+            return_value='/tmp/fake-key'
+        ), patch(
+            'pgadmin.llm.utils.read_api_key_file', return_value='sk-test'
+        ), patch(
+            'pgadmin.llm._fetch_glm_models', return_value=_FAKE_MODELS
+        ):
+            response = self.tester.post(
+                '/llm/models/glm/refresh',
                 data=json.dumps(self.post_data),
                 content_type='application/json',
                 follow_redirects=True

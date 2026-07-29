@@ -154,9 +154,9 @@ def get_llm_client(
     Get an LLM client instance for the specified or default provider.
 
     Args:
-        provider: Optional provider name ('anthropic', 'openai', 'ollama',
-                  'docker'). If not specified, uses the configured default
-                  provider.
+        provider: Optional provider name ('anthropic', 'openai', 'glm',
+                  'ollama', 'docker'). If not specified, uses the configured
+                  default provider.
         model: Optional model name to use. If not specified, uses the
                configured default model for the provider.
 
@@ -171,6 +171,7 @@ def get_llm_client(
         get_default_provider,
         get_anthropic_api_url, get_anthropic_api_key, get_anthropic_model,
         get_openai_api_url, get_openai_api_key, get_openai_model,
+        get_glm_api_url, get_glm_api_key, get_glm_model,
         get_ollama_api_url, get_ollama_model,
         get_docker_api_url, get_docker_model,
         is_pref_api_url_rejected,
@@ -240,6 +241,24 @@ def get_llm_client(
             ))
         model_name = model or get_openai_model()
         return OpenAIClient(
+            api_key=api_key, model=model_name, api_url=api_url
+        )
+
+    elif provider == 'glm':
+        from pgadmin.llm.providers.glm import GLMClient
+        if is_pref_api_url_rejected('glm_api_url'):
+            raise _rejected_url_error('glm')
+        if is_pref_api_key_path_rejected('glm_api_key_file'):
+            raise _rejected_key_file_error('glm')
+        api_key = get_glm_api_key()
+        api_url = get_glm_api_url()
+        if not api_key and not api_url:
+            raise LLMClientError(LLMError(
+                message="GLM API key not configured",
+                provider="glm"
+            ))
+        model_name = model or get_glm_model()
+        return GLMClient(
             api_key=api_key, model=model_name, api_url=api_url
         )
 

@@ -40,7 +40,7 @@ SSL_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1_2
 MODULE_NAME = 'llm'
 
 # Valid LLM providers
-LLM_PROVIDERS = ['anthropic', 'openai', 'ollama', 'docker']
+LLM_PROVIDERS = ['anthropic', 'openai', 'glm', 'ollama', 'docker']
 
 
 class LLMModule(PgAdminModule):
@@ -71,6 +71,7 @@ class LLMModule(PgAdminModule):
             {'label': gettext('None (Disabled)'), 'value': ''},
             {'label': gettext('Anthropic'), 'value': 'anthropic'},
             {'label': gettext('OpenAI'), 'value': 'openai'},
+            {'label': gettext('GLM (Z.ai)'), 'value': 'glm'},
             {'label': gettext('Ollama'), 'value': 'ollama'},
             {'label': gettext('Docker Model Runner'), 'value': 'docker'},
         ]
@@ -238,6 +239,64 @@ class LLMModule(PgAdminModule):
             }
         )
 
+        # GLM Settings
+        # Get defaults from config
+        glm_url_default = getattr(config, 'GLM_API_URL', '')
+        glm_key_file_default = getattr(config, 'GLM_API_KEY_FILE', '')
+        glm_model_default = getattr(config, 'GLM_API_MODEL', '')
+
+        self.glm_api_url = self.preference.register(
+            'glm', 'glm_api_url',
+            gettext("API URL"), 'text',
+            glm_url_default,
+            category_label=gettext('GLM (Z.ai)'),
+            help_str=gettext(
+                'URL for the GLM API endpoint. Leave empty to use '
+                'the default (https://open.bigmodel.cn/api/paas/v4). '
+                'Set a custom URL to use a GLM-compatible API provider.'
+            )
+        )
+
+        self.glm_api_key_file = self.preference.register(
+            'glm', 'glm_api_key_file',
+            gettext("API Key File"), 'text',
+            glm_key_file_default,
+            category_label=gettext('GLM (Z.ai)'),
+            help_str=gettext(
+                'Path to a file containing your GLM API key. '
+                'This path must be on the server hosting pgAdmin, '
+                'e.g. inside the container when using Docker. '
+                'The file should contain only the API key.'
+            )
+        )
+
+        glm_model_options = []
+
+        self.glm_api_model = self.preference.register(
+            'glm', 'glm_api_model',
+            gettext("Model"), 'options',
+            glm_model_default,
+            category_label=gettext('GLM (Z.ai)'),
+            options=glm_model_options,
+            help_str=gettext(
+                'The GLM model to use. Models are loaded dynamically '
+                'from your API key. You can also type a custom model name. '
+                'Leave empty to use the default (glm-4.5).'
+            ),
+            control_props={
+                'allowClear': True,
+                'creatable': True,
+                'tags': True,
+                'placeholder': gettext('Select or type a model name...'),
+                'optionsUrl': 'llm.models_glm',
+                'optionsRefreshUrl': 'llm.refresh_models_glm',
+                'refreshDepNames': {
+                    'api_url': 'glm_api_url',
+                    'api_key_file': 'glm_api_key_file'
+                }
+            }
+        )
+
         # Ollama Settings
         # Get defaults from config
         ollama_url_default = getattr(config, 'OLLAMA_API_URL', '')
@@ -334,10 +393,12 @@ class LLMModule(PgAdminModule):
         return [
             'llm.models_anthropic',
             'llm.models_openai',
+            'llm.models_glm',
             'llm.models_ollama',
             'llm.models_docker',
             'llm.refresh_models_anthropic',
             'llm.refresh_models_openai',
+            'llm.refresh_models_glm',
             'llm.refresh_models_ollama',
             'llm.refresh_models_docker',
             'llm.status',
@@ -378,7 +439,7 @@ def get_llm_status():
     """
     from pgadmin.llm.utils import (
         is_llm_enabled, is_llm_enabled_system, get_default_provider,
-        get_anthropic_model, get_openai_model, get_ollama_model,
+        get_anthropic_model, get_openai_model, get_glm_model, get_ollama_model,
         get_docker_model
     )
 
@@ -388,6 +449,8 @@ def get_llm_status():
         model = get_anthropic_model()
     elif provider == 'openai':
         model = get_openai_model()
+    elif provider == 'glm':
+        model = get_glm_model()
     elif provider == 'ollama':
         model = get_ollama_model()
     elif provider == 'docker':
@@ -612,6 +675,108 @@ def refresh_openai_models():
         return make_json_response(
             data={'models': [],
                   'error': 'Failed to fetch OpenAI models. '
+                           'Check the API key file and URL.'},
+            status=200
+        )
+
+
+@blueprint.route("/models/glm", methods=["GET"], endpoint='models_glm')
+@pga_login_required
+def get_glm_models():
+    """
+    Fetch available GLM models.
+    Returns models from the OpenAI-compatible models endpoint.
+    """
+    from pgadmin.llm.utils import get_glm_api_key, get_glm_api_url
+
+    api_key = get_glm_api_key()
+    api_url = get_glm_api_url()
+    if not api_key and not api_url:
+        return make_json_response(
+            data={'models': [], 'error': 'No API key configured'},
+            status=200
+        )
+
+    try:
+        models = _fetch_glm_models(api_key, api_url)
+        return make_json_response(data={'models': models}, status=200)
+    except LLMApiError as e:
+        return make_json_response(
+            data={'models': [], 'error': str(e)},
+            status=200
+        )
+    except Exception:
+        return make_json_response(
+            data={'models': [],
+                  'error': 'Failed to fetch GLM models. '
+                           'Check the API key and URL configuration.'},
+            status=200
+        )
+
+
+@blueprint.route(
+    "/models/glm/refresh",
+    methods=["POST"],
+    endpoint='refresh_models_glm'
+)
+@pga_login_required
+def refresh_glm_models():
+    """
+    Fetch available GLM models using a provided API key file path
+    and/or custom API URL.
+    Used by the preferences refresh button to load models before saving.
+    """
+    from pgadmin.llm.utils import (
+        read_api_key_file, validate_api_key_path, validate_api_url
+    )
+
+    data = request.get_json(force=True, silent=True) or {}
+    api_key_file = data.get('api_key_file', '')
+    api_url = data.get('api_url', '')
+
+    if api_url and not validate_api_url(api_url):
+        return make_json_response(
+            data={'models': [],
+                  'error': 'API URL is not in the allowed list. '
+                           'Contact your administrator to update '
+                           'ALLOWED_LLM_API_URLS in the server '
+                           'configuration.'},
+            status=200
+        )
+
+    api_key = None
+    if api_key_file:
+        safe_path = validate_api_key_path(api_key_file)
+        if safe_path is None:
+            return make_json_response(
+                data={'models': [],
+                      'error': 'API key file path is not permitted. '
+                               'The file must be within your private '
+                               'user storage directory; shared storage '
+                               'and other locations are not allowed for '
+                               'security reasons.'},
+                status=200
+            )
+        api_key = read_api_key_file(safe_path)
+
+    if not api_key and not api_url:
+        return make_json_response(
+            data={'models': [], 'error': 'No API key or custom URL provided'},
+            status=200
+        )
+
+    try:
+        models = _fetch_glm_models(api_key, api_url)
+        return make_json_response(data={'models': models}, status=200)
+    except LLMApiError as e:
+        return make_json_response(
+            data={'models': [], 'error': str(e)},
+            status=200
+        )
+    except Exception:
+        return make_json_response(
+            data={'models': [],
+                  'error': 'Failed to fetch GLM models. '
                            'Check the API key file and URL.'},
             status=200
         )
@@ -922,6 +1087,17 @@ def _fetch_openai_models(api_key, api_url=''):
     models.sort(key=lambda x: x['value'])
 
     return models
+
+
+def _fetch_glm_models(api_key, api_url=''):
+    """
+    Fetch models from GLM (Z.ai) API.
+    Returns a list of model options with label and value.
+    """
+    return _fetch_openai_models(
+        api_key=api_key,
+        api_url=api_url or 'https://open.bigmodel.cn/api/paas/v4'
+    )
 
 
 def _fetch_ollama_models(api_url):

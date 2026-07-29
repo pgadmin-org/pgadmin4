@@ -452,6 +452,40 @@ def get_openai_model():
     return config.OPENAI_API_MODEL or ''
 
 
+def get_glm_api_url():
+    """
+    Get the GLM API URL. See :func:`get_anthropic_api_url` for
+    the resolution and rejection rules.
+    """
+    return _resolve_pref_url('glm_api_url', config.GLM_API_URL)
+
+
+def get_glm_api_key():
+    """
+    Get the GLM API key. See :func:`_resolve_pref_key_file` for
+    resolution and rejection rules.
+    """
+    return _resolve_pref_key_file(
+        'glm_api_key_file', config.GLM_API_KEY_FILE
+    )
+
+
+def get_glm_model():
+    """
+    Get the GLM model to use.
+
+    Checks user preferences first, then falls back to system configuration.
+
+    Returns:
+        The model name string, or empty string if not configured.
+    """
+    pref_model = _get_preference_value('glm_api_model')
+    if pref_model:
+        return pref_model
+
+    return config.GLM_API_MODEL or ''
+
+
 def get_ollama_api_url():
     """
     Get the Ollama API URL. See :func:`get_anthropic_api_url` for
@@ -513,7 +547,7 @@ def get_default_provider():
     Returns None if disabled at system level or user preference is empty.
 
     Returns:
-        The provider name ('anthropic', 'openai', 'ollama', 'docker')
+        The provider name ('anthropic', 'openai', 'glm', 'ollama', 'docker')
         or None if disabled.
     """
     # Check master switch first - cannot be overridden by user
@@ -521,7 +555,7 @@ def get_default_provider():
         return None
 
     # Valid provider values
-    valid_providers = {'anthropic', 'openai', 'ollama', 'docker'}
+    valid_providers = {'anthropic', 'openai', 'glm', 'ollama', 'docker'}
 
     # Get preference value (includes config default if not set by user)
     try:
@@ -607,6 +641,10 @@ def get_llm_config():
                 'api_key': str or None,
                 'model': str
             },
+            'glm': {
+                'api_key': str or None,
+                'model': str
+            },
             'ollama': {
                 'api_url': str,
                 'model': str
@@ -629,6 +667,11 @@ def get_llm_config():
             'api_url': get_openai_api_url(),
             'api_key': get_openai_api_key(),
             'model': get_openai_model()
+        },
+        'glm': {
+            'api_url': get_glm_api_url(),
+            'api_key': get_glm_api_key(),
+            'model': get_glm_model()
         },
         'ollama': {
             'api_url': get_ollama_api_url(),
