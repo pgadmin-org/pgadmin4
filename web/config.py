@@ -1025,7 +1025,8 @@ LLM_ENABLED = True
 # Default LLM Provider
 # Specifies which LLM provider to use by default when LLM_ENABLED is True.
 # Users can override this in their preferences.
-# Valid values: 'anthropic', 'openai', 'ollama', 'docker', or '' (disabled)
+# Valid values: 'anthropic', 'openai', 'glm', 'ollama', 'docker',
+# or '' (disabled)
 DEFAULT_LLM_PROVIDER = ''
 
 # Anthropic Configuration
@@ -1063,6 +1064,24 @@ OPENAI_API_KEY_FILE = '~/.openai-api-key'
 # The OpenAI model to use for AI features.
 # Examples: gpt-4o, gpt-4o-mini, gpt-4-turbo
 OPENAI_API_MODEL = ''
+
+# GLM (Z.ai) Configuration
+# URL for the GLM API endpoint. Leave empty to use the default
+# (https://api.z.ai/api/paas/v4). Set this to
+# https://api.z.ai/api/coding/paas/v4 for a Z.ai Coding Plan
+GLM_API_URL = ''
+
+# Path to a file containing the GLM API key. The file should contain
+# only the API key with no additional whitespace or formatting.
+# Default: ~/.zai-api-key
+GLM_API_KEY_FILE = '~/.zai-api-key'
+
+# The GLM model to use for AI features. There is no default: the models
+# available differ between the Z.ai open platform, Coding Plan
+# subscriptions and Zhipu's China platform, so one must be selected
+# here or in the user's preferences.
+# Examples: glm-4.6, glm-4.7, glm-5
+GLM_API_MODEL = ''
 
 # Ollama Configuration
 # URL for the Ollama API endpoint. Leave empty to disable Ollama.
@@ -1105,6 +1124,7 @@ DOCKER_API_MODEL = ''
 ALLOWED_LLM_API_URLS = [
     'https://api.anthropic.com:443',
     'https://api.openai.com:443',
+    'https://api.z.ai:443',
     # Loopback addresses on any port: covers Ollama (11434), Docker
     # Model Runner (12434), LiteLLM (4000), vLLM (8000), LM Studio
     # (1234), text-generation-webui (5000), and any self-hosted
