@@ -169,29 +169,43 @@ _build_docs() {
 }
 
 _fixup_imports() {
-    local TODO TODO_OLD FW_RELPATH LIB LIB_BN
+    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN
 
     echo "Fixing imports on the core appbundle..."
     pushd "$1" > /dev/null || exit
 
-    # Find all the files that may need tweaks
+    # Find all the files that may need tweaks.
+    #
+    # NOTE: entries are newline-separated, not space-separated. macOS
+    # app bundles routinely have spaces in paths (helper .app names,
+    # "Electron Framework.framework", etc.) - splitting/joining on
+    # spaces truncates those paths at the first space (e.g.
+    # "pgAdmin 4 Helper (Plugin)" becomes just "pgAdmin"), which then
+    # fails outright in otool/install_name_tool below. `awk -F': '`
+    # splits only on the literal ": " token `file` emits between the
+    # path and its description, leaving spaces inside the path intact.
     TODO=$(find . -perm +0111 -type f -exec file "{}" \; | \
         grep -v "Frameworks/Python.framework" | \
         grep -E "Mach-O 64-bit" | \
-        awk -F ':| ' '{ORS=" "; print $1}' | \
+        awk -F': ' '{print $1}' | \
         uniq)
 
     # Add anything in the site-packages Python directory
-    TODO+=$(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f -exec file "{}" \; | \
+    TODO_PYTHON=$(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f -exec file "{}" \; | \
         grep -E "Mach-O 64-bit" | \
-        awk -F ':| ' '{ORS=" "; print $1}' | \
+        awk -F': ' '{print $1}' | \
         uniq)
+    if [ -n "${TODO_PYTHON}" ]; then
+        TODO="${TODO}"$'\n'"${TODO_PYTHON}"
+    fi
 
-    echo "Found executables: ${TODO}"
+    echo "Found executables:"
+    echo "${TODO}"
     while test "${TODO}" != ""; do
         TODO_OLD=${TODO} ;
         TODO="" ;
-        for TODO_OBJ in ${TODO_OLD}; do
+        while IFS= read -r TODO_OBJ; do
+            [ -z "${TODO_OBJ}" ] && continue
             echo "Post-processing: ${TODO_OBJ}"
 
             # The Rust interface in the Python Cryptography module contains
@@ -234,7 +248,7 @@ _fixup_imports() {
                     install_name_tool \
                         -id "${LIB_BN}" \
                         "Contents/Frameworks/${LIB_BN}" || exit 1
-                    TODO="${TODO} ./Contents/Frameworks/${LIB_BN}"
+                    TODO="${TODO}"$'\n'"./Contents/Frameworks/${LIB_BN}"
                 fi
 
                 # Rewrite the dependency paths
@@ -248,7 +262,7 @@ _fixup_imports() {
                     "@loader_path/${FW_RELPATH}/${TARGET_FILE}" \
                     "${TODO_OBJ}" || exit 1
             done
-        done
+        done <<< "${TODO_OLD}"
     done
 
     echo "Imports updated on the core appbundle."
