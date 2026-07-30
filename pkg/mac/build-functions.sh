@@ -235,24 +235,39 @@ _fixup_imports() {
 
             # Find all libraries ${TODO_OBJ} depends on, but skip system libraries.
             #
+            # otool sometimes re-execs the legacy otool-classic internally
+            # for certain Mach-O binaries (seen consistently on
+            # "pgAdmin 4 Helper (GPU)"), and that internal re-exec fails
+            # to open a file confirmed present, correctly-permissioned,
+            # and byte-for-byte correctly-pathed at that exact moment
+            # (verified via ls -la + od -c on a prior failing build) -
+            # i.e. otool's own internal dispatch is broken here, not
+            # anything this script passes it. Retry via otool-classic
+            # directly (our own quoting, not otool's internal re-exec)
+            # before giving up.
+            #
             # NOTE: the assignment must be the condition of the `if`
             # itself, not a separate statement followed by checking $? -
             # this script runs under an ERR trap/set -e, and a bare
             # `VAR=$(cmd)` assignment still propagates cmd's failure to
             # the trap immediately, aborting before $? can ever be
-            # inspected (that's why the previous version of this
-            # diagnostic never actually printed anything). Bash exempts
-            # the tested command of an `if` from errexit.
+            # inspected. Bash exempts the tested command of an `if` from
+            # errexit.
             if ! OTOOL_OUTPUT=$(otool -L "${TODO_OBJ}" 2>&1); then
-                echo "ERROR: otool -L failed on: ${TODO_OBJ}"
+                echo "WARNING: otool -L failed on: ${TODO_OBJ}"
                 echo "otool output: ${OTOOL_OUTPUT}"
-                echo "Raw bytes of the path (od -c):"
-                printf '%s' "${TODO_OBJ}" | od -c
-                echo "ls -la of the exact path:"
-                ls -la -- "${TODO_OBJ}"
-                echo "ls -la of the containing directory:"
-                ls -la -- "$(dirname "${TODO_OBJ}")"
-                exit 1
+                echo "Retrying via otool-classic directly..."
+                if ! OTOOL_OUTPUT=$(otool-classic -L "${TODO_OBJ}" 2>&1); then
+                    echo "ERROR: otool-classic -L also failed on: ${TODO_OBJ}"
+                    echo "otool-classic output: ${OTOOL_OUTPUT}"
+                    echo "Raw bytes of the path (od -c):"
+                    printf '%s' "${TODO_OBJ}" | od -c
+                    echo "ls -la of the exact path:"
+                    ls -la -- "${TODO_OBJ}"
+                    echo "ls -la of the containing directory:"
+                    ls -la -- "$(dirname "${TODO_OBJ}")"
+                    exit 1
+                fi
             fi
             for LIB in $(
                 echo "${OTOOL_OUTPUT}" | \
