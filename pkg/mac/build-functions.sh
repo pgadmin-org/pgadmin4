@@ -169,7 +169,7 @@ _build_docs() {
 }
 
 _fixup_imports() {
-    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN
+    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT OTOOL_STATUS
 
     echo "Fixing imports on the core appbundle..."
     pushd "$1" > /dev/null || exit
@@ -216,6 +216,17 @@ _fixup_imports() {
                 continue
             fi
 
+            # Diagnostics for a previously-seen otool failure on paths
+            # with spaces/parens (e.g. "pgAdmin 4 Helper (GPU)"): a plain
+            # `echo` won't reveal invisible/non-ASCII whitespace or
+            # confirm the file is actually present and stable at this
+            # exact moment, so dump both explicitly whenever otool fails
+            # below, rather than guessing from ${TODO_OBJ} alone again.
+            if ! ls -la -- "${TODO_OBJ}" > /dev/null 2>&1; then
+                echo "WARNING: ${TODO_OBJ} does not exist right before otool -L (raw bytes):"
+                printf '%s' "${TODO_OBJ}" | od -c
+            fi
+
             # Figure out the relative path from ${TODO_OBJ} to Contents/Frameworks
             FW_RELPATH=$(echo "${TODO_OBJ}" | \
                 sed -n 's|^\(\.//*\)\(\([^/][^/]*/\)*\)[^/][^/]*$|\2|gp' | \
@@ -223,8 +234,21 @@ _fixup_imports() {
                 )"Contents/Frameworks"
 
             # Find all libraries ${TODO_OBJ} depends on, but skip system libraries
+            OTOOL_OUTPUT=$(otool -L "${TODO_OBJ}" 2>&1)
+            OTOOL_STATUS=$?
+            if [ "${OTOOL_STATUS}" -ne 0 ]; then
+                echo "ERROR: otool -L failed (exit ${OTOOL_STATUS}) on: ${TODO_OBJ}"
+                echo "otool output: ${OTOOL_OUTPUT}"
+                echo "Raw bytes of the path (od -c):"
+                printf '%s' "${TODO_OBJ}" | od -c
+                echo "ls -la of the exact path:"
+                ls -la -- "${TODO_OBJ}"
+                echo "ls -la of the containing directory:"
+                ls -la -- "$(dirname "${TODO_OBJ}")"
+                exit 1
+            fi
             for LIB in $(
-                otool -L "${TODO_OBJ}" | \
+                echo "${OTOOL_OUTPUT}" | \
                 sed -n 's|^.*[[:space:]]\([^[:space:]]*\.dylib\).*$|\1|p' | \
                 grep -E -v '^(/usr/lib)|(/System)|@executable_path|@loader_path|/DLC/PIL/' \
             ); do
