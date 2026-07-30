@@ -169,7 +169,7 @@ _build_docs() {
 }
 
 _fixup_imports() {
-    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT OTOOL_CLASSIC
+    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT OTOOL_CLASSIC ABS_TODO_OBJ
 
     echo "Fixing imports on the core appbundle..."
     pushd "$1" > /dev/null || exit
@@ -227,6 +227,12 @@ _fixup_imports() {
                 printf '%s' "${TODO_OBJ}" | od -c
             fi
 
+            # Computed once up front - both the otool and install_name_tool
+            # fallbacks below need it, in case the relative "./Contents/..."
+            # path (this script pushd's into the bundle dir) combined with
+            # "(" is what these tools choke on.
+            ABS_TODO_OBJ="$(pwd)/${TODO_OBJ#./}"
+
             # Figure out the relative path from ${TODO_OBJ} to Contents/Frameworks
             FW_RELPATH=$(echo "${TODO_OBJ}" | \
                 sed -n 's|^\(\.//*\)\(\([^/][^/]*/\)*\)[^/][^/]*$|\2|gp' | \
@@ -235,16 +241,16 @@ _fixup_imports() {
 
             # Find all libraries ${TODO_OBJ} depends on, but skip system libraries.
             #
-            # otool sometimes re-execs the legacy otool-classic internally
-            # for certain Mach-O binaries (seen consistently on
-            # "pgAdmin 4 Helper (GPU)"), and that internal re-exec fails
-            # to open a file confirmed present, correctly-permissioned,
-            # and byte-for-byte correctly-pathed at that exact moment
-            # (verified via ls -la + od -c on a prior failing build) -
-            # i.e. otool's own internal dispatch is broken here, not
-            # anything this script passes it. Retry via otool-classic
-            # directly (our own quoting, not otool's internal re-exec)
-            # before giving up.
+            # Both `otool -L` and (invoked directly, with correct argv
+            # quoting, real resolved path) `otool-classic -L` fail to
+            # open "pgAdmin 4 Helper (GPU)" - a file confirmed present,
+            # correctly-permissioned, and byte-for-byte correctly-pathed
+            # at that exact moment (verified via ls -la + od -c on prior
+            # failing builds). Neither this script's quoting nor PATH
+            # resolution is the cause; whatever's wrong is inside these
+            # tools' own handling of "(" in a path. Try a plain absolute
+            # path with each tool before falling back to a raw
+            # diagnostic dump.
             #
             # NOTE: the assignment must be the condition of the `if`
             # itself, not a separate statement followed by checking $? -
@@ -254,8 +260,15 @@ _fixup_imports() {
             # inspected. Bash exempts the tested command of an `if` from
             # errexit.
             if ! OTOOL_OUTPUT=$(otool -L "${TODO_OBJ}" 2>&1); then
-                echo "WARNING: otool -L failed on: ${TODO_OBJ}"
+                echo "WARNING: otool -L failed on relative path: ${TODO_OBJ}"
                 echo "otool output: ${OTOOL_OUTPUT}"
+
+                echo "Retrying via otool -L with an absolute path (${ABS_TODO_OBJ})..."
+                if OTOOL_OUTPUT=$(otool -L "${ABS_TODO_OBJ}" 2>&1); then
+                    echo "Absolute path worked."
+                fi
+            fi
+            if [ -z "${OTOOL_OUTPUT}" ] || [[ "${OTOOL_OUTPUT}" == *"can't open file"* ]]; then
                 # otool-classic isn't on PATH - it only lives inside the
                 # active Xcode toolchain (confirmed by a prior failed
                 # attempt at calling the bare name: "command not found").
@@ -264,9 +277,9 @@ _fixup_imports() {
                 if [ -z "${OTOOL_CLASSIC}" ]; then
                     OTOOL_CLASSIC="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool-classic"
                 fi
-                echo "Retrying via otool-classic directly (${OTOOL_CLASSIC})..."
-                if ! OTOOL_OUTPUT=$("${OTOOL_CLASSIC}" -L "${TODO_OBJ}" 2>&1); then
-                    echo "ERROR: otool-classic -L also failed on: ${TODO_OBJ}"
+                echo "Retrying via otool-classic directly (${OTOOL_CLASSIC}), absolute path..."
+                if ! OTOOL_OUTPUT=$("${OTOOL_CLASSIC}" -L "${ABS_TODO_OBJ}" 2>&1); then
+                    echo "ERROR: otool-classic -L also failed on: ${ABS_TODO_OBJ}"
                     echo "otool-classic output: ${OTOOL_OUTPUT}"
                     echo "Raw bytes of the path (od -c):"
                     printf '%s' "${TODO_OBJ}" | od -c
@@ -305,16 +318,33 @@ _fixup_imports() {
                     TODO="${TODO}"$'\n'"./Contents/Frameworks/${LIB_BN}"
                 fi
 
-                # Rewrite the dependency paths
+                # Rewrite the dependency paths.
+                #
+                # Same relative-path fallback as the otool -L call above:
+                # install_name_tool edits ${TODO_OBJ} in place, so if it
+                # hits the same "(" handling issue, retry with the
+                # absolute path before giving up.
                 echo "Rewriting library ${LIB} to @loader_path/${FW_RELPATH}/${LIB_BN} in ${TODO_OBJ}"
-                install_name_tool -change \
+                if ! install_name_tool -change \
                     "${LIB}" \
                     "@loader_path/${FW_RELPATH}/${LIB_BN}" \
-                    "${TODO_OBJ}" || exit 1
-                install_name_tool -change \
+                    "${TODO_OBJ}" 2>/dev/null; then
+                    echo "Retrying install_name_tool -change with absolute path (${ABS_TODO_OBJ})..."
+                    install_name_tool -change \
+                        "${LIB}" \
+                        "@loader_path/${FW_RELPATH}/${LIB_BN}" \
+                        "${ABS_TODO_OBJ}" || exit 1
+                fi
+                if ! install_name_tool -change \
                     "${TARGET_PATH}" \
                     "@loader_path/${FW_RELPATH}/${TARGET_FILE}" \
-                    "${TODO_OBJ}" || exit 1
+                    "${TODO_OBJ}" 2>/dev/null; then
+                    echo "Retrying install_name_tool -change with absolute path (${ABS_TODO_OBJ})..."
+                    install_name_tool -change \
+                        "${TARGET_PATH}" \
+                        "@loader_path/${FW_RELPATH}/${TARGET_FILE}" \
+                        "${ABS_TODO_OBJ}" || exit 1
+                fi
             done
         done <<< "${TODO_OLD}"
     done
