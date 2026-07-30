@@ -169,7 +169,7 @@ _build_docs() {
 }
 
 _fixup_imports() {
-    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT
+    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT OTOOL_CLASSIC
 
     echo "Fixing imports on the core appbundle..."
     pushd "$1" > /dev/null || exit
@@ -256,8 +256,16 @@ _fixup_imports() {
             if ! OTOOL_OUTPUT=$(otool -L "${TODO_OBJ}" 2>&1); then
                 echo "WARNING: otool -L failed on: ${TODO_OBJ}"
                 echo "otool output: ${OTOOL_OUTPUT}"
-                echo "Retrying via otool-classic directly..."
-                if ! OTOOL_OUTPUT=$(otool-classic -L "${TODO_OBJ}" 2>&1); then
+                # otool-classic isn't on PATH - it only lives inside the
+                # active Xcode toolchain (confirmed by a prior failed
+                # attempt at calling the bare name: "command not found").
+                # Resolve its real path the same way Xcode itself does.
+                OTOOL_CLASSIC=$(xcrun -f otool-classic 2>/dev/null)
+                if [ -z "${OTOOL_CLASSIC}" ]; then
+                    OTOOL_CLASSIC="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool-classic"
+                fi
+                echo "Retrying via otool-classic directly (${OTOOL_CLASSIC})..."
+                if ! OTOOL_OUTPUT=$("${OTOOL_CLASSIC}" -L "${TODO_OBJ}" 2>&1); then
                     echo "ERROR: otool-classic -L also failed on: ${TODO_OBJ}"
                     echo "otool-classic output: ${OTOOL_OUTPUT}"
                     echo "Raw bytes of the path (od -c):"
