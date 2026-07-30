@@ -68,6 +68,28 @@ _create_python_virtualenv() {
     mkdir -p "usr/${APP_NAME}"
     cd "usr/${APP_NAME}" || exit
 
+    # We create the venv with --system-site-packages below, so a stale,
+    # improperly-uninstalled package's namespace-package .pth hook in the
+    # *system* site-packages gets pulled in too. That old pip/setuptools
+    # namespace mechanism runs arbitrary code at interpreter startup,
+    # before core stdlib modules are guaranteed to resolve. A leftover
+    # sphinxcontrib-jsmath nspkg.pth on the el-10 build node corrupted
+    # sys.path early enough to break pip's own subprocess bootstrap,
+    # failing the whole build with a misleading "No module named
+    # 'importlib'"/"'traceback'" error (pgadmin4-rpm-build #176).
+    #
+    # Only remove that exact known-broken file, not every *-nspkg.pth -
+    # this modifies the *system* Python install on a build node shared
+    # by other jobs, and any other such file could still be load-bearing
+    # for something unrelated to this build.
+    "${SYSTEM_PYTHON_PATH}" -c \
+        "import site; print('\n'.join(site.getsitepackages()))" | \
+    while IFS= read -r SITE_DIR; do
+        find "${SITE_DIR}" -maxdepth 1 \
+            -name 'sphinxcontrib_jsmath-1.0.1-py3.7-nspkg.pth' \
+            -print -delete 2>/dev/null
+    done || true
+
     # Create the blank venv
     "${SYSTEM_PYTHON_PATH}" -m venv --system-site-packages venv
     # shellcheck disable=SC1091

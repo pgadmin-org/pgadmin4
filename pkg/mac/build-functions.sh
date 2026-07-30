@@ -690,7 +690,12 @@ _notarize_pkg() {
         awk -F ': ' '/status:/ { print $2; }')
 
     if [[ "${REQUEST_STATUS}" != "Accepted" ]]; then
-        echo "Notarization failed."
+        echo "Notarization failed with status: ${REQUEST_STATUS}"
+        echo "Fetching notary log for details..."
+        xcrun notarytool log "${SUBMISSION_ID}" \
+            --team-id "${DEVELOPER_TEAM_ID}" \
+            --apple-id "${DEVELOPER_USER}" \
+            --password "${DEVELOPER_ASP}"
         exit 1
     fi
 
