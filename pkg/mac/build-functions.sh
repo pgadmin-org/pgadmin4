@@ -169,7 +169,7 @@ _build_docs() {
 }
 
 _fixup_imports() {
-    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT OTOOL_STATUS
+    local TODO TODO_OLD TODO_PYTHON FW_RELPATH LIB LIB_BN OTOOL_OUTPUT
 
     echo "Fixing imports on the core appbundle..."
     pushd "$1" > /dev/null || exit
@@ -233,11 +233,18 @@ _fixup_imports() {
                 sed -n 's|[^/][^/]*/|../|gp' \
                 )"Contents/Frameworks"
 
-            # Find all libraries ${TODO_OBJ} depends on, but skip system libraries
-            OTOOL_OUTPUT=$(otool -L "${TODO_OBJ}" 2>&1)
-            OTOOL_STATUS=$?
-            if [ "${OTOOL_STATUS}" -ne 0 ]; then
-                echo "ERROR: otool -L failed (exit ${OTOOL_STATUS}) on: ${TODO_OBJ}"
+            # Find all libraries ${TODO_OBJ} depends on, but skip system libraries.
+            #
+            # NOTE: the assignment must be the condition of the `if`
+            # itself, not a separate statement followed by checking $? -
+            # this script runs under an ERR trap/set -e, and a bare
+            # `VAR=$(cmd)` assignment still propagates cmd's failure to
+            # the trap immediately, aborting before $? can ever be
+            # inspected (that's why the previous version of this
+            # diagnostic never actually printed anything). Bash exempts
+            # the tested command of an `if` from errexit.
+            if ! OTOOL_OUTPUT=$(otool -L "${TODO_OBJ}" 2>&1); then
+                echo "ERROR: otool -L failed on: ${TODO_OBJ}"
                 echo "otool output: ${OTOOL_OUTPUT}"
                 echo "Raw bytes of the path (od -c):"
                 printf '%s' "${TODO_OBJ}" | od -c
