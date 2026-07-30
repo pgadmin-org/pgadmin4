@@ -68,32 +68,47 @@ _create_python_virtualenv() {
     mkdir -p "usr/${APP_NAME}"
     cd "usr/${APP_NAME}" || exit
 
-    # We create the venv with --system-site-packages below, so a stale,
-    # improperly-uninstalled package's namespace-package .pth hook in the
-    # *system* site-packages gets pulled in too. That old pip/setuptools
-    # namespace mechanism runs arbitrary code at interpreter startup,
-    # before core stdlib modules are guaranteed to resolve. A leftover
+    # Capture the system site-packages dirs *before* creating the venv -
+    # we need OS-provided packages not available as clean pip wheels on
+    # every target platform (e.g. dbus-python: needs libdbus-1-dev to
+    # build from source, no reliable prebuilt wheel, but is a hard
+    # runtime dependency - see pkg/debian/build.sh's python3-dbus dep).
+    SYSTEM_SITE_DIRS=$("${SYSTEM_PYTHON_PATH}" -c \
+        "import site; print('\n'.join(site.getsitepackages()))")
+
+    # Create the blank venv WITHOUT --system-site-packages. That flag
+    # uses Python's site.addsitedir() under the hood, which doesn't just
+    # add the directory to sys.path - it also scans it for every *.pth
+    # file and executes any "import ..." lines found inside them. A
+    # stale, improperly-uninstalled package's namespace-package .pth
+    # hook (legacy pip/setuptools mechanism) left in the system
+    # site-packages runs arbitrary code at interpreter startup, before
+    # core stdlib is guaranteed to resolve. A leftover
     # sphinxcontrib-jsmath nspkg.pth on the el-10 build node corrupted
     # sys.path early enough to break pip's own subprocess bootstrap,
     # failing the whole build with a misleading "No module named
-    # 'importlib'"/"'traceback'" error (pgadmin4-rpm-build #176).
+    # 'importlib'"/"'traceback'" error (pgadmin4-rpm-build #176/#177).
     #
-    # Only remove that exact known-broken file, not every *-nspkg.pth -
-    # this modifies the *system* Python install on a build node shared
-    # by other jobs, and any other such file could still be load-bearing
-    # for something unrelated to this build.
-    "${SYSTEM_PYTHON_PATH}" -c \
-        "import site; print('\n'.join(site.getsitepackages()))" | \
-    while IFS= read -r SITE_DIR; do
-        find "${SITE_DIR}" -maxdepth 1 \
-            -name 'sphinxcontrib_jsmath-1.0.1-py3.7-nspkg.pth' \
-            -print -delete 2>/dev/null
-    done || true
-
-    # Create the blank venv
-    "${SYSTEM_PYTHON_PATH}" -m venv --system-site-packages venv
+    # We can't just delete that file - it's in a root-owned system
+    # directory on a build node shared by other jobs, and the build
+    # user isn't guaranteed to have write access there (confirmed: our
+    # first attempt at deleting it silently no-opped on el-10).
+    #
+    # Instead, get the same "OS-provided packages are importable" result
+    # via a mechanism that doesn't trigger a .pth scan: a *plain path
+    # line* (no "import") in a .pth file only appends that directory to
+    # sys.path - it does NOT recursively scan it for further .pth files.
+    # Write the system site-packages dirs as plain lines into a .pth
+    # file inside the venv's own site-packages (which we do own), added
+    # once pip/wheel are installed below.
+    "${SYSTEM_PYTHON_PATH}" -m venv venv
     # shellcheck disable=SC1091
     . venv/bin/activate
+
+    VENV_SITE_PACKAGES=$(python3 -c \
+        "import sysconfig; print(sysconfig.get_path('purelib'))")
+    echo "${SYSTEM_SITE_DIRS}" > \
+        "${VENV_SITE_PACKAGES}/system-site-packages.pth"
 
     # Make sure we have the wheel package present, as well as the latest pip
     pip3 install --upgrade pip
