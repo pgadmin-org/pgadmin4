@@ -1,0 +1,331 @@
+{
+  "pgt_task_create": [
+    {
+      "name": "Create task: With valid data.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "task_name": "test_task_add%s",
+        "task_order": 10,
+        "kind": "SQL",
+        "command": "SELECT 1;",
+        "ignore_error": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create task: With parameters.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "task_name": "test_task_add_params%s",
+        "task_order": 10,
+        "kind": "SQL",
+        "command": "SELECT $1::text AS param;",
+        "ignore_error": false,
+        "parameters": [
+          {
+            "order_id": 1,
+            "value": "test_value"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create task: With existing chain while server is down.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "task_name": "test_task_add%s",
+        "task_order": 10,
+        "kind": "SQL",
+        "command": "SELECT 1;"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_task_delete": [
+    {
+      "name": "Delete task: With existing task.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete tasks: With existing tasks.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete task: With existing task while server is down.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_void",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgt_task_put": [
+    {
+      "name": "Update task: With updated command.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "command": "SELECT 2;"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update task: Disable ignore_error.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "ignore_error": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update task: With parameters.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "command": "SELECT $1::text;",
+        "parameters": [
+          {
+            "order_id": 1,
+            "value": "updated_value"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update task: With existing task while server is down.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "command": "SELECT 2;"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_void",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgt_task_get": [
+    {
+      "name": "Get task: With existing task.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get tasks: With existing tasks.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get task: With existing task while server is down.",
+      "url": "/browser/pgt_chaintask/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgt_task_get_nodes": [
+    {
+      "name": "Get task nodes: With existing task.",
+      "url": "/browser/pgt_chaintask/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get tasks nodes: With existing tasks.",
+      "url": "/browser/pgt_chaintask/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "pgt_task_msql": [
+    {
+      "name": "Get task msql: For existing task.",
+      "url": "/browser/pgt_chaintask/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "command": "SELECT 2;"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgt_task_get_statistics": [
+    {
+      "name": "Get task stats: With existing task.",
+      "url": "/browser/pgt_chaintask/stats/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get task stats: With existing task while server is down.",
+      "url": "/browser/pgt_chaintask/stats/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ]
+}
