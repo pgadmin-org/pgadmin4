@@ -177,6 +177,37 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
             list_of_sql[of_type] = []
             for each_row in changed_data[of_type]:
                 data = changed_data[of_type][each_row]['data']
+                # client_primary_key is a synthetic tracking key (e.g.
+                # '__temp_PK') chosen specifically to never match a real
+                # column name, so it must be read before it is popped/
+                # filtered out below.
+                row_id = data.get(client_primary_key)
+                # Remove our unique tracking keys, mirroring the
+                # added-row path above. Today neither key is ever
+                # present on an updated-row payload (only the added-row
+                # path tags rows this way), so the columns_info filter
+                # below is already sufficient - but stripping them
+                # explicitly keeps this path from silently relying on
+                # that assumption if a future change starts tagging
+                # updated rows the same way (e.g. multi-row copy-paste
+                # into existing rows).
+                data.pop(client_primary_key, None)
+                data.pop('is_row_copied', None)
+                # Drop any column that isn't a real editable column of the
+                # underlying table (e.g. an expression/alias column such as
+                # `first_name || ' ' || last_name as the_name`). Such columns
+                # carry the read-only lock icon in the grid, but without this
+                # guard the rendered UPDATE references a non-existent column
+                # and Postgres rejects the change. Issue #10103.
+                data = {
+                    k: v for k, v in data.items()
+                    if k in columns_info and
+                    columns_info[k].get('is_editable', True)
+                }
+                # Nothing editable left to persist for this row, skip it so we
+                # don't render an invalid `SET` clause.
+                if not data:
+                    continue
                 pk_escaped = {
                     pk: pk_val.replace('%', '%%') if hasattr(
                         pk_val, 'replace') else pk_val
@@ -196,8 +227,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 )
                 list_of_sql[of_type].append({'sql': sql,
                                              'data': data,
-                                             'row_id':
-                                                 data.get(client_primary_key)})
+                                             'row_id': row_id})
 
         # For deleted rows
         elif of_type == 'deleted':
