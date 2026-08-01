@@ -601,8 +601,10 @@ def validate_json_data(data, is_admin):
     for server in data["Servers"]:
         obj = data["Servers"][server]
 
+        is_shared = obj.get("Shared", None)
+
         # Check if server is shared.Won't import if user is non-admin
-        if obj.get('Shared', None) and not is_admin:
+        if is_shared and not is_admin:
             print("Won't import the server '%s' as it is shared " %
                   obj["Name"])
             skip_servers.append(server)
@@ -627,14 +629,25 @@ def validate_json_data(data, is_admin):
         is_service_attrib_available = obj.get("Service", None) is not None
 
         if not is_service_attrib_available:
-            for attrib in ("Port", "Username"):
-                errmsg = check_attrib(attrib)
+            errmsg = check_attrib("Port")
+            if errmsg:
+                return errmsg
+            errmsg = check_is_integer(obj["Port"])
+            if errmsg:
+                return errmsg
+
+            if is_shared:
+                # Shared servers may carry either the owner's username
+                # or a per-user override, so accept either attribute.
+                if "Username" not in obj and "SharedUsername" not in obj:
+                    return gettext(
+                        "'Username' or 'SharedUsername' attribute not "
+                        "found for server '%s'" % server
+                    )
+            else:
+                errmsg = check_attrib("Username")
                 if errmsg:
                     return errmsg
-                if attrib == 'Port':
-                    errmsg = check_is_integer(obj[attrib])
-                    if errmsg:
-                        return errmsg
 
         errmsg = check_attrib("MaintenanceDB")
         if errmsg:
@@ -720,6 +733,12 @@ def load_database_servers(input_file, selected_servers,
                 groups_added = groups_added + 1
                 groups = ServerGroup.query.filter_by(user_id=user_id)
 
+            is_shared = obj.get("Shared", None)
+            username = obj.get("Username", None)
+            shared_username = obj.get("SharedUsername", None)
+            if is_shared and username is None:
+                username = shared_username
+
             # Create the server
             new_server = Server()
             new_server.name = obj["Name"]
@@ -731,7 +750,7 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.port = obj.get("Port", None)
 
-            new_server.username = obj.get("Username", None)
+            new_server.username = username
 
             new_server.role = obj.get("Role", None)
 
@@ -785,9 +804,9 @@ def load_database_servers(input_file, selected_servers,
             new_server.tunnel_keep_alive = \
                 obj.get("TunnelKeepAlive", None)
 
-            new_server.shared = obj.get("Shared", None)
+            new_server.shared = is_shared
 
-            new_server.shared_username = obj.get("SharedUsername", None)
+            new_server.shared_username = shared_username
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 
