@@ -8,26 +8,49 @@
 //////////////////////////////////////////////////////////////
 import _ from 'lodash';
 
+// Join a path array the same way the filter predicates need to compare:
+// segments separated by '|', terminated with an extra '|' so a listener
+// registered on ['shared'] doesn't false-match a currPath of
+// ['shared_username']. Equivalent to `_.join(arr.concat(['']), '|')` but
+// avoids the array allocation that was visible in the hot path.
+const _joinPath = (arr) => arr.join('|') + '|';
 
 export class DepListener {
   constructor() {
     this._depListeners = [];
+    // True iff at least one registered listener has a defCallback. Lets
+    // getDeferredDepChange short-circuit when there's no deferred work
+    // possible — common in synthetic schemas and the dominant case in
+    // typical dialogs.
+    this._hasDefCallback = false;
   }
 
   /* Will keep track of the dependent fields and there callbacks */
   addDepListener(source, dest, callback, defCallback) {
     this._depListeners = this._depListeners || [];
+    // Defensive shallow copy of the source path. The cached _sourceKey
+    // is already a string snapshot and isn't affected by post-
+    // registration mutation, but `source` itself is passed to the
+    // callback at dispatch time — a caller that re-uses and mutates
+    // the array would silently corrupt later callback invocations.
+    const sourceCopy = Array.from(source);
     this._depListeners.push({
-      source: source,
+      source: sourceCopy,
       dest: dest,
       callback: callback,
-      defCallback: defCallback
+      defCallback: defCallback,
+      // Pre-compute the source's joined form so the per-dispatch filters
+      // in getDepChange / getDeferredDepChange don't re-join + re-allocate
+      // for every listener on every keystroke.
+      _sourceKey: _joinPath(sourceCopy),
     });
+    if (defCallback) this._hasDefCallback = true;
   }
 
 
   removeDepListener(dest) {
     this._depListeners = _.filter(this._depListeners, (l)=>!_.join(l.dest, '|').startsWith(_.join(dest, '|')));
+    this._hasDefCallback = this._depListeners.some((l) => l.defCallback);
   }
 
   _getListenerData(state, listener, actionObj) {
@@ -59,37 +82,36 @@ export class DepListener {
     /* If this comes from deferred change */
     if(actionObj.listener?.callback) {
       state = this._getListenerData(state, actionObj.listener, actionObj);
-    } else {
-      // adding a extra item in path to avoid incorrect matching like shared and shared_username
-      let allListeners = _.filter(this._depListeners, (entry)=>_.join(currPath.concat(['']), '|').startsWith(_.join(entry.source.concat(['']), '|')));
-      if(allListeners) {
-        for(const listener of allListeners) {
-          state = this._getListenerData(state, listener, actionObj);
-        }
+      return state;
+    }
+    // Compare against each listener using the pre-computed _sourceKey,
+    // which already encodes the trailing-'|' prefix-match protection.
+    const currKey = _joinPath(currPath);
+    for(const listener of this._depListeners) {
+      if(listener.callback && currKey.startsWith(listener._sourceKey)) {
+        state = this._getListenerData(state, listener, actionObj);
       }
     }
     return state;
   }
 
   getDeferredDepChange(currPath, state, actionObj) {
-    let deferredList = [];
-    let allListeners = _.filter(this._depListeners, (entry) => _.join(
-      currPath, '|'
-    ).startsWith(_.join(entry.source, '|')));
+    // Common case: nothing in the registry has a defCallback. Bail
+    // before touching any listener entries.
+    if(!this._hasDefCallback) return [];
 
-    if(allListeners) {
-      for(const listener of allListeners) {
-        if(listener.defCallback) {
-          let thePromise = this._getDefListenerPromise(state, listener, actionObj);
-          if(thePromise) {
-            deferredList.push({
-              action: actionObj,
-              promise: thePromise,
-              listener: listener,
-            });
-          }
-        }
-
+    const deferredList = [];
+    const currKey = _joinPath(currPath);
+    for(const listener of this._depListeners) {
+      if(!listener.defCallback) continue;
+      if(!currKey.startsWith(listener._sourceKey)) continue;
+      const thePromise = this._getDefListenerPromise(state, listener, actionObj);
+      if(thePromise) {
+        deferredList.push({
+          action: actionObj,
+          promise: thePromise,
+          listener: listener,
+        });
       }
     }
     return deferredList;

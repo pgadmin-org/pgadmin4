@@ -58,7 +58,7 @@ export function DataGridRow({row, isResizing}) {
       <DataGridRowContext.Provider value={{ rowAccessPath, row }}>
         <Draggable nodeRef={rowRef} disabled>
           <PgReactTableRowContent ref={rowRef}
-            className={classList.join[' ']}
+            className={classList.join(' ')}
             data-test='data-table-row' style={{position: 'initial'}}
             {...attributes}
           >

@@ -67,7 +67,14 @@ export const sessDataReducer = (state, action) => {
     deferredList = getDeferredDepChange(
       action.path, _.cloneDeep(data), state, action
     );
-    data.__deferred__ = deferredList || [];
+    // APPEND rather than replace — multiple SET_VALUEs in the same
+    // React batch each contribute their deferred promises to the queue.
+    // Replacing the array would lose still-pending promises from the
+    // previous action. The drain useEffect in useSchemaState then
+    // processes the full list and `CLEAR_DEFERRED_QUEUE` empties it.
+    if (deferredList && deferredList.length > 0) {
+      data.__deferred__ = (data.__deferred__ || []).concat(deferredList);
+    }
     break;
 
   case SCHEMA_STATE_ACTIONS.ADD_ROW:

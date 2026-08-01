@@ -67,7 +67,7 @@ function addToSortedList(_list, _item, _comparator = (a, b) => (a < b)) {
   _list.splice(idx, 0, _item);
 }
 
-const featurePriorityCompare = (f1, f2) => (f1.priorty < f2.priority);
+const featurePriorityCompare = (f1, f2) => (f1.priority < f2.priority);
 
 export function register(cls) {
 
