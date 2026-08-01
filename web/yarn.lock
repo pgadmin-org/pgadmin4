@@ -5013,15 +5013,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"anti-trojan-source@npm:^1.12.0":
-  version: 1.12.0
-  resolution: "anti-trojan-source@npm:1.12.0"
+"anti-trojan-source@npm:^1.12.1":
+  version: 1.12.1
+  resolution: "anti-trojan-source@npm:1.12.1"
   dependencies:
     globby: "npm:^12.0.2"
     meow: "npm:^10.1.1"
   bin:
     anti-trojan-source: bin/anti-trojan-source.js
-  checksum: 10c0/f514b2a4e5430c005197cc66c0364dcf3e3be22484559f39ad9ed048a43e37a4773033a8510a076d556883920d1df8e4f61f1f9a66d254a785742a218e456e45
+  checksum: 10c0/89b70cb04bb77d64d1af288e13efb8c5fbcb9bca731e617150bd58735aa00e24865e88559fff05ed7f1e114d41b4236c24a011f4138ea7058420f54fd32c7c15
   languageName: node
   linkType: hard
 
@@ -13241,7 +13241,7 @@ __metadata:
     "@xterm/addon-web-links": "npm:^0.12.0"
     "@xterm/xterm": "npm:^6.0.0"
     ajv: "npm:^8.20.0"
-    anti-trojan-source: "npm:^1.12.0"
+    anti-trojan-source: "npm:^1.12.1"
     aspen-decorations: "npm:^1.1.1"
     autoprefixer: "npm:^10.5.4"
     axios: "npm:^1.18.1"
