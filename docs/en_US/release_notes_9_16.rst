@@ -32,6 +32,7 @@ New features
   | `Issue #9626 <https://github.com/pgadmin-org/pgadmin4/issues/9626>`_ -  Add support for the TOAST tuple target storage parameter in the Materialized View dialog.
   | `Issue #9646 <https://github.com/pgadmin-org/pgadmin4/issues/9646>`_ -  Make the init container security context in the Helm chart configurable via containerSecurityContext, consistent with the main container.
   | `Issue #9699 <https://github.com/pgadmin-org/pgadmin4/issues/9699>`_ -  Add support for closing a tab with a middle-click on its title.
+  | `Issue #2018 <https://github.com/pgadmin-org/pgadmin4/issues/2018>`_ -  Added support for Extended Statistics objects (CREATE STATISTICS) under the Schema node, with full create, edit, delete, and SQL-generation support for column-based and expression-based statistics on PostgreSQL 14+.
 
 Housekeeping
 ************
