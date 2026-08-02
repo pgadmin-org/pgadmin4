@@ -30,7 +30,10 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: {{ template "pgadmin4.fullname" . }}
+        - group: ''	
+          kind: Service
+          name: {{ template "pgadmin4.fullname" . }}
           port: {{ .Values.service.port }}
+          weight: 1
   {{- end }}
 {{- end }}
