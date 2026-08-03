@@ -19,7 +19,7 @@
     "globals": "^17.7.0"
   },
   "dependencies": {
-    "axios": "^1.18.1",
+    "axios": "^1.19.0",
     "electron-context-menu": "^4.1.2",
     "electron-store": "^11.0.2"
   },
