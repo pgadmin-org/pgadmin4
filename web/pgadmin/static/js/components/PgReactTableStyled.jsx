@@ -91,6 +91,9 @@ const StyledDiv = styled('div')(({theme})=>({
         flexDirection: 'column',
         position: 'absolute',
         width: '100%',
+        '&.pgrt-row--static': {
+          position: 'relative',
+        },
 
         '& .pgrt-row-content': {
           display: 'flex',
