@@ -125,12 +125,14 @@ export default function DataGridView({
   const VIRTUALISE_CELL_BUDGET = 700; // Number of cells to render
   const DEFAULT_VIRTUALISE_THRESHOLD = 100; // Number of rows to render
   const visibleColCount = table.getVisibleLeafColumns().length;
+  const rawThreshold = field.virtualiseThreshold;
   const virtualiseThreshold =
-    field.virtualiseThreshold ??
-    (visibleColCount > 0
-      ? Math.min(400, Math.max(25,
-        Math.round(VIRTUALISE_CELL_BUDGET / visibleColCount)))
-      : DEFAULT_VIRTUALISE_THRESHOLD);
+    (typeof rawThreshold === 'number' && rawThreshold > 0)
+      ? rawThreshold
+      : (visibleColCount > 0
+        ? Math.min(400, Math.max(25,
+          Math.round(VIRTUALISE_CELL_BUDGET / visibleColCount)))
+        : DEFAULT_VIRTUALISE_THRESHOLD);
   const virtualise = rows.length > virtualiseThreshold;
 
   const virtualizer = useVirtualizer({
