@@ -537,6 +537,48 @@ class OAuth2Authentication(BaseAuthentication):
 
         return None, None
 
+    def _extract_server_group_claims(self, profile_dict, id_token_claims):
+        """
+        Resolve allowed server groups from provider claim configuration.
+
+        Config keys (per provider):
+        - OAUTH2_SERVER_GROUP_CLAIM: claim name to read
+        - OAUTH2_SERVER_GROUP_CLAIM_MAPPING: optional dict mapping
+          claim-value -> list of server group names
+
+        Returns:
+            list[str] | None
+            - list of allowed server group names if configured
+            - None when claim-based server group filtering is not configured
+        """
+        provider = self.oauth2_config.get(self.oauth2_current_client) or {}
+        claim_name = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
+        if not claim_name:
+            return None
+
+        claim_values = id_token_claims.get(claim_name)
+        if claim_values is None:
+            claim_values = profile_dict.get(claim_name)
+        if claim_values is None:
+            return []
+
+        if not isinstance(claim_values, list):
+            claim_values = [claim_values]
+
+        mapping = provider.get('OAUTH2_SERVER_GROUP_CLAIM_MAPPING') or {}
+        server_groups = []
+        for value in claim_values:
+            mapped_groups = mapping.get(value)
+            if mapped_groups is None:
+                server_groups.append(value)
+            elif isinstance(mapped_groups, str):
+                server_groups.append(mapped_groups)
+            elif isinstance(mapped_groups, list):
+                server_groups.extend(mapped_groups)
+
+        # Remove duplicates
+        return list(set(server_groups))
+
     def login(self, form):
         if not self.oauth2_current_client:
             error_msg = gettext('No OAuth2 provider available.')
@@ -599,6 +641,15 @@ class OAuth2Authentication(BaseAuthentication):
                 )
             current_app.logger.error(error_msg)
             return False, error_msg
+
+        oauth2_server_group_claims = self._extract_server_group_claims(
+            profile_dict, id_token_claims
+        )
+        if oauth2_server_group_claims is None:
+            session.pop('oauth2_server_group_claims', None)
+        else:
+            session['oauth2_server_group_claims'] = \
+                oauth2_server_group_claims
 
         additional_claims = None
         if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
