@@ -767,10 +767,12 @@ class OAuth2Authentication(BaseAuthentication):
                 )
                 username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
                 additional_claims = provider.get('OAUTH2_ADDITIONAL_CLAIMS')
+                server_group_claim = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
 
-                # If custom username claim or additional authorization
-                #  claims are configured, they may exist only in userinfo;
-                # don't skip userinfo unless ID token has them.
+                # If custom username claim, additional authorization
+                # claims, or server-group claims are configured, they may
+                # exist only in userinfo; don't skip userinfo unless ID
+                # token has them.
                 needs_userinfo = False
                 if username_claim and username_claim not in id_token_claims:
                     needs_userinfo = True
@@ -781,6 +783,9 @@ class OAuth2Authentication(BaseAuthentication):
                     ]
                     if missing_authz_keys:
                         needs_userinfo = True
+                if (server_group_claim and
+                        server_group_claim not in id_token_claims):
+                    needs_userinfo = True
 
             if has_sufficient_claims and not needs_userinfo:
                 current_app.logger.debug(

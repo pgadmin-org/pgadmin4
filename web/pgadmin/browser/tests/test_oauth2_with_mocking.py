@@ -472,7 +472,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             if expected_server_groups is None:
                 self.assertNotIn('oauth2_server_group_claims', sess)
             else:
-                self.assertEqual(
+                self.assertCountEqual(
                     sess.get('oauth2_server_group_claims'),
                     expected_server_groups
                 )
