@@ -79,12 +79,12 @@ For more detail, see the [pull request submission guide](docs/en_US/submitting_p
 Contributors are responsible for understanding, testing, and standing behind everything they submit, whether or not AI tools were used. Please do not open large numbers of auto-generated issues or pull requests without first discussing that work with the maintainers.
 
 - If you used AI tools in preparing your PR, please commit with the `Co-Authored-By`, `Generated-by`, or similar commit trailer.
-  ```
+  ```text
   Co-Authored-By: <AI tool name and version>
   Generated-by: <AI tool name and version>
   ```
   Example:
-  ```
+  ```text
   #1234: Fix issue in web interface
 
   Co-Authored-By: Claude Sonnet 4.6 <claude@anthropic.com>
