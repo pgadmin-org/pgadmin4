@@ -24,8 +24,19 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                             'rows_cnt', 'hastoasttable', 'relhassubclass',
                             'relacl_str', 'setting']
 
+    # 'seqrelid' (the sequence a column owns) and 'defseqrelid' (the
+    # sequence referenced by the column's nextval() DEFAULT) are compared
+    # against EACH OTHER by get_formatted_columns() to reproject a column
+    # as SERIAL/BIGSERIAL/SMALLSERIAL (see columns/utils.py, #9896/#10100/
+    # #10101) -- but the resulting raw sequence OIDs are otherwise
+    # meaningless across two independently-created databases, even when
+    # both sides have an identical SERIAL column. Without ignoring
+    # 'defseqrelid' here too, Schema Diff falsely reports such columns (and
+    # therefore their whole table) as different, and generates an invalid
+    # `ALTER COLUMN ... TYPE bigserial` statement despite both sides having
+    # the exact same reprojected cltype.
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
-                             'indkey', 'seqtypid']
+                             'indkey', 'seqtypid', 'defseqrelid']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',

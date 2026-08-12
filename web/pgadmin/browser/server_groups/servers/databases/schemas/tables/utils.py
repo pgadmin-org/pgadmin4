@@ -1284,6 +1284,52 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                         self.double_newline
         return column_sql
 
+    @staticmethod
+    def _normalise_serial_column(data, old_col_data):
+        """
+        Reconcile a column that has been reprojected as SERIAL/SMALLSERIAL/
+        BIGSERIAL with the raw catalogue properties of its old self, so that
+        update.sql renders only the genuine changes.
+
+        Schema Diff compares tables fetched with with_serial_cols=True, so a
+        column declared as SERIAL reaches us carrying the pseudo-type as its
+        cltype and an emptied default, whilst its old properties are read
+        straight from the catalogue and carry the underlying integer type
+        along with the real nextval() default. Left alone, that asymmetry
+        made any serial column with a genuine difference (a comment, a NOT
+        NULL, a privilege) also render an invalid
+        `ALTER COLUMN ... TYPE bigserial`, a spurious DROP DEFAULT, and a
+        set of sequence options that only an identity column accepts
+        (#10236).
+
+        The pseudo-type is shorthand for a declaration rather than a type
+        ALTER COLUMN can be given, so compare and alter the underlying
+        integer type instead, drop the default the reprojection emptied,
+        and leave the owned sequence to be compared as the object it is in
+        its own right.
+
+        :param data: The changed column, modified in place
+        :param old_col_data: Properties of the column as it stands now
+        """
+        cltype = data.get('cltype')
+        if cltype not in column_utils.UNDERLYING_SERIAL_TYPES:
+            return
+
+        data['cltype'] = column_utils.UNDERLYING_SERIAL_TYPES[cltype]
+        if data.get('typname') == cltype:
+            data['typname'] = data['cltype']
+
+        # The reprojection emptied the nextval() default; that is not a
+        # request to drop it.
+        data.pop('defval', None)
+
+        # Sequence options ride along with a column because it owns a
+        # sequence, but ALTER COLUMN only accepts them for identity
+        # columns; the sequence itself is compared as a separate object.
+        for key in ('seqincrement', 'seqstart', 'seqmin', 'seqmax',
+                    'seqcache', 'seqcycle'):
+            data.pop(key, None)
+
     def _check_for_column_update(self, columns, data, column_sql, tid):
         # Here we will be needing previous properties of column
         # so that we can compare & update it
@@ -1317,6 +1363,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 old_col_data['cltype'] = \
                     DataTypeReader.parse_type_name(
                         old_col_data['cltype'])
+
+                self._normalise_serial_column(c, old_col_data)
 
                 # Sql for alter column
                 if c.get('inheritedfrom', None) is None and \
