@@ -322,7 +322,7 @@ REM Main build sequence Ends
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-icon "%WD%\pkg\win32\Resources\pgAdmin4.ico"
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "FileDescription" "%APP_NAME%"
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
-    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%"
 
     IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
         ECHO Attempting to sign the pgAdmin4.exe...
