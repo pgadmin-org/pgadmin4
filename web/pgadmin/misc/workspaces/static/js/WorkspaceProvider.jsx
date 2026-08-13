@@ -19,6 +19,9 @@ import { config } from './config';
 const WorkspaceContext = React.createContext();
 const OBJECT_EXPLORER_VISIBLE_SETTING = 'Browser/ObjectExplorerVisible';
 
+// Serialize visibility writes so overlapping store requests cannot apply out of order.
+let objectExplorerPersistChain = Promise.resolve();
+
 export const useWorkspace = ()=>useContext(WorkspaceContext);
 
 function getSavedObjectExplorerVisible(pgAdmin) {
@@ -36,7 +39,9 @@ function persistObjectExplorerVisible(pgAdmin, visible) {
   const formData = new FormData();
   formData.append('setting', OBJECT_EXPLORER_VISIBLE_SETTING);
   formData.append('value', String(visible));
-  getApiInstance().post(url_for('settings.store_bulk'), formData)
+  objectExplorerPersistChain = objectExplorerPersistChain
+    .catch(()=>{})
+    .then(()=>getApiInstance().post(url_for('settings.store_bulk'), formData))
     .catch(()=>{/* No need to throw error */});
 }
 
@@ -47,6 +52,9 @@ export function WorkspaceProvider({children}) {
     () => getSavedObjectExplorerVisible(pgAdmin)
   );
   const lastSelectedTreeItem = useRef();
+  // Keep latest visibility for consecutive toggles before React re-renders.
+  const isObjectExplorerVisibleRef = useRef(isObjectExplorerVisible);
+  isObjectExplorerVisibleRef.current = isObjectExplorerVisible;
   const isClassic = (usePreferences()?.getPreferencesForModule('misc')?.layout ?? 'classic') == 'classic';
   const openInResWorkspace = usePreferences()?.getPreferencesForModule('misc')?.open_in_res_workspace && !isClassic;
 
@@ -140,13 +148,14 @@ export function WorkspaceProvider({children}) {
   };
 
   const setObjectExplorerVisible = useCallback((visible)=>{
+    isObjectExplorerVisibleRef.current = visible;
     setIsObjectExplorerVisible(visible);
     persistObjectExplorerVisible(pgAdmin, visible);
   }, [pgAdmin]);
 
   const toggleObjectExplorer = useCallback(()=>{
-    setObjectExplorerVisible(!isObjectExplorerVisible);
-  }, [isObjectExplorerVisible, setObjectExplorerVisible]);
+    setObjectExplorerVisible(!isObjectExplorerVisibleRef.current);
+  }, [setObjectExplorerVisible]);
 
   const value = useMemo(()=>({
     config: config,
