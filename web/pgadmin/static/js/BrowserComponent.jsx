@@ -10,7 +10,7 @@
 import {useEffect, useMemo, useState } from 'react';
 import AppMenuBar from './AppMenuBar';
 import ObjectBreadcrumbs from './components/ObjectBreadcrumbs';
-import Layout, { LAYOUT_EVENTS, LayoutDocker, getDefaultGroup } from './helpers/Layout';
+import Layout, { LayoutDocker, getDefaultGroup } from './helpers/Layout';
 import gettext from 'sources/gettext';
 import ObjectExplorer from './tree/ObjectExplorer';
 import Properties from '../../misc/properties/Properties';
@@ -139,7 +139,6 @@ function Layouts({browser}) {
             key={item.docker}
             getLayoutInstance={(obj)=>{
               pgAdmin.Browser.docker[item.docker] = obj;
-              obj.eventBus.fireEvent(LAYOUT_EVENTS.INIT);
             }}
             defaultLayout={item.layout}
             layoutId={`Workspace/Layout-${item.workspace}`}

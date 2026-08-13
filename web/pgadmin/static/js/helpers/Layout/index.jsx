@@ -284,6 +284,22 @@ export class LayoutDocker {
     return panelData?.parent?.activeId == panelData?.id;
   }
 
+  isPanelMaximized(panelId) {
+    const panelData = this.find(panelId);
+    return panelData?.parent?.mode === 'maximize';
+  }
+
+  // Toggle maximize for a panel. Maximizing the main panel hides sibling
+  // panels (e.g. Object Explorer) — used for VS Code-style sidebar toggle.
+  toggleMaximize(panelId) {
+    const panelData = this.find(panelId);
+    if (!panelData || !this.layoutObj) {
+      return false;
+    }
+    this.layoutObj.dockMove(panelData, null, 'maximize');
+    return true;
+  }
+
   openTab(panelData, refTabId, direction='middle', forceRerender=false) {
     let panel = this.layoutObj.find(panelData.id);
     if(panel) {
@@ -445,6 +461,8 @@ export class LayoutDocker {
 
     focusOn && this.focus(focusOn);
     this.saveLayout();
+    // Notify listeners (e.g. workspace sidebar sync) that layout was restored.
+    this.eventBus.fireEvent(LAYOUT_EVENTS.INIT);
   }
 
   static getPanel({icon, title, closable, tooltip, renamable, manualClose, bgcolor, fgcolor, server_id, ...attrs}) {
@@ -712,6 +730,9 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
                 layoutDockerObj.layoutObj = obj;
                 getLayoutInstance?.(layoutDockerObj);
                 layoutDockerObj.loadLayout(savedLayout);
+                // Fire after loadLayout so listeners see the restored layout
+                // (e.g. maximized main panel / collapsed Object Explorer).
+                layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS.INIT);
               }
             }}
             loadTab={loadTab}

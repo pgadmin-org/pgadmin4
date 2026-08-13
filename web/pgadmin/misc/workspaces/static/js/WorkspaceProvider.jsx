@@ -7,11 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import usePreferences from '../../../../preferences/static/js/store';
+import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
 import { config } from './config';
 
 const WorkspaceContext = React.createContext();
@@ -21,6 +22,9 @@ export const useWorkspace = ()=>useContext(WorkspaceContext);
 export function WorkspaceProvider({children}) {
   const pgAdmin = usePgAdmin();
   const [currentWorkspace, setCurrentWorkspace] = useState(WORKSPACES.DEFAULT);
+  // Reflects whether Object Explorer is visible in Default workspace.
+  // Kept in sync with the dock layout (MAIN maximized => sidebar closed).
+  const [isDefaultSidebarOpen, setIsDefaultSidebarOpen] = useState(true);
   const lastSelectedTreeItem = useRef();
   const isClassic = (usePreferences()?.getPreferencesForModule('misc')?.layout ?? 'classic') == 'classic';
   const openInResWorkspace = usePreferences()?.getPreferencesForModule('misc')?.open_in_res_workspace && !isClassic;
@@ -69,9 +73,66 @@ export function WorkspaceProvider({children}) {
     return {docker: docker, focus: ()=>changeWorkspace(workspace)};
   };
 
+  const syncDefaultSidebarFromLayout = useCallback(()=>{
+    const docker = pgAdmin.Browser.docker.default_workspace;
+    if (!docker?.layoutObj || typeof docker.isPanelMaximized !== 'function') {
+      return;
+    }
+    if (!docker.find?.(BROWSER_PANELS.MAIN)) {
+      return;
+    }
+    // MAIN maximized => Object Explorer hidden => sidebar closed.
+    setIsDefaultSidebarOpen(!docker.isPanelMaximized(BROWSER_PANELS.MAIN));
+  }, [pgAdmin]);
+
+  // Keep React state aligned with the dock layout (reload, reset, maximize, etc.).
+  useEffect(()=>{
+    if (isClassic) {
+      return;
+    }
+
+    const docker = pgAdmin.Browser.docker.default_workspace;
+    if (!docker?.eventBus) {
+      return;
+    }
+
+    syncDefaultSidebarFromLayout();
+    const deregInit = docker.eventBus.registerListener(LAYOUT_EVENTS.INIT, syncDefaultSidebarFromLayout);
+    const deregMaximize = docker.eventBus.registerListener(LAYOUT_EVENTS.MAXIMIZE, syncDefaultSidebarFromLayout);
+    const deregChange = docker.eventBus.registerListener(LAYOUT_EVENTS.CHANGE, syncDefaultSidebarFromLayout);
+
+    return ()=>{
+      deregInit();
+      deregMaximize();
+      deregChange();
+    };
+  }, [isClassic, pgAdmin, syncDefaultSidebarFromLayout]);
+
+  const restoreDefaultSidebar = ()=>{
+    if (!isDefaultSidebarOpen) {
+      // Object Explorer was collapsed via maximize — toggle restores it.
+      // Only update React state when the layout toggle actually succeeds.
+      if (!pgAdmin.Browser.docker.default_workspace?.toggleMaximize?.(BROWSER_PANELS.MAIN)) {
+        return;
+      }
+      syncDefaultSidebarFromLayout();
+    }
+  };
+
+  const toggleDefaultSidebar = ()=>{
+    if (!pgAdmin.Browser.docker.default_workspace?.toggleMaximize?.(BROWSER_PANELS.MAIN)) {
+      return;
+    }
+    syncDefaultSidebarFromLayout();
+  };
+
   const changeWorkspace = (newVal)=>{
     // Set the currentWorkspace flag.
     if (currentWorkspace == newVal) return;
+    // Restore Object Explorer if it was collapsed when leaving Default workspace.
+    if (currentWorkspace == WORKSPACES.DEFAULT && !isDefaultSidebarOpen) {
+      restoreDefaultSidebar();
+    }
     pgAdmin.Browser.docker.currentWorkspace = newVal;
     if (newVal == WORKSPACES.DEFAULT) {
       setTimeout(() => {
@@ -117,12 +178,14 @@ export function WorkspaceProvider({children}) {
   const value = useMemo(()=>({
     config: config,
     currentWorkspace: currentWorkspace,
+    isDefaultSidebarOpen,
     enabled: !isClassic,
     changeWorkspace,
+    toggleDefaultSidebar,
     hasOpenTabs,
     getLayoutObj,
     onWorkspaceDisabled
-  }), [currentWorkspace, isClassic]);
+  }), [currentWorkspace, isClassic, isDefaultSidebarOpen]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}

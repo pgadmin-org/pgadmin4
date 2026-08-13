@@ -46,8 +46,9 @@ const StyledWorkspaceButton = styled(PgIconButton)(({theme}) => ({
 }));
 
 function WorkspaceButton({menuItem, value, options, ...props}) {
-  const {currentWorkspace, hasOpenTabs, getLayoutObj, onWorkspaceDisabled, changeWorkspace} = useWorkspace();
-  const active = value == currentWorkspace;
+  const {currentWorkspace, isDefaultSidebarOpen, hasOpenTabs, getLayoutObj, onWorkspaceDisabled, changeWorkspace, toggleDefaultSidebar} = useWorkspace();
+  // Default workspace icon is "active" only when that workspace is selected and Object Explorer is visible.
+  const active = value == currentWorkspace && (value !== WORKSPACES.DEFAULT || isDefaultSidebarOpen);
   const [disabled, setDisabled] = useState();
 
   useEffect(()=>{
@@ -84,6 +85,12 @@ function WorkspaceButton({menuItem, value, options, ...props}) {
         } else {
           // Check permission and call.
           withCheckPermission(options, () => {
+            // Re-clicking the active Default workspace icon toggles Object Explorer
+            // visibility (VS Code-style sidebar toggle). See #9631.
+            if (value === currentWorkspace && value === WORKSPACES.DEFAULT) {
+              toggleDefaultSidebar();
+              return;
+            }
             changeWorkspace(value);
           })();
         }
