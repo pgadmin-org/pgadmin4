@@ -113,7 +113,7 @@ let defaultLayout = {
 
 function Layouts({browser}) {
   const pgAdmin = usePgAdmin();
-  const {config, enabled, currentWorkspace} = useWorkspace();
+  const {config, enabled, currentWorkspace, isObjectExplorerVisible} = useWorkspace();
   return (
     <ApplicationStateProvider>
       <div style={{display: 'flex', height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
@@ -133,6 +133,7 @@ function Layouts({browser}) {
           resetToTabPanel={BROWSER_PANELS.MAIN}
           enableToolEvents
           isLayoutVisible={!enabled || currentWorkspace == WORKSPACES.DEFAULT}
+          className={(!enabled || isObjectExplorerVisible) ? undefined : 'object-explorer-collapsed'}
         />
         {enabled && config.map((item)=>(
           <Layout

@@ -561,7 +561,7 @@ export function getDefaultGroup() {
   };
 }
 
-export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, ...props}) {
+export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, className, ...props}) {
   const [[contextPos, contextPanelId, contextExtraMenus], setContextPos] = React.useState([null, null, null]);
   const defaultGroups = React.useMemo(()=>({
     'dialogs': getDialogsGroup(),
@@ -702,7 +702,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   return (
     <ApplicationStateProvider>
       <LayoutDockerContext.Provider value={layoutDockerObj}>
-        <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'} >
+        <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'}
+          className={className} >
           {useMemo(()=>(<DockLayout
             style={{
               height: '100%',
@@ -750,7 +751,8 @@ Layout.propTypes = {
   savedLayout: PropTypes.string,
   resetToTabPanel: PropTypes.string,
   enableToolEvents: PropTypes.bool,
-  isLayoutVisible: PropTypes.bool
+  isLayoutVisible: PropTypes.bool,
+  className: PropTypes.string
 };
 
 

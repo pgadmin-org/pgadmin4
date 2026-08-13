@@ -7,20 +7,46 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import usePreferences from '../../../../preferences/static/js/store';
+import getApiInstance from '../../../../static/js/api_instance';
+import url_for from 'sources/url_for';
 import { config } from './config';
 
 const WorkspaceContext = React.createContext();
+const OBJECT_EXPLORER_VISIBLE_SETTING = 'Browser/ObjectExplorerVisible';
+const LAYOUT_RESET_EVENT = 'pgadmin:browser:layout:reset';
 
 export const useWorkspace = ()=>useContext(WorkspaceContext);
+
+function getSavedObjectExplorerVisible(pgAdmin) {
+  const saved = pgAdmin?.Browser?.utils?.layout?.[OBJECT_EXPLORER_VISIBLE_SETTING];
+  if (saved === undefined || saved === null || saved === '') {
+    return true;
+  }
+  return saved === true || saved === 'true';
+}
+
+function persistObjectExplorerVisible(pgAdmin, visible) {
+  if (pgAdmin?.Browser?.utils?.layout) {
+    pgAdmin.Browser.utils.layout[OBJECT_EXPLORER_VISIBLE_SETTING] = String(visible);
+  }
+  const formData = new FormData();
+  formData.append('setting', OBJECT_EXPLORER_VISIBLE_SETTING);
+  formData.append('value', String(visible));
+  getApiInstance().post(url_for('settings.store_bulk'), formData)
+    .catch(()=>{/* No need to throw error */});
+}
 
 export function WorkspaceProvider({children}) {
   const pgAdmin = usePgAdmin();
   const [currentWorkspace, setCurrentWorkspace] = useState(WORKSPACES.DEFAULT);
+  const [isObjectExplorerVisible, setIsObjectExplorerVisible] = useState(
+    () => getSavedObjectExplorerVisible(pgAdmin)
+  );
   const lastSelectedTreeItem = useRef();
   const isClassic = (usePreferences()?.getPreferencesForModule('misc')?.layout ?? 'classic') == 'classic';
   const openInResWorkspace = usePreferences()?.getPreferencesForModule('misc')?.open_in_res_workspace && !isClassic;
@@ -114,6 +140,25 @@ export function WorkspaceProvider({children}) {
     changeWorkspace(WORKSPACES.DEFAULT);
   };
 
+  const setObjectExplorerVisible = useCallback((visible)=>{
+    setIsObjectExplorerVisible(visible);
+    persistObjectExplorerVisible(pgAdmin, visible);
+  }, [pgAdmin]);
+
+  const toggleObjectExplorer = useCallback(()=>{
+    setObjectExplorerVisible(!isObjectExplorerVisible);
+  }, [isObjectExplorerVisible, setObjectExplorerVisible]);
+
+  // Restore OE visibility when File → Reset Layout runs.
+  useEffect(()=>{
+    const deregister = pgAdmin.Browser.Events.on(LAYOUT_RESET_EVENT, ()=>{
+      setObjectExplorerVisible(true);
+    });
+    return ()=>{
+      deregister?.();
+    };
+  }, [pgAdmin, setObjectExplorerVisible]);
+
   const value = useMemo(()=>({
     config: config,
     currentWorkspace: currentWorkspace,
@@ -121,8 +166,10 @@ export function WorkspaceProvider({children}) {
     changeWorkspace,
     hasOpenTabs,
     getLayoutObj,
-    onWorkspaceDisabled
-  }), [currentWorkspace, isClassic]);
+    onWorkspaceDisabled,
+    isObjectExplorerVisible,
+    toggleObjectExplorer,
+  }), [currentWorkspace, isClassic, isObjectExplorerVisible, toggleObjectExplorer]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}

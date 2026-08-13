@@ -1005,12 +1005,14 @@ def reset_layout_db(user_id=None):
             if user_id is None:
                 cur.execute(
                     'DELETE FROM SETTING WHERE SETTING in '
-                    '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
+                    '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout",'
+                    ' "Browser/ObjectExplorerVisible")'
                 )
             else:
                 cur.execute(
                     'DELETE FROM SETTING WHERE SETTING in '
-                    '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout")'
+                    '("Browser/Layout", "SQLEditor/Layout", "Debugger/Layout",'
+                    ' "Browser/ObjectExplorerVisible")'
                     ' AND USER_ID=?', user_id
                 )
             cur.execute('DELETE FROM process')
