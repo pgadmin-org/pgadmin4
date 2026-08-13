@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
@@ -18,7 +18,6 @@ import { config } from './config';
 
 const WorkspaceContext = React.createContext();
 const OBJECT_EXPLORER_VISIBLE_SETTING = 'Browser/ObjectExplorerVisible';
-const LAYOUT_RESET_EVENT = 'pgadmin:browser:layout:reset';
 
 export const useWorkspace = ()=>useContext(WorkspaceContext);
 
@@ -149,16 +148,6 @@ export function WorkspaceProvider({children}) {
     setObjectExplorerVisible(!isObjectExplorerVisible);
   }, [isObjectExplorerVisible, setObjectExplorerVisible]);
 
-  // Restore OE visibility when File → Reset Layout runs.
-  useEffect(()=>{
-    const deregister = pgAdmin.Browser.Events.on(LAYOUT_RESET_EVENT, ()=>{
-      setObjectExplorerVisible(true);
-    });
-    return ()=>{
-      deregister?.();
-    };
-  }, [pgAdmin, setObjectExplorerVisible]);
-
   const value = useMemo(()=>({
     config: config,
     currentWorkspace: currentWorkspace,
@@ -168,8 +157,9 @@ export function WorkspaceProvider({children}) {
     getLayoutObj,
     onWorkspaceDisabled,
     isObjectExplorerVisible,
+    setObjectExplorerVisible,
     toggleObjectExplorer,
-  }), [currentWorkspace, isClassic, isObjectExplorerVisible, toggleObjectExplorer]);
+  }), [currentWorkspace, isClassic, isObjectExplorerVisible, setObjectExplorerVisible, toggleObjectExplorer]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}

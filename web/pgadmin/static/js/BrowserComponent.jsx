@@ -113,7 +113,9 @@ let defaultLayout = {
 
 function Layouts({browser}) {
   const pgAdmin = usePgAdmin();
-  const {config, enabled, currentWorkspace, isObjectExplorerVisible} = useWorkspace();
+  const {
+    config, enabled, currentWorkspace, isObjectExplorerVisible, setObjectExplorerVisible,
+  } = useWorkspace();
   return (
     <ApplicationStateProvider>
       <div style={{display: 'flex', height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
@@ -121,6 +123,15 @@ function Layouts({browser}) {
         <Layout
           getLayoutInstance={(obj)=>{
             pgAdmin.Browser.docker.default_workspace = obj;
+            // File → Reset Layout calls resetLayout(); restore OE visibility there.
+            if (!obj.__objectExplorerResetWrapped) {
+              const originalResetLayout = obj.resetLayout.bind(obj);
+              obj.resetLayout = (...args) => {
+                originalResetLayout(...args);
+                setObjectExplorerVisible(true);
+              };
+              obj.__objectExplorerResetWrapped = true;
+            }
           }}
           defaultLayout={defaultLayout}
           layoutId='Browser/Layout'

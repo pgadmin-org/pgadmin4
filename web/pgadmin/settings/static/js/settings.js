@@ -30,8 +30,6 @@ define('pgadmin.settings', ['sources/pgadmin'], function(pgAdmin) {
     // and reload the window
     show: function() {
       pgAdmin.Browser.docker.default_workspace.resetLayout();
-      // Also restore Object Explorer visibility (workspace layout toggle).
-      pgAdmin.Browser.Events.trigger('pgadmin:browser:layout:reset');
     },
   };
 
