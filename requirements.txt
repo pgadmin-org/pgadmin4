@@ -59,7 +59,7 @@ pytz==2026.*
 pywinpty==2.0.*; sys_platform=="win32"
 qrcode[pil]==8.*
 setuptools<82; python_version <= '3.9'
-setuptools==83.*; python_version > '3.9'
+setuptools==84.*; python_version > '3.9'
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
