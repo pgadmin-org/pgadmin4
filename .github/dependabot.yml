@@ -17,6 +17,13 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Python dependency"
+    # paramiko 5.0 removed DSSKey, which sshtunnel 0.4.0 still references in
+    # SSHTunnelForwarder.get_keys(); a major bump therefore breaks every SSH
+    # tunnelled connection at construction time. sshtunnel has had no release
+    # since 2019, so this stays put until it is fixed or replaced. See #9927.
+    ignore:
+      - dependency-name: "paramiko"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "pip"
     directory: "/tools"
@@ -27,6 +34,9 @@ updates:
     commit-message:
       prefix: "Python dependency"
 
+  # Note that web/regression/requirements.txt begins with
+  # "-r ../../requirements.txt", so this entry also sees everything pinned in
+  # the root file and the paramiko exclusion has to be repeated here.
   - package-ecosystem: "pip"
     directory: "/web/regression"
     schedule:
@@ -35,6 +45,9 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Python dependency"
+    ignore:
+      - dependency-name: "paramiko"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "npm"
     directory: "/runtime"
