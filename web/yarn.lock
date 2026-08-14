@@ -2910,13 +2910,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@juggle/resize-observer@npm:^3.3.1":
-  version: 3.4.0
-  resolution: "@juggle/resize-observer@npm:3.4.0"
-  checksum: 10c0/12930242357298c6f2ad5d4ec7cf631dfb344ca7c8c830ab7f64e6ac11eb1aae486901d8d880fd08fb1b257800c160a0da3aee1e7ed9adac0ccbb9b7c5d93347
-  languageName: node
-  linkType: hard
-
 "@kurkle/color@npm:^0.3.0":
   version: 0.3.4
   resolution: "@kurkle/color@npm:0.3.4"
@@ -13333,7 +13326,7 @@ __metadata:
     uplot: "npm:^1.6.32"
     uplot-react: "npm:^1.2.4"
     url-loader: "npm:^4.1.1"
-    use-resize-observer: "npm:^9.1.0"
+    use-resize-observer: "npm:^10.0.0"
     valid-filename: "npm:^4.0.0"
     vanilla-jsoneditor: "npm:^3.12.0"
     webfonts-loader: "npm:^8.1.1"
@@ -15148,15 +15141,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-resize-observer@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "use-resize-observer@npm:9.1.0"
-  dependencies:
-    "@juggle/resize-observer": "npm:^3.3.1"
+"use-resize-observer@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "use-resize-observer@npm:10.0.0"
   peerDependencies:
-    react: 16.8.0 - 18
-    react-dom: 16.8.0 - 18
-  checksum: 10c0/6ccdeb09fe20566ec182b1635a22f189e13d46226b74610432590e69b31ef5d05d069badc3306ebd0d2bb608743b17981fb535763a1d7dc2c8ae462ee8e5999c
+    react: ">=18.2"
+  checksum: 10c0/90b3c913f18f17775fab09cc56f2b2962ce1f3aa3604bab2807b722f4ea6809ab0b987d2e9177f2643305d104f027fb4c83d79d7a77b47630ccd54df7bd32cb6
   languageName: node
   linkType: hard
 
