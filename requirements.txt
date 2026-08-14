@@ -30,7 +30,10 @@ Flask-Mail==0.*
 Flask-Migrate==4.*
 Flask-Paranoid==0.*
 Flask-Security-Too==5.6.*; python_version <= '3.9'
-Flask-Security-Too==5.8.*; python_version > '3.9'
+# 5.8.2 corrected the inverted UserMixin.is_locked() test in LoginForm;
+# User.is_locked() in web/pgadmin/model/__init__.py follows the fixed
+# semantics, so anything earlier in the 5.8 series would refuse all logins.
+Flask-Security-Too>=5.8.2,<5.9; python_version > '3.9'
 Flask-SocketIO==5.6.*
 Flask-SQLAlchemy==3.1.*
 Flask-WTF==1.2.*; python_version <= '3.9'
