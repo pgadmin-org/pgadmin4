@@ -41,6 +41,9 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
 {% if data.maximum is defined %}
 {% set defquery = defquery+'\n    MAXVALUE '+data.maximum|string %}
 {% endif %}
+{% if data.restart is defined %}
+{% set defquery = defquery+'\n    RESTART '+data.restart|string %}
+{% endif %}
 {% if data.cache is defined %}
 {% set defquery = defquery+'\n    CACHE '+data.cache|string %}
 {% endif %}
