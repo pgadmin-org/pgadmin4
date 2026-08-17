@@ -7,21 +7,61 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
+import { BROWSER_PANELS, SHOW_OBJECT_EXPLORER_EVENT, WORKSPACES }
+  from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import usePreferences from '../../../../preferences/static/js/store';
+import getApiInstance from '../../../../static/js/api_instance';
+import url_for from 'sources/url_for';
 import { config } from './config';
 
 const WorkspaceContext = React.createContext();
+const OBJECT_EXPLORER_VISIBLE_SETTING = 'Browser/ObjectExplorerVisible';
+
+// Serialize visibility writes so overlapping store requests cannot apply out of order.
+let objectExplorerPersistChain = Promise.resolve();
 
 export const useWorkspace = ()=>useContext(WorkspaceContext);
+
+function getSavedObjectExplorerVisible(pgAdmin) {
+  const saved = pgAdmin?.Browser?.utils?.layout?.[OBJECT_EXPLORER_VISIBLE_SETTING];
+  if (saved === undefined || saved === null || saved === '') {
+    return true;
+  }
+  return saved === true || saved === 'true';
+}
+
+function persistObjectExplorerVisible(pgAdmin, visible) {
+  if (pgAdmin?.Browser?.utils?.layout) {
+    pgAdmin.Browser.utils.layout[OBJECT_EXPLORER_VISIBLE_SETTING] = String(visible);
+  }
+  const formData = new FormData();
+  formData.append('setting', OBJECT_EXPLORER_VISIBLE_SETTING);
+  formData.append('value', String(visible));
+  objectExplorerPersistChain = objectExplorerPersistChain
+    .catch(()=>{/* The previous write failed and has already been logged. */})
+    .then(()=>getApiInstance().post(url_for('settings.store_bulk'), formData))
+    .catch((error)=>{
+      // Not worth interrupting the user for, but silence would leave the
+      // sidebar disagreeing with the server after the next refresh with no
+      // way to tell why.
+      console.warn('Unable to save the Object Explorer visibility setting.',
+        error);
+    });
+}
 
 export function WorkspaceProvider({children}) {
   const pgAdmin = usePgAdmin();
   const [currentWorkspace, setCurrentWorkspace] = useState(WORKSPACES.DEFAULT);
+  const [isObjectExplorerVisible, setIsObjectExplorerVisible] = useState(
+    () => getSavedObjectExplorerVisible(pgAdmin)
+  );
   const lastSelectedTreeItem = useRef();
+  // Keep latest visibility for consecutive toggles before React re-renders.
+  const isObjectExplorerVisibleRef = useRef(isObjectExplorerVisible);
+  isObjectExplorerVisibleRef.current = isObjectExplorerVisible;
   const isClassic = (usePreferences()?.getPreferencesForModule('misc')?.layout ?? 'classic') == 'classic';
   const openInResWorkspace = usePreferences()?.getPreferencesForModule('misc')?.open_in_res_workspace && !isClassic;
 
@@ -114,6 +154,23 @@ export function WorkspaceProvider({children}) {
     changeWorkspace(WORKSPACES.DEFAULT);
   };
 
+  const setObjectExplorerVisible = useCallback((visible)=>{
+    isObjectExplorerVisibleRef.current = visible;
+    setIsObjectExplorerVisible(visible);
+    persistObjectExplorerVisible(pgAdmin, visible);
+  }, [pgAdmin]);
+
+  const toggleObjectExplorer = useCallback(()=>{
+    setObjectExplorerVisible(!isObjectExplorerVisibleRef.current);
+  }, [setObjectExplorerVisible]);
+
+  useEffect(()=>{
+    // Code outside React, e.g. the shortcut that focuses the tree, asks for
+    // the panel this way rather than reaching into this state.
+    return pgAdmin.Browser.Events.registerListener(
+      SHOW_OBJECT_EXPLORER_EVENT, ()=>setObjectExplorerVisible(true));
+  }, [pgAdmin, setObjectExplorerVisible]);
+
   const value = useMemo(()=>({
     config: config,
     currentWorkspace: currentWorkspace,
@@ -121,8 +178,11 @@ export function WorkspaceProvider({children}) {
     changeWorkspace,
     hasOpenTabs,
     getLayoutObj,
-    onWorkspaceDisabled
-  }), [currentWorkspace, isClassic]);
+    onWorkspaceDisabled,
+    isObjectExplorerVisible,
+    setObjectExplorerVisible,
+    toggleObjectExplorer,
+  }), [currentWorkspace, isClassic, isObjectExplorerVisible, setObjectExplorerVisible, toggleObjectExplorer]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}

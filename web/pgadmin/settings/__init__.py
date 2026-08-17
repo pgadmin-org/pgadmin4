@@ -97,7 +97,12 @@ def get_workspace_layout():
 
 
 def get_layout():
-    layout = {'Browser/Layout': get_setting('Browser/Layout', default='')}
+    layout = {
+        'Browser/Layout': get_setting('Browser/Layout', default=''),
+        # Persist Object Explorer sidebar visibility across refresh/navigation
+        'Browser/ObjectExplorerVisible': get_setting(
+            'Browser/ObjectExplorerVisible', default='true'),
+    }
     layout = {**layout, **get_workspace_layout()}
     return layout
 
@@ -160,12 +165,20 @@ def reset_layout():
                 .filter(Setting.user_id == current_user.id) \
                 .filter((Setting.setting == request.params['setting'])) \
                 .delete()
+            # Resetting Browser layout restores Object Explorer visibility.
+            if request.params['setting'] == 'Browser/Layout':
+                db.session.query(Setting) \
+                    .filter(Setting.user_id == current_user.id) \
+                    .filter(Setting.setting ==
+                            'Browser/ObjectExplorerVisible') \
+                    .delete()
         else:
             db.session.query(Setting) \
                 .filter(Setting.user_id == current_user.id)\
                 .filter((Setting.setting == 'Browser/Layout') |
                         (Setting.setting == 'SQLEditor/Layout') |
-                        (Setting.setting == 'Debugger/Layout'))\
+                        (Setting.setting == 'Debugger/Layout') |
+                        (Setting.setting == 'Browser/ObjectExplorerVisible'))\
                 .delete()
 
         db.session.commit()

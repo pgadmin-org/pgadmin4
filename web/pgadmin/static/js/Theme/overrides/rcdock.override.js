@@ -190,6 +190,16 @@ export default function rcdockOverride(theme) {
         color: theme.custom.icon.contrastText
       }
     },
+    // Collapse Object Explorer without unmounting so tree state is preserved.
+    '.object-explorer-collapsed': {
+      '& .dock-style-object-explorer': {
+        display: 'none !important',
+      },
+      // Cover divider on either side of the OE panel (layout order can vary).
+      '& .dock-style-object-explorer + .dock-divider, & .dock-divider:has(+ .dock-style-object-explorer)': {
+        display: 'none !important',
+      },
+    },
     '.dock-dropdown': {
       zIndex: 1004,
 

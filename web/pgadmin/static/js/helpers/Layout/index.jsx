@@ -445,6 +445,10 @@ export class LayoutDocker {
 
     focusOn && this.focus(focusOn);
     this.saveLayout();
+    // Anything that tracks state alongside the layout, e.g. whether the
+    // Object Explorer is collapsed, needs to know the layout went back to
+    // its defaults.
+    this.eventBus.fireEvent(LAYOUT_EVENTS.RESET);
   }
 
   static getPanel({icon, title, closable, tooltip, renamable, manualClose, bgcolor, fgcolor, server_id, ...attrs}) {
@@ -561,7 +565,7 @@ export function getDefaultGroup() {
   };
 }
 
-export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, ...props}) {
+export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, className, ...props}) {
   const [[contextPos, contextPanelId, contextExtraMenus], setContextPos] = React.useState([null, null, null]);
   const defaultGroups = React.useMemo(()=>({
     'dialogs': getDialogsGroup(),
@@ -702,7 +706,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   return (
     <ApplicationStateProvider>
       <LayoutDockerContext.Provider value={layoutDockerObj}>
-        <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'} >
+        <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'}
+          className={className} >
           {useMemo(()=>(<DockLayout
             style={{
               height: '100%',
@@ -750,7 +755,8 @@ Layout.propTypes = {
   savedLayout: PropTypes.string,
   resetToTabPanel: PropTypes.string,
   enableToolEvents: PropTypes.bool,
-  isLayoutVisible: PropTypes.bool
+  isLayoutVisible: PropTypes.bool,
+  className: PropTypes.string
 };
 
 
@@ -765,5 +771,6 @@ export const LAYOUT_EVENTS = {
   CLOSING: 'closing',
   CONTEXT: 'context',
   CHANGE: 'change',
-  REFRESH_TITLE: 'refresh-title'
+  REFRESH_TITLE: 'refresh-title',
+  RESET: 'reset'
 };

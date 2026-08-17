@@ -45,9 +45,15 @@ const StyledWorkspaceButton = styled(PgIconButton)(({theme}) => ({
   },
 }));
 
-function WorkspaceButton({menuItem, value, options, ...props}) {
-  const {currentWorkspace, hasOpenTabs, getLayoutObj, onWorkspaceDisabled, changeWorkspace} = useWorkspace();
-  const active = value == currentWorkspace;
+function WorkspaceButton({menuItem, value, options, title: titleProp, ...props}) {
+  const {
+    currentWorkspace, hasOpenTabs, getLayoutObj, onWorkspaceDisabled,
+    changeWorkspace, isObjectExplorerVisible, toggleObjectExplorer,
+  } = useWorkspace();
+  // Default workspace icon is active only when OE sidebar is visible (VS Code-like).
+  const active = value == currentWorkspace && (
+    value != WORKSPACES.DEFAULT || isObjectExplorerVisible
+  );
   const [disabled, setDisabled] = useState();
 
   useEffect(()=>{
@@ -73,10 +79,24 @@ function WorkspaceButton({menuItem, value, options, ...props}) {
     if(disabled && active) {
       onWorkspaceDisabled();
     }
-  }, [disabled]);
+  }, [disabled, active]);
+
+  // While the Default workspace is current its icon toggles the Object
+  // Explorer, so say so rather than leaving the label describing a switch that
+  // will not happen, and expose the state to assistive technology.
+  const isOEToggle = value == WORKSPACES.DEFAULT
+    && currentWorkspace == WORKSPACES.DEFAULT;
+  // titleProp is pulled out of props above deliberately: props are spread
+  // after title below, so anything left in there would override this.
+  const title = isOEToggle
+    ? (isObjectExplorerVisible
+      ? gettext('Hide Object Explorer')
+      : gettext('Show Object Explorer'))
+    : (titleProp ?? menuItem?.label ?? '');
 
   return (
-    <StyledWorkspaceButton className={active ? 'active': ''} title={menuItem?.label??''}
+    <StyledWorkspaceButton className={active ? 'active': ''} title={title}
+      aria-pressed={isOEToggle ? isObjectExplorerVisible : undefined}
       {...props}
       onClick={()=>{
         if(menuItem) {
@@ -84,6 +104,11 @@ function WorkspaceButton({menuItem, value, options, ...props}) {
         } else {
           // Check permission and call.
           withCheckPermission(options, () => {
+            // Re-clicking the Default workspace icon toggles Object Explorer visibility.
+            if (value == WORKSPACES.DEFAULT && currentWorkspace == WORKSPACES.DEFAULT) {
+              toggleObjectExplorer();
+              return;
+            }
             changeWorkspace(value);
           })();
         }
@@ -93,6 +118,7 @@ function WorkspaceButton({menuItem, value, options, ...props}) {
   );
 }
 WorkspaceButton.propTypes = {
+  title: PropTypes.string,
   menuItem: PropTypes.object,
   active: PropTypes.bool,
   changeWorkspace: PropTypes.func,

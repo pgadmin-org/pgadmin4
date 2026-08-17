@@ -113,7 +113,22 @@ let defaultLayout = {
 
 function Layouts({browser}) {
   const pgAdmin = usePgAdmin();
-  const {config, enabled, currentWorkspace} = useWorkspace();
+  const {
+    config, enabled, currentWorkspace, isObjectExplorerVisible, setObjectExplorerVisible,
+  } = useWorkspace();
+
+  useEffect(()=>{
+    // File → Reset Layout puts the layout back to its defaults, which has to
+    // bring the Object Explorer back with it. The docker instance is set by
+    // the ref callback below, which runs during commit, so it is available by
+    // the time this effect runs.
+    const docker = pgAdmin.Browser.docker.default_workspace;
+    if(!docker) return;
+
+    return docker.eventBus.registerListener(
+      LAYOUT_EVENTS.RESET, ()=>setObjectExplorerVisible(true));
+  }, [setObjectExplorerVisible]);
+
   return (
     <ApplicationStateProvider>
       <div style={{display: 'flex', height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
@@ -133,6 +148,7 @@ function Layouts({browser}) {
           resetToTabPanel={BROWSER_PANELS.MAIN}
           enableToolEvents
           isLayoutVisible={!enabled || currentWorkspace == WORKSPACES.DEFAULT}
+          className={(!enabled || isObjectExplorerVisible) ? undefined : 'object-explorer-collapsed'}
         />
         {enabled && config.map((item)=>(
           <Layout
