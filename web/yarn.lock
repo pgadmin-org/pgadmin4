@@ -8722,12 +8722,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-minimizer-webpack-plugin@npm:^4.1.4":
-  version: 4.1.4
-  resolution: "image-minimizer-webpack-plugin@npm:4.1.4"
+"image-minimizer-webpack-plugin@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "image-minimizer-webpack-plugin@npm:5.0.0"
   dependencies:
     schema-utils: "npm:^4.2.0"
-    serialize-javascript: "npm:^6.0.2"
+    serialize-javascript: "npm:^7.0.3"
   peerDependencies:
     webpack: ^5.1.0
   peerDependenciesMeta:
@@ -8739,7 +8739,7 @@ __metadata:
       optional: true
     svgo:
       optional: true
-  checksum: 10c0/f57800a2ab6bdfe802db4113ab3ba28198fab2929c806e214c5b817b26b375cd8a83b7563744c823a2f85132df26c0ef544d85dd1cac4f34245dd5a40a5ce26b
+  checksum: 10c0/cbc661dc5f0dd72846ac154abd37fc4da5a8b9705c2701e9782173b2bdd5d5a70854fac1af7f89dd1fd7e5fc4ac1c306cd8ad5378b79ccb40f7071af8a75b8b0
   languageName: node
   linkType: hard
 
@@ -13273,7 +13273,7 @@ __metadata:
     hotkeys-js: "npm:^4.0.4"
     html-react-parser: "npm:^5.2.17"
     html-to-image: "npm:1.11.13"
-    image-minimizer-webpack-plugin: "npm:^4.1.4"
+    image-minimizer-webpack-plugin: "npm:^5.0.0"
     immutability-helper: "npm:^3.1.1"
     imports-loader: "npm:^5.0.0"
     insert-if: "npm:^1.2.0"
