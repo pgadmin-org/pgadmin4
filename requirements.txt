@@ -21,8 +21,8 @@ azure-mgmt-subscription==3.1.1
 bcrypt==5.0.*
 boto3==1.42.*; python_version <= '3.9'
 boto3==1.43.*; python_version > '3.9'
-certifi==2026.6.17
-cryptography==49.0.*
+certifi==2026.7.22
+cryptography==50.0.*
 Flask-Babel==4.0.*
 Flask-Compress==1.*
 Flask-Login==0.*
@@ -30,7 +30,10 @@ Flask-Mail==0.*
 Flask-Migrate==4.*
 Flask-Paranoid==0.*
 Flask-Security-Too==5.6.*; python_version <= '3.9'
-Flask-Security-Too==5.8.*; python_version > '3.9'
+# 5.8.2 corrected the inverted UserMixin.is_locked() test in LoginForm;
+# User.is_locked() in web/pgadmin/model/__init__.py follows the fixed
+# semantics, so anything earlier in the 5.8 series would refuse all logins.
+Flask-Security-Too>=5.8.2,<5.9; python_version > '3.9'
 Flask-SocketIO==5.6.*
 Flask-SQLAlchemy==3.1.*
 Flask-WTF==1.2.*; python_version <= '3.9'
@@ -56,12 +59,12 @@ pytz==2026.*
 pywinpty==2.0.*; sys_platform=="win32"
 qrcode[pil]==8.*
 setuptools<82; python_version <= '3.9'
-setuptools==83.*; python_version > '3.9'
+setuptools==84.*; python_version > '3.9'
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
 typer[all]==0.23.*; python_version <= '3.9'
-typer==0.26.*; python_version > '3.9'
+typer==0.27.*; python_version > '3.9'
 urllib3==1.26.*; python_version <= '3.9'
 urllib3==2.7.*;  python_version > '3.9'
 user-agents==2.2.0

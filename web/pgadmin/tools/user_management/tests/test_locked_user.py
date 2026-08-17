@@ -26,8 +26,10 @@ class TestLockedUser(BaseTestGenerator):
 
       - `is_active` -> False when the account is deactivated OR locked
         (Flask-Login's `login_user()` then refuses the session).
-      - `is_locked(errors)` -> False when locked, True otherwise; populates
+      - `is_locked(errors)` -> True when locked, False otherwise; populates
         the supplied error list when locked so the form surfaces a message.
+        Flask-Security-Too <= 5.8.1 read this the other way round, which is
+        why requirements.txt floors the dependency at 5.8.2.
     """
 
     # Pure model-contract test - no Postgres server interaction needed.
@@ -39,16 +41,16 @@ class TestLockedUser(BaseTestGenerator):
     scenarios = [
         ('active and not locked: login allowed',
          dict(active=True, locked=False,
-              expect_is_active=True, expect_is_locked=True)),
+              expect_is_active=True, expect_is_locked=False)),
         ('active and locked: login blocked',
          dict(active=True, locked=True,
-              expect_is_active=False, expect_is_locked=False)),
+              expect_is_active=False, expect_is_locked=True)),
         ('inactive and not locked: login blocked',
          dict(active=False, locked=False,
-              expect_is_active=False, expect_is_locked=True)),
+              expect_is_active=False, expect_is_locked=False)),
         ('inactive and locked: login blocked',
          dict(active=False, locked=True,
-              expect_is_active=False, expect_is_locked=False)),
+              expect_is_active=False, expect_is_locked=True)),
     ]
 
     def runTest(self):
