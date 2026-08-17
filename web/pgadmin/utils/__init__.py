@@ -212,6 +212,31 @@ else:
         return os.path.realpath(os.path.expanduser('~/'))
 
 
+# A single SQL identifier, quoted, with every embedded double quote doubled.
+_QUOTED_IDENT = re.compile(r'"(?:[^"]|"")*"\Z')
+
+
+def unquote_ident(value):
+    """
+    Reverse the quoting that Driver.qtIdent() and the server's own
+    quote_ident() apply to an identifier.
+
+    Catalogue functions such as pg_get_indexdef() return an identifier quoted
+    only when it needs to be, with any embedded double quote doubled, so a
+    column named 'col"x' arrives as '"col""x"'. Stripping the outer quotes
+    alone would leave that doubled quote behind.
+
+    Anything that is not a single quoted identifier, an unquoted name or an
+    expression such as '(a || b)', is returned unchanged.
+
+    :param value: identifier as returned by the server
+    :return: the identifier as the user typed it
+    """
+    if value and _QUOTED_IDENT.match(value):
+        return value[1:-1].replace('""', '"')
+    return value
+
+
 def get_directory_and_file_name(drivefilepath):
     """
     Returns directory name if specified and file name
