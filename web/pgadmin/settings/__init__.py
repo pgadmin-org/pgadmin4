@@ -165,11 +165,12 @@ def reset_layout():
                 .filter(Setting.user_id == current_user.id) \
                 .filter((Setting.setting == request.params['setting'])) \
                 .delete()
-            # Resetting Browser layout also restores Object Explorer visibility.
+            # Resetting Browser layout restores Object Explorer visibility.
             if request.params['setting'] == 'Browser/Layout':
                 db.session.query(Setting) \
                     .filter(Setting.user_id == current_user.id) \
-                    .filter(Setting.setting == 'Browser/ObjectExplorerVisible') \
+                    .filter(Setting.setting ==
+                            'Browser/ObjectExplorerVisible') \
                     .delete()
         else:
             db.session.query(Setting) \
