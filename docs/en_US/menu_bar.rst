@@ -72,7 +72,7 @@ following options (in alphabetical order):
 |                             |                                                                                                                          |
 |   2) *Deploy Cloud Instance*| Click to open the :ref:`Cloud Deployment <cloud_deployment>` dialog to deploy an cloud instance.                         |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Change Password...*        | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.                     |
+| *Change Server Password...* | Click to open the :ref:`Change Server Password... <change_password_dialog>` dialog to change the password.               |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Clear Saved Password*      | If you have saved the database server password, click to clear the saved password.                                       |
 |                             | Enable only when password is already saved.                                                                              |
