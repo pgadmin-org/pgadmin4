@@ -362,11 +362,22 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
 
         # PostgreSQL 18 and above options
         if manager.version >= 180000:
-            set_param('only_statistics', '--statistics-only', data, args)
+            # pg_restore refuses --statistics-only alongside --data-only or
+            # --schema-only, and each --no-* option below alongside the
+            # matching --*-only, so drop the narrower option rather than
+            # letting the utility reject the whole command. The dialog
+            # disables these switches, but a request can still arrive with
+            # both set.
+            if not data.get('only_data', None) and \
+                    not data.get('only_schema', None):
+                set_param('only_statistics', '--statistics-only', data, args)
             set_param('no_policies', '--no-policies', data, args)
-            set_param('no_data', '--no-data', data, args)
-            set_param('no_schema', '--no-schema', data, args)
-            set_param('no_statistics', '--no-statistics', data, args)
+            if not data.get('only_data', None):
+                set_param('no_data', '--no-data', data, args)
+            if not data.get('only_schema', None):
+                set_param('no_schema', '--no-schema', data, args)
+            if not data.get('only_statistics', None):
+                set_param('no_statistics', '--no-statistics', data, args)
 
         set_multiple('schemas', '--schema', data, args, driver, conn, False)
         set_multiple('tables', '--table', data, args, driver, conn, False)

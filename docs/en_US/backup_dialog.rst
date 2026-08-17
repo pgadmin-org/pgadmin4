@@ -159,6 +159,10 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
      (the data definitions) from the backup. **Note:** This option is visible
      only for database server greater than or equal to 18.
 
+   * Move the switch next to *Statistics* to the *Yes* position to exclude
+     optimizer statistics. **Note:** This option is visible only for database
+     server greater than or equal to 18.
+
 .. image:: images/backup_queries.png
     :alt: Queries option on backup dialog
     :align: center
