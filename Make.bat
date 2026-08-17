@@ -227,7 +227,6 @@ REM Main build sequence Ends
         ECHO ERROR: Could not determine Yarn version from package.json packageManager field.
         EXIT /B 1
     )
-    CALL yarn set version berry || EXIT /B 1
     CALL yarn set version %YARN_VERSION% || EXIT /B 1
     CALL yarn install || EXIT /B 1
     CALL npm rebuild || EXIT /B 1
@@ -288,7 +287,6 @@ REM Main build sequence Ends
         ECHO ERROR: Could not determine Yarn version from package.json packageManager field.
         EXIT /B 1
     )
-    CALL yarn set version berry || EXIT /B 1
     CALL yarn set version %YARN_VERSION% || EXIT /B 1
     CALL yarn workspaces focus --production || EXIT /B 1
 
