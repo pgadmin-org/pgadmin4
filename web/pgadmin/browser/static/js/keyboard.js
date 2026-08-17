@@ -163,8 +163,19 @@ _.extend(pgBrowser.keyboardNavigation, {
     // rc-dock renders the object explorer and the workspace as separate
     // tab-sets, and each marks its own active tab with `dock-tab-active`, so
     // prefer the active tab that is not the object explorer.
+    //
+    // Only the outermost dock layout is considered. The SQL editor, ERD and
+    // Schema Diff each render a DockLayout of their own inside a workspace
+    // tab, and their active tabs (Data Output, Messages, Notifications and
+    // so on) carry the same `dock-tab-active` class, so a search across the
+    // whole tree can land on one of those and cycle a tool's inner tabs
+    // instead of the workspace tabs it was asked to move between.
+    const topDockLayout = rootDock.querySelector('.dock-layout');
+    if (!topDockLayout) return;
+
     const activeTabBtns = Array.from(
-      rootDock.querySelectorAll('.dock-tab.dock-tab-active .dock-tab-btn'));
+      topDockLayout.querySelectorAll('.dock-tab.dock-tab-active .dock-tab-btn')
+    ).filter(tab => tab.closest('.dock-layout') === topDockLayout);
     const activeTabBtn =
       activeTabBtns.find(tab => !tab.id.includes('id-object-explorer')) ||
       activeTabBtns[0];
@@ -176,7 +187,8 @@ _.extend(pgBrowser.keyboardNavigation, {
     const panel = activeTabBtn.closest('.dock-panel');
     const dockLayoutTabs = panel ? Array.from(
       panel.querySelectorAll('.dock-tab-btn'))
-      .filter(tab => tab.closest('.dock-panel') === panel) : [];
+      .filter(tab => tab.closest('.dock-panel') === panel &&
+        tab.closest('.dock-layout') === topDockLayout) : [];
 
     if (dockLayoutTabs.length > 1) {
       const activeTabIndex = dockLayoutTabs.indexOf(activeTabBtn);

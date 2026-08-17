@@ -201,8 +201,11 @@ export default function SchemaDialogView({
   };
 
   /* I am Groot */
-  return useMemo(() =>
-    <StyledBox onKeyDown={onKeyDown}>
+  // Only the children are memoized: the wrapper carries onKeyDown, which
+  // closes over props.onClose and onSaveClick, and memoizing it would pin
+  // whichever versions of those existed when the deps last changed.
+  const dialogContent = useMemo(() =>
+    <>
       <SchemaStateContext.Provider value={schemaState}>
         <Box className='Dialog-form'>
           <FormLoader/>
@@ -257,8 +260,10 @@ export default function SchemaDialogView({
           </Box>
         }
       </SchemaStateContext.Provider>
-    </StyledBox>, [schema._id, viewHelperProps.mode, resetKey]
+    </>, [schema._id, viewHelperProps.mode, resetKey]
   );
+
+  return <StyledBox onKeyDown={onKeyDown}>{dialogContent}</StyledBox>;
 }
 
 SchemaDialogView.propTypes = {
