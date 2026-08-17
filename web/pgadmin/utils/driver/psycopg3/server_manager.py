@@ -587,13 +587,22 @@ WHERE db.oid = {0}""".format(did))
                 ssh_logger.setLevel(logging.DEBUG)
                 for h in current_app.logger.handlers:
                     ssh_logger.addHandler(h)
+            # Only keep sshtunnel away from the agent when we have a
+            # credential of our own for it to use (#9814). Given neither a
+            # usable key nor a password it raises ValueError from
+            # _consolidate_auth() before it ever connects, so leaving the
+            # agent enabled in that case preserves the previous behaviour
+            # for anyone relying on "Prompt for Password?" or on the agent
+            # itself to authenticate.
             if self.tunnel_authentication == 1:
+                tunnel_identity_file = get_complete_file_path(
+                    self.tunnel_identity_file)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
-                    ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
+                    ssh_pkey=tunnel_identity_file,
                     ssh_private_key_password=tunnel_password,
-                    allow_agent=False,
+                    allow_agent=not tunnel_identity_file,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)
@@ -603,7 +612,7 @@ WHERE db.oid = {0}""".format(did))
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
-                    allow_agent=False,
+                    allow_agent=not tunnel_password,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)
@@ -612,7 +621,11 @@ WHERE db.oid = {0}""".format(did))
             self.tunnel_object.daemon_forward_servers = True
             self.tunnel_object.start()
             self.tunnel_created = True
-        except BaseSSHTunnelForwarderError as e:
+        except (BaseSSHTunnelForwarderError, ValueError) as e:
+            # sshtunnel raises a bare ValueError rather than one of its own
+            # exceptions when it finds no credential to authenticate with, so
+            # catch that too and report it the same way instead of letting it
+            # escape as an unhandled exception.
             current_app.logger.exception(e)
             return False, gettext(
                 "Failed to create the SSH tunnel. Possible causes:\n"
