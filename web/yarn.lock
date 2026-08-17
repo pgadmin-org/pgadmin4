@@ -3601,10 +3601,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@simonwep/pickr@npm:~1.10.1":
-  version: 1.10.1
-  resolution: "@simonwep/pickr@npm:1.10.1"
-  checksum: 10c0/825f64494e81dd3feb56edb1e316117774e15aadacf51a0e5cb7c74291c58cf502bf1da9eafd775b88648e23068ff0e401c1d1922a79d05b2b141e5a1a6ac6ee
+"@simonwep/pickr@npm:~1.9.1":
+  version: 1.9.1
+  resolution: "@simonwep/pickr@npm:1.9.1"
+  dependencies:
+    core-js: "npm:3.37.0"
+    nanopop: "npm:2.4.2"
+  checksum: 10c0/c4c52202cb2ad251836ef71c98e40d178616e15f3eb419b778cfed2c4bb20b31b327b495cb804467578650999ec7edc0ee31963b0c34686e0d8a85d4ee8f63c8
   languageName: node
   linkType: hard
 
@@ -6338,6 +6341,13 @@ __metadata:
   dependencies:
     browserslist: "npm:^4.28.1"
   checksum: 10c0/546e64b7ce45f724825bc13c1347f35c0459a6e71c0dcccff3ec21fbff463f5b0b97fc1220e6d90302153863489301793276fe2bf96f46001ff555ead4140308
+  languageName: node
+  linkType: hard
+
+"core-js@npm:3.37.0":
+  version: 3.37.0
+  resolution: "core-js@npm:3.37.0"
+  checksum: 10c0/7e00331f346318ca3f595c08ce9e74ddae744715aef137486c1399163afd79792fb94c3161280863adfdc3e30f8026912d56bd3036f93cacfc689d33e185f2ee
   languageName: node
   linkType: hard
 
@@ -11123,6 +11133,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanopop@npm:2.4.2":
+  version: 2.4.2
+  resolution: "nanopop@npm:2.4.2"
+  checksum: 10c0/5a0df455e2147ce89ea9ad2386ca6cb1735bb64f6be28762b927a67617b518cd8e1e53c9a35e2939d328f3d21dac3b262dbed536d3fa6b6c07ed0f81a2c6061f
+  languageName: node
+  linkType: hard
+
 "napi-postinstall@npm:^0.3.0":
   version: 0.3.4
   resolution: "napi-postinstall@npm:0.3.4"
@@ -13206,7 +13223,7 @@ __metadata:
     "@mui/x-date-pickers": "npm:^8.28.3"
     "@nozbe/microfuzz": "npm:^1.0.0"
     "@projectstorm/react-diagrams": "npm:^7.0.4"
-    "@simonwep/pickr": "npm:~1.10.1"
+    "@simonwep/pickr": "npm:~1.9.1"
     "@svgr/webpack": "npm:^8.1.0"
     "@szhsin/react-menu": "npm:^4.5.2"
     "@tanstack/react-query": "npm:^5.101.4"
