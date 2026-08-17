@@ -1,4 +1,11 @@
 version: 2
+
+# A note on the "groups" blocks below: minor and patch updates are batched into
+# a single PR per manifest per week, whilst major updates continue to arrive
+# individually. Majors are where the breakage lives and each one wants its own
+# review, whereas a dozen separate PRs for patch bumps is pure overhead.
+# Grouping applies to version updates only, so Dependabot security updates are
+# unaffected and still arrive as their own PRs.
 updates:
   - package-ecosystem: "docker"
     directory: "/"
@@ -17,6 +24,13 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Python dependency"
+    groups:
+      python-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     # paramiko 5.0 removed DSSKey, which sshtunnel 0.4.0 still references in
     # SSHTunnelForwarder.get_keys(); a major bump therefore breaks every SSH
     # tunnelled connection at construction time. sshtunnel has had no release
@@ -33,6 +47,13 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Python dependency"
+    groups:
+      tools-python-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # Note that web/regression/requirements.txt begins with
   # "-r ../../requirements.txt", so this entry also sees everything pinned in
@@ -45,6 +66,13 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Python dependency"
+    groups:
+      regression-python-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: "paramiko"
         update-types: ["version-update:semver-major"]
@@ -57,6 +85,13 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Javascript dependency"
+    groups:
+      runtime-javascript-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     directory: "/web"
@@ -66,3 +101,10 @@ updates:
       - "Dependencies"
     commit-message:
       prefix: "Javascript dependency"
+    groups:
+      web-javascript-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
