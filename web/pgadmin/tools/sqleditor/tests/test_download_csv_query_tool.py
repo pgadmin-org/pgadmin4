@@ -9,6 +9,8 @@
 ##########################################################################
 import codecs
 from unittest.mock import patch
+from urllib.parse import quote as url_quote
+from xml.etree import ElementTree
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
@@ -243,6 +245,19 @@ class TestDownloadCSV(BaseTestGenerator):
         test_utils.drop_database(main_conn, self._db_name)
 
 
+# A control character that XML 1.0 does not allow at all (not even as a
+# character reference), a bytea value, the two non-finite floats that JSON
+# has no syntax for, and a NULL.
+AWKWARD_SQL = (
+    'SELECT E\'ctl\\x01char\' as "Ctl", '
+    '\'\\x48656c6c6f\'::bytea as "Bytes", '
+    '\'NaN\'::float8 as "NotANumber", '
+    '\'Infinity\'::float8 as "Inf", '
+    '\'-Infinity\'::float8 as "NegInf", '
+    'NULL::text as "Nothing"'
+)
+
+
 class TestDownloadResultFormats(BaseTestGenerator):
     """
     Validates downloading query results as JSON and XML, the UTF BOM option
@@ -294,7 +309,48 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_status=400, expected_content_type=None,
                  expected_extension='.csv')
         ),
+        (
+            # RFC 6266 requires the quoted form once the name contains a
+            # space, or the client sees a truncated filename.
+            'Download with a filename containing spaces',
+            dict(data_format='csv', add_bom=False, encoding='utf-8',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv',
+                 filename_override='my query results.csv')
+        ),
+        (
+            # A name werkzeug cannot put in a latin-1 header still has to
+            # reach the client, via the RFC 5987 filename* form, rather than
+            # being thrown away.
+            'Download with a filename outside latin-1',
+            dict(data_format='csv', add_bom=False, encoding='utf-8',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv',
+                 filename_override='ohms-\u03a9.csv')
+        ),
+        (
+            # Data that the naive serialisers get wrong: a control character
+            # that XML 1.0 forbids outright, a bytea column, the non-finite
+            # floats that are not valid JSON, and a NULL.
+            'Download awkward data as JSON stays valid JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json', sql=AWKWARD_SQL,
+                 awkward_data=True)
+        ),
+        (
+            'Download awkward data as XML stays well formed',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml', sql=AWKWARD_SQL,
+                 awkward_data=True)
+        ),
     ]
+
+    # Set per scenario; the scenarios above override these as needed.
+    sql = None
+    awkward_data = False
+    filename_override = None
 
     def setUp(self):
         self._db_name = 'download_results_fmt_' + str(
@@ -310,6 +366,46 @@ class TestDownloadResultFormats(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
         return async_poll(tester=self.tester,
                           poll_url='/sqleditor/poll/{0}'.format(trans_id))
+
+    def _assert_awkward_data(self, body):
+        """The output must be parseable, whatever the data contained.
+
+        A strict parser is the point here: XML 1.0 forbids most control
+        characters outright, and NaN/Infinity are not JSON tokens, so an
+        exporter that passes them straight through produces a file the
+        user's next tool refuses to open.
+        """
+        if self.data_format == 'json':
+            def reject_constant(constant):
+                # json.loads accepts NaN and Infinity by default even though
+                # they are not JSON; most other parsers do not, so treat them
+                # as the failure they are.
+                raise AssertionError(
+                    '{0} is not a JSON token'.format(constant))
+
+            parsed = json.loads(body, parse_constant=reject_constant)
+            self.assertEqual(len(parsed), 1)
+            row = parsed[0]
+            # A NULL must survive as JSON null rather than a string.
+            self.assertIsNone(row['Nothing'])
+            # NaN and Infinity have to arrive as something a parser will
+            # accept, i.e. not as bare NaN/Infinity tokens.
+            self.assertEqual(row['NotANumber'], 'NaN')
+            self.assertEqual(row['Inf'], 'Infinity')
+            self.assertEqual(row['NegInf'], '-Infinity')
+            # bytea is deliberately reported as a placeholder rather than its
+            # contents, as it is in the grid and in CSV output, but it must
+            # never leak a Python repr such as '<memory at 0x...>'.
+            self.assertNotIn('memory at', str(row['Bytes']))
+            return
+
+        root = ElementTree.fromstring(body)
+        self.assertEqual(root.tag, 'data_output')
+        columns = {c.get('name'): c for c in root.find('row')}
+        self.assertEqual(columns['Nothing'].get('null'), 'true')
+        self.assertNotIn('memory at', columns['Bytes'].text or '')
+        # The control character must not have been passed through verbatim.
+        self.assertNotIn('\x01', body)
 
     def runTest(self):
         db_con = database_utils.connect_database(self,
@@ -327,17 +423,19 @@ class TestDownloadResultFormats(BaseTestGenerator):
         }))
         self.assertEqual(response.status_code, 200)
 
-        self.initiate_sql_query_tool(self.trans_id, self.SQL)
+        sql = self.sql or self.SQL
+        self.initiate_sql_query_tool(self.trans_id, sql)
 
         url = self.DOWNLOAD_URL.format(self.trans_id)
         self.app.logger.disabled = True
-        filename = 'test{0}'.format(self.expected_extension)
+        filename = self.filename_override or \
+            'test{0}'.format(self.expected_extension)
         with patch('pgadmin.tools.sqleditor.blueprint.'
                    'csv_add_bom.get', return_value=self.add_bom), \
             patch('pgadmin.tools.sqleditor.blueprint.'
                   'csv_output_encoding.get', return_value=self.encoding):
             response = self.tester.post(url, data={
-                "query": self.SQL,
+                "query": sql,
                 "filename": filename,
                 "format": self.data_format,
                 "query_commited": True,
@@ -361,7 +459,18 @@ class TestDownloadResultFormats(BaseTestGenerator):
         self.assertIn(self.expected_content_type, headers['Content-Type'])
         self.assertIn('charset={0}'.format(self.encoding),
                       headers['Content-Type'])
-        self.assertIn(filename, headers['Content-Disposition'])
+        disposition = headers['Content-Disposition']
+        try:
+            filename.encode('latin-1', 'strict')
+        except UnicodeEncodeError:
+            # The stand-in must follow the format, and the real name must
+            # still be there in percent-encoded form.
+            self.assertIn('filename="download{0}"'.format(
+                self.expected_extension), disposition)
+            self.assertIn("filename*=UTF-8''", disposition)
+            self.assertIn(url_quote(filename, safe=''), disposition)
+        else:
+            self.assertIn('filename="{0}"'.format(filename), disposition)
 
         raw = response.data
         normalized = self.encoding.lower().replace('-', '').replace('_', '')
@@ -382,7 +491,9 @@ class TestDownloadResultFormats(BaseTestGenerator):
 
         body = raw.decode(self.encoding)
 
-        if self.data_format == 'json':
+        if self.awkward_data:
+            self._assert_awkward_data(body)
+        elif self.data_format == 'json':
             parsed = json.loads(body)
             self.assertIsInstance(parsed, list)
             self.assertEqual(parsed[0]['A'], 1)
