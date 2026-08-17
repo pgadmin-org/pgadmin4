@@ -225,6 +225,15 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
             headers, fp
         )
 
+    # HTTPRedirectHandler only gained http_error_308() in Python 3.11, so on
+    # older interpreters a 308 is not recognised as a redirect at all: it
+    # bypasses redirect_request() and surfaces from http_error_default() as a
+    # bare 'HTTP Error 308: Permanent Redirect'. That is safe, in that the
+    # redirect still isn't followed, but the caller gets no explanation of
+    # why. Map it explicitly so every redirect status behaves identically on
+    # every version we support.
+    http_error_308 = urllib.request.HTTPRedirectHandler.http_error_301
+
 
 def urlopen_no_redirect(request, timeout, context=None):
     """
