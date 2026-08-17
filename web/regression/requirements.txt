@@ -28,7 +28,7 @@ pbr==7.0.3
 pycodestyle>=2.14.0
 python-mimeparse==2.0.0
 selenium==4.44.0; python_version <= '3.9'
-selenium==4.46.0; python_version > '3.9'
+selenium==4.47.0; python_version > '3.9'
 testscenarios==0.5.0; python_version <= '3.9'
 testscenarios==0.6.2; python_version > '3.9'
 testtools==2.7.2; python_version <= '3.9'
