@@ -108,9 +108,30 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # @testing-library/jest-dom 7 requires Node >= 22, whilst Node 20 is the
-    # minimum we support and what most of the buildfarm runs. Revisit once the
-    # buildfarm moves to Node 22. See #10271 and #10210.
     ignore:
+      # @testing-library/jest-dom 7 requires Node >= 22, whilst Node 20 is the
+      # minimum we support and what most of the buildfarm runs. Revisit once
+      # the buildfarm moves to Node 22. See #10271 and #10210.
       - dependency-name: "@testing-library/jest-dom"
         update-types: ["version-update:semver-major"]
+
+      # Babel 8 requires Node ^22.18.0 || >=24.11.0, and every 8.x package
+      # peer-depends on @babel/core ^8.0.0 whilst we are on 7.x. Taking any of
+      # them individually leaves an unsatisfiable peer requirement and a mixed
+      # 7/8 tree, so Babel 8 needs a coordinated migration across all ten
+      # @babel/* packages once we are on Node 22. See #10283, #10284, #10285.
+      - dependency-name: "@babel/*"
+        update-types: ["version-update:semver-major"]
+
+      # pickr 1.10 switched to a dual CJS/ESM build whose CommonJS entry point
+      # exports a namespace object rather than the class, so Babel's interop
+      # leaves _pickr.default as an object and every dialog with a colour field
+      # dies on mount. That took master's feature tests down for three days
+      # (#10264, reverted in #10278). Note 1.9 -> 1.10 is a *minor* bump, so it
+      # otherwise rejoins the grouped PR and comes back around; minor updates
+      # are excluded here as well as majors until withColorPicker.js is adapted
+      # to the new export shape.
+      - dependency-name: "@simonwep/pickr"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
