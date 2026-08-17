@@ -245,29 +245,40 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       inlineGroup: 'save_options',
       min_version: 180000
     }, {
+      // pg_restore rejects each of these alongside the matching *Only*
+      // switch on the Data/Objects tab, so they follow each other's state.
       id: 'no_data',
       label: gettext('Data'),
       type: 'switch',
-      disabled: false,
       group: gettext('Do not save'),
       inlineGroup: 'save_options',
-      min_version: 180000
+      min_version: 180000,
+      deps: ['only_data'],
+      disabled: function(state) {
+        return state.only_data;
+      },
     }, {
       id: 'no_schema',
       label: gettext('Schema'),
       type: 'switch',
-      disabled: false,
       group: gettext('Do not save'),
       inlineGroup: 'save_options',
-      min_version: 180000
+      min_version: 180000,
+      deps: ['only_schema'],
+      disabled: function(state) {
+        return state.only_schema;
+      },
     }, {
       id: 'no_statistics',
       label: gettext('Statistics'),
       type: 'switch',
-      disabled: false,
       group: gettext('Do not save'),
       inlineGroup: 'save_options',
-      min_version: 180000
+      min_version: 180000,
+      deps: ['only_statistics'],
+      disabled: function(state) {
+        return state.only_statistics;
+      },
     }];
   }
 }
