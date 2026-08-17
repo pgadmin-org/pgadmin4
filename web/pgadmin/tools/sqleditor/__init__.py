@@ -13,7 +13,7 @@ import os
 import pickle
 import re
 import secrets
-from urllib.parse import unquote
+from urllib.parse import quote as url_quote, unquote
 from threading import Lock
 from io import BytesIO
 import threading
@@ -2259,18 +2259,27 @@ def start_query_download_tool(trans_id):
         filename = data['filename'] if data.get('filename', '') != "" else \
             '{0}.{1}'.format(int(time.time()), extn)
 
-        # We will try to encode report file name with latin-1
-        # If it fails then we will fallback to default ascii file name
-        # werkzeug only supports latin-1 encoding supported values
+        # Werkzeug will only put latin-1 in a header, so a name it cannot
+        # encode needs an ASCII stand-in. RFC 6266 lets us send the real name
+        # alongside it as filename*, so rather than losing the name entirely
+        # we offer both and let the client prefer the latter. The fallback
+        # follows the chosen format rather than always claiming to be a CSV.
+        ascii_filename = filename
         try:
-            tmp_file_name = filename
-            tmp_file_name.encode('latin-1', 'strict')
+            filename.encode('latin-1', 'strict')
         except UnicodeEncodeError:
-            filename = "download.csv"
+            ascii_filename = 'download.{0}'.format(extn)
 
-        r.headers[
-            "Content-Disposition"
-        ] = "attachment;filename={0}".format(filename)
+        # RFC 6266 requires the quoted form for anything with a space or a
+        # separator character in it, which a user supplied name can easily
+        # have.
+        disposition = 'attachment; filename="{0}"'.format(
+            ascii_filename.replace('\\', '\\\\').replace('"', '\\"'))
+        if ascii_filename != filename:
+            disposition += "; filename*=UTF-8''{0}".format(
+                url_quote(filename, safe=''))
+
+        r.headers["Content-Disposition"] = disposition
 
         return r
     except (ConnectionLost, SSHTunnelConnectionLost):
