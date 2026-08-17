@@ -108,3 +108,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # @testing-library/jest-dom 7 requires Node >= 22, whilst Node 20 is the
+    # minimum we support and what most of the buildfarm runs. Revisit once the
+    # buildfarm moves to Node 22. See #10271 and #10210.
+    ignore:
+      - dependency-name: "@testing-library/jest-dom"
+        update-types: ["version-update:semver-major"]
