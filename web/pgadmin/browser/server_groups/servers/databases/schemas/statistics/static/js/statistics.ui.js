@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from '../../../../../../../../static/js/validators';
 
 export default class StatisticsSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues={}) {
+  constructor(fieldOptions={}, initValues={}, nodeInfo={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -20,12 +20,12 @@ export default class StatisticsSchema extends BaseUISchema {
       table: undefined,
       columns: [],
       expression_list: undefined,
-      has_expressions: false,
       stat_types: [],
       stattarget: undefined,
       owner: undefined,
       comment: undefined,
       is_sys_obj: undefined,
+      has_ext_data_access: true,
       ...initValues,
     });
 
@@ -36,7 +36,14 @@ export default class StatisticsSchema extends BaseUISchema {
       getColumns: null,
       ...fieldOptions,
     };
+    this.nodeInfo = nodeInfo;
     this.allTablesOptions = [];
+  }
+
+  get isNameOptional() {
+    // PostgreSQL 16 made the statistics name optional, generating one from
+    // the table and the columns or expressions when it is left blank.
+    return (this.nodeInfo?.server?.version ?? 0) >= 160000;
   }
 
   getTableOid(tabName) {
@@ -60,7 +67,10 @@ export default class StatisticsSchema extends BaseUISchema {
         label: gettext('Name'),
         type: 'text',
         mode: ['properties', 'create', 'edit'],
-        helpMessage: gettext('Statistics name'),
+        noEmpty: !obj.isNameOptional,
+        helpMessage: obj.isNameOptional
+          ? gettext('Leave blank to let the server generate a name.')
+          : gettext('Statistics name'),
       },
       {
         id: 'oid',
@@ -129,7 +139,7 @@ export default class StatisticsSchema extends BaseUISchema {
           multiple: true,
           allowClear: true,
         },
-        helpMessage: gettext('Select at least 2 columns for multi-column statistics'),
+        helpMessage: gettext('Select at least two columns, or one column alongside an expression.'),
         depChange: (state)=>{
           // Clear columns when table changes
           if(!state.table) {
@@ -161,19 +171,10 @@ export default class StatisticsSchema extends BaseUISchema {
         id: 'expression_list',
         label: gettext('Expressions'),
         type: 'text',
-        mode: ['create'],
+        mode: ['properties', 'create'],
         group: gettext('Definition'),
-        helpMessage: gettext('Enter SQL expression(s) for expression-based statistics, separated by commas'),
-      },
-      {
-        id: 'has_expressions',
-        label: gettext('Has expressions?'),
-        type: 'switch',
-        mode: ['properties'],
-        readonly: true,
-        disabled: true,
-        helpMessage: gettext('Indicates if this statistics object includes expression-based statistics'),
-
+        readonly: (state)=>!obj.isNew(state),
+        helpMessage: gettext('Enter one or more SQL expressions, separated by commas, each in parentheses unless it is a function call. The list is passed to the server as entered.'),
       },
       {
         id: 'stattarget',
@@ -192,6 +193,9 @@ export default class StatisticsSchema extends BaseUISchema {
         readonly: true,
         disabled: true,
         group: gettext('Computed Statistics'),
+        // The computed values live in pg_statistic_ext_data, which only a
+        // superuser may read; hide them rather than showing them as empty.
+        visible: (state)=>state.has_ext_data_access,
         helpMessage: gettext('N-distinct coefficients computed by ANALYZE'),
       },
       {
@@ -202,6 +206,7 @@ export default class StatisticsSchema extends BaseUISchema {
         readonly: true,
         disabled: true,
         group: gettext('Computed Statistics'),
+        visible: (state)=>state.has_ext_data_access,
         helpMessage: gettext('Functional dependency statistics computed by ANALYZE'),
       },
       {
@@ -212,6 +217,7 @@ export default class StatisticsSchema extends BaseUISchema {
         readonly: true,
         disabled: true,
         group: gettext('Computed Statistics'),
+        visible: (state)=>state.has_ext_data_access,
         helpMessage: gettext('Indicates if most-common values data is available for this statistics object'),
       },
       {
@@ -241,7 +247,10 @@ export default class StatisticsSchema extends BaseUISchema {
       setError('table', null);
     }
 
-    // Validate columns or expressions are provided
+    // Validate columns or expressions are provided. A statistics object
+    // needs at least two items, unless it is the single expression form, so
+    // only the columns-only case can be checked here: the server has the
+    // final say on the expression list.
     const hasColumns = state.columns && state.columns.length > 0;
     const hasExpressions = state.expression_list && state.expression_list.trim().length > 0;
 
@@ -250,7 +259,6 @@ export default class StatisticsSchema extends BaseUISchema {
       setError('expression_list', gettext('Either columns or expressions must be specified.'));
       errors = true;
     } else {
-      // Validate minimum 2 columns for multi-column statistics (when no expressions)
       if (hasColumns && !hasExpressions && state.columns.length < 2 && !state.oid) {
         setError('columns', gettext('At least 2 columns must be selected for multi-column statistics.'));
         errors = true;

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -163,7 +163,19 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         'dependent': [{'get': 'dependents'}]
     })
 
-    keys_to_ignore = ['oid', 'oid-2', 'schemaoid', 'tableoid']
+    # 'column_attnums' and 'stat_types_raw' are the raw catalog representation
+    # of data we also expose in a readable form, and the '*_values' keys hold
+    # the data ANALYZE happened to collect, which differs between two servers
+    # holding identical definitions. None of them may take part in a schema
+    # diff comparison.
+    keys_to_ignore = ['oid', 'oid-2', 'schemaoid', 'tableoid',
+                      'column_attnums', 'stat_types_raw', 'ndistinct_values',
+                      'dependencies_values', 'has_mcv_values',
+                      'has_ext_data_access']
+
+    # Whether the connected user may read pg_statistic_ext_data, resolved
+    # lazily and reset for every request by check_precondition.
+    ext_data_access = None
 
     _PROPERTIES_SQL = 'properties.sql'
     _NODES_SQL = 'nodes.sql'
@@ -171,6 +183,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
     _UPDATE_SQL = 'update.sql'
     _DELETE_SQL = 'delete.sql'
     _OID_SQL = 'get_oid.sql'
+    _GET_NAME_SQL = 'get_name.sql'
     _STATS_SQL = 'stats.sql'
     _COLL_STATS_SQL = 'coll_stats.sql'
 
@@ -195,6 +208,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 else:
                     self.conn = self.manager.connection()
 
+                self.ext_data_access = None
                 self.datistemplate = False
                 if (
                     self.manager.db_info is not None and
@@ -229,7 +243,8 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid
+            scid=scid,
+            has_ext_data_access=self._has_ext_data_access()
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -322,6 +337,29 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def _has_ext_data_access(self):
+        """
+        pg_catalog.pg_statistic_ext_data holds the data ANALYZE collected, and
+        is readable by superusers only: not even pg_read_all_stats grants
+        access to it. Joining it unconditionally would make the whole node
+        unusable for everybody else, so ask first and leave the computed
+        values out when we cannot read them.
+
+        The answer is cached for the lifetime of the request, which keeps
+        schema diff from asking once per object.
+
+        Returns:
+            True if the connected user can read pg_statistic_ext_data
+        """
+        if self.ext_data_access is None:
+            status, res = self.conn.execute_scalar(
+                "SELECT pg_catalog.has_table_privilege("
+                "'pg_catalog.pg_statistic_ext_data', 'SELECT')"
+            )
+            self.ext_data_access = bool(status and res)
+
+        return self.ext_data_access
+
     def _fetch_properties(self, scid, stid):
         """
         This function is used to fetch the properties of the specified object
@@ -335,7 +373,8 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid, stid=stid
+            scid=scid, stid=stid,
+            has_ext_data_access=self._has_ext_data_access()
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -363,9 +402,10 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         if row.get('columns') is None:
             row['columns'] = []
 
-        # expression_list is the deparsed text from pg_get_expr; keep it for
-        # SQL-tab round-trip and set has_expressions for the properties switch
-        row['has_expressions'] = row.get('expression_list') is not None
+        # The computed values are only present when the connected user can
+        # read pg_statistic_ext_data; flag it so the dialog can say so rather
+        # than implying ANALYZE has not run.
+        row['has_ext_data_access'] = self._has_ext_data_access()
 
         # Ensure stattarget has a default value if None
         if row.get('stattarget') is None:
@@ -394,7 +434,9 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         Returns:
           JSON response with the new statistics node
         """
-        data = request.form if request.form else json.loads(
+        # request.form is an ImmutableMultiDict, and we add keys below, so
+        # take a copy rather than mutating it.
+        data = dict(request.form) if request.form else json.loads(
             request.data
         )
 
@@ -416,24 +458,14 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                     ).format(arg)
                 )
 
-        # Parse expression_list into expressions array if provided
+        # The expression list is passed to the server verbatim: it is a list
+        # of SQL expressions, and splitting it on commas here would mangle
+        # anything with an argument list, such as coalesce(col1, col2).
         has_columns = 'columns' in data and len(data.get('columns', [])) > 0
-        has_expression_list = 'expression_list' in data and data.get(
-            'expression_list', '').strip()
-
-        # Convert expression_list (comma-separated) to expressions array
-        if has_expression_list:
-            expr_list = data.get('expression_list', '').strip()
-            # Split by comma and strip whitespace from each expression
-            data['expressions'] = [
-                {'expression': expr.strip()}
-                for expr in expr_list.split(',')
-                if expr.strip()
-            ]
-            has_expressions = len(data['expressions']) > 0
-        else:
-            data['expressions'] = []
-            has_expressions = False
+        has_expressions = bool(
+            (data.get('expression_list') or '').strip()
+        )
+        data['expression_list'] = (data.get('expression_list') or '').strip()
 
         if not has_columns and not has_expressions:
             return make_json_response(
@@ -444,8 +476,10 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
 
-        # Validate minimum 2 items for multi-column statistics
-        # (not for single expression)
+        # A statistics object needs at least two items, unless it is the
+        # single expression form (CREATE STATISTICS ... ON (expr) FROM ...),
+        # so only the columns-only case can be checked here; PostgreSQL has
+        # the final say on the expression list.
         if has_columns and not has_expressions and \
                 len(data.get('columns', [])) < 2:
             return make_json_response(
@@ -480,41 +514,35 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=msg)
 
-        # Get OID of newly created statistics
-        # For PostgreSQL 16+, if name is not provided, it's auto-generated
-        if data.get('name'):
-            sql = render_template(
-                "/".join([self.template_path, self._OID_SQL]),
-                name=data['name'],
-                schema=data['schema'],
-                conn=self.conn
-            )
-            sql = sql.strip('\n').strip(' ')
+        # Get the OID and name of the newly created object. On PostgreSQL 16+
+        # the name is optional, in which case the server generates one, so
+        # look the object up by the table it was defined on and take the
+        # newest one rather than by name.
+        sql = render_template(
+            "/".join([self.template_path, self._OID_SQL]),
+            name=data.get('name'),
+            schema=data['schema'],
+            table=data['table'],
+            conn=self.conn
+        )
+        sql = sql.strip('\n').strip(' ')
 
-            status, rset = self.conn.execute_2darray(sql)
-            if not status:
-                return internal_server_error(errormsg=rset)
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
 
-            row = rset['rows'][0]
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    row['oid'],
-                    scid,
-                    data['name'],
-                    icon=self.node_icon
-                )
+        if len(rset['rows']) == 0:
+            return gone(errormsg=self.not_found_error_msg())
+
+        row = rset['rows'][0]
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                row['oid'],
+                scid,
+                row['name'],
+                icon=self.node_icon
             )
-        else:
-            # For auto-generated names in PG 16+, we need to query for the
-            # latest statistics
-            # This is a limitation - we'll return success but
-            # can't return the node
-            return make_json_response(
-                success=1,
-                info=_(
-                    "Statistics created successfully with auto-generated name"
-                )
-            )
+        )
 
     @check_precondition(action='delete')
     def delete(self, gid, sid, did, scid, stid=None, only_sql=False):
@@ -546,7 +574,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             for stid in data['ids']:
                 # Fetch statistics details first
                 sql = render_template(
-                    "/".join([self.template_path, self._DELETE_SQL]),
+                    "/".join([self.template_path, self._GET_NAME_SQL]),
                     stid=stid
                 )
                 status, res = self.conn.execute_dict(sql)
@@ -600,7 +628,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         data = request.form if request.form else json.loads(
             request.data
         )
-        sql, _ = self.get_SQL(gid, sid, did, data, scid, stid)
+        sql, _sql_name = self.get_SQL(gid, sid, did, data, scid, stid)
 
         # Most probably this is due to error
         if not isinstance(sql, str):
@@ -752,15 +780,27 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             did: Database ID
             scid: Schema ID
             stid: Statistics ID
+            kwargs: target_schema to generate the SQL against another schema,
+                    and json_resp=False to get the SQL itself back, both used
+                    by schema diff
         """
+        target_schema = kwargs.get('target_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         status, res = self._fetch_properties(scid, stid)
         if not status:
             return res
+
+        if target_schema:
+            res['schema'] = target_schema
 
         sql = render_template(
             "/".join([self.template_path, self._CREATE_SQL]),
             data=res, conn=self.conn, add_not_exists_clause=False
         )
+
+        if not json_resp:
+            return sql
 
         return ajax_response(response=sql)
 
@@ -781,7 +821,8 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._STATS_SQL]),
                 stid=stid,
-                conn=self.conn
+                conn=self.conn,
+                has_ext_data_access=self._has_ext_data_access()
             )
         else:
             # Collection statistics
@@ -874,39 +915,38 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
 
     def get_sql_from_diff(self, **kwargs):
         """
-        This function generates SQL from model data for schema diff.
+        This function is used to get the DDL/DML statements for schema diff.
 
-        Args:
-            kwargs: Additional parameters
-
-        Returns:
-            SQL string
+        :param kwargs
+        :return: SQL string
         """
         gid = kwargs.get('gid')
         sid = kwargs.get('sid')
         did = kwargs.get('did')
         scid = kwargs.get('scid')
-        source_params = kwargs.get('source_params')
-        target_params = kwargs.get('target_params')
-        comp_status = kwargs.get('comp_status')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
-        if comp_status == 'source_only':
-            # Object exists in source only - generate CREATE
-            sql, _ = self.get_SQL(gid=gid, sid=sid, did=did,
-                                  data=source_params, scid=scid)
-        elif comp_status == 'target_only':
-            # Object exists in target only - generate DROP
-            sql = render_template(
-                "/".join([self.template_path, self._DELETE_SQL]),
-                name=target_params['name'],
-                schema=target_params['schema'],
-                cascade=False
-            )
+        # Each branch goes through a view method carrying the
+        # check_precondition decorator, so that the connection is bound to the
+        # server and database named in the parameters: schema diff calls this
+        # for the source and the target in turn.
+        if data:
+            if target_schema:
+                data['schema'] = target_schema
+            sql, _sql_name = self.get_SQL(gid=gid, sid=sid, did=did,
+                                          data=data, scid=scid, stid=oid)
+        elif drop_sql:
+            sql = self.delete(gid=gid, sid=sid, did=did, scid=scid,
+                              stid=oid, only_sql=True)
+        elif target_schema:
+            sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, stid=oid,
+                           target_schema=target_schema, json_resp=False)
         else:
-            # Object exists in both - generate ALTER
-            sql, _ = self.get_SQL(gid=gid, sid=sid, did=did,
-                                  data=source_params, scid=scid,
-                                  stid=target_params['oid'])
+            sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, stid=oid,
+                           json_resp=False)
 
         return sql
 

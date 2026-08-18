@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ define('pgadmin.node.statistics', [
       collection_type: 'coll-statistics',
       hasSQL: true,
       hasDepends: true,
-      hasStatistics: false,
+      hasStatistics: true,
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
@@ -110,8 +110,10 @@ define('pgadmin.node.statistics', [
             }
           },
           {
-            schema: itemNodeData.label,
-          }
+            owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            schema: ('schema' in treeNodeInfo) ? treeNodeInfo.schema.label : '',
+          },
+          treeNodeInfo
         );
       },
     });
