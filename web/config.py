@@ -894,6 +894,19 @@ OAUTH2_CONFIG = [
         #     'wids': ["cf1c38e5-3621-4004-a7cb-879624dced7c"],
         # }
         'OAUTH2_ADDITIONAL_CLAIMS': None,
+        # Optional server-group visibility claim controls.
+        # If OAUTH2_SERVER_GROUP_CLAIM is set, pgAdmin stores the resolved
+        # list in session['oauth2_server_group_claims'] and uses it to show
+        # additional server groups in browser tree.
+        # Without mapping, claim values are treated as server group names.
+        # Example:
+        # 'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
+        # Optional mapping from claim value -> server group name(s):
+        # 'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': {
+        #     'readonly': ['RO Server 1', 'RO Server 2']
+        # },
+        'OAUTH2_SERVER_GROUP_CLAIM': None,
+        'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': None,
         # Set this variable to False to disable SSL certificate verification
         # for OAuth2 provider.
         # This may need to set False, in case of self-signed certificates.
