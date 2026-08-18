@@ -122,6 +122,19 @@ export default function DataGridView({
     )
   ).includes(true);
 
+  const VIRTUALISE_CELL_BUDGET = 700; // Number of cells to render
+  const DEFAULT_VIRTUALISE_THRESHOLD = 100; // Number of rows to render
+  const visibleColCount = table.getVisibleLeafColumns().length;
+  const rawThreshold = field.virtualiseThreshold;
+  const virtualiseThreshold =
+    (typeof rawThreshold === 'number' && rawThreshold > 0)
+      ? rawThreshold
+      : (visibleColCount > 0
+        ? Math.min(400, Math.max(25,
+          Math.round(VIRTUALISE_CELL_BUDGET / visibleColCount)))
+        : DEFAULT_VIRTUALISE_THRESHOLD);
+  const virtualise = rows.length > virtualiseThreshold;
+
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => tableEleRef.current,
@@ -152,32 +165,51 @@ export default function DataGridView({
               ref={tableEleRef} table={table} data-test="data-grid-view"
               tableClassName='DataGridView-table'>
               <PgReactTableHeader table={table} />
-              <PgReactTableBody style={{
-                height: virtualizer.getTotalSize() + 'px'
-              }}>
-                {
-                  virtualizer.getVirtualItems().map((virtualRow) => {
-                    const row = rows[virtualRow.index];
-                    return (
+              {virtualise ?
+                <PgReactTableBody style={{
+                  height: virtualizer.getTotalSize() + 'px'
+                }}>
+                  {
+                    virtualizer.getVirtualItems().map((virtualRow) => {
+                      const row = rows[virtualRow.index];
+                      return (
+                        <PgReactTableRow
+                          key={row.id}
+                          data-index={virtualRow.index}
+                          ref={node => virtualizer.measureElement(node)}
+                          style={{
+                            // This should always be a `style` as it changes on
+                            // scroll.
+                            transform: `translateY(${virtualRow.start}px)`,
+                          }}
+                        >
+                          <GridRow
+                            rowId={virtualRow.index} isResizing={isResizing}
+                            row={row}
+                          />
+                        </PgReactTableRow>
+                      );
+                    })
+                  }
+                </PgReactTableBody>
+                :
+                <PgReactTableBody>
+                  {
+                    rows.map((row, index) => (
                       <PgReactTableRow
                         key={row.id}
-                        data-index={virtualRow.index}
-                        ref={node => virtualizer.measureElement(node)}
-                        style={{
-                          // This should always be a `style` as it changes on
-                          // scroll.
-                          transform: `translateY(${virtualRow.start}px)`,
-                        }}
+                        data-index={index}
+                        className='pgrt-row--static'
                       >
                         <GridRow
-                          rowId={virtualRow.index} isResizing={isResizing}
+                          rowId={index} isResizing={isResizing}
                           row={row}
                         />
                       </PgReactTableRow>
-                    );
-                  })
-                }
-              </PgReactTableBody>
+                    ))
+                  }
+                </PgReactTableBody>
+              }
             </PgReactTable>
           </DndProvider>
         </Box>
