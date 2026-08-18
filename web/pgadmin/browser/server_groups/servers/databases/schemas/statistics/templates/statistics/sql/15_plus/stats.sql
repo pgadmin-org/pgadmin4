@@ -1,4 +1,4 @@
-{### Get statistics for an individual extended statistics object ###}
+{### Get statistics for an individual extended statistics object (PG 15+) ###}
 SELECT
     s.stxname AS {{ conn|qtIdent(_('Name')) }},
     t.relname AS {{ conn|qtIdent(_('Table')) }},
@@ -24,7 +24,8 @@ SELECT
         ELSE ''
     END AS {{ conn|qtIdent(_('Statistics Types')) }}
 {### The values ANALYZE collected live in pg_statistic_ext_data, which ###}
-{### only a superuser may read ###}
+{### only a superuser may read, and PostgreSQL 15 gave inheritance ###}
+{### parents one row per variant ###}
 {% if has_ext_data_access %}
     ,sd.stxdndistinct AS {{ conn|qtIdent(_('N-Distinct Coefficients')) }},
     sd.stxddependencies AS {{ conn|qtIdent(_('Functional Dependencies')) }},
@@ -33,6 +34,12 @@ SELECT
 FROM pg_catalog.pg_statistic_ext s
     LEFT JOIN pg_catalog.pg_class t ON t.oid = s.stxrelid
 {% if has_ext_data_access %}
-    LEFT JOIN pg_catalog.pg_statistic_ext_data sd ON sd.stxoid = s.oid
+    LEFT JOIN LATERAL (
+        SELECT d.stxdndistinct, d.stxddependencies, d.stxdmcv
+        FROM pg_catalog.pg_statistic_ext_data d
+        WHERE d.stxoid = s.oid
+        ORDER BY d.stxdinherit
+        LIMIT 1
+    ) sd ON true
 {% endif %}
 WHERE s.oid = {{stid}}::oid

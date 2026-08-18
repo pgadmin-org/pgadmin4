@@ -1,5 +1,6 @@
-{### Check if extended statistics are supported (PostgreSQL 10+) ###}
+{### Check whether extended statistics are supported ###}
 SELECT
     CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END AS has_statistics
-FROM pg_catalog.pg_class
-WHERE relname='pg_statistic_ext'
+FROM pg_catalog.pg_class c
+WHERE c.relname = 'pg_statistic_ext'
+    AND c.relnamespace = 'pg_catalog'::regnamespace

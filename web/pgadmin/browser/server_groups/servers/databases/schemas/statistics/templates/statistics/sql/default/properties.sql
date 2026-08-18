@@ -21,15 +21,20 @@ SELECT
     s.stxstattarget AS stattarget,
 {### stxexprs added in PostgreSQL 14 for expression statistics ###}
     pg_catalog.pg_get_expr(s.stxexprs, s.stxrelid) AS expression_list,
-{### Statistics data from pg_statistic_ext_data (PostgreSQL 12+) ###}
+{### pg_statistic_ext_data is readable by superusers only, so the data ###}
+{### ANALYZE collected is only selected when we are allowed to read it ###}
+{% if has_ext_data_access %}
     sd.stxdndistinct AS ndistinct_values,
     sd.stxddependencies AS dependencies_values,
     CASE WHEN sd.stxdmcv IS NOT NULL THEN true ELSE false END AS has_mcv_values,
+{% endif %}
     des.description AS comment
 FROM pg_catalog.pg_statistic_ext s
     LEFT JOIN pg_catalog.pg_namespace ns ON ns.oid = s.stxnamespace
     LEFT JOIN pg_catalog.pg_class t ON t.oid = s.stxrelid
+{% if has_ext_data_access %}
     LEFT JOIN pg_catalog.pg_statistic_ext_data sd ON sd.stxoid = s.oid
+{% endif %}
     LEFT OUTER JOIN pg_catalog.pg_description des
         ON (des.objoid = s.oid AND des.classoid = 'pg_statistic_ext'::regclass)
 WHERE s.stxnamespace = {{scid}}::oid

@@ -114,6 +114,75 @@
       }
     },
     {
+      "name": "Create statistics: With columns and expressions together.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000,
+        "skip_msg": "Statistics not supported below PG 14"
+      },
+      "test_data": {
+        "name": "test_stats_mixed",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1"],
+        "expression_list": "(col1 + col2)",
+        "stat_types": ["ndistinct"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: With an expression containing a comma.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000,
+        "skip_msg": "Statistics not supported below PG 14"
+      },
+      "test_data": {
+        "name": "test_stats_comma_expr",
+        "schema": "public",
+        "table": "test_table",
+        "expression_list": "coalesce(col1, col2), lower(col3)",
+        "stat_types": ["ndistinct"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: Without a name (PG 16+).",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "The statistics name is only optional from PG 16"
+      },
+      "test_data": {
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": ["ndistinct"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
       "name": "Create statistics: With invalid data - Less than 2 columns.",
       "url": "/browser/statistics/obj/",
       "is_positive_test": false,
@@ -175,6 +244,21 @@
       "url": "/browser/statistics/obj/",
       "is_positive_test": true,
       "is_list": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Delete statistics: Single object with cascade.",
+      "url": "/browser/statistics/delete/",
+      "is_positive_test": true,
+      "is_list": false,
       "inventory_data": {},
       "test_data": {},
       "mocking_required": false,
@@ -260,6 +344,38 @@
       "inventory_data": {},
       "test_data": {
         "name": "test_stats_renamed"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update statistics: Change the statistics target.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "stattarget": 500
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update statistics: Change the comment.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "comment": "Statistics object comment"
       },
       "mocking_required": false,
       "mock_data": {},
