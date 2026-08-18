@@ -41,12 +41,36 @@ class SecurityHeaders:
         """
         Return the configured Content-Security-Policy, replacing the
         ``{nonce}`` placeholder (if present) with the per-request nonce.
+
+        In debug mode a nonce based policy additionally gets 'unsafe-eval'
+        appended to its script-src directive: development bundles are built
+        with webpack's 'eval' devtool and would otherwise be blocked by the
+        strict policy. Production bundles do not need it, so it is never
+        added when DEBUG is False. Custom (non-nonce) policies are passed
+        through untouched in both cases.
         """
         csp = getattr(config, 'CONTENT_SECURITY_POLICY', None)
         if csp and CSP_NONCE_PLACEHOLDER in csp:
             csp = csp.replace(
                 CSP_NONCE_PLACEHOLDER, SecurityHeaders.get_nonce())
+            if config.DEBUG:
+                csp = SecurityHeaders._add_unsafe_eval_to_script_src(csp)
         return csp
+
+    @staticmethod
+    def _add_unsafe_eval_to_script_src(csp):
+        """
+        Append 'unsafe-eval' to the policy's script-src directive, without
+        duplicating it if already present. Used only in debug mode so that
+        development bundles (built with webpack's 'eval' devtool) are not
+        blocked by a nonce based policy.
+        """
+        directives = [d.strip() for d in csp.split(';') if d.strip()]
+        for i, directive in enumerate(directives):
+            name = directive.split(None, 1)[0]
+            if name == 'script-src' and "'unsafe-eval'" not in directive:
+                directives[i] = directive + " 'unsafe-eval'"
+        return '; '.join(directives) + ';'
 
     @staticmethod
     def set_response_headers(response):
