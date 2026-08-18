@@ -241,6 +241,15 @@ export function TextEditor({row, column, onRowChange, onClose}) {
   }, []);
 
   const onOK = ()=>{
+    /* The editor also opens on read-only columns so that wide values can be
+     * inspected, but committing must be refused there: an expression/alias
+     * column has no counterpart in the base table and the generated UPDATE
+     * would fail with `column "..." does not exist` (#10103). The OK button
+     * is already hidden, this guards the Enter key path. */
+    if(!column.can_edit) {
+      onClose(false);
+      return;
+    }
     if(column.is_array && !isValidArray(localVal)) {
       pgAdmin.Browser.notifier.error(gettext('Arrays must start with "{" and end with "}"'));
     } else {

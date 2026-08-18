@@ -1621,6 +1621,15 @@ export function ResultSet() {
 
 
   const onRowsChange = (newRows, otherInfo)=>{
+    /* Never record, or even display, a change to a read-only column. The
+     * editors open on such columns so that wide values can be inspected, so a
+     * stray commit can still arrive here; letting it through would stage an
+     * expression/alias column that does not exist in the base table and the
+     * save would fail with `column "..." does not exist` (#10103). */
+    if(otherInfo.column?.can_edit === false) {
+      return;
+    }
+
     let row = newRows[otherInfo.indexes[0]];
     let clientPK = rowKeyGetter(row);
 
