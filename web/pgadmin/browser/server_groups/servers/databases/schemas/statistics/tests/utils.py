@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -188,6 +188,85 @@ def create_statistics(server, db_name, schema_name, table_name,
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+
+
+def execute_statement(server, db_name, statement):
+    """
+    This function runs an arbitrary statement against the test database.
+
+    Args:
+        server: server details
+        db_name: database name
+        statement: the SQL to run
+    """
+    connection = None
+    try:
+        connection = test_utils.get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        old_isolation_level = connection.isolation_level
+        test_utils.set_isolation_level(connection, 0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(statement)
+        test_utils.set_isolation_level(connection, old_isolation_level)
+        connection.commit()
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+        raise
+    finally:
+        if connection:
+            connection.close()
+
+
+def drop_table_for_statistics(server, db_name, schema_name, table_name):
+    """
+    This function drops a table created for statistics testing.
+
+    Args:
+        server: server details
+        db_name: database name
+        schema_name: schema name
+        table_name: table name
+    """
+    execute_statement(
+        server, db_name,
+        f"DROP TABLE IF EXISTS {schema_name}.{table_name} CASCADE"
+    )
+
+
+def create_statistics_with_columns(server, db_name, schema_name, table_name,
+                                   statistics_name, columns, expressions,
+                                   stat_types):
+    """
+    Creates a statistics object over a mixture of columns and expressions.
+
+    Args:
+        server: server details
+        db_name: database name
+        schema_name: schema name
+        table_name: table name
+        statistics_name: statistics object name
+        columns: list of column names
+        expressions: list of SQL expression strings, each parenthesised
+        stat_types: list of statistics types (ndistinct, dependencies, mcv)
+
+    Returns:
+        statistics OID
+    """
+    stat_types_str = ', '.join(stat_types)
+    items_str = ', '.join(list(columns) + list(expressions))
+    execute_statement(
+        server, db_name,
+        f"CREATE STATISTICS {schema_name}.{statistics_name} "
+        f"({stat_types_str}) ON {items_str} FROM {schema_name}.{table_name}"
+    )
+
+    return get_statistics_id(server, db_name, statistics_name)
 
 
 def create_statistics_with_expressions(server, db_name, schema_name,
@@ -380,11 +459,12 @@ def get_statistics_columns(server, db_name, statistics_oid):
         )
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            f"SELECT array_agg(a.attname ORDER BY s.stxkeys_pos) "
-            f"FROM pg_catalog.pg_statistic_ext s, "
-            f"unnest(s.stxkeys) WITH ORDINALITY AS s(attnum, stxkeys_pos) "
+            f"SELECT array_agg(a.attname ORDER BY k.stxkeys_pos) "
+            f"FROM pg_catalog.pg_statistic_ext s "
+            f"CROSS JOIN LATERAL unnest(s.stxkeys) "
+            f"    WITH ORDINALITY AS k(attnum, stxkeys_pos) "
             f"JOIN pg_catalog.pg_attribute a "
-            f"  ON a.attrelid = s.stxrelid AND a.attnum = s.attnum "
+            f"  ON a.attrelid = s.stxrelid AND a.attnum = k.attnum "
             f"WHERE s.oid = {statistics_oid}"
         )
         columns = pg_cursor.fetchone()

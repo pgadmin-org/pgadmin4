@@ -1,4 +1,4 @@
-{### SQL to update extended statistics object ###}
+{### SQL to update extended statistics object (PostgreSQL 14+) ###}
 {### Rename statistics ###}
 {% if data.name and data.name != o_data.name %}
 ALTER STATISTICS {{ conn|qtIdent(o_data.schema, o_data.name) }}
@@ -15,6 +15,12 @@ ALTER STATISTICS {{ conn|qtIdent(o_data.schema, data.name if data.name else o_da
 {% if data.owner and data.owner != o_data.owner %}
 ALTER STATISTICS {{ conn|qtIdent(data.schema if data.schema else o_data.schema, data.name if data.name else o_data.name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
+
+{% endif %}
+{### Set statistics target (PostgreSQL 13+) ###}
+{% if data.stattarget is defined and data.stattarget != o_data.stattarget %}
+ALTER STATISTICS {{ conn|qtIdent(data.schema if data.schema else o_data.schema, data.name if data.name else o_data.name) }}
+    SET STATISTICS {{ data.stattarget }};
 
 {% endif %}
 {### Update comment ###}

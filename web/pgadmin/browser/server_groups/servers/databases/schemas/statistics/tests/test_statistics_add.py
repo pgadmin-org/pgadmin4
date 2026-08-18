@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -117,5 +117,10 @@ class StatisticsAddTestCase(BaseTestGenerator):
                 utils.assert_error_message(self, response)
 
     def tearDown(self):
+        # Dropping the table takes the statistics objects defined on it with
+        # it, whatever the server named them.
+        statistics_utils.drop_table_for_statistics(
+            self.server, self.db_name, self.schema_name, self.table_name
+        )
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
