@@ -1040,3 +1040,114 @@ class TestSaveAddedRowSkipsNonEditableColumn(TestSaveChangedData):
             "FROM {0};"
         ).format(self.test_table_name)
         utils.create_table_with_query(self.server, self.db_name, create_sql)
+
+
+# The result set used by both alias regression classes below: three real
+# columns of the base table plus an expression column that only exists in
+# the query. ``can_edit`` mirrors what the client sends for the lock icon.
+ALIAS_RESULT_COLUMNS = [
+    {"name": "id", "pos": 0, "can_edit": True,
+     "type": "integer", "cell": "number",
+     "not_null": True, "has_default_val": False,
+     "is_array": False, "display_name": "id"},
+    {"name": "first_name", "pos": 1, "can_edit": True,
+     "type": "text", "cell": "string",
+     "not_null": False, "has_default_val": False,
+     "is_array": False, "display_name": "first_name"},
+    {"name": "last_name", "pos": 2, "can_edit": True,
+     "type": "text", "cell": "string",
+     "not_null": False, "has_default_val": False,
+     "is_array": False, "display_name": "last_name"},
+    {"name": "the_name", "pos": 3, "can_edit": False,
+     "type": "text", "cell": "string",
+     "not_null": False, "has_default_val": False,
+     "is_array": False, "display_name": "the_name"},
+]
+
+
+class TestSaveUpdatedRowSkipsNonEditableColumn(TestSaveChangedData):
+    """Regression test for issue #10103.
+
+    The counterpart of :class:`TestSaveAddedRowSkipsNonEditableColumn` for
+    the UPDATE path. An edit staged against an expression or alias column
+    must be dropped before rendering the UPDATE, because the alias is not a
+    real column of the underlying table and PostgreSQL would reject the
+    statement with ``column "the_name" does not exist``. If nothing
+    editable is left once the alias has been dropped, no UPDATE should be
+    rendered at all.
+    """
+
+    scenarios = [
+        ('Update carrying an alias alongside a real column', dict(
+            save_payload={
+                "updated": {
+                    "1": {
+                        "err": False,
+                        "data": {
+                            "first_name": "Jane",
+                            # The alias must be ignored rather than
+                            # written to the base table.
+                            "the_name": "Jane Doe"
+                        },
+                        "primary_keys": {"id": 1}
+                    }
+                },
+                "added": {},
+                "staged_rows": {},
+                "deleted": {},
+                "updated_index": {},
+                "added_index": {},
+                "columns": ALIAS_RESULT_COLUMNS
+            },
+            save_status=True,
+            check_sql='SELECT id, first_name, last_name '
+                      'FROM %s WHERE id = 1',
+            check_result=[[1, "Jane", "Doe"]]
+        )),
+        ('Update carrying nothing but an alias', dict(
+            save_payload={
+                "updated": {
+                    "1": {
+                        "err": False,
+                        "data": {
+                            "the_name": "Jane Doe"
+                        },
+                        "primary_keys": {"id": 1}
+                    }
+                },
+                "added": {},
+                "staged_rows": {},
+                "deleted": {},
+                "updated_index": {},
+                "added_index": {},
+                "columns": ALIAS_RESULT_COLUMNS
+            },
+            save_status=True,
+            # Nothing editable remains, so no UPDATE is rendered and the
+            # row is left exactly as it was.
+            check_sql='SELECT id, first_name, last_name '
+                      'FROM %s WHERE id = 1',
+            check_result=[[1, "John", "Doe"]]
+        )),
+    ]
+
+    def _create_test_table(self):
+        self.test_table_name = "test_for_save_data_alias_upd_" + \
+                               str(secrets.choice(range(1000, 9999)))
+        create_sql = """
+            DROP TABLE IF EXISTS "{0}";
+
+            CREATE TABLE "{0}"(
+                id INT PRIMARY KEY,
+                first_name TEXT,
+                last_name TEXT
+            );
+
+            INSERT INTO "{0}" VALUES (1, 'John', 'Doe');
+        """.format(self.test_table_name)
+        self.select_sql = (
+            "SELECT id, first_name, last_name, "
+            "first_name || ' ' || last_name AS the_name "
+            "FROM {0};"
+        ).format(self.test_table_name)
+        utils.create_table_with_query(self.server, self.db_name, create_sql)
