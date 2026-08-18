@@ -43,10 +43,6 @@
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
 
-    <!-- Per-request CSP nonce for webpack's dynamically injected assets -->
-    <script type="application/javascript" nonce="{{ csp_nonce }}">
-        window.__webpack_nonce__ = "{{ csp_nonce }}";
-    </script>
     <script type="application/javascript" nonce="{{ csp_nonce }}">
         /* This is used to change publicPath of webpack at runtime */
         window.resourceBasePath = "{{ url_for('static', filename='js') }}/generated/";
