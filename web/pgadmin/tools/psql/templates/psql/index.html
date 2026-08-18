@@ -2,7 +2,7 @@
 {% block title %}{{title}}{% endblock %}
 
 {% block css_link %}
-<style>
+<style nonce="{{ csp_nonce }}">
     #psql-container {
         display: flex;
         flex-direction: column;
