@@ -15,11 +15,8 @@ Covers the per-request CSP nonce (SecurityHeaders.get_nonce), the
 get_content_security_policy, and the wiring in set_response_headers that
 emits the Content-Security-Policy header only when a policy is configured.
 
-The dev-mode 'unsafe-eval' behaviour is a PLANNED change to
-get_content_security_policy that has not yet been merged. Its tests are
-grouped under the "PLANNED / DEV-MODE" banner below and are EXPECTED TO
-FAIL until the implementation lands. They are written against the agreed
-contract so they turn green once the source is updated:
+Also covers the dev-mode 'unsafe-eval' behaviour of
+get_content_security_policy:
 
   * When config.DEBUG is True AND the configured policy is a nonce policy
     (originally contained ``{nonce}``), ``'unsafe-eval'`` is appended to
@@ -30,7 +27,7 @@ contract so they turn green once the source is updated:
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from flask import Flask, g
 
@@ -229,18 +226,17 @@ class TestCspEmptyPolicyStaysFalsy(
 
 
 # ---------------------------------------------------------------------------
-# PLANNED / DEV-MODE behaviour (NOT yet implemented)
+# Dev-mode 'unsafe-eval' behaviour
 #
-# The tests below assert the agreed contract for the forthcoming dev-mode
-# 'unsafe-eval' feature in get_content_security_policy. They are EXPECTED
-# TO FAIL until that source change is merged. Do not "fix" the source to
-# make them pass - they exist to lock in the contract.
+# In debug mode a nonce based policy gets 'unsafe-eval' added to script-src,
+# so development bundles (built with webpack's 'eval' devtool) are not
+# blocked. The tests below verify that behaviour and its boundary conditions.
 # ---------------------------------------------------------------------------
 
 class TestDevModeNoncePolicyGetsUnsafeEval(
         _SkipServerSetUpMixin, BaseTestGenerator):
-    """PLANNED (expected-fail until impl): DEBUG=True + nonce policy =>
-    script-src must contain 'unsafe-eval' (dev webpack bundles need it)."""
+    """DEBUG=True + nonce policy => script-src must contain 'unsafe-eval'
+    (dev webpack bundles need it)."""
 
     scenarios = [('default', dict())]
 
@@ -264,8 +260,8 @@ class TestDevModeNoncePolicyGetsUnsafeEval(
 
 class TestProdModeNoncePolicyNoUnsafeEval(
         _SkipServerSetUpMixin, BaseTestGenerator):
-    """PLANNED (expected-fail until impl): DEBUG=False + nonce policy =>
-    script-src must NOT contain 'unsafe-eval'."""
+    """DEBUG=False + nonce policy => script-src must NOT contain
+    'unsafe-eval'."""
 
     scenarios = [('default', dict())]
 
@@ -282,8 +278,8 @@ class TestProdModeNoncePolicyNoUnsafeEval(
 
 class TestDevModeCustomPolicyUnchanged(
         _SkipServerSetUpMixin, BaseTestGenerator):
-    """PLANNED (expected-fail until impl): DEBUG=True + non-nonce custom
-    policy => returned unchanged (no forced 'unsafe-eval')."""
+    """DEBUG=True + non-nonce custom policy => returned unchanged (no
+    forced 'unsafe-eval')."""
 
     scenarios = [('default', dict())]
 
@@ -302,8 +298,8 @@ class TestDevModeCustomPolicyUnchanged(
 
 class TestDevModeUnsafeEvalNotDuplicated(
         _SkipServerSetUpMixin, BaseTestGenerator):
-    """PLANNED (expected-fail until impl): DEBUG=True + nonce policy that
-    ALREADY lists 'unsafe-eval' => 'unsafe-eval' appears exactly once."""
+    """DEBUG=True + nonce policy that ALREADY lists 'unsafe-eval' =>
+    'unsafe-eval' appears exactly once."""
 
     scenarios = [('default', dict())]
 
