@@ -1173,6 +1173,19 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
+
+        if isinstance(cur, AsyncDictServerCursor):
+            # A named/server-side cursor's execute() always runs the query
+            # as `DECLARE ... CURSOR FOR <query>`, which cannot express a
+            # transaction-control statement such as BEGIN/COMMIT/ROLLBACK.
+            # Run this one statement through a throwaway plain cursor
+            # instead, leaving the cached server-side cursor untouched, and
+            # treat it as leaving no result set for whatever poll() call
+            # comes next.
+            cur = self.conn.cursor()
+            self.column_info = None
+            self.row_count = 0
+
         query_id = str(secrets.choice(range(1, 9999999)))
 
         current_app.logger.log(
