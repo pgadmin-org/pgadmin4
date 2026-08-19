@@ -511,8 +511,8 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
     for non-owners."""
 
     scenarios = [
-        ('Non-owner cannot set passexec_cmd',
-         dict(test_method='test_nonowner_passexec_blocked')),
+        ('Non-owner can set their own passexec_cmd',
+         dict(test_method='test_nonowner_passexec_allowed')),
         ('Non-owner cannot set db_res or db_res_type',
          dict(test_method='test_nonowner_db_res_blocked')),
         ('Owner can set passexec_cmd',
@@ -525,7 +525,7 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
     @patch(SRV_MODULE + '.get_crypt_key',
            return_value=(True, b'key'))
     @patch(SRV_MODULE + '.current_user')
-    def test_nonowner_passexec_blocked(self, mock_cu, mock_ck):
+    def test_nonowner_passexec_allowed(self, mock_cu, mock_ck):
         mock_cu.id = 200  # Non-owner
         from pgadmin.browser.server_groups.servers import \
             ServerNode
@@ -536,7 +536,7 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
         node.delete_shared_server = MagicMock()
 
         data = {
-            'passexec_cmd': '/evil/cmd',
+            'passexec_cmd': '/usr/bin/my-own-cmd',
             'post_connection_sql': 'SET role reader;',
         }
         config_map = {
@@ -547,9 +547,10 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
         node._set_valid_attr_value(
             1, data, config_map, server, ss)
 
-        # passexec_cmd should be blocked for non-owners
-        self.assertIsNone(ss.passexec_cmd)
-        # post_connection_sql is allowed for non-owners
+        # Non-owners may set their own SharedServer.passexec_cmd --
+        # only inheriting the *owner's* command is blocked, and
+        # that's enforced in connection_manager(), not here.
+        self.assertEqual(ss.passexec_cmd, '/usr/bin/my-own-cmd')
         self.assertEqual(ss.post_connection_sql,
                          'SET role reader;')
 

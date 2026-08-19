@@ -1007,10 +1007,14 @@ class ServerNode(PGChildNodeView):
             raise CryptKeyMissing
 
         # Fields that non-owners must never set on their
-        # SharedServer — they enable command/SQL execution
-        # or are owner-level concepts not on SharedServer.
+        # SharedServer — owner-level concepts not on SharedServer.
+        # passexec_cmd/passexec_expiration are deliberately NOT
+        # here: a non-owner may set their own, which only ever runs
+        # in their own request context (see _shared_server_passexec
+        # in pgadmin.utils.driver.psycopg3). Only inheriting the
+        # *owner's* passexec_cmd is blocked, and that is enforced in
+        # connection_manager(), not here.
         _owner_only_fields = frozenset({
-            'passexec_cmd', 'passexec_expiration',
             'db_res', 'db_res_type',
         })
 
