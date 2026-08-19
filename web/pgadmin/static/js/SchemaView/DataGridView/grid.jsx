@@ -122,12 +122,25 @@ export default function DataGridView({
     )
   ).includes(true);
 
+  // Virtualising a small grid buys nothing (there's no offscreen window to
+  // skip rendering) but still pays for measureElement's per-row
+  // getBoundingClientRect on every mount/remeasure. That remeasure is
+  // exactly what fires when a dialog tab holding the grid is hidden via
+  // `display: none` and then shown again, since the scroll viewport
+  // momentarily measures 0 and the virtualizer's ResizeObserver treats
+  // that as a real resize. Below the threshold we skip virtualisation
+  // entirely and render every row in normal document flow, so showing a
+  // hidden tab is a pure CSS toggle again.
+  const virtualiseThreshold = viewHelperProps.virtualiseThreshold ?? 100;
+  const shouldVirtualise = rows.length > virtualiseThreshold;
+
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => tableEleRef.current,
     estimateSize: () => 50,
     measureElement:
-      typeof window !== 'undefined' &&
+      shouldVirtualise &&
+        typeof window !== 'undefined' &&
         navigator.userAgent.indexOf('Firefox') === -1
         ? element => element?.getBoundingClientRect().height
         : undefined,
@@ -152,22 +165,29 @@ export default function DataGridView({
               ref={tableEleRef} table={table} data-test="data-grid-view"
               tableClassName='DataGridView-table'>
               <PgReactTableHeader table={table} />
-              <PgReactTableBody style={{
-                height: virtualizer.getTotalSize() + 'px'
-              }}>
+              <PgReactTableBody style={
+                shouldVirtualise ? {height: virtualizer.getTotalSize() + 'px'} : undefined
+              }>
                 {
-                  virtualizer.getVirtualItems().map((virtualRow) => {
+                  (
+                    shouldVirtualise
+                      ? virtualizer.getVirtualItems()
+                      : rows.map((_row, index) => ({index, start: 0}))
+                  ).map((virtualRow) => {
                     const row = rows[virtualRow.index];
                     return (
                       <PgReactTableRow
                         key={row.id}
                         data-index={virtualRow.index}
-                        ref={node => virtualizer.measureElement(node)}
-                        style={{
-                          // This should always be a `style` as it changes on
-                          // scroll.
-                          transform: `translateY(${virtualRow.start}px)`,
-                        }}
+                        ref={shouldVirtualise ? node => virtualizer.measureElement(node) : undefined}
+                        className={shouldVirtualise ? undefined : 'pgrt-row--static'}
+                        style={
+                          shouldVirtualise ? {
+                            // This should always be a `style` as it changes
+                            // on scroll.
+                            transform: `translateY(${virtualRow.start}px)`,
+                          } : undefined
+                        }
                       >
                         <GridRow
                           rowId={virtualRow.index} isResizing={isResizing}
