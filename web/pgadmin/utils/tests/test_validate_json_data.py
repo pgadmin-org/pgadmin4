@@ -47,6 +47,20 @@ class TestValidateJsonData(BaseTestGenerator):
              expected_error="'Username' attribute not found",
              expected_servers=["1"]
          )),
+        ('A non-shared server with an empty username is rejected',
+         dict(
+             servers={"1": server(Username="")},
+             is_admin=True,
+             expected_error="'Username' attribute not found",
+             expected_servers=["1"]
+         )),
+        ('A non-shared server with a null username is rejected',
+         dict(
+             servers={"1": server(Username=None)},
+             is_admin=True,
+             expected_error="'Username' attribute not found",
+             expected_servers=["1"]
+         )),
         ('A shared server with only a shared username is valid',
          dict(
              servers={"1": server(Shared=True, SharedUsername="postgres")},
