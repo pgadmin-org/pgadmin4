@@ -236,6 +236,10 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
     scenarios = [
         ('Sanitizes connection_params on creation',
          dict(test_method='test_sanitizes_conn_params')),
+        ('Copies passfile on creation',
+         dict(test_method='test_copies_passfile')),
+        ('Copies tags from owner on creation',
+         dict(test_method='test_copies_tags')),
         ('Copies tunnel_port from owner',
          dict(test_method='test_copies_tunnel_port')),
         ('Copies tunnel_keep_alive from owner',
@@ -273,9 +277,10 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
     def test_sanitizes_conn_params(self):
         self._create()
         cp = self.captured_kwargs.get('connection_params', {})
-        # Sensitive keys must be stripped
+        # Personal SSL client cert/key paths must be stripped -
+        # each user configures their own.
         for key in ('sslcert', 'sslkey', 'sslrootcert',
-                    'sslcrl', 'sslcrldir', 'passfile'):
+                    'sslcrl', 'sslcrldir'):
             self.assertNotIn(
                 key, cp,
                 'Sensitive key "{0}" should be stripped '
@@ -283,6 +288,25 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
         # Non-sensitive keys preserved
         self.assertEqual(cp.get('sslmode'), 'verify-full')
         self.assertEqual(cp.get('connect_timeout'), '10')
+
+    def test_copies_passfile(self):
+        # passfile is how the owner (e.g. an admin provisioning
+        # servers.json) lets every user of a shared server
+        # authenticate automatically - it must be copied, unlike
+        # the other, genuinely personal, SSL file paths (#10137).
+        self._create()
+        cp = self.captured_kwargs.get('connection_params', {})
+        self.assertEqual(cp.get('passfile'), '/home/owner/.pgpass')
+
+    def test_copies_tags(self):
+        # Tags configured on the owner's server (e.g. via
+        # servers.json) must be visible to non-owners too (#10136).
+        server = _make_server(
+            tags=[{'text': 'prod', 'color': '#f00'}])
+        self._create(server)
+        self.assertEqual(
+            self.captured_kwargs.get('tags'),
+            [{'text': 'prod', 'color': '#f00'}])
 
     def test_copies_tunnel_port(self):
         server = _make_server(tunnel_port=2222)

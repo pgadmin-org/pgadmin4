@@ -437,15 +437,19 @@ class ServerModule(sg.ServerGroupPluginModule):
             db.session.rollback()
             user = User.query.filter_by(id=data.user_id).first()
 
-            # Strip owner's sensitive file paths from
-            # connection_params — each user should configure
-            # their own SSL/passfile paths.
+            # Strip owner's sensitive SSL file paths from
+            # connection_params — each user should configure their
+            # own SSL certificate/key paths. 'passfile' is excluded
+            # from the strip: it is how a shared server's owner (e.g.
+            # an admin provisioning servers.json) lets every user of
+            # the shared server authenticate automatically, so it
+            # must be copied like any other connection parameter.
             safe_conn_params = {}
             if data.connection_params:
                 safe_conn_params = {
                     k: v for k, v in
                     data.connection_params.items()
-                    if k not in SENSITIVE_CONN_KEYS
+                    if k not in SENSITIVE_CONN_KEYS or k == 'passfile'
                 }
 
             shared_server = SharedServer(
@@ -480,7 +484,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 passexec_cmd=None,
                 passexec_expiration=None,
                 kerberos_conn=False,
-                tags=None,
+                tags=data.tags,
                 post_connection_sql=None
             )
             db.session.add(shared_server)
