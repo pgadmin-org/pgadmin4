@@ -408,6 +408,73 @@ class RestoreCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When restore object with option - Do not restore Row security '
+         'policies, Data, Schema, Statistics and Only statistics (>= v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 no_policies=True,
+                 no_data=True,
+                 no_schema=True,
+                 no_statistics=True,
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
+             expected_cmd_opts=['--no-policies', '--no-data', '--no-schema',
+                                '--no-statistics'],
+             not_expected_cmd_opts=['--statistics-only'],
+             expected_exit_code=[0, None],
+             server_min_version=180000,
+             message='Restore object with --no-policies, --no-data, '
+                     '--no-schema, --no-statistics is not '
+                     'supported by EPAS/PG server less than 18.0'
+         )),
+        # Separate from the scenario above because pg_restore rejects
+        # --statistics-only alongside --no-statistics.
+        ('When restore object with option - Only statistics (>= v18)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 only_statistics=True,
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
+             expected_cmd_opts=['--statistics-only'],
+             not_expected_cmd_opts=['--no-statistics', '--data-only',
+                                    '--schema-only'],
+             expected_exit_code=[0, None],
+             server_min_version=180000,
+             message='Restore object with --statistics-only is not '
+                     'supported by EPAS/PG server less than 18.0'
+         )),
     ]
 
     def setUp(self):

@@ -294,6 +294,14 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
               data.get('only_tablespaces', None))
     set_param('only_roles', '--roles-only',
               data.get('only_roles', None))
+    # pg_dump rejects --statistics-only alongside --data-only or
+    # --schema-only, so suppress it the same way --schema-only is suppressed
+    # above. The dialog disables the switches, but a request can still arrive
+    # with both set.
+    set_param('only_statistics', '--statistics-only',
+              manager.version >= 180000 and
+              not data.get('only_data', None) and
+              not data.get('only_schema', None))
 
     # Sections
     set_param('pre_data', '--section=pre-data')
@@ -317,6 +325,17 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('dns_table_access_method', '--no-table-access-method',
               manager.version >= 150000)
     set_param('dns_no_role_passwords', '--no-role-passwords')
+    set_param('no_policies', '--no-policies', manager.version >= 180000)
+    # Each of these conflicts with the matching --*-only option.
+    set_param('no_data', '--no-data',
+              manager.version >= 180000 and
+              not data.get('only_data', None))
+    set_param('no_schema', '--no-schema',
+              manager.version >= 180000 and
+              not data.get('only_schema', None))
+    set_param('no_statistics', '--no-statistics',
+              manager.version >= 180000 and
+              not data.get('only_statistics', None))
 
     # Query Options
     set_param('use_insert_commands', '--inserts')
@@ -353,6 +372,8 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
     set_param('use_set_session_auth', '--use-set-session-authorization')
+    set_param('statistics', '--statistics', manager.version >= 180000)
+    set_param('sequence_data', '--sequence-data', manager.version >= 180000)
     set_value('exclude_schema', '--exclude-schema')
     set_value('extra_float_digits', '--extra-float-digits', None,
               manager.version >= 120000)
