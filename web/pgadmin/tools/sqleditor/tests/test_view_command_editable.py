@@ -149,6 +149,40 @@ class TestViewCommandEditable(BaseTestGenerator):
             expected_primary_keys=None,
             do_save=False,
         )),
+        # information_schema.views.is_trigger_updatable only reflects
+        # INSTEAD OF UPDATE triggers - a view with *only* an INSTEAD OF
+        # DELETE trigger reports is_updatable='YES' AND
+        # is_trigger_updatable='NO', so this must be caught by the
+        # is_trigger_deletable check instead.
+        ('View with only an INSTEAD OF DELETE trigger is not editable', dict(
+            setup_sql="""
+                CREATE TABLE {base1} (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(50)
+                );
+                INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+                CREATE VIEW {view} AS SELECT id, name FROM {base1};
+                CREATE FUNCTION {trig_func}() RETURNS trigger AS $$
+                BEGIN
+                    RETURN NULL;
+                END;
+                $$ LANGUAGE plpgsql;
+                CREATE TRIGGER {trig_name}
+                    INSTEAD OF DELETE ON {view}
+                    FOR EACH ROW EXECUTE FUNCTION {trig_func}();
+            """,
+            teardown_sql="""
+                DROP TRIGGER IF EXISTS {trig_name} ON {view};
+                DROP VIEW IF EXISTS {view};
+                DROP FUNCTION IF EXISTS {trig_func}();
+                DROP TABLE IF EXISTS {base1};
+            """,
+            view_key='view',
+            obj_type='view',
+            expected_can_edit=False,
+            expected_primary_keys=None,
+            do_save=False,
+        )),
         ('Materialized view is not editable', dict(
             setup_sql="""
                 CREATE TABLE {base1} (
@@ -322,3 +356,326 @@ class TestViewCommandEditable(BaseTestGenerator):
     def _close_query_tool(self):
         url = '/sqleditor/close/{0}'.format(self.trans_id)
         self.tester.delete(url)
+
+
+class _ViewSaveTestMixin:
+    """ Shared plumbing for the ad-hoc single-scenario tests below: a
+    fresh connection, a helper to fetch a relation's oid, and the
+    initialize/start/poll/save/close HTTP calls used by
+    TestViewCommandEditable, without the scenario-table machinery (each
+    of these tests needs its own bespoke setup/assertions). """
+
+    def _connect(self):
+        database_info = parent_node_dict["database"][-1]
+        self.db_name = database_info["db_name"]
+        self.server_id = database_info["server_id"]
+        self.db_id = database_info["db_id"]
+
+        db_con = database_utils.connect_database(
+            self, utils.SERVER_GROUP, self.server_id, self.db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to the database.")
+
+        self.connection = utils.get_db_connection(
+            self.db_name,
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port']
+        )
+
+    def _get_relation_oid(self, relname, relkind='v'):
+        pg_cursor = self.connection.cursor()
+        pg_cursor.execute(
+            "SELECT oid FROM pg_catalog.pg_class WHERE relname = %s "
+            "AND relkind = %s", (relname, relkind))
+        result = pg_cursor.fetchall()
+        self.connection.commit()
+        return result[0][0]
+
+    def _initialize_view_data(self, obj_id, obj_type='view', body=None):
+        trans_id = str(secrets.choice(range(1, 9999999)))
+        url = '/sqleditor/initialize/viewdata/{0}/{1}/{2}/{3}/{4}/{5}/{6}' \
+            .format(trans_id, VIEW_ALL_ROWS, obj_type,
+                    utils.SERVER_GROUP, self.server_id, self.db_id, obj_id)
+        if body is not None:
+            response = self.tester.post(
+                url, data=json.dumps(body), content_type='html/json')
+        else:
+            response = self.tester.post(url)
+        self.assertEqual(response.status_code, 200)
+        return trans_id
+
+    def _start_and_poll(self, trans_id):
+        url = "/sqleditor/view_data/start/{0}".format(trans_id)
+        response = self.tester.get(url)
+        self.assertEqual(response.status_code, 200)
+        start_data = json.loads(response.data.decode('utf-8'))
+
+        poll_response = async_poll(
+            tester=self.tester,
+            poll_url='/sqleditor/poll/{0}'.format(trans_id))
+        self.assertEqual(poll_response.status_code, 200)
+
+        return start_data
+
+    def _save(self, trans_id, save_payload):
+        url = '/sqleditor/save/{0}'.format(trans_id)
+        response = self.tester.post(
+            url, data=json.dumps(save_payload), content_type='html/json')
+        self.assertEqual(response.status_code, 200)
+        return json.loads(response.data.decode('utf-8'))
+
+    def _close_query_tool(self, trans_id):
+        url = '/sqleditor/close/{0}'.format(trans_id)
+        self.tester.delete(url)
+
+
+class TestViewSaveRejectsAmbiguousPrimaryKey(
+        _ViewSaveTestMixin, BaseTestGenerator):
+    """ Regression test for the aliasing gap can_edit() can't close.
+
+    can_edit()'s primary-key check is name-only (deliberately - see the
+    design spec's pg_depend note on why per-column alias resolution
+    isn't reliable): it only confirms the base table's real PK column
+    name is *also* present, under the same name, in the view's own
+    output. It has no way to tell that a differently-derived column
+    happens to share that name.
+
+    `CREATE VIEW v AS SELECT legacy AS id, id AS realid, name FROM t`
+    passes that check (t's real PK is `id`, and the view exposes an
+    output column literally called `id`), but the view's `id` is
+    actually `t.legacy`, not `t.id`. An UPDATE through the view with
+    `WHERE id = <value>` would then rewrite every base row sharing that
+    `legacy` value, not just one - so the save path's rows-affected
+    safety net must catch and reject this rather than silently
+    corrupting more rows than intended. """
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_alias_base_' + suffix
+        self.view = 'test_editview_alias_v_' + suffix
+
+    def runTest(self):
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                legacy INTEGER,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, legacy, name) VALUES
+                (1, 5, 'foo'),
+                (2, 5, 'bar');
+            CREATE VIEW {view} AS
+                SELECT legacy AS id, id AS realid, name FROM {base1};
+        """.format(base1=self.base1, view=self.view)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            trans_id = self._initialize_view_data(obj_id)
+
+            # Confirm the exploit precondition: can_edit() is fooled by
+            # the name-only match.
+            start_data = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+
+            save_payload = {
+                "updated": {
+                    "1": {
+                        "err": False,
+                        "data": {"name": "CHANGED"},
+                        "primary_keys": {"id": 5}
+                    }
+                },
+                "added": {},
+                "deleted": {},
+            }
+            response_data = self._save(trans_id, save_payload)
+
+            # Rejected, not silently applied to both rows.
+            self.assertEqual(response_data['data']['status'], False)
+
+            self._close_query_tool(trans_id)
+
+            pg_cursor = self.connection.cursor()
+            pg_cursor.execute(
+                "SELECT name FROM {0} ORDER BY id".format(self.base1))
+            result = pg_cursor.fetchall()
+            self.connection.commit()
+            # Neither base row was changed.
+            self.assertEqual([r[0] for r in result], ['foo', 'bar'])
+        finally:
+            self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1};".format(
+                    view=self.view, base1=self.base1))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestViewSaveRejectsInsertedRow(_ViewSaveTestMixin, BaseTestGenerator):
+    """ Regression test: the frontend's "Add row" is gated only on the
+    backend's can_edit flag (shared, unchanged behaviour also used for
+    tables), so once can_edit() can return True for a view, a user can
+    reach the INSERT path through the existing UI even though row
+    insertion into a view was never designed for or tested (out of
+    scope per the design spec). save() must reject any row marked as
+    newly-inserted when the target is a view. """
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_insert_base_' + suffix
+        self.view = 'test_editview_insert_v_' + suffix
+
+    def runTest(self):
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+            CREATE VIEW {view} AS SELECT id, name FROM {base1};
+        """.format(base1=self.base1, view=self.view)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            trans_id = self._initialize_view_data(obj_id)
+
+            start_data = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+
+            save_payload = {
+                "updated": {},
+                "added": {
+                    "2": {
+                        "err": False,
+                        "data": {
+                            "id": "99",
+                            "__temp_PK": "2",
+                            "name": "new row"
+                        }
+                    }
+                },
+                "deleted": {},
+                "added_index": {"2": "2"},
+            }
+            response_data = self._save(trans_id, save_payload)
+
+            self.assertEqual(response_data['data']['status'], False)
+
+            self._close_query_tool(trans_id)
+
+            pg_cursor = self.connection.cursor()
+            pg_cursor.execute(
+                "SELECT count(*) FROM {0}".format(self.base1))
+            result = pg_cursor.fetchall()
+            self.connection.commit()
+            # No row was actually inserted into the base table.
+            self.assertEqual(int(result[0][0]), 1)
+        finally:
+            self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1};".format(
+                    view=self.view, base1=self.base1))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestViewCommandEditableForNonOwnerRole(
+        _ViewSaveTestMixin, BaseTestGenerator):
+    """ Regression test: information_schema.view_table_usage (previously
+    used to resolve a view's base table) is filtered by
+    pg_has_role(owner, 'USAGE'), so it returns nothing for a role that
+    has direct GRANTs on the view/table but isn't a member of the
+    owning role - which is the normal case in most real server-mode
+    deployments (the connecting role is rarely the table owner). The
+    base-table lookup is now resolved via pg_depend/pg_rewrite instead,
+    which carries no such role filter. This test authenticates as a
+    fresh, non-superuser LOGIN role with only direct grants (no
+    ownership, no role membership) and confirms can_edit() is still
+    True. """
+
+    scenarios = [('default', dict())]
+
+    ROLE_PASSWORD = 'Editview_probe_pw1!'
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_role_base_' + suffix
+        self.view = 'test_editview_role_v_' + suffix
+        self.role_name = 'test_editview_role_' + suffix
+
+    def runTest(self):
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+            CREATE VIEW {view} AS SELECT id, name FROM {base1};
+            CREATE ROLE {role} LOGIN PASSWORD '{password}';
+            GRANT SELECT, UPDATE ON {base1} TO {role};
+            GRANT SELECT, UPDATE ON {view} TO {role};
+        """.format(base1=self.base1, view=self.view, role=self.role_name,
+                   password=self.ROLE_PASSWORD)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            # Log the async connection in as the restricted role - a
+            # fresh, password-authenticated connection (see
+            # Connection.connect()), not a superuser SET ROLE - so this
+            # genuinely exercises a non-owner, non-superuser session.
+            trans_id = self._initialize_view_data(
+                obj_id,
+                body={
+                    "user": self.role_name,
+                    "password": self.ROLE_PASSWORD,
+                }
+            )
+
+            start_data = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+
+            self._close_query_tool(trans_id)
+        finally:
+            self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1}; "
+                "DROP ROLE IF EXISTS {role};".format(
+                    view=self.view, base1=self.base1, role=self.role_name))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
