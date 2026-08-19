@@ -98,6 +98,27 @@ class Driver(BaseDriver):
 
         return {}
 
+    @staticmethod
+    def _manager_is_stale(manager, server_data):
+        """
+        A cached manager is normally kept in sync with edits to its
+        Server row via explicit manager.update() calls from the
+        server-edit endpoints. It can still go stale in place if the
+        row itself was swapped out from under it, e.g. a numeric
+        server id reused by an unrelated row after the configuration
+        database was reset or restored without restarting pgAdmin, so
+        compare against what actually identifies the target rather
+        than trusting the id match alone.
+        """
+        return (
+            manager.host != server_data.host or
+            manager.port != server_data.port or
+            manager.db != server_data.maintenance_db or
+            manager.user != server_data.username or
+            manager.service != server_data.service or
+            manager.tunnel_host != server_data.tunnel_host
+        )
+
     def connection_manager(self, sid=None):
         """
         connection_manager(...)
@@ -144,8 +165,22 @@ class Driver(BaseDriver):
             if str(sid) in managers:
                 manager = managers[str(sid)]
                 with connection_restore_lock:
-                    manager._restore_connections()
-                    manager.update_session()
+                    if self._manager_is_stale(manager, server_data):
+                        # The id has been reused by an unrelated Server
+                        # row (e.g. the configuration database was reset
+                        # or restored without restarting pgAdmin), so the
+                        # cached manager still points at whatever server
+                        # it was originally built from. Drop it rather
+                        # than report a live connection to a server that,
+                        # from this row's perspective, was never opened.
+                        manager.release()
+                        manager.update(server_data)
+                        if config.SERVER_MODE and server_data.shared and \
+                                server_data.user_id != current_user.id:
+                            manager.passexec = None
+                    else:
+                        manager._restore_connections()
+                        manager.update_session()
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
