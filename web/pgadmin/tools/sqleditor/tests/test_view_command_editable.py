@@ -679,3 +679,116 @@ class TestViewCommandEditableForNonOwnerRole(
 
     def tearDown(self):
         database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestViewSaveGuardsNonEditable(_ViewSaveTestMixin, BaseTestGenerator):
+    """ Regression test: before ViewCommand/MViewCommand implemented
+    their own save(), every view fell through to GridCommand.save(),
+    which always refuses. Now that they implement save() themselves, a
+    non-editable instance (can_edit() False - a view missing its PK
+    column, a materialized view, a join-based view, etc.) must still be
+    refused up front, not attempted: without this guard, save() would
+    reach save_changed_data() with an incomplete columns_info (built for
+    a non-editable object, missing keys like not_null) and fail with a
+    KeyError - after a BEGIN had already been issued, leaving a dangling
+    transaction and a 500 instead of a clean refusal. """
+
+    scenarios = [
+        ('View missing its primary key column', dict(
+            setup_sql="""
+                CREATE TABLE {base1} (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(50)
+                );
+                INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+                CREATE VIEW {view} AS SELECT name FROM {base1};
+            """,
+            teardown_sql="""
+                DROP VIEW IF EXISTS {view};
+                DROP TABLE IF EXISTS {base1};
+            """,
+            relname_key='view',
+            obj_type='view',
+        )),
+        ('Materialized view', dict(
+            setup_sql="""
+                CREATE TABLE {base1} (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(50)
+                );
+                INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+                CREATE MATERIALIZED VIEW {mview} AS
+                    SELECT id, name FROM {base1};
+            """,
+            teardown_sql="""
+                DROP MATERIALIZED VIEW IF EXISTS {mview};
+                DROP TABLE IF EXISTS {base1};
+            """,
+            relname_key='mview',
+            obj_type='mview',
+        )),
+    ]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_guard_base_' + suffix
+        self.view = 'test_editview_guard_v_' + suffix
+        self.mview = 'test_editview_guard_mv_' + suffix
+        self._names = dict(
+            base1=self.base1, view=self.view, mview=self.mview)
+        self.relname = self._names[self.relname_key]
+
+    def runTest(self):
+        sql = self.setup_sql.format(**self._names)
+        utils.create_table_with_query(self.server, self.db_name, sql)
+
+        try:
+            relkind = 'm' if self.obj_type == 'mview' else 'v'
+            obj_id = self._get_relation_oid(self.relname, relkind)
+            trans_id = self._initialize_view_data(obj_id, self.obj_type)
+
+            start_data = self._start_and_poll(trans_id)
+            # Precondition: this instance really is non-editable.
+            self.assertFalse(start_data['data']['can_edit'])
+
+            save_payload = {
+                "updated": {
+                    "1": {
+                        "err": False,
+                        "data": {"name": "should-not-apply"},
+                        "primary_keys": {"id": 1}
+                    }
+                },
+                "added": {},
+                "deleted": {},
+            }
+            response_data = self._save(trans_id, save_payload)
+
+            # A clean refusal, not a 500 from an unhandled KeyError.
+            self.assertEqual(response_data['data']['status'], False)
+            self.assertIn(
+                'cannot be saved',
+                response_data['data']['result'].lower())
+            # No transaction was left dangling by the refused save.
+            self.assertEqual(response_data['data']['transaction_status'], 0)
+
+            self._close_query_tool(trans_id)
+
+            pg_cursor = self.connection.cursor()
+            pg_cursor.execute(
+                "SELECT name FROM {0} WHERE id = 1".format(self.base1))
+            result = pg_cursor.fetchall()
+            self.connection.commit()
+            # Nothing was actually changed in the base table either.
+            self.assertEqual(result[0][0], 'foo')
+        finally:
+            try:
+                teardown_sql = self.teardown_sql.format(**self._names)
+                utils.create_table_with_query(
+                    self.server, self.db_name, teardown_sql)
+            except Exception:
+                pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
