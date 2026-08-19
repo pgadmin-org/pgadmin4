@@ -11,6 +11,7 @@
 
 from flask import render_template
 from flask_babel import gettext as _
+from pgadmin.utils import unquote_ident
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -90,7 +91,7 @@ def get_index_constraints(conn, did, tid, ctype, cid=None, template_path=None):
 
         columns = []
         for r in res['rows']:
-            columns.append({"column": r['column'].strip('"')})
+            columns.append({"column": unquote_ident(r['column'])})
 
         idx_cons['columns'] = columns
 
