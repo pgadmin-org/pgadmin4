@@ -129,60 +129,47 @@ export default class ForeignTableSchema extends BaseUISchema {
         options: obj.fieldOptions.tables,
         optionsLoaded: (res)=>obj.inheritedTableList=res,
         deferredDepChange: (state, source, topState, actionObj)=>{
-          return new Promise((resolve)=>{
-            // current table list and previous table list
-            let newColInherits = state.inherits || [];
-            let oldColInherits = actionObj.oldState.inherits || [];
+          const newColInherits = state.inherits || [];
+          const oldColInherits = actionObj.oldState.inherits || [];
+          const added = _.difference(newColInherits, oldColInherits);
+          const removed = _.difference(oldColInherits, newColInherits);
 
-            let tabName;
-            let tabColsResponse;
+          // REMOVE takes precedence: any removed parent means stale
+          // columns to clean up. Covers pure shrink AND same-length
+          // swap (e.g. multi-select replace) — without this branch a
+          // swap would leave the removed parent's columns sitting in
+          // the grid until the user did something else.
+          if(removed.length > 0) {
+            const removeOid = this.getTableOid(removed[0]);
+            // Guard: if inheritedTableList is stale and the removed
+            // table can't be resolved to an OID, opt out. Filtering on
+            // `inheritedid != undefined` would silently drop local
+            // user-added columns (`null == undefined` in JS).
+            if(removeOid == null) return undefined;
+            return Promise.resolve((tmpstate)=>({
+              adding_inherit_cols: false,
+              columns: (tmpstate.columns || [])
+                .filter((col)=>col.inheritedid != removeOid),
+            }));
+          }
 
-            // Add columns logic
-            // If new table is added in list
-            if(newColInherits.length > 1 && newColInherits.length > oldColInherits.length) {
-              // Find newly added table from current list
-              tabName = _.difference(newColInherits, oldColInherits);
-              tabColsResponse = obj.getColumns({attrelid: this.getTableOid(tabName[0])});
-            } else if (newColInherits.length == 1) {
-              // First table added
-              tabColsResponse = obj.getColumns({attrelid: this.getTableOid(newColInherits[0])});
-            }
-
-            if(tabColsResponse) {
-              tabColsResponse.then((res)=>{
-                resolve((tmpstate)=>{
-                  let finalCols = res.map((col)=>obj.columnsObj.getNewData(col));
-                  finalCols = [...tmpstate.columns, ...finalCols];
-                  return {
-                    adding_inherit_cols: false,
-                    columns: finalCols,
-                  };
-                });
-              });
-            }
-
-            // Remove columns logic
-            let removeOid;
-            if(newColInherits.length > 0 && newColInherits.length < oldColInherits.length) {
-              // Find deleted table from previous list
-              tabName = _.difference(oldColInherits, newColInherits);
-              removeOid = this.getTableOid(tabName[0]);
-            } else if (oldColInherits.length === 1 && newColInherits.length < 1) {
-              // We got last table from list
-              tabName = oldColInherits[0];
-              removeOid = this.getTableOid(tabName);
-            }
-            if(removeOid) {
-              resolve((tmpstate)=>{
-                let finalCols = tmpstate.columns;
-                _.remove(tmpstate.columns, (col)=>col.inheritedid==removeOid);
+          // Pure ADD: list grew without any removals.
+          if(added.length > 0) {
+            const fetchOid = this.getTableOid(added[0]);
+            if(fetchOid == null) return undefined;
+            return obj.getColumns({attrelid: fetchOid}).then((res)=>(
+              (tmpstate)=>{
+                const fetched = res.map((col)=>obj.columnsObj.getNewData(col));
                 return {
                   adding_inherit_cols: false,
-                  columns: finalCols
+                  columns: [...(tmpstate.columns || []), ...fetched],
                 };
-              });
-            }
-          });
+              }
+            ));
+          }
+
+          // Lists are equivalent — no work to do.
+          return undefined;
         },
       },
       {
