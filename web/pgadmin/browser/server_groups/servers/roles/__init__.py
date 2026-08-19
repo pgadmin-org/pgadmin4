@@ -619,6 +619,7 @@ rolmembership:{
         return fetch_name, check_permission, forbidden_msg
 
     def _check_permission(self, check_permission, action, kwargs):
+        self.membership_only_update = False
         if check_permission:
             user = self.manager.user_info
 
@@ -627,6 +628,15 @@ rolmembership:{
                 (action != 'update' or 'rid' in kwargs) and \
                 kwargs['rid'] != -1 and \
                     user['id'] != kwargs['rid']:
+                # A role that only has ADMIN OPTION on this specific role
+                # (rather than being a superuser or having CREATEROLE) may
+                # still manage that role's membership, so don't forbid the
+                # request outright; the update handler restricts what such
+                # a request is allowed to change to membership only.
+                if action == 'update' and getattr(
+                        self, 'has_admin_option', False):
+                    self.membership_only_update = True
+                    return False
                 return True
         return False
 
@@ -658,6 +668,7 @@ rolmembership:{
             self.role = row['rolname']
             self.rolCanLogin = row['rolcanlogin']
             self.rolSuper = row['rolsuper']
+            self.has_admin_option = row.get('has_admin_option', False)
 
         return False, ''
 
@@ -713,15 +724,19 @@ rolmembership:{
                 fetch_name, check_permission, \
                     forbidden_msg = RoleView._check_action(action, kwargs)
 
-                is_permission_error = self._check_permission(check_permission,
-                                                             action, kwargs)
-                if is_permission_error:
-                    return forbidden(forbidden_msg)
-
+                # Fetched first: the permission check needs to know
+                # whether the current user holds ADMIN OPTION on this
+                # role before it can decide whether to forbid the
+                # request.
                 is_error, errmsg = self._check_and_fetch_name(fetch_name,
                                                               kwargs)
                 if is_error:
                     return errmsg
+
+                is_permission_error = self._check_permission(check_permission,
+                                                             action, kwargs)
+                if is_permission_error:
+                    return forbidden(forbidden_msg)
 
                 return f(self, **kwargs)
 
@@ -1023,6 +1038,13 @@ rolmembership:{
     @check_precondition(action='update')
     @validate_request
     def update(self, gid, sid, rid):
+        if getattr(self, 'membership_only_update', False) and \
+                not set(self.request) <= {'rolmembers'}:
+            return forbidden(
+                _("The current user does not have permission to update "
+                  "the role. Users with ADMIN OPTION on this role may "
+                  "only manage its membership.")
+            )
 
         sql = render_template(
             self.sql_path + self._UPDATE_SQL,
