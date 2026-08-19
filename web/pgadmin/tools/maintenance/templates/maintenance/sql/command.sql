@@ -14,7 +14,6 @@
 {% if data.vacuum_parallel %}{{ maintenance_options.append('PARALLEL ' + data.vacuum_parallel) or "" }}{% endif %}
 {% if data.buffer_usage_limit %}{{ maintenance_options.append('BUFFER_USAGE_LIMIT "' + data.buffer_usage_limit + '"') or "" }}{% endif %}
 {% if data.reindex_tablespace %}{{ maintenance_options.append('TABLESPACE ' + conn|qtIdent(data.reindex_tablespace)) or "" }}{% endif %}
-{% if data.reindex_concurrently %}{{ maintenance_options.append('CONCURRENTLY') or "" }}{% endif %}
 {% if data.op == "VACUUM" %}
 VACUUM{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if data.schema %} {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.table) }}{% endif %};
 {% endif %}
@@ -23,9 +22,9 @@ ANALYZE{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{
 {% endif %}
 {% if data.op == "REINDEX" %}
 {% if index_name %}
-REINDEX{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %} INDEX {{ conn|qtIdent(data.schema, index_name) }};
+REINDEX{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %} INDEX{% if data.reindex_concurrently %} CONCURRENTLY{% endif %} {{ conn|qtIdent(data.schema, index_name) }};
 {% else %}
-REINDEX{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if not data.schema and not data.reindex_system %} DATABASE {{ conn|qtIdent(data.database) }}{% elif not data.schema and data.reindex_system%} SYSTEM {{ conn|qtIdent(data.database) }}{% elif data.schema and not data.table and not data.primary_key and not data.unique_constraint and not data.index and not data.mview %} SCHEMA {{ conn|qtIdent(data.schema) }}{% else %} TABLE {{ conn|qtIdent(data.schema, data.table) }}{% endif %};
+REINDEX{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if not data.schema and not data.reindex_system %} DATABASE{% if data.reindex_concurrently %} CONCURRENTLY{% endif %} {{ conn|qtIdent(data.database) }}{% elif not data.schema and data.reindex_system%} SYSTEM {{ conn|qtIdent(data.database) }}{% elif data.schema and not data.table and not data.primary_key and not data.unique_constraint and not data.index and not data.mview %} SCHEMA{% if data.reindex_concurrently %} CONCURRENTLY{% endif %} {{ conn|qtIdent(data.schema) }}{% else %} TABLE{% if data.reindex_concurrently %} CONCURRENTLY{% endif %} {{ conn|qtIdent(data.schema, data.table) }}{% endif %};
 {% endif %}
 {% endif %}
 {% if data.op == "CLUSTER" %}
