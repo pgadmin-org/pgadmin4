@@ -537,7 +537,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  verbose=True
              ),
              url=MAINTENANCE_URL,
-             expected_cmd_opts=['REINDEX (VERBOSE, CONCURRENTLY) DATABASE '
+             expected_cmd_opts=['REINDEX (VERBOSE) DATABASE CONCURRENTLY '
                                 'postgres;\n'],
              server_min_version=120000,
              message='REINDEX CONCURRENTLY is not supported by EPAS/PG server '
@@ -643,7 +643,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  verbose=True
              ),
              url=MAINTENANCE_URL,
-             expected_cmd_opts=['REINDEX (VERBOSE, CONCURRENTLY) TABLE '
+             expected_cmd_opts=['REINDEX (VERBOSE) TABLE CONCURRENTLY '
                                 'my_schema.my_table;\n'],
              server_min_version=120000,
              message='REINDEX CONCURRENTLY TABLE is not supported by '
@@ -710,7 +710,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  verbose=True
              ),
              url=MAINTENANCE_URL,
-             expected_cmd_opts=['REINDEX (VERBOSE, CONCURRENTLY) INDEX '
+             expected_cmd_opts=['REINDEX (VERBOSE) INDEX CONCURRENTLY '
                                 'my_schema.my_index;\n'],
              server_min_version=120000,
              message='REINDEX CONCURRENTLY is not supported by EPAS/PG server '
