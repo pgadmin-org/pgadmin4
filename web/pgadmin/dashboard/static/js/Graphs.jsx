@@ -125,6 +125,14 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
       }
       if(prevPrefernces['tps_stats_refresh'] != preferences['tps_stats_refresh']) {
         tpsStatsReduce({reset:chartsDefault['tps_stats']});
+        /* The rate divisor is changing, so the previous counter baseline
+         * can no longer be used to compute the next delta.
+         */
+        setCounterData((prevCounterData)=>{
+          const nextCounterData = {...prevCounterData};
+          delete nextCounterData['tps_stats'];
+          return nextCounterData;
+        });
         calcPollDelay = true;
       }
       if(prevPrefernces['ti_stats_refresh'] != preferences['ti_stats_refresh']) {
