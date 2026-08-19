@@ -913,6 +913,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         json_resp = kwargs.get('json_resp', True)
         target_schema = kwargs.get('target_schema', None)
+        allow_code_formatting = kwargs.get('allow_code_formatting', True)
 
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Most probably this is due to error
@@ -936,7 +937,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         resp_data['func_args_without'] = ', '.join(args_without_name)
 
-        self.reformat_prosrc_code(resp_data)
+        if allow_code_formatting:
+            self.reformat_prosrc_code(resp_data)
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
@@ -1670,8 +1672,18 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, fnid=oid, only_sql=True)
             elif target_schema:
+                # This SQL is the one that will actually be executed
+                # against the target (e.g. to create a "Source Only"
+                # object there), so it must reproduce the body exactly
+                # as stored, without the cosmetic newlines added around
+                # $BODY$ for readability in the SQL panel. Otherwise the
+                # target's prosrc would differ from the source's by
+                # nothing but pgAdmin's own formatting, and a subsequent
+                # comparison would keep reporting a (whitespace-only)
+                # difference (see #10302).
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
-                               target_schema=target_schema, json_resp=False)
+                               target_schema=target_schema, json_resp=False,
+                               allow_code_formatting=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)
