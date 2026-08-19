@@ -171,6 +171,22 @@ export default class ColumnSchema extends BaseUISchema {
     return !isEmptyString(state.inheritedfromtype);
   }
 
+  // Shared by the inline grid-cell 'Data type' editor and the expanded
+  // Definition tab's 'Data type' dropdown, so both apply the exact same
+  // edit_types restriction for the same column. isRowNew must be computed
+  // by the caller against the *row's* own state (not the enclosing table's
+  // or the field's own scalar state), since new columns can be set to any
+  // type whilst existing ones may only be altered to one of edit_types.
+  editTypesFilter(edit_types, isRowNew) {
+    return (options)=>{
+      if (isRowNew || this.inErd) {
+        return options;
+      }
+      let allowed = edit_types || [];
+      return _.filter(options, (o)=>allowed.indexOf(o.value) > -1);
+    };
+  }
+
   get baseFields() {
     let obj = this;
 
@@ -248,20 +264,21 @@ export default class ColumnSchema extends BaseUISchema {
       group: gettext('Definition'), noEmpty: true,
       editable: this.editableCheckForTable,
       options: this.cltypeOptions, optionsLoaded: (options)=>{obj.datatypes = options;},
-      type: (state)=>{
+      // 'edit_types'/'attnum' are declared as deps purely so that the
+      // schema view resolves them against this row (not the whole table),
+      // and passes them through as the 2nd (depVals) argument below. This
+      // is what lets the expanded Definition tab's dropdown apply the same
+      // edit_types restriction as the inline grid-cell editor, whose
+      // 'cell' callback already receives the full row.
+      deps: ['edit_types', 'attnum'],
+      type: (state, depVals)=>{
+        let [edit_types, attnum] = depVals || [];
         return {
           type: 'select',
           options: this.cltypeOptions,
           controlProps: {
             allowClear: false,
-            filter: (options)=>{
-              let result = options;
-              let edit_types = state?.edit_types || [];
-              if(!obj.isNew(state) && !this.inErd) {
-                result = _.filter(options, (o)=>edit_types.indexOf(o.value) > -1);
-              }
-              return result;
-            },
+            filter: obj.editTypesFilter(edit_types, obj.isNew({attnum})),
           }
         };
       },
@@ -271,14 +288,7 @@ export default class ColumnSchema extends BaseUISchema {
           options: this.cltypeOptions,
           controlProps: {
             allowClear: false,
-            filter: (options)=>{
-              let result = options;
-              let edit_types = row?.edit_types || [];
-              if(!obj.isNew(row) && !this.inErd) {
-                result = _.filter(options, (o)=>edit_types.indexOf(o.value) > -1);
-              }
-              return result;
-            },
+            filter: obj.editTypesFilter(row?.edit_types, obj.isNew(row)),
           }
         };
       }

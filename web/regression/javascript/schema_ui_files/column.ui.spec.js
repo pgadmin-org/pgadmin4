@@ -152,6 +152,57 @@ describe('ColumnSchema', ()=>{
     expect(schemaObj.editableCheckForTable(state)).toBe(false);
   });
 
+  it('editTypesFilter', ()=>{
+    let options = [
+      {label: 'integer', value: 'integer'},
+      {label: 'text', value: 'text'},
+      {label: 'boolean', value: 'boolean'},
+    ];
+
+    // Existing column: restricted to edit_types.
+    let filtered = schemaObj.editTypesFilter(['integer', 'text'], false)(options);
+    expect(filtered).toEqual([
+      {label: 'integer', value: 'integer'},
+      {label: 'text', value: 'text'},
+    ]);
+
+    // New column: unrestricted, full list.
+    expect(schemaObj.editTypesFilter(['integer'], true)(options)).toEqual(options);
+
+    // No edit_types available: restricts down to nothing.
+    expect(schemaObj.editTypesFilter(undefined, false)(options)).toEqual([]);
+
+    // ERD is always unrestricted, regardless of edit_types/isNew.
+    schemaObj.inErd = true;
+    expect(schemaObj.editTypesFilter(['integer'], false)(options)).toEqual(options);
+    schemaObj.inErd = false;
+  });
+
+  it('cltype - expanded Definition tab options match the inline grid-cell options', ()=>{
+    let cltypeField = _.find(schemaObj.fields, (f)=>f.id === 'cltype');
+    let options = [
+      {label: 'integer', value: 'integer'},
+      {label: 'text', value: 'text'},
+      {label: 'boolean', value: 'boolean'},
+    ];
+    let row = {attnum: 1, edit_types: ['integer', 'boolean']};
+
+    // Inline grid-cell editor.
+    let cellResult = cltypeField.cell(row);
+    let cellFiltered = cellResult.controlProps.filter(options);
+
+    // Expanded Definition tab, as it is invoked once 'edit_types'/'attnum'
+    // have been resolved against this row via deps (see MappedControl.jsx).
+    let typeResult = cltypeField.type(row.cltype, [row.edit_types, row.attnum]);
+    let typeFiltered = typeResult.controlProps.filter(options);
+
+    expect(typeFiltered).toEqual(cellFiltered);
+    expect(typeFiltered).toEqual([
+      {label: 'integer', value: 'integer'},
+      {label: 'boolean', value: 'boolean'},
+    ]);
+  });
+
   it('editableCheckForTable', ()=>{
     let state = {};
     schemaObj.nodeInfo = {};
