@@ -1029,17 +1029,23 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     def _update_arguments_for_get_sql(data, old_data):
         """
         If Function Definition/Arguments are changed then merge old
-        Arguments with changed ones for Create/Replace Function SQL statement
+        Arguments with changed/added ones for Create/Replace Function SQL
+        statement
         :param data:
         :param old_data:
         :return:
         """
         if 'arguments' in data and len(data['arguments']) > 0:
-            for arg in data['arguments']['changed']:
+            for arg in data['arguments'].get('changed', []):
                 for old_arg in old_data['arguments']:
                     if arg['argid'] == old_arg['argid']:
                         old_arg.update(arg)
                         break
+            # Newly added arguments (not yet saved) need to be appended,
+            # otherwise they would be silently dropped as only pre-existing
+            # arguments are present in old_data.
+            for arg in data['arguments'].get('added', []):
+                old_data['arguments'].append(arg)
             data['arguments'] = old_data['arguments']
         elif data['change_func']:
             data['arguments'] = old_data['arguments']

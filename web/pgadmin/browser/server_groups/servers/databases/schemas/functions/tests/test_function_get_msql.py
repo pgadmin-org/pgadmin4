@@ -143,6 +143,43 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
             )
         ),
         (
+            'Fetch Function msql with newly added argument',
+            dict(
+                url='/browser/function/msql/',
+                is_positive_test=True,
+                mocking_required=False,
+                with_function_id=True,
+                is_mock_local_function=False,
+                test_data={
+                    "name": "Test Function",
+                    "funcowner": "",
+                    "pronamespace": 2200,
+                    "prorettypename": "character varying",
+                    "lanname": "sql",
+                    "prosrc": "select '1'",
+                    "probin": "$libdir/",
+                    "variables": [],
+                    "seclabels": [],
+                    "acl": [],
+                    # A newly added (not yet saved) argument must survive
+                    # into the generated SQL, and not be silently dropped.
+                    "arguments": json.dumps({
+                        "added": [{
+                            "argname": "new_arg",
+                            "argtype": "integer",
+                            "argmode": "IN",
+                            "argdefval": "1"
+                        }]
+                    })
+                },
+                mock_data={},
+                expected_data={
+                    "status_code": 200,
+                    "check_string": "new_arg"
+                }
+            ),
+        ),
+        (
             'Fetch Function msql fetch properties not found',
             dict(
                 url='/browser/function/msql/',
@@ -222,5 +259,8 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
 
         self.assertEqual(response.status_code,
                          self.expected_data['status_code'])
+        if 'check_string' in self.expected_data:
+            self.assertIn(self.expected_data['check_string'],
+                          response.json['data'])
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
