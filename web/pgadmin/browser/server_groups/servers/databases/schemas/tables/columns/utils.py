@@ -269,6 +269,14 @@ def reproject_serial_column(col):
     with, so that callers can emit round-trippable DDL. Columns that are
     not SERIAL, including ones already reprojected, are left untouched.
 
+    The real ``nextval(...)`` expression is kept alongside the emptied
+    ``defval`` (under ``serial_defval``) rather than discarded, because
+    Schema Diff needs it back verbatim whenever it finds this column
+    genuinely differs in "serialness" from its counterpart: converting a
+    column to or from SERIAL means creating or dropping the sequence
+    behind it, which the pseudo-type's own implied default can't drive by
+    itself (#10292).
+
     :param col: Column properties, modified in place
     :return: The same column
     """
@@ -280,9 +288,29 @@ def reproject_serial_column(col):
     col['displaytypname'] = serial_type
     col['cltype'] = serial_type
     col['typname'] = serial_type
+    col['serial_defval'] = col['defval']
     col['defval'] = ''
 
     return col
+
+
+def parse_nextval_sequence(defval):
+    """
+    Extract the schema-qualified sequence name out of a ``nextval(...)``
+    column default expression, e.g. ``nextval('public.t_id_seq'::regclass)``
+    yields ``public.t_id_seq``. The identifier is returned exactly as
+    PostgreSQL rendered it (already quoted if it needs to be), so callers
+    should use it verbatim rather than re-quoting it.
+
+    :param defval: A column's default value expression, or None
+    :return: The schema-qualified sequence name, or None if it is not a
+        nextval() default
+    """
+    if not defval:
+        return None
+
+    match = re.match(r"nextval\('(.+)'::regclass\)$", defval)
+    return match.group(1) if match else None
 
 
 @get_template_path
