@@ -694,13 +694,20 @@ class ViewCommand(GridCommand):
         """
         A view is editable only if PostgreSQL itself classifies it as a
         simple automatically updatable view (single base table, no
-        INSTEAD OF triggers), and the base table's primary key columns are
-        exposed under their original names in the view's own output.
+        INSTEAD OF UPDATE/DELETE/INSERT triggers - a view with any of
+        these is left entirely out of scope, not just the one the
+        triggering operation would use), and the base table's primary key
+        columns are exposed under their original names in the view's own
+        output.
 
         This never raises: any missing connection, failed query, or
         unexpected error is treated as "not editable".
         """
-        if self._can_edit is not None:
+        # Use getattr rather than direct attribute access: a ViewCommand
+        # unpickled from a session created before this attribute existed
+        # (see session_obj['command_obj'] in sqleditor/__init__.py) won't
+        # have it, and this must fail closed rather than raise.
+        if getattr(self, '_can_edit', None) is not None:
             return self._can_edit
 
         try:
@@ -714,6 +721,7 @@ class ViewCommand(GridCommand):
             # Resolve the base table backing this view (if any).
             query = render_template(
                 "/".join([self.sql_path, 'view_base_table.sql']),
+                obj_id=self.obj_id,
                 nsp_name=self.nsp_name,
                 object_name=self.object_name,
                 conn=conn,
@@ -793,10 +801,11 @@ class ViewCommand(GridCommand):
         itself still exposes under their original name. Resolved (and
         cached) by can_edit(), which is run first if it hasn't been yet.
         """
-        if self._can_edit is None:
+        if getattr(self, '_can_edit', None) is None:
             self.can_edit()
 
-        return self._pk_names, self._primary_keys
+        return getattr(self, '_pk_names', ''), \
+            getattr(self, '_primary_keys', OrderedDict())
 
     def has_oids(self, default_conn=None):
         """
