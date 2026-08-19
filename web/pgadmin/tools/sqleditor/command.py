@@ -690,7 +690,7 @@ class ViewCommand(GridCommand):
 
         return sql
 
-    def can_edit(self):
+    def can_edit(self, default_conn=None):
         """
         A view is editable only if PostgreSQL itself classifies it as a
         simple automatically updatable view (single base table, no
@@ -699,6 +699,14 @@ class ViewCommand(GridCommand):
         triggering operation would use), and the base table's primary key
         columns are exposed under their original names in the view's own
         output.
+
+        Args:
+            default_conn: an already-resolved connection to reuse (see
+                sqleditor/__init__.py's start_view_data(), which resolves
+                one specifically so metadata calls like this one don't
+                run on the same conn_id-keyed connection as an in-flight
+                async query and its cursor). Only resolved independently
+                when the caller doesn't supply one.
 
         This never raises: any missing connection, failed query, or
         unexpected error is treated as "not editable".
@@ -712,8 +720,12 @@ class ViewCommand(GridCommand):
 
         try:
             driver = get_driver(PG_DEFAULT_DRIVER)
-            manager = driver.connection_manager(self.sid)
-            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+            if default_conn is None:
+                manager = driver.connection_manager(self.sid)
+                conn = manager.connection(did=self.did,
+                                          conn_id=self.conn_id)
+            else:
+                conn = default_conn
 
             if not conn.connected():
                 return False
@@ -799,10 +811,13 @@ class ViewCommand(GridCommand):
         This function is used to fetch the primary key columns of the
         view's underlying base table, filtered to the ones the view
         itself still exposes under their original name. Resolved (and
-        cached) by can_edit(), which is run first if it hasn't been yet.
+        cached) by can_edit(), which is run first if it hasn't been yet -
+        forwarding whatever connection this was given, rather than
+        letting can_edit() resolve one of its own independently of the
+        caller (see can_edit()'s default_conn docstring).
         """
         if getattr(self, '_can_edit', None) is None:
-            self.can_edit()
+            self.can_edit(default_conn)
 
         return getattr(self, '_pk_names', ''), \
             getattr(self, '_primary_keys', OrderedDict())
@@ -828,6 +843,30 @@ class ViewCommand(GridCommand):
             client_primary_key:
             default_conn:
         """
+        # Before this class existed, every view fell through to
+        # GridCommand.save() below, which always refuses. Match that: a
+        # non-editable view (join-based, trigger-backed, matview, PK not
+        # exposed under its own name, etc.) must still be refused here,
+        # not attempted - can_edit() being false isn't otherwise checked
+        # anywhere on this path before a transaction gets started.
+        #
+        # This deliberately does NOT call forbidden() the way
+        # GridCommand.save() does: forbidden() returns a raw HTTP
+        # Response, but the one real caller of this method - the
+        # /sqleditor/save/<trans_id> endpoint - always does
+        # `status, res, query_results, _rowid = trans_obj.save(...)`,
+        # and unpacking a Response that way raises TypeError (verified),
+        # turning a clean refusal into a 500. Same message/intent as
+        # forbidden(), in the 4-tuple shape save_changed_data() itself
+        # already returns for its own early refusals.
+        if not self.can_edit(default_conn):
+            return (
+                False,
+                gettext("Data cannot be saved for the current object."),
+                [],
+                None
+            )
+
         driver = get_driver(PG_DEFAULT_DRIVER)
         if default_conn is None:
             manager = driver.connection_manager(self.sid)
