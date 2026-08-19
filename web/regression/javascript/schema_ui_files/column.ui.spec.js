@@ -133,6 +133,25 @@ describe('ColumnSchema', ()=>{
     expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(false);
   });
 
+  it('inSchemaWithColumnCheck - column already inherited from a parent table', ()=>{
+    // Set on the properties fetch for a column the table already
+    // inherits when opened (issue #10179, case 1).
+    schemaObj.nodeInfo = {schema: {}};
+    let state = {attnum: 1, inheritedfromtable: 'public.parent'};
+    expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(true);
+    expect(schemaObj.editableCheckForTable(state)).toBe(false);
+  });
+
+  it('inSchemaWithColumnCheck - column added interactively via Inherited from table(s)', ()=>{
+    // Columns freshly fetched via 'Inherited from table(s)' don't carry an
+    // attnum yet, so isNew() would otherwise (wrongly) treat them as new,
+    // editable rows (issue #10179, case 2).
+    schemaObj.nodeInfo = {schema: {}};
+    let state = {name: 'id', inheritedfrom: 'public.parent'};
+    expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(true);
+    expect(schemaObj.editableCheckForTable(state)).toBe(false);
+  });
+
   it('editableCheckForTable', ()=>{
     let state = {};
     schemaObj.nodeInfo = {};

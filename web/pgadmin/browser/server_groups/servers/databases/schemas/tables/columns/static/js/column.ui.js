@@ -88,15 +88,22 @@ export default class ColumnSchema extends BaseUISchema {
     }
 
     if(this.nodeInfo &&  ('schema' in this.nodeInfo)) {
-      if(this.isNew(state)) {
-        return false;
+      // inheritedfrom/inheritedfromtable check is useful when we use this
+      // schema in table node. A column inherited from a parent table should
+      // always be read-only, whether it was already present when the table
+      // was opened (inheritedfromtable, set on the properties fetch) or was
+      // just added interactively via 'Inherited from table(s)'
+      // (inheritedfrom, set on the freshly fetched column). This must be
+      // checked before the isNew() check below, as interactively added
+      // inherited columns don't carry an attnum yet and would otherwise be
+      // (wrongly) treated as new, editable rows.
+      if (!isEmptyString(state.inheritedfrom) ||
+          !isEmptyString(state.inheritedfromtable)){
+        return true;
       }
 
-      // We will disable control if it's system columns
-      // inheritedfrom check is useful when we use this schema in table node
-      // inheritedfrom has value then we should disable it
-      if (!isEmptyString(state.inheritedfrom)){
-        return true;
+      if(this.isNew(state)) {
+        return false;
       }
 
       // ie: it's position is less than 1
