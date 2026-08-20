@@ -7,7 +7,10 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import codecs
 from unittest.mock import patch
+from urllib.parse import quote as url_quote
+from xml.etree import ElementTree
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
@@ -228,6 +231,393 @@ class TestDownloadCSV(BaseTestGenerator):
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 
+        database_utils.disconnect_database(self, self._sid, self._did)
+
+    def tearDown(self):
+        main_conn = test_utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
+        test_utils.drop_database(main_conn, self._db_name)
+
+
+# A control character that XML 1.0 does not allow at all (not even as a
+# character reference), a bytea value, the two non-finite floats that JSON
+# has no syntax for, and a NULL.
+AWKWARD_SQL = (
+    'SELECT E\'ctl\\x01char\' as "Ctl", '
+    '\'\\x48656c6c6f\'::bytea as "Bytes", '
+    '\'NaN\'::float8 as "NotANumber", '
+    '\'Infinity\'::float8 as "Inf", '
+    '\'-Infinity\'::float8 as "NegInf", '
+    'NULL::text as "Nothing"'
+)
+
+
+class TestDownloadResultFormats(BaseTestGenerator):
+    """
+    Validates downloading query results as JSON and XML, the UTF BOM option
+    and the output file encoding option.
+    """
+    SQL = 'SELECT 1 as "A", 2 as "B", \'x\' as "C"'
+    INIT_URL = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'
+    DOWNLOAD_URL = '/sqleditor/query_tool/download/{0}'
+
+    scenarios = [
+        (
+            'Download results as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json')
+        ),
+        (
+            'Download results as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml')
+        ),
+        (
+            'Download CSV with a UTF BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-8',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
+            # '€' (Euro sign) cannot be represented in Latin-1. The
+            # exporter's errors='replace' contract must survive the whole
+            # request/response round trip: an ASCII-only fixture would let a
+            # regression that silently drops or mis-encodes the character
+            # pass unnoticed.
+            'Download CSV with a non-UTF output encoding',
+            dict(data_format='csv', add_bom=True, encoding='latin-1',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv',
+                 sql='SELECT 1 as "A", 2 as "B", \'€\' as "C"',
+                 non_latin1_char='€')
+        ),
+        (
+            # utf-16 (without endianness) self-emits a BOM, so the result
+            # must contain exactly one BOM, not two (a hand-prepended one
+            # plus the codec's own).
+            'Download CSV as utf-16 has exactly one BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-16',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
+            # A bogus, non-existent codec must be rejected up front with a
+            # clean 400, rather than blowing up mid-stream after a 200.
+            'Download CSV with an invalid output encoding returns 400',
+            dict(data_format='csv', add_bom=False, encoding='not-a-codec',
+                 expected_status=400, expected_content_type=None,
+                 expected_extension='.csv')
+        ),
+        (
+            # RFC 6266 requires the quoted form once the name contains a
+            # space, or the client sees a truncated filename.
+            'Download with a filename containing spaces',
+            dict(data_format='csv', add_bom=False, encoding='utf-8',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv',
+                 filename_override='my query results.csv')
+        ),
+        (
+            # A name werkzeug cannot put in a latin-1 header still has to
+            # reach the client, via the RFC 5987 filename* form, rather than
+            # being thrown away.
+            'Download with a filename outside latin-1',
+            dict(data_format='csv', add_bom=False, encoding='utf-8',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv',
+                 filename_override='ohms-\u03a9.csv')
+        ),
+        (
+            # Data that the naive serialisers get wrong: a control character
+            # that XML 1.0 forbids outright, a bytea column, the non-finite
+            # floats that are not valid JSON, and a NULL.
+            'Download awkward data as JSON stays valid JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json', sql=AWKWARD_SQL,
+                 awkward_data=True)
+        ),
+        (
+            'Download awkward data as XML stays well formed',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml', sql=AWKWARD_SQL,
+                 awkward_data=True)
+        ),
+        (
+            # A genuine single-row, single-column result must be written as
+            # the bare value, not wrapped in the usual array/row structure,
+            # per #3205.
+            'Download a single-value result as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT 42 as "Value"', single_value=True)
+        ),
+        (
+            'Download a single-value result as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT 42 as "Value"', single_value=True)
+        ),
+        (
+            # A single-row, single-column NULL is still the direct-value
+            # shape, i.e. a bare JSON null / an empty element with
+            # null="true", not a row containing one null column.
+            'Download a single-value NULL result as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT NULL::text as "Value"', single_value=True,
+                 single_value_is_null=True)
+        ),
+        (
+            'Download a single-value NULL result as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT NULL::text as "Value"', single_value=True,
+                 single_value_is_null=True)
+        ),
+        (
+            # Zero rows must still come back as a (empty) document of the
+            # requested format, not the CSV-era plain-text message under an
+            # application/json or application/xml content type.
+            'Download an empty result as JSON stays valid JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT 1 as "A" WHERE false', empty_result=True)
+        ),
+        (
+            'Download an empty result as XML stays well formed',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT 1 as "A" WHERE false', empty_result=True)
+        ),
+    ]
+
+    # Set per scenario; the scenarios above override these as needed.
+    sql = None
+    awkward_data = False
+    single_value = False
+    single_value_is_null = False
+    empty_result = False
+    filename_override = None
+    non_latin1_char = None
+
+    def setUp(self):
+        self._db_name = 'download_results_fmt_' + str(
+            secrets.choice(range(10000, 65535)))
+        self._sid = self.server_information['server_id']
+        server_utils.connect_server(self, self._sid)
+        self._did = test_utils.create_database(self.server, self._db_name)
+
+    def initiate_sql_query_tool(self, trans_id, sql_query):
+        url = '/sqleditor/query_tool/start/{0}'.format(trans_id)
+        response = self.tester.post(url, data=json.dumps({"sql": sql_query}),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, 200)
+        return async_poll(tester=self.tester,
+                          poll_url='/sqleditor/poll/{0}'.format(trans_id))
+
+    def _assert_awkward_data(self, body):
+        """The output must be parseable, whatever the data contained.
+
+        A strict parser is the point here: XML 1.0 forbids most control
+        characters outright, and NaN/Infinity are not JSON tokens, so an
+        exporter that passes them straight through produces a file the
+        user's next tool refuses to open.
+        """
+        if self.data_format == 'json':
+            def reject_constant(constant):
+                # json.loads accepts NaN and Infinity by default even though
+                # they are not JSON; most other parsers do not, so treat them
+                # as the failure they are.
+                raise AssertionError(
+                    '{0} is not a JSON token'.format(constant))
+
+            parsed = json.loads(body, parse_constant=reject_constant)
+            self.assertEqual(len(parsed), 1)
+            row = parsed[0]
+            # A NULL must survive as JSON null rather than a string.
+            self.assertIsNone(row['Nothing'])
+            # NaN and Infinity have to arrive as something a parser will
+            # accept, i.e. not as bare NaN/Infinity tokens.
+            self.assertEqual(row['NotANumber'], 'NaN')
+            self.assertEqual(row['Inf'], 'Infinity')
+            self.assertEqual(row['NegInf'], '-Infinity')
+            # bytea is deliberately reported as a placeholder rather than its
+            # contents, as it is in the grid and in CSV output, but it must
+            # never leak a Python repr such as '<memory at 0x...>'.
+            self.assertNotIn('memory at', str(row['Bytes']))
+            return
+
+        root = ElementTree.fromstring(body)
+        self.assertEqual(root.tag, 'data_output')
+        columns = {c.get('name'): c for c in root.find('row')}
+        self.assertEqual(columns['Nothing'].get('null'), 'true')
+        self.assertNotIn('memory at', columns['Bytes'].text or '')
+        # The control character must not have been passed through verbatim.
+        self.assertNotIn('\x01', body)
+
+    def _assert_single_value(self, body):
+        """A genuine single-row, single-column result must be the bare
+        value, per #3205, not a one-element array / one-row document.
+        """
+        if self.data_format == 'json':
+            parsed = json.loads(body)
+            if self.single_value_is_null:
+                self.assertIsNone(parsed)
+            else:
+                self.assertEqual(parsed, 42)
+            return
+
+        root = ElementTree.fromstring(body)
+        self.assertEqual(root.tag, 'data_output')
+        # No row/column wrapper, and no column name anywhere in sight.
+        self.assertIsNone(root.find('row'))
+        self.assertIsNone(root.find('column'))
+        if self.single_value_is_null:
+            self.assertEqual(root.get('null'), 'true')
+        else:
+            self.assertEqual(root.text, '42')
+
+    def _assert_empty_result(self, body):
+        """Zero rows must still come back as an (empty) document of the
+        requested format, not the CSV-era plain-text message.
+        """
+        if self.data_format == 'json':
+            self.assertEqual(json.loads(body), [])
+            return
+
+        root = ElementTree.fromstring(body)
+        self.assertEqual(root.tag, 'data_output')
+        self.assertEqual(list(root), [])
+
+    def runTest(self):
+        db_con = database_utils.connect_database(self,
+                                                 test_utils.SERVER_GROUP,
+                                                 self._sid,
+                                                 self._did)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to the database.")
+
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
+        url = self.INIT_URL.format(
+            self.trans_id, test_utils.SERVER_GROUP, self._sid, self._did)
+        response = self.tester.post(url, data=json.dumps({
+            "dbname": self._db_name
+        }))
+        self.assertEqual(response.status_code, 200)
+
+        sql = self.sql or self.SQL
+        self.initiate_sql_query_tool(self.trans_id, sql)
+
+        url = self.DOWNLOAD_URL.format(self.trans_id)
+        self.app.logger.disabled = True
+        filename = self.filename_override or \
+            'test{0}'.format(self.expected_extension)
+        with patch('pgadmin.tools.sqleditor.blueprint.'
+                   'csv_add_bom.get', return_value=self.add_bom), \
+            patch('pgadmin.tools.sqleditor.blueprint.'
+                  'csv_output_encoding.get', return_value=self.encoding):
+            response = self.tester.post(url, data={
+                "query": sql,
+                "filename": filename,
+                "format": self.data_format,
+                "query_commited": True,
+            })
+        self.app.logger.disabled = False
+
+        headers = dict(response.headers)
+
+        # An invalid encoding must be rejected up front with a clean error
+        # status, before the streaming Response is constructed.
+        expected_status = getattr(self, 'expected_status', 200)
+        if expected_status != 200:
+            self.assertEqual(response.status_code, expected_status)
+            url = '/sqleditor/close/{0}'.format(self.trans_id)
+            response = self.tester.delete(url)
+            self.assertEqual(response.status_code, 200)
+            database_utils.disconnect_database(self, self._sid, self._did)
+            return
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.expected_content_type, headers['Content-Type'])
+        self.assertIn('charset={0}'.format(self.encoding),
+                      headers['Content-Type'])
+        disposition = headers['Content-Disposition']
+        try:
+            filename.encode('latin-1', 'strict')
+        except UnicodeEncodeError:
+            # The stand-in must follow the format, and the real name must
+            # still be there in percent-encoded form.
+            self.assertIn('filename="download{0}"'.format(
+                self.expected_extension), disposition)
+            self.assertIn("filename*=UTF-8''", disposition)
+            self.assertIn(url_quote(filename, safe=''), disposition)
+        else:
+            self.assertIn('filename="{0}"'.format(filename), disposition)
+
+        raw = response.data
+        normalized = self.encoding.lower().replace('-', '').replace('_', '')
+        if self.add_bom and normalized.startswith('utf'):
+            # The output must carry exactly one BOM for the encoding, never
+            # two (which happened when a BOM was hand-prepended for codecs
+            # that already self-emit one, e.g. utf-16/utf-32).
+            bom = {
+                'utf8': codecs.BOM_UTF8,
+                'utf16': codecs.BOM_UTF16,
+                'utf32': codecs.BOM_UTF32,
+            }[normalized]
+            self.assertTrue(raw.startswith(bom))
+            # No second, redundant BOM immediately after the first.
+            self.assertFalse(raw[len(bom):].startswith(bom))
+        else:
+            self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
+
+        body = raw.decode(self.encoding)
+
+        if self.awkward_data:
+            self._assert_awkward_data(body)
+        elif self.single_value:
+            self._assert_single_value(body)
+        elif self.empty_result:
+            self._assert_empty_result(body)
+        elif self.data_format == 'json':
+            parsed = json.loads(body)
+            self.assertIsInstance(parsed, list)
+            self.assertEqual(parsed[0]['A'], 1)
+            self.assertEqual(parsed[0]['B'], 2)
+            self.assertEqual(parsed[0]['C'], 'x')
+        elif self.data_format == 'xml':
+            self.assertIn('<data_output>', body)
+            self.assertIn('<column name="A">1</column>', body)
+            self.assertIn('<column name="C">x</column>', body)
+            self.assertIn('</data_output>', body)
+        else:
+            self.assertIn('"A","B","C"', body)
+            if self.non_latin1_char:
+                # errors='replace' must turn the character Latin-1 cannot
+                # encode into the codec's standard replacement rather than
+                # silently dropping it or corrupting the row.
+                self.assertNotIn(self.non_latin1_char, body)
+                self.assertIn('?', body)
+
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
+        response = self.tester.delete(url)
+        self.assertEqual(response.status_code, 200)
         database_utils.disconnect_database(self, self._sid, self._did)
 
     def tearDown(self):
