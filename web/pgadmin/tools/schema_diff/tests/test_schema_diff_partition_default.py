@@ -22,6 +22,10 @@ done:
 * If the source table genuinely has a default partition, only one DEFAULT
   partition may exist on the temporary table (Postgres allows a single
   one), and it must be the real one, not the scaffolding one.
+* If the target table already holds rows that fall outside every one of
+  the rebuilt partitions' bounds (so they land in the scaffolding DEFAULT
+  partition during the copy), those rows must not be silently discarded
+  when the scaffolding partition would otherwise be dropped.
 """
 
 import json
@@ -54,6 +58,13 @@ CREATE TABLE {0}.part_with_default_p1 PARTITION OF {0}.part_with_default
     FOR VALUES FROM (1) TO (10);
 CREATE TABLE {0}.part_with_default_def PARTITION OF {0}.part_with_default
     DEFAULT;
+
+CREATE TABLE {0}.part_stray_rows (
+    col1 integer NOT NULL
+) PARTITION BY RANGE (col1);
+
+CREATE TABLE {0}.part_stray_rows_p1 PARTITION OF {0}.part_stray_rows
+    FOR VALUES FROM (1) TO (10);
 """
 
 # The target starts out with different partition bounds so that Schema Diff
@@ -70,6 +81,8 @@ CREATE TABLE {0}.part_no_default (
 CREATE TABLE {0}.part_no_default_p1 PARTITION OF {0}.part_no_default
     FOR VALUES FROM (1) TO (5);
 
+INSERT INTO {0}.part_no_default_p1 VALUES (2), (3);
+
 CREATE TABLE {0}.part_with_default (
     col1 integer NOT NULL
 ) PARTITION BY RANGE (col1);
@@ -78,6 +91,29 @@ CREATE TABLE {0}.part_with_default_p1 PARTITION OF {0}.part_with_default
     FOR VALUES FROM (1) TO (5);
 CREATE TABLE {0}.part_with_default_def PARTITION OF {0}.part_with_default
     DEFAULT;
+
+-- col1=2 fits the regular partition both before and after the rebuild;
+-- col1=50 fits neither the old nor the new bounds of the regular
+-- partition, so it must land (and stay) in the genuine DEFAULT partition
+-- across the rebuild.
+INSERT INTO {0}.part_with_default VALUES (2), (50);
+
+CREATE TABLE {0}.part_stray_rows (
+    col1 integer NOT NULL
+) PARTITION BY RANGE (col1);
+
+CREATE TABLE {0}.part_stray_rows_p1 PARTITION OF {0}.part_stray_rows
+    FOR VALUES FROM (1) TO (5);
+CREATE TABLE {0}.part_stray_rows_def PARTITION OF {0}.part_stray_rows
+    DEFAULT;
+
+-- col1=2 fits the rebuilt regular partition's new bounds; col1=500 fits
+-- neither the old nor the new bounds of any regular partition, so it is
+-- only reachable via a DEFAULT partition. The source table has no
+-- DEFAULT partition of its own, so this row can only survive the
+-- rebuild if the scaffolding DEFAULT partition is kept instead of being
+-- unconditionally dropped once it holds data.
+INSERT INTO {0}.part_stray_rows VALUES (2), (500);
 """
 
 
@@ -159,6 +195,14 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
             "AND p.relnamespace = '{1}'::regnamespace "
             "AND pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT'".format(
                 table_name, SCHEMA_NAME))
+
+    def count_rows(self, db_name, table_name):
+        """
+        Count how many rows the given table holds in the given database.
+        """
+        return self.fetch_scalar(
+            db_name,
+            "SELECT count(*) FROM {0}.{1}".format(SCHEMA_NAME, table_name))
 
     def count_partitions(self, db_name, table_name):
         """
@@ -252,6 +296,12 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
             '{0}'.format(diff_ddl))
         self.assertEqual(
             self.count_partitions(self.tar_database, 'part_no_default'), 2)
+        # The rows that were copied via the scaffolding default partition
+        # must still be there once it is dropped.
+        self.assertEqual(
+            self.count_rows(self.tar_database, 'part_no_default'), 2,
+            'Schema Diff lost rows while rebuilding a table whose source '
+            'has no default partition: {0}'.format(diff_ddl))
 
         # --- Source has a genuine default partition. ---
         with_default = self.find_object(response_data, 'table',
@@ -271,8 +321,48 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.assertEqual(
             self.count_partitions(self.tar_database, 'part_with_default'),
             2)
+        # The row that fits the regular partition and the row that only
+        # ever fit the DEFAULT partition must both survive the rebuild.
+        self.assertEqual(
+            self.count_rows(self.tar_database, 'part_with_default'), 2,
+            'Schema Diff lost rows while rebuilding a table whose source '
+            'has a genuine default partition: {0}'.format(diff_ddl))
 
-        # Re-comparing must now report both tables as identical.
+        # --- Target has rows outside every rebuilt partition's bounds. ---
+        # The source table has no default partition of its own, so a
+        # scaffolding one is created purely to let the row-copy INSERT
+        # succeed. col1=500 in the target doesn't fit any real partition
+        # in the rebuilt scheme, so it can only be copied via that
+        # scaffolding partition; it must not be lost when the scaffolding
+        # partition is cleaned up.
+        stray_rows = self.find_object(response_data, 'table',
+                                      'part_stray_rows')
+        self.assertEqual(stray_rows['status'], 'Different')
+        diff_ddl = stray_rows['diff_ddl']
+
+        self.execute_sql(self.tar_database, diff_ddl)
+        self.assertEqual(
+            self.count_rows(self.tar_database, 'part_stray_rows'), 2,
+            'Schema Diff silently dropped a row that fell outside every '
+            'rebuilt partition\'s bounds: {0}'.format(diff_ddl))
+        self.assertEqual(
+            self.fetch_scalar(
+                self.tar_database,
+                "SELECT count(*) FROM {0}.part_stray_rows "
+                "WHERE col1 = 500".format(SCHEMA_NAME)), 1,
+            'Schema Diff dropped the out-of-bounds row instead of routing '
+            'it to a durable partition: {0}'.format(diff_ddl))
+        self.assertEqual(
+            self.count_default_partitions(self.tar_database,
+                                          'part_stray_rows'), 1,
+            'Schema Diff dropped the scaffolding default partition even '
+            'though it still held an out-of-bounds row: {0}'.format(
+                diff_ddl))
+        self.assertEqual(
+            self.count_partitions(self.tar_database, 'part_stray_rows'), 2)
+
+        # Re-comparing must now report both bounds-only tables as
+        # identical.
         response_data = self.compare()
         self.assertEqual(
             self.find_object(response_data, 'table',
@@ -280,6 +370,13 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.assertEqual(
             self.find_object(response_data, 'table',
                              'part_with_default')['status'], 'Identical')
+        # part_stray_rows legitimately still differs from its source: the
+        # target kept a default partition (holding the recovered
+        # out-of-bounds row) that the source doesn't have. Preserving the
+        # data takes priority over reporting a false "Identical".
+        self.assertEqual(
+            self.find_object(response_data, 'table',
+                             'part_stray_rows')['status'], 'Different')
 
     def tearDown(self):
         """This function drops the added databases"""

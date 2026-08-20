@@ -514,9 +514,12 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
 
         # For PG/EPAS 11 and above when we copy the data from original
         # table to temporary table for schema diff, we will have to create
-        # a default partition to prevent the data loss.
+        # a default partition to prevent the data loss. Derive its name
+        # from the already-randomised temporary table name (rather than
+        # the original table's name) so it cannot collide with an
+        # existing relation.
         target_data['default_partition_name'] = \
-            target_data['orig_name'] + '_default'
+            target_data['name'] + '_default'
 
         # Copy the partition scheme from source to target.
         if 'partition_scheme' in source_data:
