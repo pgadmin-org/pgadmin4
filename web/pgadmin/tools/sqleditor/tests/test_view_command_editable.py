@@ -206,6 +206,7 @@ class TestViewCommandEditable(BaseTestGenerator):
     ]
 
     def setUp(self):
+        self.trans_id = None
         self._initialize_database_connection()
 
     def runTest(self):
@@ -226,7 +227,8 @@ class TestViewCommandEditable(BaseTestGenerator):
                 self._save_through_view()
                 self._check_base_table_updated()
         finally:
-            self._close_query_tool()
+            if self.trans_id is not None:
+                self._close_query_tool()
 
     def tearDown(self):
         self._drop_test_objects()
