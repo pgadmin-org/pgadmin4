@@ -30,6 +30,8 @@ import config
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User, SharedServer
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.driver.psycopg3 import shared_server_passexec
+from pgadmin.utils.passexec import PasswordExec
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -957,10 +959,26 @@ class ServerNode(PGChildNodeView):
         # which will affect the connections.
         if not conn.connected():
             manager.update(server)
-            # Suppress passexec for non-owners so the manager
-            # never holds the owner's password-exec command.
+            # manager.update() rebuilds the manager from the server
+            # object alone, dropping any passexec. Recompute it so a
+            # non-owner's own SharedServer.passexec_cmd survives, while
+            # still never inheriting the owner's.
             if _is_non_owner(server):
-                manager.passexec = None
+                manager.passexec = shared_server_passexec(server)
+        elif 'passexec_cmd' in data or 'passexec_expiration' in data:
+            # manager.update() is skipped while connected, but a
+            # changed passexec_cmd/passexec_expiration is still
+            # committed above. manager.passexec is read lazily on
+            # the next reconnect (Connection.__attempt_execution_
+            # reconnect), so refresh it now or a mid-session
+            # reconnect would keep using the pre-change command.
+            if _is_non_owner(server):
+                manager.passexec = shared_server_passexec(server)
+            else:
+                manager.passexec = PasswordExec(
+                    server.passexec_cmd, server.host, server.port,
+                    server.username, server.passexec_expiration) \
+                    if server.passexec_cmd else None
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -1007,10 +1025,14 @@ class ServerNode(PGChildNodeView):
             raise CryptKeyMissing
 
         # Fields that non-owners must never set on their
-        # SharedServer — they enable command/SQL execution
-        # or are owner-level concepts not on SharedServer.
+        # SharedServer — owner-level concepts not on SharedServer.
+        # passexec_cmd/passexec_expiration are deliberately NOT
+        # here: a non-owner may set their own, which only ever runs
+        # in their own request context (see shared_server_passexec
+        # in pgadmin.utils.driver.psycopg3). Only inheriting the
+        # *owner's* passexec_cmd is blocked, and that is enforced in
+        # connection_manager(), not here.
         _owner_only_fields = frozenset({
-            'passexec_cmd', 'passexec_expiration',
             'db_res', 'db_res_type',
         })
 
@@ -1628,12 +1650,14 @@ class ServerNode(PGChildNodeView):
         # the API call is not made from SQL Editor or View/Edit Data tool
         if not manager.connection().connected() and not is_qt:
             manager.update(server)
-            # Re-suppress passexec after update() which rebuilds
-            # from the (overlaid) server object.  Belt-and-suspenders:
-            # the overlay already defaults passexec to None, but this
-            # guards against direct DB edits.
+            # manager.update() rebuilds the manager from the (overlaid)
+            # server object alone, dropping any passexec. Recompute it
+            # so a non-owner's own SharedServer.passexec_cmd survives,
+            # while still never inheriting the owner's. server.id is
+            # preserved through the overlay, so this still resolves
+            # against the right SharedServer row.
             if _is_non_owner(server):
-                manager.passexec = None
+                manager.passexec = shared_server_passexec(server)
         conn = manager.connection()
 
         # Get enc key
