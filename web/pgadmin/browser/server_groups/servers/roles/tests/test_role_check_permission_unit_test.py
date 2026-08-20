@@ -60,3 +60,57 @@ class RoleCheckPermissionTest(BaseTestGenerator):
 
     def tearDown(self):
         pass
+
+
+class RoleMembersOnlyUpdateRequestKeysTest(BaseTestGenerator):
+    """Regression test for the membership-only update guard.
+
+    _validate_rolemembers() mutates the request dict in place, adding
+    derived keys ('rol_members_list', 'rol_members_revoked_list') that
+    the client never sent. The membership-only update guard in
+    RoleView.update() must check the client-supplied keys captured
+    before that mutation (self.request_keys), not the mutated dict,
+    otherwise a valid ADMIN OPTION request containing only 'rolmembers'
+    would be wrongly rejected as forbidden.
+    """
+    scenarios = [
+        ('Check Role Node', dict(url='/browser/role/obj/'))
+    ]
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        view = RoleView(cmd=None)
+        view.manager = MagicMock()
+        view.manager.version = 170000
+
+        data = {
+            'rolmembers': {
+                'added': [
+                    {'role': 'member_role', 'admin': True,
+                     'inherit': True, 'set': True}
+                ],
+                'changed': [],
+                'deleted': []
+            }
+        }
+
+        # Mirror what validate_request() does: capture the client
+        # supplied keys before running the validators.
+        request_keys = set(data)
+
+        # This mutates 'data' in place, adding derived keys.
+        self.assertIsNone(view._validate_rolemembers(10, data))
+        self.assertIn('rol_members_list', data)
+
+        # The mutated dict is no longer a subset of {'rolmembers'} ...
+        self.assertFalse(set(data) <= {'rolmembers'})
+
+        # ... but the keys captured before mutation still are, so the
+        # membership-only guard (which must use request_keys) allows
+        # the request through instead of returning 403.
+        self.assertTrue(request_keys <= {'rolmembers'})
+
+    def tearDown(self):
+        pass
