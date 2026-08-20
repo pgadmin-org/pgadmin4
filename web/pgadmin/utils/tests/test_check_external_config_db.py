@@ -24,6 +24,7 @@ arrangement is ever broken.
 
 import os
 import sys
+from urllib.parse import quote
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -54,9 +55,25 @@ class CheckExternalConfigDBTestCase(BaseTestGenerator):
         self.db_name = self.server['db']
 
     def _uri(self):
+        username = quote(str(self.server['username']), safe='')
+        password = quote(str(self.server['db_password']), safe='')
+        host = self.server['host']
+        port = self.server['port']
+
+        # A Unix domain socket directory (as used on the Linux/macOS test
+        # runners) can't be embedded in the URI's authority component: a
+        # "/" there is parsed as the start of the path, not part of the
+        # host, leaving the host/port undetermined and the database name
+        # mangled. libpq's URI form for that case instead leaves the
+        # authority's host empty and passes the socket directory as the
+        # "host" query parameter.
+        if '/' in str(host):
+            return 'postgresql://{0}:{1}@/{2}?host={3}&port={4}'.format(
+                username, password, self.db_name,
+                quote(str(host), safe=''), port)
+
         return 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-            self.server['username'], self.server['db_password'],
-            self.server['host'], self.server['port'], self.db_name)
+            username, password, host, port, self.db_name)
 
     def _connect(self):
         return utils.get_db_connection(self.db_name,
@@ -88,9 +105,12 @@ class CheckExternalConfigDBTestCase(BaseTestGenerator):
             utils.set_isolation_level(connection, 0)
             cursor = connection.cursor()
             cursor.execute('CREATE TABLE public.server (id serial)')
+            # Recorded as soon as the table exists, before the isolation
+            # level restore and commit below, so tearDown still drops it
+            # if either of those later steps were to fail.
+            self.created_table = True
             utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
-            self.created_table = True
         finally:
             connection.close()
 
@@ -104,7 +124,7 @@ class CheckExternalConfigDBTestCase(BaseTestGenerator):
             old_isolation_level = connection.isolation_level
             utils.set_isolation_level(connection, 0)
             cursor = connection.cursor()
-            cursor.execute('DROP TABLE public.server')
+            cursor.execute('DROP TABLE IF EXISTS public.server')
             utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
         finally:
