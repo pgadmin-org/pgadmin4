@@ -606,6 +606,29 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              url=MAINTENANCE_URL,
              expected_cmd_opts=['REINDEX (VERBOSE) SCHEMA my_schema;\n'],
          )),
+        ('When maintenance the object with the REINDEX CONCURRENTLY SCHEMA',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 op='REINDEX',
+                 reindex_concurrently=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE) SCHEMA CONCURRENTLY '
+                                'my_schema;\n'],
+             server_min_version=120000,
+             message='REINDEX CONCURRENTLY SCHEMA is not supported by '
+                     'EPAS/PG server less than 12.0'
+         )),
         ('When maintenance the object with the REINDEX TABLE',
          dict(
              class_params=dict(
