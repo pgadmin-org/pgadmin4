@@ -299,8 +299,19 @@ def parse_nextval_sequence(defval):
     Extract the schema-qualified sequence name out of a ``nextval(...)``
     column default expression, e.g. ``nextval('public.t_id_seq'::regclass)``
     yields ``public.t_id_seq``. The identifier is returned exactly as
-    PostgreSQL rendered it (already quoted if it needs to be), so callers
-    should use it verbatim rather than re-quoting it.
+    PostgreSQL would render it as a bare identifier (already quoted if it
+    needs to be), so callers should use it verbatim rather than
+    re-quoting it.
+
+    PostgreSQL renders the argument to ``::regclass`` as a string literal,
+    so any single quote that is part of the identifier itself (e.g. a
+    sequence named ``id'seq``, which the server prints as the
+    double-quoted identifier ``"id'seq"``) is doubled per standard SQL
+    string-literal escaping: ``nextval('public."id''seq"'::regclass)``.
+    That doubling has to be undone before the extracted text is usable
+    outside of a string literal, i.e. spliced directly into
+    ``CREATE SEQUENCE``/``ALTER SEQUENCE`` DDL, or the doubled quote would
+    be read back as two literal characters instead of one (#10318).
 
     :param defval: A column's default value expression, or None
     :return: The schema-qualified sequence name, or None if it is not a
@@ -310,7 +321,7 @@ def parse_nextval_sequence(defval):
         return None
 
     match = re.match(r"nextval\('(.+)'::regclass\)$", defval)
-    return match.group(1) if match else None
+    return match.group(1).replace("''", "'") if match else None
 
 
 @get_template_path
