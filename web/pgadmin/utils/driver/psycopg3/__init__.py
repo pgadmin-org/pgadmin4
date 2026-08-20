@@ -91,12 +91,67 @@ class Driver(BaseDriver):
                             server.user_id != current_user.id:
                         manager.passexec = None
                     if server.id in session_managers:
-                        manager._restore(
-                            session_managers[server.id])
-                        manager.update_session()
+                        saved = session_managers[server.id]
+                        if self._saved_state_is_stale(saved, server):
+                            # The persisted blob was serialized under
+                            # this numeric id by whatever Server row
+                            # held it before (e.g. the configuration
+                            # database was reset or restored without
+                            # restarting pgAdmin), so it no longer
+                            # describes this row. Restoring it would
+                            # hand the new row the previous row's
+                            # password/connection state. Drop it and
+                            # let the manager start clean.
+                            manager.update_session()
+                        else:
+                            manager._restore(saved)
+                            manager.update_session()
             return managers
 
         return {}
+
+    @staticmethod
+    def _saved_state_is_stale(saved, server_data):
+        """
+        Same identity check as _manager_is_stale, applied to the
+        serialized ServerManager state carried across worker
+        restarts/new sessions in the Flask session
+        ('__pgsql_server_managers'), before it is restored onto a
+        manager that was just built fresh from the current Server row.
+        Without this, a reused server id would have its old serialized
+        password/connections restored onto the new row on the very
+        first request, before any manager exists to run
+        _manager_is_stale against.
+        """
+        return (
+            saved.get('host') != server_data.host or
+            saved.get('port') != server_data.port or
+            saved.get('db') != server_data.maintenance_db or
+            saved.get('user') != server_data.username or
+            saved.get('service') != server_data.service or
+            saved.get('tunnel_host') != server_data.tunnel_host
+        )
+
+    @staticmethod
+    def _manager_is_stale(manager, server_data):
+        """
+        A cached manager is normally kept in sync with edits to its
+        Server row via explicit manager.update() calls from the
+        server-edit endpoints. It can still go stale in place if the
+        row itself was swapped out from under it, e.g. a numeric
+        server id reused by an unrelated row after the configuration
+        database was reset or restored without restarting pgAdmin, so
+        compare against what actually identifies the target rather
+        than trusting the id match alone.
+        """
+        return (
+            manager.host != server_data.host or
+            manager.port != server_data.port or
+            manager.db != server_data.maintenance_db or
+            manager.user != server_data.username or
+            manager.service != server_data.service or
+            manager.tunnel_host != server_data.tunnel_host
+        )
 
     def connection_manager(self, sid=None):
         """
@@ -144,8 +199,32 @@ class Driver(BaseDriver):
             if str(sid) in managers:
                 manager = managers[str(sid)]
                 with connection_restore_lock:
-                    manager._restore_connections()
-                    manager.update_session()
+                    if self._manager_is_stale(manager, server_data):
+                        # The id has been reused by an unrelated Server
+                        # row (e.g. the configuration database was reset
+                        # or restored without restarting pgAdmin), so the
+                        # cached manager still points at whatever server
+                        # it was originally built from. Drop it rather
+                        # than report a live connection to a server that,
+                        # from this row's perspective, was never opened.
+                        manager.release()
+                        manager.update(server_data)
+                    else:
+                        manager._restore_connections()
+                        manager.update_session()
+                        # Identity (host/port/db/user/service/tunnel)
+                        # still matches, so the live connection is kept,
+                        # but access-control-relevant metadata such as
+                        # shared/ownership is not part of that identity
+                        # check and manager.update() was skipped above -
+                        # refresh it here too, otherwise a row whose
+                        # sharing/ownership changed via the same reused-id
+                        # path could keep serving the previous owner's
+                        # passexec to a new, non-owning user.
+                        manager.shared = server_data.shared
+                    if config.SERVER_MODE and server_data.shared and \
+                            server_data.user_id != current_user.id:
+                        manager.passexec = None
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
