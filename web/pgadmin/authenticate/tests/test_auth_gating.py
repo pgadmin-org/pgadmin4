@@ -56,8 +56,19 @@ class AuthSourceGatingTestCase(BaseTestGenerator):
         """Empty the registry and drop the external provider modules, so that
         load_modules() is observed importing them (or not) from scratch.
         """
-        for module in EXTERNAL_MODULES:
+        import pgadmin.authenticate as auth_package
+
+        for source, module in zip(EXTERNAL_SOURCES, EXTERNAL_MODULES):
             sys.modules.pop(module, None)
+            # Clearing sys.modules alone is not enough. load_modules() reaches
+            # these with "from . import <provider>", which finds the attribute
+            # already set on the parent package by whichever earlier test
+            # imported it, and so returns the previous module object without
+            # re-executing it. The provider then never re-registers itself and
+            # the registry looks empty for that one alone. Dropping the
+            # attribute as well forces the real import.
+            if hasattr(auth_package, source):
+                delattr(auth_package, source)
 
         AuthSourceRegistry._registry = dict()
         AuthSourceRegistry._objects = dict()
