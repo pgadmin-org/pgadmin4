@@ -732,7 +732,11 @@ class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
     def _call_update(
             self, server, data, connected, manager, sharedserver=None):
         """Invoke the undecorated ServerNode.update(gid, sid) with
-        collaborators mocked, and return the manager it acted on."""
+        collaborators mocked. Returns (manager, result) -- callers
+        must assert on result too, so a test can't pass vacuously
+        by way of update() returning early (e.g. its "no parameters
+        were changed" guard) before ever reaching the code under
+        test."""
         from pgadmin.browser.server_groups.servers import ServerNode
 
         driver = MagicMock()
@@ -760,9 +764,9 @@ class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
                     ServerModule, 'get_shared_server',
                     return_value=sharedserver):
             raw_update = inspect.unwrap(ServerNode.update)
-            raw_update(node, 1, 1)
+            result = raw_update(node, 1, 1)
 
-        return manager
+        return manager, result
 
     @patch(DRIVER_MODULE + '.current_user')
     @patch(DRIVER_MODULE + '.SharedServer')
@@ -778,9 +782,10 @@ class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
         data = {'passexec_cmd': '/usr/bin/new-owner-cmd',
                 'passexec_expiration': 90}
 
-        manager = self._call_update(
+        manager, result = self._call_update(
             server, data, connected=True, manager=manager)
 
+        self.assertIn('node', result)
         self.assertIsNotNone(manager.passexec)
         self.assertEqual(manager.passexec.cmd, '/usr/bin/new-owner-cmd')
         self.assertEqual(manager.passexec.expiration_seconds, 90)
@@ -805,10 +810,11 @@ class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
         data = {'passexec_cmd': '/usr/bin/my-own-cmd',
                 'passexec_expiration': 60}
 
-        manager = self._call_update(
+        manager, result = self._call_update(
             server, data, connected=True, manager=manager,
             sharedserver=ss)
 
+        self.assertIn('node', result)
         self.assertEqual(ss.passexec_cmd, '/usr/bin/my-own-cmd')
         self.assertIsNotNone(manager.passexec)
         self.assertEqual(manager.passexec.cmd, '/usr/bin/my-own-cmd')
@@ -827,9 +833,10 @@ class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
         sentinel = manager.passexec  # whatever the manager already has
         data = {'name': 'NewName'}
 
-        manager = self._call_update(
+        manager, result = self._call_update(
             server, data, connected=True, manager=manager)
 
+        self.assertIn('node', result)
         # No passexec field changed -- manager.passexec must be left
         # exactly as it was, not recomputed or cleared.
         self.assertIs(manager.passexec, sentinel)
