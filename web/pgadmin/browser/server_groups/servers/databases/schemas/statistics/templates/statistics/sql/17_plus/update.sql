@@ -20,7 +20,7 @@ ALTER STATISTICS {{ conn|qtIdent(data.schema if data.schema else o_data.schema, 
 {### Set statistics target (PostgreSQL 17+ supports DEFAULT) ###}
 {% if data.stattarget is defined and data.stattarget != o_data.stattarget %}
 ALTER STATISTICS {{ conn|qtIdent(data.schema if data.schema else o_data.schema, data.name if data.name else o_data.name) }}
-    SET STATISTICS {% if data.stattarget == -1 or data.stattarget == 'DEFAULT' %}DEFAULT{% else %}{{ data.stattarget }}{% endif %};
+    SET STATISTICS {% if data.stattarget == -1 or data.stattarget == 'DEFAULT' %}DEFAULT{% else %}{{ data.stattarget|int }}{% endif %};
 
 {% endif %}
 {### Update comment ###}
