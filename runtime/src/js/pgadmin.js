@@ -509,7 +509,11 @@ function rememberVisitedDirectory(options, result) {
   try {
     configStore.set('lastVisitedDirectory', isDirectory ? chosenPath : path.dirname(chosenPath));
   } catch (error) {
-    misc.writeServerLog(`Error remembering last visited directory: ${error}`);
+    try {
+      misc.writeServerLog(`Error remembering last visited directory: ${error}`);
+    } catch (logError) {
+      console.error('Error remembering last visited directory:', error, logError);
+    }
   }
 }
 
