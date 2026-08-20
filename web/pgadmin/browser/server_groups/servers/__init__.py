@@ -31,6 +31,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User, SharedServer
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.driver.psycopg3 import shared_server_passexec
+from pgadmin.utils.passexec import PasswordExec
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -964,6 +965,20 @@ class ServerNode(PGChildNodeView):
             # still never inheriting the owner's.
             if _is_non_owner(server):
                 manager.passexec = shared_server_passexec(server)
+        elif 'passexec_cmd' in data or 'passexec_expiration' in data:
+            # manager.update() is skipped while connected, but a
+            # changed passexec_cmd/passexec_expiration is still
+            # committed above. manager.passexec is read lazily on
+            # the next reconnect (Connection.__attempt_execution_
+            # reconnect), so refresh it now or a mid-session
+            # reconnect would keep using the pre-change command.
+            if _is_non_owner(server):
+                manager.passexec = shared_server_passexec(server)
+            else:
+                manager.passexec = PasswordExec(
+                    server.passexec_cmd, server.host, server.port,
+                    server.username, server.passexec_expiration) \
+                    if server.passexec_cmd else None
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
