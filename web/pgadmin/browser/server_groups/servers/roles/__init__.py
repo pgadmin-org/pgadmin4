@@ -567,6 +567,13 @@ rolmembership:{
                     except ValueError:
                         data[k] = v
 
+            # Capture the client-supplied keys before the validators below
+            # mutate 'data' (e.g. _validate_rolemembers adds derived keys
+            # such as 'rol_members_list'), so callers that need to know what
+            # the client actually sent (e.g. the membership-only update
+            # check) can rely on this instead of the mutated dict.
+            self.request_keys = set(data)
+
             invalid_msg_arr = [
                 self._validate_rolname(kwargs.get('rid', -1), data),
                 self._validate_rolvaliduntil(data),
@@ -1039,7 +1046,7 @@ rolmembership:{
     @validate_request
     def update(self, gid, sid, rid):
         if getattr(self, 'membership_only_update', False) and \
-                not set(self.request) <= {'rolmembers'}:
+                not self.request_keys <= {'rolmembers'}:
             return forbidden(
                 _("The current user does not have permission to update "
                   "the role. Users with ADMIN OPTION on this role may "
