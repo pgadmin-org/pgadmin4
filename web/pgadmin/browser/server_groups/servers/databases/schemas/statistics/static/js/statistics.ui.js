@@ -164,7 +164,10 @@ export default class StatisticsSchema extends BaseUISchema {
           {label: gettext('Dependencies'), value: 'dependencies'},
           {label: gettext('MCV (Most Common Values)'), value: 'mcv'},
         ],
-        noEmpty: true,
+        // Required only for column-based statistics: PostgreSQL's univariate
+        // expression form (a single expression, no columns) does not accept
+        // a statistics-kind clause at all. Enforced conditionally in
+        // validate() below rather than here, since noEmpty can't see state.
         helpMessage: gettext('Select one or more statistics types to collect'),
       },
       {
@@ -193,8 +196,8 @@ export default class StatisticsSchema extends BaseUISchema {
         readonly: true,
         disabled: true,
         group: gettext('Computed Statistics'),
-        // The computed values live in pg_statistic_ext_data, which only a
-        // superuser may read; hide them rather than showing them as empty.
+        // The computed values live in pg_statistic_ext_data, which is not
+        // publicly readable; hide them rather than showing them as empty.
         visible: (state)=>state.has_ext_data_access,
         helpMessage: gettext('N-distinct coefficients computed by ANALYZE'),
       },
@@ -272,8 +275,11 @@ export default class StatisticsSchema extends BaseUISchema {
       }
     }
 
-    // Validate at least one stat type
-    if (state.stat_types && state.stat_types.length === 0 && !state.oid) {
+    // Validate at least one stat type, unless this is the expression-only
+    // form. PostgreSQL's univariate expression statistics (a single
+    // expression, no columns) do not accept a statistics-kind clause at
+    // all, so only require one when columns are involved.
+    if (hasColumns && state.stat_types && state.stat_types.length === 0 && !state.oid) {
       setError('stat_types', gettext('At least one statistics type must be selected.'));
       errors = true;
     } else {

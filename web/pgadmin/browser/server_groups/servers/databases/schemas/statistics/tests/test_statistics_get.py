@@ -132,26 +132,30 @@ class StatisticsGetTestCase(BaseTestGenerator):
         else:
             if 'statistics_id' in self.data:
                 self.statistics_id = self.data["statistics_id"]
-            get_call = (
-                statistics_utils.api_get(self, '')
-                if self.is_list else statistics_utils.api_get(self)
-            )
+
+            def get_call():
+                if self.is_list:
+                    return statistics_utils.api_get(self, '')
+                return statistics_utils.api_get(self)
+
             if self.mocking_required:
                 with patch(
                     self.mock_data["function_name"],
                     side_effect=[eval(self.mock_data["return_value"])]
                 ):
-                    response = (
-                        statistics_utils.api_get(self, '')
-                        if self.is_list else statistics_utils.api_get(self)
-                    )
+                    response = get_call()
             else:
-                response = get_call
+                response = get_call()
 
             # Assert response
             utils.assert_status_code(self, response)
             utils.assert_error_message(self, response)
 
     def tearDown(self):
+        # Dropping the table takes the statistics objects defined on it with
+        # it, whatever the server named them.
+        statistics_utils.drop_table_for_statistics(
+            self.server, self.db_name, self.schema_name, self.table_name
+        )
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

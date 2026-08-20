@@ -107,10 +107,19 @@ describe('StatisticsSchema', () => {
     state.expression_list = 'coalesce(col1, col2)';
     expect(schemaObj.validate(state, setError)).toBe(false);
 
-    // At least one statistics type is needed.
+    // At least one statistics type is needed when columns are involved.
+    state.columns = ['col1', 'col2'];
+    state.expression_list = null;
     state.stat_types = [];
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith(
       'stat_types', 'At least one statistics type must be selected.');
+
+    // But not for the expression-only form: PostgreSQL's univariate
+    // expression statistics don't accept a statistics-kind clause at all.
+    state.columns = [];
+    state.expression_list = 'coalesce(col1, col2)';
+    state.stat_types = [];
+    expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });

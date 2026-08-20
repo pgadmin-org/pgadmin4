@@ -258,4 +258,7 @@ class SchemaDiffStatisticsTestCase(BaseSocketTestGenerator):
                                                  self.server['host'],
                                                  self.server['port'],
                                                  self.server['sslmode'])
-            utils.drop_database(connection, db_name)
+            try:
+                utils.drop_database(connection, db_name)
+            finally:
+                connection.close()
