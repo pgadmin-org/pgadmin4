@@ -287,10 +287,17 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_extension='.csv')
         ),
         (
+            # '€' (Euro sign) cannot be represented in Latin-1. The
+            # exporter's errors='replace' contract must survive the whole
+            # request/response round trip: an ASCII-only fixture would let a
+            # regression that silently drops or mis-encodes the character
+            # pass unnoticed.
             'Download CSV with a non-UTF output encoding',
             dict(data_format='csv', add_bom=True, encoding='latin-1',
                  expected_content_type='text/csv',
-                 expected_extension='.csv')
+                 expected_extension='.csv',
+                 sql='SELECT 1 as "A", 2 as "B", \'€\' as "C"',
+                 non_latin1_char='€')
         ),
         (
             # utf-16 (without endianness) self-emits a BOM, so the result
@@ -345,12 +352,69 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_extension='.xml', sql=AWKWARD_SQL,
                  awkward_data=True)
         ),
+        (
+            # A genuine single-row, single-column result must be written as
+            # the bare value, not wrapped in the usual array/row structure,
+            # per #3205.
+            'Download a single-value result as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT 42 as "Value"', single_value=True)
+        ),
+        (
+            'Download a single-value result as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT 42 as "Value"', single_value=True)
+        ),
+        (
+            # A single-row, single-column NULL is still the direct-value
+            # shape, i.e. a bare JSON null / an empty element with
+            # null="true", not a row containing one null column.
+            'Download a single-value NULL result as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT NULL::text as "Value"', single_value=True,
+                 single_value_is_null=True)
+        ),
+        (
+            'Download a single-value NULL result as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT NULL::text as "Value"', single_value=True,
+                 single_value_is_null=True)
+        ),
+        (
+            # Zero rows must still come back as a (empty) document of the
+            # requested format, not the CSV-era plain-text message under an
+            # application/json or application/xml content type.
+            'Download an empty result as JSON stays valid JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT 1 as "A" WHERE false', empty_result=True)
+        ),
+        (
+            'Download an empty result as XML stays well formed',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT 1 as "A" WHERE false', empty_result=True)
+        ),
     ]
 
     # Set per scenario; the scenarios above override these as needed.
     sql = None
     awkward_data = False
+    single_value = False
+    single_value_is_null = False
+    empty_result = False
     filename_override = None
+    non_latin1_char = None
 
     def setUp(self):
         self._db_name = 'download_results_fmt_' + str(
@@ -406,6 +470,40 @@ class TestDownloadResultFormats(BaseTestGenerator):
         self.assertNotIn('memory at', columns['Bytes'].text or '')
         # The control character must not have been passed through verbatim.
         self.assertNotIn('\x01', body)
+
+    def _assert_single_value(self, body):
+        """A genuine single-row, single-column result must be the bare
+        value, per #3205, not a one-element array / one-row document.
+        """
+        if self.data_format == 'json':
+            parsed = json.loads(body)
+            if self.single_value_is_null:
+                self.assertIsNone(parsed)
+            else:
+                self.assertEqual(parsed, 42)
+            return
+
+        root = ElementTree.fromstring(body)
+        self.assertEqual(root.tag, 'data_output')
+        # No row/column wrapper, and no column name anywhere in sight.
+        self.assertIsNone(root.find('row'))
+        self.assertIsNone(root.find('column'))
+        if self.single_value_is_null:
+            self.assertEqual(root.get('null'), 'true')
+        else:
+            self.assertEqual(root.text, '42')
+
+    def _assert_empty_result(self, body):
+        """Zero rows must still come back as an (empty) document of the
+        requested format, not the CSV-era plain-text message.
+        """
+        if self.data_format == 'json':
+            self.assertEqual(json.loads(body), [])
+            return
+
+        root = ElementTree.fromstring(body)
+        self.assertEqual(root.tag, 'data_output')
+        self.assertEqual(list(root), [])
 
     def runTest(self):
         db_con = database_utils.connect_database(self,
@@ -493,6 +591,10 @@ class TestDownloadResultFormats(BaseTestGenerator):
 
         if self.awkward_data:
             self._assert_awkward_data(body)
+        elif self.single_value:
+            self._assert_single_value(body)
+        elif self.empty_result:
+            self._assert_empty_result(body)
         elif self.data_format == 'json':
             parsed = json.loads(body)
             self.assertIsInstance(parsed, list)
@@ -506,6 +608,12 @@ class TestDownloadResultFormats(BaseTestGenerator):
             self.assertIn('</data_output>', body)
         else:
             self.assertIn('"A","B","C"', body)
+            if self.non_latin1_char:
+                # errors='replace' must turn the character Latin-1 cannot
+                # encode into the codec's standard replacement rather than
+                # silently dropping it or corrupting the row.
+                self.assertNotIn(self.non_latin1_char, body)
+                self.assertIn('?', body)
 
         url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)

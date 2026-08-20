@@ -173,6 +173,23 @@ def _generate_xml(cur, records, results, header):
     yield '</data_output>'
 
 
+def _generate_single_value(data_format, value):
+    """Render a genuine single-row, single-column result directly, per
+    issue #3205: no array wrapper for JSON, no <row>/<column> wrapper for
+    XML, just the value itself. NULL is reported the same way it is
+    elsewhere: JSON null, or an empty element with null="true".
+    """
+    if data_format == 'json':
+        return json.dumps(
+            _json_safe(value), default=_json_default, allow_nan=False)
+
+    if value is None:
+        return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<data_output null="true"/>')
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<data_output>{0}</data_output>'.format(_xml_text(value)))
+
+
 # Register global type caster which will be applicable to all connections.
 register_global_typecasters()
 configure_driver_encodings(encodings)
@@ -1056,9 +1073,6 @@ WHERE db.datname = current_database()""")
             # Make sure numeric values will be fetched without quoting
             register_numeric_typecasters(cur)
             results = cur.fetchmany(records)
-            if not results:
-                yield gettext('The query executed did not return any data.')
-                return
 
             header = []
             json_columns = []
@@ -1069,6 +1083,36 @@ WHERE db.datname = current_database()""")
                 header.append(column_name)
                 if c.to_dict()['type_code'] in ALL_JSON_TYPES:
                     json_columns.append(column_name)
+
+            if not results:
+                # An empty result must still come back in the requested
+                # format: JSON/XML consumers expect a (empty) document of
+                # that type, not the CSV-era plain-text message under an
+                # application/json or application/xml content type.
+                if data_format == 'json':
+                    yield '[]'
+                elif data_format == 'xml':
+                    yield ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                           '<data_output/>')
+                else:
+                    yield gettext(
+                        'The query executed did not return any data.')
+                return
+
+            if data_format in ('json', 'xml') and len(header) == 1 and \
+                    len(results) == 1:
+                # A genuine single-row, single-column result is written as
+                # the bare value, without the usual array/row wrapper, per
+                # #3205. Confirm there really is only one row before
+                # committing to that shape: a batch boundary can make the
+                # first fetchmany() return exactly one row even though more
+                # follow.
+                more = cur.fetchmany(records)
+                if not more:
+                    yield _generate_single_value(
+                        data_format, results[0].get(header[0]))
+                    return
+                results = results + more
 
             if data_format == 'json':
                 yield from _generate_json(cur, records, results)
