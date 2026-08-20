@@ -816,8 +816,10 @@ class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
 
         self.assertIn('node', result)
         self.assertEqual(ss.passexec_cmd, '/usr/bin/my-own-cmd')
+        self.assertEqual(ss.passexec_expiration, 60)
         self.assertIsNotNone(manager.passexec)
         self.assertEqual(manager.passexec.cmd, '/usr/bin/my-own-cmd')
+        self.assertEqual(manager.passexec.expiration_seconds, 60)
 
     @patch(DRIVER_MODULE + '.current_user')
     @patch(DRIVER_MODULE + '.SharedServer')
