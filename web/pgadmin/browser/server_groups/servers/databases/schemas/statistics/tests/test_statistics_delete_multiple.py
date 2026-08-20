@@ -121,5 +121,10 @@ class StatisticsDeleteMultipleTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
+        # Dropping the table takes the statistics objects defined on it with
+        # it, whatever the server named them.
+        statistics_utils.drop_table_for_statistics(
+            self.server, self.db_name, self.schema_name, self.table_name
+        )
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

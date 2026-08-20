@@ -16,7 +16,7 @@ ALTER STATISTICS {{ conn|qtIdent(data.schema, data.name) }}
 {% if data.name and data.stattarget is defined and data.stattarget is not none and data.stattarget != -1 %}
 
 ALTER STATISTICS {{ conn|qtIdent(data.schema, data.name) }}
-    SET STATISTICS {{ data.stattarget }};
+    SET STATISTICS {{ data.stattarget|int }};
 {% endif %}
 {% if data.comment and data.name %}
 

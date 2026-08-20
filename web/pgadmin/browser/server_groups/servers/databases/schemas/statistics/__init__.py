@@ -491,8 +491,11 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
 
-        # Validate at least 1 stat_type
-        if len(data.get('stat_types', [])) < 1:
+        # Validate at least 1 stat_type, unless this is the expression-only
+        # form. PostgreSQL's univariate expression statistics (a single
+        # expression, no columns) do not accept a statistics-kind clause at
+        # all, so that form is left for the server to validate.
+        if has_columns and len(data.get('stat_types', [])) < 1:
             return make_json_response(
                 status=400,
                 success=0,
@@ -715,6 +718,39 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    @staticmethod
+    def _validate_stattarget(data):
+        """
+        Validate (and normalise) data['stattarget'] in place before it is
+        interpolated into the create/update SQL templates.
+
+        'DEFAULT' is left untouched, as the PostgreSQL 17+ update template
+        renders it verbatim to reset the statistics target. Anything else
+        must be convertible to an integer; a bogus value is rejected here
+        rather than reaching the SQL as defense in depth.
+
+        Args:
+            data: Form data
+
+        Returns:
+            An error response tuple (response, None) if invalid, else None.
+        """
+        if 'stattarget' not in data or data['stattarget'] == 'DEFAULT':
+            return None
+
+        try:
+            data['stattarget'] = int(data['stattarget'])
+        except (ValueError, TypeError):
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=_(
+                    "Statistics target must be an integer."
+                )
+            ), None
+
+        return None
+
     def get_SQL(self, gid, sid, did, data, scid, stid=None,
                 add_not_exists_clause=False):
         """
@@ -734,17 +770,9 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if stid is not None:
             # Update operation
-            if 'stattarget' in data:
-                try:
-                    data['stattarget'] = int(data['stattarget'])
-                except (ValueError, TypeError):
-                    return make_json_response(
-                        status=400,
-                        success=0,
-                        errormsg=_(
-                            "Statistics target must be an integer."
-                        )
-                    ), None
+            error = self._validate_stattarget(data)
+            if error is not None:
+                return error
 
             status, old_data = self._fetch_properties(scid, stid)
             if not status:
@@ -761,6 +789,10 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             return sql, data.get('name', old_data['name'])
         else:
             # Create operation
+            error = self._validate_stattarget(data)
+            if error is not None:
+                return error
+
             # Name is optional in PostgreSQL 16+
             sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
