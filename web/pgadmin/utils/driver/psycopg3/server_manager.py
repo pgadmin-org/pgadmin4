@@ -154,6 +154,18 @@ class ServerManager(object):
         res['ver'] = self.ver
         res['sversion'] = self.sversion
 
+        # Persisted alongside the connection state so a later restore
+        # (e.g. after a worker restart) can tell whether this blob still
+        # belongs to the Server row for this id, or whether the id was
+        # reused by an unrelated row after the configuration database
+        # was reset/restored - see Driver._manager_is_stale.
+        res['host'] = self.host
+        res['port'] = self.port
+        res['db'] = self.db
+        res['user'] = self.user
+        res['service'] = self.service
+        res['tunnel_host'] = self.tunnel_host
+
         self._set_password(res)
 
         if self.use_ssh_tunnel:
