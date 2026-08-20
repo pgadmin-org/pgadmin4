@@ -116,6 +116,11 @@ class GetCtypesTestCase(BaseTestGenerator):
                 self.skipTest("template0 is %s encoded, so a UTF-8 builtin "
                               "locale cannot be used here."
                               % self.template_encoding)
+            if self.template_collate == 'C.UTF-8':
+                self.skipTest("template0 already uses the 'C.UTF-8' locale, "
+                              "the only one a UTF-8 builtin database can "
+                              "use, so a distinguishable one cannot be "
+                              "created here.")
             self._skip_unless_distinct_template_locale()
             self._create_database("LOCALE_PROVIDER builtin "
                                   "BUILTIN_LOCALE 'C.UTF-8' ENCODING UTF8")
@@ -128,6 +133,9 @@ class GetCtypesTestCase(BaseTestGenerator):
             return
 
         # ICU
+        if self.server_version < 150000:
+            self.skipTest('LOCALE_PROVIDER icu requires PostgreSQL 15 or '
+                          'later.')
         cursor = self.connection.cursor()
         cursor.execute("SELECT 1 FROM pg_catalog.pg_collation "
                        "WHERE collprovider = 'i' LIMIT 1")
