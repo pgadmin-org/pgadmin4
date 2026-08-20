@@ -143,7 +143,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
             )
         ),
         (
-            'Fetch Function msql with newly added argument',
+            'Fetch Function msql with newly added argument is rejected',
             dict(
                 url='/browser/function/msql/',
                 is_positive_test=True,
@@ -161,8 +161,11 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                     "variables": [],
                     "seclabels": [],
                     "acl": [],
-                    # A newly added (not yet saved) argument must survive
-                    # into the generated SQL, and not be silently dropped.
+                    # PostgreSQL cannot add an argument to an existing
+                    # function via CREATE OR REPLACE (it would create a
+                    # separate, overloaded routine instead), so this must
+                    # be rejected with a clear error rather than silently
+                    # producing SQL that orphans a routine.
                     "arguments": json.dumps({
                         "added": [{
                             "argname": "new_arg",
@@ -174,8 +177,8 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                 },
                 mock_data={},
                 expected_data={
-                    "status_code": 200,
-                    "check_string": "new_arg"
+                    "status_code": 500,
+                    "check_errormsg": "not supported"
                 }
             ),
         ),
@@ -262,5 +265,8 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
         if 'check_string' in self.expected_data:
             self.assertIn(self.expected_data['check_string'],
                           response.json['data'])
+        if 'check_errormsg' in self.expected_data:
+            self.assertIn(self.expected_data['check_errormsg'],
+                          response.json['errormsg'])
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

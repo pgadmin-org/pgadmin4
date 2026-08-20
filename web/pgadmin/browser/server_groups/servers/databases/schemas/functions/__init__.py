@@ -1029,8 +1029,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     def _update_arguments_for_get_sql(data, old_data):
         """
         If Function Definition/Arguments are changed then merge old
-        Arguments with changed/added ones for Create/Replace Function SQL
-        statement
+        Arguments with changed ones for Create/Replace Function SQL statement
         :param data:
         :param old_data:
         :return:
@@ -1041,11 +1040,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     if arg['argid'] == old_arg['argid']:
                         old_arg.update(arg)
                         break
-            # Newly added arguments (not yet saved) need to be appended,
-            # otherwise they would be silently dropped as only pre-existing
-            # arguments are present in old_data.
-            for arg in data['arguments'].get('added', []):
-                old_data['arguments'].append(arg)
             data['arguments'] = old_data['arguments']
         elif data['change_func']:
             data['arguments'] = old_data['arguments']
@@ -1199,6 +1193,21 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if (arg == 'arguments' and arg in data and len(
                     data[arg]) > 0) or arg in data:
                 data['change_func'] = True
+
+        # PostgreSQL cannot add an input argument to an existing
+        # function/procedure via CREATE OR REPLACE: a changed argument
+        # list is a different signature, so PostgreSQL creates a new,
+        # separate overloaded routine instead of replacing this one.
+        # Reject such edits explicitly, rather than silently leaving an
+        # orphaned routine behind.
+        if 'arguments' in data and isinstance(data['arguments'], dict) \
+                and data['arguments'].get('added'):
+            return False, gettext(
+                "Adding a new argument to an existing function/procedure "
+                "is not supported, as PostgreSQL would create a separate, "
+                "overloaded routine rather than replacing this one. "
+                "Please create a new function/procedure instead."
+            ), ''
 
         # If Function Definition/Arguments are changed then merge old
         #  Arguments with changed ones for Create/Replace Function
