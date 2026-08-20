@@ -497,11 +497,29 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         target_data['orig_name'] = target_data['name']
         target_data['name'] = 'temp_partitioned_{0}'.format(
             secrets.choice(range(1, 9999999)))
+
+        # If the source table already has a default partition of its own,
+        # it will be (re)created below via source_data['partitions'], so we
+        # must not scaffold an extra one (Postgres allows only a single
+        # default partition per parent). We only need the scaffolding
+        # default partition - dropped again once the data copy is done -
+        # when the source has no default partition, to prevent the
+        # row-copy INSERT from failing on rows that don't match any of the
+        # real partitions.
+        source_has_default_partition = any(
+            partition.get('is_default') for partition in
+            source_data.get('partitions', []))
+        target_data['create_scaffolding_default_partition'] = \
+            not source_has_default_partition
+
         # For PG/EPAS 11 and above when we copy the data from original
         # table to temporary table for schema diff, we will have to create
-        # a default partition to prevent the data loss.
+        # a default partition to prevent the data loss. Derive its name
+        # from the already-randomised temporary table name (rather than
+        # the original table's name) so it cannot collide with an
+        # existing relation.
         target_data['default_partition_name'] = \
-            target_data['orig_name'] + '_default'
+            target_data['name'] + '_default'
 
         # Copy the partition scheme from source to target.
         if 'partition_scheme' in source_data:
