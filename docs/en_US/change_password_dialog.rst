@@ -1,8 +1,8 @@
 .. _change_password_dialog:
 
-*******************************
-`Change Password Dialog`:index:
-*******************************
+**************************************
+`Change Server Password Dialog`:index:
+**************************************
 
 It is a good policy to routinely change your password to protect data, even in
 what you may consider a 'safe' environment. In the workplace, failure to apply
@@ -30,7 +30,9 @@ comprehensive list and they **will not guarantee security**.
     :alt: Change database password dialog
     :align: center
 
-Use the *Change Password* dialog to change your password:
+Use the *Change Server Password* dialog to change the password of the role that
+pgAdmin uses to connect to the database server, rather than the password you use
+to log in to pgAdmin itself:
 
 * The name displayed in the *User* field is the role for which you are modifying
   the password; it is the role that is associated with the server connection
