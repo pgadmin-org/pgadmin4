@@ -50,13 +50,14 @@ if _platform == "win32":
 
 
 def _open_upload_target(path):
-    """Open a file for upload with leaf-symlink protection.
+    """Open a file for writing with leaf-symlink protection.
 
-    Returns a binary write-mode file object. The kernel will refuse to
-    follow a symbolic link at the leaf (CWE-61), closing the TOCTOU gap
-    between `check_access_permission` and the actual file write. Mode is
-    intentionally 0o600 (owner-only); see release notes for the
-    behavioral change from the previous umask-default 0o644.
+    Used by both the file upload endpoint and `save_file()` (Query Tool /
+    ERD save). Returns a binary write-mode file object. The kernel will
+    refuse to follow a symbolic link at the leaf (CWE-61), closing the
+    TOCTOU gap between `check_access_permission` and the actual file
+    write. Mode is intentionally 0o600 (owner-only); see release notes
+    for the behavioral change from the previous umask-default 0o644.
 
     On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
     residual leaf-component TOCTOU is mitigated by the absence of any
@@ -469,7 +470,7 @@ def save_file():
 
     # write to file
     try:
-        with open(file_path, 'wb+') as output_file:
+        with _open_upload_target(file_path) as output_file:
             output_file.write(file_content)
     except IOError as e:
         err_msg = error_str.format(e.strerror)

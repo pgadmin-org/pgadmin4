@@ -18,6 +18,7 @@ The `O_NOFOLLOW` upload-leaf protection is tested in a separate class.
 """
 
 import errno
+import json
 import os
 import shutil
 import sys
@@ -26,7 +27,9 @@ import unittest
 from unittest.mock import patch
 
 import config
+from pgadmin import create_app
 from pgadmin.misc.file_manager import Filemanager
+from pgadmin.utils.constants import MY_STORAGE
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -409,3 +412,66 @@ class TestOpenUploadTargetRejectsLeafSymlinkPointingToNonexistent(
             "Expected ELOOP/EMLINK, got errno=%d" % cm.exception.errno)
         # No file must have been created at the symlink's target.
         self.assertFalse(os.path.exists(outside_path))
+
+
+# ---------------------------------------------------------------------------
+# save_file() must use the same O_NOFOLLOW-protected open as uploads.
+#
+# check_access_permission() resolves symlinks and validates containment,
+# but save_file() re-joins the path and, before this fix, wrote through a
+# bare open() that would happily follow a leaf symlink planted after the
+# check ran. check_access_permission is patched out here to isolate that
+# write-time protection from the (separately-tested) check-time one.
+# ---------------------------------------------------------------------------
+
+class TestSaveFileRejectsLeafSymlink(BaseTestGenerator):
+    """save_file() must not follow a leaf symlink when writing."""
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        if sys.platform == "win32":
+            self.skipTest("O_NOFOLLOW unavailable on Windows")
+        self.tmpdir = tempfile.mkdtemp(prefix="pga_filemgr_savefile_")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def runTest(self):
+        from pgadmin.misc.file_manager import save_file
+
+        outside_target = os.path.join(self.tmpdir, "outside.txt")
+        with open(outside_target, "wb") as f:
+            f.write(b"VICTIM")
+        storage_dir = os.path.join(self.tmpdir, "storage")
+        os.makedirs(storage_dir)
+        link_path = os.path.join(storage_dir, "evil.sql")
+        os.symlink(outside_target, link_path)
+
+        payload = json.dumps({
+            "file_name": "/evil.sql",
+            "file_content": "OWNED",
+        }).encode('utf-8')
+
+        app = create_app()
+        with app.app_context(), app.test_request_context(
+                '/file_manager/save_file/', method='POST', data=payload,
+                content_type='application/json'), \
+                patch('pgadmin.misc.file_manager.Filemanager.'
+                      'check_access_permission'), \
+                patch('pgadmin.misc.file_manager.get_storage_directory',
+                      return_value=storage_dir), \
+                patch('pgadmin.misc.file_manager.Preferences.module') \
+                as mock_module:
+            mock_module.return_value.preference.return_value.get \
+                .return_value = MY_STORAGE
+            # save_file is wrapped by pga_login_required/mfa_required;
+            # __wrapped__ is the raw view, set by functools.wraps, so this
+            # exercises save_file()'s own logic without needing a login.
+            response = save_file.__wrapped__()
+
+        self.assertEqual(response.status_code, 500)
+        # Critical: the outside target must not have been overwritten.
+        with open(outside_target, "rb") as f:
+            self.assertEqual(f.read(), b"VICTIM")
