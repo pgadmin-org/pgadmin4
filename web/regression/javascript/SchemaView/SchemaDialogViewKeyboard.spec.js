@@ -7,11 +7,31 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
+import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import { TestSchema } from './TestSchema.ui';
 import { withBrowser } from '../genericFunctions';
+
+// A single required field is all the Ctrl/Cmd+Enter save-and-close tests
+// need; TestSchema's nested tab and row collection require a lot more
+// simulated input just to get to a savable state.
+class MinimalSchema extends BaseUISchema {
+  constructor() {
+    super({field1: null});
+  }
+
+  get baseFields() {
+    return [
+      {
+        id: 'field1', label: 'Field1', type: 'text', group: null,
+        mode: ['properties', 'edit', 'create'], disabled: false, visible: true,
+      },
+    ];
+  }
+}
 
 // Escape closes a dialog rendered as a dockable panel (issue #5691). The
 // handler sits on the dialog wrapper, which must not be memoized along with
@@ -20,6 +40,7 @@ import { withBrowser } from '../genericFunctions';
 // a memoized wrapper would keep calling whichever one it captured first.
 describe('SchemaDialogView keyboard handling', () => {
   const SchemaViewWithBrowser = withBrowser(SchemaView);
+  const user = userEvent.setup();
 
   const dialog = (schema, onClose) => (
     <SchemaViewWithBrowser
@@ -37,15 +58,15 @@ describe('SchemaDialogView keyboard handling', () => {
     />
   );
 
-  const renderDialog = async (onClose) => {
+  const renderDialog = async (onClose, onSave = jest.fn(() => Promise.resolve()), schema = new TestSchema()) => {
     let ctrl;
     await act(async () => {
       ctrl = render(
         <SchemaViewWithBrowser
           formType='dialog'
-          schema={new TestSchema()}
+          schema={schema}
           viewHelperProps={{mode: 'create'}}
-          onSave={jest.fn(() => Promise.resolve())}
+          onSave={onSave}
           onClose={onClose}
           onHelp={jest.fn()}
           onEdit={jest.fn()}
@@ -62,6 +83,12 @@ describe('SchemaDialogView keyboard handling', () => {
   const pressEscape = async (ctrl) => {
     await act(async () => {
       fireEvent.keyDown(ctrl.container.firstChild, {key: 'Escape'});
+    });
+  };
+
+  const pressCtrlEnter = async (ctrl) => {
+    await act(async () => {
+      fireEvent.keyDown(ctrl.container.firstChild, {key: 'Enter', ctrlKey: true});
     });
   };
 
@@ -99,4 +126,25 @@ describe('SchemaDialogView keyboard handling', () => {
       expect(secondOnClose).toHaveBeenCalled();
       expect(firstOnClose).not.toHaveBeenCalled();
     });
+
+  // Ctrl/Cmd+Enter is meant to save and close in one step (issue #7167).
+  // onSaveClick alone is not enough: it only calls onSave, so this covers the
+  // dialog actually closing once that save resolves.
+  it('saves and closes the dialog on Ctrl/Cmd+Enter', async () => {
+    const onClose = jest.fn();
+    const onSave = jest.fn(() => Promise.resolve());
+    const ctrl = await renderDialog(onClose, onSave, new MinimalSchema());
+
+    // Wait for the dialog's auto-focus to settle before typing, as the other
+    // SchemaDialogView specs do.
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    });
+    await user.type(ctrl.container.querySelector('[name="field1"]'), 'val1');
+
+    await pressCtrlEnter(ctrl);
+
+    expect(onSave).toHaveBeenCalled();
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+  });
 });

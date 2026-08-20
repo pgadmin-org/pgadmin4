@@ -97,7 +97,7 @@ export default function SchemaDialogView({
     );
   };
 
-  const save = (changeData) => {
+  const save = (changeData, onSaved) => {
     props.onSave(schemaState.isNew, changeData)
       .then(()=>{
         if(schema.informText) {
@@ -106,6 +106,7 @@ export default function SchemaDialogView({
             schema.informText,
           );
         }
+        onSaved?.();
       }).catch((err)=>{
         schemaState.setError({
           name: 'apierror',
@@ -119,7 +120,11 @@ export default function SchemaDialogView({
       });
   };
 
-  const onSaveClick = () => {
+  // closeOnSave is only ever passed explicitly as true, by the Ctrl/Cmd+Enter
+  // handler below. The Save button's onClick passes its click event instead,
+  // which is never === true, so a plain Save click keeps its existing
+  // behaviour (some dialogs, e.g. object properties, stay open after Save).
+  const onSaveClick = (closeOnSave) => {
     // Do nothing when there is no change or there is an error
     if (
       !schemaState._changes || Object.keys(schemaState._changes).length === 0 ||
@@ -129,15 +134,17 @@ export default function SchemaDialogView({
     setSaving(true);
     setLoaderText(schemaState.customLoadingText || gettext('Saving...'));
 
+    const onSaved = closeOnSave === true ? () => props.onClose?.() : undefined;
+
     if (!schema.warningText) {
-      save(schemaState.changes(true));
+      save(schemaState.changes(true), onSaved);
       return;
     }
 
     Notifier.confirm(
       gettext('Warning'),
       schema.warningText,
-      () => { save(schemaState.changes(true)); },
+      () => { save(schemaState.changes(true), onSaved); },
       () => {
         setSaving(false);
         setLoaderText('');
@@ -183,7 +190,7 @@ export default function SchemaDialogView({
     // there is a validation error, so this is safe to call unconditionally.
     if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key === 'Enter') {
       e.preventDefault();
-      onSaveClick();
+      onSaveClick(true);
       return;
     }
 
