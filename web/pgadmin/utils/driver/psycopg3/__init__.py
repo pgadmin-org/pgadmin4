@@ -36,7 +36,7 @@ from .server_manager import ServerManager
 connection_restore_lock = Lock()
 
 
-def _shared_server_passexec(server):
+def shared_server_passexec(server):
     """Return a PasswordExec built from a shared-server non-owner's
     own SharedServer.passexec_cmd, or None.
 
@@ -46,6 +46,10 @@ def _shared_server_passexec(server):
     user's request context. A non-owner's own SharedServer.passexec_cmd
     carries no such risk: it only ever runs in that same user's own
     request context, exactly like an owned server's passexec_cmd would.
+
+    Also used outside this module (browser.server_groups.servers) to
+    recompute passexec after a manager.update() call, which otherwise
+    rebuilds the manager from the server object alone and drops it.
     """
     shared_server = SharedServer.query.filter_by(
         user_id=current_user.id, osid=server.id).first()
@@ -112,7 +116,7 @@ class Driver(BaseDriver):
                     if config.SERVER_MODE and server.shared and \
                             server.user_id != current_user.id:
                         manager.passexec = \
-                            _shared_server_passexec(server)
+                            shared_server_passexec(server)
                     if server.id in session_managers:
                         manager._restore(
                             session_managers[server.id])
@@ -181,7 +185,7 @@ class Driver(BaseDriver):
             if config.SERVER_MODE and server_data.shared and \
                     server_data.user_id != current_user.id:
                 manager.passexec = \
-                    _shared_server_passexec(server_data)
+                    shared_server_passexec(server_data)
             managers[str(sid)] = manager
 
             return manager
