@@ -42,8 +42,6 @@ RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
     export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
     npm install -g corepack && \
     corepack enable && \
-    yarn set version berry && \
-    yarn set version "$(node -p "require('./package.json').packageManager.split('@')[1]")" && \
     yarn install && \
     yarn run bundle && \
     rm -rf yarn.lock \
