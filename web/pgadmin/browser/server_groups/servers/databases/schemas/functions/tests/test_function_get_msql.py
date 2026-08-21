@@ -143,6 +143,46 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
             )
         ),
         (
+            'Fetch Function msql with newly added argument is rejected',
+            dict(
+                url='/browser/function/msql/',
+                is_positive_test=True,
+                mocking_required=False,
+                with_function_id=True,
+                is_mock_local_function=False,
+                test_data={
+                    "name": "Test Function",
+                    "funcowner": "",
+                    "pronamespace": 2200,
+                    "prorettypename": "character varying",
+                    "lanname": "sql",
+                    "prosrc": "select '1'",
+                    "probin": "$libdir/",
+                    "variables": [],
+                    "seclabels": [],
+                    "acl": [],
+                    # PostgreSQL cannot add an argument to an existing
+                    # function via CREATE OR REPLACE (it would create a
+                    # separate, overloaded routine instead), so this must
+                    # be rejected with a clear error rather than silently
+                    # producing SQL that orphans a routine.
+                    "arguments": json.dumps({
+                        "added": [{
+                            "argname": "new_arg",
+                            "argtype": "integer",
+                            "argmode": "IN",
+                            "argdefval": "1"
+                        }]
+                    })
+                },
+                mock_data={},
+                expected_data={
+                    "status_code": 500,
+                    "check_errormsg": "not supported"
+                }
+            ),
+        ),
+        (
             'Fetch Function msql fetch properties not found',
             dict(
                 url='/browser/function/msql/',
@@ -222,5 +262,11 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
 
         self.assertEqual(response.status_code,
                          self.expected_data['status_code'])
+        if 'check_string' in self.expected_data:
+            self.assertIn(self.expected_data['check_string'],
+                          response.json['data'])
+        if 'check_errormsg' in self.expected_data:
+            self.assertIn(self.expected_data['check_errormsg'],
+                          response.json['errormsg'])
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
