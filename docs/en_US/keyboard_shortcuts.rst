@@ -22,6 +22,8 @@ When using main browser window, the following keyboard shortcuts are available:
    +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + b            | Shift + Option + b | Object explorer                    |
    +----------------------------+--------------------+------------------------------------+
+   | Ctrl + Alt + b             | Ctrl + Option + b  | Toggle Object Explorer             |
+   +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + n            | Shift + Option + n | Create object                      |
    +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + d            | Shift + Option + d | Delete object                      |
