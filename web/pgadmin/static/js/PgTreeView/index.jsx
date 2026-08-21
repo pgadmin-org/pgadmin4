@@ -16,7 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PropTypes from 'prop-types';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
-import useResizeObserver from 'use-resize-observer';
+import { useResizeObserver } from 'use-resize-observer';
 
 
 const Root = styled('div')(({ theme }) => ({
