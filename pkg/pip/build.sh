@@ -61,7 +61,6 @@ if [ -z "${YARN_VERSION}" ]; then
     echo "ERROR: Could not determine Yarn version from package.json packageManager field."
     exit 1
 fi
-yarn set version berry
 yarn set version "${YARN_VERSION}"
 yarn install
 yarn run bundle

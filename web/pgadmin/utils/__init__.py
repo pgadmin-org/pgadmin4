@@ -649,9 +649,11 @@ def validate_json_data(data, is_admin):
                         "found for server '%s'" % server
                     )
             else:
-                errmsg = check_attrib("Username")
-                if errmsg:
-                    return errmsg
+                if not obj.get("Username"):
+                    return gettext(
+                        "'Username' attribute not found for server '%s'" %
+                        server
+                    )
 
         errmsg = check_attrib("MaintenanceDB")
         if errmsg:

@@ -22,6 +22,7 @@ from pgadmin.llm.models import (
     Message, Tool, ToolCall, LLMResponse, LLMError,
     Role, StopReason, Usage
 )
+from pgadmin.llm.utils import urlopen_no_redirect
 
 
 # Default configuration
@@ -72,7 +73,7 @@ class OllamaClient(LLMClient):
         try:
             # Check if Ollama is running
             req = urllib.request.Request(f'{self._api_url}/api/tags')
-            with urllib.request.urlopen(req, timeout=5) as response:
+            with urlopen_no_redirect(req, timeout=5) as response:
                 data = json.loads(response.read().decode('utf-8'))
                 # Check if our model is available
                 models = [m.get('name', '') for m in data.get('models', [])]
@@ -215,7 +216,7 @@ class OllamaClient(LLMClient):
         )
 
         try:
-            with urllib.request.urlopen(request, timeout=300) as response:
+            with urlopen_no_redirect(request, timeout=300) as response:
                 return json.loads(response.read().decode('utf-8'))
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8')
@@ -348,7 +349,7 @@ class OllamaClient(LLMClient):
         )
 
         try:
-            response = urllib.request.urlopen(request, timeout=300)
+            response = urlopen_no_redirect(request, timeout=300)
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8')
             try:
