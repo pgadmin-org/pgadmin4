@@ -39,10 +39,12 @@ class PasswordExec:
             raise NotImplementedError('Passexec not available in server mode')
         driver = get_driver(config.PG_DEFAULT_DRIVER)
         self.cmd = str(self.cmd)
-        self.cmd = self.cmd.replace('%HOSTNAME%', self.host)
-        self.cmd = self.cmd.replace('%PORT%', str(self.port))
-        self.cmd = self.cmd.replace('%USERNAME%',
-                                    driver.qtIdent(None,self.username))
+        self.cmd = self.cmd.replace('%HOSTNAME%', self.host or '')
+        self.cmd = self.cmd.replace(
+            '%PORT%', str(self.port) if self.port is not None else '')
+        self.cmd = self.cmd.replace(
+            '%USERNAME%',
+            driver.qtIdent(None, self.username) if self.username else '')
         with self.lock:
             if not self.password or self.is_expired():
                 if not self.cmd:
