@@ -88,7 +88,7 @@
     "@simonwep/pickr": "~1.9.1",
     "@szhsin/react-menu": "^4.5.2",
     "@tanstack/react-query": "^5.101.4",
-    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-table": "^9.1.2",
     "@tanstack/react-virtual": "^3.14.9",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
