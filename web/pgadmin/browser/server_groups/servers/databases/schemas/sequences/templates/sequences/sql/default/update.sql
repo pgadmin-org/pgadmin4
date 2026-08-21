@@ -36,6 +36,9 @@ SELECT setval({{ seqname|qtLiteral(conn) }}, {{ data.current_value }}, false);
 {% if data.maximum is defined %}
 {% set defquery = defquery+'\n    MAXVALUE '+data.maximum|string %}
 {% endif %}
+{% if data.restart is defined %}
+{% set defquery = defquery+'\n    RESTART '+data.restart|string %}
+{% endif %}
 {% if data.cache is defined %}
 {% set defquery = defquery+'\n    CACHE '+data.cache|string %}
 {% endif %}
