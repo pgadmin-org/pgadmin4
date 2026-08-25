@@ -88,6 +88,7 @@ persistence:
   size: 1Gi
   storageClass: ""
   accessModes: ["ReadWriteOnce"]
+  existingClaim: ""
 
 service:
   type: ClusterIP
@@ -179,4 +180,3 @@ containerSecurityContext:
     type: RuntimeDefault
   windowsOptions:
     hostProcess: false
-

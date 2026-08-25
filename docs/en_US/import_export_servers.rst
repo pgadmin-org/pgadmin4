@@ -132,7 +132,9 @@ The JSON file format used when importing or exporting servers is quite
 straightforward and simply contains a list of servers, with a number of
 attributes. The following attributes are required to be present in every server
 definition: Name, Group, Port, Username, SSLMode, MaintenanceDB and one of Host,
-HostAddr or Service.
+HostAddr or Service. A shared server may supply SharedUsername in place of
+Username, in which case the shared username is also used as the username of the
+imported server.
 
 Password fields cannot be imported or exported.
 

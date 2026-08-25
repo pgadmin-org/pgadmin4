@@ -14,6 +14,7 @@ import * as commonUtils from '../../../static/js/utils';
 import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
 import usePreferences from '../../../preferences/static/js/store';
+import { SHOW_OBJECT_EXPLORER_EVENT } from './constants';
 
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -203,8 +204,14 @@ _.extend(pgBrowser.keyboardNavigation, {
   bindLeftTree: function() {
     const tree = this.getTreeDetails();
 
-    document.querySelector('[id="id-object-explorer"]').focus();
-    tree.t.select(tree.i);
+    // The Object Explorer can be collapsed, and focus() on a hidden element
+    // does nothing at all, so ask for it to be shown first. Focus is deferred
+    // to give React a chance to paint the panel before we move into it.
+    pgAdmin.Browser.Events.trigger(SHOW_OBJECT_EXPLORER_EVENT);
+    setTimeout(()=>{
+      document.querySelector('[id="id-object-explorer"]')?.focus();
+      tree.t.select(tree.i);
+    }, 0);
   },
   bindSubMenuQueryTool: function() {
     const tree = this.getTreeDetails();

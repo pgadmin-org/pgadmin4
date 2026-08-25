@@ -1048,7 +1048,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         status, pname = self.conn.execute_scalar(get_name_sql)
         table_sql = render_template(
             "/".join([self.template_path, 'dependencies.sql']),
-            pname=pname
+            pname=pname, conn=self.conn
         )
         status, res = self.conn.execute_dict(table_sql)
         if not status:

@@ -10,6 +10,8 @@
 """Utility functions for LLM configuration access."""
 
 import os
+import urllib.error
+import urllib.request
 from pgadmin.utils.preferences import Preferences
 import config
 
@@ -201,6 +203,52 @@ def validate_api_url(url):
             return True
 
     return False
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """
+    Refuse to follow redirects returned by an LLM API endpoint.
+
+    validate_api_url() checks the configured URL before the request is
+    made, but urllib's default redirect handler would then follow a
+    Location header to somewhere that check was never applied to. No
+    legitimate LLM API replies with a redirect, so refuse them outright
+    rather than re-validating each hop.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(
+            req.full_url, code,
+            'Refusing to follow the redirect to %s returned by the LLM '
+            'API endpoint; the redirect target has not been checked '
+            'against ALLOWED_LLM_API_URLS' % newurl,
+            headers, fp
+        )
+
+    # HTTPRedirectHandler only gained http_error_308() in Python 3.11, so on
+    # older interpreters a 308 is not recognised as a redirect at all: it
+    # bypasses redirect_request() and surfaces from http_error_default() as a
+    # bare 'HTTP Error 308: Permanent Redirect'. That is safe, in that the
+    # redirect still isn't followed, but the caller gets no explanation of
+    # why. Map it explicitly so every redirect status behaves identically on
+    # every version we support.
+    http_error_308 = urllib.request.HTTPRedirectHandler.http_error_301
+
+
+def urlopen_no_redirect(request, timeout, context=None):
+    """
+    Open an LLM API request without following redirects.
+
+    Mirrors urllib.request.urlopen(), including its handling of an
+    explicit SSL context, but installs _NoRedirectHandler so that a
+    redirect raises urllib.error.HTTPError instead of being followed.
+    """
+    handlers = [_NoRedirectHandler()]
+    if context is not None:
+        handlers.append(urllib.request.HTTPSHandler(context=context))
+
+    opener = urllib.request.build_opener(*handlers)
+    return opener.open(request, timeout=timeout)
 
 
 def _read_api_key_from_file(file_path, _trusted=False):

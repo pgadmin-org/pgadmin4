@@ -27,7 +27,7 @@ from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, redirect, session
 from flask_babel import gettext
 from libgravatar import Gravatar
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from flask_login.utils import login_url
 from flask_security.changeable import send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
@@ -50,6 +50,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     bad_request
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
+from pgadmin.tools.user_management.PgAdminPermissions import \
+    AllPermissionTypes
 from pgadmin.browser.register_browser_preferences import \
     register_browser_preferences
 from pgadmin.browser.register_editor_preferences import \
@@ -891,6 +893,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
     @blueprint.route("/change_password", endpoint="change_password",
                      methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
+    @permissions_required(AllPermissionTypes.change_password)
     @pga_login_required
     def change_password():
         """View function which handles a change password request."""

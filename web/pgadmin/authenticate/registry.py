@@ -10,6 +10,7 @@
 """External Authentication Registry."""
 
 
+import config
 from pgadmin.utils.dynamic_registry import create_registry_metaclass
 
 
@@ -19,20 +20,21 @@ def load_modules(cls, app=None):
     from . import internal as module
     submodules.append(module)
 
-    from . import kerberos as module
-    submodules.append(module)
+    if config.SERVER_MODE:
+        from . import kerberos as module
+        submodules.append(module)
 
-    from . import ldap as module
-    submodules.append(module)
+        from . import ldap as module
+        submodules.append(module)
 
-    from . import mfa as module
-    submodules.append(module)
+        from . import mfa as module
+        submodules.append(module)
 
-    from . import oauth2 as module
-    submodules.append(module)
+        from . import oauth2 as module
+        submodules.append(module)
 
-    from . import webserver as module
-    submodules.append(module)
+        from . import webserver as module
+        submodules.append(module)
 
     for module in submodules:
         if "init_app" in module.__dict__.keys():

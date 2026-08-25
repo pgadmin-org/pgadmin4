@@ -86,24 +86,34 @@ class IEQueryParensBalancedTest(BaseTestGenerator):
          dict(query="SELECT ')", expected=False)),
         ('Rejected: unterminated double-quoted identifier',
          dict(query='SELECT "col)', expected=False)),
-        # The parser handles backslash escapes inside single-quoted
-        # strings unconditionally (matching E-string and scs=off
-        # semantics), so the close paren is correctly identified as
-        # being inside the string literal. Original test labelled this
-        # as a "false positive" expecting over-rejection; in fact the
-        # parser is precise here. Keep the case to document handling.
-        ('Balanced: E-string with escaped quote and paren inside literal',
-         dict(query="SELECT E'\\')'", expected=True)),
+        # Whether a backslash inside a single-quoted string is an
+        # escape character depends on standard_conforming_strings,
+        # which the parser cannot know. Rather than guess (and risk
+        # disagreeing with psql's actual parse), any backslash inside
+        # a single-quoted string is rejected outright.
+        ('Rejected: backslash inside single-quoted string is ambiguous',
+         dict(query="SELECT E'\\')'", expected=False)),
         ('Unbalanced: E-string RCE bypass',
          dict(query="E'\\'' ) TO PROGRAM 'cmd' --'",
               expected=False)),
         ('Unbalanced: scs=off backslash escape bypass',
          dict(query="'\\'' ) TO PROGRAM 'cmd' --'",
               expected=False)),
-        ('Balanced: backslash-backslash then close quote',
-         dict(query="SELECT '\\\\' FROM t", expected=True)),
+        ('Rejected: backslash-backslash inside string is ambiguous',
+         dict(query="SELECT '\\\\' FROM t", expected=False)),
         ('Unbalanced: injection split across lines',
          dict(query="SELECT 1)\nTO PROGRAM 'id' --(",
+              expected=False)),
+        # CVE regression: real psql (standard_conforming_strings=on,
+        # the default) treats \\ as a literal character, so 'a\\'
+        # closes the string literal at that second quote -- it does
+        # NOT escape it. The unescaped ')' immediately after is then
+        # live and closes the wrapping \\copy (...) context, exposing
+        # a TO PROGRAM clause for RCE. The old parser treated \\'
+        # as "still inside the string" unconditionally and missed
+        # this. Reported by Arpit Jain (arpitjain099), 2026-07-27.
+        ('Unbalanced: scs=on backslash-quote RCE bypass (CVE)',
+         dict(query="SELECT 'a\\') TO PROGRAM 'echo pwned' x'",
               expected=False)),
     ]
 

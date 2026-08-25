@@ -197,7 +197,7 @@ class BaseConnection(metaclass=ABCMeta):
 
     @abstractmethod
     def execute_2darray(self, query, params=None,
-                        formatted_exception_msg=False):
+                        formatted_exception_msg=False, prepare=None):
         pass
 
     @abstractmethod

@@ -71,7 +71,6 @@ _build_runtime() {
             echo "ERROR: Could not determine Yarn version from package.json packageManager field."
             exit 1
         fi
-        yarn set version berry
         yarn set version "${YARN_VERSION}"
         yarn workspaces focus --production
 
@@ -308,7 +307,6 @@ _complete_bundle() {
             echo "ERROR: Could not determine Yarn version from package.json packageManager field."
             exit 1
         fi
-        yarn set version berry
         yarn set version "${YARN_VERSION}"
         yarn install 2>&1
 
@@ -690,7 +688,12 @@ _notarize_pkg() {
         awk -F ': ' '/status:/ { print $2; }')
 
     if [[ "${REQUEST_STATUS}" != "Accepted" ]]; then
-        echo "Notarization failed."
+        echo "Notarization failed with status: ${REQUEST_STATUS}"
+        echo "Fetching notary log for details..."
+        xcrun notarytool log "${SUBMISSION_ID}" \
+            --team-id "${DEVELOPER_TEAM_ID}" \
+            --apple-id "${DEVELOPER_USER}" \
+            --password "${DEVELOPER_ASP}"
         exit 1
     fi
 

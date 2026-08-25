@@ -492,6 +492,7 @@ def create_restore_job(sid):
 @blueprint.route(
     '/utility_exists/<int:sid>', endpoint='utility_exists'
 )
+@permissions_required(AllPermissionTypes.tools_restore)
 @pga_login_required
 def check_utility_exists(sid):
     """

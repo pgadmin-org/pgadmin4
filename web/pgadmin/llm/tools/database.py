@@ -44,10 +44,21 @@ LLM_APP_NAME_PREFIX = 'pgAdmin 4 - LLM'
 # effective if the LLM cannot exit that transaction. A multi-statement
 # payload such as `COMMIT; <write>; SELECT 1` would otherwise terminate
 # the read-only transaction (via COMMIT/END/ROLLBACK/ABORT) and run
-# subsequent statements in autocommit mode. The allowlist below, in
-# combination with the single-statement check, ensures the LLM cannot
-# emit transaction-control statements, SET/RESET, DML/DDL, CALL, COPY,
-# or anything else that could escape or weaken the read-only sandbox.
+# subsequent statements in autocommit mode.
+#
+# The allowlist below rejects transaction-control statements, SET/RESET,
+# DML/DDL, CALL, COPY, and anything else that could weaken the read-only
+# sandbox, *for queries sqlparse correctly recognises as a single
+# statement*. It is a fast, user-friendly pre-filter, not the boundary
+# enforcement: sqlparse's lexer can disagree with PostgreSQL's own
+# parser about where one statement ends and another begins (e.g. string
+# literal escaping under standard_conforming_strings), so a payload can
+# look like one safe statement to sqlparse while PostgreSQL executes it
+# as several. The actual guarantee that only one statement reaches the
+# server is enforced at the protocol level -- see _execute_readonly_query,
+# which runs the query with prepare=True so PostgreSQL's own Parse step
+# (not a client-side approximation of it) rejects multi-statement text.
+#
 # EXPLAIN ANALYZE on a SELECT remains supported; EXPLAIN ANALYZE on a
 # write statement is blocked by PostgreSQL itself inside the read-only
 # transaction.
@@ -126,6 +137,24 @@ def _connect_readonly(
             if not status:
                 return False, msg
 
+        # Force the extended query protocol on this connection,
+        # regardless of the server's configured "Prepare threshold"
+        # (which defaults to blank/None, meaning "never prepare"). The
+        # per-call prepare=True passed to execute_2darray() in
+        # _execute_readonly_query() is silently ignored by psycopg3
+        # whenever conn.prepare_threshold is None -- PrepareManager.get()
+        # checks that before it looks at the prepare argument at all, and
+        # falls back to the simple query protocol, which is exactly the
+        # multi-statement-capable protocol this defense must avoid.
+        # Setting the threshold to 0 ("always prepare") on this
+        # single-use, per-query connection (see conn_id generation in
+        # execute_readonly_query) makes the extended protocol -- and
+        # therefore PostgreSQL's single-statement Parse-step guarantee --
+        # unconditional here, without touching the server-wide setting or
+        # any other connection.
+        if getattr(conn, 'conn', None) is not None:
+            conn.conn.prepare_threshold = 0
+
         # Set application name via SQL - this is thread-safe and doesn't
         # require environment variables. The name will be visible in
         # pg_stat_activity to identify LLM connections.
@@ -138,6 +167,16 @@ def _connect_readonly(
         if not status:
             # Non-fatal - connection still works without custom app name
             pass
+
+        # Defense-in-depth: make READ ONLY the session default, not just a
+        # property of the transaction started by BEGIN TRANSACTION READ
+        # ONLY. If a statement ever managed to end that transaction early
+        # (e.g. a smuggled COMMIT), the next transaction on this connection
+        # -- implicit or explicit -- would still be read-only rather than
+        # falling back to a writable default.
+        conn.execute_void(
+            "SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"
+        )
 
         return True, None
 
@@ -166,20 +205,28 @@ def _first_real_keyword(statement) -> str:
 
 def _validate_readonly_query(query: str) -> None:
     """
-    Ensure an LLM-supplied query is a single, read-only statement.
+    Reject LLM-supplied queries that are obviously not a single,
+    read-only statement.
 
-    This is the load-bearing defense against an attacker escaping the
-    read-only transaction wrapper by emitting multiple statements. The
-    PostgreSQL simple-query protocol cheerfully runs a whole
-    semicolon-separated batch in one round-trip, so a payload such as
-    ``COMMIT; <write>; SELECT 1`` would terminate the read-only
-    transaction (via the leading ``COMMIT``) and execute the remaining
-    statements in autocommit mode. The trailing ``ROLLBACK`` would then
-    be a no-op.
+    This is a fast pre-filter, not the security boundary: it rejects
+    plainly-disallowed statement types and multi-statement input *as
+    sqlparse's lexer sees it*. sqlparse's notion of where a string
+    literal (and therefore a statement) ends can disagree with
+    PostgreSQL's own parser -- e.g. a backslash before a quote is an
+    escape to sqlparse but an ordinary character to PostgreSQL when
+    standard_conforming_strings is on (the default) -- so a payload can
+    pass this check as a single SELECT while PostgreSQL would actually
+    execute it as several statements, including a COMMIT that ends the
+    read-only transaction. That class of attack is closed at the
+    protocol level, not here: see _execute_readonly_query, which
+    executes the query with prepare=True so PostgreSQL's own Parse step
+    -- the actual authority on statement boundaries -- rejects any text
+    containing more than one statement.
 
     Validation rules:
 
-    * The input must contain exactly one non-empty statement.
+    * The input must contain exactly one non-empty statement (as far as
+      sqlparse can tell).
     * The leading keyword must be in :data:`_ALLOWED_LEADING_KEYWORDS`.
 
     PostgreSQL is left to enforce the rest -- ``EXPLAIN ANALYZE`` on a
@@ -242,6 +289,19 @@ def _execute_readonly_query(conn, query: str) -> dict:
     The query is wrapped in a read-only transaction to ensure
     no data modifications can occur.
 
+    The query is executed with prepare=True, and the connection's
+    prepare_threshold is forced to 0 in _connect_readonly(), which
+    together force it through PostgreSQL's extended query protocol.
+    (prepare=True alone is not enough: psycopg3 ignores it whenever
+    prepare_threshold is None -- pgAdmin's blank-by-default server
+    setting -- and falls back to the multi-statement-capable simple
+    query protocol.) The server's Parse step accepts only a single SQL
+    statement in the extended protocol, so this is what actually
+    guarantees the LLM cannot smuggle a second statement (e.g. a COMMIT
+    to end the read-only transaction early) past
+    _validate_readonly_query's sqlparse-based check -- see the note on
+    _validate_readonly_query for why that check alone is not sufficient.
+
     Args:
         conn: Database connection
         query: SQL query to execute
@@ -266,8 +326,10 @@ def _execute_readonly_query(conn, query: str) -> dict:
             )
 
         try:
-            # Execute the actual query
-            status, result = conn.execute_2darray(query)
+            # Execute the actual query. prepare=True, combined with the
+            # prepare_threshold=0 forced in _connect_readonly(), is
+            # load-bearing -- see the docstring above.
+            status, result = conn.execute_2darray(query, prepare=True)
 
             if not status:
                 raise DatabaseToolError(

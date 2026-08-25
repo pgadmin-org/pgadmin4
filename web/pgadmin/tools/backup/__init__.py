@@ -511,6 +511,7 @@ def create_backup_objects_job(sid):
 @blueprint.route(
     '/utility_exists/<int:sid>/<backup_obj_type>', endpoint='utility_exists'
 )
+@permissions_required(AllPermissionTypes.tools_backup)
 @pga_login_required
 def check_utility_exists(sid, backup_obj_type):
     """
@@ -553,6 +554,7 @@ def check_utility_exists(sid, backup_obj_type):
 @blueprint.route(
     '/objects/<int:sid>/<int:did>/<int:scid>', endpoint='schema_objects'
 )
+@permissions_required(AllPermissionTypes.tools_backup)
 @pga_login_required
 def objects(sid, did, scid=None):
     """

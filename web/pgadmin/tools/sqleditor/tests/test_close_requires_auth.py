@@ -60,7 +60,13 @@ class TestSqlEditorCloseRequiresAuth(BaseTestGenerator):
         # the attack chain in the report does: harvest one from GET /login.
         # This isolates the test to the auth decorator — CSRF check must
         # NOT be what rejects the request.
+        #
+        # Register the re-login via addCleanup (not tearDown) immediately
+        # after logout(): unittest skips tearDown() entirely if setUp()
+        # raises, which would otherwise leave the shared class-level
+        # self.tester logged out for the rest of the suite.
         self.tester.logout()
+        self.addCleanup(lambda: utils.login_tester_account(self.tester))
         res = self.tester.get('/login', follow_redirects=False)
         self.tester.csrf_token = self.tester.fetch_csrf(res)
         self.assertIsNotNone(

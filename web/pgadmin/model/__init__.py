@@ -222,17 +222,20 @@ class User(db.Model, UserMixin):
 
     def is_locked(self, form_error=None):
         # Flask-Security's LoginForm.validate() calls this after password
-        # verification and treats the return value inverted: True means
-        # "not locked, proceed"; False means "locked, fail validation".
-        # The default UserMixin.is_locked unconditionally returns True,
-        # which is what allows the /login bypass on a locked account.
+        # verification and fails validation when it returns True, so True
+        # means "locked, refuse the login". Flask-Security-Too up to and
+        # including 5.8.1 had that test inverted (fixed upstream in 5.8.2 by
+        # pallets-eco/flask-security#1267), which is why requirements.txt
+        # floors the dependency at 5.8.2: on an older release the value
+        # below would be read backwards and every unlocked user would be
+        # refused a session.
         if self.locked:
             if form_error is not None:
                 form_error.append(gettext(
                     'Your account is locked. Please contact the '
                     'Administrator.'))
-            return False
-        return True
+            return True
+        return False
 
 
 class Setting(db.Model, UserScopedMixin):

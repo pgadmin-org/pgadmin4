@@ -292,6 +292,7 @@ def create_maintenance_job(sid, did):
 @blueprint.route(
     '/utility_exists/<int:sid>', endpoint='utility_exists'
 )
+@permissions_required(AllPermissionTypes.tools_maintenance)
 @pga_login_required
 def check_utility_exists(sid):
     """

@@ -243,7 +243,9 @@ iteratively. For example, you can ask for a query and then follow up with
 
 **Note:** The AI Assistant uses database schema inspection tools to understand
 your database structure. It supports SELECT, INSERT, UPDATE, DELETE, and DDL
-statements. All generated queries should be reviewed before execution.
+statements. All generated queries should be reviewed before execution. See
+:ref:`ai_data_handling` for details of the information that is transmitted to
+your configured LLM provider.
 
 The Data Output Panel
 *********************

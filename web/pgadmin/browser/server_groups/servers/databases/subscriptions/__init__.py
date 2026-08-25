@@ -892,7 +892,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         status, subname = self.conn.execute_scalar(get_name_sql)
         table_sql = render_template(
             "/".join([self.template_path, 'dependencies.sql']),
-            subname=subname
+            subname=subname, conn=self.conn
         )
         status, res = self.conn.execute_dict(table_sql)
         if not status:

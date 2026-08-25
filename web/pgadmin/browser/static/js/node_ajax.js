@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import getApiInstance from '../../../static/js/api_instance';
+import getApiInstance, {getInflight} from '../../../static/js/api_instance';
 import {generate_url} from 'sources/browser/generate_url';
 import pgAdmin from 'sources/pgadmin';
 
@@ -114,15 +114,19 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
       let data = cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel);
 
       if (_.isUndefined(data) || _.isNull(data)) {
-        api.get(fullUrl, {
+        // Share a single in-flight request among all concurrent callers asking
+        // for the same URL + params, so we don't fire duplicate GETs before the
+        // first response lands and populates the cache. Each caller still runs
+        // its own caching + transform on the shared response.
+        getInflight(api, fullUrl, {
           params: otherParams.urlParams,
         }).then((res)=>{
-          data = res.data;
+          let resData = res.data;
           if(res.data.data) {
-            data = res.data.data;
+            resData = res.data.data;
           }
-          otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
-          resolve(transform(data));
+          otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, resData);
+          resolve(transform(resData));
         }).catch((err)=>{
           reject(err instanceof Error ? err : Error('Something went wrong'));
         });

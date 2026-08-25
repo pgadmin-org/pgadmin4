@@ -144,3 +144,7 @@ export const AllPermissionTypes = {
   STORAGE_ADD_FOLDER: 'storage_add_folder',
   STORAGE_REMOVE_FOLDER: 'storage_remove_folder'
 };
+
+// Fired on pgAdmin.Browser.Events when code outside React, e.g. the keyboard
+// shortcut that focuses the tree, needs the Object Explorer on screen.
+export const SHOW_OBJECT_EXPLORER_EVENT = 'pgadmin:object-explorer:show';

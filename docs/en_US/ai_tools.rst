@@ -82,6 +82,38 @@ Select your preferred LLM provider from the dropdown:
 After configuring your provider, click *Save* to apply the changes.
 
 
+.. _ai_data_handling:
+
+Data Handling and Provider Selection
+************************************
+
+When a cloud LLM provider is configured, pgAdmin transmits information about
+your database to that provider's API. Depending on the feature in use, this may
+include schema definitions such as table, column, index and constraint names
+and data types; server and database configuration settings read from
+``pg_settings``; query text; and EXPLAIN plan output. The *AI Assistant* in the
+Query Tool is also able to run queries against your database, within a read-only
+transaction and limited to 1000 rows, so row data may be included where the
+assistant determines it is needed to answer a question.
+
+None of this is transmitted unless you invoke an AI feature, and none of it is
+transmitted at all when no provider has been configured, which is the default;
+when AI features have been disabled by the administrator through the
+``LLM_ENABLED`` setting; or when a locally hosted provider such as Ollama or
+Docker Model Runner is configured.
+
+Each provider processes this data under its own terms of service, privacy policy
+and legal jurisdiction, and operates its infrastructure in locations of its own
+choosing. If you work in an environment subject to data residency requirements,
+procurement policies, or sector-specific rules governing the handling of
+database metadata, review both the provider's terms and your own organisation's
+policies before enabling a cloud provider.
+
+The providers listed in pgAdmin reflect the APIs that pgAdmin is able to
+communicate with. Their inclusion is not a recommendation, and no provider is
+enabled by default.
+
+
 Security Reports
 ****************
 

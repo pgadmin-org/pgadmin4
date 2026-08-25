@@ -193,6 +193,7 @@ def index():
     methods=["PUT", "POST"],
     endpoint="initialize_viewdata"
 )
+@permissions_required(AllPermissionTypes.tools_query_tool)
 @pga_login_required
 def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     """

@@ -12,7 +12,7 @@ FROM
         AND dep.refclassid=(SELECT oid FROM pg_catalog.pg_class WHERE relname='pg_constraint'))
     LEFT OUTER JOIN pg_catalog.pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)
 WHERE
-    schemaname = '{{schema}}'
-    AND stat.relname = '{{table}}'
+    schemaname = {{schema|qtLiteral(conn)}}
+    AND stat.relname = {{table|qtLiteral(conn)}}
     AND (con.contype IS NULL OR con.contype = 'p')
 ORDER BY indexrelname;

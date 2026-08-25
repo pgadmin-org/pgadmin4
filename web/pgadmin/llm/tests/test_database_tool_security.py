@@ -10,21 +10,32 @@
 """Security regression tests for execute_sql_query input validation.
 
 These tests pin the multi-statement / leading-keyword guard added in
-``_validate_readonly_query``.  The validator is the load-bearing
-defense against an attacker escaping the ``BEGIN TRANSACTION READ
-ONLY`` wrapper by emitting a transaction-control statement (COMMIT,
-END, ROLLBACK, ABORT) followed by writes -- the original Isaac Chen
-report from 2026-06-08.
+``_validate_readonly_query``.  It rejects the original Isaac Chen
+report from 2026-06-08 (a transaction-control statement such as COMMIT,
+END, ROLLBACK, ABORT followed by writes) whenever sqlparse and
+PostgreSQL agree on where the statement boundary is.
 
-The tests are pure unit tests (no DB, no Flask client) -- they exercise
-the validator directly.  Anything that reaches the connection layer is
-already too late.
+``_validate_readonly_query`` is a fast pre-filter, not the security
+boundary -- see ``ValidateReadonlyQueryLexerDifferentialTestCase``
+below and the module docstring in ``database.py`` for why sqlparse
+cannot be the load-bearing check, and ``ExecuteReadonlyQueryProtocolTestCase``
+for the protocol-level enforcement that actually is (Kai Aizen /
+SnailSploit report, 2026-07-23, on the bf4792444446 fix).
+
+Most of these tests are pure unit tests (no DB, no Flask client) --
+they exercise the validator directly. Anything that reaches the
+connection layer is already too late for validator, which is exactly
+why the protocol-level fix exists.
 """
+
+from unittest.mock import patch, MagicMock
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.llm.tools.database import (
     DatabaseToolError,
     _validate_readonly_query,
+    _connect_readonly,
+    execute_readonly_query,
 )
 
 
@@ -403,4 +414,171 @@ class ValidateReadonlyQueryRejectTestCase(BaseTestGenerator):
         self.fail(
             f"Validator accepted query that should have been "
             f"rejected: {self.query!r}"
+        )
+
+
+class ValidateReadonlyQueryLexerDifferentialTestCase(BaseTestGenerator):
+    """Pins a KNOWN, ACCEPTED limitation of the sqlparse-based validator.
+
+    sqlparse's string-literal lexing does not always match PostgreSQL's.
+    Under standard_conforming_strings = on (the default), a backslash
+    inside a '...'-quoted literal is an ordinary character to PostgreSQL
+    but sqlparse treats it as escaping the following quote, so it keeps
+    reading past what PostgreSQL considers the end of the string. That
+    lets a payload like the one below smuggle ``;COMMIT;<write>;`` past
+    the "exactly one statement" check disguised as a single string
+    literal, even though PostgreSQL executes it as four statements --
+    the report from Kai Aizen / SnailSploit (2026-07-23) against the
+    bf4792444446 fix.
+
+    This is NOT something ``_validate_readonly_query`` can be made to
+    catch in general (it would require re-implementing PostgreSQL's
+    lexer, including its dependence on server-side GUCs like
+    standard_conforming_strings). The test below asserts the validator
+    accepts the payload -- documenting that this is expected -- and
+    exists only to point at where the real protection lives: see
+    ExecuteReadonlyQueryProtocolTestCase, which pins that the query is
+    always executed with prepare=True. That forces PostgreSQL's own
+    Parse step -- not a client-side approximation of it -- to reject
+    any text containing more than one statement, regardless of how it
+    is lexed.
+    """
+
+    scenarios = [
+        ('Backslash-quote smuggled COMMIT + DDL', dict(
+            query=(
+                "SELECT '\\';COMMIT;CREATE TABLE pwn(x int);"
+                "SELECT 1 --'"
+            ),
+        )),
+        ('Backslash-quote smuggled COMMIT + COPY TO PROGRAM', dict(
+            query=(
+                "SELECT '\\';COMMIT;COPY (SELECT 1) TO PROGRAM 'id';"
+                "SELECT 1 --'"
+            ),
+        )),
+    ]
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        # Documents current, accepted behavior -- must NOT raise.
+        # If this ever starts raising, _validate_readonly_query has
+        # changed in a way that may be worth understanding, but the
+        # query is still safe only because of prepare=True downstream;
+        # don't mistake a change here for the security fix itself.
+        keyword = _validate_readonly_query(self.query)
+        self.assertIsNone(keyword)
+
+
+class ExecuteReadonlyQueryProtocolTestCase(BaseTestGenerator):
+    """Pins that execute_readonly_query always runs the LLM's query with
+    prepare=True.
+
+    This is the actual load-bearing defense against statement-boundary
+    smuggling (see ValidateReadonlyQueryLexerDifferentialTestCase):
+    prepare=True forces psycopg3's extended query protocol, whose Parse
+    step is answered by PostgreSQL's own parser and rejects a query
+    string containing more than one SQL statement -- independent of
+    sqlparse, and independent of any particular payload shape. Verified
+    end-to-end against a live PostgreSQL 16 instance during the
+    SnailSploit report triage (2026-07-23): the smuggled-COMMIT payload
+    that _validate_readonly_query accepts is rejected by PostgreSQL's
+    Parse step with "cannot insert multiple commands into a prepared
+    statement" once prepare=True is set, both before and after the
+    max_rows LIMIT-wrapping applied to SELECT queries.
+
+    This test mocks the connection layer (no DB) and only pins the
+    wiring: that prepare=True is passed on every call, not just for
+    inputs that look suspicious. A future refactor that drops the
+    keyword argument, or only sets it conditionally, must fail this
+    test.
+    """
+
+    scenarios = [
+        ('Benign SELECT', dict(
+            query='SELECT 1',
+        )),
+        ('Backslash-quote smuggled COMMIT + DDL', dict(
+            query=(
+                "SELECT '\\';COMMIT;CREATE TABLE pwn(x int);"
+                "SELECT 1 --'"
+            ),
+        )),
+    ]
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        mock_manager = MagicMock()
+        mock_conn = MagicMock()
+        mock_conn.execute_void.return_value = (True, None)
+        mock_conn.execute_2darray.return_value = (
+            True, {'columns': [], 'rows': []}
+        )
+
+        with patch(
+            'pgadmin.llm.tools.database._get_connection',
+            return_value=(mock_manager, mock_conn)
+        ), patch(
+            'pgadmin.llm.tools.database._connect_readonly',
+            return_value=(True, None)
+        ):
+            execute_readonly_query(sid=1, did=1, query=self.query)
+
+        mock_conn.execute_2darray.assert_called_once()
+        _args, kwargs = mock_conn.execute_2darray.call_args
+        self.assertTrue(
+            kwargs.get('prepare') is True,
+            "execute_readonly_query must run the LLM-supplied query "
+            "with prepare=True so PostgreSQL's own Parse step -- not "
+            "the sqlparse pre-filter -- enforces the single-statement "
+            "guarantee."
+        )
+
+
+class ConnectReadonlyForcesPrepareThresholdTestCase(BaseTestGenerator):
+    """Pins that _connect_readonly forces conn.conn.prepare_threshold = 0.
+
+    prepare=True on the execute_2darray call is necessary but NOT
+    sufficient: psycopg3's PrepareManager.get() returns Prepare.NO --
+    silently falling back to the multi-statement-capable simple query
+    protocol -- whenever the connection's prepare_threshold is None,
+    *before* it even inspects the prepare argument. pgAdmin's per-server
+    "Prepare threshold" field defaults to blank/None, so on a default
+    server the prepare=True guarantee never engages and the
+    CVE-2026-12045 smuggled-COMMIT bypass stays live (Kai Aizen /
+    SnailSploit follow-up, verified live against PostgreSQL on
+    2026-07-24).
+
+    _connect_readonly() therefore forces prepare_threshold = 0 on the
+    LLM's single-use connection. This test pins that override so a
+    future refactor that drops it -- reopening the bypass -- fails here,
+    without needing a live server.
+    """
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        mock_manager = MagicMock()
+        mock_conn = MagicMock()
+        mock_conn.connected.return_value = True
+        mock_conn.execute_void.return_value = (True, None)
+        # Emulate pgAdmin's default: extended protocol disabled.
+        mock_conn.conn.prepare_threshold = None
+
+        status, msg = _connect_readonly(
+            mock_manager, mock_conn, 'llm_test_conn')
+
+        self.assertTrue(status, msg)
+        self.assertEqual(
+            mock_conn.conn.prepare_threshold, 0,
+            "_connect_readonly must force prepare_threshold=0 on the "
+            "LLM connection; otherwise psycopg3 ignores prepare=True "
+            "(when the server's Prepare threshold is blank/None, the "
+            "default) and falls back to the multi-statement-capable "
+            "simple query protocol, reopening CVE-2026-12045."
         )

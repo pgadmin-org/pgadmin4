@@ -185,6 +185,7 @@ def preferences_s():
 
 
 @blueprint.route("/get_all_cli", methods=["GET"], endpoint='get_all_cli')
+@pga_login_required
 def get_all_cli():
     """Fetch all preferences for caching."""
     # Load Preferences

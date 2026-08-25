@@ -61,6 +61,7 @@ def index():
 
 
 @blueprint.route('/get_servers', methods=['GET'], endpoint='get_servers')
+@permissions_required(AllPermissionTypes.tools_import_export_servers)
 @pga_login_required
 def get_servers():
     """
@@ -92,6 +93,7 @@ def get_servers():
 
 
 @blueprint.route('/load_servers', methods=['POST'], endpoint='load_servers')
+@permissions_required(AllPermissionTypes.tools_import_export_servers)
 @pga_login_required
 def load_servers():
     """
