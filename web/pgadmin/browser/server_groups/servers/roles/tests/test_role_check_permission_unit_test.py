@@ -7,7 +7,8 @@
 #
 ##########################################################################
 
-from unittest.mock import MagicMock
+import json
+from unittest.mock import MagicMock, patch
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.roles import RoleView
@@ -111,6 +112,87 @@ class RoleMembersOnlyUpdateRequestKeysTest(BaseTestGenerator):
         # membership-only guard (which must use request_keys) allows
         # the request through instead of returning 403.
         self.assertTrue(request_keys <= {'rolmembers'})
+
+    def tearDown(self):
+        pass
+
+
+class RoleUpdateAdminOptionMembershipOnlyTest(BaseTestGenerator):
+    """End-to-end regression test for the ADMIN OPTION membership-only
+    update guard.
+
+    The two tests above exercise _check_permission() and
+    _validate_rolemembers() individually, but neither actually calls
+    validate_request() or RoleView.update(), so a regression that broke
+    how those two decorators interact (e.g. the membership-only guard
+    reading the wrong dict, or request_keys being set/consumed at the
+    wrong point in the chain) would slip past them.
+
+    This test drives RoleView.update() through its real decorator chain
+    (check_precondition -> validate_request -> update) with the driver,
+    connection and SQL rendering mocked out, submitting a 'rolmembers'
+    -only body as a user who holds ADMIN OPTION on the target role (but
+    is neither a superuser nor a CREATEROLE holder), and asserts the
+    request is NOT rejected with 403.
+    """
+    scenarios = [
+        ('Check Role Node', dict(url='/browser/role/obj/'))
+    ]
+
+    def setUp(self):
+        pass
+
+    @patch('pgadmin.browser.server_groups.servers.roles.get_driver')
+    @patch('pgadmin.browser.server_groups.servers.roles.render_template')
+    def runTest(self, render_template_mock, get_driver_mock):
+        view = RoleView(cmd=None)
+
+        manager = MagicMock()
+        manager.version = 170000
+        manager.db_info = None
+        manager.user_info = {
+            'is_superuser': False, 'can_create_role': False, 'id': 5
+        }
+
+        conn = MagicMock()
+        conn.connected.return_value = True
+        # Used for the permission lookup, the ALTER ROLE, and the
+        # post-update node fetch alike; has_admin_option=True is what
+        # drives the ADMIN OPTION carve-out in _check_permission().
+        conn.execute_dict.return_value = (True, {'rows': [{
+            'rolname': 'grp_role', 'rolcanlogin': False, 'rolsuper': False,
+            'has_admin_option': True, 'description': None
+        }]})
+        manager.connection.return_value = conn
+
+        get_driver_mock.return_value.connection_manager.return_value = \
+            manager
+
+        # The client sends only 'rolmembers' - exactly what an ADMIN
+        # OPTION holder (who may manage membership only) is allowed to
+        # change.
+        body = {
+            'rolmembers': {
+                'added': [
+                    {'role': 'member_role', 'admin': True,
+                     'inherit': True, 'set': True}
+                ],
+                'changed': [],
+                'deleted': []
+            }
+        }
+
+        with self.app.test_request_context(
+            data=json.dumps(body), content_type='application/json'
+        ):
+            response = view.update(gid=1, sid=1, rid=10)
+
+        # The real _check_permission() call, driven off the mocked
+        # has_admin_option row, must have flagged this as a
+        # membership-only update ...
+        self.assertTrue(view.membership_only_update)
+        # ... and update() must let it through rather than forbidding it.
+        self.assertNotEqual(response.status_code, 403)
 
     def tearDown(self):
         pass
