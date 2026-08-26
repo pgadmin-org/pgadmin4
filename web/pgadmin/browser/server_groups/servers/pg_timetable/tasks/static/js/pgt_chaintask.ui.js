@@ -109,8 +109,9 @@ export default class PgtChainTaskSchema extends BaseUISchema {
       {
         id: 'task_order',
         label: gettext('Order'),
-        type: 'int',
-        cell: 'int',
+        type: 'numeric',
+        cell: 'numeric',
+        controlProps: { decimals: 2 },
       },
       {
         id: 'kind',
@@ -143,6 +144,7 @@ For more information, please see the documentation on <a href="https://www.postg
       {
         id: 'command',
         label: gettext('Command'),
+        noEmpty: true,
         type: (state) => {
           if (state?.kind === 'SQL') return { type: 'multiline', label: gettext('SQL') };
           if (state?.kind === 'BUILTIN') return { type: 'select', label: gettext('Internal Command'), options: [
@@ -155,7 +157,7 @@ For more information, please see the documentation on <a href="https://www.postg
             { label: 'CopyToFile', value: 'CopyToFile' },
             { label: 'Shutdown', value: 'Shutdown' },
           ] };
-          return { type: 'text', label: gettext('Program') };
+          return { type: 'multiline', label: gettext('Program') };
         },
         group: gettext('Code'),
         deps: ['kind'],
@@ -246,13 +248,13 @@ For more information, please see the documentation on <a href="https://www.postg
       } else {
         setError('database_connection', null);
       }
+    }
 
-      if (isEmptyString(state.command)) {
-        setError('command', state.kind  === 'SQL' ? gettext('Please specify the SQL to execute.') : gettext('Please specify the program to execute.'));
-        return true;
-      } else {
-        setError('command', null);
-      }
+    if (isEmptyString(state.command)) {
+      setError('command', state.kind  === 'SQL' ? gettext('Please specify the SQL to execute.') : gettext('Please specify the program to execute.'));
+      return true;
+    } else {
+      setError('command', null);
     }
   }
 }
