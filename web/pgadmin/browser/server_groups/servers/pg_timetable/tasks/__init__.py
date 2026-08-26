@@ -10,6 +10,7 @@
 """Implements pgTimeTable Chain Task Node"""
 
 import json
+import math
 from functools import wraps
 
 from flask import render_template, request, jsonify
@@ -22,6 +23,13 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
 
 from config import PG_DEFAULT_DRIVER
+
+
+def _fmt_task_order(order):
+    f = float(order)
+    if f == int(f):
+        return str(int(f))
+    return f"{f:g}"
 
 
 class ChainTaskModule(CollectionNodeModule):
@@ -278,7 +286,8 @@ SELECT EXISTS(
                 return gone(errormsg=self.STEP_NOT_FOUND)
 
             row = result['rows'][0]
-            label = f"{int(row['task_order']):04d}: {row['task_name']}"
+            order_str = _fmt_task_order(row['task_order'])
+            label = f"{order_str}: {row['task_name']}"
             node = self.blueprint.generate_browser_node(
                 row['task_id'],
                 row['chain_id'],
@@ -290,8 +299,16 @@ SELECT EXISTS(
             )
             return make_json_response(node)
 
+        max_width = max(
+            (len(_fmt_task_order(r['task_order']))
+             for r in result['rows']),
+            default=1
+        )
         for row in result['rows']:
-            label = f"{int(row['task_order']):04d}: {row['task_name']}"
+            order_str = _fmt_task_order(row['task_order']).zfill(
+                max_width
+            )
+            label = f"{order_str}: {row['task_name']}"
             node = self.blueprint.generate_browser_node(
                 row['task_id'],
                 row['chain_id'],
@@ -357,11 +374,18 @@ SELECT EXISTS(
             if isinstance(params_raw, str):
                 params_raw = json.loads(params_raw)
             if isinstance(params_raw, dict):
-                params_raw = params_raw.get('added', []) + params_raw.get('changed', [])
+                params_raw = (
+                    params_raw.get('added', []) +
+                    params_raw.get('changed', [])
+                )
             cleaned = []
             for idx, param in enumerate(params_raw):
                 if not isinstance(param, dict):
-                    cleaned.append({'order_id': idx + 1, 'value': str(param), '_is_json': False})
+                    cleaned.append({
+                        'order_id': idx + 1,
+                        'value': str(param),
+                        '_is_json': False
+                    })
                 else:
                     try:
                         json.loads(param.get('value', ''))
@@ -402,7 +426,7 @@ SELECT EXISTS(
                 )
             )
         row = res['rows'][0]
-        label = f"{int(row['task_order']):04d}: {row['task_name']}"
+        label = f"{_fmt_task_order(row['task_order'])}: {row['task_name']}"
         node = self.blueprint.generate_browser_node(
             row['task_id'],
             row['chain_id'],
@@ -432,7 +456,10 @@ SELECT EXISTS(
                 params_raw = json.loads(params_raw)
 
             if isinstance(params_raw, dict):
-                params_list = params_raw.get('changed', []) + params_raw.get('added', [])
+                params_list = (
+                    params_raw.get('changed', []) +
+                    params_raw.get('added', [])
+                )
             else:
                 params_list = params_raw
 
@@ -482,7 +509,7 @@ SELECT EXISTS(
                 )
             )
         row = res['rows'][0]
-        label = f"{int(row['task_order']):04d}: {row['task_name']}"
+        label = f"{_fmt_task_order(row['task_order'])}: {row['task_name']}"
         node = self.blueprint.generate_browser_node(
             task_id,
             chain_id,
@@ -541,7 +568,10 @@ SELECT EXISTS(
                 params_raw = json.loads(params_raw)
 
             if isinstance(params_raw, dict):
-                params_list = params_raw.get('changed', []) + params_raw.get('added', [])
+                params_list = (
+                    params_raw.get('changed', []) +
+                    params_raw.get('added', [])
+                )
             else:
                 params_list = params_raw
 
@@ -591,9 +621,10 @@ SELECT EXISTS(
     def statistics(self, gid, sid, chain_id, task_id):
         """
         statistics
-        Returns the statistics for a particular database if chain_id is specified,
-        otherwise it will return statistics for all the databases in that
-        server.
+        Returns the statistics for a particular database
+        if chain_id is specified,
+        otherwise it will return statistics for all the
+        databases in that server.
         """
         pref = Preferences.module('browser')
         rows_threshold = pref.preference(

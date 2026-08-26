@@ -24,11 +24,11 @@ INSERT INTO timetable.task(
     {% if 'ignore_error' in task %}, ignore_error{% endif %}
     {% if 'database_connection' in task and task.database_connection %}, database_connection{% endif %}
 ) VALUES (
-    cid, {{ task.task_name|qtLiteral(conn) }}::text, {{ task.task_order|qtLiteral(conn) }}::integer, {{ task.command|qtLiteral(conn) }}::text, {{ task.kind|qtLiteral(conn) }}::timetable.command_kind
+    cid, {{ task.task_name|qtLiteral(conn) }}::text, {{ task.task_order|qtLiteral(conn) }}::double precision, {{ task.command|qtLiteral(conn) }}::text, {{ task.kind|qtLiteral(conn) }}::timetable.command_kind
     {% if 'ignore_error' in task %}, {% if task.ignore_error %}true{% else %}false{% endif %}{% endif %}
     {% if 'database_connection' in task and task.database_connection %}, {{ task.database_connection|qtLiteral(conn) }}::text{% endif %}
 ) RETURNING task_id INTO tid;
-{% if 'parameters' in task and task.parameters|length > 0 %}
+{% if 'parameters' in task and task.parameters and task.parameters|length > 0 %}
 {% for param in task.parameters %}
 INSERT INTO timetable.parameter(task_id, order_id, value)
 VALUES (tid, {{ param.order_id|qtLiteral(conn) }}::integer, {% if param._is_json %}{{ param.value|qtLiteral(conn) }}::jsonb{% else %}to_jsonb({{ param.value|qtLiteral(conn) }}::text){% endif %});

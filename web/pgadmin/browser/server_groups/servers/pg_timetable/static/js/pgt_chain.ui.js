@@ -113,9 +113,13 @@ export default class PgtChainSchema extends BaseUISchema {
               ? tasks.find(t => t.cid === actionObj.value.cid)
               : tasks[tasks.length - 1];
 
-            if (addedTask && (addedTask.task_order === undefined || addedTask.task_order === null)) {
-              const lastOrder = tasks.reduce((max, t) => Math.max(max, parseInt(t.task_order, 10) || 0), 0);
-              addedTask.task_order = lastOrder + 10;
+            if (addedTask && addedTask.task_id === null) {
+              if (tasks.length === 1) {
+                addedTask.task_order = 10;
+              } else {
+                const maxOrder = Math.max(...tasks.map(t => parseFloat(t.task_order) || 0));
+                addedTask.task_order = maxOrder + 10;
+              }
             }
           }
           return state;

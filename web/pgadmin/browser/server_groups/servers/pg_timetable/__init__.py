@@ -199,7 +199,10 @@ SELECT EXISTS(
         if chain_id is not None:
             if len(rset['rows']) != 1:
                 return gone(
-                    errormsg=_("Could not find the pgTimeTable chain on the server.")
+                    errormsg=_(
+                        "Could not find the pgTimeTable"
+                        " chain on the server."
+                    )
                 )
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
@@ -254,7 +257,10 @@ SELECT EXISTS(
                 render_template(
                     "/".join([self.template_path, 'tasks.sql']),
                     chain_id=chain_id, conn=self.conn,
-                    has_connstr=self.manager.db_info['timetable']['has_connstr']
+                    has_connstr=(
+                        self.manager
+                        .db_info['timetable']['has_connstr']
+                    )
                 )
             )
             if not status:
@@ -298,7 +304,11 @@ SELECT EXISTS(
             cleaned_params = []
             for idx, param in enumerate(task.get('parameters', [])):
                 if not isinstance(param, dict):
-                    cleaned_params.append({'order_id': idx + 1, 'value': str(param), '_is_json': False})
+                    cleaned_params.append({
+                        'order_id': idx + 1,
+                        'value': str(param),
+                        '_is_json': False
+                    })
                 else:
                     try:
                         json.loads(param.get('value', ''))
@@ -365,7 +375,14 @@ SELECT EXISTS(
         if not status:
             return internal_server_error(errormsg=res)
 
-        chain_fields = {k: data[k] for k in ['chain_name', 'live', 'max_instances', 'timeout', 'self_destruct', 'exclusive_execution', 'client_name', 'on_error', 'run_at'] if k in data}
+        chain_fields = {
+            k: data[k] for k in [
+                'chain_name', 'live', 'max_instances',
+                'timeout', 'self_destruct',
+                'exclusive_execution', 'client_name',
+                'on_error', 'run_at'
+            ] if k in data
+        }
         if chain_fields:
             sets = []
             params = []
@@ -380,7 +397,11 @@ SELECT EXISTS(
                 else:
                     params.append(val)
             params.append(chain_id)
-            sql = f"UPDATE timetable.chain SET {', '.join(sets)} WHERE chain_id = %s"
+            sql = (
+                f"UPDATE timetable.chain"
+                f" SET {', '.join(sets)}"
+                f" WHERE chain_id = %s"
+            )
             status, res = self.conn.execute_void(sql, params)
             if not status:
                 self.conn.execute_void('ROLLBACK')
@@ -427,7 +448,9 @@ SELECT EXISTS(
             tid = task.get('task_id') if isinstance(task, dict) else task
             if tid:
                 status, res = self.conn.execute_void(
-                    "DELETE FROM timetable.task WHERE task_id = %s AND chain_id = %s",
+                    "DELETE FROM timetable.task"
+                    " WHERE task_id = %s"
+                    " AND chain_id = %s",
                     (tid, chain_id)
                 )
                 if not status:
@@ -459,7 +482,12 @@ SELECT EXISTS(
                     params.append(task[frontend_field])
             if sets:
                 params.extend([tid, chain_id])
-                sql = f"UPDATE timetable.task SET {', '.join(sets)} WHERE task_id = %s AND chain_id = %s"
+                sql = (
+                    f"UPDATE timetable.task"
+                    f" SET {', '.join(sets)}"
+                    f" WHERE task_id = %s"
+                    f" AND chain_id = %s"
+                )
                 status, res = self.conn.execute_void(sql, params)
                 if not status:
                     return status, res
@@ -471,33 +499,48 @@ SELECT EXISTS(
         for task in ctasks.get('added', []):
             if not isinstance(task, dict):
                 continue
-            fields = ['chain_id', 'task_name', 'task_order', 'command']
-            values = [chain_id, task.get('task_name', ''), task.get('task_order', 10), task.get('command', '')]
+            fields = [
+                'chain_id', 'task_name', 'task_order', 'command'
+            ]
+            values = [
+                chain_id,
+                task.get('task_name', ''),
+                task.get('task_order', 10),
+                task.get('command', '')
+            ]
             if 'ignore_error' in task:
                 fields.append('ignore_error')
                 values.append(task['ignore_error'])
             if 'kind' in task:
                 fields.append('kind')
                 values.append(task['kind'])
-            if has_connstr and 'database_connection' in task and task['database_connection']:
+            if (
+                has_connstr and
+                'database_connection' in task and
+                task['database_connection']
+            ):
                 fields.append('database_connection')
                 values.append(task['database_connection'])
             placeholders = ', '.join(['%s'] * len(values))
-            sql = f"INSERT INTO timetable.task ({', '.join(fields)}) VALUES ({placeholders}) RETURNING task_id"
+            sql = (
+                f"INSERT INTO timetable.task"
+                f" ({', '.join(fields)})"
+                f" VALUES ({placeholders})"
+                f" RETURNING task_id"
+            )
             status, tid = self.conn.execute_scalar(sql, values)
             if not status:
                 return status, tid
             if tid:
-                status, res = self._upsert_task_params(tid, task.get('parameters', []))
+                status, res = self._upsert_task_params(
+                    tid, task.get('parameters', [])
+                )
                 if not status:
                     return status, res
 
         return True, None
 
     def _upsert_task_params(self, task_id, parameters):
-        if not parameters:
-            return True, None
-
         def _insert_param(idx, param):
             if not isinstance(param, dict):
                 param = {'order_id': idx + 1, 'value': str(param)}
@@ -511,10 +554,19 @@ SELECT EXISTS(
                 val = ''
             try:
                 json.loads(val)
-                sql = "INSERT INTO timetable.parameter(task_id, order_id, value) VALUES (%s, %s, %s::jsonb)"
+                sql = (
+                    "INSERT INTO timetable.parameter"
+                    "(task_id, order_id, value)"
+                    " VALUES (%s, %s, %s::jsonb)"
+                )
                 params = (task_id, order_id, val)
             except (ValueError, TypeError):
-                sql = "INSERT INTO timetable.parameter(task_id, order_id, value) VALUES (%s, %s, to_jsonb(%s::text))"
+                sql = (
+                    "INSERT INTO timetable.parameter"
+                    "(task_id, order_id, value)"
+                    " VALUES (%s, %s,"
+                    " to_jsonb(%s::text))"
+                )
                 params = (task_id, order_id, val)
             return self.conn.execute_void(sql, params)
 
@@ -525,7 +577,10 @@ SELECT EXISTS(
             return status, res
 
         if isinstance(parameters, dict):
-            all_params = parameters.get('changed', []) + parameters.get('added', [])
+            all_params = (
+                parameters.get('changed', []) +
+                parameters.get('added', [])
+            )
         else:
             all_params = parameters
 
@@ -603,9 +658,10 @@ SELECT EXISTS(
     def statistics(self, gid, sid, chain_id):
         """
         statistics
-        Returns the statistics for a particular database if chain_id is specified,
-        otherwise it will return statistics for all the databases in that
-        server.
+        Returns the statistics for a particular database
+        if chain_id is specified,
+        otherwise it will return statistics for all the
+        databases in that server.
         """
         pref = Preferences.module('browser')
         rows_threshold = pref.preference(
@@ -689,5 +745,6 @@ SELECT EXISTS(
         return success_return(
             message=_("Updated the next runtime to now.")
         )
+
 
 ChainView.register_node_view(blueprint)

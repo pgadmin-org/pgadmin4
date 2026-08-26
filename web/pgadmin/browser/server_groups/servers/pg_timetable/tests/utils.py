@@ -95,7 +95,10 @@ def is_valid_server_to_run_pgtimetable(self):
     self.server_id = parent_node_dict["server"][-1]["server_id"]
     server_con = server_utils.connect_server(self, self.server_id)
     if not server_con["info"] == "Server connected.":
-        raise Exception("Could not connect to server to add pgTimetable chain.")
+        raise Exception(
+            "Could not connect to server"
+            " to add pgTimetable chain."
+        )
     return True, None
 
 
