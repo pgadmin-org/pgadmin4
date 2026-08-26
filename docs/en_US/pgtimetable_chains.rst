@@ -5,12 +5,12 @@
 `pgTimeTable Chains`:index:
 ***************************************
 
-pgTimeTable is a PostgreSQL-based scheduling agent that runs and manages what are called `Chains`.
+**pg_timetable** is a PostgreSQL-based scheduling agent that runs and manages what are called `Chains`.
 Each chain is composed of a set of Tasks to be executed in the order they should run.
 A chain is assigned a single schedule using an extended cron-style format.
-This UI has been tested with pgTimeTable 6.3.0 and above.
+This UI has been tested with pg_timetable 6.3.0 and above.
 
-A task may be a series of *SQL* statements, a *BUILTIN* pgTimeTable command (such as sending email)
+A task may be a series of *SQL* statements, a *BUILTIN* pg_timetable command (such as sending email)
 or an operating system *PROGRAM* program/batch/shell script.
 
 Switches on the *pgTimeTable Chain* dialog (accessed
@@ -22,15 +22,15 @@ When you highlight the name of a defined chain in the pgAdmin tree control, the
 and the *Statistics* tab will display details about the chain's execution.
 There are also statistics about each task.
 
-pgTimeTable supports the ability to have more than one job agent running at a time.
+pg_timetable supports the ability to have more than one job agent running at a time.
 Job agents can be deployed on various platforms and binaries are readily available to 
 deploy on Linux, Windows, and Mac.
 
 For complete installation instructions, configuration options, and command-line
 usage, please refer to the
-`pgTimeTable documentation <https://cybertec-postgresql.github.io/pg_timetable/>`_.
+`pg_timetable documentation <https://cybertec-postgresql.github.io/pg_timetable/>`_.
 
-If you are migrating from pgAgent or another PostgreSQL based scheduler, pgTimeTable provides
+If you are migrating from pgAgent or another PostgreSQL based scheduler, pg_timetable provides
 migration SQL queries to help in that migration.  See the
 `migration tools <https://github.com/cybertec-postgresql/pg_timetable/tree/master/extras>`_
 on GitHub for details.
@@ -43,7 +43,7 @@ It will only show if the schema *timetable* and associated tables exist in your 
 Creating a Chain
 ****************
 
-Note that pgTimeTable is not installed via `CREATE EXTENSION`.
+Note that pg_timetable is not installed via `CREATE EXTENSION`.
 Instead you use a pgTimeTable agent to install the necessary tables.
 To create or manage a chain, use the pgAdmin tree control to browse to the
 server on which the timetable schema exists.  The tree control will
@@ -228,7 +228,7 @@ parameter row:
 Click the compose icon to close the task definition dialog, then click *Save*
 on the chain dialog to save all changes.
 
-Refer to `pgTimeTable samples <https://cybertec-postgresql.github.io/pg_timetable/latest/samples/>`_
+Refer to `pg_timetable samples <https://cybertec-postgresql.github.io/pg_timetable/latest/samples/>`_
 for the kind of parameters expected for each type.
 
 
