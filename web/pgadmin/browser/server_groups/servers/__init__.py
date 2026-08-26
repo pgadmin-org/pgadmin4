@@ -391,7 +391,6 @@ class ServerModule(sg.ServerGroupPluginModule):
         from .pgagent import blueprint as module
         self.submodules.append(module)
 
-         # Explicitly pull in your new testme package route
         from .pg_timetable import blueprint as module
         self.submodules.append(module)
 
