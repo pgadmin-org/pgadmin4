@@ -844,7 +844,10 @@ class OpenAIClient(LLMClient):
         response.completed for the final response.
         """
         content_parts = []
-        # tool_calls_data: {call_id: {name, arguments}}
+        # tool_calls_data: {item_id: {call_id, name, arguments}}
+        # Keyed by item_id because response.function_call_arguments.delta
+        # events carry item_id (matching item.id from output_item.added),
+        # not call_id.
         tool_calls_data = {}
         model_name = self._model
         usage = Usage()
@@ -884,19 +887,20 @@ class OpenAIClient(LLMClient):
             elif event_type == 'response.output_item.added':
                 item = data.get('item', {})
                 if item.get('type') == 'function_call':
-                    call_id = item.get('call_id', '')
-                    tool_calls_data[call_id] = {
+                    item_id = item.get('id', '')
+                    tool_calls_data[item_id] = {
+                        'call_id': item.get('call_id', ''),
                         'name': item.get('name', ''),
                         'arguments': ''
                     }
 
             elif event_type == 'response.function_call_arguments.delta':
-                call_id = data.get('call_id', '')
-                if call_id not in tool_calls_data:
-                    tool_calls_data[call_id] = {
-                        'name': '', 'arguments': ''
+                item_id = data.get('item_id', '')
+                if item_id not in tool_calls_data:
+                    tool_calls_data[item_id] = {
+                        'call_id': '', 'name': '', 'arguments': ''
                     }
-                tool_calls_data[call_id]['arguments'] += data.get(
+                tool_calls_data[item_id]['arguments'] += data.get(
                     'delta', ''
                 )
 
@@ -915,14 +919,14 @@ class OpenAIClient(LLMClient):
         # Build final response
         content = ''.join(content_parts)
         tool_calls = []
-        for call_id, tc in tool_calls_data.items():
+        for tc in tool_calls_data.values():
             try:
                 arguments = json.loads(tc['arguments']) \
                     if tc['arguments'] else {}
             except json.JSONDecodeError:
                 arguments = {}
             tool_calls.append(ToolCall(
-                id=call_id or str(uuid.uuid4()),
+                id=tc['call_id'] or str(uuid.uuid4()),
                 name=tc['name'],
                 arguments=arguments
             ))
