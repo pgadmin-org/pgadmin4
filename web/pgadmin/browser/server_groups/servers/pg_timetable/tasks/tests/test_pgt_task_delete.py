@@ -65,6 +65,8 @@ class PgtTaskDeleteTestCase(BaseTestGenerator):
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
                     response = tasks_utils.api_delete(self)
+            else:
+                response = tasks_utils.api_delete(self)
 
             utils.assert_status_code(self, response)
             utils.assert_error_message(self, response)

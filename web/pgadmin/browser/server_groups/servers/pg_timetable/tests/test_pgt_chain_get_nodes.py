@@ -58,6 +58,8 @@ class PgtChainGetNodesTestCase(BaseTestGenerator):
                 self.chain_id = self.data["chain_id"]
                 response = pgt_utils.api_get(self)
                 self.chain_id = existing_chain_id
+            else:
+                response = pgt_utils.api_get(self)
 
             utils.assert_status_code(self, response)
             utils.assert_error_message(self, response)

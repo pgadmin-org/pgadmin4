@@ -208,19 +208,6 @@ class ChainTaskView(PGChildNodeView):
 
             self.template_path = 'pgt_chaintask/sql/default'
 
-            if 'timetable' not in self.manager.db_info:
-                status, res = self.conn.execute_dict("""
-SELECT EXISTS(
-        SELECT 1 FROM information_schema.columns
-        WHERE
-            table_schema='timetable' AND table_name='task' AND
-            column_name='database_connection'
-    ) has_connstr""")
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-                self.manager.db_info['timetable'] = res['rows'][0]
-
             return f(*args, **kwargs)
 
         return wrap
@@ -239,7 +226,6 @@ SELECT EXISTS(
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             chain_id=chain_id,
-            has_connstr=self.manager.db_info['timetable']['has_connstr'],
             conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
@@ -340,7 +326,6 @@ SELECT EXISTS(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             task_id=task_id,
             chain_id=chain_id,
-            has_connstr=self.manager.db_info['timetable']['has_connstr'],
             conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
@@ -399,7 +384,6 @@ SELECT EXISTS(
             "/".join([self.template_path, self._CREATE_SQL]),
             chain_id=chain_id,
             data=data,
-            has_connstr=self.manager.db_info['timetable']['has_connstr'],
             conn=self.conn
         )
 
@@ -482,7 +466,6 @@ SELECT EXISTS(
             chain_id=chain_id,
             task_id=task_id,
             data=data,
-            has_connstr=self.manager.db_info['timetable']['has_connstr'],
             conn=self.conn
         )
 
@@ -594,7 +577,6 @@ SELECT EXISTS(
                 "/".join([self.template_path, self._CREATE_SQL]),
                 chain_id=chain_id,
                 data=data,
-                has_connstr=self.manager.db_info['timetable']['has_connstr'],
                 conn=self.conn
             )
 
@@ -608,7 +590,6 @@ SELECT EXISTS(
             chain_id=chain_id,
             task_id=task_id,
             data=data,
-            has_connstr=self.manager.db_info['timetable']['has_connstr'],
             conn=self.conn
         )
 

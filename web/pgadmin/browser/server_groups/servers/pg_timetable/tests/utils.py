@@ -130,27 +130,11 @@ def is_pgtimetable_installed_on_server(self):
         """
         pg_cursor.execute(SQL)
         result = pg_cursor.fetchone()
-        if result is None:
+        if result is None or not result[0]:
             connection.close()
             message = "Make sure pgTimetable is installed properly."
             return False, message
 
-        SQL = """
-        SELECT EXISTS(
-                SELECT 1 FROM information_schema.columns
-                WHERE
-                    table_schema='timetable' AND table_name='task' AND
-                    column_name='database_connection'
-            ) has_connstr
-        """
-        pg_cursor.execute(SQL)
-        result = pg_cursor.fetchone()
-        if result is None:
-            connection.close()
-            message = "Make sure pgTimetable is installed properly."
-            return False, message
-
-        connection.close()
         return True, None
     except Exception:
         traceback.print_exc(file=sys.stderr)

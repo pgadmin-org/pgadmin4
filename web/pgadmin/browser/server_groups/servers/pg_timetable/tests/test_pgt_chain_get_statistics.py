@@ -46,6 +46,8 @@ class PgtChainGetStatsTestCase(BaseTestGenerator):
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
                     response = pgt_utils.api_get_stats(self)
+            else:
+                response = pgt_utils.api_get_stats(self)
 
             utils.assert_status_code(self, response)
             utils.assert_error_message(self, response)
