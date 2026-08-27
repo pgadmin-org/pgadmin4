@@ -131,7 +131,15 @@ export default function DataGridView({
   // that as a real resize. Below the threshold we skip virtualisation
   // entirely and render every row in normal document flow, so showing a
   // hidden tab is a pure CSS toggle again.
-  const virtualiseThreshold = viewHelperProps.virtualiseThreshold ?? 100;
+  //
+  // The threshold scales with visible column count rather than being a
+  // flat row count, since render cost tracks total cells (rows * cols),
+  // not rows alone: formula and bounds from VIBVEL47's PR #10146.
+  const visibleColCount = table.getVisibleLeafColumns().length;
+  const virtualiseThreshold = viewHelperProps.virtualiseThreshold ??
+    (visibleColCount > 0
+      ? Math.min(400, Math.max(25, Math.round(700 / visibleColCount)))
+      : 100);
   const shouldVirtualise = rows.length > virtualiseThreshold;
 
   const virtualizer = useVirtualizer({
