@@ -192,7 +192,10 @@ describe('SchemaView', ()=>{
       });
 
       it('virtualises a large grid, mounting only a window of rows', async ()=>{
-        const manyRows = Array.from({length: 150}, (_, i)=>(
+        // The default threshold scales with visible column count (capped at
+        // 400), so this needs to comfortably clear that cap regardless of
+        // how many columns FieldColl renders.
+        const manyRows = Array.from({length: 450}, (_, i)=>(
           {field3: i, field4: 'field4val', field5: `field5val${i}`}
         ));
 
