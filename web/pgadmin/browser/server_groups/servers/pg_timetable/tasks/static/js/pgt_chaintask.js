@@ -69,8 +69,8 @@ define('pgadmin.node.pgt_chaintask', [
         }]);
       },
 
-      getSchema: function(treeNodeInfo, itemNodeData) {
-        return getNodePgtChainTaskSchema(treeNodeInfo, itemNodeData);
+      getSchema: function() {
+        return getNodePgtChainTaskSchema();
       },
 
     });

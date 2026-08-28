@@ -21,7 +21,7 @@ from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.server_groups import servers
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response, gone, success_return
+    make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
 
@@ -459,8 +459,8 @@ class ChainView(PGChildNodeView):
             chain_id_q = qt(chain_id, self.conn)
             sql_parts.append(
                 f"UPDATE timetable.chain\n"
-                f"SET\n"
-                + ",\n".join(sets) + "\n"
+                f"SET\n" +
+                ",\n".join(sets) + "\n"
                 f"WHERE chain_id = {chain_id_q}::integer;"
             )
 
@@ -531,8 +531,8 @@ class ChainView(PGChildNodeView):
             if sets:
                 sql_parts.append(
                     f"UPDATE timetable.task\n"
-                    f"SET\n"
-                    + ",\n".join(sets) + "\n"
+                    f"SET\n" +
+                    ",\n".join(sets) + "\n"
                     f"WHERE task_id = {tid_q}::integer"
                     f" AND chain_id = {cid_q}::integer;"
                 )
@@ -634,8 +634,8 @@ class ChainView(PGChildNodeView):
             lines.append(
                 "INSERT INTO timetable.parameter"
                 "(task_id, order_id, value)\n"
-                "VALUES\n"
-                + ",\n".join(val_strs) + ";"
+                "VALUES\n" +
+                ",\n".join(val_strs) + ";"
             )
         return "\n".join(lines)
 
@@ -666,8 +666,8 @@ class ChainView(PGChildNodeView):
             lines.append(
                 "INSERT INTO timetable.parameter"
                 "(task_id, order_id, value)\n"
-                "VALUES\n"
-                + ",\n".join(val_strs) + ";"
+                "VALUES\n" +
+                ",\n".join(val_strs) + ";"
             )
         return "\n".join(lines)
 
@@ -929,10 +929,9 @@ class ChainView(PGChildNodeView):
     def statistics(self, gid, sid, chain_id):
         """
         statistics
-        Returns the statistics for a particular database
-        if chain_id is specified,
-        otherwise it will return statistics for all the
-        databases in that server.
+        Returns the recent execution details (run, status, start time,
+        end time, duration and task) for the specified chain, up to the
+        configured rows threshold.
         """
         pref = Preferences.module('browser')
         rows_threshold = pref.preference(
@@ -1002,7 +1001,7 @@ class ChainView(PGChildNodeView):
         This function will set the next run to now, to inform pgTimeTable to
         run the chain now.
         """
-        status, res = self.conn.execute_void(
+        status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'run_now.sql']),
                 chain_id=chain_id, conn=self.conn
@@ -1011,8 +1010,15 @@ class ChainView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
 
-        return success_return(
-            message=_("Updated the next runtime to now.")
+        rows = (res or {}).get('rows') or []
+        if not rows:
+            return gone(errormsg=_("Could not find the requested chain."))
+
+        notice = rows[0]['notice']
+        notification = bool(rows[0].get('notification'))
+
+        return make_json_response(
+            success=1, info=notice, data={'notification': notification}
         )
 
 

@@ -84,6 +84,9 @@ export default class PgtChainSchema extends BaseUISchema {
 -- └──────────── minute (0 - 59)</pre>`),
         helpMessageMode: ['create', 'edit'],
       },{
+        id: 'status', label: gettext('Status'), type: 'text',
+        mode: ['properties'],
+      },{
         id: 'last_run', label: gettext('Last run'), type: 'text',
         mode: ['properties'],
       },{

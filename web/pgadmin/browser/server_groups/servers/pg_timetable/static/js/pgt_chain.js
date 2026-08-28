@@ -21,7 +21,7 @@ define('pgadmin.node.pgt_chain', [
       node: 'pgt_chain',
       label: gettext('pgt_chains'),
       type: 'coll-pgt_chain',
-      columns: ['chain_id', 'chain_name', 'live', 'returncode', 'run_at'],
+      columns: ['chain_id', 'chain_name', 'live', 'status', 'run_at'],
       hasStatistics: false,
       canDrop: true,
       canDropCascade: false,
@@ -51,8 +51,8 @@ define('pgadmin.node.pgt_chain', [
         this.initialized = true;
       },
 
-      getSchema: function (treeNodeInfo, itemNodeData) {
-        return new PgtChainSchema({}, () => getNodePgtChainTaskSchema(treeNodeInfo, itemNodeData));
+      getSchema: function () {
+        return new PgtChainSchema({}, () => getNodePgtChainTaskSchema());
       },
 
       run_pgt_chain_now: function (args) {
@@ -65,7 +65,11 @@ define('pgadmin.node.pgt_chain', [
           getApiInstance()
             .put(obj.generate_url(i, 'run_now', d, true))
             .then(({ data: res }) => {
-              pgAdmin.Browser.notifier.success(res.info);
+              if (res.data && res.data.notification) {
+                pgAdmin.Browser.notifier.success(res.info);
+              } else {
+                pgAdmin.Browser.notifier.warning(res.info);
+              }
               t.unload(i);
             })
             .catch(function (error) {

@@ -602,10 +602,9 @@ class ChainTaskView(PGChildNodeView):
     def statistics(self, gid, sid, chain_id, task_id):
         """
         statistics
-        Returns the statistics for a particular database
-        if chain_id is specified,
-        otherwise it will return statistics for all the
-        databases in that server.
+        Returns the recent execution details (run, status, start time,
+        end time, duration and output) for the specified task of the
+        given chain, up to the configured rows threshold.
         """
         pref = Preferences.module('browser')
         rows_threshold = pref.preference(
