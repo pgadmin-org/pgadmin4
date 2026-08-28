@@ -10,52 +10,14 @@
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { SCHEMA_STATE_ACTIONS } from 'sources/SchemaView';
-import { getNodeListByName } from '../../../../../../static/js/node_ajax';
 import { isEmptyString } from 'sources/validators';
 
-export function getNodePgtChainTaskSchema(treeNodeInfo, itemNodeData) {
-  const paramSchema = new (class extends BaseUISchema {
-    constructor() {
-      super({ order_id: null, value: '' });
-    }
-    get baseFields() {
-      return [
-        { id: '_t', type: 'boolean' },
-        { id: 'order_id', label: gettext('Order'), type: 'int', noEmpty: true, cell: 'int', width: 20 },
-        { id: 'value', label: gettext('Value'), type: 'multiline', cell: 'text' },
-      ];
-    }
-    validate(state, setError) {
-      if (!state.order_id || state.order_id < 1) {
-        setError('order_id', gettext('Order must be a positive integer.'));
-        return true;
-      }
-      setError('order_id', null);
-      if (isEmptyString(state.value)) {
-        setError('value', gettext('Please enter a parameter value.'));
-        return true;
-      }
-      setError('value', null);
-    }
-  })();
-
-  return new PgtChainTaskSchema(
-    {
-      databases: () =>
-        getNodeListByName('database', treeNodeInfo, itemNodeData, {
-          cacheLevel: 'database',
-          cacheNode: 'database',
-        }),
-      paramSchema,
-    },
-    {
-      jstdbname: treeNodeInfo['server']['db'],
-    }
-  );
+export function getNodePgtChainTaskSchema() {
+  return new PgtChainTaskSchema();
 }
 
 export default class PgtChainTaskSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues = {}) {
+  constructor(initValues = {}) {
     super({
       task_id: null,
       chain_id: null,
@@ -69,22 +31,30 @@ export default class PgtChainTaskSchema extends BaseUISchema {
       ...initValues,
     });
 
-    this.fieldOptions = {
-      databases: [],
-      paramSchema: new (class extends BaseUISchema {
-        constructor() {
-          super({ order_id: null, value: '' });
+    this.paramSchema = new (class extends BaseUISchema {
+      constructor() {
+        super({ order_id: null, value: '' });
+      }
+      get baseFields() {
+        return [
+          { id: '_t', type: 'boolean' },
+          { id: 'order_id', label: gettext('Order'), type: 'int', noEmpty: true, cell: 'int', width: 20 },
+          { id: 'value', label: gettext('Value'), type: 'multiline', cell: 'text' },
+        ];
+      }
+      validate(state, setError) {
+        if (!state.order_id || state.order_id < 1) {
+          setError('order_id', gettext('Order must be a positive integer.'));
+          return true;
         }
-        get baseFields() {
-          return [
-            { id: '_t', type: 'boolean' },
-            { id: 'order_id', label: gettext('Order'), type: 'int', noEmpty: true, cell: 'int', width: 20 },
-            { id: 'value', label: gettext('Value'), type: 'multiline', cell: 'text' },
-          ];
+        setError('order_id', null);
+        if (isEmptyString(state.value)) {
+          setError('value', gettext('Please enter a parameter value.'));
+          return true;
         }
-      })(),
-      ...fieldOptions,
-    };
+        setError('value', null);
+      }
+    })();
   }
 
   get idAttribute() {
@@ -166,7 +136,7 @@ For more information, please see the documentation on <a href="https://www.postg
         id: 'parameters', label: '', group: gettext('Code'),
         type: 'collection', mode: ['edit', 'create'],
         deps: ['kind'],
-        schema: this.fieldOptions.paramSchema,
+        schema: this.paramSchema,
         canEdit: true, canAdd: true, canDelete: true,
         uniqueCol: ['order_id'],
         columns: ['order_id', 'value'],

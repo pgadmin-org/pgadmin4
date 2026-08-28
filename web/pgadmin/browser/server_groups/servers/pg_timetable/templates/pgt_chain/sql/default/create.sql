@@ -1,7 +1,7 @@
 DO $$
 DECLARE
-    cid integer;
-    tid integer;
+    cid bigint;
+    tid bigint;
 BEGIN
 INSERT INTO timetable.chain(
     chain_name, run_at, client_name, live, max_instances, timeout, self_destruct, exclusive_execution, on_error

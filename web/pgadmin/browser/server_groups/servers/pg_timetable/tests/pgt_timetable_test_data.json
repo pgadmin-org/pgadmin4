@@ -443,6 +443,22 @@
         "error_msg": null,
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Run chain now: Designated client not active.",
+      "url": "/browser/pgt_chain/run_now/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "designated_client": "ghost_agent"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
     }
   ]
 }
