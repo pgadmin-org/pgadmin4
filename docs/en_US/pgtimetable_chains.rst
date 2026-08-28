@@ -105,16 +105,15 @@ chain:
   .. code-block:: text
 
       * * * * *
-      ┬ ┬ ┬ ┬ ┬
-      │ │ │ │ │
-      │ │ │ │ └──── day of the week (0 - 7) (0 and 7 = Sunday)
-      │ │ │ └────── month (1 - 12)
-      │ │ └──────── day of the month (1 - 31)
-      │ └────────── hour (0 - 23)
-      └──────────── minute (0 - 59)
+      | | | | |
+      | | | | +---- day of the week (0 - 7) (0 and 7 = Sunday)
+      | | | +------ month (1 - 12)
+      | | +-------- day of the month (1 - 31)
+      | +---------- hour (0 - 23)
+      +------------ minute (0 - 59)
 
-  Leave the field blank to disable automatic scheduling.  The chain can still
-  be started manually using the *Run now* option.
+  If you leave the field blank it runs every minute
+  (the effective schedule is `* * * * *`).
 
 In addition to cron syntax, pgTimeTable supports additional special case formats.
 Namely `@after`, `@every`, `@reboot`.
