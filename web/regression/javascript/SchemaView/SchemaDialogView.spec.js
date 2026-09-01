@@ -192,14 +192,16 @@ describe('SchemaView', ()=>{
       });
 
       it('virtualises a large grid, mounting only a window of rows', async ()=>{
-        // The default threshold scales with visible column count (capped at
-        // 400), so this needs to comfortably clear that cap regardless of
-        // how many columns FieldColl renders.
-        const manyRows = Array.from({length: 450}, (_, i)=>(
+        // Clearing the default threshold would need several hundred rows,
+        // which is slow enough to time out on the Windows runners, so the
+        // threshold is pinned low instead and the scaling of the default
+        // is covered directly by getVirtualiseThreshold's own tests.
+        const manyRows = Array.from({length: 60}, (_, i)=>(
           {field3: i, field4: 'field4val', field5: `field5val${i}`}
         ));
 
         await ctrlMount({
+          viewHelperProps: {mode: 'create', virtualiseThreshold: 25},
           getInitData: ()=>Promise.resolve({fieldcoll: manyRows}),
         });
 
