@@ -217,7 +217,11 @@ _.extend(pgBrowser.keyboardNavigation, {
       // div with no tabindex, so focusing it has never done anything; the
       // tree carries tabindex="-1" and can actually take focus, which is
       // what makes the arrow keys work once the shortcut has been pressed.
-      (panel?.querySelector('.file-tree') ?? panel)?.focus();
+      // There is deliberately no fallback to the panel: it cannot take focus,
+      // and giving it a tabindex purely to catch this case would land the
+      // keyboard on a container that handles no keys, which is worse for
+      // anyone navigating by keyboard than leaving focus where it was.
+      panel?.querySelector('.file-tree')?.focus();
       tree.t.select(tree.i);
     }, 0);
   },

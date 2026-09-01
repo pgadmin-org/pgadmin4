@@ -65,13 +65,21 @@ describe('keyboardNavigation.bindLeftTree', () => {
     expect(select).toHaveBeenCalledWith('some-tree-item');
   });
 
-  it('falls back to the panel when there is no tree to focus', () => {
-    buildObjectExplorer({withTree: false});
+  it('leaves focus alone when there is no tree to focus', () => {
+    const {pane} = buildObjectExplorer({withTree: false});
+    const elsewhere = document.createElement('button');
+    document.body.appendChild(elsewhere);
+    elsewhere.focus();
 
     expect(() => {
       pgAdmin.Browser.keyboardNavigation.bindLeftTree();
       jest.runAllTimers();
     }).not.toThrow();
+    // The panel cannot take focus and is not given a tabindex to make it
+    // able to, so focus stays where the user left it rather than landing on
+    // a container that handles no keys.
+    expect(document.activeElement).toBe(elsewhere);
+    expect(document.activeElement).not.toBe(pane);
     expect(select).toHaveBeenCalled();
   });
 
