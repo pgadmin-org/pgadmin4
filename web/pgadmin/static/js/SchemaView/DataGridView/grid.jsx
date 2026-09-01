@@ -46,6 +46,20 @@ import { FeatureSet } from './features';
 import { createGridColumns, GRID_STATE } from './utils';
 
 
+// The row count above which a grid is worth virtualising. It scales with
+// the visible column count rather than being a flat row count, since
+// render cost tracks total cells (rows * cols), not rows alone: formula
+// and bounds from VIBVEL47's PR #10146. A grid reporting no columns yet
+// gets a middling default rather than the 25 row floor, so that a grid
+// still settling its columns is not virtualised on the strength of a
+// momentary zero.
+export function getVirtualiseThreshold(visibleColCount) {
+  if(!visibleColCount) return 100;
+
+  return Math.min(400, Math.max(25, Math.round(700 / visibleColCount)));
+}
+
+
 export default function DataGridView({
   field, viewHelperProps, accessPath, dataDispatch, containerClassName
 }) {
@@ -131,15 +145,9 @@ export default function DataGridView({
   // that as a real resize. Below the threshold we skip virtualisation
   // entirely and render every row in normal document flow, so showing a
   // hidden tab is a pure CSS toggle again.
-  //
-  // The threshold scales with visible column count rather than being a
-  // flat row count, since render cost tracks total cells (rows * cols),
-  // not rows alone: formula and bounds from VIBVEL47's PR #10146.
   const visibleColCount = table.getVisibleLeafColumns().length;
   const virtualiseThreshold = viewHelperProps.virtualiseThreshold ??
-    (visibleColCount > 0
-      ? Math.min(400, Math.max(25, Math.round(700 / visibleColCount)))
-      : 100);
+    getVirtualiseThreshold(visibleColCount);
   const shouldVirtualise = rows.length > virtualiseThreshold;
 
   const virtualizer = useVirtualizer({
