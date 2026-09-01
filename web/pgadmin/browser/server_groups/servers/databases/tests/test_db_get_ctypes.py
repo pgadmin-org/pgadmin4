@@ -22,6 +22,7 @@ also covers the server version picking the right template bucket.
 
 import uuid
 
+import psycopg
 from flask import render_template
 
 from pgadmin.utils.route import BaseTestGenerator
@@ -105,7 +106,18 @@ class GetCtypesTestCase(BaseTestGenerator):
                 else (self.template_collate, 'C')
             self._create_database(
                 "LC_COLLATE '%s' LC_CTYPE '%s'" % (collate, ctype))
-            self.assertIn(self.template_collate, self._reported_locales())
+            try:
+                reported = self._reported_locales()
+            except psycopg.OperationalError as exc:
+                # Windows builds accept the CREATE DATABASE but refuse to
+                # open a database whose collation and character type differ,
+                # so the pair that proves which of the two columns was read
+                # cannot be exercised there.
+                if 'not supported on this platform' not in str(exc):
+                    raise
+                self.skipTest('This server will not open a database whose '
+                              'collate and ctype differ: %s' % exc)
+            self.assertIn(self.template_collate, reported)
             return
 
         if self.provider == 'builtin':
@@ -121,7 +133,12 @@ class GetCtypesTestCase(BaseTestGenerator):
                               "the only one a UTF-8 builtin database can "
                               "use, so a distinguishable one cannot be "
                               "created here.")
-            self._skip_unless_distinct_template_locale()
+            # Unlike the libc scenarios, nothing here needs a template
+            # locale that differs from the defaults: 'C' and 'POSIX' are
+            # both perfectly distinguishable from the 'C.UTF-8' the builtin
+            # database is created with, and skipping them would lose the
+            # scenario on exactly the servers most likely to have a default
+            # template0.
             self._create_database("LOCALE_PROVIDER builtin "
                                   "BUILTIN_LOCALE 'C.UTF-8' ENCODING UTF8")
 
