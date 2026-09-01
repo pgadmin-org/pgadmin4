@@ -309,6 +309,18 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_extension='.csv')
         ),
         (
+            # The exporter fetches ten rows at a time, and the codecs that
+            # self-emit a BOM do so on every encode() call, so anything
+            # spanning more than one chunk is where a BOM per chunk would
+            # show up. A single row cannot catch that.
+            'Download multi-chunk CSV as utf-16 has exactly one BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-16',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv',
+                 sql='SELECT g as "A", g * 2 as "B", \'x\' as "C" '
+                     'FROM generate_series(1, 25) g')
+        ),
+        (
             # A bogus, non-existent codec must be rejected up front with a
             # clean 400, rather than blowing up mid-stream after a 200.
             'Download CSV with an invalid output encoding returns 400',
@@ -584,6 +596,12 @@ class TestDownloadResultFormats(BaseTestGenerator):
             self.assertTrue(raw.startswith(bom))
             # No second, redundant BOM immediately after the first.
             self.assertFalse(raw[len(bom):].startswith(bom))
+            # And none further in either: the exporter encodes in chunks,
+            # and a codec that emits its own BOM emits one per encode()
+            # call, so a payload spanning several chunks is where a stray
+            # BOM would otherwise appear. The fixture data is ASCII, so the
+            # BOM byte sequence cannot occur in the encoded rows.
+            self.assertEqual(raw.count(bom), 1)
         else:
             self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
 
@@ -615,12 +633,15 @@ class TestDownloadResultFormats(BaseTestGenerator):
                 self.assertNotIn(self.non_latin1_char, body)
                 self.assertIn('?', body)
 
+    def tearDown(self):
+        # Closing the transaction and disconnecting belong here rather than
+        # at the end of runTest: a failed assertion would otherwise skip
+        # them and leave the connection open against a database that is
+        # about to be dropped.
         url = '/sqleditor/close/{0}'.format(self.trans_id)
-        response = self.tester.delete(url)
-        self.assertEqual(response.status_code, 200)
+        self.tester.delete(url)
         database_utils.disconnect_database(self, self._sid, self._did)
 
-    def tearDown(self):
         main_conn = test_utils.get_db_connection(
             self.server['db'],
             self.server['username'],

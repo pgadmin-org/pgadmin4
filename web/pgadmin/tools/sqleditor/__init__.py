@@ -2225,6 +2225,14 @@ def start_query_download_tool(trans_id):
                       replace_nulls_with=blueprint.replace_nulls_with.get(),
                       data_format=data_format)
 
+        # Encode incrementally rather than a chunk at a time. The codecs
+        # that emit their own BOM do so on every encode() call, so encoding
+        # each chunk on its own would put a BOM at the head of every chunk
+        # rather than once at the head of the file; an incremental encoder
+        # emits it once and then keeps going.
+        encoder = codecs.getincrementalencoder(output_encoding)(
+            errors='replace')
+
         def encoded_gen(text_gen):
             is_first_chunk = True
             for chunk in text_gen:
@@ -2234,7 +2242,11 @@ def start_query_download_tool(trans_id):
                     # one itself, otherwise we'd end up with two BOMs.
                     if add_bom and is_utf and not codec_self_emits_bom:
                         chunk = '\ufeff' + chunk
-                yield chunk.encode(output_encoding, errors='replace')
+                yield encoder.encode(chunk)
+
+            trailing = encoder.encode('', True)
+            if trailing:
+                yield trailing
 
         if data_format == 'json':
             base_mimetype = 'application/json'
