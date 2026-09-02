@@ -79,7 +79,7 @@
     "@date-io/date-fns": "^3.2.1",
     "@emotion/sheet": "^1.4.0",
     "@fluentui/keyboard-key": "^0.4.23",
-    "@fortawesome/fontawesome-free": "latest",
+    "@fortawesome/fontawesome-free": "7.3.1",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
     "@mui/x-date-pickers": "^8.29.3",

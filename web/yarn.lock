@@ -3195,10 +3195,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-free@npm:latest":
-  version: 7.2.0
-  resolution: "@fortawesome/fontawesome-free@npm:7.2.0"
-  checksum: 10c0/fc95989739857a2622c993929c6748c8c7eac3b490b0de6beb843b0b6a5de99f1e99c92901706c73e4da6be9413853a7382dfe82d2313c217489210a5b9965ed
+"@fortawesome/fontawesome-free@npm:7.3.1":
+  version: 7.3.1
+  resolution: "@fortawesome/fontawesome-free@npm:7.3.1"
+  checksum: 10c0/85b70ea64e69b9635ff0b949871acaaf0e6c6fd41860b8a78a5067123a42dd71144f7f7feea7aee013a485166ee8bf8ee3aafb15146dc0f55512d07015adddee
   languageName: node
   linkType: hard
 
@@ -14429,7 +14429,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@emotion/utils": "npm:^1.4.2"
     "@fluentui/keyboard-key": "npm:^0.4.23"
-    "@fortawesome/fontawesome-free": "npm:latest"
+    "@fortawesome/fontawesome-free": "npm:7.3.1"
     "@mui/icons-material": "npm:^7.3.11"
     "@mui/material": "npm:^7.3.11"
     "@mui/x-date-pickers": "npm:^8.29.3"
