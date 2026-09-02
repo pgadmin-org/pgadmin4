@@ -425,6 +425,56 @@ class ChainView(PGChildNodeView):
         driver = get_driver(PG_DEFAULT_DRIVER)
         qt = driver.qtLiteral
 
+        def _params_sql(parameters, task_id_ref):
+            """Build the parameter DELETE + INSERT statements.
+
+            task_id_ref is the SQL expression for the task id: a quoted
+            literal for existing tasks, or the PL/pgSQL variable 'tid'
+            for tasks added within the enclosing DO block.
+            """
+            lines = [
+                f"DELETE FROM timetable.parameter"
+                f" WHERE task_id = {task_id_ref}::integer;"
+            ]
+            if isinstance(parameters, dict):
+                all_params = (
+                    parameters.get('changed', []) +
+                    parameters.get('added', [])
+                )
+            else:
+                all_params = parameters
+            val_strs = []
+            for param in all_params:
+                if not isinstance(param, dict):
+                    continue
+                oid = param.get('order_id', 0)
+                val = param.get('value', '')
+                if val is None:
+                    val = ''
+                oid_q = qt(oid, self.conn)
+                if param.get('_is_json'):
+                    vq = qt(val, self.conn)
+                    val_strs.append(
+                        f"({task_id_ref}::integer,"
+                        f" {oid_q}::integer,"
+                        f" {vq}::jsonb)"
+                    )
+                else:
+                    vq = qt(val, self.conn)
+                    val_strs.append(
+                        f"({task_id_ref}::integer,"
+                        f" {oid_q}::integer,"
+                        f" to_jsonb({vq}::text))"
+                    )
+            if val_strs:
+                lines.append(
+                    "INSERT INTO timetable.parameter"
+                    "(task_id, order_id, value)\n"
+                    "VALUES\n" +
+                    ",\n".join(val_strs) + ";"
+                )
+            return lines
+
         sql_parts = []
 
         chain_fields = {
@@ -468,6 +518,9 @@ class ChainView(PGChildNodeView):
         if not isinstance(ctasks, dict):
             return "\n".join(sql_parts) if sql_parts else ""
 
+        cid_q = qt(chain_id, self.conn)
+        body = []
+
         for task in ctasks.get('deleted', []):
             tid = (
                 task.get('task_id')
@@ -475,12 +528,11 @@ class ChainView(PGChildNodeView):
             )
             if tid:
                 tid_q = qt(tid, self.conn)
-                cid_q = qt(chain_id, self.conn)
-                sql_parts.append(
+                body.append(
                     f"DELETE FROM timetable.parameter"
                     f" WHERE task_id = {tid_q}::integer;"
                 )
-                sql_parts.append(
+                body.append(
                     f"DELETE FROM timetable.task"
                     f" WHERE task_id = {tid_q}::integer"
                     f" AND chain_id = {cid_q}::integer;"
@@ -493,7 +545,6 @@ class ChainView(PGChildNodeView):
             if not tid:
                 continue
             tid_q = qt(tid, self.conn)
-            cid_q = qt(chain_id, self.conn)
             sets = []
             if 'kind' in task:
                 kv = qt(task['kind'], self.conn)
@@ -515,21 +566,15 @@ class ChainView(PGChildNodeView):
                 if field == 'ignore_error':
                     v = 'true' if val else 'false'
                 elif field == 'database_connection':
-                    if val:
-                        v = (
-                            f"{qt(val, self.conn)}"
-                            f"::text"
-                        )
-                    else:
-                        v = 'NULL'
-                else:
                     v = (
-                        f"{qt(val, self.conn)}"
-                        f"::{cast}"
+                        f"{qt(val, self.conn)}::text"
+                        if val else 'NULL'
                     )
+                else:
+                    v = f"{qt(val, self.conn)}::{cast}"
                 sets.append(f"    {field} = {v}")
             if sets:
-                sql_parts.append(
+                body.append(
                     f"UPDATE timetable.task\n"
                     f"SET\n" +
                     ",\n".join(sets) + "\n"
@@ -537,16 +582,15 @@ class ChainView(PGChildNodeView):
                     f" AND chain_id = {cid_q}::integer;"
                 )
             if 'parameters' in task:
-                sql_parts.append(
-                    self._generate_params_sql(
-                        tid, task['parameters']
+                body.extend(
+                    _params_sql(
+                        task['parameters'], tid_q
                     )
                 )
 
         for task in ctasks.get('added', []):
             if not isinstance(task, dict):
                 continue
-            cid_q = qt(chain_id, self.conn)
             cols = [
                 'chain_id', 'task_name', 'task_order',
                 'command', 'kind', 'ignore_error',
@@ -566,110 +610,33 @@ class ChainView(PGChildNodeView):
             ie = task.get('ignore_error', False)
             vals.append('true' if ie else 'false')
             dc = task.get('database_connection', '')
-            if dc:
-                vals.append(
-                    f"{qt(dc, self.conn)}::text"
-                )
-            else:
-                vals.append('NULL')
+            vals.append(
+                f"{qt(dc, self.conn)}::text" if dc else 'NULL'
+            )
             cols_str = ", ".join(cols)
             vals_str = ",\n    ".join(vals)
-            sql_parts.append(
+            body.append(
                 f"INSERT INTO timetable.task(\n"
                 f"    {cols_str}\n"
                 f") VALUES (\n"
                 f"    {vals_str}\n"
-                f") RETURNING task_id;"
+                f") RETURNING task_id INTO tid;"
             )
             params = task.get('parameters', [])
             if params:
-                sql_parts.append(
-                    self._generate_added_params_sql(
-                        params
-                    )
-                )
+                body.extend(_params_sql(params, 'tid'))
+
+        if body:
+            sql_parts.append(
+                "DO $$\n"
+                "DECLARE\n"
+                "    tid bigint;\n"
+                "BEGIN\n" +
+                "\n".join(body) +
+                "\nEND\n$$;"
+            )
 
         return "\n".join(sql_parts) if sql_parts else ""
-
-    def _generate_params_sql(self, task_id, parameters):
-        lines = []
-        tid_q = qt(task_id, self.conn)
-        lines.append(
-            f"DELETE FROM timetable.parameter"
-            f" WHERE task_id = {tid_q}::integer;"
-        )
-        if isinstance(parameters, dict):
-            all_params = (
-                parameters.get('changed', []) +
-                parameters.get('added', [])
-            )
-        else:
-            all_params = parameters
-        if not all_params:
-            return "\n".join(lines)
-        val_strs = []
-        for param in all_params:
-            if not isinstance(param, dict):
-                continue
-            oid = param.get('order_id', 0)
-            val = param.get('value', '')
-            if val is None:
-                val = ''
-            oid_q = qt(oid, self.conn)
-            if param.get('_is_json'):
-                vq = qt(val, self.conn)
-                val_strs.append(
-                    f"({tid_q}::integer,"
-                    f" {oid_q}::integer,"
-                    f" {vq}::jsonb)"
-                )
-            else:
-                vq = qt(val, self.conn)
-                val_strs.append(
-                    f"({tid_q}::integer,"
-                    f" {oid_q}::integer,"
-                    f" to_jsonb({vq}::text))"
-                )
-        if val_strs:
-            lines.append(
-                "INSERT INTO timetable.parameter"
-                "(task_id, order_id, value)\n"
-                "VALUES\n" +
-                ",\n".join(val_strs) + ";"
-            )
-        return "\n".join(lines)
-
-    def _generate_added_params_sql(self, params):
-        lines = []
-        val_strs = []
-        for param in params:
-            if not isinstance(param, dict):
-                continue
-            oid = param.get('order_id', 0)
-            val = param.get('value', '')
-            if val is None:
-                val = ''
-            oid_q = qt(oid, self.conn)
-            if param.get('_is_json'):
-                vq = qt(val, self.conn)
-                val_strs.append(
-                    f"(tid, {oid_q}::integer,"
-                    f" {vq}::jsonb)"
-                )
-            else:
-                vq = qt(val, self.conn)
-                val_strs.append(
-                    f"(tid, {oid_q}::integer,"
-                    f" to_jsonb({vq}::text))"
-                )
-        if val_strs:
-            lines.append(
-                "INSERT INTO timetable.parameter"
-                "(task_id, order_id, value)\n"
-                "VALUES\n" +
-                ",\n".join(val_strs) + ";"
-            )
-        return "\n".join(lines)
 
     def _process_ctasks(self, chain_id, ctasks):
         if not isinstance(ctasks, dict):
