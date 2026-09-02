@@ -36,8 +36,38 @@ and modify the values for the following parameters:
     environment variable name which comes from the web server after webserver authentication.
     The default value is REMOTE_USER and the possible values are REMOTE_USER,
     HTTP_X_FORWARDED_USER, X-Forwarded-User."
+    "WEBSERVER_REMOTE_USER_FROM_HEADER", "Set to *True* only if your reverse proxy passes the
+    authenticated identity as an HTTP request header rather than the REMOTE_USER CGI variable.
+    Defaults to *False*. See the warning below before enabling this."
+    "WEBSERVER_TRUSTED_PROXIES", "A list of IP addresses/CIDR ranges of the reverse proxies
+    that are allowed to assert the identity header. Required (non-empty) for
+    WEBSERVER_REMOTE_USER_FROM_HEADER to take effect. Defaults to an empty list."
+    "WEBSERVER_SHARED_SECRET", "An optional shared secret that the trusted proxy must inject
+    into every request, as additional proof that the identity header was set by the proxy
+    and not the client. Defaults to *None* (not checked)."
+    "WEBSERVER_SHARED_SECRET_HEADER", "The header name carrying WEBSERVER_SHARED_SECRET.
+    Defaults to *X-Pgadmin-Webserver-Secret*."
 
-.. note:: If REMOTE_USER does not work, try replacing it with either REMOTE-USER or Remote-user.
+.. warning::
+    Setting WEBSERVER_REMOTE_USER to a header-derived name (such as
+    HTTP_X_FORWARDED_USER, or REMOTE-USER/Remote-user) means the identity is
+    read from a client-controlled HTTP request header, not necessarily a
+    value set by your webserver's authentication plug-in. Any client that
+    can reach pgAdmin can set this header itself and impersonate any user,
+    including an existing Administrator, unless you:
+
+    * Set ``WEBSERVER_REMOTE_USER_FROM_HEADER = True``.
+    * List every reverse proxy allowed to assert the identity in
+      ``WEBSERVER_TRUSTED_PROXIES``.
+    * Configure your reverse proxy to strip *every* inbound spelling of the
+      header (any hyphen/underscore variant, in any case) before it sets its
+      own, so a client cannot smuggle a value past it.
+    * Optionally configure ``WEBSERVER_SHARED_SECRET`` /
+      ``WEBSERVER_SHARED_SECRET_HEADER`` as an additional proof that the
+      header was set by your proxy.
+
+    Without all of the above, pgAdmin does not trust a header-asserted
+    identity and login through it is rejected.
 
 Master Password
 ===============
