@@ -160,7 +160,7 @@ def create_pgtimetable_chain(self, name):
             INSERT INTO timetable.chain(
                 chain_name, live
             ) VALUES (
-                '{0}'::text, true
+                '{0}'::text, false
             ) RETURNING chain_id;
             """.format(name)
         )

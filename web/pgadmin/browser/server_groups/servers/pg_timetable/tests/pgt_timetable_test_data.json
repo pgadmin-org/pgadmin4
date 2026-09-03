@@ -7,7 +7,7 @@
       "inventory_data": {},
       "test_data": {
         "chain_name": "test_chain_add%s",
-        "live": true,
+        "live": false,
         "max_instances": null,
         "timeout": 0,
         "self_destruct": false,
@@ -30,7 +30,7 @@
       "is_positive_test": false,
       "inventory_data": {},
       "test_data": {
-        "live": true
+        "live": false
       },
       "mocking_required": false,
       "mock_data": {},
@@ -47,7 +47,7 @@
       "inventory_data": {},
       "test_data": {
         "chain_name": "test_chain_add%s",
-        "live": true
+        "live": false
       },
       "mocking_required": true,
       "mock_data": {
@@ -67,7 +67,7 @@
       "inventory_data": {},
       "test_data": {
         "chain_name": "test_chain_add%s",
-        "live": true,
+        "live": false,
         "client_name": "",
         "ctasks": [
           {
