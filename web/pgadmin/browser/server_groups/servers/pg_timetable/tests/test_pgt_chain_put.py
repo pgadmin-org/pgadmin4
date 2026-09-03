@@ -34,6 +34,20 @@ class PgtChainPutTestCase(BaseTestGenerator):
         name = "test_chain_put%s" % str(uuid.uuid4())[1:8]
         self.chain_id = pgt_utils.create_pgtimetable_chain(self, name)
 
+        if getattr(self, 'create_task_with_params', False):
+            task_name = "test_task_put%s" % str(uuid.uuid4())[1:8]
+            self.task_id = pgt_utils.create_pgtimetable_task_with_params(
+                self, task_name, self.chain_id,
+                [
+                    {'order_id': 1, 'value': 'param_one'},
+                    {'order_id': 2, 'value': 'param_two'},
+                    {'order_id': 3, 'value': 'param_three'},
+                ]
+            )
+            for ctask in self.data['ctasks']['changed']:
+                if ctask.get('task_id') == 'PLACEHOLDER_TASK_ID':
+                    ctask['task_id'] = self.task_id
+
     def runTest(self):
         """This function will update pgTimetable chain"""
 
@@ -41,6 +55,12 @@ class PgtChainPutTestCase(BaseTestGenerator):
             response = pgt_utils.api_put(self)
 
             utils.assert_status_code(self, response)
+
+            if hasattr(self, 'verify_params'):
+                actual = pgt_utils.verify_pgtimetable_task_params(self)
+                self.assertEqual(
+                    actual, [tuple(p) for p in self.verify_params]
+                )
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
