@@ -470,8 +470,14 @@ def create_backup_objects_job(sid):
         bfile = data['file'].encode('utf-8') \
             if hasattr(data['file'], 'encode') else data['file']
         if backup_obj_type == 'objects':
-            args.append(data['database'])
-            escaped_args.append(data['database'])
+            # Add the "--" end-of-options marker before the database name so
+            # pg_dump always treats data['database'] as the positional dbname
+            # and never as an option. Without this, a value such as
+            # "--file=/path" would be parsed as an option and override the
+            # storage-confined "--file", letting a user write pg_dump output
+            # outside their storage sandbox (argument injection).
+            args.extend(['--', data['database']])
+            escaped_args.extend(['--', data['database']])
             p = BatchProcess(
                 desc=BackupMessage(
                     BACKUP.OBJECT, server.id, bfile,
