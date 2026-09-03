@@ -153,19 +153,30 @@ CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 #                             " 'unsafe-inline' 'unsafe-eval';"
 # Notes:
 #  - 'unsafe-inline' is retained for style-src because pgAdmin's UI (React/MUI)
-#    injects styles at runtime that are not nonce tagged.
-#  - 'unsafe-eval' is NOT listed: production bundles do not need it.
-#    Development webpack bundles are built with the 'eval' devtool and DO
-#    need it, so when running the dev server add it in config_local.py, e.g.:
-#       CONTENT_SECURITY_POLICY = (
-#           "default-src 'self' ws: http: data: blob:;"
-#           " script-src 'self' 'nonce-{nonce}' 'unsafe-eval';"
-#           " style-src 'self' 'unsafe-inline';"
-#       )
+#    injects runtime styles and inline style="" attributes that are not (and
+#    cannot be) nonce tagged. WARNING: do NOT add 'nonce-{nonce}' to style-src
+#    to tighten this -- per the CSP spec a nonce silently DISABLES
+#    'unsafe-inline', which blocks all of MUI's runtime styles and leaves the
+#    UI unstyled.
+#  - 'unsafe-eval' is NOT listed: production bundles do not need it. This holds
+#    only because JsonEditor.jsx passes neither 'queryLanguages' nor a
+#    'validator' to vanilla-jsoneditor: its default query language (JSONQuery)
+#    composes closures rather than evaluating source, so the eval-capable
+#    paths (jsonpath-plus, ajv's runtime compiler and the Lodash query
+#    language) stay unreachable. Enabling schema validation or registering
+#    another query language would make 'unsafe-eval' necessary again.
+#  - Development webpack bundles ARE built with the 'eval' devtool and need
+#    'unsafe-eval'. security_headers.py adds it automatically when DEBUG is
+#    True (for a nonce based policy), so no manual change is needed for the
+#    dev server. Security note: turning DEBUG on in a server-mode deployment
+#    therefore relaxes the policy (drops eval protection), and this is not
+#    logged.
 CONTENT_SECURITY_POLICY = (
     "default-src 'self' ws: http: data: blob:;"
     " script-src 'self' 'nonce-{nonce}';"
     " style-src 'self' 'unsafe-inline';"
+    " object-src 'none';"
+    " base-uri 'self';"
 )
 
 # STRICT_TRANSPORT_SECURITY_ENABLED when set to True will set the

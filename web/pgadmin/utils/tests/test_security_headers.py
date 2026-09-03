@@ -26,7 +26,9 @@ get_content_security_policy:
     policy, the policy is returned unchanged (no forced 'unsafe-eval').
 """
 
+import re
 import unittest
+from html.parser import HTMLParser
 from unittest.mock import patch
 
 from flask import Flask, g
@@ -447,3 +449,79 @@ def _extract_directive(csp, directive):
         if part.startswith(directive + ' ') or part == directive:
             return part[len(directive):].strip()
     return None
+
+
+class _InlineTagCollector(HTMLParser):
+    """Collect inline <script> (no src) and <style> tags with their nonce.
+
+    Records one dict per inline tag: {'tag': ..., 'nonce': <value|None>}.
+    External <script src=...> is ignored - the nonce requirement is about
+    inline content only (external scripts are governed by the source list).
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.inline_tags = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in ('script', 'style'):
+            return
+        attr = dict(attrs)
+        if tag == 'script' and attr.get('src') is not None:
+            return
+        self.inline_tags.append({'tag': tag, 'nonce': attr.get('nonce')})
+
+
+class TestRenderedPageInlineTagsCarryNonce(BaseTestGenerator):
+    """Rendered-page regression test (goes through the real test client).
+
+    Asserts the two properties the isolated unit tests cannot cover:
+
+      1. Every inline <script>/<style> in the returned HTML carries a
+         nonce equal to the nonce in the Content-Security-Policy header.
+      2. There are therefore no untagged inline <script>/<style> tags -
+         the failure mode when someone adds one to a template later.
+
+    Harness quirk (documented so nobody "fixes" it): regression/runtests.py
+    pushes a long-lived app context and the nonce is cached on flask.g, so
+    the nonce does NOT change between requests here. This test asserts only
+    the header/DOM *match* and tag coverage - never nonce freshness.
+    """
+
+    scenarios = [('login page', dict())]
+
+    def runTest(self):
+        # Pin a nonce policy so the header is deterministic regardless of
+        # the harness's configured CONTENT_SECURITY_POLICY.
+        with patch.object(security_headers.config,
+                          'CONTENT_SECURITY_POLICY', NONCE_POLICY):
+            res = self.tester.get('/login', follow_redirects=True)
+
+        self.assertEqual(res.status_code, 200)
+
+        csp = res.headers.get('Content-Security-Policy', '')
+        match = re.search(r"'nonce-([^']+)'", csp)
+        self.assertIsNotNone(
+            match, "CSP header carried no nonce: %r" % csp)
+        header_nonce = match.group(1)
+
+        collector = _InlineTagCollector()
+        collector.feed(res.data.decode('utf-8', 'replace'))
+
+        # Sanity: the page must contain inline tags, else the test proves
+        # nothing (e.g. wrong route, or template stopped rendering).
+        self.assertTrue(
+            collector.inline_tags,
+            "No inline <script>/<style> found; test target is wrong.")
+
+        untagged = [t for t in collector.inline_tags if t['nonce'] is None]
+        self.assertEqual(
+            untagged, [],
+            "Untagged inline tag(s) missing a nonce: %r" % untagged)
+
+        mismatched = [t for t in collector.inline_tags
+                      if t['nonce'] != header_nonce]
+        self.assertEqual(
+            mismatched, [],
+            "Inline tag nonce(s) do not match CSP header nonce %r: %r"
+            % (header_nonce, mismatched))
