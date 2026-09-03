@@ -36,14 +36,22 @@ class PgtTaskGetNodesTestCase(BaseTestGenerator):
         name = "test_chain_get_nodes%s" % str(uuid.uuid4())[1:8]
         self.chain_id = pgt_utils.create_pgtimetable_chain(self, name)
 
-        task_name = "test_task_get_nodes%s" % str(uuid.uuid4())[1:8]
-        self.task_id = pgt_utils.create_pgtimetable_task(
-            self, task_name, self.chain_id)
+        if hasattr(self, 'task_orders'):
+            self.task_ids = []
+            for order in self.task_orders:
+                task_name = "test_task_get_nodes%s" % str(uuid.uuid4())[1:8]
+                self.task_ids.append(pgt_utils.create_pgtimetable_task(
+                    self, task_name, self.chain_id, task_order=order))
 
-        if self.is_list:
-            task_name2 = "test_task_get_nodes%s" % str(uuid.uuid4())[1:8]
-            self.task_id_2 = pgt_utils.create_pgtimetable_task(
-                self, task_name2, self.chain_id)
+        else:
+            task_name = "test_task_get_nodes%s" % str(uuid.uuid4())[1:8]
+            self.task_id = pgt_utils.create_pgtimetable_task(
+                self, task_name, self.chain_id)
+
+            if self.is_list:
+                task_name2 = "test_task_get_nodes%s" % str(uuid.uuid4())[1:8]
+                self.task_id_2 = pgt_utils.create_pgtimetable_task(
+                    self, task_name2, self.chain_id)
 
     def runTest(self):
         """This function will get pgTimetable chain task nodes"""
@@ -54,6 +62,13 @@ class PgtTaskGetNodesTestCase(BaseTestGenerator):
                 response = tasks_utils.api_get(self)
 
             utils.assert_status_code(self, response)
+
+            if hasattr(self, 'expected_task_order'):
+                label_prefixes = [
+                    row['label'].split(':')[0]
+                    for row in response.json['data']
+                ]
+                self.assertEqual(label_prefixes, self.expected_task_order)
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],

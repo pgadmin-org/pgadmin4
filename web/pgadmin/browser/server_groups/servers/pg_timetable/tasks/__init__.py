@@ -25,11 +25,20 @@ from pgadmin.utils.preferences import Preferences
 from config import PG_DEFAULT_DRIVER
 
 
-def _fmt_task_order(order):
+def _fmt_task_order(order, integer_width=0, fraction_width=0):
     f = float(order)
     if f == int(f):
-        return str(int(f))
-    return f"{f:g}"
+        s = str(int(f))
+    else:
+        s = f"{f:g}"
+    if integer_width or fraction_width:
+        whole, dot, frac = s.partition('.')
+        whole = whole.zfill(integer_width)
+        if dot or fraction_width:
+            s = f"{whole}.{(frac if dot else '').ljust(fraction_width, '0')}"
+        else:
+            s = whole
+    return s
 
 
 class ChainTaskModule(CollectionNodeModule):
@@ -285,14 +294,19 @@ class ChainTaskView(PGChildNodeView):
             )
             return make_json_response(node)
 
-        max_width = max(
-            (len(_fmt_task_order(r['task_order']))
+        integer_width = max(
+            (len(_fmt_task_order(r['task_order']).partition('.')[0])
              for r in result['rows']),
             default=1
         )
+        fraction_width = max(
+            (len(_fmt_task_order(r['task_order']).partition('.')[2])
+             for r in result['rows']),
+            default=0
+        )
         for row in result['rows']:
-            order_str = _fmt_task_order(row['task_order']).zfill(
-                max_width
+            order_str = _fmt_task_order(
+                row['task_order'], integer_width, fraction_width
             )
             label = f"{order_str}: {row['task_name']}"
             node = self.blueprint.generate_browser_node(

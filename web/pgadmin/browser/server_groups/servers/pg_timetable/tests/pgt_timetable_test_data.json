@@ -195,6 +195,38 @@
       }
     },
     {
+      "name": "Update chain: Edit one parameter of a task with three, others preserved.",
+      "url": "/browser/pgt_chain/obj/",
+      "is_positive_test": true,
+      "create_task_with_params": true,
+      "test_data": {
+        "ctasks": {
+          "changed": [
+            {
+              "task_id": "PLACEHOLDER_TASK_ID",
+              "parameters": [
+                { "order_id": 1, "value": "edited_value" },
+                { "order_id": 2, "value": "param_two" },
+                { "order_id": 3, "value": "param_three" }
+              ]
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "verify_params": [
+        [1, "edited_value"],
+        [2, "param_two"],
+        [3, "param_three"]
+      ]
+    },
+    {
       "name": "Update chain: With existing chain while server down.",
       "url": "/browser/pgt_chain/obj/",
       "is_positive_test": false,

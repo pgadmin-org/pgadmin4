@@ -707,15 +707,17 @@ class ChainView(PGChildNodeView):
                 continue
             fields = [
                 'chain_id', 'task_name', 'task_order',
-                'command', 'database_connection'
+                'command'
             ]
             values = [
                 chain_id,
                 task.get('task_name', ''),
                 task.get('task_order', 10),
-                task.get('command', ''),
-                task.get('database_connection', '')
+                task.get('command', '')
             ]
+            if task.get('database_connection'):
+                fields.append('database_connection')
+                values.append(task['database_connection'])
             if 'ignore_error' in task:
                 fields.append('ignore_error')
                 values.append(task['ignore_error'])

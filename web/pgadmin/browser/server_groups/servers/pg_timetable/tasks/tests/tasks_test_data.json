@@ -274,6 +274,23 @@
         "test_result_data": {}
       },
       "is_list": true
+    },
+    {
+      "name": "Get task nodes: With fractional task orders.",
+      "url": "/browser/pgt_chaintask/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true,
+      "task_orders": [5, 5.5, 10],
+      "expected_task_order": ["05.0", "05.5", "10.0"]
     }
   ],
   "pgt_task_msql": [

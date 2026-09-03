@@ -234,7 +234,7 @@ def verify_pgtimetable_chain(self):
             connection.close()
 
 
-def create_pgtimetable_task(self, task_name, chain_id):
+def create_pgtimetable_task(self, task_name, chain_id, task_order=10):
     connection = None
     try:
         connection = utils.get_db_connection(
@@ -252,9 +252,9 @@ def create_pgtimetable_task(self, task_name, chain_id):
             INSERT INTO timetable.task(
                 chain_id, task_name, task_order, command, kind
             ) VALUES (
-                {0}::integer, '{1}'::text, 10, 'SELECT 1', 'SQL'
+                {0}::integer, '{1}'::text, '{2}'::numeric, 'SELECT 1', 'SQL'
             ) RETURNING task_id;
-            """.format(chain_id, task_name)
+            """.format(chain_id, task_name, task_order)
         pg_cursor.execute(query)
         task_id = pg_cursor.fetchone()
         utils.set_isolation_level(connection, old_isolation_level)
@@ -319,6 +319,84 @@ def verify_pgtimetable_task(self):
         result = pg_cursor.fetchone()
         count = result[0]
         return count is not None and int(count) != 0
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
+
+
+def create_pgtimetable_task_with_params(self, task_name, chain_id, params):
+    """Create a task with the given parameters and return its task_id.
+
+    params is a list of dicts, each with 'order_id' and 'value' keys.
+    """
+    connection = None
+    try:
+        connection = utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
+        old_isolation_level = connection.isolation_level
+        utils.set_isolation_level(connection, 0)
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            """
+            INSERT INTO timetable.task(
+                chain_id, task_name, task_order, command, kind
+            ) VALUES (
+                {0}::integer, '{1}'::text, 10, 'SELECT 1', 'SQL'
+            ) RETURNING task_id;
+            """.format(chain_id, task_name)
+        )
+        task_id = pg_cursor.fetchone()[0]
+        for param in params:
+            pg_cursor.execute(
+                """
+                INSERT INTO timetable.parameter(task_id, order_id, value)
+                VALUES (
+                    {0}::integer, {1}::integer,
+                    to_jsonb('{2}'::text)
+                );
+                """.format(
+                    task_id, param['order_id'], str(param['value'])
+                )
+            )
+        utils.set_isolation_level(connection, old_isolation_level)
+        connection.commit()
+        return task_id
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+    finally:
+        if connection:
+            connection.close()
+
+
+def verify_pgtimetable_task_params(self):
+    """Return the (order_id, value) rows for self.task_id."""
+    connection = None
+    try:
+        connection = utils.get_db_connection(
+            self.server['db'],
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port'],
+            self.server['sslmode']
+        )
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            "SELECT order_id, value#>>'{}' "
+            "FROM timetable.parameter "
+            "WHERE task_id = %s::integer "
+            "ORDER BY order_id;", (self.task_id,)
+        )
+        rows = pg_cursor.fetchall()
+        return [(int(r[0]), r[1]) for r in rows]
     except Exception:
         traceback.print_exc(file=sys.stderr)
     finally:
