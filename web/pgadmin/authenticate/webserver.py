@@ -32,9 +32,12 @@ def _is_cgi_var_name(name):
     """Return True only for a genuine CGI/WSGI environment variable name,
     e.g. REMOTE_USER. Anything HTTP_-prefixed or hyphenated is, in practice,
     a client-supplied HTTP header (e.g. HTTP_X_FORWARDED_USER or
-    X-Forwarded-User), so it must never be trusted as-is.
+    X-Forwarded-User), so it must never be trusted as-is. A name that is
+    not a non-empty string at all (a misconfigured WEBSERVER_REMOTE_USER)
+    is not a CGI variable name either.
     """
-    return bool(name) and not name.startswith('HTTP_') and '-' not in name
+    return isinstance(name, str) and bool(name) and \
+        not name.startswith('HTTP_') and '-' not in name
 
 
 def _get_untrusted_peer_addr():
@@ -89,7 +92,8 @@ def _shared_secret_matches():
     """When a shared secret is configured, require the proxy to have sent
     it back in the configured header, compared with hmac.compare_digest to
     avoid a timing side-channel. When no secret is configured, this check is
-    skipped (returns True).
+    skipped (returns True). Never raises - a non-str/bytes or non-ASCII
+    secret is treated as a mismatch, with a warning logged for the operator.
     """
     if not config.WEBSERVER_SHARED_SECRET:
         return True
@@ -97,7 +101,21 @@ def _shared_secret_matches():
     supplied = request.headers.get(config.WEBSERVER_SHARED_SECRET_HEADER)
     if not supplied:
         return False
-    return hmac.compare_digest(supplied, config.WEBSERVER_SHARED_SECRET)
+
+    # Compare as bytes: hmac.compare_digest rejects a str carrying any
+    # non-ASCII character, so an accented passphrase would otherwise raise
+    # rather than simply match or not.
+    secret = config.WEBSERVER_SHARED_SECRET
+    if isinstance(secret, str):
+        secret = secret.encode('utf-8')
+
+    try:
+        return hmac.compare_digest(supplied.encode('utf-8'), secret)
+    except TypeError:
+        current_app.logger.warning(
+            "Webserver auth: WEBSERVER_SHARED_SECRET must be a str or "
+            "bytes value; rejecting the header-asserted identity.")
+        return False
 
 
 def _get_trusted_value(name):
@@ -111,6 +129,20 @@ def _get_trusted_value(name):
     return request.environ.get(name)
 
 
+def _header_name_for(name):
+    """Translate a CGI-style HTTP_FOO_BAR name to the HTTP header name a
+    client/proxy actually sends (Foo-Bar), so an operator can set
+    WEBSERVER_REMOTE_USER to either spelling and have the header path
+    resolve it. Werkzeug's header lookup normalizes '_' to '-' but does not
+    strip an HTTP_ prefix, so that translation has to happen here. Any
+    other name (e.g. an ordinary hyphenated header name) is returned as-is.
+    """
+    if name.startswith('HTTP_'):
+        return '-'.join(
+            part.capitalize() for part in name[len('HTTP_'):].split('_'))
+    return name
+
+
 def _get_header_value(name):
     """Read a value from an inbound HTTP request header - a client-
     controlled source. Only returned when the operator has explicitly
@@ -120,6 +152,11 @@ def _get_header_value(name):
     """
     if not config.WEBSERVER_REMOTE_USER_FROM_HEADER:
         return None
+    if not isinstance(name, str) or not name:
+        current_app.logger.warning(
+            "Webserver auth: WEBSERVER_REMOTE_USER is not set to a "
+            "non-empty name; rejecting the header-asserted identity.")
+        return None
     if not _peer_is_trusted_proxy():
         return None
     if not _shared_secret_matches():
@@ -127,7 +164,7 @@ def _get_header_value(name):
             "Webserver auth: shared secret mismatch; rejecting the "
             "header-asserted identity.")
         return None
-    return request.headers.get(name)
+    return request.headers.get(_header_name_for(name))
 
 
 class WebserverModule(PgAdminModule):
