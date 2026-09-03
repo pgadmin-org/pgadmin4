@@ -1301,6 +1301,67 @@ class BackupCreateJobTest(BaseTestGenerator):
              expected_cmd_opts=['--globals-only'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
+         )),
+        ('When backup an object the database name is the trailing '
+         'positional after the "--" end-of-options marker',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres'
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[],
+             not_expected_cmd_opts=[],
+             # Order matters: the dbname must come right after "--" so
+             # pg_dump can never treat it as an option. assertIn would be
+             # order-blind, so assert on the exact trailing pair.
+             expected_last_args=['--', 'postgres'],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup an object an argument-injection attempt via the '
+         'database field is neutralised by the "--" end-of-options marker',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 # Malicious value: without the "--" marker pg_dump would
+                 # parse this as an option and override the storage-confined
+                 # "--file", writing output outside the sandbox.
+                 database='--file=/tmp/pgadmin_arginj_poc'
+             ),
+             url=BACKUP_OBJECT_URL,
+             # The storage-confined "--file" flag must still be present...
+             expected_cmd_opts=['--file'],
+             not_expected_cmd_opts=[],
+             # ...and the injected value must land strictly as the trailing
+             # positional after "--", never as an active option.
+             expected_last_args=['--', '--file=/tmp/pgadmin_arginj_poc'],
+             expected_exit_code=[0, None]
          ))
     ]
 
@@ -1407,3 +1468,13 @@ class BackupCreateJobTest(BaseTestGenerator):
                     opt,
                     batch_process_mock.call_args_list[0][1]['args']
                 )
+        # Position-sensitive check (assertIn above is order-blind). Used by
+        # the argument-injection regression scenarios to pin that the
+        # database name is the final positional, right after the "--"
+        # end-of-options marker.
+        if getattr(self, 'expected_last_args', None):
+            actual_args = batch_process_mock.call_args_list[0][1]['args']
+            self.assertEqual(
+                actual_args[-len(self.expected_last_args):],
+                self.expected_last_args
+            )
