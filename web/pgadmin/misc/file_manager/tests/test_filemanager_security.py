@@ -17,6 +17,7 @@ between path-string semantics and kernel filesystem semantics.
 The `O_NOFOLLOW` upload-leaf protection is tested in a separate class.
 """
 
+import contextlib
 import errno
 import json
 import os
@@ -27,7 +28,6 @@ import unittest
 from unittest.mock import patch
 
 import config
-from pgadmin import create_app
 from pgadmin.misc.file_manager import Filemanager
 from pgadmin.utils.constants import MY_STORAGE
 from pgadmin.utils.route import BaseTestGenerator
@@ -417,61 +417,121 @@ class TestOpenUploadTargetRejectsLeafSymlinkPointingToNonexistent(
 # ---------------------------------------------------------------------------
 # save_file() must use the same O_NOFOLLOW-protected open as uploads.
 #
-# check_access_permission() resolves symlinks and validates containment,
-# but save_file() re-joins the path and, before this fix, wrote through a
-# bare open() that would happily follow a leaf symlink planted after the
-# check ran. check_access_permission is patched out here to isolate that
-# write-time protection from the (separately-tested) check-time one.
+# check_access_permission() resolves symlinks and validates containment, but
+# save_file() re-joins the path afterwards and, before this fix, wrote through
+# a bare open() that would follow a leaf symlink planted *after* the check
+# ran. A symlink already present at check time is rejected by the check, so
+# the only interesting case is the race, which the negative test below
+# reproduces deterministically by planting the symlink from inside the check
+# itself.
+#
+# These drive the real endpoint through the harness's already-authenticated
+# test client, so the whole decorator stack and request path are exercised.
 # ---------------------------------------------------------------------------
 
-class TestSaveFileRejectsLeafSymlink(BaseTestGenerator):
-    """save_file() must not follow a leaf symlink when writing."""
+SAVE_FILE_URL = '/file_manager/save_file/'
 
-    scenarios = [('default', dict())]
+
+class _SaveFileMixin:
+    """Mixin (NOT a TestCase) — storage sandbox setup for save_file tests."""
 
     def setUp(self):
+        # Pure request/filesystem logic: no Postgres connection needed, so
+        # BaseTestGenerator.setUp()'s connect_server() is deliberately skipped.
         unittest.TestCase.setUp(self)
         if sys.platform == "win32":
             self.skipTest("O_NOFOLLOW unavailable on Windows")
         self.tmpdir = tempfile.mkdtemp(prefix="pga_filemgr_savefile_")
+        self.storage_dir = os.path.join(self.tmpdir, "storage")
+        os.makedirs(self.storage_dir)
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
-    def runTest(self):
-        from pgadmin.misc.file_manager import save_file
+    def _save_file(self, file_name, file_content, check_side_effect=None):
+        """POST to save_file with storage confined to self.storage_dir.
 
+        `check_side_effect`, when given, replaces check_access_permission —
+        used to simulate an attacker winning the check-to-open race.
+        """
+        payload = json.dumps({
+            "file_name": file_name,
+            "file_content": file_content,
+        })
+
+        patches = [
+            patch('pgadmin.misc.file_manager.get_storage_directory',
+                  return_value=self.storage_dir),
+            patch('pgadmin.misc.file_manager.Preferences.module'),
+        ]
+        if check_side_effect is not None:
+            patches.append(
+                patch('pgadmin.misc.file_manager.Filemanager.'
+                      'check_access_permission',
+                      side_effect=check_side_effect))
+
+        with contextlib.ExitStack() as stack:
+            mocks = [stack.enter_context(p) for p in patches]
+            mocks[1].return_value.preference.return_value.get \
+                .return_value = MY_STORAGE
+            return self.tester.post(SAVE_FILE_URL, data=payload,
+                                    content_type='application/json')
+
+
+class TestSaveFileRejectsLeafSymlink(_SaveFileMixin, BaseTestGenerator):
+    """save_file() must not follow a symlink raced in after the check."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
         outside_target = os.path.join(self.tmpdir, "outside.txt")
         with open(outside_target, "wb") as f:
             f.write(b"VICTIM")
-        storage_dir = os.path.join(self.tmpdir, "storage")
-        os.makedirs(storage_dir)
-        link_path = os.path.join(storage_dir, "evil.sql")
-        os.symlink(outside_target, link_path)
 
-        payload = json.dumps({
-            "file_name": "/evil.sql",
-            "file_content": "OWNED",
-        }).encode('utf-8')
+        link_path = os.path.join(self.storage_dir, "evil.sql")
+        real_check = Filemanager.check_access_permission
 
-        app = create_app()
-        with app.app_context(), app.test_request_context(
-                '/file_manager/save_file/', method='POST', data=payload,
-                content_type='application/json'), \
-                patch('pgadmin.misc.file_manager.Filemanager.'
-                      'check_access_permission'), \
-                patch('pgadmin.misc.file_manager.get_storage_directory',
-                      return_value=storage_dir), \
-                patch('pgadmin.misc.file_manager.Preferences.module') \
-                as mock_module:
-            mock_module.return_value.preference.return_value.get \
-                .return_value = MY_STORAGE
-            # save_file is wrapped by pga_login_required/mfa_required;
-            # __wrapped__ is the raw view, set by functools.wraps, so this
-            # exercises save_file()'s own logic without needing a login.
-            response = save_file.__wrapped__()
+        def check_then_lose_the_race(*args, **kwargs):
+            # The real containment check runs and passes: at this instant
+            # the leaf is absent, so nothing escapes the storage root.
+            real_check(*args, **kwargs)
+            # T+0: the attacker swaps a symlink into the leaf, exactly the
+            # window the bare open() used to write through.
+            os.symlink(outside_target, link_path)
+
+        response = self._save_file(
+            "/evil.sql", "OWNED",
+            check_side_effect=check_then_lose_the_race)
 
         self.assertEqual(response.status_code, 500)
-        # Critical: the outside target must not have been overwritten.
+        # Assert on *why* it failed. A bare status check would also pass if
+        # the write never happened for some unrelated reason.
+        self.assertIn(
+            "symbolic link",
+            response.json['errormsg'],
+            "Expected the symlink-specific error, got: %s"
+            % response.json['errormsg'])
+        # The property that actually matters: nothing was written outside.
         with open(outside_target, "rb") as f:
             self.assertEqual(f.read(), b"VICTIM")
+
+
+class TestSaveFileWritesRegularFile(_SaveFileMixin, BaseTestGenerator):
+    """Positive control: an ordinary save must still succeed.
+
+    Without this, a broken _open_upload_target() would leave the negative
+    test above green while every Query Tool / ERD save in the product fails.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        response = self._save_file("/ok.sql", "SELECT 1;")
+
+        self.assertEqual(response.status_code, 200)
+        target = os.path.join(self.storage_dir, "ok.sql")
+        with open(target, "rb") as f:
+            self.assertEqual(f.read(), b"SELECT 1;")
+        # The helper opens with mode 0o600; pin it so the documented
+        # behavioral change cannot regress silently.
+        self.assertEqual(os.stat(target).st_mode & 0o777, 0o600)

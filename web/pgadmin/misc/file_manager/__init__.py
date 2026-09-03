@@ -9,6 +9,7 @@
 
 """Implements File Manager"""
 
+import errno
 import os
 import os.path
 import secrets
@@ -473,6 +474,13 @@ def save_file():
         with _open_upload_target(file_path) as output_file:
             output_file.write(file_content)
     except IOError as e:
+        # O_NOFOLLOW makes the kernel refuse a leaf symlink with ELOOP
+        # (EMLINK on some BSDs). Report that specifically: the raw strerror
+        # ("Too many levels of symbolic links") tells the user nothing
+        # about why their save was rejected.
+        if e.errno in (errno.ELOOP, errno.EMLINK):
+            return internal_server_error(errormsg=gettext(
+                "Refusing to write through a symbolic link."))
         err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
     except Exception as e:
