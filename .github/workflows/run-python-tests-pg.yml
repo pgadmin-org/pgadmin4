@@ -155,7 +155,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           wget --quiet -O /tmp/pg_timetable.tar.gz https://github.com/cybertec-postgresql/pg_timetable/releases/download/v${{ env.PG_TIMETABLE_VERSION }}/pg_timetable_Linux_x86_64.tar.gz
-          tar -xzf /tmp/pg_timetable.tar.gz -C /tmp
+          tar -xzf /tmp/pg_timetable.tar.gz -C /tmp --strip-components=1
           /tmp/pg_timetable --init --clientname=runner "host=/var/run/postgresql port=59${{ matrix.pgver }} dbname=postgres user=postgres"
           nohup /tmp/pg_timetable --clientname=runner "host=/var/run/postgresql port=59${{ matrix.pgver }} dbname=postgres user=postgres" > /tmp/pg_timetable.log 2>&1 &
           echo $! > /tmp/pg_timetable.pid
@@ -165,7 +165,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           curl -sSL -o /tmp/pg_timetable.tar.gz https://github.com/cybertec-postgresql/pg_timetable/releases/download/v${{ env.PG_TIMETABLE_VERSION }}/pg_timetable_Darwin_arm64.tar.gz
-          tar -xzf /tmp/pg_timetable.tar.gz -C /tmp
+          tar -xzf /tmp/pg_timetable.tar.gz -C /tmp --strip-components=1
           /tmp/pg_timetable --init --clientname=runner "host=/tmp port=59${{ matrix.pgver }} dbname=postgres user=postgres"
           nohup /tmp/pg_timetable --clientname=runner "host=/tmp port=59${{ matrix.pgver }} dbname=postgres user=postgres" > /tmp/pg_timetable.log 2>&1 &
           echo $! > /tmp/pg_timetable.pid
@@ -177,9 +177,9 @@ jobs:
         run: |
           $env:PGPASSWORD = 'postgres'
           curl.exe -sSL -o pg_timetable.zip https://github.com/cybertec-postgresql/pg_timetable/releases/download/v${{ env.PG_TIMETABLE_VERSION }}/pg_timetable_Windows_x86_64.zip
-          Expand-Archive -Path pg_timetable.zip -DestinationPath pg_timetable
-          & .\pg_timetable\pg_timetable.exe --init --clientname=runner "postgresql://postgres:postgres@127.0.0.1:59${{ matrix.pgver }}/postgres"
-          Start-Process -FilePath .\pg_timetable\pg_timetable.exe -ArgumentList @('--clientname=runner', "postgresql://postgres:postgres@127.0.0.1:59${{ matrix.pgver }}/postgres") -RedirectStandardError .\pg_timetable\pg_timetable.err -NoNewWindow
+          Expand-Archive -Path pg_timetable.zip -DestinationPath .
+          & .\pg_timetable_Windows_x86_64\pg_timetable.exe --init --clientname=runner "postgresql://postgres:postgres@127.0.0.1:59${{ matrix.pgver }}/postgres"
+          Start-Process -FilePath .\pg_timetable_Windows_x86_64\pg_timetable.exe -ArgumentList @('--clientname=runner', "postgresql://postgres:postgres@127.0.0.1:59${{ matrix.pgver }}/postgres") -RedirectStandardError .\pg_timetable_Windows_x86_64\pg_timetable.err -NoNewWindow
           Start-Sleep -Seconds 3
 
       - name: Install Python dependencies on Linux and macOS
