@@ -82,7 +82,11 @@ and modify the values for the following parameters:
     through Webserver authentication until you change it. To do so, sign in
     through another configured authentication source and, for each such
     user, set *Authentication source* to *webserver* on the
-    :ref:`User Management <user_management>` page.
+    :ref:`User Management <user_management>` page. If ``AUTHENTICATION_SOURCES``
+    lists only *webserver*, there is no other source to sign in with -
+    temporarily add *internal* back to ``AUTHENTICATION_SOURCES``, sign in
+    with the internal administrator's password, fix the affected users'
+    *Authentication source*, then remove *internal* again.
 
 Master Password
 ===============

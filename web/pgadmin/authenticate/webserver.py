@@ -158,14 +158,18 @@ def _get_header_value(name):
     controlled source. Only returned when the operator has explicitly
     opted in via WEBSERVER_REMOTE_USER_FROM_HEADER, the request came from a
     peer listed in WEBSERVER_TRUSTED_PROXIES, and (if configured) the
-    shared secret matches. Every rejection here is logged at info, not
-    warning: an unauthenticated client can trigger any of them on every
-    request, and warning-level logging would let it flood the log.
+    shared secret matches. A client-triggered rejection here (untrusted
+    peer, secret mismatch) is logged at info, since an unauthenticated
+    client can trigger it on every request and warning-level logging
+    would let it flood the log. A malformed WEBSERVER_REMOTE_USER is a
+    static operator misconfiguration, not something a client varies per
+    request, and stays at warning so it doesn't go unnoticed while every
+    login silently fails.
     """
     if not config.WEBSERVER_REMOTE_USER_FROM_HEADER:
         return None
     if not isinstance(name, str) or not name:
-        current_app.logger.info(
+        current_app.logger.warning(
             "Webserver auth: WEBSERVER_REMOTE_USER is not set to a "
             "non-empty name; rejecting the header-asserted identity.")
         return None
