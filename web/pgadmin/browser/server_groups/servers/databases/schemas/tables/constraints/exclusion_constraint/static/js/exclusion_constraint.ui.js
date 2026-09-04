@@ -284,6 +284,16 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       type: 'select', group: gettext('Definition'),
       options: this.fieldOptions.amname,
       deferredDepChange: (state, source, topState, actionObj)=>{
+        // Opt out cleanly when nothing would change: amname unchanged
+        // or no columns to wipe. Previously this queued a confirmation
+        // dialog unconditionally.
+        // actionObj.oldState is guaranteed by the reducer to be the
+        // pre-dispatch clone; no need for optional chaining (and the
+        // cancel branch below accesses it unconditionally).
+        if(state.amname === actionObj.oldState.amname
+            || !state.columns?.length) {
+          return undefined;
+        }
         return new Promise((resolve)=>{
           pgAdmin.Browser.notifier.confirm(
             gettext('Change access method?'),
@@ -311,11 +321,9 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
               }));
             },
             function() {
-              resolve(()=>{
-                return {
-                  amname: actionObj.oldState.amname,
-                };
-              });
+              resolve(()=>({
+                amname: actionObj.oldState.amname,
+              }));
             }
           );
         });

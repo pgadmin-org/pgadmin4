@@ -168,17 +168,16 @@ describe('TableSchema', () => {
       });
     });
 
-    it('empty', (done)=>{
+    it('empty', ()=>{
+      // typname unchanged is now an opt-out from the deferred queue.
+      // Previously it returned a Promise wrapping a no-op callback.
       let state = {typname: null};
-      let deferredPromise = deferredDepChange(state, null, null, {
+      let result = deferredDepChange(state, null, null, {
         oldState: {
           typname: null,
         },
       });
-      deferredPromise.then((depChange)=>{
-        expect(depChange()).toBeUndefined();
-        done();
-      });
+      expect(result).toBeUndefined();
     });
   });
 
