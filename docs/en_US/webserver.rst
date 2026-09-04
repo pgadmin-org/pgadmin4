@@ -69,6 +69,21 @@ and modify the values for the following parameters:
     Without all of the above, pgAdmin does not trust a header-asserted
     identity and login through it is rejected.
 
+.. warning::
+    A user matched via Webserver authentication is only logged in if their
+    *Authentication source* is *webserver*. This prevents a header-asserted
+    identity from ever logging into an account that was created some other
+    way - most importantly, the default administrator account created by
+    pgAdmin's own setup, whose *Authentication source* is *internal*.
+
+    If you are enabling Webserver authentication on a site that already has
+    users (including that default administrator) with an *Authentication
+    source* other than *webserver*, none of them will be able to log in
+    through Webserver authentication until you change it. To do so, sign in
+    through another configured authentication source and, for each such
+    user, set *Authentication source* to *webserver* on the
+    :ref:`User Management <user_management>` page.
+
 Master Password
 ===============
 

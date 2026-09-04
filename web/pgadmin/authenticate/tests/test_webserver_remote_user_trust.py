@@ -14,6 +14,15 @@ it never logs a header-asserted identity into a non-Webserver account.
 These are pure request/config-logic tests - no Postgres server or SQLite
 database is required, so setUp() below skips
 BaseTestGenerator.setUp()'s connect_server().
+
+WebserverAuthentication is deliberately imported inside each runTest(),
+not at module level: test_auth_gating.py (which sorts and therefore runs
+before this module) evicts pgadmin.authenticate.webserver from
+sys.modules and never restores it, to observe load_modules() re-import
+it from scratch. A module-level import here would bind the discarded
+module's class, while unittest.mock.patch('pgadmin.authenticate.webserver
+.User') resolves through sys.modules and patches the fresh one - the
+patch would silently miss and hit a real, unconfigured database.
 """
 
 from unittest.mock import patch
@@ -21,7 +30,6 @@ from unittest.mock import patch
 import flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 import config
-from pgadmin.authenticate.webserver import WebserverAuthentication
 from pgadmin.utils.constants import WEBSERVER, INTERNAL
 from pgadmin.utils.route import BaseTestGenerator
 
@@ -105,6 +113,8 @@ class WebserverRemoteUserTrustTestCase(BaseTestGenerator):
             setattr(config, key, value)
 
     def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
         config.WEBSERVER_REMOTE_USER = self.remote_user
         config.WEBSERVER_REMOTE_USER_FROM_HEADER = self.from_header
         config.WEBSERVER_TRUSTED_PROXIES = self.trusted_proxies
@@ -151,6 +161,8 @@ class WebserverLoginAuthSourceTestCase(BaseTestGenerator):
         pass
 
     def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
         app = flask.Flask(__name__)
         with app.test_request_context('/'):
             auth = WebserverAuthentication()
@@ -186,6 +198,8 @@ class WebserverLoginPositiveTestCase(BaseTestGenerator):
         pass
 
     def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
         app = flask.Flask(__name__)
         with app.test_request_context('/'):
             auth = WebserverAuthentication()
@@ -223,6 +237,8 @@ class WebserverLoginNoMatchingUserTestCase(BaseTestGenerator):
         pass
 
     def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
         app = flask.Flask(__name__)
         with app.test_request_context('/'):
             auth = WebserverAuthentication()
@@ -269,6 +285,8 @@ class WebserverProxyFixBypassTestCase(BaseTestGenerator):
             setattr(config, key, value)
 
     def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
         config.WEBSERVER_REMOTE_USER = 'REMOTE_USER'
         config.WEBSERVER_REMOTE_USER_FROM_HEADER = True
         # The trusted proxy list names the address the attacker will
@@ -319,6 +337,8 @@ class WebserverAuthenticateMailTestCase(BaseTestGenerator):
         config.WEBSERVER_REMOTE_USER = self._orig_remote_user
 
     def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
         config.WEBSERVER_REMOTE_USER = 'REMOTE_USER'
         app = flask.Flask(__name__)
         app.secret_key = 'test-secret-key'

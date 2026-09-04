@@ -54,11 +54,21 @@ def _get_untrusted_peer_addr():
 def _peer_is_trusted_proxy():
     """Check the raw peer address against WEBSERVER_TRUSTED_PROXIES. Never
     raises - a malformed config entry or an unparseable/missing peer address
-    is treated as untrusted, with a warning logged for the operator.
+    is treated as untrusted. A per-request rejection (no proxy in front, an
+    untrusted peer) is logged at info, since an unauthenticated client can
+    trigger it on every request; a malformed WEBSERVER_TRUSTED_PROXIES
+    itself is an operator misconfiguration and stays at warning.
     """
+    if not isinstance(config.WEBSERVER_TRUSTED_PROXIES, (list, tuple)):
+        current_app.logger.warning(
+            "Webserver auth: WEBSERVER_TRUSTED_PROXIES must be a list or "
+            "tuple of IP/CIDR strings; rejecting the header-asserted "
+            "identity.")
+        return False
+
     peer_addr = _get_untrusted_peer_addr()
     if not peer_addr:
-        current_app.logger.warning(
+        current_app.logger.info(
             "Webserver auth: could not determine the peer address; "
             "rejecting the header-asserted identity.")
         return False
@@ -66,7 +76,7 @@ def _peer_is_trusted_proxy():
     try:
         peer = ipaddress.ip_address(peer_addr)
     except ValueError:
-        current_app.logger.warning(
+        current_app.logger.info(
             "Webserver auth: peer address {0} is not a valid IP; "
             "rejecting the header-asserted identity.".format(peer_addr))
         return False
@@ -82,7 +92,7 @@ def _peer_is_trusted_proxy():
         if peer in network:
             return True
 
-    current_app.logger.warning(
+    current_app.logger.info(
         "Webserver auth: peer {0} is not in WEBSERVER_TRUSTED_PROXIES; "
         "rejecting the header-asserted identity.".format(peer_addr))
     return False
@@ -148,19 +158,21 @@ def _get_header_value(name):
     controlled source. Only returned when the operator has explicitly
     opted in via WEBSERVER_REMOTE_USER_FROM_HEADER, the request came from a
     peer listed in WEBSERVER_TRUSTED_PROXIES, and (if configured) the
-    shared secret matches.
+    shared secret matches. Every rejection here is logged at info, not
+    warning: an unauthenticated client can trigger any of them on every
+    request, and warning-level logging would let it flood the log.
     """
     if not config.WEBSERVER_REMOTE_USER_FROM_HEADER:
         return None
     if not isinstance(name, str) or not name:
-        current_app.logger.warning(
+        current_app.logger.info(
             "Webserver auth: WEBSERVER_REMOTE_USER is not set to a "
             "non-empty name; rejecting the header-asserted identity.")
         return None
     if not _peer_is_trusted_proxy():
         return None
     if not _shared_secret_matches():
-        current_app.logger.warning(
+        current_app.logger.info(
             "Webserver auth: shared secret mismatch; rejecting the "
             "header-asserted identity.")
         return None
@@ -246,7 +258,9 @@ class WebserverAuthentication(BaseAuthentication):
         if username:
             user = User.query.filter_by(username=username).first()
             if user is None:
-                current_app.logger.exception(self.messages('LOGIN_FAILED'))
+                current_app.logger.warning(
+                    "Webserver auth: no User row matches the asserted "
+                    "identity {0}.".format(username))
                 return False, self.messages('LOGIN_FAILED')
             # Defense in depth: a header-asserted identity must never be
             # able to log in an account that was not created via Webserver
