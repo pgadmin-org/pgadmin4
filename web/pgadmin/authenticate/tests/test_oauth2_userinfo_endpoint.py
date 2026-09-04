@@ -12,7 +12,7 @@ template default) is treated the same as an absent key, rather than being
 passed to the HTTP client and crashing (issue #10349).
 """
 
-import sys
+import importlib
 from unittest.mock import MagicMock, patch
 
 from pgadmin.utils.route import BaseTestGenerator
@@ -26,11 +26,14 @@ class OAuth2UserinfoEndpointNoneTestCase(BaseTestGenerator):
 
     def runTest(self):
         # Resolved at call time, rather than imported at module load time:
-        # test_auth_gating (run earlier in this same package) deliberately
-        # forces pgadmin.authenticate.oauth2 to be re-imported, which would
-        # leave a module-level import here bound to a stale module object
-        # whose globals patch('...session', ...) below wouldn't reach.
-        oauth2_module = sys.modules['pgadmin.authenticate.oauth2']
+        # pgadmin.authenticate.oauth2 can be re-imported after this module
+        # is loaded, which would leave a module-level import here bound to a
+        # stale module object whose globals patch('...session', ...) below
+        # wouldn't reach. import_module returns the module that is already
+        # in sys.modules when there is one, and imports it otherwise, so
+        # this also works when nothing else has loaded it (in desktop mode
+        # the auth source registry doesn't).
+        oauth2_module = importlib.import_module('pgadmin.authenticate.oauth2')
         OAuth2Authentication = oauth2_module.OAuth2Authentication
 
         auth = OAuth2Authentication.__new__(OAuth2Authentication)
@@ -53,7 +56,9 @@ class OAuth2UserinfoEndpointNoneTestCase(BaseTestGenerator):
                 patch('pgadmin.authenticate.oauth2.session', {}):
             profile = auth.get_user_profile()
 
+        # Pre-fix, the None endpoint was handed straight to client.get(), so
+        # nothing raised: the MagicMock just returned a mock profile. It is
+        # these two assertions, rather than an exception, that prove the
+        # guard skips the call.
         self.assertEqual(profile, {})
-        # The bug: client.get(None) raised requests.exceptions.MissingSchema
-        # instead of skipping the call.
         mock_client.get.assert_not_called()
