@@ -319,7 +319,10 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
         # containing "=" would be expanded into a connection string,
         # redirecting the connection (and the exported PGPASSWORD credential)
         # to an arbitrary server.
-        args.extend(['--dbname', ''])
+        # Use the attached form "--dbname=" (a single argv token) rather than
+        # ['--dbname', ''] so the process-details command renders correctly
+        # (an empty standalone token is dropped from the displayed command).
+        args.append('--dbname=')
 
         if data['format'] == 'directory':
             args.extend(['--format=d'])
