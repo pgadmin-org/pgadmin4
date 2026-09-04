@@ -255,23 +255,29 @@ def create_maintenance_job(sid, did):
         index_name=index_name
     )
 
+    # The target database is passed via the PGDATABASE environment variable
+    # below, not as a --dbname argument -- a user-controlled value containing
+    # "=" is expanded by libpq into a connection string (connection and
+    # credential redirection).
     args = [
         '--host',
         manager.local_bind_host if manager.use_ssh_tunnel else server.host,
         '--port',
         str(manager.local_bind_port) if manager.use_ssh_tunnel
         else str(server.port),
-        '--username', server.username, '--dbname',
-        data['database'],
+        '--username', server.username,
         '--command', query
     ]
 
     try:
+        env = {}
+        if data.get('database'):
+            env['PGDATABASE'] = data['database']
         p = BatchProcess(
             desc=Message(server.id, data, query),
             cmd=utility, args=args, manager_obj=manager
         )
-        p.set_env_variables(server)
+        p.set_env_variables(server, env=env)
         p.start()
         jid = p.id
     except Exception as e:
