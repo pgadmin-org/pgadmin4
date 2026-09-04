@@ -469,15 +469,16 @@ def create_backup_objects_job(sid):
     try:
         bfile = data['file'].encode('utf-8') \
             if hasattr(data['file'], 'encode') else data['file']
+        # Pass the target database via the PGDATABASE environment variable
+        # instead of as a command-line argument. A positional dbname is unsafe
+        # even with a "--" end-of-options marker: pg_dump/libpq expand a value
+        # containing "=" (e.g. "host=evil port=5433 dbname=postgres") into a
+        # connection string, letting a user redirect the connection -- and the
+        # exported PGPASSWORD credential -- to an arbitrary server. PGDATABASE
+        # is used as a literal database name and is not expanded.
+        env = {}
         if backup_obj_type == 'objects':
-            # Add the "--" end-of-options marker before the database name so
-            # pg_dump always treats data['database'] as the positional dbname
-            # and never as an option. Without this, a value such as
-            # "--file=/path" would be parsed as an option and override the
-            # storage-confined "--file", letting a user write pg_dump output
-            # outside their storage sandbox (argument injection).
-            args.extend(['--', data['database']])
-            escaped_args.extend(['--', data['database']])
+            env['PGDATABASE'] = data['database']
             p = BatchProcess(
                 desc=BackupMessage(
                     BACKUP.OBJECT, server.id, bfile,
@@ -497,7 +498,7 @@ def create_backup_objects_job(sid):
                 cmd=utility, args=escaped_args, manager_obj=manager
             )
 
-        p.set_env_variables(server)
+        p.set_env_variables(server, env=env)
         p.start()
         jid = p.id
     except Exception as e:
