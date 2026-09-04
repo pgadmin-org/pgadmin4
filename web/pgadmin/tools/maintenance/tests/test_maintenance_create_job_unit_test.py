@@ -817,9 +817,12 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              ),
              url=MAINTENANCE_URL,
              expected_cmd_opts=['VACUUM (VERBOSE);\n'],
-             # neither the --dbname flag nor the user value may reach argv
-             not_expected_cmd_opts=[
-                 '--dbname', 'host=127.0.0.1 port=9999 dbname=postgres'],
+             # the --dbname flag must be gone entirely...
+             not_expected_cmd_opts=['--dbname'],
+             # ...and the value must not appear even inside a single argv
+             # token (e.g. "--dbname=host=...")
+             forbidden_arg_substr=[
+                 'host=127.0.0.1 port=9999 dbname=postgres'],
              expected_env={
                  'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
          ))
@@ -911,6 +914,14 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
             for opt in self.not_expected_cmd_opts:
                 self.assertNotIn(
                     opt, batch_process_mock.call_args_list[0][1]['args'])
+        # Injection guard: the value must not appear even embedded inside a
+        # single argv token (e.g. "--dbname=host=..."), which plain
+        # assertNotIn membership would miss. Scan every arg for the substring.
+        if getattr(self, 'forbidden_arg_substr', None):
+            _args = batch_process_mock.call_args_list[0][1]['args']
+            for _sub in self.forbidden_arg_substr:
+                for _a in _args:
+                    self.assertNotIn(_sub, str(_a))
         # The target database must be carried in PGDATABASE (a literal name
         # libpq never expands), not in argv where a value containing "="
         # would be turned into a connection string.

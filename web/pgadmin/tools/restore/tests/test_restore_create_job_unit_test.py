@@ -428,9 +428,11 @@ class RestoreCreateJobTest(BaseTestGenerator):
              url=RESTORE_JOB_URL,
              expected_cmd='psql',
              expected_cmd_opts=[],
-             # neither the --dbname flag nor the user value may reach argv
-             not_expected_cmd_opts=[
-                 '--dbname', 'host=127.0.0.1 port=9999 dbname=postgres'],
+             # the --dbname flag must be gone entirely...
+             not_expected_cmd_opts=['--dbname'],
+             # ...and the value must not appear even inside a single token
+             forbidden_arg_substr=[
+                 'host=127.0.0.1 port=9999 dbname=postgres'],
              expected_env={
                  'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
              expected_exit_code=[0, None]
@@ -454,10 +456,12 @@ class RestoreCreateJobTest(BaseTestGenerator):
              ),
              url=RESTORE_JOB_URL,
              expected_cmd='pg_restore',
-             expected_cmd_opts=[],
-             # pg_restore keeps an empty --dbname flag, but the user-supplied
-             # value must never appear in argv.
-             not_expected_cmd_opts=[
+             # pg_restore MUST keep the (empty) --dbname flag, otherwise it
+             # errors with "one of -d/--dbname and -f/--file must be specified"
+             expected_cmd_opts=['--dbname='],
+             not_expected_cmd_opts=[],
+             # the user value must not appear even inside a single argv token
+             forbidden_arg_substr=[
                  'host=127.0.0.1 port=9999 dbname=postgres'],
              expected_env={
                  'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
@@ -565,6 +569,14 @@ class RestoreCreateJobTest(BaseTestGenerator):
                     opt,
                     batch_process_mock.call_args_list[0][1]['args']
                 )
+        # Injection guard: the value must not appear even embedded inside a
+        # single argv token (e.g. "--dbname=host=..."), which plain
+        # assertNotIn membership would miss. Scan every arg for the substring.
+        if getattr(self, 'forbidden_arg_substr', None):
+            _args = batch_process_mock.call_args_list[0][1]['args']
+            for _sub in self.forbidden_arg_substr:
+                for _a in _args:
+                    self.assertNotIn(_sub, str(_a))
         # The target database must be carried in PGDATABASE (a literal name
         # libpq never expands), not in argv where a value containing "="
         # would be turned into a connection string.
