@@ -70,18 +70,18 @@ export default class PgtChainTaskSchema extends BaseUISchema {
         mode: ['properties'],
       },
       {
-        id: 'task_name',
-        label: gettext('Name'),
-        type: 'text',
-        noEmpty: true,
-        cell: 'text',
-      },
-      {
         id: 'task_order',
         label: gettext('Order'),
         type: 'numeric',
         cell: 'numeric',
         controlProps: { decimals: 2 },
+      },
+      {
+        id: 'task_name',
+        label: gettext('Name'),
+        type: 'text',
+        noEmpty: true,
+        cell: 'text',
       },
       {
         id: 'kind',

@@ -20,7 +20,7 @@ define('pgadmin.node.pgt_chaintask', [
         label: gettext('Tasks'),
         type: 'coll-pgt_chaintask',
         columns: [
-          'task_id', 'task_name',  'kind',
+          'task_id', 'task_order', 'task_name', 'kind',
           'ignore_error',
         ],
         hasStatistics: false,

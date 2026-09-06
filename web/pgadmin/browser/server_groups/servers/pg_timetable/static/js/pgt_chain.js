@@ -123,7 +123,6 @@ define('pgadmin.node.pgt_chain', [
       callback: 'run_pgt_chain_now',
       priority: 4,
       label: gettext('Run now'),
-      data: { action: 'create' },
     },
   ]);
   return pgBrowser.Nodes['pgt_chain'];
