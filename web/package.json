@@ -158,6 +158,14 @@
     "wkx": "^0.5.0",
     "zustand": "^5.0.15"
   },
+  "dependenciesMeta": {
+    "ttf2woff2": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "resolutions": {
     "rc-resize-observer": "1.4.0",
     "@xmldom/xmldom": "^0.8.13",

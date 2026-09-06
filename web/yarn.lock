@@ -14558,6 +14558,10 @@ __metadata:
   dependenciesMeta:
     sharp:
       optional: true
+    ttf2woff2:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 
