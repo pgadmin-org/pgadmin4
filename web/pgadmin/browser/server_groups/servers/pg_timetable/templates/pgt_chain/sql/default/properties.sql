@@ -5,6 +5,7 @@ SELECT
     j.client_name,
     CASE
         WHEN ac.client_name IS NOT NULL THEN 'running'
+        WHEN el.last_run IS NULL THEN 'never run'
         WHEN el.returncode = 0 THEN 'success'
         ELSE 'failure (' || returncode::text || ')'
     END AS status,

@@ -107,7 +107,7 @@ export default class PgtChainSchema extends BaseUISchema {
         schema: this.getPgtChainTaskSchema(),
         canEdit: true, canAdd: true, canDelete: true,
         columns: [
-          'task_name',  'task_order', 'kind', 'ignore_error',
+          'task_order',  'task_name', 'kind', 'ignore_error',
         ],
         depChange: (state, source, topState, actionObj) => {
           if (actionObj.type === SCHEMA_STATE_ACTIONS.ADD_ROW && state?.ctasks) {
