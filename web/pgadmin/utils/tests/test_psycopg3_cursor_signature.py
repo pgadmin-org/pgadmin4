@@ -24,9 +24,11 @@ kwarg trips a narrowed ``DictCursor.execute`` signature with
 here for full ``psycopg.Cursor`` signature parity.
 """
 
+import asyncio
 import inspect
 
-from pgadmin.utils.driver.psycopg3.cursor import AsyncDictCursor, DictCursor
+from pgadmin.utils.driver.psycopg3.cursor import AsyncDictCursor, \
+    AsyncDictServerCursor, DictCursor
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -49,3 +51,39 @@ class TestDictCursorExecuteSignature(BaseTestGenerator):
                          inspect.Parameter.KEYWORD_ONLY)
         self.assertEqual(params['binary'].kind,
                          inspect.Parameter.KEYWORD_ONLY)
+
+
+class TestAsyncDictServerCursorDropsPrepare(BaseTestGenerator):
+    """
+    ``AsyncDictServerCursor`` accepts ``prepare`` too (it inherits
+    ``AsyncDictCursor.execute`` for ``psycopg.AsyncCursor`` substitutability),
+    but must NOT forward it any further: the underlying
+    ``psycopg.AsyncServerCursor.execute`` never accepts ``prepare`` (a
+    server-side ``DECLARE CURSOR`` can't be a prepared statement) and raises
+    ``TypeError`` on any unexpected keyword, even one whose value is
+    ``None``. Without this, every server-cursor query fails with
+    ``TypeError: keyword not supported: prepare``.
+    """
+
+    def runTest(self):
+        captured = {}
+
+        async def fake_execute(_self, query, params, **kwargs):
+            captured['query'] = query
+            captured['params'] = params
+            captured.update(kwargs)
+            return _self
+
+        fake_underlying_cursor = type(
+            'FakeServerCursor', (), {'execute': fake_execute})
+
+        cur = AsyncDictServerCursor.__new__(AsyncDictServerCursor)
+        cur.cursor = fake_underlying_cursor
+
+        asyncio.run(
+            cur._execute('SELECT 1', None, prepare=None, binary=None)
+        )
+
+        self.assertNotIn('prepare', captured)
+        self.assertIn('binary', captured)
+        self.assertEqual(captured['query'], 'SELECT 1')

@@ -637,8 +637,12 @@ def compare_database(params):
 
     except Exception as e:
         app.logger.exception(e)
+        # Reporting success as well would hand the client a comparison
+        # that stopped part way through as though it were complete
+        # (#10303).
         socketio.emit('compare_database_failed', str(e),
                       namespace=SOCKETIO_NAMESPACE, to=request.sid)
+        return
 
     socketio.emit('compare_database_success', comparison_result,
                   namespace=SOCKETIO_NAMESPACE, to=request.sid)
@@ -702,8 +706,12 @@ def compare_schema(params):
 
     except Exception as e:
         app.logger.exception(e)
+        # As above: a partial comparison must not be reported as a
+        # successful one (#10303).
         socketio.emit('compare_schema_failed', str(e),
                       namespace=SOCKETIO_NAMESPACE, to=request.sid)
+        return
+
     socketio.emit('compare_schema_success', comparison_result,
                   namespace=SOCKETIO_NAMESPACE, to=request.sid)
 

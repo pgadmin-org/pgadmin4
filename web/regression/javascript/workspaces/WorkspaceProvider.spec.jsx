@@ -9,7 +9,7 @@
 
 import { act, render } from '@testing-library/react';
 
-import { SHOW_OBJECT_EXPLORER_EVENT } from
+import { SHOW_OBJECT_EXPLORER_EVENT, TOGGLE_OBJECT_EXPLORER_EVENT } from
   '../../../pgadmin/browser/static/js/constants';
 import { WorkspaceProvider, useWorkspace } from
   '../../../pgadmin/misc/workspaces/static/js/WorkspaceProvider';
@@ -18,6 +18,18 @@ import pgAdmin from '../fake_pgadmin';
 import getApiInstance from '../../../pgadmin/static/js/api_instance';
 
 jest.mock('../../../pgadmin/static/js/api_instance');
+
+// The workspace layout, since that is the only layout with a workspace
+// toolbar and therefore the only one where the Object Explorer can be
+// collapsed at all.
+jest.mock('../../../pgadmin/preferences/static/js/store', () => {
+  const store = () => ({
+    getPreferencesForModule: () => ({layout: 'workspace'}),
+  });
+  store.subscribe = () => () => {/* nothing to unsubscribe */};
+  store.getState = () => ({});
+  return {__esModule: true, default: store};
+});
 
 // The Object Explorer can be collapsed, and that choice is persisted, so the
 // visibility state has to survive a reload and the writes must not be able to
@@ -95,6 +107,21 @@ describe('WorkspaceProvider Object Explorer visibility', () => {
     const values = post.mock.calls.map(([, formData]) =>
       formData.get('value'));
     expect(values).toEqual(['false', 'true']);
+  });
+
+  it('toggles when asked to by code outside React', async () => {
+    await renderProvider();
+    expect(workspace.isObjectExplorerVisible).toBe(true);
+
+    await act(async () => {
+      pgAdmin.Browser.Events.trigger(TOGGLE_OBJECT_EXPLORER_EVENT);
+    });
+    expect(workspace.isObjectExplorerVisible).toBe(false);
+
+    await act(async () => {
+      pgAdmin.Browser.Events.trigger(TOGGLE_OBJECT_EXPLORER_EVENT);
+    });
+    expect(workspace.isObjectExplorerVisible).toBe(true);
   });
 
   it('shows the panel when asked to by code outside React', async () => {

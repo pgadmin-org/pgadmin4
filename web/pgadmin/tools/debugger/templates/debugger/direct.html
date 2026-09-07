@@ -17,7 +17,7 @@ try {
 }
 {% endblock %}
 {% block body %}
-<style>
+<style nonce="{{ csp_nonce }}">
     #debugger-main-container {
         display: flex;
         flex-direction: column;
@@ -29,7 +29,7 @@ try {
     }
 </style>
 {% if is_desktop_mode and is_linux %}
-<style>
+<style nonce="{{ csp_nonce }}">
     body
 </style>
 {% endif %}

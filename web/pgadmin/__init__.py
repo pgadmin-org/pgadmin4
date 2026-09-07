@@ -958,6 +958,9 @@ def create_app(app_name=None):
         return {
             'current_app': current_app,
             'current_blueprint': current_blueprint,
+            # Per-request Content-Security-Policy nonce, for use on inline
+            # <script>/<style> tags when a nonce based CSP is configured.
+            'csp_nonce': SecurityHeaders.get_nonce(),
         }
 
     @app.errorhandler(Exception)

@@ -304,16 +304,16 @@ export default class FunctionSchema extends BaseUISchema {
     },
     {
       id: 'arguments', label: gettext('Arguments'), cell: 'string',
-      group: gettext('Definition'), type: 'collection', canAdd: function(){
-        return obj.isNew();
-      },
+      group: gettext('Definition'), type: 'collection',
       canDelete: true, mode: ['create', 'edit'],
       columns: ['argtype', 'argmode', 'argname', 'argdefval'],
       schema : new DefaultArgumentSchema(this.node_info, this.fieldOptions.getTypes),
       disabled: obj.inCatalog(),
-      canDeleteRow: function() {
-        return obj.isNew();
-      },
+      // Existing (already saved) arguments cannot be removed here, as
+      // PostgreSQL has no way to drop an argument from a function via
+      // CREATE OR REPLACE. Only rows added in the current session (not
+      // yet saved) can be deleted.
+      canDeleteRow: (state) => (this.isNew(state)),
     },{
       id: 'prosrc', label: gettext('Code'), cell: 'text',
       type: 'sql', mode: ['properties', 'create', 'edit'],

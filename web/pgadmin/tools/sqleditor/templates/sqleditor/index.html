@@ -5,7 +5,7 @@
 <link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
 {% endblock %}
 {% block body %}
-<style>
+<style nonce="{{ csp_nonce }}">
     body {padding: 0px;}
     #sqleditor-container {
         display: flex;

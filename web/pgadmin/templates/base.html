@@ -10,7 +10,7 @@
 
     <!-- To set pgAdmin4 shortcut icon in browser -->
     <link rel="shortcut icon" href="{{ url_for('redirects.favicon') }}"/>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .pg-sp-container {
             position: absolute;
             min-width: 100%;
@@ -43,14 +43,14 @@
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
 
-    <script type="application/javascript">
+    <script type="application/javascript" nonce="{{ csp_nonce }}">
         /* This is used to change publicPath of webpack at runtime */
         window.resourceBasePath = "{{ url_for('static', filename='js') }}/generated/";
     </script>
-    <script type="application/javascript"
+    <script type="application/javascript" nonce="{{ csp_nonce }}"
         src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
     <!-- Base template scripts -->
-    <script type="application/javascript">
+    <script type="application/javascript" nonce="{{ csp_nonce }}">
             require.config({
                 baseUrl: '',
 {% if config.APP_VERSION_PARAM is not none and config.APP_VERSION_PARAM != '' %}
@@ -73,15 +73,15 @@
             });
 
     </script>
-    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.react.js') }}" ></script>
-    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
-    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
-    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.sqleditor.js') }}"></script>
-    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
+    <script type="application/javascript" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/generated/vendor.react.js') }}" ></script>
+    <script type="application/javascript" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
+    <script type="application/javascript" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
+    <script type="application/javascript" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/generated/vendor.sqleditor.js') }}"></script>
+    <script type="application/javascript" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
 
 </head>
 <body>
-<style>
+<style nonce="{{ csp_nonce }}">
 body {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -100,7 +100,7 @@ body {
 <![endif]-->
 
 {% block body %}{% endblock %}
-<script type="application/javascript">
+<script type="application/javascript" nonce="{{ csp_nonce }}">
             {% block init_script %}{% endblock %}
 </script>
 

@@ -913,6 +913,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         json_resp = kwargs.get('json_resp', True)
         target_schema = kwargs.get('target_schema', None)
+        allow_code_formatting = kwargs.get('allow_code_formatting', True)
 
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Most probably this is due to error
@@ -936,7 +937,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         resp_data['func_args_without'] = ', '.join(args_without_name)
 
-        self.reformat_prosrc_code(resp_data)
+        if allow_code_formatting:
+            self.reformat_prosrc_code(resp_data)
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
@@ -1035,7 +1037,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return:
         """
         if 'arguments' in data and len(data['arguments']) > 0:
-            for arg in data['arguments']['changed']:
+            for arg in data['arguments'].get('changed', []):
                 for old_arg in old_data['arguments']:
                     if arg['argid'] == old_arg['argid']:
                         old_arg.update(arg)
@@ -1193,6 +1195,36 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if (arg == 'arguments' and arg in data and len(
                     data[arg]) > 0) or arg in data:
                 data['change_func'] = True
+
+        # PostgreSQL cannot add an argument to an existing function/
+        # procedure via CREATE OR REPLACE. Adding an IN/INOUT/VARIADIC
+        # argument changes the routine's signature, so PostgreSQL
+        # creates a new, separate overloaded routine instead of
+        # replacing this one. Adding an OUT argument does not affect
+        # the signature, but it changes the shape of the returned row,
+        # which PostgreSQL rejects outright (SQLSTATE 42P13). Reject
+        # both cases explicitly, rather than silently leaving an
+        # orphaned routine behind or letting the database error surface.
+        if 'arguments' in data and isinstance(data['arguments'], dict) \
+                and data['arguments'].get('added'):
+            added_args = data['arguments']['added']
+            if any(
+                (a.get('argmode') or 'IN') != 'OUT' for a in added_args
+            ):
+                return False, gettext(
+                    "Adding a new IN/INOUT/VARIADIC argument to an "
+                    "existing function/procedure is not supported, as "
+                    "PostgreSQL would create a separate, overloaded "
+                    "routine rather than replacing this one. Please "
+                    "create a new function/procedure instead."
+                ), ''
+            else:
+                return False, gettext(
+                    "Adding a new OUT argument to an existing function/"
+                    "procedure is not supported, as it would change the "
+                    "shape of the returned row. Please create a new "
+                    "function/procedure instead."
+                ), ''
 
         # If Function Definition/Arguments are changed then merge old
         #  Arguments with changed ones for Create/Replace Function
@@ -1670,8 +1702,18 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, fnid=oid, only_sql=True)
             elif target_schema:
+                # This SQL is the one that will actually be executed
+                # against the target (e.g. to create a "Source Only"
+                # object there), so it must reproduce the body exactly
+                # as stored, without the cosmetic newlines added around
+                # $BODY$ for readability in the SQL panel. Otherwise the
+                # target's prosrc would differ from the source's by
+                # nothing but pgAdmin's own formatting, and a subsequent
+                # comparison would keep reporting a (whitespace-only)
+                # difference (see #10302).
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
-                               target_schema=target_schema, json_resp=False)
+                               target_schema=target_schema, json_resp=False,
+                               allow_code_formatting=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)

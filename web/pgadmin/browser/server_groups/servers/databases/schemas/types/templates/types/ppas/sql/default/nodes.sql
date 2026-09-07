@@ -14,6 +14,6 @@ WHERE t.typtype != 'd' AND t.typname NOT LIKE E'\\_%' AND t.typnamespace = {{sci
 {% endif %}
 {% if schema_diff %}
     AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
-        WHERE objid = t.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+        WHERE objid = t.oid AND deptype IN ('e', 'i')) > 0 THEN FALSE ELSE TRUE END
 {% endif %}
 ORDER BY t.typname;

@@ -15,7 +15,7 @@ try {
 }
 {% endblock %}
 {% block css_link %}
-<style>
+<style nonce="{{ csp_nonce }}">
   #schema-diff-main-container {
         display: flex;
         flex-direction: column;

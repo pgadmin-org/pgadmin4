@@ -540,7 +540,10 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         Returns:
 
         """
-        data = request.form if request.form else json.loads(
+        # request.form is immutable, and get_SQL adds a 'restart' of its
+        # own when the new bounds have left the sequence outside them, so
+        # take a mutable copy of it.
+        data = dict(request.form) if request.form else json.loads(
             request.data
         )
         sql, _ = self.get_SQL(gid, sid, did, data, scid, seid)
@@ -628,6 +631,50 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def _add_restart_for_new_bounds(self, data, old_data):
+        """
+        Ask for the sequence to be repositioned when the bounds being set
+        would leave it outside them.
+
+        PostgreSQL will not raise a sequence's MINVALUE above, or lower its
+        MAXVALUE below, the value the sequence currently sits at: it
+        rejects the whole statement with "RESTART value (n) cannot be less
+        than MINVALUE (m)", so every other change in it is lost too.
+        Repositioning onto the nearest value the new bounds allow is the
+        only way such a change can be applied, so ask for it rather than
+        generating a statement that cannot run (#10298). A sequence already
+        within its new bounds is left where it is, because handing out
+        values that have been used already would be worse than either.
+
+        :param data: The change being applied, modified in place
+        :param old_data: The sequence as it stands
+        """
+        minimum = data.get('minimum')
+        maximum = data.get('maximum')
+
+        if minimum is None and maximum is None:
+            return
+
+        current = data.get('current_value')
+        if current is None:
+            sql = render_template(
+                "/".join([self.template_path, 'get_def.sql']),
+                data=old_data, conn=self.conn
+            )
+            status, res = self.conn.execute_dict(sql)
+            if not status or not res['rows']:
+                return
+
+            current = res['rows'][0]['last_value']
+
+        if current is None:
+            return
+
+        if minimum is not None and int(minimum) > int(current):
+            data['restart'] = int(minimum)
+        elif maximum is not None and int(maximum) < int(current):
+            data['restart'] = int(maximum)
+
     def get_SQL(self, gid, sid, did, data, scid, seid=None,
                 add_not_exists_clause=False):
         """
@@ -667,6 +714,9 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             for arg in required_args:
                 if arg not in data:
                     data[arg] = old_data[arg]
+
+            self._add_restart_for_new_bounds(data, old_data)
+
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data, conn=self.conn

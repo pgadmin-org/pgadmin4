@@ -8,7 +8,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Idx_$%{}[]()&*^!@""'`\/#"
     INCLUDE(name, id)
     NULLS NOT DISTINCT
     WITH (fillfactor=10)
-    TABLESPACE pg_default
+
     WHERE id < 100;
 
 COMMENT ON INDEX public."Idx_$%{}[]()&*^!@""'`\/#"

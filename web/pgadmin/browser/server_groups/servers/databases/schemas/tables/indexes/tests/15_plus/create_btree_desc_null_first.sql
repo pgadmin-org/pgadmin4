@@ -7,4 +7,4 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Idx_$%{}[]()&*^!@""'`\/#"
     (id DESC NULLS FIRST, name COLLATE pg_catalog."POSIX" text_pattern_ops DESC NULLS FIRST)
     INCLUDE(name, id)
     NULLS NOT DISTINCT
-    TABLESPACE pg_default;
+;

@@ -61,6 +61,17 @@ class PgAdminModule(Blueprint):
         sub-modules at once.
         """
 
+        # Sub-classes populate self.submodules from their own register(),
+        # but the blueprint objects themselves are module level singletons,
+        # so registering one against a second application instance (which
+        # happens whenever more than one app is created in a single
+        # process, as the regression suite does) would otherwise leave a
+        # duplicate entry behind for every sub-module. Anything that walks
+        # self.submodules then does its work once per duplicate; in Schema
+        # Diff's case that means generating the same DDL several times
+        # over.
+        self.submodules = list(dict.fromkeys(self.submodules))
+
         super().register(app, options)
 
         def create_module_preference():
@@ -77,7 +88,8 @@ class PgAdminModule(Blueprint):
         app.register_before_app_start(create_module_preference)
 
         for module in self.submodules:
-            module.parentmodules.append(self)
+            if self not in module.parentmodules:
+                module.parentmodules.append(self)
             if app.blueprints.get(module.name) is None:
                 app.register_blueprint(module)
                 app.register_logout_hook(module)

@@ -144,8 +144,40 @@ CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 # such as JavaScript, CSS, or pretty much anything that the browser loads.
 # see https://content-security-policy.com/#source_list for more info
 # e.g. "default-src https: data: 'unsafe-inline' 'unsafe-eval';"
-CONTENT_SECURITY_POLICY = "default-src ws: http: data: blob: 'unsafe-inline'" \
-                          " 'unsafe-eval';"
+#
+# A per-request nonce is used in place of 'unsafe-inline' for scripts. The
+# literal token {nonce} anywhere in the policy is replaced at runtime with a
+# freshly generated nonce that is also emitted on pgAdmin's inline <script>
+# tags. To go back to the old permissive policy, set:
+#   CONTENT_SECURITY_POLICY = "default-src ws: http: data: blob:" \
+#                             " 'unsafe-inline' 'unsafe-eval';"
+# Notes:
+#  - 'unsafe-inline' is retained for style-src because pgAdmin's UI (React/MUI)
+#    injects runtime styles and inline style="" attributes that are not (and
+#    cannot be) nonce tagged. WARNING: do NOT add 'nonce-{nonce}' to style-src
+#    to tighten this -- per the CSP spec a nonce silently DISABLES
+#    'unsafe-inline', which blocks all of MUI's runtime styles and leaves the
+#    UI unstyled.
+#  - 'unsafe-eval' is NOT listed: production bundles do not need it. This holds
+#    only because JsonEditor.jsx passes neither 'queryLanguages' nor a
+#    'validator' to vanilla-jsoneditor: its default query language (JSONQuery)
+#    composes closures rather than evaluating source, so the eval-capable
+#    paths (jsonpath-plus, ajv's runtime compiler and the Lodash query
+#    language) stay unreachable. Enabling schema validation or registering
+#    another query language would make 'unsafe-eval' necessary again.
+#  - Development webpack bundles ARE built with the 'eval' devtool and need
+#    'unsafe-eval'. security_headers.py adds it automatically when DEBUG is
+#    True (for a nonce based policy), so no manual change is needed for the
+#    dev server. Security note: turning DEBUG on in a server-mode deployment
+#    therefore relaxes the policy (drops eval protection), and this is not
+#    logged.
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self' ws: http: data: blob:;"
+    " script-src 'self' 'nonce-{nonce}';"
+    " style-src 'self' 'unsafe-inline';"
+    " object-src 'none';"
+    " base-uri 'self';"
+)
 
 # STRICT_TRANSPORT_SECURITY_ENABLED when set to True will set the
 # Strict-Transport-Security header

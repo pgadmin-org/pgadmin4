@@ -224,6 +224,18 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                       'schema', 'oid-2', 'type_acl', 'rngcollation', 'attnum',
                       'typowner']
 
+    # A range type carries its subtype, collation and support functions as
+    # plain values, which types of every other kind have no equivalent of at
+    # all. directory_diff() silently drops a value that only one side has,
+    # so comparing a range against a type of another kind would lose the
+    # subtype and leave nothing to render but `CREATE TYPE ... AS RANGE ()`
+    # when the type has to be dropped and recreated. Defining the keys on
+    # both sides keeps them in the difference (#10304).
+    range_keys_to_normalise = ['rngsubtype', 'typname', 'rngmultirangetype',
+                               'collname', 'rngsubopc', 'opcname',
+                               'rngcanonical', 'rngsubdiff_proc',
+                               'rngsubdiff']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks
@@ -1587,6 +1599,17 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         for row in rset['rows']:
             status, data = self._fetch_properties(scid, row['oid'])
             if status:
+                # The catalogue writes '-' where a type has no support
+                # function, which is not something that can be handed back
+                # to CREATE TYPE; the reverse-engineered SQL path drops it
+                # the same way before rendering (#10304).
+                for key, value in data.items():
+                    if value == '-':
+                        data[key] = None
+
+                for key in self.range_keys_to_normalise:
+                    data.setdefault(key, None)
+
                 res[row['name']] = data
 
         return res

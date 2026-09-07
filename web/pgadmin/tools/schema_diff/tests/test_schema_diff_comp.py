@@ -15,7 +15,7 @@ import secrets
 from pgadmin.utils.route import BaseTestGenerator, BaseSocketTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from .utils import restore_schema
+from .utils import apply_sql_chunks, restore_schema
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
 
@@ -28,6 +28,19 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
             url='schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}/0/0'))
     ]
     SOCKET_NAMESPACE = '/schema_diff'
+
+    # Objects that the generated script is known not to settle yet, each
+    # with the issue that covers it. The test fails on anything outside
+    # this list, and also fails when something on it starts working, so
+    # that the list cannot quietly rot.
+    KNOWN_DIFFERENCES = {
+        # Rebuilding a partitioned table leaves its scaffolding default
+        # partition behind.
+        'table table_for_partition_1': 10301,
+        # CREATE OR REPLACE wraps the body in newlines, leaving a
+        # whitespace-only difference.
+        'procedure proc1(IN arg1 bigint)': 10302,
+    }
 
     def setUp(self):
         super().setUp()
@@ -63,13 +76,13 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
             raise FileNotFoundError(
                 '{} file does not exists'.format(tar_sql_path))
 
-        status, self.src_schema_id = restore_schema(
+        status, self.src_schema_id, _ = restore_schema(
             self.server, self.src_database, self.schema_name, src_sql_path)
         if not status:
             print("Failed to restore schema on source database.")
             return False
 
-        status, self.tar_schema_id = restore_schema(
+        status, self.tar_schema_id, _ = restore_schema(
             self.server, self.tar_database, self.schema_name, tar_sql_path)
         if not status:
             print("Failed to restore schema on target database.")
@@ -124,6 +137,15 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
         self.socket_client.emit('compare_database', data,
                                 namespace=self.SOCKET_NAMESPACE)
         received = self.socket_client.get_received(self.SOCKET_NAMESPACE)
+
+        # A comparison that throws part way through still reports the
+        # objects it managed to get through, so watching only for the
+        # success message would quietly assert against a fraction of the
+        # databases.
+        failures = [message['args'][0] for message in received
+                    if message['name'] == 'compare_database_failed']
+        self.assertEqual(failures, [], 'The comparison failed')
+
         response_data = received[-1]['args'][0]
         self.assertEqual(received[-1]['name'], "compare_database_success",
                          response_data)
@@ -161,7 +183,10 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
             str(secrets.choice(range(1, 99999)))))
         file_obj = open(diff_file, 'a')
 
+        chunks = []
+
         for diff in response_data:
+            ddl = None
             if diff['status'] == 'Identical':
                 src_obj_oid = diff['source_oid']
                 tar_obj_oid = diff['target_oid']
@@ -186,24 +211,60 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
                     response = self.tester.get(url)
 
                     self.assertEqual(response.status_code, 200)
-                    response_data = json.loads(response.data.decode('utf-8'))
-                    file_obj.write(response_data['diff_ddl'])
+                    ddl_response = json.loads(response.data.decode('utf-8'))
+                    ddl = ddl_response['diff_ddl']
             elif 'diff_ddl' in diff:
-                file_obj.write(diff['diff_ddl'])
+                ddl = diff['diff_ddl']
+
+            if ddl and ddl.strip():
+                file_obj.write(ddl)
+                chunks.append(('{0} {1}'.format(diff['type'], diff['title']),
+                               ddl))
 
         file_obj.close()
-        try:
-            restore_schema(self.server, self.tar_database, self.schema_name,
-                           diff_file)
 
-            os.remove(diff_file)
+        # Every object's SQL has to be valid, and applying the lot has to
+        # leave the two databases identical. Anything else is a bug in the
+        # SQL we generate, so it fails the test rather than being discarded
+        # the way it was before #10293. The script is left on disk when it
+        # does fail, since it is the evidence of what went wrong.
+        #
+        # The objects go in one at a time and are retried, rather than as a
+        # single script, because Schema Diff no longer orders the script it
+        # generates by dependency (#10295), so an object can fail purely
+        # because something it needs comes later on. Retrying tells that
+        # apart from SQL that is simply wrong; once #10295 is fixed this
+        # can go back to applying the script in one go.
+        _, failed = apply_sql_chunks(self.server, self.tar_database, chunks)
+        if failed:
+            self.fail(
+                'The SQL generated for {0} of {1} object(s) never applied:'
+                '\n{2}\nThe script has been left at {3}'.format(
+                    len(failed), len(chunks),
+                    '\n'.join('  {0}: {1}'.format(label, error)
+                              for label, _, error in failed),
+                    diff_file))
 
-            response_data = self.compare()
-            for diff in response_data:
-                self.assertEqual(diff['status'], 'Identical')
-        except Exception as e:
-            if os.path.exists(diff_file):
-                os.remove(diff_file)
+        response_data = self.compare()
+        not_identical = {'{0} {1}'.format(diff['type'], diff['title'])
+                         for diff in response_data
+                         if diff['status'] != 'Identical'}
+
+        unexpected = not_identical - set(self.KNOWN_DIFFERENCES)
+        if unexpected:
+            self.fail('Applying the generated script left {0} object(s) '
+                      'unexpectedly different: {1}\nThe script has been '
+                      'left at {2}'.format(len(unexpected),
+                                           ', '.join(sorted(unexpected)),
+                                           diff_file))
+
+        settled = set(self.KNOWN_DIFFERENCES) - not_identical
+        if settled:
+            self.fail('{0} settles now that the generated script has been '
+                      'applied, so it should come off '
+                      'KNOWN_DIFFERENCES'.format(', '.join(sorted(settled))))
+
+        os.remove(diff_file)
 
     def tearDown(self):
         """This function drop the added database"""

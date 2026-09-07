@@ -3,7 +3,7 @@ CREATE UNIQUE INDEX "Idx_$%{}[]()&*^!@""'`\/#"
     (id DESC NULLS LAST, name COLLATE pg_catalog."POSIX" text_pattern_ops DESC NULLS LAST)
     INCLUDE(name, id)
     WITH (fillfactor=10, deduplicate_items=False)
-    TABLESPACE pg_default
+
     WHERE id < 100;
 
 COMMENT ON INDEX public."Idx_$%{}[]()&*^!@""'`\/#"
