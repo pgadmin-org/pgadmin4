@@ -141,10 +141,11 @@ jobs:
           }
           EOF
 
-      - name: Upgrade yarn
-        run: |
-          yarn set version berry
-          yarn set version $(node -p "require('./web/package.json').packageManager.split('@')[1]")
+      # Corepack reads packageManager from web/package.json and provisions
+      # exactly that Yarn: a single pinned download, with nothing written
+      # into the checkout.
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Build the JS bundle
         run: |

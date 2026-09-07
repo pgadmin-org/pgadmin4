@@ -89,6 +89,11 @@ class TestExecuteServerCursor(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
         _resp = json.loads(response.data.decode())
         self.assertTrue(_resp['data']['server_cursor'])
+        # The query must actually have executed under the server cursor,
+        # not merely echoed the server_cursor flag back.
+        self.assertEqual(_resp['data']['status'], 'Success')
+        self.assertEqual(len(_resp['data']['result']), 1)
+        self.assertEqual(_resp['data']['result'][0][0], 1)
 
         self.set_server_cursor(False)
 

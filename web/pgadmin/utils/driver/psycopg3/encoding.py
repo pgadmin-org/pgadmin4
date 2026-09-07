@@ -43,8 +43,8 @@ def get_encoding(key):
         current_app.logger.error(e)
         postgres_encoding = 'utf-8'
 
-    python_encoding = psycopg._encodings._py_codecs.get(postgres_encoding,
-                                                        'utf-8')
+    python_encoding = psycopg._encodings.py_codecs.get(
+        postgres_encoding.upper().encode(), 'utf-8')
 
     _dict = encode_dict.get(postgres_encoding.upper(),
                             [postgres_encoding,
@@ -61,9 +61,8 @@ def configure_driver_encodings(encodings):
 
     for key, val in encode_dict.items():
         _, python_encoding = val
-        psycopg._encodings._py_codecs[key] = python_encoding
+        psycopg._encodings.py_codecs[key.encode()] = python_encoding
 
-    encodings.update((k.encode(), v
-                      ) for k, v in psycopg._encodings._py_codecs.items())
+    encodings.update(psycopg._encodings.py_codecs)
     psycopg._encodings.pg_codecs = {
-        v: k.encode() for k, v in psycopg._encodings._py_codecs.items()}
+        v: k for k, v in psycopg._encodings.py_codecs.items()}

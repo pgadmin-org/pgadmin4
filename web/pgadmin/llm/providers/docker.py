@@ -38,6 +38,7 @@ from pgadmin.llm.models import (
     Message, Tool, ToolCall, LLMResponse, LLMError,
     Role, StopReason, Usage
 )
+from pgadmin.llm.utils import urlopen_no_redirect
 
 
 # Default configuration
@@ -237,7 +238,7 @@ class DockerClient(LLMClient):
 
         try:
             # Use longer timeout for local models which can be slower
-            with urllib.request.urlopen(
+            with urlopen_no_redirect(
                 request, timeout=300, context=SSL_CONTEXT
             ) as response:
                 return json.loads(response.read().decode('utf-8'))
@@ -436,7 +437,7 @@ class DockerClient(LLMClient):
         )
 
         try:
-            response = urllib.request.urlopen(
+            response = urlopen_no_redirect(
                 request, timeout=300, context=SSL_CONTEXT
             )
         except urllib.error.HTTPError as e:
