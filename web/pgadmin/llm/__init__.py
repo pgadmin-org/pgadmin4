@@ -22,7 +22,7 @@ from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.csrf import pgCSRFProtect
 import config
-from pgadmin.llm.utils import LLMApiError
+from pgadmin.llm.utils import LLMApiError, urlopen_no_redirect
 from pgadmin.tools.user_management.PgAdminPermissions import \
     AllPermissionTypes
 
@@ -807,7 +807,7 @@ def _fetch_anthropic_models(api_key, api_url=''):
     req = urllib.request.Request(url, headers=headers)
 
     try:
-        with urllib.request.urlopen(
+        with urlopen_no_redirect(
             req, timeout=30, context=SSL_CONTEXT
         ) as response:
             data = json.loads(response.read().decode('utf-8'))
@@ -882,7 +882,7 @@ def _fetch_openai_models(api_key, api_url=''):
     req = urllib.request.Request(url, headers=headers)
 
     try:
-        with urllib.request.urlopen(
+        with urlopen_no_redirect(
             req, timeout=30, context=SSL_CONTEXT
         ) as response:
             data = json.loads(response.read().decode('utf-8'))
@@ -947,7 +947,7 @@ def _fetch_ollama_models(api_url):
     req = urllib.request.Request(url)
 
     try:
-        with urllib.request.urlopen(
+        with urlopen_no_redirect(
             req, timeout=30, context=SSL_CONTEXT
         ) as response:
             data = json.loads(response.read().decode('utf-8'))
@@ -1008,7 +1008,7 @@ def _fetch_docker_models(api_url):
     req = urllib.request.Request(url)
 
     try:
-        with urllib.request.urlopen(
+        with urlopen_no_redirect(
             req, timeout=30, context=SSL_CONTEXT
         ) as response:
             data = json.loads(response.read().decode('utf-8'))

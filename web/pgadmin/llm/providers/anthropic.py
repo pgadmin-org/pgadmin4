@@ -33,6 +33,7 @@ from pgadmin.llm.models import (
     Message, Tool, ToolCall, LLMResponse, LLMError,
     Role, StopReason, Usage
 )
+from pgadmin.llm.utils import urlopen_no_redirect
 
 
 # Default model if none specified
@@ -215,7 +216,7 @@ class AnthropicClient(LLMClient):
         )
 
         try:
-            with urllib.request.urlopen(
+            with urlopen_no_redirect(
                 request, timeout=120, context=SSL_CONTEXT
             ) as response:
                 return json.loads(response.read().decode('utf-8'))
@@ -343,7 +344,7 @@ class AnthropicClient(LLMClient):
         )
 
         try:
-            response = urllib.request.urlopen(
+            response = urlopen_no_redirect(
                 request, timeout=120, context=SSL_CONTEXT
             )
         except urllib.error.HTTPError as e:

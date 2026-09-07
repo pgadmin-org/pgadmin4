@@ -9,7 +9,8 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { BROWSER_PANELS, SHOW_OBJECT_EXPLORER_EVENT, WORKSPACES }
+import { BROWSER_PANELS, SHOW_OBJECT_EXPLORER_EVENT,
+  TOGGLE_OBJECT_EXPLORER_EVENT, WORKSPACES }
   from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import usePreferences from '../../../../preferences/static/js/store';
@@ -170,6 +171,15 @@ export function WorkspaceProvider({children}) {
     return pgAdmin.Browser.Events.registerListener(
       SHOW_OBJECT_EXPLORER_EVENT, ()=>setObjectExplorerVisible(true));
   }, [pgAdmin, setObjectExplorerVisible]);
+
+  useEffect(()=>{
+    // Classic layout has no workspace toolbar and always shows the Object
+    // Explorer, so the shortcut has nothing to collapse there.
+    if(isClassic) return;
+
+    return pgAdmin.Browser.Events.registerListener(
+      TOGGLE_OBJECT_EXPLORER_EVENT, toggleObjectExplorer);
+  }, [pgAdmin, isClassic, toggleObjectExplorer]);
 
   const value = useMemo(()=>({
     config: config,
