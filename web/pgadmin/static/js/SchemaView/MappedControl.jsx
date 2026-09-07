@@ -409,7 +409,12 @@ export const MappedFormControl = ({
     // sibling fields from its own row, mirroring what field.cell() already
     // gets via its row argument. Existing field.type() callbacks that only
     // take a single argument are unaffected.
-    const typeProps = evalFunc(null, field.type, state, depVals);
+    let typeState = state;
+    if (accessPath && accessPath.length > 1) {
+      const parentPath = accessPath.slice(0, -1);
+      typeState = schemaState.value(parentPath);
+    }
+    const typeProps = evalFunc(null, field.type, typeState, depVals);
     newProps = {
       ...newProps,
       ...typeProps,
