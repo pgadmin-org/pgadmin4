@@ -164,7 +164,11 @@ REM Main build sequence Ends
     "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
 
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
+    REM Copy the standard library, but NOT site-packages: the venv already has its
+    REM own seeded pip there, and overwriting only the files the system Python also
+    REM has leaves a mix of two pip versions behind.
+    ROBOCOPY /E /R:3 /W:5 "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" /XD "%PGADMIN_PYTHON_DIR%\Lib\site-packages" > nul
+    CALL :CHECK_ROBOCOPY_ERROR || EXIT /B 1
 
     ECHO Activating virtual environment -  %TMPDIR%\venv...
     CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
