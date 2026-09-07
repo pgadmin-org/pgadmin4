@@ -1618,6 +1618,12 @@ class ServerNode(PGChildNodeView):
         passfile = None
         tunnel_password = None
         save_password = False
+        # Distinguishes "the caller explicitly said false" from "the
+        # caller didn't mention save_password at all" -- only the former
+        # should clear an existing saved credential (see the success
+        # branch below); legacy callers that omit the field must not have
+        # a saved password silently wiped out from under them.
+        save_password_provided = False
         save_tunnel_password = False
         prompt_password = False
         prompt_tunnel_password = False
@@ -1691,8 +1697,9 @@ class ServerNode(PGChildNodeView):
             # this reflects the user's explicit choice -- including
             # unchecking it for a server previously configured to save
             # its password.
+            save_password_provided = 'save_password' in data
             save_password = str_to_bool(
-                data['save_password'] if 'save_password' in data else False)
+                data['save_password'] if save_password_provided else False)
 
             try:
                 # Encrypt the password before saving with user's login
@@ -1756,6 +1763,25 @@ class ServerNode(PGChildNodeView):
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
+                    current_app.logger.exception(e)
+                    manager.release(database=server.maintenance_db)
+                    conn = None
+
+                    return internal_server_error(errormsg=str(e))
+            elif save_password_provided and not save_password and \
+                    server.save_password and config.ALLOW_SAVE_PASSWORD:
+                # The user explicitly unticked "Save Password" on a server
+                # that had one saved -- clear it instead of leaving the
+                # now-stale credential and flag in place.
+                try:
+                    if _is_non_owner(server):
+                        setattr(shared_server, 'save_password', 0)
+                        setattr(shared_server, 'password', None)
+                    else:
+                        setattr(server, 'save_password', 0)
+                        setattr(server, 'password', None)
+                    db.session.commit()
+                except Exception as e:
                     current_app.logger.exception(e)
                     manager.release(database=server.maintenance_db)
                     conn = None

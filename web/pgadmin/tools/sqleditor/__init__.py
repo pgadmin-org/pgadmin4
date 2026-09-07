@@ -267,6 +267,7 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
                         "username": user or server.username,
                         "errmsg": msg,
                         "prompt_password": True,
+                        "save_password": bool(server.save_password),
                         "allow_save_password": True
                         if ALLOW_SAVE_PASSWORD and
                         session.get('allow_save_password', None)
@@ -592,6 +593,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                             "username": user or server.username,
                             "errmsg": msg,
                             "prompt_password": True,
+                            "save_password": bool(server.save_password),
                             "allow_save_password": True
                             if ALLOW_SAVE_PASSWORD and
                             session.get('allow_save_password', None)
@@ -2764,20 +2766,23 @@ def _cache_manager_password_from_request(manager, server=None):
         if not crypt_key_present:
             return
 
+        # This request never actually uses `password` to open a connection
+        # (the manager's primary connection was already established
+        # beforehand), so it must be validated against the server before
+        # caching it on the manager or persisting it -- otherwise a typo at
+        # the prompt would silently replace a working password, for the
+        # current session as well as in durable storage.
+        if not _password_is_valid(manager, password):
+            return
+
         enc_password = encrypt(password, crypt_key)
         manager._update_password(enc_password)
         manager.update_session()
 
-        # Persist the freshly entered password if the user asked to save it,
-        # so the stale stored ciphertext is replaced. This request never
-        # actually uses `password` to open a connection (the manager's
-        # primary connection was already established beforehand), so the
-        # password must be validated against the server first -- otherwise
-        # a typo at the prompt would silently overwrite a working saved
-        # password.
+        # Persist the freshly entered password if the user asked to save
+        # it, so the stale stored ciphertext is replaced.
         if str_to_bool(data.get('save_password', False)) and \
-                ALLOW_SAVE_PASSWORD and server is not None and \
-                _password_is_valid(manager, password):
+                ALLOW_SAVE_PASSWORD and server is not None:
             _persist_saved_password(server, enc_password)
     except Exception as e:
         current_app.logger.exception(e)

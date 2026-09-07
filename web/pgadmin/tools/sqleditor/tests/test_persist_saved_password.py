@@ -38,17 +38,16 @@ class TestPersistSavedPasswordOwner(_NoServerSetupMixin, BaseTestGenerator):
 
     def runTest(self):
         server = MagicMock(shared=False, user_id=1)
+        servers_mod = 'pgadmin.browser.server_groups.servers.ServerModule'
 
-        with patch('pgadmin.model.db') as mock_db, \
-                patch(
-                    'pgadmin.browser.server_groups.servers.ServerModule'
-                ) as mock_mod:
-            _persist_saved_password(server, b'enc-pwd')
+        with patch('pgadmin.model.db') as mock_db:
+            with patch(servers_mod) as mock_mod:
+                _persist_saved_password(server, b'enc-pwd')
 
-            self.assertEqual(server.save_password, 1)
-            self.assertEqual(server.password, b'enc-pwd')
-            mock_mod.get_shared_server.assert_not_called()
-            mock_db.session.commit.assert_called_once()
+                self.assertEqual(server.save_password, 1)
+                self.assertEqual(server.password, b'enc-pwd')
+                mock_mod.get_shared_server.assert_not_called()
+                mock_db.session.commit.assert_called_once()
 
 
 class TestPersistSavedPasswordSharedNonOwner(
@@ -59,27 +58,24 @@ class TestPersistSavedPasswordSharedNonOwner(
     def runTest(self):
         owner_server = MagicMock(shared=True, user_id=1, servergroup_id=7)
         shared_server = MagicMock()
+        servers_mod = 'pgadmin.browser.server_groups.servers'
 
-        with patch('pgadmin.model.db') as mock_db, \
-                patch(
-                    'pgadmin.browser.server_groups.servers.ServerModule'
-                ) as mock_mod, \
-                patch(
-                    'pgadmin.browser.server_groups.servers.current_user'
-                ) as mock_user:
-            mock_user.id = 2  # not the owner (user_id=1)
-            mock_mod.get_shared_server.return_value = shared_server
+        with patch('pgadmin.model.db') as mock_db:
+            with patch(f'{servers_mod}.ServerModule') as mock_mod:
+                with patch(f'{servers_mod}.current_user') as mock_user:
+                    mock_user.id = 2  # not the owner (user_id=1)
+                    mock_mod.get_shared_server.return_value = shared_server
 
-            _persist_saved_password(owner_server, b'enc-pwd')
+                    _persist_saved_password(owner_server, b'enc-pwd')
 
-            mock_mod.get_shared_server.assert_called_once_with(
-                owner_server, 7)
-            self.assertEqual(shared_server.save_password, 1)
-            self.assertEqual(shared_server.password, b'enc-pwd')
-            # The owner's own row must never be touched for a shared
-            # connection used by a non-owner.
-            self.assertNotEqual(owner_server.password, b'enc-pwd')
-            mock_db.session.commit.assert_called_once()
+                    mock_mod.get_shared_server.assert_called_once_with(
+                        owner_server, 7)
+                    self.assertEqual(shared_server.save_password, 1)
+                    self.assertEqual(shared_server.password, b'enc-pwd')
+                    # The owner's own row must never be touched for a
+                    # shared connection used by a non-owner.
+                    self.assertNotEqual(owner_server.password, b'enc-pwd')
+                    mock_db.session.commit.assert_called_once()
 
 
 class TestPersistSavedPasswordRollsBackOnFailure(
