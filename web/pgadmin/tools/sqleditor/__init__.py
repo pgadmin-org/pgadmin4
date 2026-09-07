@@ -2779,11 +2779,22 @@ def _cache_manager_password_from_request(manager, server=None):
         manager._update_password(enc_password)
         manager.update_session()
 
+        if server is None or not ALLOW_SAVE_PASSWORD:
+            return
+
+        save_password_provided = 'save_password' in data
+        save_password = str_to_bool(data.get('save_password', False))
+
         # Persist the freshly entered password if the user asked to save
-        # it, so the stale stored ciphertext is replaced.
-        if str_to_bool(data.get('save_password', False)) and \
-                ALLOW_SAVE_PASSWORD and server is not None:
+        # it, so the stale stored ciphertext is replaced. An explicit
+        # false instead clears any previously saved credential -- mirrors
+        # the same "Save Password" opt-out handling in
+        # browser.server_groups.servers.ServerNode.connect -- so
+        # unchecking the box here doesn't leave a stale saved password.
+        if save_password:
             _persist_saved_password(server, enc_password)
+        elif save_password_provided:
+            _clear_saved_password(server)
     except Exception as e:
         current_app.logger.exception(e)
 
@@ -2810,24 +2821,54 @@ def _password_is_valid(manager, password):
         return False
 
 
+def _get_save_password_target(server):
+    """
+    Return the record ("save_password"/"password" live on the owned Server
+    row, or on the current user's SharedServer row for a shared server they
+    don't own).
+    """
+    from pgadmin.browser.server_groups.servers import (
+        ServerModule, _is_non_owner)
+
+    if _is_non_owner(server):
+        shared_server = ServerModule.get_shared_server(
+            server, server.servergroup_id)
+        if shared_server is not None:
+            return shared_server
+    return server
+
+
 def _persist_saved_password(server, enc_password):
     """
     Persist the encrypted password to the server record (owned or shared),
     replacing any stale stored ciphertext.
     """
     from pgadmin.model import db
-    from pgadmin.browser.server_groups.servers import (
-        ServerModule, _is_non_owner)
 
-    target = server
-    if _is_non_owner(server):
-        shared_server = ServerModule.get_shared_server(
-            server, server.servergroup_id)
-        if shared_server is not None:
-            target = shared_server
-
+    target = _get_save_password_target(server)
     setattr(target, 'save_password', 1)
     setattr(target, 'password', enc_password)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+
+def _clear_saved_password(server):
+    """
+    Clear a previously saved password on the owned or shared server record,
+    so an explicit "Save Password" opt-out doesn't leave a stale saved
+    credential behind.
+    """
+    from pgadmin.model import db
+
+    target = _get_save_password_target(server)
+    if not target.save_password:
+        return
+
+    setattr(target, 'save_password', 0)
+    setattr(target, 'password', None)
     try:
         db.session.commit()
     except Exception:

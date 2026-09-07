@@ -1750,6 +1750,12 @@ class ServerNode(PGChildNodeView):
                     # 1 is True in SQLite as no boolean type
                     if _is_non_owner(server):
                         setattr(shared_server, 'save_password', 1)
+                        # `server` is a detached overlay (see
+                        # get_shared_server_properties) built before this
+                        # write, so it won't pick up the SharedServer
+                        # change on its own -- keep it in sync since the
+                        # connect response below reports its state.
+                        server.save_password = 1
                     else:
                         setattr(server, 'save_password', 1)
 
@@ -1777,6 +1783,9 @@ class ServerNode(PGChildNodeView):
                     if _is_non_owner(server):
                         setattr(shared_server, 'save_password', 0)
                         setattr(shared_server, 'password', None)
+                        # Keep the detached overlay in sync -- see the
+                        # comment in the save_password branch above.
+                        server.save_password = 0
                     else:
                         setattr(server, 'save_password', 0)
                         setattr(server, 'password', None)

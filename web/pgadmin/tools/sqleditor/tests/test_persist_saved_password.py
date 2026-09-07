@@ -100,7 +100,8 @@ class TestPasswordIsValid(_NoServerSetupMixin, BaseTestGenerator):
         manager = MagicMock(db='postgres', user='enterprisedb')
         manager.create_connection_string.return_value = 'dsn'
 
-        with patch('psycopg.Connection.connect') as mock_connect:
+        with self.app.app_context(), \
+                patch('psycopg.Connection.connect') as mock_connect:
             mock_connect.return_value = MagicMock()
             self.assertTrue(_password_is_valid(manager, 'correct-horse'))
 
