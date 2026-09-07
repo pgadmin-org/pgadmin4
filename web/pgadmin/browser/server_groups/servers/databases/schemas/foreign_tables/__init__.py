@@ -1194,6 +1194,8 @@ class ForeignTableView(BaseTableView, DataTypeReader,
                 # Parse the data coming from client
                 data = column_utils.parse_format_columns(data, mode='edit')
 
+                ForeignTableView._normalise_column_collation(data['columns'])
+
                 columns = data['columns']
                 column_sql = '\n'
 
@@ -1228,6 +1230,31 @@ class ForeignTableView(BaseTableView, DataTypeReader,
                                             self._CREATE_SQL]), data=data,
                                   conn=self.conn)
             return sql, data['name']
+
+    @staticmethod
+    def _normalise_column_collation(columns):
+        """
+        Give a column's collation the name the column templates expect.
+
+        The dialog calls a column's collation ``collspcname``, and that is
+        what foreign_table_columns' create and update templates render,
+        whilst get_columns.sql calls it ``collname``, which is what Schema
+        Diff hands us. Without reconciling the two, a column added or
+        retyped by Schema Diff silently loses its collation and the two
+        databases stay different however many times the script is applied
+        (#10300).
+
+        :param columns: The column difference, modified in place
+        """
+        # A create carries a plain list of columns; only an update carries
+        # the added/changed/deleted difference this applies to.
+        if not isinstance(columns, dict):
+            return
+
+        for action in ('added', 'changed'):
+            for column in columns.get(action) or []:
+                if not column.get('collspcname') and column.get('collname'):
+                    column['collspcname'] = column['collname']
 
     def _check_for_column_delete(self, columns, data, column_sql):
         # If column(s) is/are deleted
@@ -1826,15 +1853,31 @@ class ForeignTableView(BaseTableView, DataTypeReader,
         :param data: Data for columns.
         :param tmp_columns: tmp_columns list.
         """
+        def index_of(name):
+            for index, column in enumerate(tmp_columns):
+                if column.get('name') == name:
+                    return index
+            return None
+
         if 'added' in data['columns']:
             for item in data['columns']['added']:
                 tmp_columns.append(item)
         if 'changed' in data['columns']:
+            # tmp_columns holds the table as it stands, so a changed column
+            # is already in it in its old form and has to be replaced;
+            # appending it would declare the column twice and PostgreSQL
+            # would reject the recreated table outright (#10297).
             for item in data['columns']['changed']:
-                tmp_columns.append(item)
+                index = index_of(item.get('name'))
+                if index is None:
+                    tmp_columns.append(item)
+                else:
+                    tmp_columns[index] = item
         if 'deleted' in data['columns']:
             for item in data['columns']['deleted']:
-                tmp_columns.remove(item)
+                index = index_of(item.get('name'))
+                if index is not None:
+                    tmp_columns.pop(index)
 
     @staticmethod
     def _modify_constraints_data(data):

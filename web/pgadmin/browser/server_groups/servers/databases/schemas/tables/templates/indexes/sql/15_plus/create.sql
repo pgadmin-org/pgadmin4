@@ -26,7 +26,7 @@ FIRST{% else %}LAST{% endif %}{% endif %}{% endfor %})
 {% endif %}
 {% if data.storage_parameters %}
     WITH ({% for key, value in data.storage_parameters.items() %}{% if loop.index != 1 %}, {% endif %}{{key}}={{value}}{% endfor %})
-{% endif %}{% if data.spcname %}
+{% endif %}{% if data.spcname and data.spcname != "pg_default" %}
     TABLESPACE {{conn|qtIdent(data.spcname)}}{% endif %}{% if data.indconstraint %}
 
     WHERE {{data.indconstraint}}{% endif %};
