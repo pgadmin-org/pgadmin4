@@ -72,7 +72,7 @@ export default class BinaryPathSchema extends BaseUISchema {
                 const rows = (res.data.data ?? []).map(({utility, version}) => (
                   <div key={utility}>
                     <b>{utility}:</b>{' '}
-                    <SafeMessage text={version ?? gettext('not found on the specified binary path.')} />
+                    <SafeMessage text={version || gettext('not found on the specified binary path.')} />
                   </div>
                 ));
                 pgAdmin.Browser.notifier.alert(gettext('Validate binary path'), <>{rows}</>);
