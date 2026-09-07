@@ -825,6 +825,30 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  'host=127.0.0.1 port=9999 dbname=postgres'],
              expected_env={
                  'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
+         )),
+        ('When maintenance rejects an empty database value up front '
+         '(prevents libpq falling back to a role-named database)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='',
+                 op='VACUUM',
+                 vacuum_analyze=False,
+                 vacuum_freeze=False,
+                 vacuum_full=False,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             # An empty database must be rejected before the job is built:
+             # with no PGDATABASE, libpq would silently connect to a database
+             # named after the login role.
+             expected_status_code=400,
          ))
     ]
 
@@ -901,7 +925,15 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
         response = self.tester.post(url,
                                     data=json.dumps(self.params),
                                     content_type='html/json')
-        self.assertEqual(response.status_code, 200)
+
+        expected_status_code = getattr(self, 'expected_status_code', 200)
+        self.assertEqual(response.status_code, expected_status_code)
+
+        # A non-200 means the request was rejected up front, so the job must
+        # never have been built and BatchProcess must not have run.
+        if expected_status_code != 200:
+            self.assertFalse(batch_process_mock.called)
+            return
 
         self.assertTrue(message_mock.called)
         self.assertTrue(batch_process_mock.called)

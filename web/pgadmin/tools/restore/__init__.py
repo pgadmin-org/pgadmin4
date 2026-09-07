@@ -457,7 +457,16 @@ def create_restore_job(sid):
     if is_error:
         return errmsg
 
-    is_error, errmsg, driver, manager, conn, _, server = _connect_server(sid)
+    # A target database is mandatory. Reject an empty/missing value up front:
+    # otherwise PGDATABASE is left unset and libpq falls back down its chain to
+    # a database named after the login role, silently restoring into the wrong
+    # database instead of failing safely.
+    if not data.get('database'):
+        return bad_request(
+            errormsg=_("Database parameter is required."))
+
+    is_error, errmsg, driver, manager, conn, connected, server = \
+        _connect_server(sid)
     if is_error:
         return errmsg
 

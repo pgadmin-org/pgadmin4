@@ -467,6 +467,29 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
              expected_exit_code=[0, None]
          )),
+        ('When restore rejects an empty database value up front '
+         '(prevents libpq falling back to a role-named database)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 database=''
+             ),
+             url=RESTORE_JOB_URL,
+             # An empty database must be rejected before the job is built:
+             # with no PGDATABASE and an empty --dbname, libpq would silently
+             # connect to a database named after the login role.
+             expected_status_code=400,
+         )),
     ]
 
     def setUp(self):
@@ -547,7 +570,15 @@ class RestoreCreateJobTest(BaseTestGenerator):
         response = self.tester.post(url,
                                     data=json.dumps(self.params),
                                     content_type='html/json')
-        self.assertEqual(response.status_code, 200)
+
+        expected_status_code = getattr(self, 'expected_status_code', 200)
+        self.assertEqual(response.status_code, expected_status_code)
+
+        # A non-200 means the request was rejected up front, so the job must
+        # never have been built and BatchProcess must not have run.
+        if expected_status_code != 200:
+            self.assertFalse(batch_process_mock.called)
+            return
 
         self.assertTrue(restore_message_mock.called)
         self.assertTrue(batch_process_mock.called)
