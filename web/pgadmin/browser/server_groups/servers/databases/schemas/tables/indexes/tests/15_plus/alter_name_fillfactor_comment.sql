@@ -8,7 +8,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Idx1_$%{}[]()&*^!@""'`\/#"
     INCLUDE(name, id)
     NULLS NOT DISTINCT
     WITH (fillfactor=10)
-    TABLESPACE pg_default;
+;
 
 ALTER TABLE IF EXISTS public.test_table_for_indexes
     CLUSTER ON "Idx1_$%{}[]()&*^!@""'`\/#";

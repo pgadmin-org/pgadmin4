@@ -44,6 +44,62 @@ function generateFinalScript(script_array, scriptHeader, script_body) {
   return `${scriptHeader} BEGIN; \n ${script_body} END;`;
 }
 
+export function computeDependLevels(rows) {
+  /* Assign each row a dependLevel such that anything another row depends
+     on always ends up with a strictly higher level than that row, so that
+     generateFinalScript() (which writes levels highest-first) emits
+     dependencies before the objects that need them. Rows are matched by
+     oid, matching how dependenciesOid is resolved elsewhere in this file.
+
+     A row's level is therefore driven by what depends on it (the reverse
+     of its own "dependencies" list), computed as one more than the
+     highest level of anything that lists it as a dependency, bottoming
+     out at 1 for anything nothing else depends on. Circular dependencies
+     are broken by treating the row currently being resolved as level 1
+     for that edge, rather than recursing forever. */
+  const oidToRow = new Map();
+  rows.forEach((row) => {
+    if (!_.isUndefined(row.oid) && !_.isNull(row.oid)) {
+      oidToRow.set(row.oid, row);
+    }
+  });
+
+  const dependents = new Map();
+  rows.forEach((row) => {
+    (row.dependencies || []).forEach((dep) => {
+      let dependencyRow = oidToRow.get(dep.oid);
+      if (dependencyRow) {
+        if (!dependents.has(dependencyRow.id)) dependents.set(dependencyRow.id, []);
+        dependents.get(dependencyRow.id).push(row);
+      }
+    });
+  });
+
+  const levels = new Map();
+  const resolving = new Set();
+
+  function levelOf(row) {
+    if (levels.has(row.id)) return levels.get(row.id);
+    if (resolving.has(row.id)) return 1;
+    resolving.add(row.id);
+
+    let level = 1;
+    (dependents.get(row.id) || []).forEach((dependent) => {
+      level = Math.max(level, levelOf(dependent) + 1);
+    });
+
+    resolving.delete(row.id);
+    levels.set(row.id, level);
+    return level;
+  }
+
+  rows.forEach((row) => {
+    row.dependLevel = levelOf(row);
+  });
+
+  return rows;
+}
+
 function checkAndGetSchemaQuery(data, script_array) {
   /* Check whether the selected object belongs to source only schema
      if yes then we will have to add create schema statement before creating any other object.*/
@@ -363,6 +419,7 @@ export function SchemaDiffCompare({ params }) {
     if (selectedIds.length > 0) {
       let script_array = { 1: [], 2: [], 3: [], 4: [], 5: [] },
         script_body = '';
+      computeDependLevels(rows);
       getGenerateScriptData(rows, selectedIds, script_array, selectedFilters);
 
       generatedScript = generateFinalScript(script_array, scriptHeader, script_body);
