@@ -71,7 +71,6 @@ _build_runtime() {
             echo "ERROR: Could not determine Yarn version from package.json packageManager field."
             exit 1
         fi
-        yarn set version berry
         yarn set version "${YARN_VERSION}"
         yarn workspaces focus --production
 
@@ -308,7 +307,6 @@ _complete_bundle() {
             echo "ERROR: Could not determine Yarn version from package.json packageManager field."
             exit 1
         fi
-        yarn set version berry
         yarn set version "${YARN_VERSION}"
         yarn install 2>&1
 
