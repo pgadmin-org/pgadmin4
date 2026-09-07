@@ -42,7 +42,7 @@ from pgadmin.tools.sqleditor.utils.start_running_query import StartRunningQuery
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
     update_session_grid_transaction
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils import get_storage_directory
+from pgadmin.utils import get_storage_directory, str_to_bool
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, service_unavailable, gone
 from pgadmin.utils.driver import get_driver
@@ -2769,13 +2769,40 @@ def _cache_manager_password_from_request(manager, server=None):
         manager.update_session()
 
         # Persist the freshly entered password if the user asked to save it,
-        # so the stale stored ciphertext is replaced.
-        save_password = data.get('save_password', False)
-        if save_password in ('true', 'True', '1', 1, True) and \
-                ALLOW_SAVE_PASSWORD and server is not None:
+        # so the stale stored ciphertext is replaced. This request never
+        # actually uses `password` to open a connection (the manager's
+        # primary connection was already established beforehand), so the
+        # password must be validated against the server first -- otherwise
+        # a typo at the prompt would silently overwrite a working saved
+        # password.
+        if str_to_bool(data.get('save_password', False)) and \
+                ALLOW_SAVE_PASSWORD and server is not None and \
+                _password_is_valid(manager, password):
             _persist_saved_password(server, enc_password)
     except Exception as e:
         current_app.logger.exception(e)
+
+
+def _password_is_valid(manager, password):
+    """
+    Verify that `password` (plaintext) actually authenticates against the
+    server, using a standalone connection that is closed immediately
+    afterwards -- it is never registered with the manager.
+    """
+    import psycopg
+    try:
+        conn_string = manager.create_connection_string(
+            manager.db, manager.user, password)
+        test_conn = psycopg.Connection.connect(
+            conn_string, connect_timeout=10)
+        test_conn.close()
+        return True
+    except psycopg.Error as e:
+        current_app.logger.info(
+            'Not persisting the re-entered password: it failed '
+            f'validation against the server.\nError: {e}'
+        )
+        return False
 
 
 def _persist_saved_password(server, enc_password):
@@ -2784,10 +2811,11 @@ def _persist_saved_password(server, enc_password):
     replacing any stale stored ciphertext.
     """
     from pgadmin.model import db
-    from pgadmin.browser.server_groups.servers import ServerModule
+    from pgadmin.browser.server_groups.servers import (
+        ServerModule, _is_non_owner)
 
     target = server
-    if server.shared and server.user_id != current_user.id:
+    if _is_non_owner(server):
         shared_server = ServerModule.get_shared_server(
             server, server.servergroup_id)
         if shared_server is not None:
@@ -2795,7 +2823,11 @@ def _persist_saved_password(server, enc_password):
 
     setattr(target, 'save_password', 1)
     setattr(target, 'password', enc_password)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
 
 @blueprint.route(

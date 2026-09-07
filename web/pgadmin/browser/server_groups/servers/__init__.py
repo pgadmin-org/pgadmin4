@@ -44,7 +44,7 @@ from sqlalchemy.orm import object_session
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, str_to_bool
 from pgadmin.settings.utils import with_object_filters
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query, get_server_group
@@ -1685,16 +1685,14 @@ class ServerNode(PGChildNodeView):
                 password = conn_passwd or server.password
         else:
             password = data['password'] if 'password' in data else None
-            # The password-prompt dialog doesn't resend the server's
-            # existing save_password setting, only its own checkbox
-            # state. If the server is already configured to save its
-            # password, a freshly entered replacement should still be
-            # persisted, or the stale saved password is never
-            # replaced. See issue #10128.
-            save_password = (
-                data['save_password'] if 'save_password' in data
-                else False
-            ) or bool(server.save_password)
+            # The password-prompt dialog seeds its checkbox from the
+            # server's current save_password setting (see
+            # get_response_for_password) and always sends its state, so
+            # this reflects the user's explicit choice -- including
+            # unchecking it for a server previously configured to save
+            # its password.
+            save_password = str_to_bool(
+                data['save_password'] if 'save_password' in data else False)
 
             try:
                 # Encrypt the password before saving with user's login
@@ -1763,16 +1761,6 @@ class ServerNode(PGChildNodeView):
                     conn = None
 
                     return internal_server_error(errormsg=str(e))
-
-            # Persist the manager's corrected in-memory password (set by
-            # the driver on a successful connect) into the Flask session.
-            # Without this, a fresh worker process handling the next
-            # request (e.g. opening the Query Tool, in a multi-worker
-            # deployment) restores the stale pre-fix manager state from
-            # the session and the new password is lost, re-triggering the
-            # password prompt indefinitely. See issue #10128.
-            if password:
-                manager.update_session()
 
             if save_tunnel_password and config.ALLOW_SAVE_TUNNEL_PASSWORD:
                 try:
@@ -2213,6 +2201,7 @@ class ServerNode(PGChildNodeView):
                 "service": server.service,
                 "prompt_tunnel_password": prompt_tunnel_password,
                 "prompt_password": prompt_password,
+                "save_password": bool(server.save_password),
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and
@@ -2235,6 +2224,7 @@ class ServerNode(PGChildNodeView):
                 "errmsg": errmsg,
                 "service": server.service,
                 "prompt_password": True,
+                "save_password": bool(server.save_password),
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and

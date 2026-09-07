@@ -26,7 +26,10 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
     tunnel_password: '',
     save_tunnel_password: false,
     password: '',
-    save_password: false,
+    // Seed the checkbox from the server's current setting so that, for a
+    // server already configured to save its password, the checkbox
+    // reflects that instead of always defaulting to unchecked.
+    save_password: Boolean(data?.save_password),
   });
 
   const onTextChange = (e, id) => {
@@ -119,8 +122,10 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
             }
             if(data.prompt_password) {
               postFormData.append('password', formData.password);
-              formData.save_password &&
-                postFormData.append('save_password', formData.save_password);
+              // Always send the checkbox state (rather than only when
+              // checked) so the backend can tell "explicitly unchecked"
+              // apart from "field not sent".
+              postFormData.append('save_password', formData.save_password);
             }
             onOK?.(postFormData);
             closeModal();
