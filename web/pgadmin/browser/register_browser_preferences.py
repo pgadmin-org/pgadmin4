@@ -165,6 +165,21 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
+        'toggle_object_explorer',
+        gettext('Toggle Object Explorer'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': False,
+            'control': True,
+            'key': {'key_code': 66, 'char': 'b'}
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
         'tabbed_panel_backward',
         gettext('Tabbed panel backward'),
         'keyboardshortcut',

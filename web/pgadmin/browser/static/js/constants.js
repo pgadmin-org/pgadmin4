@@ -148,3 +148,7 @@ export const AllPermissionTypes = {
 // Fired on pgAdmin.Browser.Events when code outside React, e.g. the keyboard
 // shortcut that focuses the tree, needs the Object Explorer on screen.
 export const SHOW_OBJECT_EXPLORER_EVENT = 'pgadmin:object-explorer:show';
+
+// Fired on pgAdmin.Browser.Events to collapse or restore the Object Explorer,
+// the same thing clicking the current workspace icon does.
+export const TOGGLE_OBJECT_EXPLORER_EVENT = 'pgadmin:object-explorer:toggle';
