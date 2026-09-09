@@ -401,7 +401,12 @@ export const MappedFormControl = ({
   }
 
   if (typeof (field.type) === 'function') {
-    const typeProps = evalFunc(null, field.type, state);
+    let typeState = state;
+    if (accessPath && accessPath.length > 1) {
+      const parentPath = accessPath.slice(0, -1);
+      typeState = schemaState.value(parentPath);
+    }
+    const typeProps = evalFunc(null, field.type, typeState);
     newProps = {
       ...newProps,
       ...typeProps,
