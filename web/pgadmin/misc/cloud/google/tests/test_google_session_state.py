@@ -202,3 +202,142 @@ class TestUnsafeDeserializerEliminatedFromGoogleModule(
         self.assertNotIn(
             forbidden + '.loads(', src,
             "cloud.google must not call the unsafe deserialize call")
+
+
+class TestGoogleImportErrorHandling(
+        _SkipServerSetUpMixin, BaseTestGenerator):
+    """Google methods must cleanly return error strings on ImportError."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from unittest.mock import patch
+        from pgadmin.misc.cloud.google import Google
+        import pgadmin.misc.cloud.google as google_mod
+
+        g = Google()
+        with patch.object(
+                google_mod, '_google_sdk',
+                side_effect=ImportError('No module named googleapiclient')):
+            projects, err_p = g.get_projects()
+            self.assertEqual(projects, [])
+            self.assertIn('googleapiclient', err_p)
+
+            regions, err_r = g.get_regions('test-project')
+            self.assertEqual(regions, [])
+            self.assertIn('googleapiclient', err_r)
+
+            inst_types, err_it = g.get_instance_types(
+                'test-project', 'us-central1')
+            self.assertEqual(inst_types, {})
+            self.assertIn('googleapiclient', err_it)
+
+            db_vers, err_dv = g.get_database_versions()
+            self.assertEqual(db_vers, [])
+            self.assertIn('googleapiclient', err_dv)
+
+
+class TestGoogleCallbackImportErrorHandling(
+        _SkipServerSetUpMixin, BaseTestGenerator):
+    """Google.callback must cleanly handle missing google_auth_oauthlib."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from flask import Flask, session
+        from unittest.mock import MagicMock, patch
+        from pgadmin.misc.cloud.google import Google
+        import pgadmin.misc.cloud.google as google_mod
+
+        app = Flask(__name__)
+        app.secret_key = 'test'
+        with app.test_request_context('/google/callback?state=xyz'):
+            session['state'] = 'xyz'
+            g = Google()
+            req = MagicMock()
+            req.url = 'http://localhost/google/callback?state=xyz'
+            req.args = {'state': 'xyz'}
+            with patch.dict(
+                    'sys.modules',
+                    {'google_auth_oauthlib': None,
+                     'google_auth_oauthlib.flow': None}):
+                res = g.callback(req)
+
+            self.assertIn('google_auth_oauthlib', res)
+            self.assertFalse(g._verification_successful)
+            self.assertEqual(g._verification_error, res)
+            ack_status, ack_err = g.verification_ack()
+            self.assertFalse(ack_status)
+            self.assertEqual(ack_err, res)
+
+            # Verify route handler returns 200 with error message
+            # instead of 500
+            session['google'] = {'state': g.to_state()}
+            with patch.dict(
+                    'sys.modules',
+                    {'google_auth_oauthlib': None,
+                     'google_auth_oauthlib.flow': None}):
+                route_response = google_mod.callback.__wrapped__()
+            self.assertEqual(route_response.status_code, 200)
+            self.assertIn('google_auth_oauthlib',
+                          route_response.get_data(as_text=True))
+
+
+class TestGoogleCredentialsAndDiscoveryErrorHandling(
+        _SkipServerSetUpMixin, BaseTestGenerator):
+    """Google methods must cleanly return error strings when credential
+    refresh or discovery build fails."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from unittest.mock import MagicMock, patch
+        from pgadmin.misc.cloud.google import Google
+
+        g = Google()
+
+        # Test credential refresh failure
+        with patch.object(
+                g, '_get_credentials',
+                side_effect=Exception('Token refresh failed')):
+            projects, err_p = g.get_projects()
+            self.assertEqual(projects, [])
+            self.assertIn('Token refresh failed', err_p)
+
+            regions, err_r = g.get_regions('test-project')
+            self.assertEqual(regions, [])
+            self.assertIn('Token refresh failed', err_r)
+
+            inst_types, err_it = g.get_instance_types(
+                'test-project', 'us-central1')
+            self.assertEqual(inst_types, {})
+            self.assertIn('Token refresh failed', err_it)
+
+            db_vers, err_dv = g.get_database_versions()
+            self.assertEqual(db_vers, [])
+            self.assertIn('Token refresh failed', err_dv)
+
+        # Test discovery build failure
+        mock_sdk = MagicMock()
+        mock_sdk.HttpError = type('HttpError', (Exception,), {})
+        mock_sdk.discovery.build.side_effect = Exception(
+            'Discovery service unavailable')
+        with patch('pgadmin.misc.cloud.google._google_sdk',
+                   return_value=mock_sdk):
+            with patch.object(g, '_get_credentials', return_value=MagicMock()):
+                projects, err_p = g.get_projects()
+                self.assertEqual(projects, [])
+                self.assertIn('Discovery service unavailable', err_p)
+
+                regions, err_r = g.get_regions('test-project')
+                self.assertEqual(regions, [])
+                self.assertIn('Discovery service unavailable', err_r)
+
+                inst_types, err_it = g.get_instance_types(
+                    'test-project', 'us-central1')
+                self.assertEqual(inst_types, {})
+                self.assertIn('Discovery service unavailable', err_it)
+
+                db_vers, err_dv = g.get_database_versions()
+                self.assertEqual(db_vers, [])
+                self.assertIn('Discovery service unavailable', err_dv)

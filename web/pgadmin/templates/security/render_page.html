@@ -4,7 +4,7 @@
     'messages': get_flashed_messages(with_categories=true)
 } %}
 {% block body %}
-<style>
+<style nonce="{{ csp_nonce }}">
     #root:not(:empty) + .pg-sp-container {
         display: none;
     }

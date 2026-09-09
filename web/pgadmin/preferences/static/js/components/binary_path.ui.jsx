@@ -13,6 +13,7 @@ import url_for from 'sources/url_for';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import getApiInstance from '../../../../static/js/api_instance';
 import pgAdmin from 'sources/pgadmin';
+import { SafeMessage } from '../../../../static/js/components/SafeMessage';
 
 export function getBinaryPathSchema() {
 
@@ -68,7 +69,13 @@ export default class BinaryPathSchema extends BaseUISchema {
             api.post(url_for('misc.validate_binary_path'),
               JSON.stringify({ 'utility_path': data }))
               .then(function (res) {
-                pgAdmin.Browser.notifier.alertText(gettext('Validate binary path'), gettext(res.data.data));
+                const rows = (res.data.data ?? []).map(({utility, version}) => (
+                  <div key={utility}>
+                    <b>{utility}:</b>{' '}
+                    <SafeMessage text={version || gettext('not found on the specified binary path.')} />
+                  </div>
+                ));
+                pgAdmin.Browser.notifier.alert(gettext('Validate binary path'), <>{rows}</>);
               })
               .catch(function (error) {
                 pgAdmin.Browser.notifier.pgNotifier('error', error, gettext('Failed to validate binary path.'));
