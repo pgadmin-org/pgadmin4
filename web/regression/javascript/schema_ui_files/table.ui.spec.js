@@ -73,6 +73,12 @@ describe('TableSchema', () => {
   it('canEditDeleteRowColumns', () => {
     expect(schemaObj.canEditDeleteRowColumns({inheritedfrom: 1234})).toBe(false);
     expect(schemaObj.canEditDeleteRowColumns({inheritedfrom: null})).toBe(true);
+
+    // Column already inherited from a parent table when the table was
+    // opened (issue #10179, case 1) - the row's edit/delete buttons must
+    // be disabled too.
+    expect(schemaObj.canEditDeleteRowColumns({inheritedfromtable: 'public.parent'})).toBe(false);
+    expect(schemaObj.canEditDeleteRowColumns({inheritedfromtable: null})).toBe(true);
   });
 
   it('LikeSchema typname change', () => {
