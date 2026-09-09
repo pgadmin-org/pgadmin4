@@ -246,8 +246,18 @@ REM Main build sequence Ends
     RD /Q /S "%BUILDROOT%\web\regression" 1> nul 2>&1
     ECHO Removing tools...
     RD /Q /S "%BUILDROOT%\web\tools" 1> nul 2>&1
-    ECHO Removing yarn cache...
+    ECHO Removing the JavaScript build configuration...
     RD /Q /S "%BUILDROOT%\web\.yarn" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\yarn.lock" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.yarnrc.yml" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\package.json" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\jest.config.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\babel.cfg" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\babel.config.json" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\webpack.config.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\webpack.shim.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.eslintrc.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.editorconfig" 1> nul 2>&1
     ECHO Removing any existing configurations...
     DEL /q "%BUILDROOT%\web\pgadmin4.db" 1> nul 2>&1
     DEL /q "%BUILDROOT%\web\config_local.py" 1> nul 2>&1
