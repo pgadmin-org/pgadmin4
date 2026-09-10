@@ -118,6 +118,8 @@ let webpackShimConfig = {
     'pgadmin.node.pga_job': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job'),
     'pgadmin.node.pga_jobstep': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep'),
     'pgadmin.node.pga_schedule': path.join(__dirname, './pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule'),
+    'pgadmin.node.pgt_chain': path.join(__dirname, './pgadmin/browser/server_groups/servers/pg_timetable/static/js/pgt_chain'),
+    'pgadmin.node.pgt_chaintask': path.join(__dirname, './pgadmin/browser/server_groups/servers/pg_timetable/tasks/static/js/pgt_chaintask'),
     'pgadmin.node.primary_key': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key'),
     'pgadmin.node.procedure': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure'),
     'pgadmin.node.resource_group': path.join(__dirname, './pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group'),

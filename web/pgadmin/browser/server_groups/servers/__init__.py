@@ -391,6 +391,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         from .pgagent import blueprint as module
         self.submodules.append(module)
 
+        from .pg_timetable import blueprint as module
+        self.submodules.append(module)
+
         from .resource_groups import blueprint as module
         self.submodules.append(module)
 
