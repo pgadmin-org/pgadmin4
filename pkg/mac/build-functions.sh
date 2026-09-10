@@ -308,7 +308,7 @@ _complete_bundle() {
             exit 1
         fi
         yarn set version "${YARN_VERSION}"
-        yarn install 2>&1
+        yarn install --immutable 2>&1
 
         # Record the source commit hash before the heavy lint/webpack
         # steps. `yarn run` needs node_modules so this runs after install,
