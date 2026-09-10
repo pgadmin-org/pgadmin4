@@ -150,7 +150,7 @@ jobs:
       - name: Build the JS bundle
         run: |
           cd web
-          yarn install
+          yarn install --immutable
           yarn run bundle
 
       - name: Run the tests
