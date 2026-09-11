@@ -118,6 +118,7 @@ const FIXED_PREF = {
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
   const preferencesStore = usePreferences();
+  const isQueryTool = params.is_query_tool === true || params.is_query_tool === 'true';
   const [qtState, setQtState] = useState({
     preferences: {
       browser: preferencesStore.getPreferencesForModule('browser'),
@@ -138,7 +139,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     params: {
       ...params,
       title: _.unescape(params.title),
-      is_query_tool: params.is_query_tool == 'true',
+      is_query_tool: isQueryTool,
+      restore: params.restore === true || params.restore === 'true',
       node_name: retrieveNodeName(selectedNodeInfo),
       dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       server_cursor: preferencesStore.getPreferencesForModule('sqleditor').server_cursor === true,
@@ -154,7 +156,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       bgcolor: params.bgcolor,
       conn_title: getTitle(
         pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
-        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true'),
+        _.unescape(params.role) || _.unescape(params.user), isQueryTool),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
@@ -295,14 +297,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
           setQtStatePartial({ editor_disabled: true });
         });
-    } else if (qtState.params.sql_id && qtState.params.restore != 'true') {
+    } else if (qtState.params.sql_id && qtState.params.restore !== true) {
       let sqlValue = localStorage.getItem(qtState.params.sql_id);
       localStorage.removeItem(qtState.params.sql_id);
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
       setQtStatePartial({ editor_disabled: false });
-    } else if (qtState.params.restore == 'true') {
+    } else if (qtState.params.restore === true) {
       restoreToolContent();
     } else {
       setQtStatePartial({ editor_disabled: false });
@@ -347,7 +349,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(toolContent?.fileName)eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, toolContent.fileName, true);
       }
     }
-    setQtStatePartial({ editor_disabled: false });
+    setQtStatePartial(prev => ({
+      ...prev,
+      editor_disabled: false,
+      params: {
+        ...prev.params,
+        restore: false
+      }
+    }));
   };
 
   const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false, executeServerCursor=false, reexecute=false)=>{
@@ -938,15 +947,31 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eol: qtState.eol,
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
-    toggleQueryTool: () => setQtStatePartial((prev)=>{
-      return {
+    toggleQueryTool: () => {
+      let panel = qtPanelDocker?.find(qtPanelId);
+      if (!panel) {
+        console.warn('toggleQueryTool: panel not found for qtPanelId', qtPanelId);
+      } else if (panel.metaData?.toolUrl) {
+        try {
+          const toolUrl = panel.metaData.toolUrl;
+          const url = new URL(toolUrl, window.location.origin);
+          url.searchParams.set('is_query_tool', 'true');
+          panel.metaData = Object.assign({}, panel.metaData, {
+            toolUrl: url.pathname + url.search,
+          });
+          qtPanelDocker?.saveLayout();
+        } catch (e) {
+          console.warn(`Failed to update is_query_tool parameter for toolUrl "${panel?.metaData?.toolUrl}" using origin "${window.location.origin}":`, e);
+        }
+      }
+      setQtStatePartial((prev) => ({
         ...prev,
         params: {
           ...prev.params,
-          is_query_tool: true
-        }
-      };
-    }),
+          is_query_tool: true,
+        },
+      }));
+    },
     updateTitle: (title) => {
       setPanelTitle(qtPanelDocker, qtPanelId, title, qtState, isDirtyRef.current);
       setQtStatePartial((prev) => {
@@ -1032,6 +1057,7 @@ QueryToolComponent.propTypes = {
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     is_query_tool: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
+    restore: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     server_cursor: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     user: PropTypes.string,
     role: PropTypes.string,
