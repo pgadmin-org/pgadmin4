@@ -110,6 +110,14 @@ class TestGetSharedServerProperties(BaseTestGenerator):
          dict(test_method='test_overlays_kerberos_tags')),
         ('Merge strips owner SSL paths not in SharedServer',
          dict(test_method='test_strips_owner_ssl_paths')),
+        ('Merge inherits the owner passfile when SharedServer has none',
+         dict(test_method='test_inherits_owner_passfile')),
+        ('Merge prefers the SharedServer passfile when it has one',
+         dict(test_method='test_shared_passfile_wins')),
+        ('Merge falls back to owner tags when SharedServer tags are NULL',
+         dict(test_method='test_tags_fall_back_to_owner')),
+        ('Merge respects tags a user has deliberately cleared',
+         dict(test_method='test_cleared_tags_are_respected')),
         ('Merge applies SharedServer SSL paths',
          dict(test_method='test_applies_ss_ssl_paths')),
         ('Merge overrides service from SharedServer',
@@ -176,13 +184,48 @@ class TestGetSharedServerProperties(BaseTestGenerator):
     def test_strips_owner_ssl_paths(self):
         result = self._merge()
         cp = result.connection_params
-        # Owner had sslkey, sslrootcert, sslcrl, sslcrldir,
-        # passfile — SharedServer did not — should be removed.
+        # Owner had sslkey, sslrootcert, sslcrl, sslcrldir —
+        # SharedServer did not — should be removed.
         self.assertNotIn('sslkey', cp)
         self.assertNotIn('sslcrl', cp)
         self.assertNotIn('sslcrldir', cp)
         self.assertNotIn('sslrootcert', cp)
-        self.assertNotIn('passfile', cp)
+
+    def test_inherits_owner_passfile(self):
+        # A SharedServer row created before passfile started being
+        # copied has none of its own, and must still end up with the
+        # owner's: it is how the owner lets every user of the shared
+        # server authenticate without a password of their own.
+        result = self._merge()
+        self.assertEqual(
+            result.connection_params['passfile'],
+            '/home/owner/.pgpass')
+
+    def test_shared_passfile_wins(self):
+        ss = _make_shared_server(connection_params={
+            'passfile': '/home/nonowner/.pgpass'})
+        result = self._merge(ss=ss)
+        self.assertEqual(
+            result.connection_params['passfile'],
+            '/home/nonowner/.pgpass')
+
+    def test_tags_fall_back_to_owner(self):
+        # NULL tags on the SharedServer means the row predates tags
+        # being copied across, so the owner's should show through.
+        owner_tags = [{'text': 'prod', 'color': '#f00'}]
+        result = self._merge(
+            server=_make_server(tags=owner_tags),
+            ss=_make_shared_server(tags=None))
+        self.assertEqual(result.tags, owner_tags)
+
+    def test_cleared_tags_are_respected(self):
+        # An empty list is a user who has removed every tag they had,
+        # which is not the same thing as never having had any, so the
+        # owner's tags must not come back.
+        result = self._merge(
+            server=_make_server(tags=[{'text': 'prod', 'color': '#f00'}]),
+            ss=_make_shared_server(tags=[]))
+        self.assertEqual(result.tags, [])
 
     def test_applies_ss_ssl_paths(self):
         result = self._merge()
@@ -236,6 +279,10 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
     scenarios = [
         ('Sanitizes connection_params on creation',
          dict(test_method='test_sanitizes_conn_params')),
+        ('Copies passfile on creation',
+         dict(test_method='test_copies_passfile')),
+        ('Copies tags from owner on creation',
+         dict(test_method='test_copies_tags')),
         ('Copies tunnel_port from owner',
          dict(test_method='test_copies_tunnel_port')),
         ('Copies tunnel_keep_alive from owner',
@@ -273,9 +320,10 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
     def test_sanitizes_conn_params(self):
         self._create()
         cp = self.captured_kwargs.get('connection_params', {})
-        # Sensitive keys must be stripped
+        # Personal SSL client cert/key paths must be stripped -
+        # each user configures their own.
         for key in ('sslcert', 'sslkey', 'sslrootcert',
-                    'sslcrl', 'sslcrldir', 'passfile'):
+                    'sslcrl', 'sslcrldir'):
             self.assertNotIn(
                 key, cp,
                 'Sensitive key "{0}" should be stripped '
@@ -283,6 +331,25 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
         # Non-sensitive keys preserved
         self.assertEqual(cp.get('sslmode'), 'verify-full')
         self.assertEqual(cp.get('connect_timeout'), '10')
+
+    def test_copies_passfile(self):
+        # passfile is how the owner (e.g. an admin provisioning
+        # servers.json) lets every user of a shared server
+        # authenticate automatically - it must be copied, unlike
+        # the other, genuinely personal, SSL file paths (#10137).
+        self._create()
+        cp = self.captured_kwargs.get('connection_params', {})
+        self.assertEqual(cp.get('passfile'), '/home/owner/.pgpass')
+
+    def test_copies_tags(self):
+        # Tags configured on the owner's server (e.g. via
+        # servers.json) must be visible to non-owners too (#10136).
+        server = _make_server(
+            tags=[{'text': 'prod', 'color': '#f00'}])
+        self._create(server)
+        self.assertEqual(
+            self.captured_kwargs.get('tags'),
+            [{'text': 'prod', 'color': '#f00'}])
 
     def test_copies_tunnel_port(self):
         server = _make_server(tunnel_port=2222)
