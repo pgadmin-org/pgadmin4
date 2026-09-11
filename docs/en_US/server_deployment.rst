@@ -305,6 +305,135 @@ Then, configure NGINX:
       uwsgi_pass unix:/tmp/pgadmin4.sock;
     }
 
+Caddy Configuration with Gunicorn
+----------------------------------
+
+pgAdmin can be hosted by Gunicorn, with Caddy in front of it as a reverse
+proxy. Note that these examples assume pgAdmin was installed using the Python
+Wheel (you may need to adjust the path to suit your installation).
+
+To run with pgAdmin in the root directory of the server, start Gunicorn using
+a command similar to:
+
+.. code-block:: bash
+
+    gunicorn --bind unix:/tmp/pgadmin4.sock \
+             --workers=1 \
+             --threads=25 \
+             --chdir /usr/lib/python3.7/dist-packages/pgadmin4 \
+             pgAdmin4:app
+
+And configure Caddy:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        reverse_proxy unix//tmp/pgadmin4.sock
+    }
+
+.. note:: The systemd unit shipped with Caddy sets ``PrivateTmp=true``, which
+    gives the Caddy process a private ``/tmp`` directory of its own. A socket
+    created by Gunicorn or uWSGI in the system ``/tmp`` is therefore invisible
+    to Caddy, which will report a 502 error for every request. Place the
+    socket in a directory outside ``/tmp`` that both processes can access, for
+    example ``/run/pgadmin4/``, ensuring that the user Caddy runs as has
+    permission to read and write it; alternatively, have Gunicorn or uWSGI
+    listen on a TCP port such as ``127.0.0.1:5050`` and proxy to that instead.
+
+Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this
+case) on the server. Start Gunicorn as when using the root directory, but
+also set the ``SCRIPT_NAME`` environment variable for the Gunicorn process,
+so that pgAdmin knows to generate URLs, redirects (including the one issued
+after a successful login) and session cookies relative to the sub-directory,
+rather than to the root of the server:
+
+.. code-block:: bash
+
+    SCRIPT_NAME=/pgadmin4 gunicorn --bind unix:/tmp/pgadmin4.sock \
+             --workers=1 \
+             --threads=25 \
+             --chdir /usr/lib/python3.7/dist-packages/pgadmin4 \
+             pgAdmin4:app
+
+Then configure Caddy. The request path must be passed through to Gunicorn
+unchanged, so do not strip the /pgadmin4 prefix; a custom ``X-Script-Name``
+header must be set so that pgAdmin can identify requests made under the
+sub-directory; and the path matcher must include both ``/pgadmin4`` and
+``/pgadmin4/*``, so that pgAdmin's own redirect to the bare sub-directory
+path (with no trailing slash) is also proxied, rather than falling through
+to Caddy's default (and rather unhelpful) empty response for an unmatched
+path:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        @pgadmin path /pgadmin4 /pgadmin4/*
+        handle @pgadmin {
+            reverse_proxy unix//tmp/pgadmin4.sock {
+                header_up X-Script-Name /pgadmin4
+            }
+        }
+    }
+
+Caddy Configuration with uWSGI
+-------------------------------
+
+Caddy does not speak the native uwsgi protocol used by NGINX's
+``uwsgi_pass``, so uWSGI must be run in HTTP mode instead, using
+``--http-socket`` rather than ``--socket``. Note that these examples assume
+pgAdmin was installed using the Python Wheel (you may need to adjust the
+path to suit your installation).
+
+To run with pgAdmin in the root directory of the server, start uWSGI using a
+command similar to:
+
+.. code-block:: bash
+
+    uwsgi --http-socket /tmp/pgadmin4.sock \
+          --processes 1 \
+          --threads 25 \
+          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --mount /=pgAdmin4:app
+
+And configure Caddy:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        reverse_proxy unix//tmp/pgadmin4.sock
+    }
+
+Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this
+case) on the server. Start uWSGI, noting that the directory name is specified
+in the ``mount`` parameter, and that the ``SCRIPT_NAME`` environment variable
+is still required alongside it. ``--manage-script-name`` only affects the
+per-request WSGI environment that uWSGI builds; it does not set pgAdmin's
+``APPLICATION_ROOT``, which is read once from the process environment at
+startup and used for, amongst other things, the redirect issued after a
+successful login:
+
+.. code-block:: bash
+
+    SCRIPT_NAME=/pgadmin4 uwsgi --http-socket /tmp/pgadmin4.sock \
+          --processes 1 \
+          --threads 25 \
+          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --manage-script-name \
+          --mount /pgadmin4=pgAdmin4:app
+
+Then configure Caddy exactly as for the Gunicorn sub-directory example above:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        @pgadmin path /pgadmin4 /pgadmin4/*
+        handle @pgadmin {
+            reverse_proxy unix//tmp/pgadmin4.sock {
+                header_up X-Script-Name /pgadmin4
+            }
+        }
+    }
+
 Additional Information
 ----------------------
 
