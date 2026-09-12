@@ -14,10 +14,13 @@ sanitization logic without requiring a running PostgreSQL server
 or HTTP infrastructure.
 """
 
+import inspect
+import json
 from unittest.mock import MagicMock, patch, call
 from pgadmin.utils.route import BaseTestGenerator
 
 SRV_MODULE = 'pgadmin.browser.server_groups.servers'
+DRIVER_MODULE = 'pgadmin.utils.driver.psycopg3'
 
 
 def _make_server(**overrides):
@@ -511,8 +514,8 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
     for non-owners."""
 
     scenarios = [
-        ('Non-owner cannot set passexec_cmd',
-         dict(test_method='test_nonowner_passexec_blocked')),
+        ('Non-owner can set their own passexec_cmd',
+         dict(test_method='test_nonowner_passexec_allowed')),
         ('Non-owner cannot set db_res or db_res_type',
          dict(test_method='test_nonowner_db_res_blocked')),
         ('Owner can set passexec_cmd',
@@ -525,7 +528,7 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
     @patch(SRV_MODULE + '.get_crypt_key',
            return_value=(True, b'key'))
     @patch(SRV_MODULE + '.current_user')
-    def test_nonowner_passexec_blocked(self, mock_cu, mock_ck):
+    def test_nonowner_passexec_allowed(self, mock_cu, mock_ck):
         mock_cu.id = 200  # Non-owner
         from pgadmin.browser.server_groups.servers import \
             ServerNode
@@ -536,7 +539,7 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
         node.delete_shared_server = MagicMock()
 
         data = {
-            'passexec_cmd': '/evil/cmd',
+            'passexec_cmd': '/usr/bin/my-own-cmd',
             'post_connection_sql': 'SET role reader;',
         }
         config_map = {
@@ -547,9 +550,10 @@ class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
         node._set_valid_attr_value(
             1, data, config_map, server, ss)
 
-        # passexec_cmd should be blocked for non-owners
-        self.assertIsNone(ss.passexec_cmd)
-        # post_connection_sql is allowed for non-owners
+        # Non-owners may set their own SharedServer.passexec_cmd --
+        # only inheriting the *owner's* command is blocked, and
+        # that's enforced in connection_manager(), not here.
+        self.assertEqual(ss.passexec_cmd, '/usr/bin/my-own-cmd')
         self.assertEqual(ss.post_connection_sql,
                          'SET role reader;')
 
@@ -697,3 +701,144 @@ class TestGetSharedServerRaisesOnNone(BaseTestGenerator):
         self.assertIn(
             'Failed to create shared server',
             str(ctx.exception))
+
+
+class TestUpdateRefreshesLivePassexec(BaseTestGenerator):
+    """Verify ServerNode.update() refreshes manager.passexec when
+    passexec_cmd/passexec_expiration changes on a *connected* server.
+
+    manager.update(server) is skipped while connected (it would touch
+    live connection state), so without an explicit refresh here the
+    manager keeps serving the pre-change command to
+    Connection.__attempt_execution_reconnect() on the next automatic
+    reconnect (CodeRabbit finding on PR #10328).
+    """
+
+    scenarios = [
+        ("Owner: passexec_cmd change while connected refreshes "
+         'the manager',
+         dict(test_method='test_owner_connected_passexec_refreshed')),
+        ("Non-owner: passexec_cmd change while connected refreshes "
+         "the manager from their own SharedServer row",
+         dict(test_method='test_nonowner_connected_passexec_refreshed')),
+        ('Unrelated field change while connected leaves passexec '
+         'untouched',
+         dict(test_method='test_connected_unrelated_field_untouched')),
+    ]
+
+    def runTest(self):
+        getattr(self, self.test_method)()
+
+    def _call_update(
+            self, server, data, connected, manager, sharedserver=None):
+        """Invoke the undecorated ServerNode.update(gid, sid) with
+        collaborators mocked. Returns (manager, result) -- callers
+        must assert on result too, so a test can't pass vacuously
+        by way of update() returning early (e.g. its "no parameters
+        were changed" guard) before ever reaching the code under
+        test."""
+        from pgadmin.browser.server_groups.servers import ServerNode
+
+        driver = MagicMock()
+        driver.connection_manager.return_value = manager
+        manager.connection.return_value.connected.return_value = connected
+        manager.user_info = {}
+
+        node = ServerNode.__new__(ServerNode)
+        node.blueprint = MagicMock()
+        node.blueprint.generate_browser_node.return_value = {}
+        node.node_type = 'server'
+        node.delete_shared_server = MagicMock()
+
+        with self.app.test_request_context(
+                '/', method='PUT', data=json.dumps(data),
+                content_type='application/json'), \
+                patch(SRV_MODULE + '.get_server', return_value=server), \
+                patch(SRV_MODULE + '.get_driver', return_value=driver), \
+                patch(SRV_MODULE + '.get_crypt_key',
+                      return_value=(True, b'key')), \
+                patch(SRV_MODULE + '.db'), \
+                patch(SRV_MODULE + '.jsonify', side_effect=lambda **kw: kw), \
+                patch.object(
+                    __import__(SRV_MODULE, fromlist=['ServerModule']).
+                    ServerModule, 'get_shared_server',
+                    return_value=sharedserver):
+            raw_update = inspect.unwrap(ServerNode.update)
+            result = raw_update(node, 1, 1)
+
+        return manager, result
+
+    @patch(DRIVER_MODULE + '.current_user')
+    @patch(DRIVER_MODULE + '.SharedServer')
+    @patch(SRV_MODULE + '.current_user')
+    @patch(SRV_MODULE + '.config')
+    def test_owner_connected_passexec_refreshed(
+            self, mock_config, mock_cu, mock_driver_ss, mock_driver_cu):
+        mock_config.SERVER_MODE = True
+        mock_cu.id = 100  # Owner
+
+        server = _make_server()
+        manager = MagicMock()
+        data = {'passexec_cmd': '/usr/bin/new-owner-cmd',
+                'passexec_expiration': 90}
+
+        manager, result = self._call_update(
+            server, data, connected=True, manager=manager)
+
+        self.assertIn('node', result)
+        self.assertIsNotNone(manager.passexec)
+        self.assertEqual(manager.passexec.cmd, '/usr/bin/new-owner-cmd')
+        self.assertEqual(manager.passexec.expiration_seconds, 90)
+
+    @patch(DRIVER_MODULE + '.current_user')
+    @patch(DRIVER_MODULE + '.SharedServer')
+    @patch(SRV_MODULE + '.current_user')
+    @patch(SRV_MODULE + '.config')
+    def test_nonowner_connected_passexec_refreshed(
+            self, mock_config, mock_cu, mock_driver_ss, mock_driver_cu):
+        mock_config.SERVER_MODE = True
+        mock_cu.id = 200  # Non-owner
+        mock_driver_cu.id = 200
+
+        server = _make_server()
+        ss = _make_shared_server()
+        # The driver's own SharedServer query must resolve to the
+        # same ss instance _set_valid_attr_value() just wrote to.
+        mock_driver_ss.query.filter_by.return_value.first.return_value = ss
+
+        manager = MagicMock()
+        data = {'passexec_cmd': '/usr/bin/my-own-cmd',
+                'passexec_expiration': 60}
+
+        manager, result = self._call_update(
+            server, data, connected=True, manager=manager,
+            sharedserver=ss)
+
+        self.assertIn('node', result)
+        self.assertEqual(ss.passexec_cmd, '/usr/bin/my-own-cmd')
+        self.assertEqual(ss.passexec_expiration, 60)
+        self.assertIsNotNone(manager.passexec)
+        self.assertEqual(manager.passexec.cmd, '/usr/bin/my-own-cmd')
+        self.assertEqual(manager.passexec.expiration_seconds, 60)
+
+    @patch(DRIVER_MODULE + '.current_user')
+    @patch(DRIVER_MODULE + '.SharedServer')
+    @patch(SRV_MODULE + '.current_user')
+    @patch(SRV_MODULE + '.config')
+    def test_connected_unrelated_field_untouched(
+            self, mock_config, mock_cu, mock_driver_ss, mock_driver_cu):
+        mock_config.SERVER_MODE = True
+        mock_cu.id = 100  # Owner
+
+        server = _make_server()
+        manager = MagicMock()
+        sentinel = manager.passexec  # whatever the manager already has
+        data = {'name': 'NewName'}
+
+        manager, result = self._call_update(
+            server, data, connected=True, manager=manager)
+
+        self.assertIn('node', result)
+        # No passexec field changed -- manager.passexec must be left
+        # exactly as it was, not recomputed or cleared.
+        self.assertIs(manager.passexec, sentinel)
