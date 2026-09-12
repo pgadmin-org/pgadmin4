@@ -282,6 +282,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   /* Menu button refs */
   const copyMenuRef = React.useRef(null);
   const pasetMenuRef = React.useRef(null);
+  const downloadMenuRef = React.useRef(null);
 
   const queryToolPref = queryToolCtx.preferences.sqleditor;
 
@@ -309,8 +310,8 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   const addRow = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, [[]], {isNewRow: true});
   }, []);
-  const downloadResult = useCallback(()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS);
+  const downloadResult = useCallback((fmt='csv')=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, fmt);
   }, []);
   const showGraphVisualiser = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GRAPH_VISUALISER);
@@ -347,6 +348,14 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   useEffect(()=>{
     setDisableButton('save-result', (totalRowCount||0) < 1);
   }, [totalRowCount]);
+
+  useEffect(()=>{
+    // Seed the "Copy with headers" toggle default from the user preference.
+    setCheckedMenuItems((prev)=>({
+      ...prev,
+      copy_with_headers: queryToolPref.copy_column_headers,
+    }));
+  }, [queryToolPref.copy_column_headers]);
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA, copyData);
@@ -432,7 +441,10 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
           </PgButtonGroup>
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('Save results to file')} icon={<GetAppRoundedIcon />}
-              onClick={downloadResult} shortcut={queryToolPref.download_results}
+              onClick={()=>downloadResult('csv')} shortcut={queryToolPref.download_results}
+              disabled={buttonsDisabled['save-result']} />
+            <PgIconButton title={gettext('Save results options')} icon={<KeyboardArrowDownIcon />} splitButton
+              name="menu-downloadoptions" ref={downloadMenuRef} onClick={openMenu}
               disabled={buttonsDisabled['save-result']} />
           </PgButtonGroup>
           <PgButtonGroup size="small">
@@ -489,6 +501,16 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
         label={gettext('Paste Options Menu')}
       >
         <PgMenuItem hasCheck value="paste_with_serials" checked={checkedMenuItems['paste_with_serials']} onClick={checkMenuClick}>{gettext('Paste with SERIAL/IDENTITY values?')}</PgMenuItem>
+      </PgMenu>
+      <PgMenu
+        anchorRef={downloadMenuRef}
+        open={menuOpenId=='menu-downloadoptions'}
+        onClose={handleMenuClose}
+        label={gettext('Save Results Options Menu')}
+      >
+        <PgMenuItem onClick={()=>downloadResult('csv')}>{gettext('Save as CSV/Text')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult('json')}>{gettext('Save as JSON')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult('xml')}>{gettext('Save as XML')}</PgMenuItem>
       </PgMenu>
     </>
   );
