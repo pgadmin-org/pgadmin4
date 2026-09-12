@@ -111,7 +111,8 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
       * If yes - use that, and do not bother about fetching it again,
       * and use it.
       */
-      let data = cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel);
+      let data = otherParams.useCache ?
+        cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel) : undefined;
 
       if (_.isUndefined(data) || _.isNull(data)) {
         // Share a single in-flight request among all concurrent callers asking
