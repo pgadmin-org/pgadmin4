@@ -212,7 +212,16 @@ _.extend(pgBrowser.keyboardNavigation, {
     // to give React a chance to paint the panel before we move into it.
     pgAdmin.Browser.Events.trigger(SHOW_OBJECT_EXPLORER_EVENT);
     setTimeout(()=>{
-      document.querySelector('[id="id-object-explorer"]')?.focus();
+      const panel = document.querySelector('[id="id-object-explorer"]');
+      // Focus the tree rather than the panel around it. The panel is a plain
+      // div with no tabindex, so focusing it has never done anything; the
+      // tree carries tabindex="-1" and can actually take focus, which is
+      // what makes the arrow keys work once the shortcut has been pressed.
+      // There is deliberately no fallback to the panel: it cannot take focus,
+      // and giving it a tabindex purely to catch this case would land the
+      // keyboard on a container that handles no keys, which is worse for
+      // anyone navigating by keyboard than leaving focus where it was.
+      panel?.querySelector('.file-tree')?.focus();
       tree.t.select(tree.i);
     }, 0);
   },
