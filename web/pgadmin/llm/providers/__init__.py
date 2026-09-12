@@ -12,5 +12,6 @@
 from pgadmin.llm.providers.anthropic import AnthropicClient
 from pgadmin.llm.providers.openai import OpenAIClient
 from pgadmin.llm.providers.ollama import OllamaClient
+from pgadmin.llm.providers.glm import GLMClient
 
-__all__ = ['AnthropicClient', 'OpenAIClient', 'OllamaClient']
+__all__ = ['AnthropicClient', 'OpenAIClient', 'OllamaClient', 'GLMClient']

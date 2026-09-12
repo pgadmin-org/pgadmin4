@@ -235,6 +235,7 @@ def save():
     _provider_map = {
         'anthropic_api_key_file': 'anthropic',
         'openai_api_key_file': 'openai',
+        'glm_api_key_file': 'glm',
         'ollama_api_url': 'ollama',
         'docker_api_url': 'docker',
     }
@@ -333,6 +334,7 @@ def update():
     _provider_map = {
         'anthropic_api_key_file': 'anthropic',
         'openai_api_key_file': 'openai',
+        'glm_api_key_file': 'glm',
         'ollama_api_url': 'ollama',
         'docker_api_url': 'docker',
     }
