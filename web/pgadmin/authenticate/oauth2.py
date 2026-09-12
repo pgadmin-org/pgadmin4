@@ -744,8 +744,8 @@ class OAuth2Authentication(BaseAuthentication):
 
         # For non-OIDC providers or when ID token is insufficient,
         # call the userinfo endpoint
-        if 'OAUTH2_USERINFO_ENDPOINT' not in self.oauth2_config[
-                self.oauth2_current_client]:
+        if not self.oauth2_config[
+                self.oauth2_current_client].get('OAUTH2_USERINFO_ENDPOINT'):
             if self._is_oidc_provider():
                 # OIDC provider should have provided claims in ID token
                 current_app.logger.warning(
