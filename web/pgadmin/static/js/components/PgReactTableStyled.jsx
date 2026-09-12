@@ -92,6 +92,14 @@ const StyledDiv = styled('div')(({theme})=>({
         position: 'absolute',
         width: '100%',
 
+        // Opted out of the virtualizer's absolute positioning for grids
+        // small enough that virtualisation isn't used. Keeps the row in
+        // normal document flow so a hidden/shown dialog tab is a pure CSS
+        // toggle instead of triggering a virtualizer remeasure.
+        '&.pgrt-row--static': {
+          position: 'static',
+        },
+
         '& .pgrt-row-content': {
           display: 'flex',
           minHeight: 0,
