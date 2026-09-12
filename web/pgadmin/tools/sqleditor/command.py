@@ -659,6 +659,13 @@ class ViewCommand(GridCommand):
         # call base class init to fetch the table name
         super().__init__(**kwargs)
 
+        # Cache for the editability check (and the primary key info it
+        # resolves along the way), so a view's updatability only needs to
+        # be worked out once per request. None means "not yet determined".
+        self._can_edit = None
+        self._pk_names = ''
+        self._primary_keys = OrderedDict()
+
     def get_sql(self, default_conn=None):
         """
         This method is used to create a proper SQL query
@@ -683,8 +690,222 @@ class ViewCommand(GridCommand):
 
         return sql
 
-    def can_edit(self):
+    def can_edit(self, default_conn=None):
+        """
+        A view is editable only if PostgreSQL itself classifies it as a
+        simple automatically updatable view (single base table, no
+        INSTEAD OF UPDATE/DELETE/INSERT triggers - a view with any of
+        these is left entirely out of scope, not just the one the
+        triggering operation would use), and the base table's primary key
+        columns are exposed under their original names in the view's own
+        output.
+
+        Args:
+            default_conn: an already-resolved connection to reuse (see
+                sqleditor/__init__.py's start_view_data(), which resolves
+                one specifically so metadata calls like this one don't
+                run on the same conn_id-keyed connection as an in-flight
+                async query and its cursor). Only resolved independently
+                when the caller doesn't supply one.
+
+        This never raises: any missing connection, failed query, or
+        unexpected error is treated as "not editable".
+        """
+        # Use getattr rather than direct attribute access: a ViewCommand
+        # unpickled from a session created before this attribute existed
+        # (see session_obj['command_obj'] in sqleditor/__init__.py) won't
+        # have it, and this must fail closed rather than raise.
+        if getattr(self, '_can_edit', None) is not None:
+            return self._can_edit
+
+        try:
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            if default_conn is None:
+                manager = driver.connection_manager(self.sid)
+                conn = manager.connection(did=self.did,
+                                          conn_id=self.conn_id)
+            else:
+                conn = default_conn
+
+            if not conn.connected():
+                return False
+
+            # Resolve the base table backing this view (if any).
+            query = render_template(
+                "/".join([self.sql_path, 'view_base_table.sql']),
+                obj_id=self.obj_id,
+                nsp_name=self.nsp_name,
+                object_name=self.object_name,
+                conn=conn,
+            )
+            status, result = conn.execute_dict(query)
+            if not status:
+                return False
+
+            if len(result['rows']) == 0:
+                # Not a simple auto-updatable view (join, trigger-backed,
+                # not updatable at all, etc). This is a stable catalog
+                # fact for this view, so cache it.
+                self._can_edit = False
+                return self._can_edit
+
+            base_nspname = result['rows'][0]['nspname']
+            base_relname = result['rows'][0]['relname']
+
+            # The base table's real primary key columns.
+            pk_query = render_template(
+                "/".join([self.sql_path, 'primary_keys.sql']),
+                table_name=base_relname,
+                table_nspname=base_nspname,
+                conn=conn,
+            )
+            status, pk_result = conn.execute_dict(pk_query)
+            if not status:
+                return False
+
+            # The view's own output column names.
+            cols_query = render_template(
+                "/".join([self.sql_path, 'get_columns.sql']),
+                obj_id=self.obj_id,
+                conn=conn,
+            )
+            status, cols_result = conn.execute_dict(cols_query)
+            if not status:
+                return False
+
+            view_column_names = {
+                row['attname'] for row in cols_result['rows']
+            }
+
+            # Keep only the primary-key columns that are also present,
+            # under their original name, in the view's own output. There
+            # is no reliable way to map a renamed/omitted PK column back
+            # to the base table through aliasing, so such views are
+            # deliberately left non-editable.
+            primary_keys = OrderedDict()
+            pk_names = ''
+            for row in pk_result['rows']:
+                if row['attname'] in view_column_names:
+                    pk_names += driver.qtIdent(conn, row['attname']) + ','
+                    primary_keys[row['attname']] = row['typname']
+
+            if len(primary_keys) == 0:
+                self._can_edit = False
+                return self._can_edit
+
+            if pk_names != '':
+                # Remove last character from the string
+                pk_names = pk_names[:-1]
+
+            self._pk_names = pk_names
+            self._primary_keys = primary_keys
+            self._can_edit = True
+        except Exception:
+            # Fail closed - never let can_edit() raise.
+            return False
+
+        return self._can_edit
+
+    def get_primary_keys(self, default_conn=None):
+        """
+        This function is used to fetch the primary key columns of the
+        view's underlying base table, filtered to the ones the view
+        itself still exposes under their original name. Resolved (and
+        cached) by can_edit(), which is run first if it hasn't been yet -
+        forwarding whatever connection this was given, rather than
+        letting can_edit() resolve one of its own independently of the
+        caller (see can_edit()'s default_conn docstring).
+        """
+        if getattr(self, '_can_edit', None) is None:
+            self.can_edit(default_conn)
+
+        return getattr(self, '_pk_names', ''), \
+            getattr(self, '_primary_keys', OrderedDict())
+
+    def has_oids(self, default_conn=None):
+        """
+        Views cannot have oids in any currently supported PostgreSQL
+        version.
+        """
         return False
+
+    def save(self,
+             changed_data,
+             columns_info,
+             client_primary_key='__temp_PK',
+             default_conn=None):
+        """
+        This function is used to save the data into the database.
+
+        Args:
+            changed_data: Contains data to be saved
+            columns_info:
+            client_primary_key:
+            default_conn:
+        """
+        # Before this class existed, every view fell through to
+        # GridCommand.save() below, which always refuses. Match that: a
+        # non-editable view (join-based, trigger-backed, matview, PK not
+        # exposed under its own name, etc.) must still be refused here,
+        # not attempted - can_edit() being false isn't otherwise checked
+        # anywhere on this path before a transaction gets started.
+        #
+        # This deliberately does NOT call forbidden() the way
+        # GridCommand.save() does: forbidden() returns a raw HTTP
+        # Response, but the one real caller of this method - the
+        # /sqleditor/save/<trans_id> endpoint - always does
+        # `status, res, query_results, _rowid = trans_obj.save(...)`,
+        # and unpacking a Response that way raises TypeError (verified),
+        # turning a clean refusal into a 500. Same message/intent as
+        # forbidden(), in the 4-tuple shape save_changed_data() itself
+        # already returns for its own early refusals.
+        if not self.can_edit(default_conn):
+            return (
+                False,
+                gettext("Data cannot be saved for the current object."),
+                [],
+                None
+            )
+
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        if default_conn is None:
+            manager = driver.connection_manager(self.sid)
+            conn = manager.connection(did=self.did, conn_id=self.conn_id)
+        else:
+            conn = default_conn
+
+        return save_changed_data(changed_data=changed_data,
+                                 columns_info=columns_info,
+                                 command_obj=self,
+                                 client_primary_key=client_primary_key,
+                                 conn=conn)
+
+    def get_columns_types(self, conn):
+        """
+        Fetch column type/attribute info for the view's own output
+        columns, the same way TableCommand does for a table. Reused
+        as-is: for a simple 1:1 view the driver reports every result
+        column's table_oid as the view's own oid (see
+        _check_single_table), so this resolves against the view's own
+        catalog entry exactly like it does for a table.
+        """
+        columns_info = conn.get_column_info()
+        has_oids = self.has_oids()
+        table_name = None
+        table_nspname = None
+        table_oid = _check_single_table(columns_info)
+        if table_oid is None:
+            table_name = self.object_name
+            table_nspname = self.nsp_name
+
+        return get_columns_types(conn=conn,
+                                 columns_info=columns_info,
+                                 has_oids=has_oids,
+                                 table_oid=table_oid,
+                                 is_query_tool=False,
+                                 table_name=table_name,
+                                 table_nspname=table_nspname,
+                                 )
 
     def can_filter(self):
         return True
