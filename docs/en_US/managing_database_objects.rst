@@ -39,6 +39,7 @@ node, and select *Create Cast...*
    publication_dialog
    schema_dialog
    sequence_dialog
+   statistics_dialog
    subscription_dialog
    synonym_dialog
    trigger_function_dialog
