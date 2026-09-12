@@ -421,6 +421,14 @@ class Connection(BaseConnection):
 
         if status and is_update_password:
             manager._update_password(encpass)
+            # Persist the corrected in-memory password to the Flask
+            # session. Driver.managers is only an in-process cache, so
+            # without this a fresh worker process handling a later
+            # request (e.g. opening the Query Tool, in a multi-worker
+            # deployment) would restore the stale pre-fix manager from
+            # the session and lose the corrected password, re-triggering
+            # the password prompt indefinitely. See issue #10128.
+            manager.update_session()
         else:
             if not self.reconnecting and is_update_password:
                 self.wasConnected = False
