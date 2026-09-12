@@ -311,7 +311,17 @@ REM Main build sequence Ends
     REM Get a fresh copy of electron.
 
     REM WGET
-    FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
+    REM Resolve the electron version from runtime/package.json, NOT from
+    REM `npm info electron version`. The latter fetches whatever currently
+    REM carries the `latest` dist-tag on the npm registry, which means any
+    REM newly published electron release lands in shipped binaries without
+    REM review. Keep the build deterministic and pinned.
+    SET "ELECTRON_VERSION="
+    FOR /f "delims=" %%i IN ('node -p "(require(process.argv[1]).devDependencies?.electron || require(process.argv[1]).dependencies?.electron || '').replace(/^\^/, '')" "%WD%\runtime\package.json"') DO SET "ELECTRON_VERSION=%%i"
+    IF "%ELECTRON_VERSION%"=="" (
+        ECHO ERROR: Could not resolve Electron version from runtime/package.json.
+        EXIT /B 1
+    )
 
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
