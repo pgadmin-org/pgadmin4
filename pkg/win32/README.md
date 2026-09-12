@@ -158,16 +158,23 @@ takes some effort to setup.
 
 It is therefore recommended that you simply download a pre-built set of 
 PostgreSQL binaries from the 
-[winpgbuild project](https://github.com/dpage/winpgbuild/actions/workflows/postgresql.yml).
-Locate the binaries asset for the version of PostgreSQL you wish to use
-in the most recent workflow run, and extract the contents to a suitable
-directory such as `C:\Build64`.
+[winpgbuild project](https://github.com/dpage/winpgbuild/releases). Download the
+`postgresql-<version>-latest.zip` asset for the version of PostgreSQL you wish
+to use, along with `krb5-latest.zip`, and unpack both of them into `C:\build64`.
+MIT Kerberos is packaged separately and is needed in addition to the PostgreSQL
+binaries, as pgAdmin ships `kinit` and the Kerberos runtime libraries to support
+Kerberos authentication of its own. Note that PostgreSQL 17 and earlier are
+built without gssapi support on Windows, which cannot be enabled alongside
+OpenSSL before PostgreSQL 18.
 
-Repeat the process with the latest build of 
-[MIT Kerberos](https://github.com/dpage/winpgbuild/actions/workflows/krb5.yml),
-merging the files into the same set of directories. This is required because
-the PostgreSQL build doesn't include Kerberos (gssapi) support as it uses 
-native SSPI instead.
+That will leave you with `C:\build64\postgresql` and `C:\build64\krb5`, which are
+the directories the build system looks in by default. The same binaries are also
+published as artifacts of the 
+[PostgreSQL](https://github.com/dpage/winpgbuild/actions/workflows/postgresql.yml) 
+and 
+[MIT Kerberos](https://github.com/dpage/winpgbuild/actions/workflows/krb5.yml) 
+workflow runs, although those are only retained for ninety days, so the releases
+are usually the easier option.
 
 ## Setting up a dev environment
 
@@ -200,8 +207,9 @@ desktop runtime.
 
 1. Set the required environment variables, either system-wide, or in a Visual
 Studio 2017 (or 2022 with PostgreSQL 17+) 64bit command prompt. Note that the 
-examples shown below are the defaults for the build system, so if they match
-your requirements you don't need to set them. For PostgreSQL 16 and below:
+PostgreSQL 17 and later examples shown below are the defaults for the build
+system, so if they match your requirements you don't need to set them. For
+PostgreSQL 16 and below:
 
         SET "PGADMIN_POSTGRES_DIR=C:\build64\pgsql"
         SET "PGADMIN_PYTHON_DIR=C:\Python314"
@@ -213,20 +221,28 @@ your requirements you don't need to set them. For PostgreSQL 16 and below:
 
     For PostgreSQL 17 and later:
 
-        SET "PGADMIN_POSTGRES_DIR=C:\build64"
+        SET "PGADMIN_POSTGRES_DIR=C:\build64\postgresql"
         SET "PGADMIN_PYTHON_DIR=C:\Python314"
-        SET "PGADMIN_KRB5_DIR=C:\build64"
+        SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
         SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
         SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
         SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
         SET "PGADMIN_VCREDIST_FILE=vc_redist.x64.exe"
 
-2. Run:
+2. If you have a code signing certificate and wish to use it, set
+`PGADMIN_WINDOWS_CSC` to its subject name. The certificate must be present in
+the machine certificate store, along with a working link to its private key:
+
+        SET "PGADMIN_WINDOWS_CSC=Your Certificate Subject Name"
+
+    The executables and libraries that we build ourselves will then be signed,
+    as will the installer and the uninstaller. If the variable is left unset,
+    the build completes as normal without signing anything.
+
+
+3. Run:
 
         make
 
-    If you have a code signing certificate, this will automatically be used if
-    found in the Windows Certificate Store to sign the installer.
 
-
-3. Find the completed installer in the dist/ subdirectory of your source tree.
+4. Find the completed installer in the dist/ subdirectory of your source tree.
