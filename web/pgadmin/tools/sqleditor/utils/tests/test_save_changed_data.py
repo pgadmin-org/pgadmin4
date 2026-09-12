@@ -1040,3 +1040,87 @@ class TestSaveAddedRowSkipsNonEditableColumn(TestSaveChangedData):
             "FROM {0};"
         ).format(self.test_table_name)
         utils.create_table_with_query(self.server, self.db_name, create_sql)
+
+
+class TestSaveUpdatedRowSkipsNonEditableColumn(TestSaveChangedData):
+    """Regression test for issue #10103.
+
+    When a Query Tool result includes an expression or alias column
+    (e.g. ``first_name || ' ' || last_name AS the_name``), editing a
+    real column on an existing row must not include the alias in the
+    generated UPDATE statement. The alias is not a real column of the
+    underlying table, so pgAdmin already flags it as non-editable (shown
+    with a lock icon in the grid) but the update save flow used to send
+    it anyway, causing PostgreSQL to reject the statement with
+    ``column "the_name" does not exist``.
+    """
+
+    scenarios = [
+        ('Update a real column while an aliased expression column is '
+         'present', dict(
+             save_payload={
+                 "updated": {
+                     "1": {
+                         "err": False,
+                         "data": {
+                             "first_name": "Jane",
+                             # The client includes the aliased expression
+                             # column in the changed data even though it
+                             # is marked non-editable. Sending it must
+                             # not break the UPDATE.
+                             "the_name": "Jane Doe"
+                         },
+                         "primary_keys": {"id": 1}
+                     }
+                 },
+                 "added": {},
+                 "staged_rows": {},
+                 "deleted": {},
+                 "updated_index": {"1": "1"},
+                 "added_index": {},
+                 "columns": [
+                     {"name": "id", "pos": 0, "can_edit": True,
+                      "type": "integer", "cell": "number",
+                      "not_null": True, "has_default_val": False,
+                      "is_array": False, "display_name": "id"},
+                     {"name": "first_name", "pos": 1, "can_edit": True,
+                      "type": "text", "cell": "string",
+                      "not_null": False, "has_default_val": False,
+                      "is_array": False, "display_name": "first_name"},
+                     {"name": "last_name", "pos": 2, "can_edit": True,
+                      "type": "text", "cell": "string",
+                      "not_null": False, "has_default_val": False,
+                      "is_array": False, "display_name": "last_name"},
+                     {"name": "the_name", "pos": 3, "can_edit": False,
+                      "type": "text", "cell": "string",
+                      "not_null": False, "has_default_val": False,
+                      "is_array": False, "display_name": "the_name"},
+                 ]
+             },
+             save_status=True,
+             check_sql='SELECT id, first_name, last_name '
+                       'FROM %s WHERE id = 1',
+             check_result=[[1, "Jane", "Doe"]]
+         )),
+    ]
+
+    def _create_test_table(self):
+        self.test_table_name = "test_for_save_data_alias_" + \
+                               str(secrets.choice(range(1000, 9999)))
+        create_sql = """
+            DROP TABLE IF EXISTS "{0}";
+
+            CREATE TABLE "{0}"(
+                id INT PRIMARY KEY,
+                first_name TEXT,
+                last_name TEXT
+            );
+
+            INSERT INTO "{0}" VALUES (1, 'John', 'Doe');
+        """.format(self.test_table_name)
+        self.select_sql = (
+            "SELECT id, first_name, last_name, "
+            "first_name || ' ' || last_name AS the_name "
+            "FROM {0};"
+        ).format(self.test_table_name)
+        utils.create_table_with_query(self.server, self.db_name, create_sql)
