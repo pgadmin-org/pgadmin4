@@ -1150,7 +1150,8 @@ def poll(trans_id):
                 'transaction_status': transaction_status,
                 'explain_query_length':
                 get_explain_query_length(conn._Connection__async_cursor._query)
-                if conn._Connection__async_cursor else 0
+                if conn._Connection__async_cursor and
+                conn._Connection__async_cursor._query else 0
             }
             return internal_server_error(result, query_len_data)
         elif status == ASYNC_OK:
