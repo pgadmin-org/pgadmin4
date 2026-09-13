@@ -117,7 +117,7 @@ define('pgadmin.browser.utils',
     userMenuInfo: {
       username: '{{username}}',
       auth_source: '{{auth_source}}',
-      gravatar: {% if config.SHOW_GRAVATAR_IMAGE %}'{{ username | gravatar }}'{% else %}''{% endif %},
+      gravatar: {% if config.SHOW_GRAVATAR_IMAGE %}'{{ gravatar_identifier | gravatar }}'{% else %}''{% endif %},
       menus: [
         {% if auth_only_internal %}
         {
