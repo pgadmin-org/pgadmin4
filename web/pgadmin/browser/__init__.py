@@ -555,7 +555,7 @@ def utils():
             is_admin=current_user.has_role("Administrator"),
             login_url=login_url,
             username=current_user.username.replace("'","\\'"),
-            gravatar_identifier=(current_user.email or current_user.username).replace("'","\\'"),
+            gravatar_identifier=current_user.email or current_user.username,
             auth_source=auth_source,
             heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
             password_length_min=config.PASSWORD_LENGTH_MIN,
