@@ -59,6 +59,29 @@ register_global_typecasters()
 configure_driver_encodings(encodings)
 
 
+# Statements that leave no result set behind for poll() to report on, and
+# which therefore need the cursor they ran on to become the async cursor.
+# ROLLBACK covers ROLLBACK TO SAVEPOINT as well, and START covers START
+# TRANSACTION, there being no other START in the grammar.
+TRANSACTION_CONTROL_KEYWORDS = frozenset({
+    'abort', 'begin', 'commit', 'end', 'release', 'rollback', 'savepoint',
+    'start'
+})
+
+
+def _is_transaction_control(query):
+    """
+    Report whether the given statement is a transaction-control statement,
+    judged by its leading keyword.
+
+    Args:
+        query: SQL statement, as passed to execute_void()
+    """
+    keyword = query.strip().split(None, 1)[0] if query.strip() else ''
+
+    return keyword.rstrip(';').lower() in TRANSACTION_CONTROL_KEYWORDS
+
+
 class Connection(BaseConnection):
     """
     class Connection(object)
@@ -1173,6 +1196,39 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
+
+        if isinstance(cur, AsyncDictServerCursor):
+            # A named/server-side cursor's execute() always runs the query
+            # as `DECLARE ... CURSOR FOR <query>`, which cannot express a
+            # transaction-control statement such as BEGIN/COMMIT/ROLLBACK.
+            # Run this one statement through a throwaway plain cursor
+            # instead, leaving the cursor cached for the connection in
+            # place for the next query to reuse. The connection's
+            # cursor_factory is AsyncDictCursor, so the throwaway carries
+            # ordered_description(), get_rowcount() and the rest of the
+            # API poll() calls.
+            cur = self.conn.cursor()
+
+            if _is_transaction_control(query):
+                # For a transaction-control statement the throwaway also
+                # has to become the async cursor, because poll() and
+                # status_message() report on that rather than on whatever
+                # this call used: the cached server-side cursor still
+                # describes the previous query and reports itself open, so
+                # a following poll() would read straight past its "not cur
+                # or cur.closed" guard and put that query's column metadata
+                # and row count back over the "no result set" the
+                # statement leaves behind.
+                #
+                # Anything else keeps the cached cursor as the async
+                # cursor. A statement such as the SELECT pg_cancel_backend()
+                # issued by cancel_transaction() has no business detaching
+                # the cursor a result set is still being paged or
+                # downloaded from.
+                self.__async_cursor = cur
+                self.column_info = None
+                self.row_count = 0
+
         query_id = str(secrets.choice(range(1, 9999999)))
 
         current_app.logger.log(
