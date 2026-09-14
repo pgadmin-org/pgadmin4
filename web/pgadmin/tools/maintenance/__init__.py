@@ -221,10 +221,6 @@ def create_maintenance_job(sid, did):
     # otherwise PGDATABASE is left unset and libpq falls back down its chain to
     # a database named after the login role, silently running maintenance on
     # the wrong database instead of failing safely.
-    # A target database is mandatory. Reject an empty/missing value up front:
-    # otherwise PGDATABASE is left unset and libpq falls back down its chain to
-    # a database named after the login role, silently running maintenance on
-    # the wrong database instead of failing safely.
     if not data.get('database'):
         return bad_request(
             errormsg=_("Database parameter is required."))
