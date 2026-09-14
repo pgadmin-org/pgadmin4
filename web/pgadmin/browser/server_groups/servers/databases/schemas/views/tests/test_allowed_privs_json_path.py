@@ -42,6 +42,9 @@ class AllowedPrivsJsonPathTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        # BaseTestGenerator.setUp() connects to the test server, which this
+        # test has no use for: it only renders a template, and the Flask app
+        # it needs is set up by the regression harness rather than here.
         pass
 
     def runTest(self):
