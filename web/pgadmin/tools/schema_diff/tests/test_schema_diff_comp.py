@@ -37,9 +37,6 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
         # Rebuilding a partitioned table leaves its scaffolding default
         # partition behind.
         'table table_for_partition_1': 10301,
-        # CREATE OR REPLACE wraps the body in newlines, leaving a
-        # whitespace-only difference.
-        'procedure proc1(IN arg1 bigint)': 10302,
     }
 
     def setUp(self):

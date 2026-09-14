@@ -10,9 +10,7 @@
 # AWS RDS Cloud Deployment Implementation
 
 import requests
-import boto3
 import json
-from boto3.session import Session
 from flask_babel import gettext
 from flask import session, current_app, request
 from pgadmin.user_login_check import pga_login_required
@@ -21,7 +19,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
-from pgadmin.utils.ajax import make_json_response,\
+from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, bad_request, success_return
 from .regions import AWS_REGIONS
 import json
@@ -152,6 +150,8 @@ def get_regions():
     """GET Regions for AWS."""
     try:
         clear_aws_session()
+        # Defer boto3.session (heavy import, user action only, cached)
+        from boto3.session import Session
         _session = Session()
         res = _session.get_available_regions('rds')
         regions = []
@@ -177,6 +177,7 @@ class RDS():
     def __init__(self, access_key, secret_key, session_token=None,
                  default_region='ap-south-1'):
         self._clients = {}
+        self._error = None
 
         self._access_key = access_key
         self._secret_key = secret_key
@@ -192,24 +193,35 @@ class RDS():
         if type in self._clients:
             return self._clients[type]
 
-        session = boto3.Session(
-            aws_access_key_id=self._access_key,
-            aws_secret_access_key=self._secret_key,
-            aws_session_token=self._session_token
-        )
+        # Defer boto3 (heavy import, user action only, cached)
+        try:
+            import boto3
+            session = boto3.Session(
+                aws_access_key_id=self._access_key,
+                aws_secret_access_key=self._secret_key,
+                aws_session_token=self._session_token
+            )
 
-        self._clients[type] = session.client(
-            type, region_name=self._default_region)
+            self._clients[type] = session.client(
+                type, region_name=self._default_region)
 
-        return self._clients[type]
+            return self._clients[type]
+        except ImportError as e:
+            self._error = str(e)
+            current_app.logger.error(self._error)
+            return None
 
     def get_available_db_version(self, engine='postgres'):
         rds = self._get_aws_client('rds')
+        if rds is None:
+            return {'DBEngineVersions': []}
         return rds.describe_db_engine_versions(Engine=engine)
 
     def get_available_db_instance_class(self, engine='postgres',
                                         engine_version='10'):
         rds = self._get_aws_client('rds')
+        if rds is None:
+            return []
         _instances = rds.describe_orderable_db_instance_options(
             Engine=engine,
             EngineVersion=engine_version)
@@ -233,14 +245,16 @@ class RDS():
             DBInstanceIdentifier=instance_name)
 
     def validate_credentials(self):
-        client = self._get_aws_client('sts')
         try:
+            client = self._get_aws_client('sts')
+            if client is None:
+                return False, self._error or 'Failed to initialize AWS client.'
             identity = client.get_caller_identity()
             return True, identity
         except Exception as e:
             return False, str(e)
         finally:
-            self._clients.pop('sts')
+            self._clients.pop('sts', None)
 
 
 def _get_rds_from_session():

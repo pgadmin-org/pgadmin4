@@ -510,7 +510,12 @@ export default class TableSchema extends BaseUISchema {
 
   // Check for column grid when to edit/delete (for each row)
   canEditDeleteRowColumns(colstate) {
-    return isEmptyString(colstate.inheritedfrom);
+    // 'inheritedfrom' is set on columns fetched interactively via
+    // 'Inherited from table(s)'; 'inheritedfromtable' is set on columns
+    // already inherited when the table's properties were fetched. Both
+    // must disable the row's edit/delete buttons.
+    return isEmptyString(colstate.inheritedfrom) &&
+      isEmptyString(colstate.inheritedfromtable);
   }
 
   isPartitioned(state) {

@@ -161,3 +161,90 @@ class TestUnsafeDeserializerEliminatedFromRdsModule(
         self.assertNotIn(
             forbidden + '.loads(', src,
             "cloud.rds must not call the unsafe deserialize call")
+
+
+class TestRdsImportErrorHandling(
+        _SkipServerSetUpMixin, BaseTestGenerator):
+    """RDS methods must handle ImportError cleanly without raising."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        import json
+        from flask import Flask, session
+        from unittest.mock import patch
+        from pgadmin.misc.cloud import rds as rds_mod
+        from pgadmin.misc.cloud.rds import RDS
+
+        rds = RDS(
+            access_key='AKIA_TEST',
+            secret_key='SECRET_TEST',
+            session_token='STS_TOKEN',
+            default_region='us-east-1',
+        )
+        app = Flask(__name__)
+        app.secret_key = 'test'
+        with app.app_context(), \
+                patch.object(app.logger, 'error') as mock_log, \
+                patch.dict('sys.modules',
+                           {'boto3': None, 'boto3.session': None}):
+            client = rds._get_aws_client('rds')
+            self.assertIsNone(client)
+            mock_log.assert_called()
+            self.assertIn('boto3', str(mock_log.call_args[0][0]))
+
+            status, msg = rds.validate_credentials()
+            self.assertFalse(status)
+            self.assertIn('boto3', msg)
+
+            db_versions = rds.get_available_db_version()
+            self.assertEqual(db_versions, {'DBEngineVersions': []})
+
+            db_instances = rds.get_available_db_instance_class()
+            self.assertEqual(db_instances, [])
+
+            # Verify route handlers return 200 responses instead of 500
+            with app.test_request_context(
+                    '/rds/verify_credentials/',
+                    method='POST',
+                    data=json.dumps({
+                        'cloud': 'aws',
+                        'secret': {
+                            'access_key': 'AKIA_TEST',
+                            'secret_access_key': 'SECRET_TEST',
+                            'region': 'us-east-1',
+                        },
+                    }),
+                    content_type='application/json'):
+                session['aws'] = {}
+                route_resp = rds_mod.verify_credentials.__wrapped__()
+                self.assertEqual(route_resp.status_code, 200)
+                body = json.loads(route_resp.data)
+                self.assertFalse(body.get('success'))
+                self.assertIn('boto3', body.get('info'))
+
+            with app.test_request_context('/rds/db_versions/'):
+                session['aws'] = {
+                    'secret': {
+                        'access_key': 'AKIA_TEST',
+                        'secret_access_key': 'SECRET_TEST',
+                        'region': 'us-east-1',
+                    }
+                }
+                route_resp = rds_mod.get_db_versions.__wrapped__()
+                self.assertEqual(route_resp.status_code, 200)
+                body = json.loads(route_resp.data)
+                self.assertEqual(body.get('data'), [])
+
+            with app.test_request_context('/rds/db_instances/'):
+                session['aws'] = {
+                    'secret': {
+                        'access_key': 'AKIA_TEST',
+                        'secret_access_key': 'SECRET_TEST',
+                        'region': 'us-east-1',
+                    }
+                }
+                route_resp = rds_mod.get_db_instances.__wrapped__()
+                self.assertEqual(route_resp.status_code, 200)
+                body = json.loads(route_resp.data)
+                self.assertEqual(body.get('data'), [])

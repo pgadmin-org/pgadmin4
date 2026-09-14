@@ -76,6 +76,15 @@ do
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
+# Remove the JavaScript build configuration from the tree we're shipping. None
+# of it is used at runtime (only the bundle under pgadmin/static/js/generated
+# is), and leaving yarn.lock in place means vulnerability scanners report the
+# entire build-time dependency tree against the installed package. This happens
+# before the SBOM is generated so that the SBOM describes what actually ships.
+echo Removing the JavaScript build configuration...
+(cd ../pip-build/pgadmin4 && rm -rf jest.config.js babel.* package.json \
+    .yarn* yarn* webpack.* .editorconfig .eslint*)
+
 cd ../docs || exit
 for FILE in $(git ls-files)
 do

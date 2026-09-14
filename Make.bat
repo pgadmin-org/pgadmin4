@@ -161,10 +161,14 @@ REM Main build sequence Ends
     CD "%TMPDIR%"
 
     REM Note that we must use virtualenv.exe here, as the venv module doesn't allow python.exe to relocate.
-    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
+    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv || EXIT /B 1
 
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
+    REM Copy the standard library, but NOT site-packages: the venv already has its
+    REM own seeded pip there, and overwriting only the files the system Python also
+    REM has leaves a mix of two pip versions behind.
+    ROBOCOPY /E /R:3 /W:5 /NFL /NDL /NP "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" /XD site-packages
+    CALL :CHECK_ROBOCOPY_ERROR || EXIT /B 1
 
     ECHO Activating virtual environment -  %TMPDIR%\venv...
     CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
@@ -216,8 +220,8 @@ REM Main build sequence Ends
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    ROBOCOPY /S "%WD%\web" "%BUILDROOT%\web" > nul
-    CALL :CHECK_ROBOCOPY_ERROR
+    ROBOCOPY /S /NFL /NDL /NP "%WD%\web" "%BUILDROOT%\web"
+    CALL :CHECK_ROBOCOPY_ERROR || EXIT /B 1
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
@@ -242,8 +246,18 @@ REM Main build sequence Ends
     RD /Q /S "%BUILDROOT%\web\regression" 1> nul 2>&1
     ECHO Removing tools...
     RD /Q /S "%BUILDROOT%\web\tools" 1> nul 2>&1
-    ECHO Removing yarn cache...
+    ECHO Removing the JavaScript build configuration...
     RD /Q /S "%BUILDROOT%\web\.yarn" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\yarn.lock" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.yarnrc.yml" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\package.json" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\jest.config.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\babel.cfg" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\babel.config.json" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\webpack.config.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\webpack.shim.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.eslintrc.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.editorconfig" 1> nul 2>&1
     ECHO Removing any existing configurations...
     DEL /q "%BUILDROOT%\web\pgadmin4.db" 1> nul 2>&1
     DEL /q "%BUILDROOT%\web\config_local.py" 1> nul 2>&1
