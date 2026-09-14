@@ -28,11 +28,15 @@ server-side cursor: it reports itself open, so the ``not cur or
 cur.closed`` guard lets it through and the previous query's metadata comes
 straight back. The throwaway cursor therefore has to become the async
 cursor as well, which also makes ``status_message()`` report the
-transaction-control statement rather than the previous query."""
+transaction-control statement rather than the previous query. That
+promotion is limited to transaction-control statements, for the reason
+given in ``ExecuteVoidNonTransactionServerCursorTest`` below."""
 
 from unittest.mock import MagicMock, patch
 
-from pgadmin.utils.driver.psycopg3.connection import Connection
+from pgadmin.utils.driver.psycopg3.connection import (
+    Connection, _is_transaction_control
+)
 from pgadmin.utils.driver.psycopg3.cursor import AsyncDictServerCursor
 from pgadmin.utils.route import BaseTestGenerator
 
@@ -138,3 +142,93 @@ class ExecuteVoidServerCursorTest(BaseTestGenerator):
         # The status message belongs to the statement just run, not to the
         # previous query.
         self.assertEqual(status_message, self.sql.rstrip(';'))
+
+
+class ExecuteVoidNonTransactionServerCursorTest(BaseTestGenerator):
+    """A statement that is not transaction control must leave the cached
+    server-side cursor in place as the async cursor.
+
+    ``execute_void()`` runs on a throwaway plain cursor whenever the cached
+    cursor is a server-side one, but only a transaction-control statement
+    has that throwaway become the async cursor. Promoting it for every
+    statement would let something like the ``SELECT pg_cancel_backend(...)``
+    that ``cancel_transaction()`` issues detach the cursor a result set is
+    still being paged or downloaded from, so that the pagination and
+    download calls that follow read the throwaway and find no rows.
+    """
+
+    scenarios = [
+        ('a non-transaction statement keeps the cached server-side cursor '
+         'as the async cursor',
+         dict(sql='SELECT pg_cancel_backend(1234);')),
+    ]
+
+    def runTest(self):
+        manager = MagicMock(sid=1)
+        conn = Connection(manager, 'test-conn-id', 'testdb')
+        conn.python_encoding = 'utf-8'
+
+        # State from the query whose result set is still being read.
+        conn.column_info = [{'name': 'x'}]
+        conn.row_count = 1
+
+        server_cursor = MagicMock(spec=AsyncDictServerCursor)
+        server_cursor.closed = False
+        conn._Connection__async_cursor = server_cursor
+
+        plain_cursor = MagicMock()
+        plain_cursor.closed = False
+
+        conn.conn = MagicMock()
+        conn.conn.cursor.return_value = plain_cursor
+        conn.conn.info.user = 'postgres'
+        conn.conn.info.host = 'localhost'
+        conn.conn.info.dbname = 'testdb'
+
+        with self.app.test_request_context():
+            with patch(
+                'pgadmin.utils.driver.psycopg3.connection.current_user',
+                MagicMock(email='test@example.com')
+            ), patch.object(Connection, '_Connection__cursor',
+                            return_value=(True, server_cursor)):
+                status, result = conn.execute_void(self.sql)
+
+        self.assertTrue(status)
+        self.assertIsNone(result)
+
+        # It still runs on the throwaway, since a server-side cursor cannot
+        # execute anything except through DECLARE ... CURSOR FOR.
+        plain_cursor.execute.assert_called_once()
+        server_cursor.execute.assert_not_called()
+
+        # ... but the result set being read is left alone.
+        self.assertIs(conn._Connection__async_cursor, server_cursor)
+        self.assertEqual(conn.column_info, [{'name': 'x'}])
+        self.assertEqual(conn.row_count, 1)
+
+
+class IsTransactionControlTest(BaseTestGenerator):
+    """Unit tests for the leading-keyword check that decides whether a
+    statement is transaction control."""
+
+    scenarios = [
+        ('BEGIN', dict(sql='BEGIN;', expected=True)),
+        ('COMMIT', dict(sql='COMMIT;', expected=True)),
+        ('ROLLBACK', dict(sql='ROLLBACK;', expected=True)),
+        ('lower case, no semicolon', dict(sql='commit', expected=True)),
+        ('leading whitespace', dict(sql='  \n\tROLLBACK;', expected=True)),
+        ('START TRANSACTION', dict(sql='START TRANSACTION;', expected=True)),
+        ('ROLLBACK TO SAVEPOINT',
+         dict(sql='ROLLBACK TO SAVEPOINT sp1;', expected=True)),
+        ('SAVEPOINT', dict(sql='SAVEPOINT sp1;', expected=True)),
+        ('RELEASE', dict(sql='RELEASE sp1;', expected=True)),
+        ('a SELECT', dict(sql='SELECT pg_cancel_backend(1234);',
+                          expected=False)),
+        ('an INSERT', dict(sql='INSERT INTO t VALUES (1);', expected=False)),
+        # "beginx" is not "begin".
+        ('a keyword prefix', dict(sql='BEGINNING;', expected=False)),
+        ('an empty statement', dict(sql='   ', expected=False)),
+    ]
+
+    def runTest(self):
+        self.assertEqual(_is_transaction_control(self.sql), self.expected)
