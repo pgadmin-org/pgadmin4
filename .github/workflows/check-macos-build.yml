@@ -56,15 +56,30 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      # syft generates the SBOM, wget fetches Electron.
+      # syft generates the SBOM, wget fetches Electron. openssl@3 arrives as a
+      # postgresql@18 dependency anyway, but is named explicitly because the
+      # build step below depends on it.
       - name: Install the build dependencies
-        run: brew install postgresql@18 syft wget
+        run: brew install postgresql@18 openssl@3 syft wget
 
       - name: Check the appbundle build
         run: |
           PGADMIN_POSTGRES_DIR="$(brew --prefix postgresql@18)"
           export PGADMIN_POSTGRES_DIR
           echo "Using PostgreSQL from ${PGADMIN_POSTGRES_DIR}"
+
+          # cryptography publishes arm64-only macOS wheels (checked against
+          # 50.0.1), so on Intel pip builds it from the sdist and its
+          # openssl-sys crate links whatever OpenSSL it finds on the build
+          # host. _fixup_imports deliberately skips _rust.abi3.so, so that
+          # reference would survive into the bundle and _verify_bundle_linkage
+          # would fail the build. Linking statically leaves no external
+          # reference at all. The release build does the same thing against its
+          # own OpenSSL rather than Homebrew's. See issue #10123.
+          OPENSSL_DIR="$(brew --prefix openssl@3)"
+          export OPENSSL_DIR
+          export OPENSSL_STATIC=1
+
           make appbundle
 
       - name: Archive the disk image
