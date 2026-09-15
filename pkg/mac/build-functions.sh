@@ -614,6 +614,20 @@ _create_zip() {
     echo "Successfully created ZIP file: ${ZIP_NAME}"
 }
 
+_force_detach_working_image() {
+    # Force off any device still backed by the read/write working image named
+    # in $1. hdiutil's polite detach waits on DiskArbitration; the forced one
+    # does not, which is the whole point of calling it here.
+    local dev
+    while IFS= read -r dev; do
+        [ -n "${dev}" ] || continue
+        echo "Forcing detach of ${dev}..."
+        hdiutil detach "${dev}" -force || true
+    done < <(hdiutil info | awk -v img="$1" '
+        /^image-path/ { keep = (index($0, img) > 0) }
+        keep && $1 ~ /^\/dev\/disk[0-9]+$/ { print $1 }')
+}
+
 _create_dmg() {
     # move to the directory where we want to create the DMG
     test -d "${DIST_ROOT}" || mkdir "${DIST_ROOT}"
@@ -621,7 +635,7 @@ _create_dmg() {
     echo "Checking out create-dmg..."
     git clone https://github.com/create-dmg/create-dmg.git "${BUILD_ROOT}/create-dmg"
 
-    "${BUILD_ROOT}/create-dmg/create-dmg" \
+    if "${BUILD_ROOT}/create-dmg/create-dmg" \
         --volname "${APP_NAME}" \
         --volicon "${SCRIPT_DIR}/dmg-icon.icns" \
         --eula "${SCRIPT_DIR}/licence.rtf" \
@@ -636,7 +650,55 @@ _create_dmg() {
         --skip-jenkins \
         --no-internet-enable \
         "${DMG_NAME}" \
-        "${BUNDLE_DIR}"
+        "${BUNDLE_DIR}"; then
+        return 0
+    fi
+
+    # create-dmg builds a read/write image, mounts it, populates it, unmounts
+    # it, and only then converts it to the compressed image we ship. The
+    # unmount is the fragile step: hdiutil waits on DiskArbitration with a
+    # fixed 120 second timeout that nothing lets us raise, and the cost of
+    # unmounting scales with the bundle. On GitHub's hosted runners an
+    # equivalent payload unmounts in around 20 seconds on arm64 and 90 on
+    # x86_64, and the real bundle exceeds 120 on every Intel machine tried, so
+    # there it fails every time rather than occasionally. It has also been seen
+    # intermittently on developers' own machines.
+    #
+    # Retrying create-dmg would not help, because a deterministic failure
+    # simply recurs. What matters is that by this point the working image is
+    # fully populated and the only step create-dmg did not reach is the
+    # conversion. So force the volume off, which does not wait on
+    # DiskArbitration, and do that last step here.
+    echo
+    echo "create-dmg failed. Attempting to recover the working image..."
+
+    local rw_image
+    rw_image=$(ls -t "${DIST_ROOT}"/rw.*."$(basename "${DMG_NAME}")" 2>/dev/null | head -1)
+
+    if [ -z "${rw_image}" ] || [ ! -f "${rw_image}" ]; then
+        echo "ERROR: no working image found in ${DIST_ROOT}; create-dmg failed" >&2
+        echo "       before it got far enough to recover from." >&2
+        exit 1
+    fi
+
+    echo "Recovering from ${rw_image}..."
+    _force_detach_working_image "${rw_image}"
+
+    rm -f "${DMG_NAME}"
+    hdiutil convert "${rw_image}" -format UDBZ -o "${DMG_NAME}" || {
+        echo "ERROR: failed to convert the working image to ${DMG_NAME}." >&2
+        exit 1
+    }
+
+    # Prove the result is usable rather than assuming it, since this path only
+    # runs when something has already gone wrong.
+    hdiutil verify "${DMG_NAME}" || {
+        echo "ERROR: ${DMG_NAME} did not verify after recovery." >&2
+        exit 1
+    }
+
+    rm -f "${rw_image}"
+    echo "Recovered successfully."
 }
 
 _codesign_dmg() {
