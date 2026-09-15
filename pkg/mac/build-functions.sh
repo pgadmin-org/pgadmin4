@@ -497,7 +497,11 @@ _verify_bundle_linkage() {
     # Build-host prefixes that must never appear in a shipped bundle. SLAVE_HOME
     # (the Jenkins workspace root, under which the self-built OpenSSL and
     # PostgreSQL live) is only added when set, i.e. on the CI builders.
-    local PREFIXES='/usr/local|/opt/homebrew|/opt/local'
+    # /opt/pgbuild is where the PostgreSQL, OpenSSL, Kerberos, zstd and lz4
+    # builds from pgadmin-org/pgbuild are unpacked. Their install names are
+    # absolute, so an unrewritten reference to one is exactly the kind of
+    # build-host path this check exists to catch, no different from Homebrew's.
+    local PREFIXES='/usr/local|/opt/homebrew|/opt/local|/opt/pgbuild'
     if [ -n "${SLAVE_HOME}" ]; then
         PREFIXES="${PREFIXES}|${SLAVE_HOME}"
     fi

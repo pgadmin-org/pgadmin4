@@ -41,7 +41,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: 'arm64', runner: 'macos-15' }
+          # "arch" is pgbuild's spelling of the architecture, which differs
+          # from the one this build uses internally (x64 rather than x86_64).
+          - { name: 'arm64', arch: 'arm64', runner: 'macos-15' }
           # macos-26-intel rather than macos-15-intel: create-dmg's unmount
           # scales with how much real Mach-O content lands on the volume, and
           # the macos-15-intel image is slow enough that the real bundle
@@ -50,7 +52,7 @@ jobs:
           # 41s on macos-26-intel, 82s on macos-15-intel, and that was with a
           # lighter stand-in than the real bundle. It is also the newer image,
           # which we would move to regardless since macOS 15 retires first.
-          - { name: 'x64',   runner: 'macos-26-intel' }
+          - { name: 'x64',   arch: 'x86_64', runner: 'macos-26-intel' }
 
     timeout-minutes: 120
 
@@ -64,17 +66,47 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      # syft generates the SBOM, wget fetches Electron. openssl@3 arrives as a
-      # postgresql@18 dependency anyway, but is named explicitly because the
-      # build step below depends on it.
+      # syft generates the SBOM, wget fetches Electron. PostgreSQL and its
+      # dependencies no longer come from Homebrew; see below.
       - name: Install the build dependencies
-        run: brew install postgresql@18 openssl@3 syft wget
+        run: brew install syft wget
+
+      # The dependencies come from pgadmin-org/pgbuild, built against each
+      # other with --with-zstd --with-lz4 and a 14.0 deployment target, which
+      # is what the release build will ship. Homebrew's PostgreSQL was only
+      # ever a stand-in: it has no zstd or lz4 support (issue #9425), links
+      # Homebrew's OpenSSL rather than ours, and carries whatever minimum OS
+      # Homebrew happened to build for.
+      #
+      # These must land in /opt/pgbuild precisely, because the install names
+      # are absolute: pg_dump asks for /opt/pgbuild/zstd/lib/libzstd.1.dylib
+      # and libpq for /opt/pgbuild/krb5/lib/libgssapi_krb5.2.2.dylib, among
+      # others. _fixup_imports copies from those paths into the bundle and
+      # rewrites the references, so they have to resolve at build time.
+      - name: Install the PostgreSQL build dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PGBUILD_ARCH: ${{ matrix.arch }}
+        run: |
+          sudo mkdir -p /opt/pgbuild
+          sudo chown "$(id -u):$(id -g)" /opt/pgbuild
+
+          for PKG in openssl krb5 zstd lz4 postgresql-18; do
+              TAG="${PKG}-macos-${PGBUILD_ARCH}-latest"
+              echo "Fetching ${TAG}..."
+              gh release download "${TAG}" \
+                  --repo pgadmin-org/pgbuild \
+                  --dir "${RUNNER_TEMP}" --clobber
+              tar -xzf "${RUNNER_TEMP}/${TAG}.tar.gz" -C /opt/pgbuild
+          done
+
+          ls -l /opt/pgbuild
+          echo "--- what pg_dump expects ---"
+          otool -L /opt/pgbuild/postgresql/bin/pg_dump
 
       - name: Check the appbundle build
         run: |
-          PGADMIN_POSTGRES_DIR="$(brew --prefix postgresql@18)"
-          export PGADMIN_POSTGRES_DIR
-          echo "Using PostgreSQL from ${PGADMIN_POSTGRES_DIR}"
+          export PGADMIN_POSTGRES_DIR=/opt/pgbuild/postgresql
 
           # cryptography publishes arm64-only macOS wheels (checked against
           # 50.0.1), so on Intel pip builds it from the sdist and its
@@ -82,10 +114,9 @@ jobs:
           # host. _fixup_imports deliberately skips _rust.abi3.so, so that
           # reference would survive into the bundle and _verify_bundle_linkage
           # would fail the build. Linking statically leaves no external
-          # reference at all. The release build does the same thing against its
-          # own OpenSSL rather than Homebrew's. See issue #10123.
-          OPENSSL_DIR="$(brew --prefix openssl@3)"
-          export OPENSSL_DIR
+          # reference at all, and against our own OpenSSL rather than a
+          # different one from Homebrew. See issue #10123.
+          export OPENSSL_DIR=/opt/pgbuild/openssl
           export OPENSSL_STATIC=1
 
           make appbundle
