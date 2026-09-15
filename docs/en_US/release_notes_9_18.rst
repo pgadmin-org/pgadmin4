@@ -21,7 +21,6 @@ New features
 ************
 
   | `Issue #9631 <https://github.com/pgadmin-org/pgadmin4/issues/9631>`_ -  Collapse and restore the Object Explorer by re-clicking the current workspace icon, in the manner of the VS Code side bar, remembering the choice across refreshes. A keyboard shortcut, Ctrl+Alt+B by default, does the same thing and can be changed through the new ``toggle_object_explorer`` preference.
-  | ``fb0ca5c4c`` -  Harden the default Content-Security-Policy: inline scripts now run under a per-request nonce rather than a blanket ``'unsafe-inline'``, and ``'unsafe-eval'`` is dropped. ``style-src`` keeps ``'unsafe-inline'``, because MUI and React inject runtime styles and inline ``style`` attributes that cannot carry a nonce, and development bundles need ``'unsafe-eval'`` back through ``config_local.py``.
 
 Housekeeping
 ************
@@ -29,19 +28,14 @@ Housekeeping
   | `Issue #10221 <https://github.com/pgadmin-org/pgadmin4/issues/10221>`_ -  Skip importing and initialising the kerberos, ldap, mfa, oauth2 and webserver authentication providers unless ``SERVER_MODE`` is set, leaving desktop mode with internal authentication alone.
   | `Issue #10247 <https://github.com/pgadmin-org/pgadmin4/issues/10247>`_ -  Relax the ``azure-mgmt-resource`` pin to allow 24.0.0, and aggregate the third-party JavaScript and Python dependency bumps for this release.
   | `Issue #10293 <https://github.com/pgadmin-org/pgadmin4/issues/10293>`_ -  Make the Schema Diff regression test assert its own generated script, which it previously swallowed, so invalid generated SQL can no longer pass silently.
-  | ``6487f2a93`` -  Add support for Python 3.14: the macOS bundle now defaults to 3.14.7 and the Windows build looks for an interpreter in ``C:\Python314``, and the pip trove classifier is added. The minimum supported version is unchanged at 3.9.
-  | ``efc0dea33`` -  Document what the AI features transmit to LLM providers - schema definitions, ``pg_settings`` values, query text, EXPLAIN plan output and, for the Query Tool assistant, row data - and that nothing is transmitted until a provider is configured.
-  | ``3cb33475e`` -  Helm chart: add ``existingClaim`` to persistence.
-  | ``9cd0e35f4`` -  Helm chart: add ``backendRefs`` group and kind to ``httproute.yaml``.
-  | ``689c969f9`` -  macOS packaging: stop using ``--system-site-packages`` in favour of a scoped ``.pth``, and surface the real notarization failure by printing ``REQUEST_STATUS`` and fetching the notarytool log.
-  | ``bc58657d3`` -  Stop the build scripts fetching an unpinned Yarn before the pinned one.
-  | ``7790264ac`` -  Batch Dependabot's minor and patch updates into one pull request per manifest, and stop it re-proposing bumps we have deliberately held back.
 
 Bug fixes
 *********
 
   | `Issue #9226 <https://github.com/pgadmin-org/pgadmin4/issues/9226>`_ -  Accept ``SharedUsername`` when importing a shared server from a servers.json definition, instead of insisting on ``Username`` for every server.
   | `Issue #10155 <https://github.com/pgadmin-org/pgadmin4/issues/10155>`_ -  Share concurrent identical GET requests behind ``getNodeAjaxOptions()`` so a wide table's Columns tab no longer fires one duplicate ``get_types`` request per column row.
+  | `Issue #10179 <https://github.com/pgadmin-org/pgadmin4/issues/10179>`_ -  Fix inherited columns in the Table dialog being editable and deletable: a column already inherited from a parent carries ``inheritedfromtable`` while one fetched interactively through 'Inherited from table(s)' carries ``inheritedfrom`` and has no ``attnum`` yet, and only the latter was checked, after an ``isNew()`` short-circuit that treated the attnum-less rows as new.
+  | `Issue #10180 <https://github.com/pgadmin-org/pgadmin4/issues/10180>`_ -  Fix the Data type dropdown on the expanded Definition tab of the Table dialog offering every type, ignoring the allowed-type restriction already applied to the inline editor.
   | `Issue #10214 <https://github.com/pgadmin-org/pgadmin4/issues/10214>`_ -  Fix the ``existingSecret`` path in the Helm deployment template.
   | `Issue #10235 <https://github.com/pgadmin-org/pgadmin4/issues/10235>`_ -  Remove a trailing quote from the Windows installer's ``ProductVersion``, which was stamped as e.g. ``9.17"``.
   | `Issue #10236 <https://github.com/pgadmin-org/pgadmin4/issues/10236>`_ -  Fix Schema Diff reporting false differences for SERIAL/BIGSERIAL columns by ignoring the owned sequence's oid, and fix the invalid ``ALTER COLUMN ... TYPE bigserial`` SQL generated when such a column genuinely differs.
@@ -62,9 +56,7 @@ Bug fixes
   | `Issue #10385 <https://github.com/pgadmin-org/pgadmin4/issues/10385>`_ -  Fix a time-of-check to time-of-use flaw in the File Manager's ``save_file`` endpoint, which backs saving from the Query Tool and ERD: the requested path was validated with ``check_access_permission()`` and then opened with a plain ``open()``, so a symbolic link planted in between was followed, writing outside the storage directory. This is the sink CVE-2026-7819's hardening of the separate upload path did not cover (CVE-2026-86861). Reported by sec-rex.
   | `Issue #10388 <https://github.com/pgadmin-org/pgadmin4/issues/10388>`_ -  Fix connection-string injection in the Restore and Maintenance tools, where the client-supplied database name was passed straight to ``--dbname``: libpq expands a database name containing an equals sign into a full connection string, whose embedded keywords override the ``--host`` and ``--port`` pgAdmin supplies, so the connection - and the stored password exported in ``PGPASSWORD`` - could be redirected to a server of the caller's choosing (CVE-2026-86862). The database name is now passed through the ``PGDATABASE`` environment variable, which libpq never expands. Found by Hitesh Jambhale.
   | `Issue #10393 <https://github.com/pgadmin-org/pgadmin4/issues/10393>`_ -  Render the Validate binary path dialog as HTML, instead of showing the raw markup.
-  | ``bc04db39d`` -  Fix every server-cursor query failing with ``TypeError: keyword not supported: prepare``, because ``AsyncDictServerCursor`` inherited an ``execute()`` that forwards ``prepare`` to a cursor which has never accepted it.
-  | ``9a009fd2b`` -  Refuse HTTP redirects on LLM API requests, rather than following a ``Location`` header on to a destination ``ALLOWED_LLM_API_URLS`` was never applied to. This is hardening rather than a fix for an exploitable flaw, since returning the redirect at all requires control of a host already on the allowlist. Reported by Ziya Abdullayev.
-  | ``3f9945419`` -  Fix the desktop app hanging at startup on hosts with no live D-Bus/GNOME-Keyring session, by moving the keyring usability probe out of ``import config`` and into a background thread that runs it in a separate process.
+  | `Issue #10420 <https://github.com/pgadmin-org/pgadmin4/issues/10420>`_ -  Refuse HTTP redirects on LLM API requests, rather than following a ``Location`` header on to a destination ``ALLOWED_LLM_API_URLS`` was never applied to. This is hardening rather than a fix for an exploitable flaw, since returning the redirect at all requires control of a host already on the allowlist. Reported by Ziya Abdullayev.
 
 Dependencies
 ************
