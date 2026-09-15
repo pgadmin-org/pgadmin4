@@ -192,9 +192,81 @@ jobs:
 
           ls -lh "${RUNNER_TEMP}/out/"
 
+      # Tests A and B both passed on every runner, which rules out the runner
+      # image, hdiutil generally, create-dmg's invocation and volume size. So
+      # the variable is the bundle itself: test B's stand-in was a random blob
+      # in Contents/MacOS with no Info.plist and no Mach-O, which is not an app
+      # as far as the system is concerned. A genuine bundle arriving on a fresh
+      # volume gets noticed by LaunchServices and Gatekeeper in a way a folder
+      # of noise does not.
+      #
+      # Test C is a real, signed, framework-bearing bundle with helper apps:
+      # Electron, which is literally what the real build starts from.
+      - name: 'Test C: create-dmg over a real Electron.app'
+        id: test_c
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ARCH="x64"
+          [ "$(uname -m)" = "arm64" ] && ARCH="arm64"
+          VER=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' runtime/package.json | head -1)
+          echo "electron ${VER} ${ARCH}"
+
+          cd "${RUNNER_TEMP}"
+          rm -rf electron-app && mkdir electron-app && cd electron-app
+          curl -fsSL -o electron.zip \
+              "https://github.com/electron/electron/releases/download/v${VER}/electron-v${VER}-darwin-${ARCH}.zip"
+          unzip -q electron.zip
+          mv Electron.app "pgAdmin 4.app"
+          du -sh "pgAdmin 4.app"
+
+          "${RUNNER_TEMP}/create-dmg/create-dmg" \
+              --volname "pgAdmin 4" --format UDBZ --skip-jenkins --no-internet-enable \
+              "${RUNNER_TEMP}/out-c.dmg" "${RUNNER_TEMP}/electron-app/pgAdmin 4.app" \
+              && echo "TEST C: create-dmg OK" && exit 0
+
+          echo "TEST C: create-dmg FAILED"
+          MOUNT=$(ls -d /Volumes/dmg.* 2>/dev/null | head -1)
+          DEV=$(mount | grep -F "${MOUNT}" | awk '{print $1}')
+          "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
+          exit 1
+
+      # Test D adds the other symlink-heavy component the real build layers on
+      # top: a relocatable Python framework, with its Versions/Current links.
+      # Built without pip installing anything, so this stays minutes rather
+      # than the half hour the real build spends compiling cryptography.
+      - name: 'Test D: Electron.app plus a Python framework'
+        id: test_d
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          APP="${RUNNER_TEMP}/electron-app/pgAdmin 4.app"
+          [ -d "${APP}" ] || { echo "test C did not leave a bundle; skipping"; exit 1; }
+
+          git clone --depth 1 https://github.com/gregneagle/relocatable-python.git \
+              "${RUNNER_TEMP}/relocatable_python"
+          python3 "${RUNNER_TEMP}/relocatable_python/make_relocatable_python_framework.py" \
+              --python-version 3.13.15 --os-version 11 \
+              --destination "${APP}/Contents/Frameworks/"
+          du -sh "${APP}"
+          find "${APP}/Contents/Frameworks" -type l | head -20
+
+          "${RUNNER_TEMP}/create-dmg/create-dmg" \
+              --volname "pgAdmin 4" --format UDBZ --skip-jenkins --no-internet-enable \
+              "${RUNNER_TEMP}/out-d.dmg" "${APP}" \
+              && echo "TEST D: create-dmg OK" && exit 0
+
+          echo "TEST D: create-dmg FAILED"
+          MOUNT=$(ls -d /Volumes/dmg.* 2>/dev/null | head -1)
+          DEV=$(mount | grep -F "${MOUNT}" | awk '{print $1}')
+          "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
+          exit 1
+
       - name: Summarise
         if: always()
         run: |
           echo "runner:  ${{ matrix.runner }}"
-          echo "test A (bare hdiutil):        ${{ steps.test_a.outcome }}"
-          echo "test B (create-dmg):          ${{ steps.test_b.outcome }}"
+          echo "test A (bare hdiutil):            ${{ steps.test_a.outcome }}"
+          echo "test B (create-dmg, synthetic):   ${{ steps.test_b.outcome }}"
+          echo "test C (create-dmg, Electron):    ${{ steps.test_c.outcome }}"
+          echo "test D (Electron + Python fwk):   ${{ steps.test_d.outcome }}"
