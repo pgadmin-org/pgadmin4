@@ -309,6 +309,87 @@ jobs:
           "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
           exit 1
 
+      # Test F prototypes the replacement for create-dmg. `hdiutil create
+      # -srcfolder` builds the image straight from a directory and never mounts
+      # a volume, so DiskArbitration is never involved and there is nothing to
+      # detach. That matters because the recovery we tried first does not work:
+      # `hdiutil detach -force` waits on DiskArbitration exactly as the polite
+      # detach does, timing out after the same 120 seconds with the same
+      # message, and the subsequent convert then fails with "Resource
+      # temporarily unavailable" because the image is still attached.
+      #
+      # Everything create-dmg does for us with --skip-jenkins is staging: the
+      # volume name, the Applications symlink, the background directory, the
+      # pre-built .DS_Store and hiding the .app extension. The two that are not
+      # merely staging are the volume icon, which needs the custom-icon flag on
+      # the volume root, and the EULA, which is a resource attached to the
+      # finished image rather than a file inside it. This checks what survives.
+      - name: 'Test F: hdiutil create -srcfolder, no mount at all'
+        id: test_f
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          APP="${RUNNER_TEMP}/electron-app/pgAdmin 4.app"
+          [ -d "${APP}" ] || { echo "test C did not leave a bundle; skipping"; exit 1; }
+
+          STAGE="${RUNNER_TEMP}/stage"
+          rm -rf "${STAGE}" && mkdir -p "${STAGE}/.background"
+          cp -R "${APP}" "${STAGE}/"
+          cp "${GITHUB_WORKSPACE}/pkg/mac/dmg-background.png" "${STAGE}/.background/"
+          cp "${GITHUB_WORKSPACE}/pkg/mac/dmg.DS_Store" "${STAGE}/.DS_Store"
+          cp "${GITHUB_WORKSPACE}/pkg/mac/dmg-icon.icns" "${STAGE}/.VolumeIcon.icns"
+          ln -s /Applications "${STAGE}/Applications"
+
+          # Finder attributes: C marks the volume as having a custom icon, E
+          # hides the .app's extension. Both are what create-dmg's --volicon
+          # and --hide-extension ultimately set.
+          SetFile -a C "${STAGE}" || echo "WARNING: SetFile -a C failed"
+          SetFile -a E "${STAGE}/pgAdmin 4.app" || echo "WARNING: SetFile -a E failed"
+
+          OUT="${RUNNER_TEMP}/out-f.dmg"
+          rm -f "${OUT}"
+          START=$(date +%s)
+          hdiutil create \
+              -srcfolder "${STAGE}" \
+              -volname "pgAdmin 4" \
+              -fs HFS+ \
+              -format UDBZ \
+              -ov \
+              "${OUT}"
+          echo "TEST F: created in $(( $(date +%s) - START ))s"
+
+          ls -lh "${OUT}"
+          hdiutil verify "${OUT}"
+          hdiutil imageinfo "${OUT}" | grep -iE 'Format:|Checksum Type:|partition-scheme' || true
+
+          # Attach the EULA the way create-dmg does, so we learn now whether it
+          # is workable rather than after rewriting _create_dmg.
+          if [ -f "${RUNNER_TEMP}/create-dmg/support/eula-resources-template.xml" ]; then
+              echo "eula template present; udifrez would run here"
+          else
+              echo "NOTE: create-dmg's eula template not found at the expected path"
+              find "${RUNNER_TEMP}/create-dmg" -iname '*eula*' | head -5
+          fi
+
+      # Read-only mount of the finished image to confirm the styling actually
+      # made it in. Mounting a compressed image briefly is not the expensive
+      # operation; unmounting a large populated read/write volume is.
+      - name: 'Test F: verify the image contents'
+        if: always()
+        continue-on-error: true
+        run: |
+          OUT="${RUNNER_TEMP}/out-f.dmg"
+          [ -f "${OUT}" ] || { echo "no image to inspect"; exit 1; }
+          DEV=$(hdiutil attach "${OUT}" -readonly -nobrowse -noverify -noautoopen \
+              | grep -E '^/dev/' | head -1 | awk '{print $1}')
+          MOUNT=$(mount | grep -F "${DEV}" | sed -E 's/.* on (.*) \(.*/\1/')
+          echo "mounted ${DEV} at ${MOUNT}"
+          ls -la "${MOUNT}/"
+          echo "--- volume name ---"
+          basename "${MOUNT}"
+          echo "--- detaching (read-only, should be quick) ---"
+          time hdiutil detach "${DEV}" || hdiutil detach "${DEV}" -force || true
+
       - name: Summarise
         if: always()
         run: |
@@ -318,3 +399,4 @@ jobs:
           echo "test C (create-dmg, Electron):    ${{ steps.test_c.outcome }}"
           echo "test D (Electron + Python fwk):   ${{ steps.test_d.outcome }}"
           echo "test E (30,000 small files):      ${{ steps.test_e.outcome }}"
+          echo "test F (hdiutil -srcfolder):      ${{ steps.test_f.outcome }}"
