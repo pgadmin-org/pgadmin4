@@ -88,6 +88,13 @@ jobs:
 
       - uses: actions/checkout@v7
 
+      # The container runs as root while the workspace is owned by the runner
+      # user, so git refuses to operate on it ("detected dubious ownership").
+      # The build shells out to git for the commit hash during `yarn run
+      # bundle`, which fails with exit 128 without this.
+      - name: Mark the workspace as a safe git directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
       # Corepack provisions the pinned Yarn from the packageManager field,
       # matching run-javascript-tests.yml. The distro nodejs packages are
       # avoided entirely: on Ubuntu 26.04 the distro node ships without npm,

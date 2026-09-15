@@ -71,18 +71,30 @@ jobs:
 
           dnf install -y --nogpgcheck "${PGDG_REPO}"
 
+          # The compiler toolchain is not optional: psycopg-c and gssapi are
+          # both built from source (pkg/linux/build-functions.sh passes
+          # --no-binary psycopg), and rpmbuild needs redhat-rpm-config. The
+          # buildfarm gets these from the @development-tools group; they are
+          # listed individually here so the container stays small.
           dnf install -y \
+              diffutils \
               expect \
               fakeroot \
+              file \
+              findutils \
+              gcc \
+              gcc-c++ \
               git \
               krb5-devel \
               libpq5-devel \
               make \
               openssl-devel \
+              patch \
               postgresql17-devel \
               python3-devel \
               python3-pip \
               python3-sphinx \
+              redhat-rpm-config \
               rpm-build \
               rpm-sign \
               unzip \
@@ -100,6 +112,13 @@ jobs:
           node-version: '20.x'
 
       - uses: actions/checkout@v7
+
+      # The container runs as root while the workspace is owned by the runner
+      # user, so git refuses to operate on it ("detected dubious ownership").
+      # The build shells out to git for the commit hash during `yarn run
+      # bundle`, which fails with exit 128 without this.
+      - name: Mark the workspace as a safe git directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
 
       - name: Enable Corepack
         run: corepack enable
