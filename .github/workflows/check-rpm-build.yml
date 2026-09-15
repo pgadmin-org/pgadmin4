@@ -1,0 +1,114 @@
+# Replaces the pgadmin4-rpm-qa Jenkins job, as check-deb-build.yml replaces the
+# DEB one: a container per distribution on a hosted runner, rather than a
+# dedicated EC2 VM per distribution.
+#
+# Unlike the DEB build, the PGDG repository is not optional here.
+# pkg/redhat/build.sh opens with `export PATH=$(ls -d /usr/pgsql-1* | ...)` and
+# runs under `set -e`, so the build dies immediately without a PGDG PostgreSQL
+# installed.
+#
+# The QA job does not sign anything; `rpmsign --resign` is a separate step in
+# the release and snapshot jobs.
+
+name: Check RPM builds
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # "name" exists only because artifact names may not contain a colon.
+          # "repo" selects the PGDG repository RPM, which is built per
+          # distribution family and major version.
+          - name: 'el-9'
+            image: 'almalinux:9'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
+          - name: 'el-10'
+            image: 'almalinux:10'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/EL-10-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
+          - name: 'fedora-43'
+            image: 'fedora:43'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/F-43-x86_64/pgdg-fedora-repo-latest.noarch.rpm'
+          - name: 'fedora-44'
+            image: 'fedora:44'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/F-44-x86_64/pgdg-fedora-repo-latest.noarch.rpm'
+
+    container: ${{ matrix.image }}
+
+    steps:
+      # Before checkout, so the action has git available.
+      - name: Install the build environment
+        env:
+          PGDG_REPO: ${{ matrix.repo }}
+        run: |
+          dnf install -y dnf-plugins-core
+
+          # EL needs EPEL and CRB for the build dependencies; Fedora has
+          # everything in the main repositories.
+          if [ ! -f /etc/fedora-release ]; then
+              dnf install -y epel-release
+              dnf config-manager --set-enabled crb
+          fi
+
+          # The distro's own PostgreSQL module would shadow PGDG's packages.
+          dnf -qy module disable postgresql || true
+
+          dnf install -y --nogpgcheck "${PGDG_REPO}"
+
+          dnf install -y \
+              expect \
+              fakeroot \
+              git \
+              krb5-devel \
+              libpq5-devel \
+              make \
+              openssl-devel \
+              postgresql17-devel \
+              python3-devel \
+              python3-pip \
+              python3-sphinx \
+              rpm-build \
+              rpm-sign \
+              unzip \
+              wget \
+              zlib-devel
+
+      - name: Install the Sphinx extensions
+        run: python3 -m pip install --break-system-packages sphinxcontrib-youtube || python3 -m pip install sphinxcontrib-youtube
+
+      - name: Install syft
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Check the RPM build
+        run: make redhat
+
+      - name: Archive the packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-rpm-build-output-${{ matrix.name }}
+          path: dist/*.rpm

@@ -1,0 +1,74 @@
+# Replaces the pgadmin4-macos-qa Jenkins job. That job runs `make appbundle` on
+# the two EC2 Mac workers; this runs the same build on hosted runners, which
+# cover both architectures.
+#
+# The build is unsigned and unnotarised: pkg/mac/build.sh sets CODESIGN=0 and
+# NOTARIZE=0 when pkg/mac/codesign.conf and pkg/mac/notarization.conf are
+# absent, so this needs no secrets. Signing belongs to the release and snapshot
+# builds.
+#
+# PostgreSQL comes from Homebrew for pg_config (psycopg builds against it) and
+# for the four client binaries copied into the bundle. The release build uses
+# a PostgreSQL built against its own OpenSSL and Kerberos; that difference
+# does not matter for a build check, and _fixup_imports relocates Homebrew's
+# libraries into the bundle correctly (verified by _verify_bundle_linkage,
+# which fails the build if anything still points outside it).
+
+name: Check macOS builds
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Matches DEFAULT_PYTHON_VERSION on the buildfarm.
+  PGADMIN_PYTHON_VERSION: '3.13.15'
+
+jobs:
+  build-appbundle:
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'arm64', runner: 'macos-15' }
+          - { name: 'x64',   runner: 'macos-15-intel' }
+
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      # syft generates the SBOM, wget fetches Electron.
+      - name: Install the build dependencies
+        run: brew install postgresql@18 syft wget
+
+      - name: Check the appbundle build
+        run: |
+          PGADMIN_POSTGRES_DIR="$(brew --prefix postgresql@18)"
+          export PGADMIN_POSTGRES_DIR
+          echo "Using PostgreSQL from ${PGADMIN_POSTGRES_DIR}"
+          make appbundle
+
+      - name: Archive the disk image
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-macos-build-output-${{ matrix.name }}
+          path: dist/*.dmg

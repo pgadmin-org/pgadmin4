@@ -1,0 +1,105 @@
+# Replaces the pgadmin4-deb-qa Jenkins job. That job runs `make debian` on a
+# dedicated EC2 VM per distribution; here each distribution is a container on a
+# hosted runner instead, which is the same build in a reproducible environment
+# and no VMs to maintain.
+#
+# Triggered on master and by hand rather than on pull requests, matching what
+# the Jenkins job does today (it polls git every five minutes). Running the
+# full matrix on every PR is a separate decision.
+
+name: Check DEB builds
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # "name" exists only because artifact names may not contain a colon.
+          - { name: 'debian-12',   image: 'debian:12' }
+          - { name: 'debian-13',   image: 'debian:13' }
+          - { name: 'ubuntu-2204', image: 'ubuntu:22.04' }
+          - { name: 'ubuntu-2404', image: 'ubuntu:24.04' }
+          - { name: 'ubuntu-2604', image: 'ubuntu:26.04' }
+
+    container: ${{ matrix.image }}
+
+    steps:
+      # Before checkout, so the action has git available and the container has
+      # the certificates it needs to fetch anything.
+      - name: Install the build environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+              build-essential \
+              ca-certificates \
+              curl \
+              dh-exec \
+              dpkg-dev \
+              fakeroot \
+              git \
+              libffi-dev \
+              libkrb5-dev \
+              libpq-dev \
+              libreadline-dev \
+              libssl-dev \
+              lsb-release \
+              python3-dev \
+              python3-pip \
+              python3-sphinx \
+              python3-venv \
+              python3-wheel \
+              unzip \
+              wget \
+              zlib1g-dev
+
+      # sphinxcontrib-youtube has no distro package. --break-system-packages is
+      # needed from Debian 12 and Ubuntu 24.04 onwards (PEP 668), and is
+      # harmless before that, but the flag itself only exists on newer pip, so
+      # fall back rather than fail.
+      - name: Install the Sphinx extensions
+        run: |
+          python3 -m pip install --break-system-packages sphinxcontrib-youtube \
+              || python3 -m pip install sphinxcontrib-youtube
+
+      - name: Install syft
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - uses: actions/checkout@v4
+
+      # Corepack provisions the pinned Yarn from the packageManager field,
+      # matching run-javascript-tests.yml. The distro nodejs packages are
+      # avoided entirely: on Ubuntu 26.04 the distro node ships without npm,
+      # which is why the buildfarm has to pin NodeSource above it.
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Check the DEB build
+        run: make debian
+
+      - name: Archive the packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-deb-build-output-${{ matrix.name }}
+          path: dist/*.deb

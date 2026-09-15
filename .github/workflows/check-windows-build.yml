@@ -1,0 +1,128 @@
+# Replaces the pgadmin4-windows-x64-qa Jenkins job.
+#
+# This runs on a hosted runner, not a self-hosted one. Code signing in Make.bat
+# is conditional on PGADMIN_WINDOWS_CSC being set (see Make.bat:339, :393 and
+# :415), so an unsigned build check needs neither the Certum hardware token nor
+# the machine it is plugged into. Only the release and snapshot builds, which
+# do sign, need the self-hosted runner.
+#
+# Dependencies come from dpage/winpgbuild, which is exactly where the
+# buildfarm's winpgbuild-update job gets them, so the toolchain matches what
+# the release build uses rather than being an approximation of it.
+#
+# UNTESTED as written: unlike the macOS equivalent this has not yet had a
+# successful run, so expect the first few attempts to need adjustment.
+
+name: Check Windows build
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-installer:
+    runs-on: windows-2025
+    timeout-minutes: 120
+
+    env:
+      # The major version of the winpgbuild PostgreSQL release to pull, matching
+      # DEFAULT_POSTGRESQL_VERSION on the buildfarm.
+      POSTGRES_MAJOR: '18'
+      DEPS_DIR: 'C:\build64'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-python@v5
+        id: python
+        with:
+          python-version: '3.13'
+
+      # Make.bat drives the venv through virtualenv.exe rather than the stdlib
+      # venv module, and checks for it explicitly (Make.bat:146).
+      - name: Install virtualenv
+        run: python -m pip install --upgrade pip virtualenv
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      # The same artefacts the buildfarm's winpgbuild-update job installs. The
+      # archives unpack to <DEPS_DIR>\postgresql and <DEPS_DIR>\krb5.
+      - name: Install the PostgreSQL and Kerberos dependencies
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path $env:DEPS_DIR | Out-Null
+
+          $pg = "postgresql-$env:POSTGRES_MAJOR-latest"
+          Invoke-WebRequest -Uri "https://github.com/dpage/winpgbuild/releases/download/$pg/$pg.zip" `
+              -OutFile "$env:DEPS_DIR\postgresql.zip"
+          Expand-Archive -Path "$env:DEPS_DIR\postgresql.zip" -DestinationPath $env:DEPS_DIR -Force
+
+          Invoke-WebRequest -Uri "https://github.com/dpage/winpgbuild/releases/download/krb5-latest/krb5-latest.zip" `
+              -OutFile "$env:DEPS_DIR\krb5.zip"
+          Expand-Archive -Path "$env:DEPS_DIR\krb5.zip" -DestinationPath $env:DEPS_DIR -Force
+
+          Get-ChildItem $env:DEPS_DIR
+
+      # The hosted image ships Visual Studio Enterprise at a path that differs
+      # from the Community install Make.bat defaults to, and the redistributable
+      # version directory changes with every VS update, so both are discovered
+      # rather than hardcoded.
+      - name: Locate the Visual Studio toolchain
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products * -property installationPath
+          if (-not $vs) { throw "Could not locate a Visual Studio installation" }
+          Write-Output "Visual Studio: $vs"
+
+          $redist = Get-ChildItem "$vs\VC\Redist\MSVC" -Directory |
+              Where-Object { Test-Path "$($_.FullName)\vc_redist.x64.exe" } |
+              Sort-Object Name -Descending |
+              Select-Object -First 1
+          if (-not $redist) { throw "Could not locate vc_redist.x64.exe under $vs" }
+          Write-Output "VC++ redistributable: $($redist.FullName)"
+
+          "VS_INSTALL_DIR=$vs"                  | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PGADMIN_VCREDIST_DIR=$($redist.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # psycopg[c] compiles against libpq, so the build needs the MSVC
+      # environment. vcvars64.bat only sets it for its own process, hence
+      # invoking it and Make.bat in a single cmd session, as the Jenkins job
+      # does.
+      - name: Check the installer build
+        shell: cmd
+        env:
+          PGADMIN_PYTHON_DIR: ${{ format('{0}', steps.python.outputs.python-path) }}
+        run: |
+          FOR %%I IN ("%PGADMIN_PYTHON_DIR%") DO SET "PGADMIN_PYTHON_DIR=%%~dpI"
+          IF "%PGADMIN_PYTHON_DIR:~-1%" == "\" SET "PGADMIN_PYTHON_DIR=%PGADMIN_PYTHON_DIR:~0,-1%"
+
+          SET "PGADMIN_POSTGRES_DIR=%DEPS_DIR%\postgresql"
+          SET "PGADMIN_KRB5_DIR=%DEPS_DIR%\krb5"
+          SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
+
+          CALL "%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat" || EXIT /b 1
+          CALL Make.bat || EXIT /b 1
+
+      - name: Archive the installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-windows-build-output
+          path: dist/*.exe
