@@ -99,7 +99,19 @@ jobs:
               rpm-sign \
               unzip \
               wget \
+              yum-utils \
               zlib-devel
+
+          # pkg/redhat/build.sh:229 shells out to yumdownloader, and a missing
+          # one surfaces as a bare exit 127 twelve minutes into the build,
+          # after the docs and the webpack bundle. Fail here instead, where the
+          # message is obvious. dnf5 distributions (EL10, Fedora 41+) get
+          # yumdownloader through yum-utils' compatibility shims rather than
+          # from yum itself, so it is worth checking rather than assuming.
+          command -v yumdownloader >/dev/null || {
+              echo "ERROR: yumdownloader is not on PATH; pkg/redhat/build.sh needs it." >&2
+              exit 1
+          }
 
       - name: Install the Sphinx extensions
         run: python3 -m pip install --break-system-packages sphinxcontrib-youtube || python3 -m pip install sphinxcontrib-youtube
