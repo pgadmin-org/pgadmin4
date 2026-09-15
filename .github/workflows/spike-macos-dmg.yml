@@ -1,0 +1,200 @@
+# Throwaway diagnostic spike. NOT part of CI.
+#
+# `hdiutil detach` fails deterministically on macos-15-intel at the end of
+# create-dmg, always exactly 120 seconds after the unmount starts:
+#
+#     Unmounting disk image...
+#     hdiutil: detach: timeout for DiskArbitration expired
+#     hdiutil: detach: drive not detached
+#
+# Three appbundle runs, three identical failures, while arm64 passed four times
+# through the same code. Disabling Spotlight made no difference.
+#
+# Reproducing that through `make appbundle` costs 40 minutes a go, most of it
+# compiling cryptography, so this reproduces it directly instead and takes a
+# couple of minutes. It answers three questions at once:
+#
+#   1. Is it create-dmg at all, or plain hdiutil? (test A vs test B)
+#   2. Does it depend on image size? (test A runs small and large)
+#   3. Is it the runner image? (the matrix includes macos-26-intel, with
+#      arm64 as the control that is known to work)
+#
+# and when something does fail, it captures who is holding the volume rather
+# than leaving us to guess: hdiutil's own view, lsof, the diskarbitrationd
+# log, and whether a forced detach succeeds where the polite one did not.
+#
+# Delete once the cause is understood.
+
+name: Spike - macOS DMG detach diagnostics
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dmg:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - 'macos-15-intel'
+          - 'macos-26-intel'
+          - 'macos-15'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Record the runner specification
+        run: |
+          sw_vers
+          echo "Architecture: $(uname -m)"
+          echo "CPUs:         $(sysctl -n hw.logicalcpu)"
+          echo "RAM:          $(( $(sysctl -n hw.memsize) / 1024 / 1024 )) MB"
+          df -h /
+
+      # Written once and reused by every test below, so a failure anywhere
+      # produces the same evidence.
+      - name: Install the diagnostic helper
+        run: |
+          cat > "${RUNNER_TEMP}/diagnose.sh" <<'EOF'
+          #!/bin/bash
+          # $1 = mount point (may be empty), $2 = device node (may be empty)
+          MOUNT="$1"
+          DEV="$2"
+          echo "======== DIAGNOSTICS ========"
+
+          echo "---- hdiutil info ----"
+          hdiutil info || true
+
+          echo "---- mounted volumes ----"
+          ls -l /Volumes/ || true
+          mount || true
+
+          echo "---- lsof against the volume ----"
+          if [ -n "${MOUNT}" ]; then
+              lsof "${MOUNT}" 2>/dev/null || true
+              lsof +D "${MOUNT}" 2>/dev/null || true
+          fi
+          lsof 2>/dev/null | grep -F '/Volumes/' || echo "(no lsof rows mentioning /Volumes/)"
+
+          echo "---- processes that tend to hold volumes ----"
+          ps aux | grep -E 'mds|mds_stores|fseventsd|diskarbitrationd|Spotlight|antivirus' \
+              | grep -v grep || echo "(none)"
+
+          echo "---- diskarbitrationd log, last 3 minutes ----"
+          sudo log show --last 3m --predicate \
+              'process == "diskarbitrationd" OR process == "hdiutil" OR process == "diskimages-helper"' \
+              --style compact 2>/dev/null | tail -60 || echo "(log show unavailable)"
+
+          echo "---- does a forced detach work where the polite one did not? ----"
+          if [ -n "${DEV}" ]; then
+              time hdiutil detach "${DEV}" -force && echo "FORCED DETACH: SUCCEEDED" \
+                  || echo "FORCED DETACH: ALSO FAILED"
+          fi
+          echo "======== END DIAGNOSTICS ========"
+          EOF
+          chmod +x "${RUNNER_TEMP}/diagnose.sh"
+
+      # Test A: no create-dmg, no pgAdmin, just hdiutil. If this fails, the
+      # problem is the runner's disk image handling and create-dmg is a
+      # bystander. Two sizes, because a 120-second timeout smells like it
+      # could scale with how much there is to flush.
+      - name: 'Test A: bare hdiutil attach/detach'
+        id: test_a
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          for SIZE in 100m 1500m; do
+              echo "############ bare hdiutil, ${SIZE} ############"
+              IMG="${RUNNER_TEMP}/bare-${SIZE}.dmg"
+              rm -f "${IMG}"
+              hdiutil create -size "${SIZE}" -fs HFS+ -volname "BareTest" "${IMG}"
+
+              DEV=$(hdiutil attach "${IMG}" -nobrowse -noverify -noautoopen \
+                  | grep -E '^/dev/' | head -1 | awk '{print $1}')
+              MOUNT=$(mount | grep -F "${DEV}" | sed -E 's/.* on (.*) \(.*/\1/')
+              echo "device=${DEV} mount=${MOUNT}"
+
+              # Put something in it, so the detach has buffers to flush.
+              dd if=/dev/urandom of="${MOUNT}/payload" bs=1m count=50 2>/dev/null
+              sync
+
+              echo "---- detaching ----"
+              START=$(date +%s)
+              if hdiutil detach "${DEV}"; then
+                  echo "DETACH OK after $(( $(date +%s) - START ))s (${SIZE})"
+              else
+                  echo "DETACH FAILED after $(( $(date +%s) - START ))s (${SIZE})"
+                  "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
+                  exit 1
+              fi
+          done
+
+      # Test B: create-dmg with pgAdmin's real flags and real assets, over a
+      # payload of roughly the size of the actual bundle. This is the failing
+      # path, minus the 40 minutes of build in front of it.
+      - name: 'Test B: create-dmg with pgAdmin flags'
+        id: test_b
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          git clone --depth 1 https://github.com/create-dmg/create-dmg.git "${RUNNER_TEMP}/create-dmg"
+          echo "create-dmg at $(git -C "${RUNNER_TEMP}/create-dmg" rev-parse --short HEAD)"
+
+          # A stand-in for the .app: a few hundred MB of mixed compressible and
+          # incompressible data, since the real DMG is UDBZ and the bundle is
+          # mostly a Python framework plus Electron.
+          APP="${RUNNER_TEMP}/pgAdmin 4.app"
+          mkdir -p "${APP}/Contents/MacOS"
+          dd if=/dev/urandom of="${APP}/Contents/MacOS/blob" bs=1m count=400 2>/dev/null
+          for i in $(seq 1 200); do
+              cp "${GITHUB_WORKSPACE}/README.md" "${APP}/Contents/text-${i}.md"
+          done
+          du -sh "${APP}"
+
+          mkdir -p "${RUNNER_TEMP}/out"
+          START=$(date +%s)
+          set +e
+          "${RUNNER_TEMP}/create-dmg/create-dmg" \
+              --volname "pgAdmin 4" \
+              --volicon "${GITHUB_WORKSPACE}/pkg/mac/dmg-icon.icns" \
+              --eula "${GITHUB_WORKSPACE}/pkg/mac/licence.rtf" \
+              --background "${GITHUB_WORKSPACE}/pkg/mac/dmg-background.png" \
+              --app-drop-link 600 220 \
+              --icon "pgAdmin 4.app" 200 220 \
+              --window-pos 200 120 \
+              --window-size 800 400 \
+              --hide-extension "pgAdmin 4.app" \
+              --add-file .DS_Store "${GITHUB_WORKSPACE}/pkg/mac/dmg.DS_Store" 5 5 \
+              --format UDBZ \
+              --skip-jenkins \
+              --no-internet-enable \
+              "${RUNNER_TEMP}/out/test.dmg" \
+              "${APP}"
+          RC=$?
+          set -e
+          echo "create-dmg exited ${RC} after $(( $(date +%s) - START ))s"
+
+          if [ ${RC} -ne 0 ]; then
+              # create-dmg leaves the volume mounted when the detach fails, so
+              # find it rather than assuming a name.
+              MOUNT=$(ls -d /Volumes/dmg.* 2>/dev/null | head -1)
+              DEV=$(mount | grep -F "${MOUNT}" | awk '{print $1}')
+              echo "leftover mount=${MOUNT} device=${DEV}"
+              "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
+              exit 1
+          fi
+
+          ls -lh "${RUNNER_TEMP}/out/"
+
+      - name: Summarise
+        if: always()
+        run: |
+          echo "runner:  ${{ matrix.runner }}"
+          echo "test A (bare hdiutil):        ${{ steps.test_a.outcome }}"
+          echo "test B (create-dmg):          ${{ steps.test_b.outcome }}"
