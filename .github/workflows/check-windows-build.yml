@@ -59,13 +59,14 @@ jobs:
       - name: Install virtualenv
         run: python -m pip install --upgrade pip virtualenv
 
-      # wget is not on the hosted image, and Make.bat's Electron download is an
-      # unbounded retry loop (Make.bat:316), so without it the build spins on
-      # error 9009 until the job times out rather than failing. The buildfarm's
-      # Windows worker gets wget from the same Chocolatey line in
-      # pkg/win32/README.md.
-      - name: Install Inno Setup and wget
-        run: choco install innosetup wget -y --no-progress
+      # None of these are on the hosted image. wget matters most: Make.bat's
+      # Electron download is an unbounded retry loop (Make.bat:316), so without
+      # it the build spins on error 9009 until the job times out rather than
+      # failing. syft generates the SBOM, and its absence is silent, since
+      # :GENERATE_SBOM redirects into sbom.json and returns 0 regardless. The
+      # buildfarm's Windows worker installs all three via Chocolatey too.
+      - name: Install Inno Setup, syft and wget
+        run: choco install innosetup syft wget -y --no-progress
 
       # The same artefacts the buildfarm's winpgbuild-update job installs. The
       # archives unpack to <DEPS_DIR>\postgresql and <DEPS_DIR>\krb5.
