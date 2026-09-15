@@ -145,13 +145,24 @@ _create_python_env() {
 
 _build_docs() {
     echo "Building the docs..."
-    # Create a temporary venv for the doc build, so we don't contaminate the one
-    # that we're going to ship.
-    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m venv "${BUILD_ROOT}/venv"
+    # The doc build imports pgAdmin itself: docs/en_US/build_code_snippet.py
+    # pulls in config, pgadmin.utils, pgadmin.browser.utils and the driver
+    # abstractions, so the whole of requirements.txt has to be importable. It
+    # already is, in the framework we just populated, so the venv inherits
+    # those rather than installing all hundred-odd packages a second time.
+    # Sphinx still goes in the venv rather than the framework, which is the
+    # point of having one: it must not end up in the shipped bundle.
+    #
+    # --system-site-packages is safe here in a way it is not in the Linux
+    # build, which deliberately avoids it (see the long comment in
+    # pkg/linux/build-functions.sh). There the parent is a shared system Python
+    # that may carry other packages' stale .pth files; here it is a framework
+    # we built ourselves moments ago and which contains only our dependencies.
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" \
+        -m venv --system-site-packages "${BUILD_ROOT}/venv"
     # shellcheck disable=SC1091
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
-    pip3 install --no-cache-dir -r "${SOURCE_DIR}/requirements.txt"
     pip3 install sphinx==7.4.7
     pip3 install sphinxcontrib-youtube
 
