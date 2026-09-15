@@ -15,9 +15,11 @@ have been explicitly shared with them via SharedServer entries.
 """
 
 from sqlalchemy import or_, case, func, literal
+from flask import session
 from flask_security import current_user
 
 from pgadmin.model import db, Server, ServerGroup
+from pgadmin.utils.constants import OAUTH2
 import config
 
 
@@ -109,8 +111,10 @@ def get_server_groups_for_user(hide_shared=False, servergroup_id=None):
 def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     """Return a query for server groups visible to the current user.
 
-    Includes groups owned by the user plus groups containing shared
-    servers (Server.shared=True, visible to all authenticated users).
+    Includes groups owned by the user, groups containing shared
+    servers (Server.shared=True, visible to all authenticated users),
+    and groups resolved from OAuth2 claim configuration when
+    OAUTH2_SERVER_GROUP_CLAIM is configured for the provider.
 
     is_shared_group is an additional column indicating if the group is a group
     not owned by the user and contains shared servers.
@@ -154,7 +158,7 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     )
 
     if hide_shared:
-        query = query.filter(ServerGroup.user_id == current_user.id)
+        conditions = [ServerGroup.user_id == current_user.id]
     else:
         has_shared_servers = (
             db.session.query(Server.id)
@@ -165,12 +169,21 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
             .exists()
         )
 
-        query = query.filter(
-            or_(
-                ServerGroup.user_id == current_user.id,
-                has_shared_servers
-            )
+        conditions = [
+            ServerGroup.user_id == current_user.id,
+            has_shared_servers
+        ]
+
+    if getattr(current_user, 'auth_source', None) == OAUTH2:
+        oauth2_allowed_server_groups = session.get(
+            'oauth2_server_group_claims'
         )
+        if isinstance(oauth2_allowed_server_groups, list):
+            conditions.append(
+                ServerGroup.name.in_(oauth2_allowed_server_groups)
+            )
+
+    query = query.filter(or_(*conditions))
 
     if servergroup_id is not None:
         query = query.filter(ServerGroup.id == servergroup_id)
