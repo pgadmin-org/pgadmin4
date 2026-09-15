@@ -62,6 +62,17 @@ jobs:
       - name: Install the build dependencies
         run: brew install postgresql@18 openssl@3 syft wget
 
+      # create-dmg mounts a disk image and unmounts it again, and on the Intel
+      # runners that unmount reliably fails: "hdiutil: detach: timeout for
+      # DiskArbitration expired", exactly 120 seconds after it starts, with the
+      # bundle otherwise complete. Spotlight indexing the freshly mounted
+      # volume is the usual culprit, since it holds a DiskArbitration
+      # reservation the detach then waits out. Nothing on a build runner wants
+      # a Spotlight index. Harmless on arm64, which has never shown the
+      # problem.
+      - name: Disable Spotlight indexing
+        run: sudo mdutil -a -i off || true
+
       - name: Check the appbundle build
         run: |
           PGADMIN_POSTGRES_DIR="$(brew --prefix postgresql@18)"
