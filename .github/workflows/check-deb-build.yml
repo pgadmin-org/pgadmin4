@@ -82,11 +82,11 @@ jobs:
       - name: Install syft
         run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '20.x'
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Corepack provisions the pinned Yarn from the packageManager field,
       # matching run-javascript-tests.yml. The distro nodejs packages are
@@ -99,7 +99,7 @@ jobs:
         run: make debian
 
       - name: Archive the packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-deb-build-output-${{ matrix.name }}
           path: dist/*.deb

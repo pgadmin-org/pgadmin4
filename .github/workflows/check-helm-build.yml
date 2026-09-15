@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Helm
         run: |
@@ -35,7 +35,7 @@ jobs:
         run: helm package pkg/helm
 
       - name: Archive the chart
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-helm-build-output
           path: pgadmin4-helm-*.tgz

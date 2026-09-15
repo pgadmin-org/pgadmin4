@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup the EDB APT repo on Linux
         run: |
@@ -163,21 +163,21 @@ jobs:
 
       - name: Archive server log
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: server-log-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regression-log-pg${{ matrix.pgver }}
           path: web/regression/regression.log
 
       - name: Archive screenshots
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: screenshots-pg${{ matrix.pgver }}
           path: web/regression/screenshots

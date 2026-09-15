@@ -26,10 +26,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Update python version
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
 
@@ -320,14 +320,14 @@ jobs:
 
       - name: Archive server log
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: server-log-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regression-log-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: web/regression/regression.log

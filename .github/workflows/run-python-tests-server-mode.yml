@@ -32,7 +32,7 @@ jobs:
       PG_VER: 18
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # We don't run any authenticated git operations after checkout
           # (no push, no submodule fetch, no comment back to the PR), so
@@ -41,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Update python version
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
 
@@ -191,14 +191,14 @@ jobs:
 
       - name: Archive server log
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: server-log-server-mode
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regression-log-server-mode
           path: web/regression/regression.log
