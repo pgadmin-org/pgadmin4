@@ -68,21 +68,25 @@ jobs:
       - name: Install Inno Setup, syft and wget
         run: choco install innosetup syft wget -y --no-progress
 
-      # The same artefacts the buildfarm's winpgbuild-update job installs. The
-      # archives unpack to <DEPS_DIR>\postgresql and <DEPS_DIR>\krb5.
+      # From pgadmin-org/pgbuild, which supersedes dpage/winpgbuild and is
+      # where the macOS dependencies come from too, so both platforms build
+      # against one manifest of pinned versions. The archives unpack to
+      # <DEPS_DIR>\postgresql and <DEPS_DIR>\krb5.
       - name: Install the PostgreSQL and Kerberos dependencies
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           New-Item -ItemType Directory -Force -Path $env:DEPS_DIR | Out-Null
 
-          $pg = "postgresql-$env:POSTGRES_MAJOR-latest"
-          Invoke-WebRequest -Uri "https://github.com/dpage/winpgbuild/releases/download/$pg/$pg.zip" `
-              -OutFile "$env:DEPS_DIR\postgresql.zip"
-          Expand-Archive -Path "$env:DEPS_DIR\postgresql.zip" -DestinationPath $env:DEPS_DIR -Force
-
-          Invoke-WebRequest -Uri "https://github.com/dpage/winpgbuild/releases/download/krb5-latest/krb5-latest.zip" `
-              -OutFile "$env:DEPS_DIR\krb5.zip"
-          Expand-Archive -Path "$env:DEPS_DIR\krb5.zip" -DestinationPath $env:DEPS_DIR -Force
+          foreach ($tag in @("postgresql-$env:POSTGRES_MAJOR-windows-x86_64-latest",
+                             "krb5-windows-x86_64-latest")) {
+              Write-Output "Fetching $tag..."
+              gh release download $tag --repo pgadmin-org/pgbuild `
+                  --dir $env:RUNNER_TEMP --clobber
+              Expand-Archive -Path "$env:RUNNER_TEMP\$tag.zip" `
+                  -DestinationPath $env:DEPS_DIR -Force
+          }
 
           Get-ChildItem $env:DEPS_DIR
 
