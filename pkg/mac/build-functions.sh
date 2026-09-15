@@ -614,91 +614,108 @@ _create_zip() {
     echo "Successfully created ZIP file: ${ZIP_NAME}"
 }
 
-_force_detach_working_image() {
-    # Force off any device still backed by the read/write working image named
-    # in $1. hdiutil's polite detach waits on DiskArbitration; the forced one
-    # does not, which is the whole point of calling it here.
-    local dev
-    while IFS= read -r dev; do
-        [ -n "${dev}" ] || continue
-        echo "Forcing detach of ${dev}..."
-        hdiutil detach "${dev}" -force || true
-    done < <(hdiutil info | awk -v img="$1" '
-        /^image-path/ { keep = (index($0, img) > 0) }
-        keep && $1 ~ /^\/dev\/disk[0-9]+$/ { print $1 }')
+_attach_dmg_eula() {
+    # The licence shown when the image is opened is a resource attached to the
+    # image, not a file inside it. Lifted from create-dmg, which in turn took
+    # the udifrez approach from https://developer.apple.com/forums/thread/668084
+    # after the older flatten/rez/unflatten route stopped working. The template
+    # is vendored alongside this script rather than cloned, so the build does
+    # not depend on another repository for one XML file.
+    echo "Attaching the licence agreement..."
+
+    local template="${SCRIPT_DIR}/eula-resources-template.xml"
+    local plist="${TEMP_DIR}/eula-resources.xml"
+    local licence="${SCRIPT_DIR}/licence.rtf"
+    local format
+
+    test -d "${TEMP_DIR}" || mkdir -p "${TEMP_DIR}"
+
+    case "$(file -b "${licence}")" in
+        'Rich Text Format data'*) format='RTF ' ;;
+        *)                        format='TEXT' ;;
+    esac
+
+    # The payload goes into a plist <data> element, so it is base64 wrapped at
+    # 52 columns and indented to sit inside the element.
+    EULA_FORMAT="${format}" \
+    EULA_DATA="$(openssl base64 -in "${licence}" | tr -d '\n' \
+        | awk '{gsub(/.{52}/, "&\n")}1' | sed $'s/^\\(.*\\)$/\t\t\t\\1/')" \
+    python3 -c 'import os, sys
+tpl = open(sys.argv[1]).read()
+tpl = tpl.replace("${EULA_FORMAT}", os.environ["EULA_FORMAT"])
+tpl = tpl.replace("${EULA_DATA}", os.environ["EULA_DATA"])
+open(sys.argv[2], "w").write(tpl)' "${template}" "${plist}"
+
+    hdiutil udifrez -xml "${plist}" '' -quiet "${DMG_NAME}" || {
+        echo 'ERROR: Failed to attach the licence agreement.'
+        exit 1
+    }
 }
 
 _create_dmg() {
-    # move to the directory where we want to create the DMG
+    # Build the image straight from a staged directory, rather than mounting a
+    # read/write volume, populating it and unmounting again.
+    #
+    # The unmount was the problem. hdiutil waits on DiskArbitration with a
+    # fixed 120 second timeout that nothing exposes a way to raise, and the
+    # cost of unmounting scales with the bundle: measured on GitHub's hosted
+    # runners with an identical payload it takes about 20 seconds on arm64, 41
+    # on macos-26-intel and 90 on macos-15-intel, and with the real bundle it
+    # exceeds 120 on both Intel images every time. `hdiutil detach -force` is
+    # no help, contrary to how it is usually described: it waits on
+    # DiskArbitration too, times out identically, and the conversion then fails
+    # with "Resource temporarily unavailable" because the image is still
+    # attached. `hdiutil create -srcfolder` never mounts anything, so none of
+    # that can arise.
+    #
+    # This also replaces create-dmg, which was cloned unpinned from its default
+    # branch on every build and run against the signed bundle. Everything it
+    # did for us was staging, because we passed --skip-jenkins and so none of
+    # its Finder automation ran: the volume name, the Applications symlink, the
+    # background directory, the pre-built .DS_Store carrying the window and
+    # icon layout, and the hidden bundle extension. The one part that is not a
+    # file in the volume is the licence agreement, attached afterwards.
     test -d "${DIST_ROOT}" || mkdir "${DIST_ROOT}"
 
-    echo "Checking out create-dmg..."
-    git clone https://github.com/create-dmg/create-dmg.git "${BUILD_ROOT}/create-dmg"
+    local stage="${BUILD_ROOT}/dmg-staging"
 
-    if "${BUILD_ROOT}/create-dmg/create-dmg" \
-        --volname "${APP_NAME}" \
-        --volicon "${SCRIPT_DIR}/dmg-icon.icns" \
-        --eula "${SCRIPT_DIR}/licence.rtf" \
-        --background "${SCRIPT_DIR}/dmg-background.png" \
-        --app-drop-link 600 220 \
-        --icon "${APP_NAME}.app" 200 220 \
-        --window-pos 200 120 \
-        --window-size 800 400 \
-        --hide-extension "${APP_NAME}.app" \
-        --add-file .DS_Store "${SCRIPT_DIR}/dmg.DS_Store" 5 5 \
-        --format UDBZ \
-        --skip-jenkins \
-        --no-internet-enable \
-        "${DMG_NAME}" \
-        "${BUNDLE_DIR}"; then
-        return 0
-    fi
+    echo "Staging the disk image contents..."
+    rm -rf "${stage}"
+    mkdir -p "${stage}/.background"
 
-    # create-dmg builds a read/write image, mounts it, populates it, unmounts
-    # it, and only then converts it to the compressed image we ship. The
-    # unmount is the fragile step: hdiutil waits on DiskArbitration with a
-    # fixed 120 second timeout that nothing lets us raise, and the cost of
-    # unmounting scales with the bundle. On GitHub's hosted runners an
-    # equivalent payload unmounts in around 20 seconds on arm64 and 90 on
-    # x86_64, and the real bundle exceeds 120 on every Intel machine tried, so
-    # there it fails every time rather than occasionally. It has also been seen
-    # intermittently on developers' own machines.
-    #
-    # Retrying create-dmg would not help, because a deterministic failure
-    # simply recurs. What matters is that by this point the working image is
-    # fully populated and the only step create-dmg did not reach is the
-    # conversion. So force the volume off, which does not wait on
-    # DiskArbitration, and do that last step here.
-    echo
-    echo "create-dmg failed. Attempting to recover the working image..."
+    # -c clones rather than copies on APFS, which makes staging a bundle of
+    # this size effectively free; fall back for any filesystem that cannot.
+    cp -Rc "${BUNDLE_DIR}" "${stage}/" 2>/dev/null || cp -R "${BUNDLE_DIR}" "${stage}/"
+    cp "${SCRIPT_DIR}/dmg-background.png" "${stage}/.background/"
+    cp "${SCRIPT_DIR}/dmg.DS_Store" "${stage}/.DS_Store"
+    cp "${SCRIPT_DIR}/dmg-icon.icns" "${stage}/.VolumeIcon.icns"
 
-    local rw_image
-    rw_image=$(ls -t "${DIST_ROOT}"/rw.*."$(basename "${DMG_NAME}")" 2>/dev/null | head -1)
+    # hdiutil preserves this as a symlink rather than following it, so the
+    # volume gets the usual drag-to-install target without carrying a copy of
+    # /Applications.
+    ln -s /Applications "${stage}/Applications"
 
-    if [ -z "${rw_image}" ] || [ ! -f "${rw_image}" ]; then
-        echo "ERROR: no working image found in ${DIST_ROOT}; create-dmg failed" >&2
-        echo "       before it got far enough to recover from." >&2
-        exit 1
-    fi
+    # C marks the volume root as having a custom icon, so .VolumeIcon.icns is
+    # used; E hides the bundle's extension in Finder. These are what create-dmg
+    # set via --volicon and --hide-extension.
+    SetFile -a C "${stage}" || echo "WARNING: could not set the custom icon attribute"
+    SetFile -a E "${stage}/${APP_NAME}.app" || echo "WARNING: could not hide the bundle extension"
 
-    echo "Recovering from ${rw_image}..."
-    _force_detach_working_image "${rw_image}"
-
+    echo "Creating the disk image..."
     rm -f "${DMG_NAME}"
-    hdiutil convert "${rw_image}" -format UDBZ -o "${DMG_NAME}" || {
-        echo "ERROR: failed to convert the working image to ${DMG_NAME}." >&2
-        exit 1
-    }
+    hdiutil create \
+        -srcfolder "${stage}" \
+        -volname "${APP_NAME}" \
+        -fs HFS+ \
+        -format UDBZ \
+        -ov \
+        "${DMG_NAME}" || { echo 'ERROR: Failed to create the disk image.'; exit 1; }
 
-    # Prove the result is usable rather than assuming it, since this path only
-    # runs when something has already gone wrong.
-    hdiutil verify "${DMG_NAME}" || {
-        echo "ERROR: ${DMG_NAME} did not verify after recovery." >&2
-        exit 1
-    }
+    _attach_dmg_eula
 
-    rm -f "${rw_image}"
-    echo "Recovered successfully."
+    hdiutil verify "${DMG_NAME}" || { echo 'ERROR: The disk image did not verify.'; exit 1; }
+
+    rm -rf "${stage}"
 }
 
 _codesign_dmg() {
