@@ -262,6 +262,53 @@ jobs:
           "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
           exit 1
 
+      # Test E separates file count from content type, which tests B to D
+      # cannot: B was ~409 MB in 201 files, D was ~415 MB in a few thousand,
+      # and both passed. The real bundle holds roughly the same order of data
+      # but across far more files: web/ alone is 4,626 (2,043 of them .sql
+      # templates), docs/ another 773, and then site-packages and the Python
+      # stdlib on top, so 30,000+ is a fair estimate.
+      #
+      # So this puts the same ~400 MB into 30,000 small text files with no
+      # Mach-O content whatsoever. If the unmount time climbs, the driver is
+      # the number of files rather than Gatekeeper or LaunchServices examining
+      # binaries, and no amount of signing or scanning policy will help.
+      - name: 'Test E: create-dmg over 30,000 small files'
+        id: test_e
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          APP="${RUNNER_TEMP}/many-files/pgAdmin 4.app"
+          rm -rf "${RUNNER_TEMP}/many-files"
+          mkdir -p "${APP}/Contents/Resources"
+
+          python3 - "${APP}/Contents/Resources" <<'PY'
+          import os, sys, random
+          root = sys.argv[1]
+          random.seed(1)
+          # 30,000 files of ~13 KB, spread over a tree rather than one flat
+          # directory, which is closer to how the bundle is actually shaped.
+          for i in range(30000):
+              d = os.path.join(root, f"d{i // 200:03d}")
+              os.makedirs(d, exist_ok=True)
+              with open(os.path.join(d, f"f{i:05d}.sql"), "w") as fh:
+                  fh.write("-- generated\n" + ("SELECT 1;\n" * 1200))
+          PY
+          echo "files: $(find "${APP}" -type f | wc -l)"
+          du -sh "${APP}"
+
+          START=$(date +%s)
+          "${RUNNER_TEMP}/create-dmg/create-dmg" \
+              --volname "pgAdmin 4" --format UDBZ --skip-jenkins --no-internet-enable \
+              "${RUNNER_TEMP}/out-e.dmg" "${APP}" \
+              && echo "TEST E: create-dmg OK after $(( $(date +%s) - START ))s" && exit 0
+
+          echo "TEST E: create-dmg FAILED after $(( $(date +%s) - START ))s"
+          MOUNT=$(ls -d /Volumes/dmg.* 2>/dev/null | head -1)
+          DEV=$(mount | grep -F "${MOUNT}" | awk '{print $1}')
+          "${RUNNER_TEMP}/diagnose.sh" "${MOUNT}" "${DEV}"
+          exit 1
+
       - name: Summarise
         if: always()
         run: |
@@ -270,3 +317,4 @@ jobs:
           echo "test B (create-dmg, synthetic):   ${{ steps.test_b.outcome }}"
           echo "test C (create-dmg, Electron):    ${{ steps.test_c.outcome }}"
           echo "test D (Electron + Python fwk):   ${{ steps.test_d.outcome }}"
+          echo "test E (30,000 small files):      ${{ steps.test_e.outcome }}"

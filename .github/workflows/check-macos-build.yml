@@ -42,7 +42,15 @@ jobs:
       matrix:
         include:
           - { name: 'arm64', runner: 'macos-15' }
-          - { name: 'x64',   runner: 'macos-15-intel' }
+          # macos-26-intel rather than macos-15-intel: create-dmg's unmount
+          # scales with how much real Mach-O content lands on the volume, and
+          # the macos-15-intel image is slow enough that the real bundle
+          # crosses hdiutil's 120-second DiskArbitration timeout. Measured with
+          # an identical payload, unmount to "Disk image done": 19s on arm64,
+          # 41s on macos-26-intel, 82s on macos-15-intel, and that was with a
+          # lighter stand-in than the real bundle. It is also the newer image,
+          # which we would move to regardless since macOS 15 retires first.
+          - { name: 'x64',   runner: 'macos-26-intel' }
 
     timeout-minutes: 120
 
