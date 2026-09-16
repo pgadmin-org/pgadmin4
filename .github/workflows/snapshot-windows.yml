@@ -1,0 +1,188 @@
+# Signed Windows snapshot builds, replacing the buildfarm's
+# pgadmin4-windows-x64-snapshot job.
+#
+# This is the one workflow that cannot use a hosted runner. The certificate is
+# on a Certum hardware token plugged into the machine in Dave's rack, reached
+# through the Windows machine certificate store, and a PIN handler answers the
+# prompt from the interactive desktop session. None of that can be moved to a
+# runner GitHub provides.
+#
+# Uploading is not wired up yet; this proves the signed build works.
+#
+# The runner must be running in the logged-in interactive session, not as a
+# Windows service. A service runs in session 0 with no desktop, so the PIN
+# prompt appears where the handler cannot see it and signing hangs rather than
+# failing.
+
+name: Snapshot - Windows
+
+on:
+  workflow_dispatch:
+
+  # See snapshot-macos.yml: workflow_dispatch offers no button for workflows
+  # off the default branch, so whilst this lives on a working branch it fires
+  # on changes to itself or to the Windows packaging instead. Remove when the
+  # branch merges.
+  push:
+    branches: [ "buildfarm-to-actions" ]
+    paths:
+      - '.github/workflows/snapshot-windows.yml'
+      - 'Make.bat'
+      - 'pkg/win32/**'
+
+concurrency:
+  # Serialised deliberately, and not cancel-in-progress. There is one hardware
+  # token, and two builds signing through it at once is a good way to find out
+  # what proCertum does under contention. Jenkins may also be using it.
+  group: 'windows-signing'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  installer:
+    runs-on: [self-hosted, windows-x64]
+    timeout-minutes: 120
+
+    environment: snapshot
+
+    env:
+      POSTGRES_MAJOR: '18'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-python@v7
+        id: python
+        with:
+          python-version: '3.13'
+
+      - name: Install virtualenv
+        run: python -m pip install --upgrade pip virtualenv
+
+      # Unlike the hosted build, nothing is installed here. This machine is
+      # configured by hand rather than by Ansible, it is the only one in the
+      # pipeline that cannot simply be rebuilt, and a CI job has no business
+      # mutating it. So check, and stop with something useful to act on rather
+      # than failing halfway through a build.
+      - name: Verify the build prerequisites
+        shell: pwsh
+        run: |
+          $missing = @()
+          if (-not (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) { $missing += "innosetup" }
+          foreach ($tool in @('syft', 'wget')) {
+              if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) { $missing += $tool }
+          }
+          if ($missing.Count) {
+              throw ("Missing build prerequisites on this runner: $($missing -join ', '). " +
+                     "Install with: choco install $($missing -join ' ') -y")
+          }
+          Write-Output "All prerequisites present."
+
+      - name: Install the PostgreSQL and Kerberos dependencies
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $depsDir = Join-Path $env:RUNNER_TEMP 'pgbuild-deps'
+          New-Item -ItemType Directory -Force -Path $depsDir | Out-Null
+
+          foreach ($tag in @("postgresql-$env:POSTGRES_MAJOR-windows-x86_64-latest",
+                             "krb5-windows-x86_64-latest")) {
+              Write-Output "Fetching $tag..."
+              gh release download $tag --repo pgadmin-org/pgbuild `
+                  --dir $env:RUNNER_TEMP --clobber
+              Expand-Archive -Path "$env:RUNNER_TEMP\$tag.zip" `
+                  -DestinationPath $depsDir -Force
+          }
+          "DEPS_DIR=$depsDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # Discovered rather than hardcoded. The buildfarm pins these to specific
+      # paths in its Jenkins node configuration, which needs editing every time
+      # Visual Studio or the Windows SDK updates, and that configuration is
+      # going away with the buildfarm.
+      - name: Locate the toolchain
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products * -property installationPath
+          if (-not $vs) { throw "Could not locate a Visual Studio installation" }
+
+          $redist = Get-ChildItem "$vs\VC\Redist\MSVC" -Directory |
+              Where-Object { Test-Path "$($_.FullName)\vc_redist.x64.exe" } |
+              Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $redist) { throw "Could not locate vc_redist.x64.exe under $vs" }
+
+          # signtool lives under the SDK's versioned bin directory, and also in
+          # the App Certification Kit, which is where the buildfarm points at.
+          # Take the newest SDK copy, falling back to the ACK one.
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" `
+                  -Filter signtool.exe -Recurse -ErrorAction SilentlyContinue |
+              Where-Object { $_.FullName -match '\\x64\\' } |
+              Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $signtool) {
+              $ack = "${env:ProgramFiles(x86)}\Windows Kits\10\App Certification Kit\signtool.exe"
+              if (Test-Path $ack) { $signtool = Get-Item $ack }
+          }
+          if (-not $signtool) { throw "Could not locate signtool.exe" }
+
+          Write-Output "Visual Studio:   $vs"
+          Write-Output "VC++ redist:     $($redist.FullName)"
+          Write-Output "signtool:        $($signtool.DirectoryName)"
+
+          "VS_INSTALL_DIR=$vs"                        | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PGADMIN_VCREDIST_DIR=$($redist.FullName)"  | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PGADMIN_SIGNTOOL_DIR=$($signtool.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # Setting PGADMIN_WINDOWS_CSC is what makes Make.bat sign: it selects the
+      # certificate by subject name from the machine store, where proCertum
+      # installed it. Kept in a repository variable rather than the tree, so a
+      # certificate renewal is a settings change rather than a commit.
+      - name: Build the signed installer
+        shell: cmd
+        env:
+          PGADMIN_PYTHON_DIR: ${{ format('{0}', steps.python.outputs.python-path) }}
+          PGADMIN_WINDOWS_CSC: ${{ vars.PGADMIN_WINDOWS_CSC }}
+        run: |
+          IF "%PGADMIN_WINDOWS_CSC%" == "" (
+              ECHO ERROR: the PGADMIN_WINDOWS_CSC repository variable is not set,
+              ECHO        so Make.bat would silently produce an unsigned build.
+              EXIT /b 1
+          )
+
+          FOR %%I IN ("%PGADMIN_PYTHON_DIR%") DO SET "PGADMIN_PYTHON_DIR=%%~dpI"
+          IF "%PGADMIN_PYTHON_DIR:~-1%" == "\" SET "PGADMIN_PYTHON_DIR=%PGADMIN_PYTHON_DIR:~0,-1%"
+
+          SET "PGADMIN_POSTGRES_DIR=%DEPS_DIR%\postgresql"
+          SET "PGADMIN_KRB5_DIR=%DEPS_DIR%\krb5"
+          SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
+
+          CALL "%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat" || EXIT /b 1
+          CALL Make.bat || EXIT /b 1
+
+      # Make.bat verifies the installer's own signature, but says nothing about
+      # the executable inside it, which is signed in a separate step and is the
+      # thing users actually run.
+      - name: Verify the signatures
+        shell: pwsh
+        run: |
+          $signtool = Join-Path $env:PGADMIN_SIGNTOOL_DIR 'signtool.exe'
+          Get-ChildItem dist\*.exe | ForEach-Object {
+              Write-Output "--- $($_.Name) ---"
+              & $signtool verify /pa /v $_.FullName
+              if ($LASTEXITCODE -ne 0) { throw "Signature verification failed for $($_.Name)" }
+          }
+
+      - name: Archive the installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-windows-snapshot
+          path: dist/*.exe
