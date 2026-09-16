@@ -550,14 +550,27 @@ _generate_sbom() {
    syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/sbom.json"
 }
 
-_codesign_binaries() {
+_set_codesign_args() {
+    # Populates CODESIGN_ARGS with the arguments shared by every codesign call.
+    #
+    # Without a Developer ID we sign ad-hoc rather than not signing at all.
+    # That is emphatically not a substitute for a real signature: an ad-hoc
+    # signed bundle is still refused by Gatekeeper and cannot be notarised. It
+    # exists because _fixup_imports has just rewritten install names across
+    # several hundred binaries, which invalidates whatever signatures they
+    # arrived with, Electron's included. On Apple Silicon the kernel refuses to
+    # execute a binary whose signature is broken or absent, so without this an
+    # unsigned bundle cannot be launched at all on arm64, even once the
+    # quarantine attribute has been removed. On Intel it merely leaves every
+    # binary in the bundle carrying a signature that no longer matches its
+    # contents.
     if [ "${CODESIGN}" -eq 0 ]; then
+        echo "Signing ad-hoc: the result will run locally once allowed, but"
+        echo "cannot be distributed. Provide pkg/mac/codesign.conf to sign"
+        echo "properly."
+        CODESIGN_ARGS=(--force --sign -)
         return
     fi
-
-    echo "Purging build-machine pollution (pycache) before signing..."
-    find "${BUNDLE_DIR}" -name "__pycache__" -type d -exec rm -rf {} +
-    find "${BUNDLE_DIR}" -name "*.pyc" -delete
 
     if [ -z "${DEVELOPER_ID}" ] ; then
         echo "Developer ID Application not found in codesign.conf" >&2
@@ -569,6 +582,20 @@ _codesign_binaries() {
     TEAM_ID=$(echo "${DEVELOPER_ID}" | awk -F"[()]" '{print $2}')
     sed -i '' "s/%TEAMID%/${TEAM_ID}/g" "${BUILD_ROOT}/entitlements.plist"
 
+    CODESIGN_ARGS=(--deep --force --verify --verbose --timestamp
+                   --options runtime
+                   --entitlements "${BUILD_ROOT}/entitlements.plist"
+                   -i org.pgadmin.pgadmin4
+                   --sign "${DEVELOPER_ID}")
+}
+
+_codesign_binaries() {
+    echo "Purging build-machine pollution (pycache) before signing..."
+    find "${BUNDLE_DIR}" -name "__pycache__" -type d -exec rm -rf {} +
+    find "${BUNDLE_DIR}" -name "*.pyc" -delete
+
+    _set_codesign_args
+
     echo Signing "${BUNDLE_DIR}" binaries...
     IFS=$'\n'
     for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
@@ -578,37 +605,21 @@ _codesign_binaries() {
                awk -F":" '{print $1}' | \
                uniq)
     do
-        codesign --deep --force --verify --verbose --timestamp \
-                 --options runtime \
-                 --entitlements "${BUILD_ROOT}/entitlements.plist" \
-                 -i org.pgadmin.pgadmin4 \
-                 --sign "${DEVELOPER_ID}" \
-                 "$i"
+        codesign "${CODESIGN_ARGS[@]}" "$i"
     done
+    unset IFS
 
     echo Signing "${BUNDLE_DIR}" libraries...
-    find "${BUNDLE_DIR}" -type f -name "*.dylib*" -exec \
-        codesign --deep --force --verify --verbose --timestamp \
-                 --options runtime \
-                 --entitlements "${BUILD_ROOT}/entitlements.plist" \
-                 -i org.pgadmin.pgadmin4 \
-                 --sign "${DEVELOPER_ID}" \
-                 {} \;
+    while IFS= read -r lib; do
+        codesign "${CODESIGN_ARGS[@]}" "${lib}"
+    done < <(find "${BUNDLE_DIR}" -type f -name "*.dylib*")
 }
 
 _codesign_bundle() {
-    if [ "${CODESIGN}" -eq 0 ]; then
-        return
-    fi
-
-    # Sign the .app
+    # CODESIGN_ARGS is set by _codesign_binaries, which always runs first and
+    # signs ad-hoc when there is no Developer ID; see _set_codesign_args.
     echo Signing "${BUNDLE_DIR}"...
-    codesign --deep --force --verify --verbose --timestamp \
-             --options runtime \
-             --entitlements "${BUILD_ROOT}/entitlements.plist" \
-             -i org.pgadmin.pgadmin4 \
-             --sign "${DEVELOPER_ID}" \
-             "${BUNDLE_DIR}"
+    codesign "${CODESIGN_ARGS[@]}" "${BUNDLE_DIR}"
 
     echo "Verifying the signature from bundle dir..."
     codesign --verify --deep --verbose=4 "${BUNDLE_DIR}"
@@ -734,6 +745,11 @@ _create_dmg() {
 }
 
 _codesign_dmg() {
+    # Unlike the bundle, there is no point signing the image ad-hoc: the
+    # signature on a disk image is about distribution, and an ad-hoc one
+    # satisfies nothing that a missing one does not. What matters for running
+    # the build locally is that the app inside it is signed, which
+    # _codesign_binaries and _codesign_bundle have already seen to.
     if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
