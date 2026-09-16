@@ -60,13 +60,31 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - uses: actions/setup-python@v7
-        id: python
-        with:
-          python-version: '3.13'
+      # Deliberately not actions/setup-python. On this runner it hangs
+      # indefinitely: it installs Python rather than unpacking it, and anything
+      # that raises a UAC prompt in the auto-logged-in session waits forever
+      # with nobody to answer it, exactly as the card's PIN dialog would. The
+      # first attempt sat on that step for thirty minutes against eleven
+      # seconds for setup-node.
+      #
+      # The machine has a Python already, which is what the buildfarm's Jenkins
+      # job uses, and using it is closer to what we are actually testing here
+      # anyway.
+      - name: Locate Python
+        shell: pwsh
+        run: |
+          $python = Get-Command python -ErrorAction SilentlyContinue
+          if (-not $python) { throw "No python on PATH on this runner." }
+          $pythonDir = Split-Path $python.Source -Parent
+          Write-Output "Python: $pythonDir"
+          & $python.Source --version
 
-      - name: Install virtualenv
-        run: python -m pip install --upgrade pip virtualenv
+          if (-not (Test-Path (Join-Path $pythonDir 'Scripts\virtualenv.exe'))) {
+              throw ("virtualenv is not installed for this Python, and Make.bat requires it. " +
+                     "Install with: python -m pip install virtualenv")
+          }
+
+          "PGADMIN_PYTHON_DIR=$pythonDir" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       # Unlike the hosted build, nothing is installed here. This machine is
       # configured by hand rather than by Ansible, it is the only one in the
@@ -149,7 +167,6 @@ jobs:
       - name: Build the signed installer
         shell: cmd
         env:
-          PGADMIN_PYTHON_DIR: ${{ format('{0}', steps.python.outputs.python-path) }}
           PGADMIN_WINDOWS_CSC: ${{ vars.PGADMIN_WINDOWS_CSC }}
         run: |
           IF "%PGADMIN_WINDOWS_CSC%" == "" (
@@ -157,9 +174,6 @@ jobs:
               ECHO        so Make.bat would silently produce an unsigned build.
               EXIT /b 1
           )
-
-          FOR %%I IN ("%PGADMIN_PYTHON_DIR%") DO SET "PGADMIN_PYTHON_DIR=%%~dpI"
-          IF "%PGADMIN_PYTHON_DIR:~-1%" == "\" SET "PGADMIN_PYTHON_DIR=%PGADMIN_PYTHON_DIR:~0,-1%"
 
           SET "PGADMIN_POSTGRES_DIR=%DEPS_DIR%\postgresql"
           SET "PGADMIN_KRB5_DIR=%DEPS_DIR%\krb5"
