@@ -29,8 +29,12 @@ on:
       - 'pkg/mac/**'
 
 concurrency:
+  # Not cancel-in-progress, unlike the QA builds. Cancelling a signing build
+  # partway through wastes forty minutes of work and, worse, can abandon a
+  # notarisation already submitted to Apple, leaving a request sitting in their
+  # queue for a build nobody will collect. Queue instead.
   group: '${{ github.workflow }} @ ${{ github.ref }}'
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
