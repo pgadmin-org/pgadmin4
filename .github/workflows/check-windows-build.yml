@@ -34,10 +34,9 @@ jobs:
     timeout-minutes: 120
 
     env:
-      # The major version of the winpgbuild PostgreSQL release to pull, matching
-      # DEFAULT_POSTGRESQL_VERSION on the buildfarm.
+      # The major version of the PostgreSQL release to pull from pgbuild,
+      # matching DEFAULT_POSTGRESQL_VERSION on the buildfarm.
       POSTGRES_MAJOR: '18'
-      DEPS_DIR: 'C:\build64'
 
     steps:
       - uses: actions/checkout@v7
@@ -72,12 +71,21 @@ jobs:
       # where the macOS dependencies come from too, so both platforms build
       # against one manifest of pinned versions. The archives unpack to
       # <DEPS_DIR>\postgresql and <DEPS_DIR>\krb5.
+      # Unpacked under the runner's own temp directory rather than a fixed
+      # path. C:\build64 was the obvious choice and the wrong one: it is what
+      # the buildfarm's winpgbuild-update job manages on the Windows worker,
+      # deleting and re-extracting postgresql and krb5 inside it. Since the
+      # signing builds will run on that same machine as a self-hosted runner,
+      # a shared path would have the two systems overwriting each other's
+      # dependencies, and the resulting Jenkins failures would look nothing
+      # like their cause.
       - name: Install the PostgreSQL and Kerberos dependencies
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          New-Item -ItemType Directory -Force -Path $env:DEPS_DIR | Out-Null
+          $depsDir = Join-Path $env:RUNNER_TEMP 'pgbuild-deps'
+          New-Item -ItemType Directory -Force -Path $depsDir | Out-Null
 
           foreach ($tag in @("postgresql-$env:POSTGRES_MAJOR-windows-x86_64-latest",
                              "krb5-windows-x86_64-latest")) {
@@ -85,10 +93,11 @@ jobs:
               gh release download $tag --repo pgadmin-org/pgbuild `
                   --dir $env:RUNNER_TEMP --clobber
               Expand-Archive -Path "$env:RUNNER_TEMP\$tag.zip" `
-                  -DestinationPath $env:DEPS_DIR -Force
+                  -DestinationPath $depsDir -Force
           }
 
-          Get-ChildItem $env:DEPS_DIR
+          Get-ChildItem $depsDir
+          "DEPS_DIR=$depsDir" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       # The hosted image ships Visual Studio Enterprise at a path that differs
       # from the Community install Make.bat defaults to, and the redistributable
