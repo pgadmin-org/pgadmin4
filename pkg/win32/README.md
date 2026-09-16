@@ -226,7 +226,14 @@ your requirements you don't need to set them. For PostgreSQL 16 and below:
         make
 
     If you have a code signing certificate, this will automatically be used if
-    found in the Windows Certificate Store to sign the installer.
+    found in the Windows Certificate Store to sign the installer. Signing is
+    enabled by setting PGADMIN_WINDOWS_CSC to the certificate's subject name;
+    without it the build produces an unsigned installer.
+
+    See SIGNING.md for how the release signing host is set up, including the
+    Certum hardware token, the certificate-to-key repair that its "simple"
+    registration does not do correctly, and why the build agent must run in an
+    interactive session rather than as a Windows service.
 
 
 3. Find the completed installer in the dist/ subdirectory of your source tree.
