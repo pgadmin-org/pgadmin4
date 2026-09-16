@@ -45,7 +45,7 @@ jobs:
 
     # The signing credentials live on an environment rather than loose on the
     # repository, so only the workflows that should be signing can reach them.
-    environment: snapshot
+    environment: signing
 
     strategy:
       fail-fast: false

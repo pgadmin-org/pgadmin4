@@ -45,7 +45,7 @@ jobs:
     runs-on: [self-hosted, windows-x64]
     timeout-minutes: 120
 
-    environment: snapshot
+    environment: signing
 
     env:
       POSTGRES_MAJOR: '18'
