@@ -60,31 +60,45 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      # Deliberately not actions/setup-python. On this runner it hangs
-      # indefinitely: it installs Python rather than unpacking it, and anything
-      # that raises a UAC prompt in the auto-logged-in session waits forever
-      # with nobody to answer it, exactly as the card's PIN dialog would. The
-      # first attempt sat on that step for thirty minutes against eleven
-      # seconds for setup-node.
+      # Deliberately not actions/setup-python: on this runner it hangs
+      # indefinitely, because it installs Python rather than unpacking it and
+      # anything raising a UAC prompt in the auto-logged-in session waits
+      # forever with nobody to answer it, exactly as the card's PIN dialog
+      # would. The first attempt sat on that step for thirty minutes against
+      # eleven seconds for setup-node.
       #
-      # The machine has a Python already, which is what the buildfarm's Jenkins
-      # job uses, and using it is closer to what we are actually testing here
-      # anyway.
+      # Equally deliberately not "whatever python is on PATH", which was the
+      # first attempt at avoiding that and was worse. This machine has 3.14 on
+      # PATH whilst the buildfarm's Jenkins job injects PGADMIN_PYTHON_DIR
+      # pointing at 3.13, so discovery would have quietly shipped a different
+      # interpreter from the one in the released installers. Which Python we
+      # ship is a decision, not a property of whichever one was installed most
+      # recently, so it is stated in one place.
+      #
+      # That place should eventually be a file in this repository, with the
+      # build fetching a private Python of that version on every platform, so
+      # local builds cannot drift either. Until then it matches Jenkins.
       - name: Locate Python
         shell: powershell
+        env:
+          PGADMIN_PYTHON_DIR: ${{ vars.PGADMIN_PYTHON_DIR }}
         run: |
-          $python = Get-Command python -ErrorAction SilentlyContinue
-          if (-not $python) { throw "No python on PATH on this runner." }
-          $pythonDir = Split-Path $python.Source -Parent
-          Write-Output "Python: $pythonDir"
-          & $python.Source --version
+          if (-not $env:PGADMIN_PYTHON_DIR) {
+              throw "The PGADMIN_PYTHON_DIR repository variable is not set."
+          }
+          $pythonExe = Join-Path $env:PGADMIN_PYTHON_DIR 'python.exe'
+          if (-not (Test-Path $pythonExe)) {
+              throw "No python.exe at $env:PGADMIN_PYTHON_DIR."
+          }
+          & $pythonExe --version
 
-          if (-not (Test-Path (Join-Path $pythonDir 'Scripts\virtualenv.exe'))) {
-              throw ("virtualenv is not installed for this Python, and Make.bat requires it. " +
-                     "Install with: python -m pip install virtualenv")
+          if (-not (Test-Path (Join-Path $env:PGADMIN_PYTHON_DIR 'Scripts\virtualenv.exe'))) {
+              throw ("virtualenv is not installed for the Python at $env:PGADMIN_PYTHON_DIR, " +
+                     "and Make.bat requires it. Install with: " +
+                     "$pythonExe -m pip install virtualenv")
           }
 
-          "PGADMIN_PYTHON_DIR=$pythonDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PGADMIN_PYTHON_DIR=$env:PGADMIN_PYTHON_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       # Unlike the hosted build, nothing is installed here. This machine is
       # configured by hand rather than by Ansible, it is the only one in the
