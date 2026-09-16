@@ -17,6 +17,17 @@ name: Snapshot - macOS
 on:
   workflow_dispatch:
 
+  # workflow_dispatch only offers a "Run workflow" button for workflows that
+  # are on the default branch, so whilst this lives on a working branch there
+  # is no way to trigger it by hand. The path filter keeps that from meaning
+  # "sign and notarise on every commit": it fires only when the thing being
+  # tested changes. Remove this trigger when the branch merges.
+  push:
+    branches: [ "buildfarm-to-actions" ]
+    paths:
+      - '.github/workflows/snapshot-macos.yml'
+      - 'pkg/mac/**'
+
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.ref }}'
   cancel-in-progress: true

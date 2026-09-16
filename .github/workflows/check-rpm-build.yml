@@ -14,7 +14,7 @@ name: Check RPM builds
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "buildfarm-to-actions" ]
 
   workflow_dispatch:
 
