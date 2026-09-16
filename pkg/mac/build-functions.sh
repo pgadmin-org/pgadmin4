@@ -568,7 +568,11 @@ _set_codesign_args() {
         echo "Signing ad-hoc: the result will run locally once allowed, but"
         echo "cannot be distributed. Provide pkg/mac/codesign.conf to sign"
         echo "properly."
-        CODESIGN_ARGS=(--force --sign -)
+        # --deep for the same reason the Developer ID path uses it: these are
+        # bundles with nested code, and without it codesign refuses to replace
+        # the signature on one whose nested code is unsigned, reporting "code
+        # object is not signed at all" against a subcomponent.
+        CODESIGN_ARGS=(--deep --force --sign -)
         return
     fi
 
