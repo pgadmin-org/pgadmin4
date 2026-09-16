@@ -71,7 +71,7 @@ jobs:
       # job uses, and using it is closer to what we are actually testing here
       # anyway.
       - name: Locate Python
-        shell: pwsh
+        shell: powershell
         run: |
           $python = Get-Command python -ErrorAction SilentlyContinue
           if (-not $python) { throw "No python on PATH on this runner." }
@@ -84,7 +84,7 @@ jobs:
                      "Install with: python -m pip install virtualenv")
           }
 
-          "PGADMIN_PYTHON_DIR=$pythonDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PGADMIN_PYTHON_DIR=$pythonDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       # Unlike the hosted build, nothing is installed here. This machine is
       # configured by hand rather than by Ansible, it is the only one in the
@@ -92,7 +92,7 @@ jobs:
       # mutating it. So check, and stop with something useful to act on rather
       # than failing halfway through a build.
       - name: Verify the build prerequisites
-        shell: pwsh
+        shell: powershell
         run: |
           $missing = @()
           if (-not (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) { $missing += "innosetup" }
@@ -106,7 +106,7 @@ jobs:
           Write-Output "All prerequisites present."
 
       - name: Install the PostgreSQL and Kerberos dependencies
-        shell: pwsh
+        shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -121,14 +121,14 @@ jobs:
               Expand-Archive -Path "$env:RUNNER_TEMP\$tag.zip" `
                   -DestinationPath $depsDir -Force
           }
-          "DEPS_DIR=$depsDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "DEPS_DIR=$depsDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       # Discovered rather than hardcoded. The buildfarm pins these to specific
       # paths in its Jenkins node configuration, which needs editing every time
       # Visual Studio or the Windows SDK updates, and that configuration is
       # going away with the buildfarm.
       - name: Locate the toolchain
-        shell: pwsh
+        shell: powershell
         run: |
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
           $vs = & $vswhere -latest -products * -property installationPath
@@ -156,9 +156,9 @@ jobs:
           Write-Output "VC++ redist:     $($redist.FullName)"
           Write-Output "signtool:        $($signtool.DirectoryName)"
 
-          "VS_INSTALL_DIR=$vs"                        | Out-File -FilePath $env:GITHUB_ENV -Append
-          "PGADMIN_VCREDIST_DIR=$($redist.FullName)"  | Out-File -FilePath $env:GITHUB_ENV -Append
-          "PGADMIN_SIGNTOOL_DIR=$($signtool.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "VS_INSTALL_DIR=$vs"                        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PGADMIN_VCREDIST_DIR=$($redist.FullName)"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PGADMIN_SIGNTOOL_DIR=$($signtool.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       # Setting PGADMIN_WINDOWS_CSC is what makes Make.bat sign: it selects the
       # certificate by subject name from the machine store, where proCertum
@@ -186,7 +186,7 @@ jobs:
       # the executable inside it, which is signed in a separate step and is the
       # thing users actually run.
       - name: Verify the signatures
-        shell: pwsh
+        shell: powershell
         run: |
           $signtool = Join-Path $env:PGADMIN_SIGNTOOL_DIR 'signtool.exe'
           Get-ChildItem dist\*.exe | ForEach-Object {
