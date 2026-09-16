@@ -69,24 +69,10 @@ jobs:
       - name: Install the build dependencies
         run: brew install syft wget
 
-      # As check-macos-build.yml; see the comment there for why these must
-      # land in /opt/pgbuild specifically.
       - name: Install the PostgreSQL build dependencies
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PGBUILD_ARCH: ${{ matrix.arch }}
-        run: |
-          sudo mkdir -p /opt/pgbuild
-          sudo chown "$(id -u):$(id -g)" /opt/pgbuild
-
-          for PKG in openssl krb5 zstd lz4 postgresql-18; do
-              TAG="${PKG}-macos-${PGBUILD_ARCH}-latest"
-              echo "Fetching ${TAG}..."
-              gh release download "${TAG}" \
-                  --repo pgadmin-org/pgbuild \
-                  --dir "${RUNNER_TEMP}" --clobber
-              tar -xzf "${RUNNER_TEMP}/${TAG}.tar.gz" -C /opt/pgbuild
-          done
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: ${{ matrix.arch }}
 
       # The buildfarm keeps the Developer ID in the worker's login keychain and
       # unlocks it with devkeys/unlock-csc.sh. A hosted runner has no such

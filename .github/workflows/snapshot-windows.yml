@@ -119,30 +119,16 @@ jobs:
           }
           Write-Output "All prerequisites present."
 
-      # Downloaded over plain HTTPS rather than with the gh CLI, which is not
-      # installed here and should not have to be: pgbuild is public, the asset
-      # URLs are predictable, and this is one less thing the signing host must
-      # have. Invoke-WebRequest throws on a 404, so a missing release still
-      # fails immediately rather than writing an error page to disk.
       - name: Install the PostgreSQL and Kerberos dependencies
+        id: deps
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: x86_64
+          postgres-major: ${{ env.POSTGRES_MAJOR }}
+
+      - name: Record the dependency location
         shell: powershell
-        run: |
-          # Without this, Invoke-WebRequest spends most of a 90 MB download
-          # rendering a progress bar.
-          $ProgressPreference = 'SilentlyContinue'
-
-          $depsDir = Join-Path $env:RUNNER_TEMP 'pgbuild-deps'
-          New-Item -ItemType Directory -Force -Path $depsDir | Out-Null
-
-          $base = 'https://github.com/pgadmin-org/pgbuild/releases/download'
-          foreach ($tag in @("postgresql-$env:POSTGRES_MAJOR-windows-x86_64-latest",
-                             "krb5-windows-x86_64-latest")) {
-              $zip = Join-Path $env:RUNNER_TEMP "$tag.zip"
-              Write-Output "Fetching $tag..."
-              Invoke-WebRequest -Uri "$base/$tag/$tag.zip" -OutFile $zip -UseBasicParsing
-              Expand-Archive -Path $zip -DestinationPath $depsDir -Force
-          }
-          "DEPS_DIR=$depsDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        run: '"DEPS_DIR=${{ steps.deps.outputs.prefix }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append'
 
       # Discovered rather than hardcoded. The buildfarm pins these to specific
       # paths in its Jenkins node configuration, which needs editing every time

@@ -1,0 +1,106 @@
+# Installs the PostgreSQL build dependencies published by pgadmin-org/pgbuild.
+#
+# Four workflows need these — the QA and snapshot builds on each of macOS and
+# Windows — and keeping the logic in one place is not merely tidiness: the
+# first version used the gh CLI, which turned out not to exist on the
+# self-hosted Windows runner, and that same fix had to be made twice.
+#
+# On macOS the archives must land in /opt/pgbuild specifically, because the
+# install names inside them are absolute: pg_dump asks for
+# /opt/pgbuild/zstd/lib/libzstd.1.dylib and libpq for
+# /opt/pgbuild/krb5/lib/libgssapi_krb5.2.2.dylib, among others. _fixup_imports
+# copies from those paths into the bundle and rewrites the references, so they
+# have to resolve at build time. On Windows there are no absolute references,
+# so the location only has to avoid colliding with anything else, which is why
+# it goes under the runner's temp directory rather than the C:\build64 the
+# buildfarm's Jenkins worker manages.
+#
+# Everything is fetched over plain HTTPS. pgbuild is public and its asset URLs
+# are predictable, so this needs neither a CLI nor authentication, and both
+# curl --fail and Invoke-WebRequest fail on a 404 rather than writing an error
+# page to disk and failing later at the unpack.
+
+name: Install pgbuild dependencies
+description: Download and unpack the PostgreSQL build dependencies from pgadmin-org/pgbuild
+
+inputs:
+  arch:
+    description: Architecture as pgbuild names it, e.g. arm64, x86_64
+    required: true
+  postgres-major:
+    description: PostgreSQL major version to install
+    required: false
+    default: '18'
+
+outputs:
+  prefix:
+    description: Directory the dependencies were unpacked into
+    value: ${{ steps.install.outputs.prefix }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install the pgbuild dependencies (macOS)
+      id: install-macos
+      if: runner.os == 'macOS'
+      shell: bash
+      env:
+        PGBUILD_ARCH: ${{ inputs.arch }}
+        POSTGRES_MAJOR: ${{ inputs.postgres-major }}
+      run: |
+        set -euo pipefail
+        BASE=https://github.com/pgadmin-org/pgbuild/releases/download
+
+        sudo mkdir -p /opt/pgbuild
+        sudo chown "$(id -u):$(id -g)" /opt/pgbuild
+
+        for PKG in openssl krb5 zstd lz4 "postgresql-${POSTGRES_MAJOR}"; do
+            TAG="${PKG}-macos-${PGBUILD_ARCH}-latest"
+            echo "Fetching ${TAG}..."
+            curl --fail --silent --show-error --location \
+                -o "${RUNNER_TEMP}/${TAG}.tar.gz" \
+                "${BASE}/${TAG}/${TAG}.tar.gz"
+            tar -xzf "${RUNNER_TEMP}/${TAG}.tar.gz" -C /opt/pgbuild
+        done
+
+        ls -l /opt/pgbuild
+        echo "prefix=/opt/pgbuild" >> "${GITHUB_OUTPUT}"
+
+    - name: Install the pgbuild dependencies (Windows)
+      id: install-windows
+      if: runner.os == 'Windows'
+      shell: powershell
+      env:
+        PGBUILD_ARCH: ${{ inputs.arch }}
+        POSTGRES_MAJOR: ${{ inputs.postgres-major }}
+      run: |
+        # Without this, Invoke-WebRequest spends most of a 90 MB download
+        # rendering a progress bar into a log nobody will read.
+        $ProgressPreference = 'SilentlyContinue'
+
+        $depsDir = Join-Path $env:RUNNER_TEMP 'pgbuild-deps'
+        New-Item -ItemType Directory -Force -Path $depsDir | Out-Null
+
+        $base = 'https://github.com/pgadmin-org/pgbuild/releases/download'
+        foreach ($pkg in @("postgresql-$env:POSTGRES_MAJOR", 'krb5')) {
+            $tag = "$pkg-windows-$env:PGBUILD_ARCH-latest"
+            $zip = Join-Path $env:RUNNER_TEMP "$tag.zip"
+            Write-Output "Fetching $tag..."
+            Invoke-WebRequest -Uri "$base/$tag/$tag.zip" -OutFile $zip -UseBasicParsing
+            Expand-Archive -Path $zip -DestinationPath $depsDir -Force
+        }
+
+        Get-ChildItem $depsDir
+        # Out-File in Windows PowerShell defaults to UTF-16, which the runner
+        # cannot parse, so the encoding is explicit.
+        "prefix=$depsDir" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+    - name: Publish the prefix
+      id: install
+      shell: bash
+      run: |
+        if [ "${RUNNER_OS}" = "Windows" ]; then
+            echo "prefix=${{ steps.install-windows.outputs.prefix }}" >> "${GITHUB_OUTPUT}"
+        else
+            echo "prefix=${{ steps.install-macos.outputs.prefix }}" >> "${GITHUB_OUTPUT}"
+        fi

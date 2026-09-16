@@ -79,30 +79,16 @@ jobs:
       # a shared path would have the two systems overwriting each other's
       # dependencies, and the resulting Jenkins failures would look nothing
       # like their cause.
-      # Plain HTTPS rather than the gh CLI, matching snapshot-windows.yml, which
-      # runs on a self-hosted machine that has no gh and should not need one.
-      # pgbuild is public and the asset URLs are predictable, so this needs
-      # neither a CLI nor authentication, and Invoke-WebRequest throws on a 404
-      # so a missing release still fails immediately.
       - name: Install the PostgreSQL and Kerberos dependencies
+        id: deps
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: x86_64
+          postgres-major: ${{ env.POSTGRES_MAJOR }}
+
+      - name: Record the dependency location
         shell: pwsh
-        run: |
-          $ProgressPreference = 'SilentlyContinue'
-
-          $depsDir = Join-Path $env:RUNNER_TEMP 'pgbuild-deps'
-          New-Item -ItemType Directory -Force -Path $depsDir | Out-Null
-
-          $base = 'https://github.com/pgadmin-org/pgbuild/releases/download'
-          foreach ($tag in @("postgresql-$env:POSTGRES_MAJOR-windows-x86_64-latest",
-                             "krb5-windows-x86_64-latest")) {
-              $zip = Join-Path $env:RUNNER_TEMP "$tag.zip"
-              Write-Output "Fetching $tag..."
-              Invoke-WebRequest -Uri "$base/$tag/$tag.zip" -OutFile $zip -UseBasicParsing
-              Expand-Archive -Path $zip -DestinationPath $depsDir -Force
-          }
-
-          Get-ChildItem $depsDir
-          "DEPS_DIR=$depsDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+        run: '"DEPS_DIR=${{ steps.deps.outputs.prefix }}" | Out-File -FilePath $env:GITHUB_ENV -Append'
 
       # The hosted image ships Visual Studio Enterprise at a path that differs
       # from the Community install Make.bat defaults to, and the redistributable

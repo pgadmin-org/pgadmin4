@@ -73,36 +73,17 @@ jobs:
 
       # The dependencies come from pgadmin-org/pgbuild, built against each
       # other with --with-zstd --with-lz4 and a 14.0 deployment target, which
-      # is what the release build will ship. Homebrew's PostgreSQL was only
-      # ever a stand-in: it has no zstd or lz4 support (issue #9425), links
-      # Homebrew's OpenSSL rather than ours, and carries whatever minimum OS
-      # Homebrew happened to build for.
-      #
-      # These must land in /opt/pgbuild precisely, because the install names
-      # are absolute: pg_dump asks for /opt/pgbuild/zstd/lib/libzstd.1.dylib
-      # and libpq for /opt/pgbuild/krb5/lib/libgssapi_krb5.2.2.dylib, among
-      # others. _fixup_imports copies from those paths into the bundle and
-      # rewrites the references, so they have to resolve at build time.
+      # is what the release build ships. Homebrew's PostgreSQL was only ever a
+      # stand-in: it has no zstd or lz4 support (issue #9425), links Homebrew's
+      # OpenSSL rather than ours, and carries whatever minimum OS Homebrew
+      # happened to build for.
       - name: Install the PostgreSQL build dependencies
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PGBUILD_ARCH: ${{ matrix.arch }}
-        run: |
-          sudo mkdir -p /opt/pgbuild
-          sudo chown "$(id -u):$(id -g)" /opt/pgbuild
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: ${{ matrix.arch }}
 
-          for PKG in openssl krb5 zstd lz4 postgresql-18; do
-              TAG="${PKG}-macos-${PGBUILD_ARCH}-latest"
-              echo "Fetching ${TAG}..."
-              gh release download "${TAG}" \
-                  --repo pgadmin-org/pgbuild \
-                  --dir "${RUNNER_TEMP}" --clobber
-              tar -xzf "${RUNNER_TEMP}/${TAG}.tar.gz" -C /opt/pgbuild
-          done
-
-          ls -l /opt/pgbuild
-          echo "--- what pg_dump expects ---"
-          otool -L /opt/pgbuild/postgresql/bin/pg_dump
+      - name: Show what pg_dump expects
+        run: otool -L /opt/pgbuild/postgresql/bin/pg_dump
 
       - name: Check the appbundle build
         run: |
