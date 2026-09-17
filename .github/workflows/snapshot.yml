@@ -51,6 +51,22 @@ permissions:
   contents: read
 
 jobs:
+  # The directory name, decided once. Two jobs need it and they must agree:
+  # the repo RPMs carry the snapshot's own URL inside them, so if that job and
+  # the assemble job each called date(1) a run straddling midnight would ship a
+  # repository configuration pointing at a snapshot that does not exist.
+  location:
+    runs-on: ubuntu-24.04
+    outputs:
+      name: ${{ steps.pick.outputs.name }}
+    steps:
+      - id: pick
+        run: |
+          NAME="${{ inputs.location || '' }}"
+          [ -n "${NAME}" ] || NAME=$(date +%Y-%m-%d)
+          echo "Snapshot location: ${NAME}"
+          echo "name=${NAME}" >> "${GITHUB_OUTPUT}"
+
   deb:
     uses: ./.github/workflows/check-deb-build.yml
   rpm:
@@ -64,6 +80,36 @@ jobs:
   helm:
     uses: ./.github/workflows/check-helm-build.yml
 
+  # The repository configuration RPMs. These are not built by the QA
+  # workflows, because they are not a build of pgAdmin: they are a one-file
+  # package carrying a .repo pointing at the tree they ship in, which is why
+  # the URL has to be known before they are built.
+  repo-rpm:
+    needs: location
+    runs-on: ubuntu-24.04
+    container: almalinux:9
+    steps:
+      - name: Install the build environment
+        run: dnf install -y --setopt=install_weak_deps=False rpm-build python3 git
+
+      - uses: actions/checkout@v7
+
+      - name: Mark the workspace as a safe git directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
+      - name: Build the repository RPMs
+        env:
+          PGADMIN_REPO_DIR: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/${{ needs.location.outputs.name }}/yum
+        run: |
+          echo "Repositories will point at ${PGADMIN_REPO_DIR}"
+          pkg/redhat/repo-rpm.sh
+
+      - name: Archive the repository RPMs
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-repo-rpm-build-output
+          path: dist/*.noarch.rpm
+
   macos:
     uses: ./.github/workflows/snapshot-macos.yml
     secrets: inherit
@@ -73,7 +119,7 @@ jobs:
     secrets: inherit
 
   assemble:
-    needs: [deb, rpm, tarball, wheel, docs, macos, windows]
+    needs: [location, deb, rpm, tarball, wheel, docs, repo-rpm, macos, windows]
     runs-on: ubuntu-24.04
 
     # The Windows signing host is the one runner that can be offline, and a
@@ -100,7 +146,7 @@ jobs:
           # and the snapshots tree are laid out. The docs/macos/pip/source/
           # windows subdivision belongs to a published release, and it is the
           # promotion step that sorts files into it on the way there.
-          STAGE="stage/$(date +%Y-%m-%d)"
+          STAGE="stage/${{ needs.location.outputs.name }}"
           mkdir -p "${STAGE}/yum"
 
           # An artefact can be legitimately absent: the Windows signing host is
@@ -177,6 +223,10 @@ jobs:
               tar -czf "${STAGE}/pgadmin4-${VERSION}-docs.tar.gz" \
                   -C artefacts/pgadmin4-html-build-output .
           fi
+
+          # At the root of yum/, beside the family directories, which is
+          # where the README instructions tell people to fetch them from.
+          copy_into "${STAGE}/yum" artefacts/pgadmin4-repo-rpm-build-output/*
 
           copy_into "${STAGE}" artefacts/pgadmin4-macos-snapshot-*/*
           copy_into "${STAGE}" artefacts/pgadmin4-windows-snapshot/*
