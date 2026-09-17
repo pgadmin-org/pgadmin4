@@ -25,17 +25,6 @@ on:
 
   workflow_dispatch:
 
-  # See snapshot-macos.yml: workflow_dispatch offers no button for workflows
-  # off the default branch, so whilst this lives on a working branch it fires
-  # on changes to itself or to the Windows packaging instead. Remove when the
-  # branch merges.
-  push:
-    branches: [ "buildfarm-to-actions" ]
-    paths:
-      - '.github/workflows/snapshot-windows.yml'
-      - 'Make.bat'
-      - 'pkg/win32/**'
-
 concurrency:
   # Serialised deliberately, and not cancel-in-progress. There is one hardware
   # token, and two builds signing through it at once is a good way to find out
