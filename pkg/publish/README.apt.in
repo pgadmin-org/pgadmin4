@@ -2,24 +2,15 @@ pgAdmin 4: APT repository
 
 Supported platform matrix:
 
-+--------------------------+--------------+-------------------------+------------------------+
-| Platform                 | Architecture | First supported release | Last supported release |
-+--------------------------+--------------+-------------------------+------------------------+
-| Debian 11 (Bullseye)     |    x86_64    |           4.30          |          9.14          |
-| Debian 12 (Bookworm)     |    x86_64    |           7.0           |            -           |
-| Debian 13 (Trixie)       |    x86_64    |           9.8           |            -           |
-+--------------------------+--------------+-------------------------+------------------------+
-| Ubuntu 22.04 (Jammy)     |    x86_64    |           6.9           |            -           |
-| Ubuntu 24.04 (Noble)     |    x86_64    |           8.7           |            -           |
-| Ubuntu 24.10 (Oracular)  |    x86_64    |           8.13          |          9.5           |
-| Ubuntu 25.04 (Plucky)    |    x86_64    |           9.3           |          9.14          |
-| Ubuntu 25.10 (Questing)  |    x86_64    |           9.11          |          9.17          |
-| Ubuntu 26.04 (Resolute)  |    x86_64    |           9.15          |            -           |
-+--------------------------+--------------+-------------------------+------------------------+
+@SUPPORTED_TABLE@
 
-IMPORTANT NOTE: Packages for distributions that are no longer supported will be archived to 
-https://pgadmin-archive.postgresql.org/, from where they can be manually downloaded. The archive
-site cannot be used as a repository!
+@ARCHIVE_SECTION_START@
+Platforms that are no longer supported. Packages for these remain available
+from https://pgadmin-archive.postgresql.org/, from where they can be manually
+downloaded; the archive site cannot be used as a repository.
+
+@ARCHIVED_TABLE@
+@ARCHIVE_SECTION_END@
 
 To use this repository, run the following commands:
 
