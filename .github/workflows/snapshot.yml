@@ -96,8 +96,12 @@ jobs:
       - name: Assemble the staging tree
         run: |
           set -euo pipefail
+          # Flat, beside apt/ and yum/, which is how both the staging server
+          # and the snapshots tree are laid out. The docs/macos/pip/source/
+          # windows subdivision belongs to a published release, and it is the
+          # promotion step that sorts files into it on the way there.
           STAGE="stage/$(date +%Y-%m-%d)"
-          mkdir -p "${STAGE}"/{docs,macos,pip,source,windows,yum}
+          mkdir -p "${STAGE}/yum"
 
           # An artefact can be legitimately absent: the Windows signing host is
           # allowed to be offline, and a failed matrix leg is reported by its
@@ -151,22 +155,31 @@ jobs:
               done
           done
 
-          copy_into "${STAGE}/source" artefacts/pgadmin4-tarball-build-output/*
-          copy_into "${STAGE}/pip"    artefacts/pgadmin4-python-build-output/*
-          copy_into "${STAGE}/docs"   artefacts/pgadmin4-pdf-build-output/*
-          copy_into "${STAGE}/docs"   artefacts/pgadmin4-epub-build-output/*
+          copy_into "${STAGE}" artefacts/pgadmin4-tarball-build-output/*
+          copy_into "${STAGE}" artefacts/pgadmin4-python-build-output/*
+          # The version is read once here and used for the documentation
+          # filenames, which the build leaves unversioned as pgadmin4.pdf and
+          # pgAdmin4.epub whilst the download site has always carried
+          # pgadmin4-<version>.pdf and .epub.
+          VERSION=$(python3 -c "import sys; sys.path.insert(0, 'web'); import version; print(version.APP_VERSION)")
+
+          for SRC in artefacts/pgadmin4-pdf-build-output/*.pdf; do
+              [ -e "${SRC}" ] && cp "${SRC}" "${STAGE}/pgadmin4-${VERSION}.pdf"
+          done
+          for SRC in artefacts/pgadmin4-epub-build-output/*.epub; do
+              [ -e "${SRC}" ] && cp "${SRC}" "${STAGE}/pgadmin4-${VERSION}.epub"
+          done
 
           # The docs tarball is what load-docs.sh unpacks on the web server, so
           # it ships as a tarball rather than as the directory of files the
           # build produces.
           if [ -d artefacts/pgadmin4-html-build-output ]; then
-              VERSION=$(python3 -c "import sys; sys.path.insert(0, 'web'); import version; print(version.APP_VERSION)")
-              tar -czf "${STAGE}/docs/pgadmin4-${VERSION}-docs.tar.gz" \
+              tar -czf "${STAGE}/pgadmin4-${VERSION}-docs.tar.gz" \
                   -C artefacts/pgadmin4-html-build-output .
           fi
 
-          copy_into "${STAGE}/macos"   artefacts/pgadmin4-macos-snapshot-*/*
-          copy_into "${STAGE}/windows" artefacts/pgadmin4-windows-snapshot/*
+          copy_into "${STAGE}" artefacts/pgadmin4-macos-snapshot-*/*
+          copy_into "${STAGE}" artefacts/pgadmin4-windows-snapshot/*
 
           find "${STAGE}" -type f | sort
 

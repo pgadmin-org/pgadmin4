@@ -119,10 +119,12 @@ BIN_PYTHON = "/usr/bin/python3"
 GPG_KEY = "packages@pgadmin.org"
 GNUPGHOME = os.path.expanduser("~/.gnupg")
 
-# The directory layout created inside a staging build. Server-side constant:
-# the client asks for a staging directory, not for a list of subdirectories to
-# create, so no client input ever becomes a directory name here.
-STAGE_CONTENT_DIRS = ("docs", "macos", "pip", "source", "windows")
+# The subdirectories a published release is divided into. Only releases: a
+# staging build and a snapshot both keep their downloadable files loose at the
+# top level beside apt/ and yum/, and it is the promotion job that sorts them
+# into these on the way to v<VERSION>. Server-side constant either way, since
+# the client asks for a directory, not for a list of names to create.
+RELEASE_CONTENT_DIRS = ("docs", "macos", "pip", "source", "windows")
 
 # Which repositories we publish, as a table rather than as anything the client
 # can name. Both lists are the ones the build matrices actually produce, which
@@ -534,7 +536,7 @@ def write_readme(root, kind, base_url, history=True):
 
 
 def sign_packages(root):
-    """Sign everything in a staging tree that ships with a signature.
+    """Sign everything in a build tree that ships with a signature.
 
     This is the half of the build that cannot happen on a GitHub runner. The
     key that signs pgAdmin's packages and repository metadata stays on this
@@ -544,8 +546,20 @@ def sign_packages(root):
     one; what it cannot do is hold the key, sign anything out of band, or sign
     with any key other than this one.
 
-    Only the extensions listed are signed, and only within the tree named. A
-    file the build did not produce is a file this does not touch.
+    Driven by extension and location rather than by a list of directories,
+    because the layouts differ: a staging build and a snapshot keep their
+    downloadable files at the top level, whilst a published release sorts them
+    into docs/, pip/ and source/. The rules are the same in both.
+
+      yum/**.rpm    signed in place by rpmsign, which is what dnf checks.
+      *.tar.gz      detached armoured signature beside the file. Covers the
+      *.whl         source tarball, the wheel, the documentation tarball and
+      *.pdf         the PDF and ePub, which is exactly the set that carries a
+      *.epub        .asc on the download site today.
+
+    Deliberately not signed: the .debs under apt/, which apt verifies through
+    the signed Release file rather than individually, and the disk images, ZIPs
+    and installer, which carry Apple and Authenticode signatures of their own.
     """
     rpms = []
     for directory, _, names in os.walk(os.path.join(root, "yum")):
@@ -554,18 +568,12 @@ def sign_packages(root):
     if rpms:
         run([BIN_RPMSIGN, "--resign"] + rpms)
 
-    # Detached armoured signatures for everything downloaded directly rather
-    # than through a package manager. The .debs are not signed individually:
-    # apt verifies them through the signed Release file, which the indexing
-    # step produces.
-    for subdir, suffixes in (("source", (".tar.gz",)),
-                             ("pip", (".whl",)),
-                             ("docs", (".pdf", ".epub", ".tar.gz"))):
-        directory = os.path.join(root, subdir)
-        if not os.path.isdir(directory):
-            continue
-        for name in sorted(os.listdir(directory)):
-            if not name.endswith(suffixes) or name.endswith(".asc"):
+    detached = (".tar.gz", ".whl", ".pdf", ".epub")
+    for directory, subdirs, names in os.walk(root):
+        # The package trees are the package managers' business.
+        subdirs[:] = [d for d in subdirs if d not in ("apt", "yum")]
+        for name in sorted(names):
+            if not name.endswith(detached):
                 continue
             target = os.path.join(directory, name)
             signature = target + ".asc"
@@ -661,8 +669,6 @@ def cmd_stage_create(args, raw):
     datestamp = v_datestamp(args[0], raw)
     root = under(STAGING_ROOT, datestamp)
     makedirs(root)
-    for name in STAGE_CONTENT_DIRS:
-        makedirs(under(root, name))
     for codename in APT_CODENAMES:
         makedirs(under(root, "apt", codename, "dists", "pgadmin4",
                        APT_COMPONENT))
@@ -775,7 +781,7 @@ def cmd_release_create(args, raw):
     root = under(FTP_ROOT, "v%s" % version)
     refuse_if_exists(root, "publication location already exists")
     makedirs(root)
-    for name in STAGE_CONTENT_DIRS:
+    for name in RELEASE_CONTENT_DIRS:
         makedirs(under(root, name))
     print("created %s" % root)
 
@@ -791,7 +797,7 @@ def cmd_release_fetch(args, raw):
     datestamp = v_datestamp(args[1], raw)
     root = under(FTP_ROOT, "v%s" % version)
     require_dir(root, "run release-create first")
-    for name in STAGE_CONTENT_DIRS:
+    for name in RELEASE_CONTENT_DIRS:
         pull_from_staging(datestamp, name, under(root, name))
     print("fetched %s into %s" % (datestamp, root))
 
@@ -830,8 +836,6 @@ def cmd_snapshot_create(args, raw):
     datestamp = v_datestamp(args[0], raw)
     root = under(SNAPSHOT_ROOT, datestamp)
     makedirs(root)
-    for name in STAGE_CONTENT_DIRS:
-        makedirs(under(root, name))
     print("created %s" % root)
 
 
