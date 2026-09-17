@@ -35,7 +35,10 @@ inputs:
 outputs:
   prefix:
     description: Directory the dependencies were unpacked into
-    value: ${{ steps.install.outputs.prefix }}
+    # Whichever of the two platform steps ran. Merging these in a shell step
+    # instead would mean picking a shell that exists on every runner, and the
+    # Windows signing host has no bash.
+    value: ${{ steps.install-macos.outputs.prefix || steps.install-windows.outputs.prefix }}
 
 runs:
   using: composite
@@ -94,13 +97,3 @@ runs:
         # Out-File in Windows PowerShell defaults to UTF-16, which the runner
         # cannot parse, so the encoding is explicit.
         "prefix=$depsDir" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
-    - name: Publish the prefix
-      id: install
-      shell: bash
-      run: |
-        if [ "${RUNNER_OS}" = "Windows" ]; then
-            echo "prefix=${{ steps.install-windows.outputs.prefix }}" >> "${GITHUB_OUTPUT}"
-        else
-            echo "prefix=${{ steps.install-macos.outputs.prefix }}" >> "${GITHUB_OUTPUT}"
-        fi
