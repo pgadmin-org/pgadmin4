@@ -3,8 +3,26 @@ name: Run Javascript tests
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+      - 'web/package.json'
+      - 'web/yarn.lock'
+      - 'web/jest.config.js'
+      - 'web/webpack.shim.js'
+      - 'web/regression/javascript/**'
+      - '.github/workflows/run-javascript-tests.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+      - 'web/package.json'
+      - 'web/yarn.lock'
+      - 'web/jest.config.js'
+      - 'web/webpack.shim.js'
+      - 'web/regression/javascript/**'
+      - '.github/workflows/run-javascript-tests.yml'
 
   workflow_dispatch:
 

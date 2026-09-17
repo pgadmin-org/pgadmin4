@@ -3,8 +3,22 @@ name: Check tarball build
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'docs/**'
+      - 'pkg/src/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - '.github/workflows/check-tarball-build.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'docs/**'
+      - 'pkg/src/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - '.github/workflows/check-tarball-build.yml'
 
   workflow_dispatch:
 

@@ -3,8 +3,22 @@ name: Check documentation builds
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'docs/**'
+      - 'web/version.py'
+      - 'web/branding.py'
+      - 'requirements.txt'
+      - 'Makefile'
+      - '.github/workflows/check-doc-builds.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'docs/**'
+      - 'web/version.py'
+      - 'web/branding.py'
+      - 'requirements.txt'
+      - 'Makefile'
+      - '.github/workflows/check-doc-builds.yml'
 
   workflow_dispatch:
 

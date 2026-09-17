@@ -3,8 +3,20 @@ name: Check Python build
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'pkg/pip/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - '.github/workflows/check-python-build.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'pkg/pip/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - '.github/workflows/check-python-build.yml'
 
   workflow_dispatch:
 
