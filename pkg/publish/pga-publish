@@ -70,7 +70,6 @@
 # ---------------------------------------------------------------------------
 
 import fcntl
-import gzip
 import os
 import pwd
 import re
@@ -101,6 +100,7 @@ VALID_ROLES = (ROLE_STAGING, ROLE_DOWNLOAD)
 STAGING_ROOT = "/var/www/html/builds"           # procyon
 FTP_ROOT = "/var/ftp/pgadmin4"                  # paxsor
 SNAPSHOT_ROOT = os.path.join(FTP_ROOT, "snapshots")
+SNAPSHOT_KEEP = 5                               # as pgadmin4-all-snapshot kept
 TOOLS_DIR = "/var/www/pgaweb/tools"             # the pgaweb website scripts
 PUBLISH_DIR = "/usr/local/lib/pga-publish"      # pkg/publish, deployed alongside
 
@@ -619,6 +619,27 @@ def acquire_lock():
 # Verb handlers: staging role (procyon)
 # ---------------------------------------------------------------------------
 
+def index_tree(root, url, kind):
+    """Index, sign and document one kind of repository inside a build tree.
+
+    Used for both a staging build on procyon and a snapshot on the download
+    server, which differ in where they live and in nothing else.
+    """
+    if kind == "apt":
+        for codename in APT_CODENAMES:
+            if not DRY_RUN and not os.path.isdir(under(root, "apt", codename)):
+                continue
+            index_apt(root, codename)
+    else:
+        for family, name, version, arch in YUM_TARGETS:
+            tree = under(root, "yum", family,
+                         "%s-%s-%s" % (name, version, arch))
+            if not DRY_RUN and not os.path.isdir(tree):
+                continue
+            index_yum(root, family, name, version, arch)
+    write_readme(root, kind, url, history=False)
+
+
 def staging_url(datestamp):
     """Where a staging tree is reachable from, for the README it carries.
 
@@ -688,11 +709,7 @@ def cmd_stage_index_apt(args, raw):
     require_dir(root, "staging directory does not exist")
     apt_root = under(root, "apt")
     require_dir(apt_root, "staging build has no apt tree")
-    for codename in APT_CODENAMES:
-        if not DRY_RUN and not os.path.isdir(under(apt_root, codename)):
-            continue
-        index_apt(root, codename)
-    write_readme(root, "apt", staging_url(datestamp), history=False)
+    index_tree(root, staging_url(datestamp), "apt")
     print("indexed %s" % apt_root)
 
 
@@ -709,13 +726,7 @@ def cmd_stage_index_yum(args, raw):
     require_dir(root, "staging directory does not exist")
     yum_root = under(root, "yum")
     require_dir(yum_root, "staging build has no yum tree")
-    for family, name, version, arch in YUM_TARGETS:
-        tree = under(root, "yum", family,
-                     "%s-%s-%s" % (name, version, arch))
-        if not DRY_RUN and not os.path.isdir(tree):
-            continue
-        index_yum(root, family, name, version, arch)
-    write_readme(root, "yum", staging_url(datestamp), history=False)
+    index_tree(root, staging_url(datestamp), "yum")
     print("indexed %s" % yum_root)
 
 
@@ -824,17 +835,72 @@ def cmd_snapshot_create(args, raw):
     print("created %s" % root)
 
 
-def cmd_snapshot_fetch(args, raw):
-    """snapshot-fetch <DATESTAMP>
+def snapshot_url(datestamp):
+    """Where a snapshot is reachable from, for the README it carries."""
+    return ("https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/%s"
+            % datestamp)
 
-    Copy a staging build into the snapshot directory of the same name.
+
+def cmd_snapshot_sign(args, raw):
+    """snapshot-sign <DATESTAMP>
+
+    Sign the packages in a snapshot, before its metadata is built.
     """
     datestamp = v_datestamp(args[0], raw)
     root = under(SNAPSHOT_ROOT, datestamp)
     require_dir(root, "run snapshot-create first")
-    for name in STAGE_CONTENT_DIRS:
-        pull_from_staging(datestamp, name, under(root, name))
-    print("fetched %s into %s" % (datestamp, root))
+    sign_packages(root)
+    print("signed %s" % root)
+
+
+def cmd_snapshot_index_apt(args, raw):
+    """snapshot-index-apt <DATESTAMP>"""
+    datestamp = v_datestamp(args[0], raw)
+    root = under(SNAPSHOT_ROOT, datestamp)
+    require_dir(under(root, "apt"), "snapshot has no apt tree")
+    index_tree(root, snapshot_url(datestamp), "apt")
+    print("indexed %s/apt" % root)
+
+
+def cmd_snapshot_index_yum(args, raw):
+    """snapshot-index-yum <DATESTAMP>"""
+    datestamp = v_datestamp(args[0], raw)
+    root = under(SNAPSHOT_ROOT, datestamp)
+    require_dir(under(root, "yum"), "snapshot has no yum tree")
+    index_tree(root, snapshot_url(datestamp), "yum")
+    print("indexed %s/yum" % root)
+
+
+def cmd_snapshot_purge(args, raw):
+    """snapshot-purge
+
+    Keep the newest SNAPSHOT_KEEP snapshots and remove the rest, as
+    pgadmin4-all-snapshot did with `ls -dt | tail -n +6 | xargs rm -rf`.
+
+    This is the one verb that deletes anything, so it takes no argument: it
+    cannot be asked to remove a particular snapshot, only to enforce the
+    retention the server already has. Directories that do not look like a
+    snapshot are left alone rather than swept up, because the day somebody
+    parks something in that tree by hand is the day a tidy-up should not eat
+    it.
+    """
+    if not os.path.isdir(SNAPSHOT_ROOT):
+        print("no snapshots")
+        return
+
+    names = sorted(name for name in os.listdir(SNAPSHOT_ROOT)
+                   if DATESTAMP_RE.match(name)
+                   and os.path.isdir(os.path.join(SNAPSHOT_ROOT, name)))
+    doomed = names[:-SNAPSHOT_KEEP] if len(names) > SNAPSHOT_KEEP else []
+    for name in doomed:
+        path = under(SNAPSHOT_ROOT, name)
+        log(syslog.LOG_NOTICE, "PURGE %s" % path)
+        if DRY_RUN:
+            print("would remove: %s" % path)
+        else:
+            shutil.rmtree(path)
+    print("kept %d snapshot(s), removed %d"
+          % (min(len(names), SNAPSHOT_KEEP), len(doomed)))
 
 
 def cmd_rebuild_apt(args, raw):
@@ -974,7 +1040,10 @@ VERBS = {
     "release-fetch":    (ROLE_DOWNLOAD, 2, 2, cmd_release_fetch),
     "packages-fetch":   (ROLE_DOWNLOAD, 1, 1, cmd_packages_fetch),
     "snapshot-create":  (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_create),
-    "snapshot-fetch":   (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_fetch),
+    "snapshot-sign":    (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_sign),
+    "snapshot-index-apt": (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_index_apt),
+    "snapshot-index-yum": (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_index_yum),
+    "snapshot-purge":   (ROLE_DOWNLOAD, 0, 0, cmd_snapshot_purge),
     "rebuild-apt":      (ROLE_DOWNLOAD, 1, 1, cmd_rebuild_apt),
     "rebuild-yum":      (ROLE_DOWNLOAD, 4, 4, cmd_rebuild_yum),
     "create-release":   (ROLE_DOWNLOAD, 1, 1, cmd_create_release),

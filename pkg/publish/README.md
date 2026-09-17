@@ -5,10 +5,21 @@ that index and sign the APT and YUM repositories, the README that sits at the
 top of each of them, and the wrapper that lets a GitHub Actions runner ask for
 those things to happen without being given a shell on the servers.
 
-Two servers are involved. The *staging* server holds build output at
-`/var/www/html/builds/<date>` and serves it over HTTP for testing. The
-*download* server holds the published tree at `/var/ftp/pgadmin4` and is what
-the world mirrors. Each runs the same wrapper with a different role.
+Two servers are involved, and which one a build goes to depends on what kind
+of build it is. The *staging* server holds release candidates at
+`/var/www/html/builds/<date>` and serves them over HTTP for testing, until they
+are promoted and copied across. The *download* server holds the published tree
+at `/var/ftp/pgadmin4`, which the world mirrors, and it is also where nightly
+snapshots go directly, under `snapshots/<date>`: snapshots are not staged and
+promoted, they are simply published somewhere nobody mirrors.
+
+That last point is why the snapshots tree is the confinement root for the
+upload key on the download server. It is the one part of the download site
+that `sync-ftp-to-s3.py` excludes, so nothing written through that key can
+reach the archive bucket or the PostgreSQL mirrors.
+
+Each server runs the same wrapper with a different role, and the role decides
+which verbs exist.
 
 ## Files
 

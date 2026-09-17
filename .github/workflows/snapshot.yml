@@ -21,13 +21,13 @@ on:
     inputs:
       location:
         description: >-
-          Staging directory name, normally today's date. Jenkins writes
-          <date> on the same server, so a test run wants a -N suffix,
-          for example 2026-09-17-2. stage-list shows what is taken.
+          Snapshot directory name, normally today's date. The buildfarm
+          writes <date> on the same server, so a test run wants a -N
+          suffix, for example 2026-09-17-2.
         required: false
         default: ''
       publish:
-        description: Upload to the staging server when the build succeeds
+        description: Upload to the download server when the build succeeds
         type: boolean
         required: false
         default: false
@@ -176,7 +176,14 @@ jobs:
           name: pgadmin4-snapshot
           path: stage/
 
-  # Upload the assembled tree to procyon and have it signed and indexed there.
+  # Upload the assembled tree to the download server and have it signed and
+  # indexed there.
+  #
+  # Snapshots go straight there rather than being staged on the development
+  # server and promoted; that path is the release flow, and this is not it. The
+  # tree lands under snapshots/, which is the one part of the download site
+  # that the S3 archive sync excludes, so a snapshot never reaches the archive
+  # or the PostgreSQL mirrors.
   #
   # Everything this job does on the far side goes through pga-publish behind a
   # forced command, so the request is a verb and a datestamp rather than a
@@ -236,42 +243,47 @@ jobs:
               exit 1
           fi
 
-      - name: Publish to staging
+      - name: Publish the snapshot
         env:
-          STAGING: ${{ vars.STAGING_SSH_TARGET }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           LOCATION: ${{ inputs.location }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
         run: |
           set -euo pipefail
-          if [ -z "${STAGING}" ]; then
-              echo "The STAGING_SSH_TARGET variable is not set." >&2
+          if [ -z "${DOWNLOAD}" ]; then
+              echo "The DOWNLOAD_SSH_TARGET variable is not set." >&2
               exit 1
           fi
 
           # One directory came out of assemble, named for the date. An explicit
-          # location overrides it so that a test run does not land on the one
-          # the buildfarm is still writing to on the same server.
+          # location overrides it so that a test run does not land on the
+          # snapshot the buildfarm is still writing on the same server.
           BUILT=$(ls stage)
           DEST=${LOCATION:-${BUILT}}
           echo "Publishing ${BUILT} as ${DEST}"
 
           publish() {
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${STAGING}" "$@"
+                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
           }
 
-          publish stage-create "${DEST}"
+          publish snapshot-create "${DEST}"
 
           # No --delete, deliberately: rrsync refuses it anyway, and a
           # publishing step that can remove things is a publishing step that
           # can remove the wrong things.
           rsync -rlt --safe-links --no-specials --no-devices \
               -e "ssh -i ${UPLOAD_KEY/#\~/$HOME} -o BatchMode=yes -o StrictHostKeyChecking=yes" \
-              "stage/${BUILT}/" "${STAGING}:${DEST}/"
+              "stage/${BUILT}/" "${DOWNLOAD}:${DEST}/"
 
           # Signing before indexing: the metadata has to describe the signed
           # packages rather than the unsigned ones just uploaded.
-          publish stage-sign "${DEST}"
-          publish stage-index-apt "${DEST}"
-          publish stage-index-yum "${DEST}"
+          publish snapshot-sign "${DEST}"
+          publish snapshot-index-apt "${DEST}"
+          publish snapshot-index-yum "${DEST}"
+
+          # Retention, which the buildfarm did with ls | tail | xargs rm. The
+          # verb takes no argument: it cannot be asked to remove a particular
+          # snapshot, only to enforce the retention the server already has.
+          publish snapshot-purge

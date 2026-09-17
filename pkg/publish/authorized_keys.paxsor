@@ -32,19 +32,21 @@
 restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@roadie
 
 # ---------------------------------------------------------------------------
-# Key 2: upload. Bytes only, and into a landing area rather than the live tree.
+# Key 2: upload. Bytes only, and only into the snapshots tree.
 # ---------------------------------------------------------------------------
-# On procyon the upload key writes into the staging root, because staging is
-# what it is for. Here it writes into a separate landing directory that nothing
-# serves, so a compromised runner cannot put a file where a user's apt or dnf
-# would find it: only the wrapper's verbs move content into the published tree,
-# and only from a validated staging directory.
+# Snapshots are built straight onto this server rather than staged on procyon
+# and promoted, so unlike the release flow they do need an upload path here.
 #
-# In the normal release flow this key is not used at all, since publication
-# pulls from procyon. It is here for the occasional out-of-band artefact that
-# has no staging build behind it, and if review concludes that case does not
-# exist, the right answer is to delete this line rather than to keep it warm.
+# The confinement root is the snapshots tree itself, which is the right place
+# on two counts. It is where snapshots belong, and it is the one part of the
+# download tree that sync-ftp-to-s3.py excludes, so nothing written through
+# this key can reach the archive bucket or the PostgreSQL mirrors. A key
+# confined anywhere else under /var/ftp would have both of those as a side
+# effect of a single bad upload.
 #
-# SITE: create /var/ftp/incoming owned by pgaupload, outside the document root
-# and outside /var/ftp/pgadmin4, and confirm that nothing serves it.
-restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/incoming" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@roadie
+# Retention is not this key's business either: the wrapper's snapshot-purge
+# verb enforces it, and -no-del means this key cannot remove a snapshot even
+# if asked to.
+#
+# SITE: check `command -v rrsync`; the path moved between rsync packages.
+restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/pgadmin4/snapshots" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@roadie
