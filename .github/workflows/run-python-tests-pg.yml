@@ -10,6 +10,11 @@ on:
     branches: [ "master" ]
 
   workflow_dispatch:
+    inputs:
+      pg_timetable_version:
+        description: 'pg_timetable version to install for the tests'
+        required: false
+        type: string
 
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
@@ -17,6 +22,8 @@ concurrency:
 
 jobs:
   run-python-tests-pg:
+    env:
+      PG_TIMETABLE_VERSION: ${{ inputs.pg_timetable_version || '6.3.0' }}
     strategy:
       fail-fast: false
       matrix:
@@ -142,6 +149,38 @@ jobs:
           done
 
           psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
+
+      # pg_timetable tables are created by the agent and need the agent to test run_now.
+      - name: Install and start pg_timetable on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          wget --quiet -O /tmp/pg_timetable.tar.gz https://github.com/cybertec-postgresql/pg_timetable/releases/download/v${{ env.PG_TIMETABLE_VERSION }}/pg_timetable_Linux_x86_64.tar.gz
+          tar -xzf /tmp/pg_timetable.tar.gz -C /tmp --strip-components=1
+          /tmp/pg_timetable --init --clientname=runner "host=/var/run/postgresql port=59${{ matrix.pgver }} dbname=postgres user=postgres"
+          nohup /tmp/pg_timetable --clientname=runner "host=/var/run/postgresql port=59${{ matrix.pgver }} dbname=postgres user=postgres" > /tmp/pg_timetable.log 2>&1 &
+          echo $! > /tmp/pg_timetable.pid
+          sleep 2
+
+      - name: Install and start pg_timetable on macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          curl -sSL -o /tmp/pg_timetable.tar.gz https://github.com/cybertec-postgresql/pg_timetable/releases/download/v${{ env.PG_TIMETABLE_VERSION }}/pg_timetable_Darwin_arm64.tar.gz
+          tar -xzf /tmp/pg_timetable.tar.gz -C /tmp --strip-components=1
+          /tmp/pg_timetable --init --clientname=runner "host=/tmp port=59${{ matrix.pgver }} dbname=postgres user=postgres"
+          nohup /tmp/pg_timetable --clientname=runner "host=/tmp port=59${{ matrix.pgver }} dbname=postgres user=postgres" > /tmp/pg_timetable.log 2>&1 &
+          echo $! > /tmp/pg_timetable.pid
+          sleep 2
+
+      - name: Install and start pg_timetable on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          $env:PGPASSWORD = 'postgres'
+          curl.exe -sSL -o pg_timetable.zip https://github.com/cybertec-postgresql/pg_timetable/releases/download/v${{ env.PG_TIMETABLE_VERSION }}/pg_timetable_Windows_x86_64.zip
+          Expand-Archive -Path pg_timetable.zip -DestinationPath .
+          & .\pg_timetable_Windows_x86_64\pg_timetable.exe --init --clientname=runner "postgresql://postgres:postgres@127.0.0.1:59${{ matrix.pgver }}/postgres"
+          Start-Process -FilePath .\pg_timetable_Windows_x86_64\pg_timetable.exe -ArgumentList @('--clientname=runner', "postgresql://postgres:postgres@127.0.0.1:59${{ matrix.pgver }}/postgres") -RedirectStandardError .\pg_timetable_Windows_x86_64\pg_timetable.err -NoNewWindow
+          Start-Sleep -Seconds 3
 
       - name: Install Python dependencies on Linux and macOS
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-22.04' }}
@@ -317,6 +356,19 @@ jobs:
           call venv\Scripts\activate.bat
           python web\regression\runtests.py --exclude feature_tests
         shell: cmd
+
+      - name: Stop pg_timetable on Linux and macOS
+        if: always() && (matrix.os == 'macos-latest' || matrix.os == 'ubuntu-22.04')
+        run: |
+          if [ -f /tmp/pg_timetable.pid ]; then
+            kill $(cat /tmp/pg_timetable.pid) 2>/dev/null || true
+          fi
+
+      - name: Stop pg_timetable on Windows
+        if: always() && matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Get-Process -Name pg_timetable -ErrorAction SilentlyContinue | Stop-Process -Force
 
       - name: Archive server log
         if: success() || failure()
