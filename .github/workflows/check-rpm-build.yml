@@ -95,7 +95,7 @@ jobs:
               make \
               openssl-devel \
               patch \
-              postgresql17-devel \
+              postgresql18-devel \
               python3-devel \
               python3-pip \
               python3-sphinx \
