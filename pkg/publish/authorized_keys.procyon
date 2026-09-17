@@ -1,0 +1,89 @@
+# ~pgaupload/.ssh/authorized_keys on procyon (developer.pgadmin.org)
+#
+# Two keys, two jobs, two blast radii. Neither of them can give you a shell.
+#
+# Placeholders in angle brackets must be substituted at install time. Do not
+# commit the substituted file to a public repository: the addresses are not
+# secret, but publishing the exact shape of the firewall is free reconnaissance
+# for somebody who has not earned it.
+#
+#   <ROADIE-IPV4>, <ROADIE-IPV6>   the runner's addresses
+#   <PAXSOR-IPV4>                  the download server's address
+#   <...KEY...>                    the public key, one line, no line breaks
+#
+# Options used, and why:
+#
+#   restrict      Refuse everything optional, then add back nothing. This is
+#                 the modern shorthand for no-agent-forwarding, no-pty,
+#                 no-port-forwarding, no-X11-forwarding and no-user-rc, and
+#                 crucially it is future-proof: when OpenSSH grows a new
+#                 forwarding feature, `restrict` disables that too, whereas an
+#                 explicit list of no-* options silently would not.
+#
+#                 no-pty matters more than it looks. Without it, a client can
+#                 ask for a terminal, and a terminal is an interactive channel
+#                 into whatever the forced command turns out to be.
+#
+#   from=         Defence in depth behind the firewall, not instead of it. The
+#                 firewall can be misconfigured during maintenance; this line
+#                 is in the same file as the key it constrains, so the two are
+#                 reviewed together and rotated together.
+#
+#   command=      The forced command. Whatever the client asked to run is put
+#                 in SSH_ORIGINAL_COMMAND and this runs instead. The wrapper
+#                 parses that variable itself and never lets a shell near it.
+#
+# There is deliberately no environment= option on either key. The wrapper
+# builds its children's environment from scratch, but not offering the client
+# an input channel at all is better than filtering one.
+
+# ---------------------------------------------------------------------------
+# Key 1: publishing. Verbs only. No file content passes through this key.
+# ---------------------------------------------------------------------------
+# What a holder of this key can do on procyon: create a staging directory from
+# a fixed template, list staging directories, and rebuild and sign the apt and
+# yum metadata inside one. That is the entire capability set; it is enumerated
+# in the VERBS table in pga-publish, on one screen, on purpose.
+restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@roadie
+
+# ---------------------------------------------------------------------------
+# Key 2: upload. Bytes only. No verbs, no metadata, no signing.
+# ---------------------------------------------------------------------------
+# rrsync ships with rsync (on Debian and Ubuntu, /usr/share/doc/rsync/scripts,
+# or /usr/bin/rrsync on newer packages: check before writing this line). It is
+# itself a forced-command wrapper, written and reviewed by the rsync
+# maintainers, whose whole job is to inspect the rsync argument list the client
+# sent and refuse anything outside the subtree it was given.
+#
+#   -wo        write-only. The client may send files and may not fetch them.
+#              A compromised runner therefore cannot read back whatever else
+#              lives under the staging root, and cannot use this key to
+#              exfiltrate anything.
+#   -no-del    no deletion. Uploads add and overwrite; they never remove. A
+#              wrong --delete in a workflow, or a deliberate one from an
+#              attacker, stops here rather than emptying developer.pgadmin.org.
+#   -munge     munge incoming symlinks so that they cannot be followed. Without
+#              it, an upload can drop a symlink pointing at, say, the account's
+#              ~/.ssh, and the next thing that writes through that path writes
+#              somewhere it should not.
+#
+# The trailing path is the root the client is confined to. Every path the
+# client names is resolved relative to it, and rrsync refuses anything that
+# climbs out, so the client never sees an absolute path at all.
+restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/www/html/builds" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@roadie
+
+# ---------------------------------------------------------------------------
+# Key 3: the download server's read-only pull.
+# ---------------------------------------------------------------------------
+# paxsor fetches staging content from procyon during publication, so it holds a
+# key here. It is read-only and confined to the same staging root, which is a
+# tree that developer.pgadmin.org already serves over plain HTTP; this edge
+# therefore grants paxsor nothing it could not have fetched with curl, and it
+# is worth saying so explicitly in review, because "the download server can SSH
+# to the staging server" sounds worse than it is.
+#
+# If that reasoning is ever rejected, the alternative is for roadie to pull the
+# content down and push it up again over its own two keys, at the cost of
+# moving every byte twice. The wrapper would lose release-fetch,
+# packages-fetch and snapshot-fetch, and gain nothing else.
+restrict,from="<PAXSOR-IPV4>",command="/usr/bin/rrsync -ro /var/www/html/builds" ssh-ed25519 <...PULL-KEY...> pga-pull@paxsor

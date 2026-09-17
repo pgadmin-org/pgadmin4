@@ -1,0 +1,1087 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# pga-publish: SSH forced-command wrapper for the pgAdmin publishing pipeline.
+#
+# ---------------------------------------------------------------------------
+# WHY THIS FILE EXISTS, AND WHY IT IS SHAPED THE WAY IT IS
+# ---------------------------------------------------------------------------
+#
+# The GitHub Actions runner (roadie) holds an SSH private key that can reach
+# procyon and paxsor. The GPG signing keys, the live download tree and the web
+# root all live on those two servers, so a shell on either of them is, for
+# practical purposes, the ability to ship a signed package of somebody else's
+# choosing to every pgAdmin user. The runner is the weakest link in that chain:
+# it executes third-party build tooling, it is rebuilt often, and it is exactly
+# the sort of machine an attacker would go after first.
+#
+# This wrapper is therefore the whole security boundary. It is named in the
+# authorized_keys `command=` option, so sshd runs it *instead of* whatever the
+# client asked for, and the client's request text is handed to us in the
+# environment variable SSH_ORIGINAL_COMMAND. A compromise of roadie should
+# yield the ability to run the publishing steps, and nothing else.
+#
+# The rules below are load-bearing. If you are reading this because you want to
+# add something, read the "adding a verb" section of the README first.
+#
+#   1. SSH_ORIGINAL_COMMAND IS NEVER GIVEN TO A SHELL. Not through os.system,
+#      not through subprocess(..., shell=True), not through `sh -c`, not by
+#      interpolating it into a string that something else will parse. We read
+#      it, we validate it, and we exec a fixed argv that we built ourselves.
+#      Every child process below is launched from a Python list, with
+#      shell=False, which is the default and is never overridden.
+#
+#   2. THE CLIENT ASKS FOR A VERB, NOT A COMMAND LINE. `publish-yum redhat
+#      rhel 9` is a request; `createrepo_c /some/path` is not, and never will
+#      be. The mapping from verb to argv lives here, on the server, where it is
+#      reviewed and version-controlled. Adding a capability is a deliberate
+#      change to this file, not something the client can improvise.
+#
+#   3. EVERY ARGUMENT IS VALIDATED BEFORE USE, against a pattern that describes
+#      the narrow shape the argument genuinely has, and in several cases
+#      against an explicit allowlist as well. Validation is positive: we say
+#      what is allowed, never what is forbidden.
+#
+#   4. NO ARGUMENT MAY ESCAPE ITS DIRECTORY. The character gate in
+#      parse_request() rejects the whole request if it contains a path
+#      separator at all, assert_component() rejects `.`, `..` and anything
+#      else that is not a plain name, and under() re-checks the assembled path
+#      against its root afterwards. Three layers, deliberately redundant,
+#      because this is the failure that would hurt most.
+#
+#   5. EVERY REQUEST IS LOGGED TO SYSLOG, accepted or not. The rejected ones
+#      are the interesting entries: a rejection here is either a bug in the
+#      workflow or somebody probing the boundary, and both are worth an alert.
+#
+#   6. THIS WRAPPER MOVES NO FILE CONTENT. Uploads go over a second key that is
+#      confined to rsync by rrsync. See the README for why that separation is
+#      worth an extra key.
+#
+#   7. NO sudo, ANYWHERE. The pgaupload account already owns the trees it needs
+#      to write, exactly as it does under Jenkins today. If a future step seems
+#      to need root, that is a sign the step does not belong in this wrapper.
+#
+# Lines marked "SITE:" are values that must be confirmed against the current
+# Jenkins job definitions before this is deployed. They are written here as the
+# best reading of the documented behaviour, but they are site configuration
+# rather than logic, and a wrong value should fail loudly rather than quietly
+# do the wrong thing.
+#
+# ---------------------------------------------------------------------------
+
+import fcntl
+import gzip
+import os
+import pwd
+import re
+import shutil
+import subprocess
+import sys
+import syslog
+from datetime import date, timedelta
+
+VERSION = "1.0"
+
+# ---------------------------------------------------------------------------
+# Site configuration
+# ---------------------------------------------------------------------------
+#
+# One script, two roles. The role is read from a file rather than compiled in,
+# so that procyon and paxsor run byte-identical copies of the wrapper and a
+# review of one is a review of both. The file contains exactly one word.
+#
+ROLE_FILE = "/etc/pga-publish.role"
+ROLE_STAGING = "staging"        # procyon, developer.pgadmin.org
+ROLE_DOWNLOAD = "download"      # paxsor, ftp.pgadmin.org
+VALID_ROLES = (ROLE_STAGING, ROLE_DOWNLOAD)
+
+# Filesystem roots. Nothing this script touches lives outside these, and every
+# path handed to a child process is built from one of them plus components that
+# have been through assert_component().
+STAGING_ROOT = "/var/www/html/builds"           # procyon
+FTP_ROOT = "/var/ftp/pgadmin4"                  # paxsor
+SNAPSHOT_ROOT = os.path.join(FTP_ROOT, "snapshots")
+TOOLS_DIR = "/var/www/pgaweb/tools"             # the pgaweb website scripts
+PUBLISH_DIR = "/usr/local/lib/pga-publish"      # pkg/publish, deployed alongside
+
+# Absolute paths to every binary we are willing to run. Absolute, because PATH
+# lookup is one more thing an attacker who has managed to write to the account's
+# environment could subvert, and because it documents the dependency set.
+BIN_GPG = "/usr/bin/gpg"
+BIN_RPMSIGN = "/usr/bin/rpmsign"
+BIN_RSYNC = "/usr/bin/rsync"
+BIN_SSH = "/usr/bin/ssh"
+BIN_PYTHON = "/usr/bin/python3"
+
+# The signing identity. Hard-coded on purpose: the client never says which key
+# to sign with, so a compromise of roadie cannot ask for a signature from some
+# other secret key that happens to be in the keyring.
+GPG_KEY = "packages@pgadmin.org"
+GNUPGHOME = os.path.expanduser("~/.gnupg")
+
+# The directory layout created inside a staging build. Server-side constant:
+# the client asks for a staging directory, not for a list of subdirectories to
+# create, so no client input ever becomes a directory name here.
+STAGE_CONTENT_DIRS = ("docs", "macos", "pip", "source", "windows")
+
+# Which repositories we publish, as a table rather than as anything the client
+# can name. Both lists are the ones the build matrices actually produce, which
+# is not the same as the set the repositories support: RHEL 8 repositories
+# exist and still serve their last packages, but nothing is built for them, so
+# a request to index one has no legitimate caller and is refused. Rebuilding
+# such a tree by hand remains possible by running rebuild-yum-repo.sh directly.
+APT_CODENAMES = (
+    "bookworm", "trixie",                       # Debian
+    "jammy", "noble", "resolute",               # Ubuntu
+)
+
+# (family, name, version, arch) for rebuild-yum-repo.sh. Validated as a whole
+# rather than field by field, so that a valid family cannot be paired with
+# somebody else's version number, and so that adding aarch64 is a reviewed
+# change to this table rather than a new argument the client gets to supply.
+YUM_TARGETS = (
+    ("redhat", "rhel", "9", "x86_64"),
+    ("redhat", "rhel", "10", "x86_64"),
+    ("fedora", "fedora", "43", "x86_64"),
+    ("fedora", "fedora", "44", "x86_64"),
+)
+
+# The package trees inside a staging directory, derived from the tables above
+# so that the two cannot disagree.
+APT_COMPONENT = "main"
+YUM_TREES = tuple("yum/%s/%s-%s-%s" % (family, name, version, arch)
+                  for family, name, version, arch in YUM_TARGETS)
+
+# sync-ftp-to-s3.py takes the CloudFront distribution to invalidate. It is not
+# a secret, being an identifier rather than a credential, but it is a piece of
+# our AWS account's shape and it is site configuration rather than code, so it
+# is read from a file on the server next to the role rather than carried here.
+# The client never supplies it: the script syncs the whole download tree, so
+# there is nothing per-run for a caller to choose.
+CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
+
+# How the download server pulls from the staging server. The source host is a
+# constant here; the client never names a host. The key on paxsor is confined
+# on the procyon side by rrsync in read-only mode, so the worst this edge can do
+# is read a tree that developer.pgadmin.org already publishes over HTTP anyway.
+# SITE: use the internal name or address that paxsor actually resolves.
+PULL_HOST = "procyon"
+PULL_USER = "pgaupload"
+PULL_KEY = os.path.expanduser("~/.ssh/id_staging_pull")
+
+# One publishing operation at a time. Two concurrent workflow runs indexing the
+# same repository would produce a Release file describing packages that are half
+# uploaded, so we serialise rather than trust the workflow to.
+LOCK_FILE = os.path.expanduser("~/.pga-publish.lock")
+
+# Hard limits on the request itself, applied before anything is parsed.
+MAX_REQUEST_LEN = 256
+MAX_TOKENS = 8
+
+# Exit codes, chosen from sysexits.h so that the workflow can tell a rejected
+# request from a failed operation without parsing text.
+EX_OK = 0
+EX_FAIL = 1          # the operation ran and failed
+EX_USAGE = 64        # malformed request: bad verb, bad arity, bad argument
+EX_UNAVAILABLE = 69  # the server is not in a state where this makes sense
+EX_NOPERM = 77       # well-formed, but not permitted (wrong role, not allowlisted)
+EX_TEMPFAIL = 75     # another operation holds the lock
+
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+#
+# Everything goes to syslog under LOG_AUTHPRIV, which is where the rest of the
+# session's authentication record already is, so a rejected request sits next to
+# the sshd line that shows which key presented it and from where.
+
+def log_open():
+    syslog.openlog("pga-publish", syslog.LOG_PID, syslog.LOG_AUTHPRIV)
+
+
+def sanitise_for_log(text):
+    """Make arbitrary client text safe to put in a log line.
+
+    Log injection is a real thing: a request containing a newline can forge a
+    second log entry, and terminal escapes can rewrite what an administrator
+    sees when they cat the file. We are logging attacker-controlled data by
+    design, since the rejected requests are the entries worth having, so it is
+    escaped to printable ASCII and truncated.
+    """
+    if text is None:
+        return "(none)"
+    escaped = text.encode("unicode_escape").decode("ascii", "replace")
+    if len(escaped) > MAX_REQUEST_LEN * 2:
+        escaped = escaped[:MAX_REQUEST_LEN * 2] + "...(truncated)"
+    return escaped
+
+
+def log(priority, message):
+    syslog.syslog(priority, message)
+
+
+def client_id():
+    """Where the request came from, for the log line.
+
+    SSH_CONNECTION is set by sshd, not by the client, so it can be trusted to
+    the same degree as sshd itself.
+    """
+    conn = os.environ.get("SSH_CONNECTION", "")
+    parts = conn.split()
+    return parts[0] if parts else "unknown"
+
+
+def reject(code, reason, request):
+    """Refuse a request, tell the client why in general terms, tell syslog why
+    in specific terms.
+
+    The client gets a deliberately unhelpful message. There is no value in
+    helping whoever is holding the key work out which character upset us, and
+    the workflow that legitimately uses this key is testable against the real
+    thing before it ships.
+    """
+    log(syslog.LOG_WARNING,
+        "REJECT from=%s reason=%s request=%s"
+        % (client_id(), reason, sanitise_for_log(request)))
+    sys.stderr.write("pga-publish: request rejected\n")
+    sys.exit(code)
+
+
+# ---------------------------------------------------------------------------
+# Request parsing
+# ---------------------------------------------------------------------------
+#
+# This is the gate. Nothing downstream sees a byte that has not been through it.
+
+# Every character the vocabulary needs, and not one more. No slash, no
+# backslash, no quote, no dollar, no semicolon, no backtick, no newline, no
+# NUL, no non-ASCII. Because the gate is applied to the raw request string
+# before it is split, a metacharacter anywhere in the request kills the whole
+# request rather than being carried into a token that some later check might
+# fail to notice.
+REQUEST_CHARS = re.compile(r"\A[A-Za-z0-9._ -]+\Z")
+
+# A single argument: a plain name. Applied on top of the character gate, so it
+# is a second opinion rather than the only one.
+COMPONENT = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._-]*\Z")
+
+
+def parse_request(raw):
+    """Turn SSH_ORIGINAL_COMMAND into a verb and a list of arguments.
+
+    Note what this does not do: it does not use shlex, because shlex exists to
+    emulate a shell's quoting rules and we have no interest in emulating any
+    part of a shell. It splits on whitespace and nothing else, which means a
+    quoted argument containing a space is not a thing this interface has. That
+    is a feature; none of the arguments below can contain a space.
+    """
+    if raw is None:
+        reject(EX_USAGE, "no-command",
+               "(interactive login or no command supplied)")
+
+    if len(raw) > MAX_REQUEST_LEN:
+        reject(EX_USAGE, "too-long", raw)
+
+    if not REQUEST_CHARS.match(raw):
+        reject(EX_USAGE, "illegal-character", raw)
+
+    tokens = raw.split()
+    if not tokens:
+        reject(EX_USAGE, "empty", raw)
+    if len(tokens) > MAX_TOKENS:
+        reject(EX_USAGE, "too-many-arguments", raw)
+
+    return tokens[0], tokens[1:]
+
+
+def assert_component(value, raw):
+    """A path component must be a plain name.
+
+    The character gate has already removed `/`, but `..` contains no slash and
+    would still traverse when joined onto a root, so it is rejected by name
+    here. So is a leading dot, which would otherwise allow a request to target
+    a hidden directory, and an empty string, which os.path.join treats as a
+    trailing separator.
+    """
+    if not value or value in (".", "..") or ".." in value:
+        reject(EX_USAGE, "path-traversal", raw)
+    if not COMPONENT.match(value):
+        reject(EX_USAGE, "bad-component", raw)
+    return value
+
+
+def under(root, *components):
+    """Build a path inside root, and prove afterwards that it is inside root.
+
+    The components have already been validated, so this check should be
+    impossible to fail. It is here precisely because that sentence is the kind
+    of thing that stops being true when somebody adds a verb in a hurry.
+    """
+    path = os.path.normpath(os.path.join(root, *components))
+    root_n = os.path.normpath(root)
+    if path != root_n and not path.startswith(root_n + os.sep):
+        reject(EX_USAGE, "escapes-root", path)
+    return path
+
+
+# ---------------------------------------------------------------------------
+# Argument validators
+# ---------------------------------------------------------------------------
+#
+# Each validator returns the value it was given, or does not return at all.
+# They are deliberately strict about shape: a datestamp is a real calendar date
+# in a plausible range, not merely eight digits and some hyphens.
+
+DATESTAMP_RE = re.compile(r"\A(\d{4})-(\d{2})-(\d{2})(?:-([1-9]\d?))?\Z")
+VERSION_RE = re.compile(r"\A(\d{1,2})\.(\d{1,2})(?:\.(\d{1,2}))?\Z")
+
+
+def v_datestamp(value, raw):
+    """A staging directory name: YYYY-MM-DD, optionally with a -N suffix for
+    the second and subsequent builds on the same day."""
+    assert_component(value, raw)
+    match = DATESTAMP_RE.match(value)
+    if not match:
+        reject(EX_USAGE, "bad-datestamp", raw)
+    year, month, day = (int(match.group(i)) for i in (1, 2, 3))
+    try:
+        when = date(year, month, day)
+    except ValueError:
+        reject(EX_USAGE, "impossible-date", raw)
+    # A build cannot be from before the build farm existed, and cannot be from
+    # next month. This is not a security control so much as a way of catching a
+    # workflow that has computed its date wrongly before it creates a directory
+    # nobody will ever look at again.
+    # SITE: adjust the lower bound to taste.
+    if when < date(2020, 1, 1) or when > date.today() + timedelta(days=2):
+        reject(EX_USAGE, "date-out-of-range", raw)
+    return value
+
+
+def v_version(value, raw):
+    """A pgAdmin version number, as it appears in v<VERSION> on the download
+    server: two or three dot-separated numbers, such as 9.18 or 9.18.1."""
+    assert_component(value, raw)
+    if not VERSION_RE.match(value):
+        reject(EX_USAGE, "bad-version", raw)
+    return value
+
+
+def v_codename(value, raw):
+    """A Debian or Ubuntu release codename, from the allowlist."""
+    assert_component(value, raw)
+    if value not in APT_CODENAMES:
+        reject(EX_NOPERM, "codename-not-allowlisted", raw)
+    return value
+
+
+def v_name(value, raw):
+    """A plain name, validated further by the verb's own check.
+
+    Used for the yum family/name/version arguments, which are only meaningful
+    as a triple and are therefore checked as one in cmd_rebuild_yum().
+    """
+    return assert_component(value, raw)
+
+
+# ---------------------------------------------------------------------------
+# Running things
+# ---------------------------------------------------------------------------
+
+def child_env():
+    """A minimal, fixed environment for every child process.
+
+    The inherited environment is thrown away rather than filtered. sshd will
+    only pass through variables the client is permitted to send, and `restrict`
+    in authorized_keys already blocks environment options, but building the
+    environment from scratch means that a future relaxation of either does not
+    quietly become an injection route through PATH, IFS, BASH_ENV or
+    LD_PRELOAD.
+    """
+    return {
+        "PATH": "/usr/local/bin:/usr/bin:/bin",
+        "HOME": os.path.expanduser("~"),
+        "USER": pwd.getpwuid(os.getuid()).pw_name,
+        "LC_ALL": "C.UTF-8",
+        "LANG": "C.UTF-8",
+        "GNUPGHOME": GNUPGHOME,
+    }
+
+
+DRY_RUN = False
+
+
+def run(argv, cwd=None, stdout_path=None):
+    """Execute a fixed argv. Never a string, never a shell.
+
+    stdin is /dev/null: none of these steps has any business reading from the
+    client, and apt-ftparchive in particular will happily sit waiting if it
+    thinks it has an input stream.
+
+    stdout_path exists because apt-ftparchive writes its index to standard
+    output and the Jenkins job redirected it. We do the redirection here, in
+    Python, rather than reaching for a shell to do it for us.
+    """
+    log(syslog.LOG_INFO, "EXEC %s%s%s"
+        % (" ".join(argv),
+           " (cwd=%s)" % cwd if cwd else "",
+           " (stdout=%s)" % stdout_path if stdout_path else ""))
+
+    if DRY_RUN:
+        print("would run: %s%s%s"
+              % (" ".join(argv),
+                 "   [cwd %s]" % cwd if cwd else "",
+                 "   [> %s]" % stdout_path if stdout_path else ""))
+        return
+
+    out = None
+    try:
+        if stdout_path:
+            out = open(stdout_path, "wb")
+        result = subprocess.run(
+            argv,
+            cwd=cwd,
+            env=child_env(),
+            stdin=subprocess.DEVNULL,
+            stdout=out if out else None,
+            shell=False,          # the default; stated to make the audit easy
+            check=False,
+        )
+    finally:
+        if out:
+            out.close()
+
+    if result.returncode != 0:
+        log(syslog.LOG_ERR, "FAILED rc=%d cmd=%s"
+            % (result.returncode, " ".join(argv)))
+        sys.stderr.write("pga-publish: step failed: %s (rc=%d)\n"
+                         % (argv[0], result.returncode))
+        sys.exit(EX_FAIL)
+
+
+def makedirs(path):
+    """Create a directory that we have already proved is inside its root."""
+    log(syslog.LOG_INFO, "MKDIR %s" % path)
+    if not DRY_RUN:
+        os.makedirs(path, mode=0o755, exist_ok=True)
+    else:
+        print("would create: %s" % path)
+
+
+def require_dir(path, reason):
+    if DRY_RUN:
+        return
+    if not os.path.isdir(path):
+        log(syslog.LOG_WARNING, "PRECONDITION %s: %s" % (reason, path))
+        sys.stderr.write("pga-publish: %s\n" % reason)
+        sys.exit(EX_UNAVAILABLE)
+
+
+def refuse_if_exists(path, reason):
+    """Publication is not idempotent and must not pretend to be.
+
+    Overwriting an existing published version is how a good release becomes a
+    bad one, so the wrapper refuses and a human decides what to do. There is
+    deliberately no --force.
+    """
+    if DRY_RUN:
+        return
+    if os.path.exists(path):
+        log(syslog.LOG_WARNING, "PRECONDITION %s: %s" % (reason, path))
+        sys.stderr.write("pga-publish: %s\n" % reason)
+        sys.exit(EX_UNAVAILABLE)
+
+
+# ---------------------------------------------------------------------------
+# Shared building blocks
+# ---------------------------------------------------------------------------
+
+def index_apt(root, codename):
+    """Index and sign one apt tree, by running the script that does that.
+
+    The script is pkg/publish/rebuild-apt-repo.sh from the pgAdmin source
+    tree, deployed here. It is the only implementation of that sequence: it is
+    what an administrator runs by hand after purging old releases, what the
+    staging trees are indexed with, and what production is indexed with. The
+    wrapper deliberately does not carry a second copy, because a second copy is
+    how the staging and production indexes came to differ in the first place.
+    """
+    run([os.path.join(PUBLISH_DIR, "rebuild-apt-repo.sh"),
+         "-r", root, codename])
+
+
+def index_yum(root, family, name, version, arch):
+    """Index and sign one yum tree, including the EL compatibility links."""
+    run([os.path.join(PUBLISH_DIR, "rebuild-yum-repo.sh"),
+         "-r", root, "-a", arch, family, name, version])
+
+
+def write_readme(root, kind, base_url, history=True):
+    """Write the README at the top of an apt or yum tree.
+
+    The platform table in it is derived rather than maintained, from the tree
+    for what is supported and from the S3 archive for what each platform ever
+    carried. A snapshot or staging tree has no history to show, so it passes
+    --no-archive and gets a plain list of what is present.
+    """
+    argv = [os.path.join(PUBLISH_DIR, "install-repo-readme.py"),
+            "-r", root, "-u", base_url]
+    if not history:
+        argv.append("--no-archive")
+    argv.append(kind)
+    run(argv)
+
+
+def sign_packages(root):
+    """Sign everything in a staging tree that ships with a signature.
+
+    This is the half of the build that cannot happen on a GitHub runner. The
+    key that signs pgAdmin's packages and repository metadata stays on this
+    machine, so the workflow uploads unsigned artefacts and asks for them to be
+    signed here. A compromised workflow can therefore ask for a signature over
+    a package it has just uploaded, which is a real risk and an acknowledged
+    one; what it cannot do is hold the key, sign anything out of band, or sign
+    with any key other than this one.
+
+    Only the extensions listed are signed, and only within the tree named. A
+    file the build did not produce is a file this does not touch.
+    """
+    rpms = []
+    for directory, _, names in os.walk(os.path.join(root, "yum")):
+        rpms.extend(os.path.join(directory, n) for n in sorted(names)
+                    if n.endswith(".rpm"))
+    if rpms:
+        run([BIN_RPMSIGN, "--resign"] + rpms)
+
+    # Detached armoured signatures for everything downloaded directly rather
+    # than through a package manager. The .debs are not signed individually:
+    # apt verifies them through the signed Release file, which the indexing
+    # step produces.
+    for subdir, suffixes in (("source", (".tar.gz",)),
+                             ("pip", (".whl",)),
+                             ("docs", (".pdf", ".epub", ".tar.gz"))):
+        directory = os.path.join(root, subdir)
+        if not os.path.isdir(directory):
+            continue
+        for name in sorted(os.listdir(directory)):
+            if not name.endswith(suffixes) or name.endswith(".asc"):
+                continue
+            target = os.path.join(directory, name)
+            signature = target + ".asc"
+            if os.path.exists(signature):
+                os.unlink(signature)
+            run([BIN_GPG, "--batch", "--yes", "-u", GPG_KEY,
+                 "--armour", "--detach-sign", "--output", signature, target])
+
+
+def pull_from_staging(datestamp, src_subpath, dest):
+    """Copy one subdirectory of a staging build from procyon to paxsor.
+
+    The remote path is relative because the key used here is confined on the
+    procyon side by `rrsync -ro /var/www/html/builds`, so rrsync resolves it
+    against that root and refuses anything that climbs out. That is the real
+    control; the validation on this side is the belt to its braces.
+
+    -e is given as a fixed list of words. rsync splits it on whitespace and
+    execs it directly, without a shell, so the same rule applies here as
+    everywhere else: no client input goes anywhere near it.
+    """
+    remote = "%s@%s:%s/%s/" % (PULL_USER, PULL_HOST, datestamp, src_subpath)
+    ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
+               % (BIN_SSH, PULL_KEY))
+    makedirs(dest)
+    run([BIN_RSYNC,
+         "-rlt",                # no -p, no -o, no -g: local ownership wins
+         "--safe-links",        # drop any symlink pointing outside the tree
+         "--no-specials", "--no-devices",
+         "--delay-updates",
+         "-e", ssh_cmd,
+         remote, dest + "/"])
+
+
+def acquire_lock():
+    """One mutating operation at a time, per host."""
+    if DRY_RUN:
+        return None
+    handle = open(LOCK_FILE, "w")
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        log(syslog.LOG_WARNING, "BUSY another operation holds the lock")
+        sys.stderr.write("pga-publish: another publishing operation is in "
+                         "progress\n")
+        sys.exit(EX_TEMPFAIL)
+    return handle
+
+
+# ---------------------------------------------------------------------------
+# Verb handlers: staging role (procyon)
+# ---------------------------------------------------------------------------
+
+def staging_url(datestamp):
+    """Where a staging tree is reachable from, for the README it carries.
+
+    developer.pgadmin.org serves the staging root over HTTP, so a tester can
+    add the repository exactly as a user would, which is the point of building
+    the README into the staging tree at all.
+    """
+    return "https://developer.pgadmin.org/builds/%s" % datestamp
+
+
+def cmd_stage_create(args, raw):
+    """stage-create <DATESTAMP>
+
+    Create a staging directory and its fixed set of subdirectories. Idempotent,
+    because a workflow that is retried after a network failure should not need
+    a human to tidy up first, and because creating a directory that already
+    exists destroys nothing.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    root = under(STAGING_ROOT, datestamp)
+    makedirs(root)
+    for name in STAGE_CONTENT_DIRS:
+        makedirs(under(root, name))
+    for codename in APT_CODENAMES:
+        makedirs(under(root, "apt", codename, "dists", "pgadmin4",
+                       APT_COMPONENT))
+    for tree in YUM_TREES:
+        makedirs(under(root, *tree.split("/")))
+    print("created %s" % root)
+
+
+def cmd_stage_list(args, raw):
+    """stage-list
+
+    List the staging directories that exist, newest name last. Read-only, and
+    the only thing this wrapper will tell the client about the filesystem. It
+    exists so that the workflow can decide whether it needs a -N suffix without
+    guessing, and it lists names only, never contents.
+    """
+    if not os.path.isdir(STAGING_ROOT):
+        return
+    for name in sorted(os.listdir(STAGING_ROOT)):
+        if DATESTAMP_RE.match(name) and \
+                os.path.isdir(os.path.join(STAGING_ROOT, name)):
+            print(name)
+
+
+def cmd_stage_exists(args, raw):
+    """stage-exists <DATESTAMP>
+
+    Exit 0 if the staging directory exists, EX_UNAVAILABLE if it does not, so
+    that the workflow can check a precondition with a plain `ssh` exit status.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    path = under(STAGING_ROOT, datestamp)
+    require_dir(path, "staging directory does not exist")
+    print("present %s" % path)
+
+
+def cmd_stage_index_apt(args, raw):
+    """stage-index-apt <DATESTAMP>
+
+    Build and sign the apt indices for a staging build.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    root = under(STAGING_ROOT, datestamp)
+    require_dir(root, "staging directory does not exist")
+    apt_root = under(root, "apt")
+    require_dir(apt_root, "staging build has no apt tree")
+    for codename in APT_CODENAMES:
+        if not DRY_RUN and not os.path.isdir(under(apt_root, codename)):
+            continue
+        index_apt(root, codename)
+    write_readme(root, "apt", staging_url(datestamp), history=False)
+    print("indexed %s" % apt_root)
+
+
+def cmd_stage_index_yum(args, raw):
+    """stage-index-yum <DATESTAMP>
+
+    Rebuild, sign and link every yum tree in a staging build. The tree list is
+    a constant, so this is all or nothing; there is no verb for indexing one
+    tree in isolation, because there is no workflow that needs one and every
+    argument we do not accept is an argument nobody can abuse.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    root = under(STAGING_ROOT, datestamp)
+    require_dir(root, "staging directory does not exist")
+    yum_root = under(root, "yum")
+    require_dir(yum_root, "staging build has no yum tree")
+    for family, name, version, arch in YUM_TARGETS:
+        tree = under(root, "yum", family,
+                     "%s-%s-%s" % (name, version, arch))
+        if not DRY_RUN and not os.path.isdir(tree):
+            continue
+        index_yum(root, family, name, version, arch)
+    write_readme(root, "yum", staging_url(datestamp), history=False)
+    print("indexed %s" % yum_root)
+
+
+def cmd_stage_sign(args, raw):
+    """stage-sign <DATESTAMP>
+
+    Sign the packages in a staging build. Run before the indexing verbs, since
+    the apt and yum metadata has to describe signed packages rather than the
+    unsigned ones the workflow uploaded.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    root = under(STAGING_ROOT, datestamp)
+    require_dir(root, "staging directory does not exist")
+    sign_packages(root)
+    print("signed %s" % root)
+
+
+# ---------------------------------------------------------------------------
+# Verb handlers: download role (paxsor)
+# ---------------------------------------------------------------------------
+
+def cmd_release_exists(args, raw):
+    """release-exists <VERSION>
+
+    Exit 0 if the published version directory exists. The workflow uses this to
+    refuse early, before it has spent twenty minutes copying files.
+    """
+    version = v_version(args[0], raw)
+    path = under(FTP_ROOT, "v%s" % version)
+    if os.path.isdir(path) or DRY_RUN:
+        print("present %s" % path)
+        return
+    sys.stderr.write("pga-publish: no such release\n")
+    sys.exit(EX_UNAVAILABLE)
+
+
+def cmd_release_create(args, raw):
+    """release-create <VERSION>
+
+    Create /var/ftp/pgadmin4/v<VERSION> and its content subdirectories, having
+    first refused if it already exists. This is the verb that makes publication
+    single-shot: a second attempt at the same version fails here, loudly,
+    rather than merging new files into a published tree.
+    """
+    version = v_version(args[0], raw)
+    root = under(FTP_ROOT, "v%s" % version)
+    refuse_if_exists(root, "publication location already exists")
+    makedirs(root)
+    for name in STAGE_CONTENT_DIRS:
+        makedirs(under(root, name))
+    print("created %s" % root)
+
+
+def cmd_release_fetch(args, raw):
+    """release-fetch <VERSION> <DATESTAMP>
+
+    Copy the content directories of a staging build into a release directory
+    that release-create has already made. Both arguments are validated; the
+    source host, the transport and the subdirectory list are all constants.
+    """
+    version = v_version(args[0], raw)
+    datestamp = v_datestamp(args[1], raw)
+    root = under(FTP_ROOT, "v%s" % version)
+    require_dir(root, "run release-create first")
+    for name in STAGE_CONTENT_DIRS:
+        pull_from_staging(datestamp, name, under(root, name))
+    print("fetched %s into %s" % (datestamp, root))
+
+
+def cmd_packages_fetch(args, raw):
+    """packages-fetch <DATESTAMP>
+
+    Copy the built packages from a staging build into the live apt and yum
+    trees, ready for the rebuild verbs to index them.
+
+    There is no shared apt pool: each distribution release has its own tree,
+    with the packages sitting directly in binary-<arch>, which is the layout
+    apt-ftparchive is pointed at and the one the download site has always had.
+    Only the indices are left behind, because the rebuild verbs regenerate
+    those from whatever is on disk afterwards.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    for codename in APT_CODENAMES:
+        relative = "apt/%s/dists/pgadmin4/%s" % (codename, APT_COMPONENT)
+        pull_from_staging(datestamp, relative,
+                          under(FTP_ROOT, "apt", codename, "dists",
+                                "pgadmin4", APT_COMPONENT))
+    for relative in YUM_TREES:
+        pull_from_staging(datestamp, relative,
+                          under(FTP_ROOT, *relative.split("/")))
+    print("fetched packages from %s" % datestamp)
+
+
+def cmd_snapshot_create(args, raw):
+    """snapshot-create <DATESTAMP>
+
+    The snapshot equivalent of release-create. Snapshots are dated rather than
+    versioned, and unlike releases they are expected to accumulate, so this one
+    is idempotent.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    root = under(SNAPSHOT_ROOT, datestamp)
+    makedirs(root)
+    for name in STAGE_CONTENT_DIRS:
+        makedirs(under(root, name))
+    print("created %s" % root)
+
+
+def cmd_snapshot_fetch(args, raw):
+    """snapshot-fetch <DATESTAMP>
+
+    Copy a staging build into the snapshot directory of the same name.
+    """
+    datestamp = v_datestamp(args[0], raw)
+    root = under(SNAPSHOT_ROOT, datestamp)
+    require_dir(root, "run snapshot-create first")
+    for name in STAGE_CONTENT_DIRS:
+        pull_from_staging(datestamp, name, under(root, name))
+    print("fetched %s into %s" % (datestamp, root))
+
+
+def cmd_rebuild_apt(args, raw):
+    """rebuild-apt <CODENAME>
+
+    Index and sign the production apt tree for one distribution release. The
+    script signs as part of indexing, so there is nothing to do afterwards.
+    """
+    codename = v_codename(args[0], raw)
+    index_apt(FTP_ROOT, codename)
+    print("rebuilt apt %s" % codename)
+
+
+def cmd_rebuild_yum(args, raw):
+    """rebuild-yum <FAMILY> <NAME> <VERSION> <ARCH>
+
+    Index and sign the production yum tree for one target. The four arguments
+    are validated as a whole against the allowlist rather than field by field,
+    so a valid family cannot be paired with a version belonging to another
+    family, nor with an architecture we do not publish.
+    """
+    family = v_name(args[0], raw)
+    name = v_name(args[1], raw)
+    elversion = v_name(args[2], raw)
+    arch = v_name(args[3], raw)
+    if (family, name, elversion, arch) not in YUM_TARGETS:
+        reject(EX_NOPERM, "yum-target-not-allowlisted", raw)
+    index_yum(FTP_ROOT, family, name, elversion, arch)
+    print("rebuilt yum %s %s %s %s" % (family, name, elversion, arch))
+
+
+def cmd_create_release(args, raw):
+    """create-release <VERSION>
+
+    Run the existing create_release.py, which updates the website's idea of
+    what the current release is. Note the v prefix is added here: the client
+    supplies a version number, not a directory name.
+    """
+    version = v_version(args[0], raw)
+    run([BIN_PYTHON, os.path.join(TOOLS_DIR, "create_release.py"),
+         "v%s" % version])
+    print("created release record v%s" % version)
+
+
+def cmd_load_docs(args, raw):
+    """load-docs <VERSION>"""
+    version = v_version(args[0], raw)
+    run([os.path.join(TOOLS_DIR, "load-docs.sh"), version])
+    print("loaded docs for %s" % version)
+
+
+def cmd_purge_cache(args, raw):
+    """purge-cache
+
+    No arguments, by design. The script purges the CDN cache for the site; if a
+    future version grows a path argument, that argument must be allowlisted
+    here rather than passed through.
+    """
+    run([os.path.join(TOOLS_DIR, "purge-cache.sh")])
+    print("purged cache")
+
+
+def cmd_sync_s3(args, raw):
+    """sync-s3
+
+    Copy the download site to the archive bucket and invalidate the CDN. The
+    script takes no choice of what to sync: it syncs the whole tree, excluding
+    snapshots, so there is nothing here for a caller to name. Its one argument
+    is the CloudFront distribution, which is site configuration and is read
+    from the server rather than accepted from the client.
+    """
+    try:
+        with open(CLOUDFRONT_CONF) as handle:
+            distribution = handle.read().strip()
+    except OSError:
+        # A dry run is meant to be possible on a workstation, where no site
+        # configuration exists. The real path still refuses to guess.
+        if not DRY_RUN:
+            sys.stderr.write("pga-publish: cannot read %s\n" % CLOUDFRONT_CONF)
+            sys.exit(EX_UNAVAILABLE)
+        distribution = "EXAMPLEDIST"
+    if not re.match(r"\A[A-Z0-9]{8,32}\Z", distribution):
+        sys.stderr.write("pga-publish: invalid distribution id in %s\n"
+                         % CLOUDFRONT_CONF)
+        sys.exit(EX_UNAVAILABLE)
+    run([BIN_PYTHON, os.path.join(TOOLS_DIR, "sync-ftp-to-s3.py"),
+         distribution])
+    print("synced the download archive")
+
+
+# ---------------------------------------------------------------------------
+# Verbs common to both roles
+# ---------------------------------------------------------------------------
+
+def cmd_hello(args, raw):
+    """hello
+
+    Liveness and version check, so that a workflow can confirm it is talking to
+    the wrapper it expects before it starts a release. It reveals the role and
+    the verb list, both of which anyone holding this key could discover by
+    trying verbs anyway.
+    """
+    print("pga-publish %s role=%s host=%s" % (VERSION, ROLE, os.uname()[1]))
+    for verb in sorted(VERBS):
+        role, minimum, maximum, _handler = VERBS[verb]
+        if role in (None, ROLE):
+            print("  %s (%d-%d args)" % (verb, minimum, maximum))
+
+
+# ---------------------------------------------------------------------------
+# The vocabulary
+# ---------------------------------------------------------------------------
+#
+# verb -> (role, min args, max args, handler)
+#
+# role None means both. The arity is enforced before the handler runs, so a
+# handler may index args[] without checking its length.
+#
+# This table is the interface. Everything a holder of the publishing key can
+# ask for is on this page, which is the point: a reviewer should be able to
+# read the capability set in one screen, without reading the implementation.
+
+VERBS = {
+    "hello":            (None, 0, 0, cmd_hello),
+
+    # procyon
+    "stage-create":     (ROLE_STAGING, 1, 1, cmd_stage_create),
+    "stage-list":       (ROLE_STAGING, 0, 0, cmd_stage_list),
+    "stage-exists":     (ROLE_STAGING, 1, 1, cmd_stage_exists),
+    "stage-sign":       (ROLE_STAGING, 1, 1, cmd_stage_sign),
+    "stage-index-apt":  (ROLE_STAGING, 1, 1, cmd_stage_index_apt),
+    "stage-index-yum":  (ROLE_STAGING, 1, 1, cmd_stage_index_yum),
+
+    # paxsor
+    "release-exists":   (ROLE_DOWNLOAD, 1, 1, cmd_release_exists),
+    "release-create":   (ROLE_DOWNLOAD, 1, 1, cmd_release_create),
+    "release-fetch":    (ROLE_DOWNLOAD, 2, 2, cmd_release_fetch),
+    "packages-fetch":   (ROLE_DOWNLOAD, 1, 1, cmd_packages_fetch),
+    "snapshot-create":  (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_create),
+    "snapshot-fetch":   (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_fetch),
+    "rebuild-apt":      (ROLE_DOWNLOAD, 1, 1, cmd_rebuild_apt),
+    "rebuild-yum":      (ROLE_DOWNLOAD, 4, 4, cmd_rebuild_yum),
+    "create-release":   (ROLE_DOWNLOAD, 1, 1, cmd_create_release),
+    "load-docs":        (ROLE_DOWNLOAD, 1, 1, cmd_load_docs),
+    "purge-cache":      (ROLE_DOWNLOAD, 0, 0, cmd_purge_cache),
+    "sync-s3":          (ROLE_DOWNLOAD, 0, 0, cmd_sync_s3),
+}
+
+# Verbs that only read. They skip the lock, so a status check during a long
+# publication does not fail with EX_TEMPFAIL.
+READ_ONLY_VERBS = frozenset(
+    ("hello", "stage-list", "stage-exists", "release-exists"))
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def read_role(override=None):
+    """Read and validate the host's role.
+
+    A missing or unrecognised role file is fatal. Defaulting would mean that a
+    misconfigured host silently behaves like one of the two, and the wrong one
+    is the download server.
+
+    The override exists so that the self-test can exercise both roles on a
+    workstation with no role file. It is only ever passed when DRY_RUN is set,
+    which in turn is only ever set when there is no SSH_ORIGINAL_COMMAND, so it
+    is unreachable from the far end of an SSH connection.
+    """
+    if override is not None:
+        if not DRY_RUN or override not in VALID_ROLES:
+            sys.exit(EX_NOPERM)
+        return override
+    try:
+        with open(ROLE_FILE, "r") as handle:
+            value = handle.read().strip()
+    except OSError:
+        sys.stderr.write("pga-publish: cannot read %s\n" % ROLE_FILE)
+        sys.exit(EX_UNAVAILABLE)
+    if value not in VALID_ROLES:
+        sys.stderr.write("pga-publish: invalid role in %s\n" % ROLE_FILE)
+        sys.exit(EX_UNAVAILABLE)
+    return value
+
+
+ROLE = None
+
+
+def main():
+    global ROLE, DRY_RUN
+
+    log_open()
+
+    # How the request reaches us.
+    #
+    # Under sshd, the request is in SSH_ORIGINAL_COMMAND and our own argv is
+    # whatever sshd chose to pass, which we ignore entirely.
+    #
+    # Run from a real shell with no SSH_ORIGINAL_COMMAND, an administrator may
+    # pass --dry-run to see what a request would do without doing it. That flag
+    # is only ever honoured in the absence of SSH_ORIGINAL_COMMAND, so a client
+    # cannot reach it: the local argv is not something an SSH client controls,
+    # and if it ever were, the guard below would still refuse.
+    raw = os.environ.get("SSH_ORIGINAL_COMMAND")
+    role_override = None
+
+    if raw is None and len(sys.argv) > 1 and sys.argv[1] == "--dry-run":
+        DRY_RUN = True
+        local_args = sys.argv[2:]
+        if len(local_args) >= 2 and local_args[0] == "--role":
+            role_override = local_args[1]
+            local_args = local_args[2:]
+        raw = " ".join(local_args)
+
+    ROLE = read_role(role_override)
+
+    verb, args = parse_request(raw)
+
+    entry = VERBS.get(verb)
+    if entry is None:
+        reject(EX_USAGE, "unknown-verb", raw)
+
+    role, minimum, maximum, handler = entry
+
+    if role is not None and role != ROLE:
+        reject(EX_NOPERM, "wrong-role", raw)
+
+    if not minimum <= len(args) <= maximum:
+        reject(EX_USAGE, "bad-arity", raw)
+
+    log(syslog.LOG_NOTICE, "ACCEPT from=%s role=%s verb=%s args=%s"
+        % (client_id(), ROLE, verb, sanitise_for_log(" ".join(args))))
+
+    lock = None
+    if verb not in READ_ONLY_VERBS:
+        lock = acquire_lock()
+
+    try:
+        handler(args, raw)
+    finally:
+        if lock:
+            lock.close()
+
+    log(syslog.LOG_NOTICE, "DONE verb=%s" % verb)
+    sys.exit(EX_OK)
+
+
+if __name__ == "__main__":
+    main()

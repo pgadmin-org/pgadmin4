@@ -1,0 +1,50 @@
+# ~pgaupload/.ssh/authorized_keys on paxsor (ftp.pgadmin.org)
+#
+# The same two keys as on procyon, with the same options and for the same
+# reasons; read the annotations in authorized_keys.procyon first, since they
+# are not repeated here. What differs is the blast radius, because this host
+# serves the packages that end users install, and the yum and apt signing keys
+# live here.
+#
+# Placeholders in angle brackets must be substituted at install time:
+#
+#   <ROADIE-IPV4>, <ROADIE-IPV6>   the runner's addresses
+#   <...KEY...>                    the public key, one line, no line breaks
+#
+# Note that these are the same two key pairs as on procyon, not four. One
+# publishing key and one upload key, each trusted by both hosts, each confined
+# differently on each host by the options below. Two more key pairs would mean
+# two more things to rotate and no reduction in what a compromised runner can
+# reach, since a compromised runner has both of them anyway.
+
+# ---------------------------------------------------------------------------
+# Key 1: publishing. Verbs only.
+# ---------------------------------------------------------------------------
+# What a holder of this key can do on paxsor: create a v<VERSION> or snapshot
+# directory (refusing if it already exists), pull the matching staging content
+# from procyon, rebuild and sign the apt and yum metadata for an allowlisted
+# distribution, and run the four existing publication scripts with arguments
+# that have been validated or allowlisted first.
+#
+# What it cannot do, and this is the point of the exercise: delete anything,
+# name a file, name a path, name a host, name a signing key, choose which
+# binary runs, or supply a single character that reaches a shell.
+restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@roadie
+
+# ---------------------------------------------------------------------------
+# Key 2: upload. Bytes only, and into a landing area rather than the live tree.
+# ---------------------------------------------------------------------------
+# On procyon the upload key writes into the staging root, because staging is
+# what it is for. Here it writes into a separate landing directory that nothing
+# serves, so a compromised runner cannot put a file where a user's apt or dnf
+# would find it: only the wrapper's verbs move content into the published tree,
+# and only from a validated staging directory.
+#
+# In the normal release flow this key is not used at all, since publication
+# pulls from procyon. It is here for the occasional out-of-band artefact that
+# has no staging build behind it, and if review concludes that case does not
+# exist, the right answer is to delete this line rather than to keep it warm.
+#
+# SITE: create /var/ftp/incoming owned by pgaupload, outside the document root
+# and outside /var/ftp/pgadmin4, and confirm that nothing serves it.
+restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/incoming" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@roadie
