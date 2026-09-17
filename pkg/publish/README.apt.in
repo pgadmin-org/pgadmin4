@@ -1,0 +1,50 @@
+pgAdmin 4: APT repository
+
+Supported platform matrix:
+
++--------------------------+--------------+-------------------------+------------------------+
+| Platform                 | Architecture | First supported release | Last supported release |
++--------------------------+--------------+-------------------------+------------------------+
+| Debian 11 (Bullseye)     |    x86_64    |           4.30          |          9.14          |
+| Debian 12 (Bookworm)     |    x86_64    |           7.0           |            -           |
+| Debian 13 (Trixie)       |    x86_64    |           9.8           |            -           |
++--------------------------+--------------+-------------------------+------------------------+
+| Ubuntu 22.04 (Jammy)     |    x86_64    |           6.9           |            -           |
+| Ubuntu 24.04 (Noble)     |    x86_64    |           8.7           |            -           |
+| Ubuntu 24.10 (Oracular)  |    x86_64    |           8.13          |          9.5           |
+| Ubuntu 25.04 (Plucky)    |    x86_64    |           9.3           |          9.14          |
+| Ubuntu 25.10 (Questing)  |    x86_64    |           9.11          |          9.17          |
+| Ubuntu 26.04 (Resolute)  |    x86_64    |           9.15          |            -           |
++--------------------------+--------------+-------------------------+------------------------+
+
+IMPORTANT NOTE: Packages for distributions that are no longer supported will be archived to 
+https://pgadmin-archive.postgresql.org/, from where they can be manually downloaded. The archive
+site cannot be used as a repository!
+
+To use this repository, run the following commands:
+
+#
+# Setup the repository
+#
+
+# Install the public key for the repository (if not done previously):
+curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
+
+# Create the repository configuration file:
+sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] @BASE_URL@/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt update'
+
+#
+# Install pgAdmin
+#
+
+# Install for both desktop and web modes:
+sudo apt install pgadmin4
+
+# Install for desktop mode only:
+sudo apt install pgadmin4-desktop
+
+# Install for web mode only: 
+sudo apt install pgadmin4-web 
+
+# Configure the webserver, if you installed pgadmin4-web:
+sudo /usr/pgadmin4/bin/setup-web.sh
