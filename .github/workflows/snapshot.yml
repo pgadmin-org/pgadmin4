@@ -18,6 +18,19 @@ name: Snapshot
 
 on:
   workflow_dispatch:
+    inputs:
+      location:
+        description: >-
+          Staging directory name, normally today's date. Jenkins writes
+          <date> on the same server, so a test run wants a -N suffix,
+          for example 2026-09-17-2. stage-list shows what is taken.
+        required: false
+        default: ''
+      publish:
+        description: Upload to the staging server when the build succeeds
+        type: boolean
+        required: false
+        default: false
 
   # See snapshot-macos.yml: no dispatch button exists for a workflow off the
   # default branch, so whilst this lives on a working branch it fires on
@@ -162,3 +175,85 @@ jobs:
         with:
           name: pgadmin4-snapshot
           path: stage/
+
+  # Upload the assembled tree to procyon and have it signed and indexed there.
+  #
+  # Everything this job does on the far side goes through pga-publish behind a
+  # forced command, so the request is a verb and a datestamp rather than a
+  # shell command; the wrapper decides what that means. The bytes travel over a
+  # second key confined by rrsync to the staging root, write-only and with
+  # deletion refused, so a compromised run can add to a staging build but
+  # cannot read the rest of the server or empty it.
+  #
+  # The signing happens on the far side too, which is the point: the key never
+  # comes here.
+  publish:
+    needs: assemble
+    if: inputs.publish
+    runs-on: ubuntu-24.04
+
+    # Restricts the keys to this job, and lets a deployment branch policy
+    # decide which refs may reach the servers at all.
+    environment: publishing
+
+    steps:
+      - name: Collect the assembled tree
+        uses: actions/download-artifact@v7
+        with:
+          name: pgadmin4-snapshot
+          path: stage
+
+      - name: Configure SSH
+        env:
+          PUBLISH_KEY: ${{ secrets.PUBLISH_SSH_KEY }}
+          UPLOAD_KEY: ${{ secrets.UPLOAD_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          mkdir -m 700 -p ~/.ssh
+          printf '%s\n' "${PUBLISH_KEY}" > ~/.ssh/publish
+          printf '%s\n' "${UPLOAD_KEY}" > ~/.ssh/upload
+          printf '%s\n' "${KNOWN_HOSTS}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/publish ~/.ssh/upload ~/.ssh/known_hosts
+
+      - name: Publish to staging
+        env:
+          STAGING: ${{ vars.STAGING_SSH_TARGET }}
+          LOCATION: ${{ inputs.location }}
+        run: |
+          set -euo pipefail
+          if [ -z "${STAGING}" ]; then
+              echo "The STAGING_SSH_TARGET variable is not set." >&2
+              exit 1
+          fi
+
+          # One directory came out of assemble, named for the date. An explicit
+          # location overrides it so that a test run does not land on the one
+          # the buildfarm is still writing to on the same server.
+          BUILT=$(ls stage)
+          DEST=${LOCATION:-${BUILT}}
+          echo "Publishing ${BUILT} as ${DEST}"
+
+          publish() {
+              ssh -i ~/.ssh/publish -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes "${STAGING}" "$@"
+          }
+
+          publish stage-create "${DEST}"
+
+          # No --delete, deliberately: rrsync refuses it anyway, and a
+          # publishing step that can remove things is a publishing step that
+          # can remove the wrong things.
+          rsync -rlt --safe-links --no-specials --no-devices \
+              -e "ssh -i ~/.ssh/upload -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              "stage/${BUILT}/" "${STAGING}:${DEST}/"
+
+          # Signing before indexing: the metadata has to describe the signed
+          # packages rather than the unsigned ones just uploaded.
+          publish stage-sign "${DEST}"
+          publish stage-index-apt "${DEST}"
+          publish stage-index-yum "${DEST}"
+
+      - name: Remove the keys
+        if: always()
+        run: rm -f ~/.ssh/publish ~/.ssh/upload ~/.ssh/known_hosts
