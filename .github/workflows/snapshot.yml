@@ -231,6 +231,11 @@ jobs:
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
         run: |
           set -euo pipefail
+          for TOOL in ssh rsync; do
+              command -v "${TOOL}" >/dev/null || {
+                  echo "This runner has no ${TOOL}." >&2; exit 1; }
+          done
+
           for KEY in "${PUBLISH_KEY/#\~/$HOME}" "${UPLOAD_KEY/#\~/$HOME}"; do
               if [ ! -r "${KEY}" ]; then
                   echo "Missing or unreadable SSH key: ${KEY}" >&2
@@ -259,7 +264,16 @@ jobs:
           # One directory came out of assemble, named for the date. An explicit
           # location overrides it so that a test run does not land on the
           # snapshot the buildfarm is still writing on the same server.
-          BUILT=$(ls stage)
+          # assemble produces exactly one directory, named for the date.
+          # Anything else means the artefact is not what this step thinks it
+          # is, and guessing which one to publish is not a decision to make at
+          # three in the morning.
+          if [ "$(find stage -mindepth 1 -maxdepth 1 -type d | wc -l)" != "1" ]; then
+              echo "Expected one directory in the snapshot artefact:" >&2
+              ls -l stage >&2
+              exit 1
+          fi
+          BUILT=$(basename "$(find stage -mindepth 1 -maxdepth 1 -type d)")
           DEST=${LOCATION:-${BUILT}}
           echo "Publishing ${BUILT} as ${DEST}"
 
@@ -286,4 +300,12 @@ jobs:
           # Retention, which the buildfarm did with ls | tail | xargs rm. The
           # verb takes no argument: it cannot be asked to remove a particular
           # snapshot, only to enforce the retention the server already has.
-          publish snapshot-purge
+          #
+          # Skipped when the directory was named by hand, because that is a
+          # test run, and a test run has no business deciding which of the
+          # real snapshots are old enough to delete.
+          if [ -n "${LOCATION}" ]; then
+              echo "Named location, so leaving retention alone."
+          else
+              publish snapshot-purge
+          fi
