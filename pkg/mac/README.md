@@ -13,10 +13,10 @@ Either build the sources or get them from macports or similar:
   
 ## Building
 
-1. To bundle a different version of Python from the default of 3.14.7, set the
-   *PGADMIN_PYTHON_VERSION* environment variable, e.g:
-
-       export PGADMIN_PYTHON_VERSION=3.13.11
+1. The version of Python that gets bundled is read from
+   *pkg/python-version.txt*, which every platform's packaging shares so that
+   one commit cannot ship different interpreters on different systems. To
+   bundle a different version, edit that file.
 
 2. If a path different from the default of /usr/local/pgsql for the PostgreSQL
    installation has been used, set the *PGADMIN_POSTGRES_DIR* environment variable

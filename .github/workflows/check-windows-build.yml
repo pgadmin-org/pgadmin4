@@ -1,8 +1,8 @@
 # Replaces the pgadmin4-windows-x64-qa Jenkins job.
 #
 # This runs on a hosted runner, not a self-hosted one. Code signing in Make.bat
-# is conditional on PGADMIN_WINDOWS_CSC being set (see Make.bat:339, :393 and
-# :415), so an unsigned build check needs neither the Certum hardware token nor
+# is conditional on PGADMIN_WINDOWS_CSC being set (see Make.bat:393, :447 and
+# :469), so an unsigned build check needs neither the Certum hardware token nor
 # the machine it is plugged into. Only the release and snapshot builds, which
 # do sign, need the self-hosted runner.
 #
@@ -48,18 +48,8 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - uses: actions/setup-python@v7
-        id: python
-        with:
-          python-version: '3.13'
-
-      # Make.bat drives the venv through virtualenv.exe rather than the stdlib
-      # venv module, and checks for it explicitly (Make.bat:146).
-      - name: Install virtualenv
-        run: python -m pip install --upgrade pip virtualenv
-
       # None of these are on the hosted image. wget matters most: Make.bat's
-      # Electron download is an unbounded retry loop (Make.bat:316), so without
+      # Electron download is an unbounded retry loop (Make.bat:370), so without
       # it the build spins on error 9009 until the job times out rather than
       # failing. syft generates the SBOM, and its absence is silent, since
       # :GENERATE_SBOM redirects into sbom.json and returns 0 regardless. The
@@ -116,14 +106,13 @@ jobs:
       # environment. vcvars64.bat only sets it for its own process, hence
       # invoking it and Make.bat in a single cmd session, as the Jenkins job
       # does.
+      #
+      # No Python is set up for this job: Make.bat downloads the version named
+      # in pkg/python-version.txt, so the build gets the same interpreter here
+      # as it does on the signing host and on a developer's machine.
       - name: Check the installer build
         shell: cmd
-        env:
-          PGADMIN_PYTHON_DIR: ${{ format('{0}', steps.python.outputs.python-path) }}
         run: |
-          FOR %%I IN ("%PGADMIN_PYTHON_DIR%") DO SET "PGADMIN_PYTHON_DIR=%%~dpI"
-          IF "%PGADMIN_PYTHON_DIR:~-1%" == "\" SET "PGADMIN_PYTHON_DIR=%PGADMIN_PYTHON_DIR:~0,-1%"
-
           SET "PGADMIN_POSTGRES_DIR=%DEPS_DIR%\postgresql"
           SET "PGADMIN_KRB5_DIR=%DEPS_DIR%\krb5"
           SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"

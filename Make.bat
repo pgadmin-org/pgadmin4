@@ -20,9 +20,14 @@ IF "%1" == "clean" (
 )
 
 REM Main build sequence
+REM
+REM The clean runs first because :FETCH_PYTHON unpacks into the temp directory
+REM that it removes, and the fetch runs before :SET_ENVIRONMENT because the
+REM latter has no interpreter of its own to ask about the build.
+CALL :CLEAN || EXIT /B 1
+CALL :FETCH_PYTHON || EXIT /B 1
 CALL :SET_ENVIRONMENT
 CALL :VALIDATE_ENVIRONMENT || EXIT /B 1
-CALL :CLEAN || EXIT /B 1
 CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
 CALL :CREATE_PYTHON_ENV || EXIT /B 1
 CALL :CREATE_RUNTIME_ENV || EXIT /B 1
@@ -50,9 +55,72 @@ REM Main build sequence Ends
     EXIT /B 0
 
 
+:FETCH_PYTHON
+    REM Fetch the Python this build uses, rather than using whatever happens to
+    REM be installed on the machine running it. Which interpreter pgAdmin ships
+    REM is a decision recorded in pkg\python-version.txt, not a property of the
+    REM build agent, and this is the only place on Windows that reads it.
+    REM
+    REM The distribution comes from astral-sh/python-build-standalone: it is
+    REM relocatable, published per exact CPython version, and is a plain tarball
+    REM rather than an installer, so unpacking it raises no UAC prompt. That
+    REM matters on the signing host, where the desktop session is logged in
+    REM automatically and an elevation dialog waits forever for somebody who is
+    REM not there.
+    REM
+    REM curl.exe and tar.exe have shipped in Windows since 1803, so this needs
+    REM nothing installed to bootstrap itself, not even a Python.
+    ECHO Reading the Python version...
+    SET "PYTHON_VERSION="
+    SET "PYTHON_BUILD_STANDALONE_TAG="
+    FOR /F "eol=# usebackq tokens=1,2 delims==" %%a IN ("%WD%\pkg\python-version.txt") DO (
+        IF "%%a" == "PYTHON_VERSION" SET "PYTHON_VERSION=%%b"
+        IF "%%a" == "PYTHON_BUILD_STANDALONE_TAG" SET "PYTHON_BUILD_STANDALONE_TAG=%%b"
+    )
+
+    IF "%PYTHON_VERSION%" == "" (
+        ECHO PYTHON_VERSION is not set in pkg\python-version.txt.
+        EXIT /B 1
+    )
+    IF "%PYTHON_BUILD_STANDALONE_TAG%" == "" (
+        ECHO PYTHON_BUILD_STANDALONE_TAG is not set in pkg\python-version.txt.
+        EXIT /B 1
+    )
+
+    REM Split for the runtime build, where e.g. 3.13.15 becomes 313
+    FOR /F "tokens=1,2,3 delims=." %%a IN ("%PYTHON_VERSION%") DO (
+        SET "PYTHON_MAJOR=%%a"
+        SET "PYTHON_MINOR=%%b"
+        SET "PYTHON_REVISION=%%c"
+    )
+
+    SET "PGADMIN_PYTHON_DIR=%TMPDIR%\python"
+    SET "PYTHON_ARCHIVE=cpython-%PYTHON_VERSION%+%PYTHON_BUILD_STANDALONE_TAG%-x86_64-pc-windows-msvc-install_only.tar.gz"
+
+    IF NOT EXIST "%TMPDIR%"  MKDIR "%TMPDIR%"
+
+    ECHO Downloading Python %PYTHON_VERSION%...
+    curl.exe --fail --location --silent --show-error --output "%TMPDIR%\python.tar.gz" "https://github.com/astral-sh/python-build-standalone/releases/download/%PYTHON_BUILD_STANDALONE_TAG%/%PYTHON_ARCHIVE%" || EXIT /B 1
+
+    ECHO Unpacking Python...
+    REM The archive unpacks to a single python\ directory.
+    tar -x -f "%TMPDIR%\python.tar.gz" -C "%TMPDIR%" || EXIT /B 1
+    DEL /q "%TMPDIR%\python.tar.gz" > nul 2>&1
+
+    "%PGADMIN_PYTHON_DIR%\python.exe" --version || EXIT /B 1
+
+    REM :CREATE_VIRTUAL_ENV needs virtualenv rather than the venv module, as it
+    REM relocates the result. pip is bundled with the distribution, but ask
+    REM ensurepip for it anyway so this does not quietly depend on that.
+    ECHO Installing virtualenv...
+    "%PGADMIN_PYTHON_DIR%\python.exe" -m ensurepip --upgrade || EXIT /B 1
+    "%PGADMIN_PYTHON_DIR%\python.exe" -m pip install --upgrade pip virtualenv || EXIT /B 1
+
+    EXIT /B 0
+
+
 :SET_ENVIRONMENT
     ECHO Configuring the environment...
-    IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python314"
     IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\Program Files\MIT\Kerberos"
     IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\17"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
@@ -74,11 +142,6 @@ REM Main build sequence Ends
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-x64.exe
     IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-x64.exe
 
-    REM get Python version for the runtime build ex. 3.9.2 will be 39
-    FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
-    FOR /f "tokens=2 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
-    FOR /f "tokens=3 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_REVISION=%%G
-
     EXIT /B 0
 
 
@@ -90,8 +153,8 @@ REM Main build sequence Ends
     ECHO Output directory:          %DISTROOT%
     ECHO Installer name:            %INSTALLERNAME%
     ECHO.
-    ECHO Python directory:          %PGADMIN_PYTHON_DIR%
     ECHO Python version:            %PYTHON_MAJOR%.%PYTHON_MINOR%.%PYTHON_REVISION%
+    ECHO Python directory:          %PGADMIN_PYTHON_DIR%
     ECHO.
     ECHO KRB5 directory:            %PGADMIN_KRB5_DIR%
     ECHO PostgreSQL directory:      %PGADMIN_POSTGRES_DIR%
@@ -131,21 +194,9 @@ REM Main build sequence Ends
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PGADMIN_PYTHON_DIR%" (
-        ECHO !PGADMIN_PYTHON_DIR! does not exist.
-        ECHO Please install Python and set the PGADMIN_PYTHON_DIR environment variable.
-        EXIT /B 1
-    )
-
     IF NOT EXIST "%PGADMIN_POSTGRES_DIR%" (
         ECHO !PGADMIN_POSTGRES_DIR! does not exist.
         ECHO Please install PostgreSQL and set the PGADMIN_POSTGRES_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" (
-        ECHO !PGADMIN_PYTHON_DIR!\Scripts\virtualenv.exe does not exist.
-        ECHO Please install the virtualenv package in Python.
         EXIT /B 1
     )
 
@@ -185,11 +236,15 @@ REM Main build sequence Ends
     ECHO Staging Python...
     MKDIR "%BUILDROOT%\python\Lib" || EXIT /B 1
 
-    ECHO Downloading embedded Python...
-    REM Get the python embeddable and extract it to %BUILDROOT%\python
-    CD "%TMPDIR%
-    %PGADMIN_PYTHON_DIR%\python -c "import sys; from urllib.request import urlretrieve; urlretrieve('https://www.python.org/ftp/python/' + sys.version.split(' ')[0] + '/python-' + sys.version.split(' ')[0] + '-embed-amd64.zip', 'python-embedded.zip')" || EXIT /B 1
-    %PGADMIN_PYTHON_DIR%\python -c "import zipfile; z = zipfile.ZipFile('python-embedded.zip', 'r'); z.extractall('../win-build/python/')" || EXIT /B 1
+    ECHO Downloading embedded Python %PYTHON_VERSION%...
+    REM What ships is the embeddable distribution from python.org, a different
+    REM build from the one :FETCH_PYTHON downloaded, and it has to be the same
+    REM CPython version: the extension modules in site-packages were compiled
+    REM against the build Python and are about to be run under this one. Both
+    REM therefore read pkg\python-version.txt, rather than either asking the
+    REM other what it is.
+    curl.exe --fail --location --silent --show-error --output "%TMPDIR%\python-embedded.zip" "https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-embed-amd64.zip" || EXIT /B 1
+    tar -x -f "%TMPDIR%\python-embedded.zip" -C "%BUILDROOT%\python" || EXIT /B 1
 
     ECHO Copying site-packages...
     XCOPY /S /I /E /H /Y "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1

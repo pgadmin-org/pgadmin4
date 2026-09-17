@@ -29,10 +29,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  # Matches DEFAULT_PYTHON_VERSION on the buildfarm.
-  PGADMIN_PYTHON_VERSION: '3.13.15'
-
 jobs:
   build-appbundle:
     runs-on: ${{ matrix.runner }}

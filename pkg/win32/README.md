@@ -204,7 +204,6 @@ examples shown below are the defaults for the build system, so if they match
 your requirements you don't need to set them. For PostgreSQL 16 and below:
 
         SET "PGADMIN_POSTGRES_DIR=C:\build64\pgsql"
-        SET "PGADMIN_PYTHON_DIR=C:\Python314"
         SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
         SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
         SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
@@ -214,12 +213,16 @@ your requirements you don't need to set them. For PostgreSQL 16 and below:
     For PostgreSQL 17 and later:
 
         SET "PGADMIN_POSTGRES_DIR=C:\build64"
-        SET "PGADMIN_PYTHON_DIR=C:\Python314"
         SET "PGADMIN_KRB5_DIR=C:\build64"
         SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
         SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
         SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
         SET "PGADMIN_VCREDIST_FILE=vc_redist.x64.exe"
+
+    Note that Python is not among them. Make.bat downloads the exact version
+    named in *pkg/python-version.txt* into the build tree, both to build the
+    virtual environment with and to ship, so no Python needs to be installed
+    for the installer build and the one on the PATH is not consulted.
 
 2. Run:
 

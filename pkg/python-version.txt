@@ -1,0 +1,26 @@
+# The Python that pgAdmin builds against and ships.
+#
+# Every platform's packaging reads this file, so that a given commit produces
+# the same interpreter everywhere rather than whichever one happened to be
+# installed on the machine that ran the build, and so that a change of version
+# arrives as a reviewable commit rather than as a settings change somebody made
+# on a build agent.
+#
+# The format is deliberately dull: KEY=value, one per line, with # comments. It
+# has to be read by a batch file, a shell script and occasionally a person, and
+# anything richer than this would need a parser in at least one of those.
+#
+# PYTHON_VERSION is the exact CPython release, and is the only value the macOS
+# build needs, since relocatable-python fetches the framework from python.org
+# by version. The Windows build fetches a relocatable distribution from
+# astral-sh/python-build-standalone, whose releases are dated rather than
+# versioned, hence the second value; it then ships the matching embeddable
+# distribution from python.org.
+#
+# The two must be changed together, because the archive names embed both, as
+# cpython-<PYTHON_VERSION>+<PYTHON_BUILD_STANDALONE_TAG>-<platform>.tar.gz, and
+# any given tag only carries the CPython releases that were current when it was
+# cut.
+
+PYTHON_VERSION=3.13.15
+PYTHON_BUILD_STANDALONE_TAG=20260901
