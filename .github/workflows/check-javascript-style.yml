@@ -28,7 +28,7 @@ jobs:
       - name: Install Node modules
         run: |
           cd web
-          yarn install
+          yarn install --immutable
 
       - name: Run the linter
         run: |

@@ -42,7 +42,7 @@ RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
     export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
     npm install -g corepack && \
     corepack enable && \
-    yarn install && \
+    yarn install --immutable && \
     yarn run bundle && \
     rm -rf yarn.lock \
            package.json \
