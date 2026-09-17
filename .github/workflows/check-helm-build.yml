@@ -17,7 +17,11 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: '${{ github.workflow }} @ ${{ github.ref }}'
+  # The workflow's own name, spelled out rather than taken from
+  # github.workflow, because in a reusable workflow that expression is
+  # the CALLER's name. Every workflow Snapshot calls would otherwise
+  # share one group and, with cancel-in-progress, cancel each other.
+  group: 'check-helm-build @ ${{ github.ref }}'
   cancel-in-progress: true
 
 permissions:

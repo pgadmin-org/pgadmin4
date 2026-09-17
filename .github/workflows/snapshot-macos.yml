@@ -23,3 +23,145 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  # Not cancel-in-progress, unlike the QA builds. Cancelling a signing build
+  # partway through wastes forty minutes of work and, worse, can abandon a
+  # notarisation already submitted to Apple, leaving a request sitting in their
+  # queue for a build nobody will collect. Queue instead.
+  # Spelled out rather than taken from github.workflow, which in a
+  # reusable workflow is the CALLER's name, so every workflow Snapshot
+  # calls would otherwise share one group.
+  group: 'snapshot-macos @ ${{ github.ref }}'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  appbundle:
+    runs-on: ${{ matrix.runner }}
+
+    # The signing credentials live on an environment rather than loose on the
+    # repository, so only the workflows that should be signing can reach them.
+    environment: signing
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'arm64', arch: 'arm64',  runner: 'macos-15' }
+          - { name: 'x64',   arch: 'x86_64', runner: 'macos-26-intel' }
+
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install the build dependencies
+        run: brew install syft wget
+
+      - name: Install the PostgreSQL build dependencies
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: ${{ matrix.arch }}
+
+      # The buildfarm keeps the Developer ID in the worker's login keychain and
+      # unlocks it with devkeys/unlock-csc.sh. A hosted runner has no such
+      # keychain, so one is created for this job alone and destroyed after it,
+      # which is also why the password is generated rather than configured: it
+      # never outlives the job.
+      - name: Import the signing certificate
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN="${RUNNER_TEMP}/build.keychain"
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "KEYCHAIN=${KEYCHAIN}" >> "${GITHUB_ENV}"
+
+          echo "${MACOS_CERTIFICATE}" | base64 --decode > "${RUNNER_TEMP}/cert.p12"
+
+          security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
+          security set-keychain-settings -lut 21600 "${KEYCHAIN}"
+          security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
+          security import "${RUNNER_TEMP}/cert.p12" \
+              -k "${KEYCHAIN}" \
+              -P "${MACOS_CERTIFICATE_PASSWORD}" \
+              -T /usr/bin/codesign
+          # Without this, codesign prompts for permission to use the key, which
+          # on a headless runner means hanging until the job times out.
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+              -s -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}" > /dev/null
+          security list-keychain -d user -s "${KEYCHAIN}" login.keychain
+
+          rm -f "${RUNNER_TEMP}/cert.p12"
+          echo "Identities available to codesign:"
+          security find-identity -v -p codesigning "${KEYCHAIN}"
+
+      # build.sh decides whether to sign and notarise purely by whether these
+      # files exist, which is what keeps the QA build credential-free.
+      - name: Write the signing configuration
+        env:
+          MACOS_DEVELOPER_ID: ${{ secrets.MACOS_DEVELOPER_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          printf 'DEVELOPER_ID="%s"\n' "${MACOS_DEVELOPER_ID}" > pkg/mac/codesign.conf
+          {
+              printf 'DEVELOPER_USER=%s\n' "${APPLE_ID}"
+              printf 'DEVELOPER_ASP=%s\n' "${APPLE_APP_SPECIFIC_PASSWORD}"
+              printf 'DEVELOPER_TEAM_ID=%s\n' "${APPLE_TEAM_ID}"
+          } > pkg/mac/notarization.conf
+
+      # --zip as well as the DMG: the DMG is the download, the ZIP is what the
+      # Electron auto-updater fetches. The buildfarm's snapshot job does the
+      # same.
+      - name: Build the signed appbundle
+        run: |
+          export PGADMIN_POSTGRES_DIR=/opt/pgbuild/postgresql
+          export OPENSSL_DIR=/opt/pgbuild/openssl
+          export OPENSSL_STATIC=1
+
+          make appbundle BUILD_OPTS="--zip"
+
+      - name: Verify the signature and notarisation
+        run: |
+          APP="mac-build/pgAdmin 4.app"
+          echo "=== codesign ==="
+          codesign --verify --deep --strict --verbose=2 "${APP}"
+          codesign -dvvv "${APP}" 2>&1 | grep -E 'Authority|TeamIdentifier|Identifier='
+          echo "=== gatekeeper assessment ==="
+          spctl --assess --type execute --verbose=4 "${APP}"
+          echo "=== stapled notarisation ==="
+          xcrun stapler validate "${APP}"
+          for F in dist/*.dmg; do
+              echo "--- ${F} ---"
+              xcrun stapler validate "${F}"
+          done
+
+      - name: Archive the disk image and zip
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-macos-snapshot-${{ matrix.name }}
+          path: |
+            dist/*.dmg
+            dist/*.zip
+
+      # Runs even on failure: a keychain holding a Developer ID key must not
+      # outlive the job that created it, and the conf files carry the Apple
+      # credentials.
+      - name: Clean up the credentials
+        if: always()
+        run: |
+          rm -f pkg/mac/codesign.conf pkg/mac/notarization.conf
+          if [ -n "${KEYCHAIN:-}" ] && [ -f "${KEYCHAIN}" ]; then
+              security delete-keychain "${KEYCHAIN}"
+          fi
