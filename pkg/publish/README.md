@@ -71,6 +71,19 @@ substitute the addresses and the public keys, and read the annotations before
 changing an option, since each is there for a reason that is easier to write
 down than to rediscover.
 
+The private keys live on the runner's filesystem, at `~/.ssh/roadie-publish`
+and `~/.ssh/roadie-upload`, and the workflow references them by path rather
+than carrying copies in GitHub's secret store: they are already on the machine,
+and a second copy would mean a second place to rotate and a second place to
+leak from. The runner also needs the two servers in its `~/.ssh/known_hosts`,
+since host key checking is on and there is nobody to answer a prompt.
+
+The trade-off is that the boundary moves. An environment secret is gated by a
+deployment branch policy; a file on disk is gated by which workflows may run on
+that machine. This repository is public, so the runner belongs in a runner
+group restricted to these workflows, and nothing triggered by `pull_request`
+should target it.
+
 The shape of it is that no key gets a shell. The publishing key runs
 `pga-publish`, which parses `SSH_ORIGINAL_COMMAND` itself and never passes it
 to one. The upload key runs `rrsync`, confined to the staging root,

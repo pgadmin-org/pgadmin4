@@ -190,10 +190,21 @@ jobs:
   publish:
     needs: assemble
     if: inputs.publish
-    runs-on: ubuntu-24.04
 
-    # Restricts the keys to this job, and lets a deployment branch policy
-    # decide which refs may reach the servers at all.
+    # roadie, because that is where the keys are. They stay on its filesystem
+    # rather than in the secret store: they are already there, and putting a
+    # copy in GitHub would mean two places to rotate and two places to leak
+    # from.
+    #
+    # The consequence is that the boundary moves. An environment secret is
+    # gated by a deployment branch policy; a file on disk is gated by which
+    # workflows may run on this runner. This repository is public, so roadie
+    # belongs in a runner group restricted to these workflows, and nothing
+    # triggered by pull_request should ever target it.
+    runs-on: [self-hosted, roadie]
+
+    # Kept for the branch policy and for the record of what deployed when,
+    # even though the credentials no longer live on it.
     environment: publishing
 
     steps:
@@ -203,23 +214,34 @@ jobs:
           name: pgadmin4-snapshot
           path: stage
 
-      - name: Configure SSH
+      # Nothing is installed or written here: the keys are part of how this
+      # machine is configured, not part of the job. Checking up front means a
+      # missing key fails with a sentence rather than as an authentication
+      # error halfway through an upload.
+      - name: Check the keys are present
         env:
-          PUBLISH_KEY: ${{ secrets.PUBLISH_SSH_KEY }}
-          UPLOAD_KEY: ${{ secrets.UPLOAD_SSH_KEY }}
-          KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
         run: |
           set -euo pipefail
-          mkdir -m 700 -p ~/.ssh
-          printf '%s\n' "${PUBLISH_KEY}" > ~/.ssh/publish
-          printf '%s\n' "${UPLOAD_KEY}" > ~/.ssh/upload
-          printf '%s\n' "${KNOWN_HOSTS}" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/publish ~/.ssh/upload ~/.ssh/known_hosts
+          for KEY in "${PUBLISH_KEY/#\~/$HOME}" "${UPLOAD_KEY/#\~/$HOME}"; do
+              if [ ! -r "${KEY}" ]; then
+                  echo "Missing or unreadable SSH key: ${KEY}" >&2
+                  exit 1
+              fi
+          done
+          if [ ! -r ~/.ssh/known_hosts ]; then
+              echo "This runner has no ~/.ssh/known_hosts, so host key" >&2
+              echo "checking would fail. Add the servers' host keys." >&2
+              exit 1
+          fi
 
       - name: Publish to staging
         env:
           STAGING: ${{ vars.STAGING_SSH_TARGET }}
           LOCATION: ${{ inputs.location }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
         run: |
           set -euo pipefail
           if [ -z "${STAGING}" ]; then
@@ -235,7 +257,7 @@ jobs:
           echo "Publishing ${BUILT} as ${DEST}"
 
           publish() {
-              ssh -i ~/.ssh/publish -o BatchMode=yes \
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
                   -o StrictHostKeyChecking=yes "${STAGING}" "$@"
           }
 
@@ -245,7 +267,7 @@ jobs:
           # publishing step that can remove things is a publishing step that
           # can remove the wrong things.
           rsync -rlt --safe-links --no-specials --no-devices \
-              -e "ssh -i ~/.ssh/upload -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              -e "ssh -i ${UPLOAD_KEY/#\~/$HOME} -o BatchMode=yes -o StrictHostKeyChecking=yes" \
               "stage/${BUILT}/" "${STAGING}:${DEST}/"
 
           # Signing before indexing: the metadata has to describe the signed
@@ -253,7 +275,3 @@ jobs:
           publish stage-sign "${DEST}"
           publish stage-index-apt "${DEST}"
           publish stage-index-yum "${DEST}"
-
-      - name: Remove the keys
-        if: always()
-        run: rm -f ~/.ssh/publish ~/.ssh/upload ~/.ssh/known_hosts
