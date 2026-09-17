@@ -6,11 +6,35 @@ Either build the sources or get them from macports or similar:
 
 1. Yarn & NodeJS
 
-2. PostgreSQL 12 or above from http://www.postgresql.org/
+2. PostgreSQL 12 or above from http://www.postgresql.org/, or the pre-built
+   dependencies from the
+   [pgbuild project](https://github.com/pgadmin-org/pgbuild), which is what the
+   release builds use. Five are needed, openssl, krb5, zstd, lz4 and
+   postgresql-18, each published as a release whose tag ends in *-latest* so
+   that the current build is always at a predictable URL:
 
-3. Python 3.6+ (required for building). The build environment should run this 
-  version of python in response to the *python* command.
-  
+       https://github.com/pgadmin-org/pgbuild/releases/download/<pkg>-macos-<arch>-latest/<pkg>-macos-<arch>-latest.tar.gz
+
+   where <arch> is arm64 or x86_64. They unpack into subdirectories of a
+   common prefix, /opt/pgbuild in CI, which is then given to the build as
+   *PGADMIN_POSTGRES_DIR=/opt/pgbuild/postgresql*.
+
+   These matter beyond convenience: they are built against each other with
+   *--with-zstd* and *--with-lz4* and a consistent deployment target, which
+   Homebrew's PostgreSQL is not. The build checks in *.github/workflows* fetch
+   exactly these through the *install-pgbuild-deps* action, so a local build
+   and a CI build work from the same binaries.
+
+3. Python 3.9+ (required for running the build; the version that gets bundled
+   is a separate thing, see below). The build environment should run this
+   version of python in response to the *python* command.
+
+4. syft, to generate the software bill of materials, and wget, which fetches
+   Electron:
+
+       brew install syft wget
+
+
 ## Building
 
 1. The version of Python that gets bundled is read from

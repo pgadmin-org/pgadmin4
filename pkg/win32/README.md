@@ -9,165 +9,65 @@ builds may still work with suitable adjustments.
 1. Install Chocolatey from https://chocolatey.org/install#individual
 
 
-2. Install Visual Studio 2017 Pro (PostgreSQL 16 and below) from
-    https://my.visualstudio.com/Downloads?q=Visual%20Studio%202017.
-    Choose the Desktop development with C++ option, and ensure that you add the
-    'Visual C++ MFC for x86 and x64' option.
-
-
-3. Install Visual Studio (PostgreSQL 17 and above):
+2. Install Visual Studio:
 
         choco install visualstudio2022community --add Microsoft.VisualStudio.Component.VC.ATLMFC;includeRecommended --add Microsoft.VisualStudio.Workload.NativeDesktop;includeRecommended --add Microsoft.VisualStudio.Component.VC.CMake.Project;includeRecommended
 
-4. Install various command line tools:
+3. Install the command line tools the build uses:
 
-        choco install -y awk bzip2 cmake diffutils dotnet3.5 gnuwin32-coreutils.install gzip git html-help-workshop meson innosetup ninja nodejs-lts python sed strawberryperl wget winflexbison3 yarn
+        choco install -y git innosetup nodejs-lts python syft wget yarn
 
-5. Ensure the GNU CoreUtils and Microsoft HTML Help Workshop are in the system path - add:
+    That is the whole list for building pgAdmin. The build calls yarn, node,
+    npm, wget for the Electron download, syft for the SBOM, ISCC from Inno
+    Setup, and signtool if you are signing; git is used indirectly, the bundle
+    step recording the commit hash. curl and tar are used too, but Windows has
+    shipped both since 1803, so they need no installing.
+
+    Python is here for a development environment only. Building an installer
+    does not need one, because Make.bat downloads the version named in
+    *pkg/python-version.txt* into the build tree.
+
+    If you intend to build the dependencies from source, rather than taking
+    them from pgbuild as described below, you will also want the toolchain
+    that needs, and the GnuWin32 binaries and HTML Help Workshop on the
+    system path:
+
+        choco install -y awk bzip2 cmake diffutils dotnet3.5 gnuwin32-coreutils.install gzip html-help-workshop meson ninja sed strawberryperl winflexbison3
 
     * C:\Program Files (x86)\GnuWin32\bin
     * C:\Program Files (x86)\HTML Help Workshop
 
 
-6. Upgrade pip:
+4. Upgrade pip:
 
         python -m pip install --upgrade pip
 
-7. Install virtualenv:
+5. Install virtualenv:
 
         pip install virtualenv
 
-## Building dependencies (PostgreSQL 16 and below)
+## Getting the dependencies
 
-The following steps should be run from a Visual Studio 64bit command
-prompt.
+Download a pre-built set of dependencies from the
+[pgbuild project](https://github.com/pgadmin-org/pgbuild), which is what the
+release builds use. Building them from source is possible but not documented
+here: PostgreSQL 17 and later use Meson and pkg-config, which takes a fair
+amount of setting up, and doing it by hand gets you binaries built against
+different libraries from the ones we ship. Each dependency is published as a
+release whose tag ends in *-latest*, so the current build is always at a
+predictable URL rather than buried in a workflow run:
 
-1. Create a directory for the dependencies:
+    https://github.com/pgadmin-org/pgbuild/releases/download/postgresql-18-windows-x86_64-latest/postgresql-18-windows-x86_64-latest.zip
+    https://github.com/pgadmin-org/pgbuild/releases/download/krb5-windows-x86_64-latest/krb5-windows-x86_64-latest.zip
 
-        mkdir c:\build64
+Extract both into the same directory, such as `C:\Build64`; they unpack into
+*postgresql* and *krb5* subdirectories. Kerberos is a separate download
+because the PostgreSQL build doesn't include gssapi support, using native SSPI
+instead.
 
-2. Download the zlib source code, unpack, and build it:
-
-        wget https://zlib.net/zlib-1.3.11.tar.gz
-        tar -zxvf zlib-1.3.1.tar.gz
-        cd zlib-1.3.1
-        nmake -f win32/Makefile.msc
-        mkdir c:\build64\zlib
-        mkdir c:\build64\zlib\bin
-        copy zlib1.dll c:\build64\zlib\bin\
-        copy zlib1.pdb c:\build64\zlib\bin\
-        mkdir c:\build64\zlib\include
-        copy zlib.h c:\build64\zlib\include\
-        copy zconf.h c:\build64\zlib\include\
-        mkdir c:\build64\zlib\lib
-        copy zlib.lib c:\build64\zlib\lib\
-        copy zlib.pdb c:\build64\zlib\lib\
-        copy zdll.lib c:\build64\zlib\lib\
-        copy zdll.exp c:\build64\zlib\lib\
-        cd ..
-
-3. Download the OpenSSL source code, unpack and build it:
-
-        wget https://www.openssl.org/source/openssl-3.0.13.tar.gz
-        tar -zxvf openssl-3.0.13.tar.gz
-        cd openssl-3.0.13
-        perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl no-ssl3 no-comp
-        nmake
-        nmake test
-        nmake install
-        cd ..
-
-    Note that if you are not working in an administrative account, you may need to
-    create and give your regular account appropriate permissions to write/modify
-    files in *C:\Program Files\Common Files\SSL*. This is the default directory used
-    for the *OPENSSLDIR*, and should not be changed to a directory that un-privileged
-    users could potentially write to.
-
-
-4. Download the MIT Kerberos source code, unpack and build it:
-
-   In a *32bit* Visual Studio command prompt:
-
-        wget https://kerberos.org/dist/krb5/1.21/krb5-1.21.2.tar.gz
-        tar -zxvf krb5-1.21.2.tar.gz
-        mkdir C:\build64\krb5
-        cd krb5-1.21.2\src
-        set KRB_INSTALL_DIR=C:\build64\krb5
-        nmake -f Makefile.in prep-windows
-
-   Optionally, if you want 32bit binaries as well as 64bit:
-
-        nmake NODEBUG=1
-        nmake install NODEBUG=1
-
-   In a *64bit* Visual Studio command prompt:
-
-        cd krb5-1.21.2\src
-        set PATH=%PATH%;"%WindowsSdkVerBinPath%"\x86
-        set KRB_INSTALL_DIR=C:\build64\krb5
-        nmake NODEBUG=1
-        nmake install NODEBUG=1
-        cd ..\..
-
-5. Download the PostgreSQL source code, unpack and build it:
-
-        wget https://ftp.postgresql.org/pub/source/v13.3/postgresql-16.3.tar.gz
-        tar -zxvf postgresql-16.3.tar.gz
-        cd postgresql-16.3\src\tools\msvc
-        
-        >> config.pl echo # Configuration arguments for vcbuild.
-        >> config.pl echo use strict;
-        >> config.pl echo use warnings;
-        >> config.pl echo.
-        >> config.pl echo our $config = {
-        >> config.pl echo 	asserts   =^> 0,        # --enable-cassert
-        >> config.pl echo 	ldap      =^> 1,        # --with-ldap
-        >> config.pl echo 	extraver  =^> undef,    # --with-extra-version=^<string^>
-        >> config.pl echo 	gss       =^> undef,    # --with-gssapi=^<path^>
-        >> config.pl echo 	icu       =^> undef,    # --with-icu=^<path^>
-        >> config.pl echo 	nls       =^> undef,    # --enable-nls=^<path^>
-        >> config.pl echo 	tap_tests =^> undef,    # --enable-tap-tests
-        >> config.pl echo 	tcl       =^> undef,    # --with-tcl=^<path^>
-        >> config.pl echo 	perl      =^> undef,    # --with-perl
-        >> config.pl echo 	python    =^> undef,    # --with-python=^<path^>
-        >> config.pl echo 	openssl   =^> 'C:\build64\openssl',    # --with-openssl=^<path^>
-        >> config.pl echo 	uuid      =^> undef,    # --with-ossp-uuid
-        >> config.pl echo 	xml       =^> undef,    # --with-libxml=^<path^>
-        >> config.pl echo 	xslt      =^> undef,    # --with-libxslt=^<path^>
-        >> config.pl echo 	iconv     =^> undef,    # (not in configure, path to iconv)
-        >> config.pl echo 	zlib      =^> 'C:\build64\zlib'     # --with-zlib=^<path^>
-        >> config.pl echo };
-        >> config.pl echo.
-        >> config.pl echo 1;
-        
-        >> buildenv.pl echo $ENV{PATH} = "C:\\build64\\openssl\\bin;C:\\build64\\zlib\\bin;$ENV{PATH}";
-        
-        perl build.pl Release
-        perl vcregress.pl check
-        perl install.pl c:\build64\pgsql
-        copy c:\build64\zlib\bin\zlib1.dll c:\build64\pgsql\bin\
-        copy c:\build64\openssl\bin\libssl-3-x64.dll c:\build64\pgsql\bin\
-        copy c:\build64\openssl\bin\libcrypto-3-x64.dll c:\build64\pgsql\bin\
-
-## Building dependencies (PostgreSQL 17 and above)
-
-PostgreSQL 17 and later use Meson for generating project/build files, and 
-makes use of pkg-config to locate dependencies and configure the build 
-accordingly. Whilst this is arguably more reliably and flexible, it also
-takes some effort to setup. 
-
-It is therefore recommended that you simply download a pre-built set of 
-PostgreSQL binaries from the 
-[winpgbuild project](https://github.com/dpage/winpgbuild/actions/workflows/postgresql.yml).
-Locate the binaries asset for the version of PostgreSQL you wish to use
-in the most recent workflow run, and extract the contents to a suitable
-directory such as `C:\Build64`.
-
-Repeat the process with the latest build of 
-[MIT Kerberos](https://github.com/dpage/winpgbuild/actions/workflows/krb5.yml),
-merging the files into the same set of directories. This is required because
-the PostgreSQL build doesn't include Kerberos (gssapi) support as it uses 
-native SSPI instead.
+The build checks in *.github/workflows* fetch exactly these, through the
+*install-pgbuild-deps* action, so a local build and a CI build are working
+from the same binaries.
 
 ## Setting up a dev environment
 
@@ -199,21 +99,11 @@ desktop runtime.
 ## Building an installer
 
 1. Set the required environment variables, either system-wide, or in a Visual
-Studio 2017 (or 2022 with PostgreSQL 17+) 64bit command prompt. Note that the 
-examples shown below are the defaults for the build system, so if they match
-your requirements you don't need to set them. For PostgreSQL 16 and below:
+Studio 2022 64bit command prompt. The values below are examples rather than
+defaults, so check them against where you unpacked the dependencies:
 
-        SET "PGADMIN_POSTGRES_DIR=C:\build64\pgsql"
+        SET "PGADMIN_POSTGRES_DIR=C:\build64\postgresql"
         SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
-        SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
-        SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
-        SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"
-        SET "PGADMIN_VCREDIST_FILE=vcredist_x64.exe"
-
-    For PostgreSQL 17 and later:
-
-        SET "PGADMIN_POSTGRES_DIR=C:\build64"
-        SET "PGADMIN_KRB5_DIR=C:\build64"
         SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
         SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
         SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
