@@ -13,6 +13,11 @@
 name: Check RPM builds
 
 on:
+  # Callable from snapshot.yml, so that what gets published is the
+  # same build that runs on every push rather than a second
+  # definition of it that can drift.
+  workflow_call:
+
   push:
     branches: [ "master", "buildfarm-to-actions" ]
 

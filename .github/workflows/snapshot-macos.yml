@@ -15,6 +15,12 @@
 name: Snapshot - macOS
 
 on:
+  # Callable from snapshot.yml so that the orchestrator produces one
+  # complete tree. Signing stays here rather than moving to the
+  # servers like the GPG signing did, because the Apple and Certum
+  # credentials cannot follow it.
+  workflow_call:
+
   workflow_dispatch:
 
   # workflow_dispatch only offers a "Run workflow" button for workflows that

@@ -1,0 +1,164 @@
+# Nightly snapshot builds, replacing the buildfarm's pgadmin4-all-snapshot job
+# and the dozen per-artefact snapshot jobs it drives.
+#
+# Nothing here is a second definition of a build. Every artefact comes from the
+# same workflow that runs on each push, called rather than copied, so a
+# snapshot cannot quietly diverge from what QA tested. That was not true of the
+# buildfarm, where pgadmin4-deb-build and pgadmin4-deb-snapshot were separate
+# job definitions carrying the same commands.
+#
+# Nothing here signs anything either, beyond the macOS notarisation and the
+# Windows Authenticode signature, which have to happen where their credentials
+# are. The GPG key that signs the RPMs and the repository metadata stays on the
+# servers: this workflow assembles the tree and uploads it, and asks procyon to
+# index and sign, so a compromised workflow run can ask for a signature but
+# never holds the means to make one.
+
+name: Snapshot
+
+on:
+  workflow_dispatch:
+
+  # See snapshot-macos.yml: no dispatch button exists for a workflow off the
+  # default branch, so whilst this lives on a working branch it fires on
+  # changes to itself. Remove when the branch merges, and add the schedule.
+  push:
+    branches: [ "buildfarm-to-actions" ]
+    paths:
+      - '.github/workflows/snapshot.yml'
+
+concurrency:
+  # One snapshot at a time, and never cancelled: a cancelled run can abandon a
+  # notarisation already submitted to Apple, and leaves the signing token in an
+  # unknown state.
+  group: 'snapshot'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deb:
+    uses: ./.github/workflows/check-deb-build.yml
+  rpm:
+    uses: ./.github/workflows/check-rpm-build.yml
+  tarball:
+    uses: ./.github/workflows/check-tarball-build.yml
+  wheel:
+    uses: ./.github/workflows/check-python-build.yml
+  docs:
+    uses: ./.github/workflows/check-doc-builds.yml
+  helm:
+    uses: ./.github/workflows/check-helm-build.yml
+
+  macos:
+    uses: ./.github/workflows/snapshot-macos.yml
+    secrets: inherit
+
+  windows:
+    uses: ./.github/workflows/snapshot-windows.yml
+    secrets: inherit
+
+  assemble:
+    needs: [deb, rpm, tarball, wheel, docs, macos, windows]
+    runs-on: ubuntu-24.04
+
+    # The Windows signing host is the one runner that can be offline, and a
+    # snapshot without an installer is still worth having.
+    if: always() && needs.deb.result == 'success' && needs.rpm.result == 'success'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Collect the build artefacts
+        uses: actions/download-artifact@v7
+        with:
+          path: artefacts
+
+      # The layout is the one the publishing scripts and the download site
+      # expect, and is what the wrapper's stage-create verb creates on procyon.
+      # The Debian architecture comes from the package filename rather than a
+      # table, since dpkg already encodes it there; the codename does not, so
+      # that mapping is explicit.
+      - name: Assemble the staging tree
+        run: |
+          set -euo pipefail
+          STAGE="stage/$(date +%Y-%m-%d)"
+          mkdir -p "${STAGE}"/{docs,macos,pip,source,windows,yum}
+
+          # An artefact can be legitimately absent: the Windows signing host is
+          # allowed to be offline, and a failed matrix leg is reported by its
+          # own job rather than by a confusing cp error here.
+          copy_into() {
+              DEST=$1; shift
+              for SRC in "$@"; do
+                  [ -e "${SRC}" ] || continue
+                  mkdir -p "${DEST}"
+                  cp "${SRC}" "${DEST}/"
+              done
+          }
+
+          codename_for() {
+              case "$1" in
+                  debian-12)   echo bookworm ;;
+                  debian-13)   echo trixie ;;
+                  ubuntu-2204) echo jammy ;;
+                  ubuntu-2404) echo noble ;;
+                  ubuntu-2604) echo resolute ;;
+                  *) echo "Unknown Debian build name: $1" >&2; exit 1 ;;
+              esac
+          }
+
+          for DIR in artefacts/pgadmin4-deb-build-output-*; do
+              [ -d "${DIR}" ] || continue
+              CODENAME=$(codename_for "${DIR##*-output-}")
+              for DEB in "${DIR}"/*.deb; do
+                  ARCH=$(basename "${DEB}" .deb); ARCH=${ARCH##*_}
+                  TARGET="${STAGE}/apt/${CODENAME}/dists/pgadmin4/main/binary-${ARCH}"
+                  mkdir -p "${TARGET}"
+                  cp "${DEB}" "${TARGET}/"
+              done
+          done
+
+          # RPM trees are named for the distribution, which the build name
+          # already carries: el-9 becomes redhat/rhel-9-x86_64.
+          for DIR in artefacts/pgadmin4-rpm-build-output-*; do
+              [ -d "${DIR}" ] || continue
+              NAME=${DIR##*-output-}
+              case "${NAME}" in
+                  el-*)     FAMILY=redhat; TREE="rhel-${NAME#el-}" ;;
+                  fedora-*) FAMILY=fedora; TREE="${NAME}" ;;
+                  *) echo "Unknown RPM build name: ${NAME}" >&2; exit 1 ;;
+              esac
+              for RPM in "${DIR}"/*.rpm; do
+                  ARCH=$(basename "${RPM}"); ARCH=${ARCH%.rpm}; ARCH=${ARCH##*.}
+                  TARGET="${STAGE}/yum/${FAMILY}/${TREE}-${ARCH}"
+                  mkdir -p "${TARGET}"
+                  cp "${RPM}" "${TARGET}/"
+              done
+          done
+
+          copy_into "${STAGE}/source" artefacts/pgadmin4-tarball-build-output/*
+          copy_into "${STAGE}/pip"    artefacts/pgadmin4-python-build-output/*
+          copy_into "${STAGE}/docs"   artefacts/pgadmin4-pdf-build-output/*
+          copy_into "${STAGE}/docs"   artefacts/pgadmin4-epub-build-output/*
+
+          # The docs tarball is what load-docs.sh unpacks on the web server, so
+          # it ships as a tarball rather than as the directory of files the
+          # build produces.
+          if [ -d artefacts/pgadmin4-html-build-output ]; then
+              VERSION=$(python3 -c "import sys; sys.path.insert(0, 'web'); import version; print(version.APP_VERSION)")
+              tar -czf "${STAGE}/docs/pgadmin4-${VERSION}-docs.tar.gz" \
+                  -C artefacts/pgadmin4-html-build-output .
+          fi
+
+          copy_into "${STAGE}/macos"   artefacts/pgadmin4-macos-snapshot-*/*
+          copy_into "${STAGE}/windows" artefacts/pgadmin4-windows-snapshot/*
+
+          find "${STAGE}" -type f | sort
+
+      - name: Archive the staging tree
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-snapshot
+          path: stage/
