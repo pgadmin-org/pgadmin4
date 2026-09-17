@@ -16,7 +16,7 @@
 set -e
 
 ROOT=/var/ftp/pgadmin4
-ARCHES="all amd64 i386"
+ARCHES="amd64 all"
 DEFAULT_ROOT=${ROOT}
 DEFAULT_ARCHES=${ARCHES}
 
