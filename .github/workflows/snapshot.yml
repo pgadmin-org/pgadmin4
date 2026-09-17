@@ -32,13 +32,12 @@ on:
         required: false
         default: false
 
-  # See snapshot-macos.yml: no dispatch button exists for a workflow off the
-  # default branch, so whilst this lives on a working branch it fires on
-  # changes to itself. Remove when the branch merges, and add the schedule.
-  push:
-    branches: [ "buildfarm-to-actions" ]
-    paths:
-      - '.github/workflows/snapshot.yml'
+  # Nightly, matching the buildfarm's pgadmin4-all-snapshot, which ran at
+  # 01:01. GitHub's scheduler is best-effort and runs late under load, which
+  # does not matter for a snapshot: the directory is named for the date the
+  # run assembles it, not for the minute it started.
+  schedule:
+    - cron: '1 1 * * *'
 
 concurrency:
   # One snapshot at a time, and never cancelled: a cancelled run can abandon a
