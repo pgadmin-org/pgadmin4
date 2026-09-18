@@ -156,6 +156,13 @@ jobs:
           # and the snapshots tree are laid out. The docs/macos/pip/source/
           # windows subdivision belongs to a published release, and it is the
           # promotion step that sorts files into it on the way there.
+          # Explicitly, rather than trusting the checkout to have cleaned it.
+          # This runs on a self-hosted runner whose workspace persists between
+          # jobs, and a previous run's tree left behind here is indistinguishable
+          # from this one's until something downstream has to choose between
+          # them.
+          rm -rf stage
+
           STAGE="stage/${{ needs.location.outputs.name }}"
           mkdir -p "${STAGE}/yum"
 
