@@ -328,12 +328,12 @@ def create_app(app_name=None):
             data = request.form
             if 'language' in data:
                 language = data['language'] or language
-                setattr(session, 'PGADMIN_LANGUAGE', language)
-            elif hasattr(session, 'PGADMIN_LANGUAGE'):
-                language = getattr(session, 'PGADMIN_LANGUAGE', language)
-            elif hasattr(request.cookies, 'PGADMIN_LANGUAGE'):
-                language = getattr(
-                    request.cookies, 'PGADMIN_LANGUAGE', language
+                session['PGADMIN_LANGUAGE'] = language
+            elif 'PGADMIN_LANGUAGE' in session:
+                language = session.get('PGADMIN_LANGUAGE', language)
+            elif 'PGADMIN_LANGUAGE' in request.cookies:
+                language = request.cookies.get(
+                    'PGADMIN_LANGUAGE', language
                 )
 
         return language

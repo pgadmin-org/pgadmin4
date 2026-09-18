@@ -289,7 +289,7 @@ def save():
                 config.COOKIE_DEFAULT_DOMAIN != 'localhost':
             domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
 
-        setattr(session, 'PGADMIN_LANGUAGE', language)
+        session['PGADMIN_LANGUAGE'] = language
         response.set_cookie("PGADMIN_LANGUAGE", value=language,
                             path=config.SESSION_COOKIE_PATH,
                             secure=config.SESSION_COOKIE_SECURE,
