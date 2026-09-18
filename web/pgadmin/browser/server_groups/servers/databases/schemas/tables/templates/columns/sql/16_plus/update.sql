@@ -20,6 +20,26 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname and data.cltype != '"char"' %}
  COLLATE {{data.collspcname}}{% elif o_data.collspcname and data.cltype != '"char"' %} COLLATE {{o_data.collspcname}}{% endif %};
 {% endif %}
+{###  Create the sequence a column becoming SERIAL needs, before its default below can reference it (#10292). IF NOT EXISTS is deliberately not used here: it would silently skip an existing, unrelated relation of the same name (without checking it is even a sequence), and the unconditional ALTER SEQUENCE ... OWNED BY below would then reassign ownership of that unrelated object instead of failing loudly (#10318). ###}
+{% if data.serial_seq_create is defined %}
+CREATE SEQUENCE {{data.serial_seq_create.name}}{% if data.serial_seq_create.cycled %}
+
+    CYCLE{% endif %}{% if data.serial_seq_create.increment is not none %}
+
+    INCREMENT {{data.serial_seq_create.increment|int}}{% endif %}{% if data.serial_seq_create.start is not none %}
+
+    START {{data.serial_seq_create.start|int}}{% endif %}{% if data.serial_seq_create.minimum is not none %}
+
+    MINVALUE {{data.serial_seq_create.minimum|int}}{% endif %}{% if data.serial_seq_create.maximum is not none %}
+
+    MAXVALUE {{data.serial_seq_create.maximum|int}}{% endif %}{% if data.serial_seq_create.cache is not none %}
+
+    CACHE {{data.serial_seq_create.cache|int}}{% endif %};
+
+ALTER SEQUENCE {{data.serial_seq_create.name}}
+    OWNED BY {{conn|qtIdent(data.schema)}}.{{conn|qtIdent(data.table)}}.{% if data.name %}{{conn|qtIdent(data.name)}}{% else %}{{conn|qtIdent(o_data.name)}}{% endif %};
+
+{% endif %}
 {###  Alter column default value ###}
 {% if is_view_only and data.defval is defined and data.defval is not none and data.defval != '' and data.defval != o_data.defval %}
 ALTER VIEW {{conn|qtIdent(data.schema, data.table)}}
@@ -34,6 +54,11 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.defval is defined and (data.defval == '' or data.defval is none) and data.defval != o_data.defval %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} DROP DEFAULT;
+
+{% endif %}
+{###  Drop the now-unused sequence a column stops owning by leaving SERIAL; the DEFAULT above must already be gone, or PostgreSQL refuses to drop a sequence still referenced by it (#10292) ###}
+{% if data.serial_seq_drop is defined %}
+DROP SEQUENCE IF EXISTS {{data.serial_seq_drop}};
 
 {% endif %}
 {###  Alter column not null value ###}
