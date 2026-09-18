@@ -19,6 +19,15 @@ name: Check macOS builds
 on:
   push:
     branches: [ "master", "buildfarm-to-actions" ]
+    paths:
+      - 'pkg/mac/**'
+      - '.github/actions/install-pgbuild-deps/action.yml'
+      - 'web/**'
+      - 'docs/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-macos-build.yml'
 
   workflow_dispatch:
 

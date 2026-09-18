@@ -20,6 +20,15 @@ on:
 
   push:
     branches: [ "master", "buildfarm-to-actions" ]
+    paths:
+      - 'pkg/redhat/**'
+      - 'pkg/linux/**'
+      - 'web/**'
+      - 'docs/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-rpm-build.yml'
 
   workflow_dispatch:
 
