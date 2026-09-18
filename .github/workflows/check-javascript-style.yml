@@ -3,8 +3,24 @@ name: Check Javascript style
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+      - 'web/package.json'
+      - 'web/yarn.lock'
+      - 'web/.eslintrc.js'
+      - 'web/.yarnrc.yml'
+      - '.github/workflows/check-javascript-style.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+      - 'web/package.json'
+      - 'web/yarn.lock'
+      - 'web/.eslintrc.js'
+      - 'web/.yarnrc.yml'
+      - '.github/workflows/check-javascript-style.yml'
 
   workflow_dispatch:
 
