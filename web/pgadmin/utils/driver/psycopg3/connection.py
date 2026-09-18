@@ -258,12 +258,27 @@ class Connection(BaseConnection):
                 if isinstance(password, bytes):
                     password = password.decode()
             except Exception as e:
-                manager.stop_ssh_tunnel()
-                current_app.logger.exception(e)
-                return True, \
-                    _(
-                        "Failed to decrypt the saved password.\nError: {0}"
-                    ).format(str(e)), password
+                # The saved password could not be decrypted. This happens
+                # when the stored ciphertext was encrypted with a different
+                # key (e.g. OIDC/OAuth2 logins where the derived encryption
+                # key changed between sessions), leaving un-decodable bytes
+                # (typically a "'utf-8' codec can't decode byte 0x.." error).
+                # Instead of failing every connection attempt permanently,
+                # discard the bad saved password and continue so the user is
+                # prompted for the password again.
+                current_app.logger.warning(
+                    'Ignoring the saved password as it could not be '
+                    'decrypted. The user will be prompted for the password. '
+                    'Error: {0}'.format(str(e))
+                )
+                # Clear the cached ciphertext so it isn't silently reused
+                # on the next connect() attempt, which would just hit
+                # this same decode failure again, and (since a stale but
+                # still-truthy encpass would otherwise remain cached)
+                # skip the passexec fallback below.
+                self.password = None
+                manager.password = None
+                return False, '', None
         return False, '', password
 
     def connect(self, **kwargs):
