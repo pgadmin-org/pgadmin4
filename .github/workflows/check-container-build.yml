@@ -8,6 +8,9 @@ on:
       - 'pkg/docker/**'
       - 'web/**'
       - 'requirements.txt'
+      - 'docs/**'
+      - '.dockerignore'
+      - 'LICENSE'
       - '.github/workflows/check-container-build.yml'
   pull_request:
     branches: [ "master" ]
@@ -16,6 +19,9 @@ on:
       - 'pkg/docker/**'
       - 'web/**'
       - 'requirements.txt'
+      - 'docs/**'
+      - '.dockerignore'
+      - 'LICENSE'
       - '.github/workflows/check-container-build.yml'
 
   workflow_dispatch:

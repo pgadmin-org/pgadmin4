@@ -10,6 +10,7 @@ on:
       - 'web/**'
       - 'requirements.txt'
       - 'Makefile'
+      - 'tools/setup-python-env.sh'
       - '.github/workflows/run-feature-tests-pg.yml'
   pull_request:
     branches: [ "master" ]
@@ -17,6 +18,7 @@ on:
       - 'web/**'
       - 'requirements.txt'
       - 'Makefile'
+      - 'tools/setup-python-env.sh'
       - '.github/workflows/run-feature-tests-pg.yml'
 
   workflow_dispatch:

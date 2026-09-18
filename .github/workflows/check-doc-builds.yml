@@ -9,6 +9,8 @@ on:
       - 'web/branding.py'
       - 'requirements.txt'
       - 'Makefile'
+      - 'web/config.py'
+      - 'tools/setup-python-env.sh'
       - '.github/workflows/check-doc-builds.yml'
   pull_request:
     branches: [ "master" ]
@@ -18,6 +20,8 @@ on:
       - 'web/branding.py'
       - 'requirements.txt'
       - 'Makefile'
+      - 'web/config.py'
+      - 'tools/setup-python-env.sh'
       - '.github/workflows/check-doc-builds.yml'
 
   workflow_dispatch:
