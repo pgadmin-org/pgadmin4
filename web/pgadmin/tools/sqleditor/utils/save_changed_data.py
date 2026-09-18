@@ -177,6 +177,21 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
             list_of_sql[of_type] = []
             for each_row in changed_data[of_type]:
                 data = changed_data[of_type][each_row]['data']
+
+                # Drop any column the client included that isn't a real
+                # editable column of the underlying table (e.g.
+                # `first_name || ' ' || last_name as the_name`). The
+                # frontend already marks such columns as non-editable
+                # (shown with a lock icon), but still includes them in
+                # the changed data. Without this guard the rendered
+                # UPDATE references a non-existent column and Postgres
+                # rejects it. Issue #10103.
+                data = {
+                    k: v for k, v in data.items()
+                    if k in columns_info and
+                    columns_info[k].get('is_editable', True)
+                }
+
                 pk_escaped = {
                     pk: pk_val.replace('%', '%%') if hasattr(
                         pk_val, 'replace') else pk_val
