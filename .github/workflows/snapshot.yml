@@ -119,7 +119,18 @@ jobs:
 
   assemble:
     needs: [location, deb, rpm, tarball, wheel, docs, repo-rpm, macos, windows]
-    runs-on: ubuntu-24.04
+
+    # roadie, not a hosted runner. This job assembles a tree of several
+    # hundred megabytes and then, when publishing, sends it to the download
+    # server; splitting the two meant uploading that tree as an artifact and
+    # immediately downloading it again on roadie, having first queued for a
+    # hosted runner behind whatever else the organisation was building.
+    runs-on: [self-hosted, roadie]
+
+    # For the variables naming the keys and the target, which live here. The
+    # environment carries no protection rules, so a run that is not publishing
+    # is not gated by it.
+    environment: publishing
 
     # The Windows signing host is the one runner that can be offline, and a
     # snapshot without an installer is still worth having.
@@ -236,62 +247,8 @@ jobs:
 
           find "${STAGE}" -type f | sort
 
-      - name: Archive the staging tree
-        uses: actions/upload-artifact@v7
-        with:
-          name: pgadmin4-snapshot
-          path: stage/
-
-  # Upload the assembled tree to the download server and have it signed and
-  # indexed there.
-  #
-  # Snapshots go straight there rather than being staged on the development
-  # server and promoted; that path is the release flow, and this is not it. The
-  # tree lands under snapshots/, which is the one part of the download site
-  # that the S3 archive sync excludes, so a snapshot never reaches the archive
-  # or the PostgreSQL mirrors.
-  #
-  # Everything this job does on the far side goes through pga-publish behind a
-  # forced command, so the request is a verb and a datestamp rather than a
-  # shell command; the wrapper decides what that means. The bytes travel over a
-  # second key confined by rrsync to the staging root, write-only and with
-  # deletion refused, so a compromised run can add to a staging build but
-  # cannot read the rest of the server or empty it.
-  #
-  # The signing happens on the far side too, which is the point: the key never
-  # comes here.
-  publish:
-    needs: assemble
-    if: inputs.publish
-
-    # roadie, because that is where the keys are. They stay on its filesystem
-    # rather than in the secret store: they are already there, and putting a
-    # copy in GitHub would mean two places to rotate and two places to leak
-    # from.
-    #
-    # The consequence is that the boundary moves. An environment secret is
-    # gated by a deployment branch policy; a file on disk is gated by which
-    # workflows may run on this runner. This repository is public, so roadie
-    # belongs in a runner group restricted to these workflows, and nothing
-    # triggered by pull_request should ever target it.
-    runs-on: [self-hosted, roadie]
-
-    # Kept for the branch policy and for the record of what deployed when,
-    # even though the credentials no longer live on it.
-    environment: publishing
-
-    steps:
-      - name: Collect the assembled tree
-        uses: actions/download-artifact@v7
-        with:
-          name: pgadmin4-snapshot
-          path: stage
-
-      # Nothing is installed or written here: the keys are part of how this
-      # machine is configured, not part of the job. Checking up front means a
-      # missing key fails with a sentence rather than as an authentication
-      # error halfway through an upload.
       - name: Check the keys are present
+        if: inputs.publish
         env:
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
@@ -325,6 +282,7 @@ jobs:
           fi
 
       - name: Publish the snapshot
+        if: inputs.publish
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           LOCATION: ${{ inputs.location }}
