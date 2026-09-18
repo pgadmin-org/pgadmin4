@@ -8,8 +8,28 @@ on:
 
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'docs/**'
+      - 'pkg/src/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'LICENSE'
+      - 'README.md'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-tarball-build.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'docs/**'
+      - 'pkg/src/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'LICENSE'
+      - 'README.md'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-tarball-build.yml'
 
   workflow_dispatch:
 

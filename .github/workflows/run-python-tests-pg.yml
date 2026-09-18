@@ -6,8 +6,22 @@ name: Run Python tests on PostgreSQL
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - 'tools/get_sb_package.py'
+      - '.github/workflows/run-python-tests-pg.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - 'tools/get_sb_package.py'
+      - '.github/workflows/run-python-tests-pg.yml'
 
   workflow_dispatch:
 

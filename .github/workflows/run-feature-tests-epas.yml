@@ -3,8 +3,20 @@ name: Run feature tests on EPAS
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/run-feature-tests-epas.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/run-feature-tests-epas.yml'
 
   workflow_dispatch:
 

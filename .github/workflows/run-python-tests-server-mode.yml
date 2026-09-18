@@ -15,8 +15,20 @@ name: Run Python tests in server mode (data isolation)
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/run-python-tests-server-mode.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/run-python-tests-server-mode.yml'
 
   workflow_dispatch:
 

@@ -3,8 +3,16 @@ name: Check Python style
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - '**.py'
+      - '.pycodestyle'
+      - '.github/workflows/check-python-style.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - '**.py'
+      - '.pycodestyle'
+      - '.github/workflows/check-python-style.yml'
 
   workflow_dispatch:
 

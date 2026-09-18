@@ -8,8 +8,26 @@ on:
 
   push:
     branches: [ "master" ]
+    paths:
+      - 'Dockerfile'
+      - 'pkg/docker/**'
+      - 'web/**'
+      - 'requirements.txt'
+      - 'docs/**'
+      - '.dockerignore'
+      - 'LICENSE'
+      - '.github/workflows/check-container-build.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'Dockerfile'
+      - 'pkg/docker/**'
+      - 'web/**'
+      - 'requirements.txt'
+      - 'docs/**'
+      - '.dockerignore'
+      - 'LICENSE'
+      - '.github/workflows/check-container-build.yml'
 
   workflow_dispatch:
 

@@ -3,8 +3,16 @@ name: Check translations
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'Makefile'
+      - '.github/workflows/check-translations.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'Makefile'
+      - '.github/workflows/check-translations.yml'
 
   workflow_dispatch:
 

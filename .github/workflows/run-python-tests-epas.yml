@@ -13,8 +13,22 @@ name: Run Python tests on EPAS
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - 'tools/get_sb_package.py'
+      - '.github/workflows/run-python-tests-epas.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - 'tools/get_sb_package.py'
+      - '.github/workflows/run-python-tests-epas.yml'
 
   workflow_dispatch:
 
