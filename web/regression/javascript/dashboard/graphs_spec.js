@@ -72,6 +72,25 @@ describe('Graphs.js', ()=>{
       expect(state).toEqual(newState);
     });
 
+    it('with incoming with counter and rate', ()=>{
+      let state = {
+        'Label1': [1], 'Label2': [2],
+      };
+      let action = {
+        incoming: {
+          'Label1': 11, 'Label2': 23,
+        },
+        counter: true,
+        counterData: {'Label1': 1, 'Label2': 3},
+        rate: 5,
+      };
+      let newState = {
+        'Label1': [2, 1], 'Label2': [4, 2],
+      };
+      state = statsReducer(state, action);
+      expect(state).toEqual(newState);
+    });
+
     it('with reset', ()=>{
       let state = {
         'Label1': [0, 1], 'Label2': [1, 2],
