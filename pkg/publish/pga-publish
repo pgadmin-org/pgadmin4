@@ -566,7 +566,14 @@ def sign_packages(root):
         rpms.extend(os.path.join(directory, n) for n in sorted(names)
                     if n.endswith(".rpm"))
     if rpms:
-        run([BIN_RPMSIGN, "--resign"] + rpms)
+        # --define rather than a ~/.rpmmacros on the account. rpmsign refuses
+        # to run without %_gpg_name, and the buildfarm satisfied that with a
+        # dotfile on each build agent, which is both invisible and per-machine.
+        # The key is already a constant here, for the same reason the client
+        # cannot name one, so it is passed explicitly and the result does not
+        # depend on whose home directory the wrapper happens to run in.
+        run([BIN_RPMSIGN, "--define", "_gpg_name %s" % GPG_KEY, "--resign"]
+            + rpms)
 
     detached = (".tar.gz", ".whl", ".pdf", ".epub")
     for directory, subdirs, names in os.walk(root):
