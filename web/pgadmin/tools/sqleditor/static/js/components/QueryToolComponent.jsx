@@ -729,14 +729,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(isNew && !newConnList.some((c)=>c.sid == newConnData.sid
           && c.did == newConnData.did
           && c.user == newConnData.user
-          && c.role == newConnData.role)) {
+          && (c.role || null) == (newConnData.role || null))) {
           newConnList.push(newConnData);
         }
         for (const connItem of newConnList) {
           if(newConnData.sid == connItem.sid
             && newConnData.did == connItem.did
             && newConnData.user == connItem.user
-            && newConnData.role == connItem.role) {
+            && (newConnData.role || null) == (connItem.role || null)) {
             connItem.is_selected = true;
           } else {
             connItem.is_selected = false;
@@ -853,10 +853,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           };
 
           let existIdx = _.findIndex(qtState.connection_list, (conn)=>{
-            conn.role= conn.role == ''? null :conn.role;
             return(
               conn.sid == connectionData.sid  && conn.database_name == connectionData.database_name
-              && conn.user == connectionData.user && conn.role == connectionData.role
+              && conn.user == connectionData.user && (conn.role || null) == (connectionData.role || null)
             );
           });
           if(existIdx > -1) {
