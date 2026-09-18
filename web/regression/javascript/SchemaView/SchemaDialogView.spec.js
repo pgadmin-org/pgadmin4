@@ -172,6 +172,46 @@ describe('SchemaView', ()=>{
         await user.type(ctrl.container.querySelectorAll('[name="field5"]')[1], 'rval51');
         expect(ctrl.container.querySelector('[data-test="notifier-message"]')).toHaveTextContent('Field5 in FieldColl must be unique.');
       });
+
+      it('does not virtualise a small grid, rendering rows in static flow', async ()=>{
+        await simulateValidData();
+
+        const dataRows = ctrl.container.querySelectorAll('[data-test="data-table-row"]');
+        expect(dataRows.length).toBe(2);
+
+        // Every row should be fully mounted and opted out of the
+        // virtualizer's absolute positioning, so a hidden dialog tab is a
+        // pure CSS toggle rather than something the virtualizer has to
+        // remeasure when the tab is shown again.
+        const pgrtRows = ctrl.container.querySelectorAll('.pgrt-row');
+        expect(pgrtRows.length).toBe(2);
+        pgrtRows.forEach((rowEl)=>{
+          expect(rowEl.classList.contains('pgrt-row--static')).toBe(true);
+          expect(rowEl.style.transform).toBe('');
+        });
+      });
+
+      it('virtualises a large grid, mounting only a window of rows', async ()=>{
+        // Clearing the default threshold would need several hundred rows,
+        // which is slow enough to time out on the Windows runners, so the
+        // threshold is pinned low instead and the scaling of the default
+        // is covered directly by getVirtualiseThreshold's own tests.
+        const manyRows = Array.from({length: 60}, (_, i)=>(
+          {field3: i, field4: 'field4val', field5: `field5val${i}`}
+        ));
+
+        await ctrlMount({
+          viewHelperProps: {mode: 'create', virtualiseThreshold: 25},
+          getInitData: ()=>Promise.resolve({fieldcoll: manyRows}),
+        });
+
+        const pgrtRows = ctrl.container.querySelectorAll('.pgrt-row');
+        expect(pgrtRows.length).toBeGreaterThan(0);
+        expect(pgrtRows.length).toBeLessThan(manyRows.length);
+        pgrtRows.forEach((rowEl)=>{
+          expect(rowEl.classList.contains('pgrt-row--static')).toBe(false);
+        });
+      });
     });
 
     describe('SQL tab', ()=>{
