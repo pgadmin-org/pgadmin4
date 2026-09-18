@@ -408,17 +408,28 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, kberr);
             });
         } else if(error?.response?.status == 428) {
-          connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
-            await connectServer(api, modal, selectedConn.sid, selectedConn.user, passwordData, async ()=>{
-              initializeQueryTool();
-            });
-          }, ()=>{
+          setQtStatePartial({
+            connected: false,
+            obtaining_conn: false,
+          });
+          const onCancel = ()=>{
             setQtStatePartial({
               connected: false,
               obtaining_conn: false,
               connection_status_msg: gettext('Not Connected'),
             });
-          });
+          };
+          const onConnecting = (isConnecting)=>{
+            setQtStatePartial({
+              obtaining_conn: isConnecting,
+            });
+          };
+          connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
+            onConnecting(true);
+            await connectServer(api, modal, selectedConn.sid, selectedConn.user, passwordData, async ()=>{
+              initializeQueryTool();
+            }, onCancel, onConnecting);
+          }, onCancel);
         } else {
           setQtStatePartial({
             connected: false,
@@ -605,15 +616,27 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       pgAdmin.Browser.notifier.errorText(error.response.data.errormsg);
 
     }else if(error?.response?.status == 428) {
+      setQtStatePartial({
+        obtaining_conn: false,
+      });
+      const onCancel = ()=>{
+        setQtStatePartial({
+          connected: false,
+          obtaining_conn: false,
+        });
+      };
+      const onConnecting = (isConnecting)=>{
+        setQtStatePartial({
+          obtaining_conn: isConnecting,
+        });
+      };
       connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
-
+        onConnecting(true);
         await connectServer(api, modal, selectedConn.sid, selectedConn.user, passwordData, async ()=>{
           initializeQueryTool();
-        });
+        }, onCancel, onConnecting);
 
-      }, ()=>{
-        /*This is intentional (SonarQube)*/
-      });
+      }, onCancel);
     }else {
       let msg = parseApiError(error);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
@@ -702,8 +725,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     const selectConn = (newConnData, connected=false, obtainingConn=true)=>{
       setQtStatePartial((prevQtState)=>{
         let newConnList = [...prevQtState.connection_list];
-        /* If new, add to the list */
-        if(isNew) {
+        /* If new, add to the list if not already present */
+        if(isNew && !newConnList.some((c)=>c.sid == newConnData.sid
+          && c.did == newConnData.did
+          && c.user == newConnData.user
+          && c.role == newConnData.role)) {
           newConnList.push(newConnData);
         }
         for (const connItem of newConnList) {
@@ -765,18 +791,38 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         })
         .catch((error)=>{
           if(error?.response?.status == 428) {
+            setQtStatePartial({
+              obtaining_conn: false,
+            });
+            const onCancel = ()=>{
+              if(!isNew) {
+                selectConn(currSelectedConn, currConnected, false);
+              } else {
+                setQtStatePartial({
+                  obtaining_conn: false,
+                });
+              }
+              reject(new Error(gettext('Connection cancelled')));
+            };
             connectServerModal(modal, error.response?.data?.result, (passwordData)=>{
+              setQtStatePartial({
+                obtaining_conn: true,
+              });
               resolve(
                 updateQueryToolConnection({
                   ...connectionData,
                   ...passwordData,
                 }, isNew)
               );
-            }, ()=>{
-              /*This is intentional (SonarQube)*/
-            });
+            }, onCancel);
           } else {
-            selectConn(currSelectedConn, currConnected, false);
+            if(!isNew) {
+              selectConn(currSelectedConn, currConnected, false);
+            } else {
+              setQtStatePartial({
+                obtaining_conn: false,
+              });
+            }
             reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
           }
         });
