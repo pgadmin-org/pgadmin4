@@ -307,6 +307,16 @@ jobs:
                   echo "Missing or unreadable SSH key: ${KEY}" >&2
                   exit 1
               fi
+              # A public key is readable too, and pointing -i at one fails
+              # later inside ssh with a message that does not mention which
+              # file was wrong. Both halves of a pair sit in the same
+              # directory with names one suffix apart, so this is an easy
+              # thing to configure wrongly and a cheap thing to catch.
+              if head -c 4 "${KEY}" | grep -q '^ssh-'; then
+                  echo "${KEY} is a public key; -i needs the private one." >&2
+                  echo "Drop the .pub suffix from the variable that names it." >&2
+                  exit 1
+              fi
           done
           if [ ! -r ~/.ssh/known_hosts ]; then
               echo "This runner has no ~/.ssh/known_hosts, so host key" >&2
