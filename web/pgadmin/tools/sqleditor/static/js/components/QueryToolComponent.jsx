@@ -1041,7 +1041,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               connectionStatus={qtState.connection_status}
               connectionStatusMsg={qtState.connection_status_msg}
               connectionList={qtState.connection_list}
-              onConnectionChange={(connectionData)=>updateQueryToolConnection(connectionData)}
+              onConnectionChange={(connectionData)=>{
+                updateQueryToolConnection(connectionData).catch((err)=>{
+                  if(err?.message !== gettext('Connection cancelled')) {
+                    pgAdmin.Browser.notifier.error(err?.message || gettext('Something went wrong'));
+                  }
+                });
+              }}
               onNewConnClick={onNewConnClick}
               onNewQueryToolClick={onNewQueryToolClick}
               onResetLayout={onResetLayout}
