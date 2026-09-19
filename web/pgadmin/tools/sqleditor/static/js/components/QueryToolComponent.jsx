@@ -752,6 +752,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     /* If not new, select it initially to show loading */
     if(!isNew) {
       selectConn(connectionData);
+    } else {
+      setQtStatePartial({
+        obtaining_conn: true,
+      });
     }
 
     return new Promise((resolve, reject)=>{
