@@ -60,9 +60,25 @@ jobs:
       name: ${{ steps.pick.outputs.name }}
     steps:
       - id: pick
+        env:
+          REQUESTED: ${{ inputs.location }}
         run: |
-          NAME="${{ inputs.location || '' }}"
+          set -euo pipefail
+          NAME="${REQUESTED:-}"
           [ -n "${NAME}" ] || NAME=$(date +%Y-%m-%d)
+
+          # Validated here so that everything downstream, including a shell on
+          # the machine holding the publishing keys, is working with a name
+          # that cannot be anything but a date and an optional suffix. The
+          # wrapper on the server applies its own rule to the same value; this
+          # one exists so a bad input fails in five seconds rather than after
+          # an hour of building.
+          if ! printf '%s' "${NAME}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}(-[1-9][0-9]?)?$'; then
+              echo "Not a valid snapshot location: ${NAME}" >&2
+              echo "Expected YYYY-MM-DD, optionally with a -N suffix." >&2
+              exit 1
+          fi
+
           echo "Snapshot location: ${NAME}"
           echo "name=${NAME}" >> "${GITHUB_OUTPUT}"
 
@@ -76,8 +92,11 @@ jobs:
     uses: ./.github/workflows/check-python-build.yml
   docs:
     uses: ./.github/workflows/check-doc-builds.yml
-  helm:
-    uses: ./.github/workflows/check-helm-build.yml
+  # No helm job here. The chart is not part of the download tree: the
+  # buildfarm pushed it to an OCI registry, which nothing in this workflow
+  # does yet. Calling the build and then discarding its artefact, which is what
+  # happened before, cost a runner and proved nothing that check-helm-build
+  # does not already prove on every push.
 
   # The repository configuration RPMs. These are not built by the QA
   # workflows, because they are not a build of pgAdmin: they are a one-file
@@ -98,8 +117,12 @@ jobs:
 
       - name: Build the repository RPMs
         env:
-          PGADMIN_REPO_DIR: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/${{ needs.location.outputs.name }}/yum
+          LOCATION: ${{ needs.location.outputs.name }}
         run: |
+          # Through the environment rather than interpolated into the script.
+          # The location is a dispatch input, so it is text somebody chose, and
+          # ${{ }} substitution happens before the shell ever sees the line.
+          export PGADMIN_REPO_DIR="https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/${LOCATION}/yum"
           echo "Repositories will point at ${PGADMIN_REPO_DIR}"
           pkg/redhat/repo-rpm.sh
 
@@ -107,6 +130,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-repo-rpm-build-output
+          if-no-files-found: error
           path: dist/*.noarch.rpm
 
   macos:
@@ -132,9 +156,22 @@ jobs:
     # is not gated by it.
     environment: publishing
 
-    # The Windows signing host is the one runner that can be offline, and a
-    # snapshot without an installer is still worth having.
-    if: always() && needs.deb.result == 'success' && needs.rpm.result == 'success'
+    # Everything must have built except Windows. That is the one runner which
+    # can legitimately be offline, and a snapshot without the installer is
+    # still worth having; a snapshot missing its documentation, source tarball,
+    # wheel or repository RPMs is not, and the repository RPMs are worse than
+    # missing, since install-repo-readme.py then fails after the packages have
+    # been uploaded and signed, leaving half a snapshot on the download server.
+    if: >-
+      always()
+      && needs.location.result == 'success'
+      && needs.deb.result == 'success'
+      && needs.rpm.result == 'success'
+      && needs.tarball.result == 'success'
+      && needs.wheel.result == 'success'
+      && needs.docs.result == 'success'
+      && needs.repo-rpm.result == 'success'
+      && needs.macos.result == 'success'
 
     steps:
       - uses: actions/checkout@v7
@@ -150,6 +187,8 @@ jobs:
       # table, since dpkg already encodes it there; the codename does not, so
       # that mapping is explicit.
       - name: Assemble the staging tree
+        env:
+          LOCATION: ${{ needs.location.outputs.name }}
         run: |
           set -euo pipefail
           # Flat, beside apt/ and yum/, which is how both the staging server
@@ -163,7 +202,7 @@ jobs:
           # them.
           rm -rf stage
 
-          STAGE="stage/${{ needs.location.outputs.name }}"
+          STAGE="stage/${LOCATION}"
           mkdir -p "${STAGE}/yum"
 
           # An artefact can be legitimately absent: the Windows signing host is

@@ -394,12 +394,17 @@ REM Main build sequence Ends
     IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
         ECHO Attempting to sign the pgAdmin4.exe...
         CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v "%BUILDROOT%\runtime\pgAdmin4.exe"
-        IF %ERRORLEVEL% NEQ 0 (
+        REM IF ERRORLEVEL, not IF %ERRORLEVEL%: inside a parenthesised block the
+        REM latter is expanded when the block is parsed, before signtool has run,
+        REM so it tested a stale value and this branch never fired. A failed
+        REM signature on the executable users actually run was undetectable, and
+        REM the installer around it was signed and verified regardless.
+        IF ERRORLEVEL 1 (
             ECHO.
             ECHO ************************************************************
             ECHO * Failed to sign the pgAdmin4.exe
             ECHO ************************************************************
-            PAUSE
+            EXIT /B 1
         )
     ) ELSE (
         ECHO Skipping code signing ^(PGADMIN_WINDOWS_CSC is not set^)...
@@ -475,12 +480,16 @@ REM Main build sequence Ends
     ECHO Verifying the installer signature...
 
     CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" verify /pa /v "%DISTROOT%\%INSTALLERNAME%"
-    IF %ERRORLEVEL% NEQ 0 (
+    REM PAUSE was the old handler here, which on the signing host either returns
+    REM immediately, leaving the build to carry on with an unverified installer,
+    REM or blocks until the job times out. There is nobody at that machine to
+    REM press a key.
+    IF ERRORLEVEL 1 (
         ECHO.
         ECHO ************************************************************
         ECHO * Failed to verify signature of the installer
         ECHO ************************************************************
-        PAUSE
+        EXIT /B 1
     )
 
     EXIT /B 0

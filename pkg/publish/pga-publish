@@ -169,7 +169,7 @@ CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
 # SITE: use the internal name or address that paxsor actually resolves.
 PULL_HOST = "procyon"
 PULL_USER = "pgaupload"
-PULL_KEY = os.path.expanduser("~/.ssh/id_staging_pull")
+PULL_KEY = os.path.expanduser("~/.ssh/id_ed25519_paxsor_pull")
 
 # One publishing operation at a time. Two concurrent workflow runs indexing the
 # same repository would produce a Release file describing packages that are half

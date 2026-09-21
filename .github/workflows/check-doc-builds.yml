@@ -36,7 +36,12 @@ concurrency:
   # github.workflow, because in a reusable workflow that expression is
   # the CALLER's name. Every workflow Snapshot calls would otherwise
   # share one group and, with cancel-in-progress, cancel each other.
-  group: 'check-doc-builds @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-doc-builds @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
 jobs:
@@ -63,6 +68,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-html-build-output
+          if-no-files-found: error
           path: docs/en_US/_build/html/*
 
       - name: Check the ePub build
@@ -74,6 +80,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-epub-build-output
+          if-no-files-found: error
           path: docs/en_US/_build/epub/pgAdmin4.epub
 
       - name: Check the PDF build
@@ -85,4 +92,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-pdf-build-output
+          if-no-files-found: error
           path: docs/en_US/_build/latex/pgadmin4.pdf

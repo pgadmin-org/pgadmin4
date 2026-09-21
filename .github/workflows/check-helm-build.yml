@@ -24,7 +24,12 @@ concurrency:
   # github.workflow, because in a reusable workflow that expression is
   # the CALLER's name. Every workflow Snapshot calls would otherwise
   # share one group and, with cancel-in-progress, cancel each other.
-  group: 'check-helm-build @ ${{ github.ref }}'
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-helm-build @ ${{ github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
 permissions:
@@ -39,7 +44,7 @@ jobs:
 
       - name: Install Helm
         run: |
-          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 -o get-helm-3
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/v4.3.0/scripts/get-helm-3 -o get-helm-3
           chmod 700 get-helm-3
           ./get-helm-3
 
@@ -50,4 +55,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-helm-build-output
+          if-no-files-found: error
           path: pgadmin4-helm-*.tgz

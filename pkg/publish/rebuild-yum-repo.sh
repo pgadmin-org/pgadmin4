@@ -55,7 +55,13 @@ VERSION=$3
 TREE=${ROOT}/yum/${FAMILY}/${NAME}-${VERSION}-${ARCH}
 
 /usr/bin/createrepo_c "${TREE}"
-/usr/bin/gpg --yes --detach-sign --armor "${TREE}/repodata/repomd.xml"
+# -u, because without it gpg signs with whatever the keyring's default
+# key resolves to. That is the packaging key today only because there is
+# one secret key in it, and it stops being true the moment a second one
+# lands. A repository whose metadata is signed by the wrong key is one
+# every client with gpgcheck=1 rejects, produced by a run that exits 0.
+/usr/bin/gpg --yes -u packages@pgadmin.org --detach-sign --armor \
+    "${TREE}/repodata/repomd.xml"
 
 # Some EL variants report $releasever with a variant suffix, so the repository
 # has to answer to each of the resulting directory names.

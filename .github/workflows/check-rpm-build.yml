@@ -37,7 +37,12 @@ concurrency:
   # github.workflow, because in a reusable workflow that expression is
   # the CALLER's name. Every workflow Snapshot calls would otherwise
   # share one group and, with cancel-in-progress, cancel each other.
-  group: 'check-rpm-build @ ${{ github.ref }}'
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-rpm-build @ ${{ github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
 permissions:
@@ -135,7 +140,7 @@ jobs:
         run: python3 -m pip install --break-system-packages sphinxcontrib-youtube || python3 -m pip install sphinxcontrib-youtube
 
       - name: Install syft
-        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/v1.52.0/install.sh | sh -s -- -b /usr/local/bin v1.52.0
 
       - uses: actions/setup-node@v7
         with:
@@ -160,4 +165,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-rpm-build-output-${{ matrix.name }}
+          if-no-files-found: error
           path: dist/*.rpm

@@ -75,7 +75,10 @@ needs the publishing account to be able to write it.
 
 Three key pairs. `roadie-publish` and `roadie-upload` belong to the runner;
 `paxsor-pull` belongs to the download server, which uses it to fetch staged
-content from the staging server during publication.
+content from the staging server during publication. Its private half must be at
+`~pgaupload/.ssh/id_ed25519_paxsor_pull` on the download server, which is
+where `pga-publish` looks for it; the name in the key management system is
+only a label, and the path is what matters.
 
 `authorized_keys.procyon` and `authorized_keys.paxsor` are annotated templates:
 substitute the addresses and the public keys, and read the annotations before

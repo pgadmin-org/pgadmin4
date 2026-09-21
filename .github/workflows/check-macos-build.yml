@@ -115,4 +115,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-macos-build-output-${{ matrix.name }}
+          if-no-files-found: error
           path: dist/*.dmg

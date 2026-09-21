@@ -39,6 +39,32 @@ check() {
     fi
 }
 
+# check_ssh <expected-exit> <description> <raw SSH_ORIGINAL_COMMAND>
+#
+# The other helper drives --dry-run, which takes its request from argv and so
+# joins it with single spaces. Production takes the raw string sshd puts in
+# SSH_ORIGINAL_COMMAND, which keeps runs of whitespace, tabs, and whatever else
+# the client sent. Only rejections are tested this way: an accepted request
+# would run for real, and the point of these cases is that none of them gets
+# that far.
+check_ssh() {
+    local expected="$1"; shift
+    local description="$1"; shift
+
+    local output
+    output="$(SSH_ORIGINAL_COMMAND="$1" "$WRAPPER" 2>&1)"
+    local rc=$?
+
+    if [ "$rc" = "$expected" ]; then
+        pass=$((pass + 1))
+        printf 'ok    %-3s %s\n' "$rc" "$description"
+    else
+        fail=$((fail + 1))
+        printf 'FAIL  %-3s (wanted %s) %s\n' "$rc" "$expected" "$description"
+        printf '        %s\n' "$output"
+    fi
+}
+
 echo "== accepted requests: staging role (procyon) =="
 check 0 staging "hello"                         hello
 check 0 staging "stage-create"                  stage-create 2026-09-17
@@ -50,6 +76,11 @@ check 0 staging "stage-index-yum"               stage-index-yum 2026-09-17
 
 echo
 echo "== accepted requests: download role (paxsor) =="
+check 0 download "snapshot-create"               snapshot-create 2026-09-17
+check 0 download "snapshot-sign"                 snapshot-sign 2026-09-17
+check 0 download "snapshot-index-apt"            snapshot-index-apt 2026-09-17
+check 0 download "snapshot-index-yum"            snapshot-index-yum 2026-09-17
+check 0 download "snapshot-purge"                snapshot-purge
 check 0 download "release-exists"               release-exists 9.18
 check 0 download "release-create"               release-create 9.18
 check 0 download "release-create with patch"    release-create 9.18.1
@@ -110,6 +141,21 @@ check 77 download "mismatched yum tuple"        "rebuild-yum fedora rhel 9 x86_6
 check 64 download "sync-s3 takes no argument"   "sync-s3 release"
 check 77 download "unpublished yum arch"        "rebuild-yum redhat rhel 9 aarch64"
 check 77 download "unpublished apt codename"    "rebuild-apt plucky"
+
+echo
+echo "== through the real entry point, SSH_ORIGINAL_COMMAND =="
+check_ssh 64 "tab instead of a space"            "$(printf 'stage-create\t2026-09-17')"
+check_ssh 64 "embedded newline"                  "$(printf 'hello\nstage-create 2026-09-17')"
+check_ssh 64 "trailing carriage return"          "$(printf 'hello\r')"
+check_ssh 64 "Cyrillic homoglyph in the verb"    "ѕtage-create 2026-09-17"
+check_ssh 64 "non-ASCII in an argument"          "rebuild-apt bookwоrm"
+check_ssh 64 "NUL-ish escape in the request"     "$(printf 'hello\\x00')"
+
+echo
+echo "== an argument may not look like an option =="
+check 64 download "leading hyphen as a codename"   "rebuild-apt -r"
+check 64 download "leading hyphen as a datestamp"  "snapshot-sign -rf"
+check 64 staging  "lone hyphen"                    "stage-exists -"
 
 echo
 echo "== the dry-run flag is not reachable from a client =="

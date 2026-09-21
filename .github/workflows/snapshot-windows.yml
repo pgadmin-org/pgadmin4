@@ -158,9 +158,10 @@ jobs:
           CALL "%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat" || EXIT /b 1
           CALL Make.bat || EXIT /b 1
 
-      # Make.bat verifies the installer's own signature, but says nothing about
-      # the executable inside it, which is signed in a separate step and is the
-      # thing users actually run.
+      # Make.bat now fails the build if either signature fails, the executable
+      # inside the installer included, so this is a second opinion rather than
+      # the only check. It verifies what is in dist/, which is the installer;
+      # the executable within it is covered by Make.bat refusing to continue.
       - name: Verify the signatures
         shell: powershell
         run: |
@@ -175,4 +176,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-windows-snapshot
+          if-no-files-found: error
           path: dist/*.exe

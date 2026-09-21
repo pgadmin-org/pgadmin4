@@ -1,9 +1,9 @@
 name: Check container build
 
 on:
-  # Callable from snapshot.yml, so that what gets published is the
-  # same build that runs on every push rather than a second
-  # definition of it that can drift.
+  # Callable, so that a workflow which needs a container build gets this one
+  # rather than a second definition of it that can drift. Snapshot does not
+  # call it today, the image not being part of the download tree.
   workflow_call:
 
   push:
@@ -36,7 +36,12 @@ concurrency:
   # github.workflow, because in a reusable workflow that expression is
   # the CALLER's name. Every workflow Snapshot calls would otherwise
   # share one group and, with cancel-in-progress, cancel each other.
-  group: 'check-container-build @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-container-build @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
 jobs:

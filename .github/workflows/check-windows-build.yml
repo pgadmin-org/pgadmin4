@@ -137,4 +137,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-windows-build-output
+          if-no-files-found: error
           path: dist/*.exe

@@ -151,6 +151,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-macos-snapshot-${{ matrix.name }}
+          if-no-files-found: error
           path: |
             dist/*.dmg
             dist/*.zip
