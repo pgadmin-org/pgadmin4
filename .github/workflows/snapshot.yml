@@ -121,7 +121,8 @@ jobs:
         run: |
           # Through the environment rather than interpolated into the script.
           # The location is a dispatch input, so it is text somebody chose, and
-          # ${{ }} substitution happens before the shell ever sees the line.
+          # workflow expression substitution happens before the shell ever sees the
+          # line, so a crafted location would otherwise become shell text.
           export PGADMIN_REPO_DIR="https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/${LOCATION}/yum"
           echo "Repositories will point at ${PGADMIN_REPO_DIR}"
           pkg/redhat/repo-rpm.sh
