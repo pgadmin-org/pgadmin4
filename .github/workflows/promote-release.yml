@@ -32,6 +32,13 @@ on:
         description: 'Type the version again to confirm'
         required: true
         type: string
+      container-tags:
+        description: >-
+          Space separated tags for the container, for example
+          "9 9.18 9.18.0 latest". Required when scope is everything.
+        required: false
+        type: string
+        default: ''
       scope:
         description: >-
           How much to do. "everything" is a real promotion. "files" stops
@@ -228,3 +235,108 @@ jobs:
               echo "The packages are live and will reach the mirrors at the next"
               echo "hourly sync."
           fi
+
+  # The registries, which need none of the publishing keys and none of roadie:
+  # nothing here touches our servers. Separate so that a Docker Hub outage
+  # cannot leave a half-finished promotion on the download server, and so the
+  # runner holding the SSH keys never handles registry credentials.
+  registries:
+    needs: promote
+    if: ${{ inputs.scope == 'everything' }}
+    runs-on: ubuntu-24.04
+    environment: publishing
+
+    permissions:
+      contents: read
+      # For PyPI trusted publishing, which exchanges this for a short-lived
+      # upload credential rather than using a stored API token.
+      id-token: write
+      # For GHCR, which needs no stored credential at all.
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Helm
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/v4.3.0/scripts/get-helm-3 -o get-helm-3
+          chmod +x get-helm-3
+          ./get-helm-3
+
+      # Re-tagged rather than rebuilt, so what ships is the manifest the
+      # acceptance test ran against. imagetools works registry-side, so
+      # nothing is pulled or pushed through this runner.
+      - name: Publish the container
+        env:
+          LOCATION: ${{ inputs.location }}
+          TAGS: ${{ inputs.container-tags }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          [ -n "${TAGS}" ] || { echo "container-tags is required." >&2; exit 1; }
+          for tag in ${TAGS}; do
+              printf '%s' "${tag}" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$' || {
+                  echo "Not a container tag: ${tag}" >&2; exit 1; }
+          done
+
+          printf '%s' "${DOCKERHUB_TOKEN}" \
+              | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+          printf '%s' "${GITHUB_TOKEN}" \
+              | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+
+          # Docker Hub stays canonical, because every tutorial, compose file
+          # and manifest in the world names dpage/pgadmin4. GHCR is published
+          # alongside it: organisation owned, no stored credential, and not
+          # subject to Docker Hub's anonymous pull limits.
+          for tag in ${TAGS}; do
+              echo "+ ${LOCATION} -> :${tag}"
+              docker buildx imagetools create \
+                  --tag "dpage/pgadmin4:${tag}" \
+                  --tag "ghcr.io/pgadmin-org/pgadmin4:${tag}" \
+                  "dpage/pgadmin4:${LOCATION}"
+          done
+          docker logout ghcr.io
+          docker logout
+
+      # The chart carries the release version from pkg/helm/Chart.yaml, so
+      # unlike the container there is no candidate copy to re-tag: it is
+      # packaged and pushed once, here.
+      #
+      # To GHCR rather than Docker Hub. The chart's install base is a small
+      # fraction of the container's, so moving it breaks far less than moving
+      # the image would, oci://docker.io/dpage was an odd home for a chart in
+      # the first place, and it needs no stored credential here.
+      - name: Publish the Helm chart
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          printf '%s' "${GITHUB_TOKEN}" \
+              | helm registry login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+          helm package pkg/helm
+          helm push pgadmin4-helm-*.tgz oci://ghcr.io/pgadmin-org
+          helm registry logout ghcr.io
+
+      # Fetched from the published release rather than rebuilt, so what
+      # reaches PyPI is the file the acceptance test installed.
+      - name: Collect the wheel
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p pypi-dist
+          curl -fsS -o "pypi-dist/pgadmin4-${VERSION}-py3-none-any.whl" \
+              "https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v${VERSION}/pip/pgadmin4-${VERSION}-py3-none-any.whl"
+          ls -l pypi-dist
+
+      # Trusted publishing: PyPI verifies this workflow's OIDC identity, so
+      # there is no API token to hold, rotate or leak.
+      - name: Upload to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: pypi-dist

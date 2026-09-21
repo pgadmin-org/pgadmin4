@@ -84,11 +84,24 @@ jobs:
     uses: ./.github/workflows/check-python-build.yml
   docs:
     uses: ./.github/workflows/check-doc-builds.yml
-  # No helm job here. The chart is not part of the download tree: the
-  # buildfarm pushed it to an OCI registry, which nothing in this workflow
-  # does yet. Calling the build and then discarding its artefact, which is what
-  # happened before, cost a runner and proved nothing that check-helm-build
-  # does not already prove on every push.
+  # The container, pushed to the registry under this candidate's location so
+  # that it can be tested and then re-tagged at promotion. Not part of the
+  # download tree, which is why it is not in assemble's needs.
+  container:
+    needs: location
+    if: inputs.publish
+    uses: ./.github/workflows/check-container-build.yml
+    with:
+      publish: true
+      location: ${{ needs.location.outputs.name }}
+    secrets: inherit
+
+  # The Helm chart is built as a check but not published here. Its version
+  # comes from pkg/helm/Chart.yaml, so pushing it would publish the release
+  # version before the release, and the registry has no notion of a candidate
+  # the way the download server does. It goes out at promotion.
+  helm:
+    uses: ./.github/workflows/check-helm-build.yml
 
   # The repository configuration RPMs. These are not built by the QA
   # workflows, because they are not a build of pgAdmin: they are a one-file
