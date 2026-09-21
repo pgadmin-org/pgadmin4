@@ -373,3 +373,13 @@ jobs:
           publish stage-index-apt "${DEST}"
           publish stage-index-yum "${DEST}"
 
+  # Installing from the candidate, which is the only check that proves a user
+  # could have. It gates nothing automatically yet, promotion still being a
+  # human decision, but a red result here is a candidate that must not be
+  # promoted.
+  acceptance:
+    needs: [location, assemble]
+    if: inputs.publish
+    uses: ./.github/workflows/acceptance-test.yml
+    with:
+      base-url: https://developer.pgadmin.org/builds/${{ needs.location.outputs.name }}

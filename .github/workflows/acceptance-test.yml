@@ -1,0 +1,137 @@
+# Install pgAdmin from a published tree, exactly as the README tells a user to.
+#
+# Everything else in this pipeline checks that files exist, that indexes parse
+# and that signatures validate. All three can be true of a repository apt still
+# refuses, and two bugs found during the migration were of precisely that
+# shape: packages one directory too deep, and noarch RPMs filed where no dnf
+# client looks. Neither failed a build.
+#
+# So this does not inspect anything. It follows the instructions in the
+# repository README, in a clean container, and installs the package. No
+# --allow-unauthenticated, no --nogpgcheck, no pinning: if the signature is
+# wrong or the architecture is missing from Release, the install fails, which
+# is the point.
+#
+# It runs against a release candidate on the development server, which serves
+# its tree the moment it is written. The download server sits behind an hourly
+# sync to the mirrors, so testing there would mostly measure the sync.
+
+name: Acceptance test
+
+on:
+  workflow_call:
+    inputs:
+      base-url:
+        description: The tree to install from, without a trailing slash
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      base-url:
+        description: >-
+          The tree to install from, for example
+          https://developer.pgadmin.org/builds/2026-09-21-1
+        required: true
+        type: string
+
+concurrency:
+  group: 'acceptance-test @ ${{ inputs.base-url }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  apt:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'bookworm', image: 'debian:12' }
+          - { name: 'trixie',   image: 'debian:13' }
+          - { name: 'jammy',    image: 'ubuntu:22.04' }
+          - { name: 'noble',    image: 'ubuntu:24.04' }
+          - { name: 'resolute', image: 'ubuntu:26.04' }
+    container: ${{ matrix.image }}
+
+    steps:
+      # Only what a user would already have or would obviously need. lsb-release
+      # is here because the README's own sources.list line calls lsb_release,
+      # and following the instruction is the test.
+      - name: Install the prerequisites
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates curl gnupg lsb-release
+
+      - name: Follow the README
+        env:
+          BASE_URL: ${{ inputs.base-url }}
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -euo pipefail
+
+          curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub \
+              | gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
+
+          sh -c "echo \"deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] ${BASE_URL}/apt/\$(lsb_release -cs) pgadmin4 main\" \
+              > /etc/apt/sources.list.d/pgadmin4.list"
+          cat /etc/apt/sources.list.d/pgadmin4.list
+
+          # A repository apt will not verify makes this fail here, before any
+          # package is considered.
+          apt-get update
+
+      - name: Install pgAdmin
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -euo pipefail
+          apt-get install -y pgadmin4-server
+
+          # Proves the package came from us rather than from the distribution,
+          # and that what installed is the version this build produced.
+          dpkg-query -W -f '${Package} ${Version}\n' pgadmin4-server
+          test -x /usr/pgadmin4/bin/setup-web.sh
+
+  yum:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'rhel-9',    image: 'almalinux:9',  family: 'redhat' }
+          - { name: 'rhel-10',   image: 'almalinux:10', family: 'redhat' }
+          - { name: 'fedora-43', image: 'fedora:43',    family: 'fedora' }
+          - { name: 'fedora-44', image: 'fedora:44',    family: 'fedora' }
+    container: ${{ matrix.image }}
+
+    steps:
+      - name: Follow the README
+        env:
+          BASE_URL: ${{ inputs.base-url }}
+          FAMILY: ${{ matrix.family }}
+        run: |
+          set -euo pipefail
+          dnf install -y --setopt=install_weak_deps=False curl
+
+          # The repository RPM carries the .repo file and the packaging key, and
+          # points at the tree it shipped in, so nothing here names a URL twice.
+          # It sets gpgcheck=1 and repo_gpgcheck=1, which is why no --nogpgcheck
+          # appears below: a wrongly signed repository fails at this step.
+          RPM=$(curl -fsS "${BASE_URL}/yum/" \
+              | grep -oE "pgadmin4-${FAMILY}-repo-[0-9.-]+\.noarch\.rpm" \
+              | sort -u | tail -1)
+          echo "Repository package: ${RPM}"
+          rpm -i "${BASE_URL}/yum/${RPM}"
+          cat /etc/yum.repos.d/pgadmin4.repo
+
+      - name: Install pgAdmin
+        run: |
+          set -euo pipefail
+          dnf install -y pgadmin4-server
+          rpm -q pgadmin4-server
+          test -x /usr/pgadmin4/bin/setup-web.sh
