@@ -166,8 +166,11 @@ CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
 # constant here; the client never names a host. The key on paxsor is confined
 # on the procyon side by rrsync in read-only mode, so the worst this edge can do
 # is read a tree that developer.pgadmin.org already publishes over HTTP anyway.
-# SITE: use the internal name or address that paxsor actually resolves.
-PULL_HOST = "procyon"
+# The fully qualified name, not the short one: the short name resolves from
+# the download server but the host key is recorded under both, and being
+# explicit here means the name in known_hosts and the name in this file cannot
+# drift apart without somebody noticing.
+PULL_HOST = "procyon.postgresql.org"
 PULL_USER = "pgaupload"
 PULL_KEY = os.path.expanduser("~/.ssh/id_ed25519_paxsor_pull")
 
