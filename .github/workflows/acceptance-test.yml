@@ -45,6 +45,12 @@ permissions:
 jobs:
   apt:
     runs-on: ubuntu-24.04
+
+    # The images default to sh, which has no pipefail, so every step that set
+    # it died on the first line. All of these carry bash.
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -99,6 +105,12 @@ jobs:
 
   yum:
     runs-on: ubuntu-24.04
+
+    # The images default to sh, which has no pipefail, so every step that set
+    # it died on the first line. All of these carry bash.
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
