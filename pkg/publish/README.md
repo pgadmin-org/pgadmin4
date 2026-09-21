@@ -30,6 +30,7 @@ which verbs exist.
 | `install-repo-readme.py` | Write the README at the top of an APT or YUM tree |
 | `README.apt.in`, `README.yum.in` | The prose those READMEs are built from |
 | `aptftp.conf` | `apt-ftparchive` settings: Origin, Label, Suite, Description |
+| `CURRENT_MAINTAINER` | The marker the PostgreSQL mirror network expects in each published directory |
 | `pga-publish` | The forced-command wrapper |
 | `authorized_keys.procyon`, `authorized_keys.paxsor` | Annotated templates for the two servers |
 | `selftest.sh` | Exercises the wrapper's parser without touching anything |
@@ -47,7 +48,8 @@ On both servers, as root:
 install -d -m 755 /usr/local/lib/pga-publish
 install -m 755 rebuild-apt-repo.sh rebuild-yum-repo.sh install-repo-readme.py \
     /usr/local/lib/pga-publish/
-install -m 644 aptftp.conf README.apt.in README.yum.in /usr/local/lib/pga-publish/
+install -m 644 aptftp.conf README.apt.in README.yum.in CURRENT_MAINTAINER \
+    /usr/local/lib/pga-publish/
 install -m 755 pga-publish /usr/local/sbin/pga-publish
 ```
 

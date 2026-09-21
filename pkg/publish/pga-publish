@@ -835,8 +835,28 @@ def cmd_release_create(args, raw):
     refuse_if_exists(root, "publication location already exists")
     makedirs(root)
     for name in RELEASE_CONTENT_DIRS:
-        makedirs(under(root, name))
+        target = under(root, name)
+        makedirs(target)
+        write_maintainer(target)
     print("created %s" % root)
+
+
+def write_maintainer(directory):
+    """Drop the maintainer marker the PostgreSQL mirror network expects.
+
+    Fixed content, held as a file beside the scripts rather than echoed inline
+    as the buildfarm did, so that changing the support address is a reviewed
+    commit rather than an edit to nine job definitions.
+    """
+    src = os.path.join(PUBLISH_DIR, "CURRENT_MAINTAINER")
+    dst = os.path.join(directory, "CURRENT_MAINTAINER")
+    if DRY_RUN:
+        print("would copy: %s -> %s" % (src, dst))
+        return
+    if not os.path.isfile(src):
+        sys.stderr.write("pga-publish: missing %s\n" % src)
+        sys.exit(EX_UNAVAILABLE)
+    shutil.copyfile(src, dst)
 
 
 def cmd_release_fetch(args, raw):
@@ -918,6 +938,7 @@ def cmd_autoupdate_publish(args, raw):
         sys.exit(EX_UNAVAILABLE)
 
     makedirs(AUTOUPDATE_DIR)
+    write_maintainer(AUTOUPDATE_DIR)
     if not DRY_RUN:
         for stale in sorted(os.listdir(AUTOUPDATE_DIR)):
             if stale.endswith(".zip"):
