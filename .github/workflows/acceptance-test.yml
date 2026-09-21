@@ -102,7 +102,10 @@ jobs:
           # something the distribution happened to carry, and the file list
           # proves the package actually delivered its payload.
           dpkg-query -W -f '${Package} ${Version}\n' pgadmin4-server
-          dpkg -L pgadmin4-server | grep -q '^/usr/pgadmin4/' || {
+          # grep without -q, deliberately: -q exits on the first match, the
+          # command feeding it then dies of SIGPIPE, and pipefail turns that
+          # into a failed pipeline even though the match succeeded.
+          dpkg -L pgadmin4-server | grep '^/usr/pgadmin4/' >/dev/null || {
               echo "pgadmin4-server installed no files under /usr/pgadmin4" >&2
               exit 1; }
 
@@ -148,6 +151,9 @@ jobs:
           set -euo pipefail
           dnf install -y pgadmin4-server
           rpm -q pgadmin4-server
-          rpm -ql pgadmin4-server | grep -q '^/usr/pgadmin4/' || {
+          # grep without -q, deliberately: -q exits on the first match, the
+          # command feeding it then dies of SIGPIPE, and pipefail turns that
+          # into a failed pipeline even though the match succeeded.
+          rpm -ql pgadmin4-server | grep '^/usr/pgadmin4/' >/dev/null || {
               echo "pgadmin4-server installed no files under /usr/pgadmin4" >&2
               exit 1; }
