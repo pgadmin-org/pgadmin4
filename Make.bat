@@ -31,6 +31,7 @@ CALL :VALIDATE_ENVIRONMENT || EXIT /B 1
 CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
 CALL :CREATE_PYTHON_ENV || EXIT /B 1
 CALL :CREATE_RUNTIME_ENV || EXIT /B 1
+CALL :SIGN_COMPONENTS || EXIT /B 1
 CALL :GENERATE_SBOM || EXIT /B 1
 CALL :CREATE_INSTALLER || EXIT /B 1
 CALL :VERIFY_SIGNATURE || EXIT /B 1
@@ -121,8 +122,8 @@ REM Main build sequence Ends
 
 :SET_ENVIRONMENT
     ECHO Configuring the environment...
-    IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\Program Files\MIT\Kerberos"
-    IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\17"
+    IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
+    IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\build64\postgresql"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
     IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
     IF "%PGADMIN_VCREDIST_FILE%" == "" SET "PGADMIN_VCREDIST_FILE=vc_redist.x64.exe"
@@ -190,13 +191,15 @@ REM Main build sequence Ends
 
     IF NOT EXIST "%PGADMIN_KRB5_DIR%" (
         ECHO !PGADMIN_KRB5_DIR! does not exist.
-        ECHO Please install MIT Kerberos for Windows and set the PGADMIN_KRB5_DIR environment variable.
+        ECHO Please install MIT Kerberos for Windows, from the winpgbuild project or
+        ECHO elsewhere, and set the PGADMIN_KRB5_DIR environment variable.
         EXIT /B 1
     )
 
     IF NOT EXIST "%PGADMIN_POSTGRES_DIR%" (
         ECHO !PGADMIN_POSTGRES_DIR! does not exist.
-        ECHO Please install PostgreSQL and set the PGADMIN_POSTGRES_DIR environment variable.
+        ECHO Please install PostgreSQL, from the winpgbuild project or elsewhere, and
+        ECHO set the PGADMIN_POSTGRES_DIR environment variable.
         EXIT /B 1
     )
 
@@ -387,33 +390,22 @@ REM Main build sequence Ends
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%"
 
-    IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
-        ECHO Attempting to sign the pgAdmin4.exe...
-        CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v "%BUILDROOT%\runtime\pgAdmin4.exe"
-        REM IF ERRORLEVEL, not IF %ERRORLEVEL%: inside a parenthesised block the
-        REM latter is expanded when the block is parsed, before signtool has run,
-        REM so it tested a stale value and this branch never fired. A failed
-        REM signature on the executable users actually run was undetectable, and
-        REM the installer around it was signed and verified regardless.
-        IF ERRORLEVEL 1 (
-            ECHO.
-            ECHO ************************************************************
-            ECHO * Failed to sign the pgAdmin4.exe
-            ECHO ************************************************************
-            EXIT /B 1
-        )
-    ) ELSE (
-        ECHO Skipping code signing ^(PGADMIN_WINDOWS_CSC is not set^)...
-    )
-
     ECHO Staging PostgreSQL components...
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-*-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-*-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" "%BUILDROOT%\runtime" > nul
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" "%BUILDROOT%\runtime" > nul
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" "%BUILDROOT%\runtime" > nul
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" "%BUILDROOT%\runtime" > nul
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
     COPY "%PGADMIN_POSTGRES_DIR%\bin\zlib1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dump.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dumpall.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
@@ -468,7 +460,7 @@ REM Main build sequence Ends
 
     ECHO Creating windows installer using INNO tool...
     IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
-        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v $f" || EXIT /B 1
+        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v $f" || EXIT /B 1
     ) ELSE (
         CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" || EXIT /B 1
     )
@@ -508,6 +500,61 @@ REM Main build sequence Ends
         ECHO ************************************************************
         EXIT /B 1
     )
+
+    EXIT /B 0
+
+
+REM Sign one or more files, passed as quoted arguments. Signing is done in a
+REM single signtool invocation as the hardware token prompts for a PIN on the
+REM first signature of a session.
+:SIGN_FILES
+    IF "%PGADMIN_WINDOWS_CSC%" == "" EXIT /B 0
+
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v %*
+    REM IF ERRORLEVEL, not IF %ERRORLEVEL%: the latter would be expanded before
+    REM signtool had run were this ever moved inside a parenthesised block.
+    IF ERRORLEVEL 1 (
+        ECHO.
+        ECHO ************************************************************
+        ECHO * Failed to sign one or more files
+        ECHO ************************************************************
+        EXIT /B 1
+    )
+
+    EXIT /B 0
+
+
+REM Sign the components that we build ourselves: the runtime executable, and
+REM the PostgreSQL and Kerberos utilities and libraries obtained from the
+REM winpgbuild project, all of which are staged into the runtime directory by
+REM :CREATE_RUNTIME_ENV. The Electron, Python and VC++ runtime components are
+REM deliberately left alone, as they are third party binaries that we do not
+REM build, and signing them would replace any signature of their own. Names
+REM are matched as patterns as some of the libraries include version numbers,
+REM and some of them are optional.
+:SIGN_COMPONENTS
+    IF "%PGADMIN_WINDOWS_CSC%" == "" (
+        ECHO Skipping code signing ^(PGADMIN_WINDOWS_CSC is not set^)...
+        EXIT /B 0
+    )
+
+    ECHO Attempting to sign the pgAdmin, PostgreSQL and Kerberos components...
+
+    SETLOCAL EnableDelayedExpansion
+    SET "COMPONENTS="
+    FOR %%p IN (pgAdmin4.exe libpq.dll libcrypto-*-x64.dll libssl-*-x64.dll libintl-*.dll libiconv-*.dll liblz4.dll libzstd.dll zlib1.dll pg_dump.exe pg_dumpall.exe pg_restore.exe psql.exe kinit.exe krb5_64.dll comerr64.dll k5sprt64.dll gssapi64.dll krbcc64.dll ccapiserver.exe) DO (
+        FOR /F "delims=" %%f IN ('DIR /B "%BUILDROOT%\runtime\%%p" 2^>nul') DO SET "COMPONENTS=!COMPONENTS! "%BUILDROOT%\runtime\%%f""
+    )
+    IF "!COMPONENTS!" == "" (
+        ECHO.
+        ECHO ************************************************************
+        ECHO * No components were found to sign
+        ECHO ************************************************************
+        ENDLOCAL
+        EXIT /B 1
+    )
+    CALL :SIGN_FILES !COMPONENTS! || EXIT /B 1
+    ENDLOCAL
 
     EXIT /B 0
 
