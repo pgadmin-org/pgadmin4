@@ -32,6 +32,14 @@ on:
         description: 'Type the version again to confirm'
         required: true
         type: string
+      files-only:
+        description: >-
+          Stop after moving and indexing the files. Skips the website
+          update and the S3 archive, neither of which can be undone,
+          so that a promotion can be rehearsed and then deleted.
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: 'promote-release'
@@ -139,6 +147,7 @@ jobs:
           publish rebuild-readme yum
 
       - name: Update the website
+        if: ${{ !inputs.files-only }}
         env:
           VERSION: ${{ inputs.version }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
@@ -159,6 +168,7 @@ jobs:
           publish purge-cache
 
       - name: Archive to S3
+        if: ${{ !inputs.files-only }}
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
@@ -170,3 +180,11 @@ jobs:
           echo "+ sync-s3"
           ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
               -o StrictHostKeyChecking=yes "${DOWNLOAD}" sync-s3
+
+      - name: Note what was skipped
+        if: ${{ inputs.files-only }}
+        run: |
+          echo "files-only was set, so the website was not updated and"
+          echo "nothing was archived to S3. The files are on the download"
+          echo "server and will reach the mirrors at the next hourly sync"
+          echo "unless they are removed before then."
