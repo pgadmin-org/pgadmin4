@@ -8,6 +8,10 @@ on:
     branches: [ "master" ]
     paths:
       - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
       - 'requirements.txt'
       - 'Makefile'
       - 'tools/setup-python-env.sh'
@@ -17,6 +21,10 @@ on:
     branches: [ "master" ]
     paths:
       - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
       - 'requirements.txt'
       - 'Makefile'
       - 'tools/setup-python-env.sh'

@@ -12,7 +12,7 @@ on:
   workflow_call:
 
   push:
-    branches: [ "master", "buildfarm-to-actions" ]
+    branches: [ "master" ]
     paths:
       - 'pkg/helm/**'
       - '.github/workflows/check-helm-build.yml'

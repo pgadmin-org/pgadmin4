@@ -17,13 +17,17 @@ name: Check Windows build
 
 on:
   push:
-    branches: [ "master", "buildfarm-to-actions" ]
+    branches: [ "master" ]
     paths:
       - 'Make.bat'
       - 'pkg/win32/**'
       - 'pkg/python-version.txt'
       - '.github/actions/install-pgbuild-deps/action.yml'
       - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
       - 'docs/**'
       - 'requirements.txt'
       - '.github/workflows/check-windows-build.yml'

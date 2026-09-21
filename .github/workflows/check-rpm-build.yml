@@ -19,11 +19,15 @@ on:
   workflow_call:
 
   push:
-    branches: [ "master", "buildfarm-to-actions" ]
+    branches: [ "master" ]
     paths:
       - 'pkg/redhat/**'
       - 'pkg/linux/**'
       - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
       - 'docs/**'
       - 'requirements.txt'
       - 'Makefile'
