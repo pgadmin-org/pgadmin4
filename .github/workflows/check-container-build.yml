@@ -57,6 +57,17 @@ on:
       - '.github/workflows/check-container-build.yml'
 
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Build for both architectures and push to the registries
+        type: boolean
+        required: false
+        default: false
+      location:
+        description: The tag to push, normally the build's date
+        type: string
+        required: false
+        default: ''
 
 concurrency:
   # The workflow's own name, spelled out rather than taken from
