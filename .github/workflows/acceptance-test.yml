@@ -157,3 +157,176 @@ jobs:
           rpm -ql pgadmin4-server | grep '^/usr/pgadmin4/' >/dev/null || {
               echo "pgadmin4-server installed no files under /usr/pgadmin4" >&2
               exit 1; }
+
+  # The Windows installer, actually installed. Nothing else in the pipeline
+  # runs it, and until now nothing verified the signature on the executable
+  # inside it either: Make.bat's own check tested a stale %ERRORLEVEL%, and the
+  # workflow step that claimed to cover the gap only re-verified the installer.
+  windows:
+    runs-on: windows-2025
+    steps:
+      - name: Download and install
+        shell: pwsh
+        env:
+          BASE_URL: ${{ inputs.base-url }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $listing = Invoke-WebRequest -Uri "$env:BASE_URL/" -UseBasicParsing
+          $name = ([regex]'pgadmin4-[0-9.]+-x64\.exe').Matches($listing.Content) |
+                    ForEach-Object { $_.Value } | Sort-Object -Unique | Select-Object -Last 1
+          if (-not $name) { throw "No installer found at $env:BASE_URL" }
+          Write-Output "Installer: $name"
+
+          Invoke-WebRequest -Uri "$env:BASE_URL/$name" -OutFile installer.exe -UseBasicParsing
+
+          # The installer's own signature, before running anything from it.
+          $sig = Get-AuthenticodeSignature installer.exe
+          Write-Output "Installer signature: $($sig.Status) / $($sig.SignerCertificate.Subject)"
+          if ($sig.Status -ne 'Valid') { throw "Installer signature is $($sig.Status)" }
+
+          # Inno Setup's silent switches. /DIR is given so the check below does
+          # not depend on the default install location.
+          $p = Start-Process -FilePath .\installer.exe -Wait -PassThru `
+              -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/DIR=C:\pgadmin4-test'
+          if ($p.ExitCode -ne 0) { throw "Installer exited with $($p.ExitCode)" }
+
+      - name: Check what was installed
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = 'C:\pgadmin4-test'
+
+          foreach ($f in @(
+              "$root\runtime\pgAdmin4.exe",
+              "$root\runtime\libpq.dll",
+              "$root\runtime\pg_dump.exe",
+              "$root\runtime\gssapi64.dll",
+              "$root\python\python.exe",
+              "$root\web\pgAdmin4.py")) {
+              if (-not (Test-Path $f)) { throw "Missing from the installation: $f" }
+              Write-Output "present: $f"
+          }
+
+          # The executable users actually run. Verified here because it is the
+          # only place it can be: it does not exist outside the installer until
+          # the installer has run.
+          $sig = Get-AuthenticodeSignature "$root\runtime\pgAdmin4.exe"
+          Write-Output "pgAdmin4.exe signature: $($sig.Status) / $($sig.SignerCertificate.Subject)"
+          if ($sig.Status -ne 'Valid') { throw "pgAdmin4.exe signature is $($sig.Status)" }
+
+  # The macOS disk image as published, rather than the bundle as built. The
+  # snapshot workflow checks the bundle it has just made; this checks what a
+  # user downloads, which has been through a DMG, a web server and a browser's
+  # quarantine attribute.
+  macos:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'arm64', runner: 'macos-15' }
+          - { name: 'x64',   runner: 'macos-26-intel' }
+    steps:
+      - name: Download, mount and check
+        env:
+          BASE_URL: ${{ inputs.base-url }}
+          ARCH: ${{ matrix.name }}
+        run: |
+          set -euo pipefail
+          name=$(curl -fsS "${BASE_URL}/" \
+              | grep -oE "pgadmin4-[0-9.]+-${ARCH}\.dmg" | sort -u | tail -1)
+          [ -n "${name}" ] || { echo "No ${ARCH} disk image found" >&2; exit 1; }
+          echo "Disk image: ${name}"
+          curl -fsS -o image.dmg "${BASE_URL}/${name}"
+
+          # Quarantine it as a browser would, so Gatekeeper is actually
+          # consulted rather than bypassed because the file arrived by curl.
+          xattr -w com.apple.quarantine \
+              "0081;$(printf '%x' "$(date +%s)");Safari;" image.dmg
+
+          hdiutil attach image.dmg -nobrowse -readonly -mountpoint /tmp/pga
+          app="/tmp/pga/pgAdmin 4.app"
+
+          test -d "${app}"
+          test -x "${app}/Contents/MacOS/pgAdmin 4"
+          test -x "${app}/Contents/SharedSupport/pg_dump"
+          test -f "${app}/Contents/Resources/web/pgAdmin4.py"
+
+          echo "=== signature ==="
+          codesign --verify --deep --strict --verbose=2 "${app}"
+          codesign -dvvv "${app}" 2>&1 | grep -E 'Authority|TeamIdentifier'
+
+          echo "=== notarisation ==="
+          xcrun stapler validate "${app}"
+          spctl --assess --type execute --verbose=4 "${app}"
+
+          # Nothing in the bundle may reference a build machine. This is what
+          # catches a dependency that was linked but not relocated, which is
+          # how an ICU or OpenSSL path would escape.
+          echo "=== linkage of the bundled client binaries ==="
+          for b in pg_dump pg_dumpall pg_restore psql; do
+              echo "--- ${b} ---"
+              otool -L "${app}/Contents/SharedSupport/${b}" | tail -n +2
+          done
+          if otool -L "${app}/Contents/SharedSupport/"* \
+                  | grep -E '/opt/pgbuild|/opt/homebrew|/usr/local/(lib|opt)'; then
+              echo "A bundled binary still points outside the bundle" >&2
+              exit 1
+          fi
+
+          hdiutil detach /tmp/pga
+
+  # The downloads nobody installs: the wheel, the tarballs and the documents.
+  # Shallow by design, but it does verify every detached signature from the
+  # published URL rather than on the server, which is what a user would get.
+  artefacts:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fetch and check
+        env:
+          BASE_URL: ${{ inputs.base-url }}
+        run: |
+          set -euo pipefail
+          mkdir -p dl && cd dl
+
+          listing=$(curl -fsS "${BASE_URL}/")
+          fetch() {
+              local pattern=$1 name
+              name=$(printf '%s' "${listing}" | grep -oE "${pattern}" | sort -u | tail -1)
+              [ -n "${name}" ] || { echo "Nothing matching ${pattern}" >&2; exit 1; }
+              curl -fsS -O "${BASE_URL}/${name}"
+              echo "${name}"
+          }
+
+          tarball=$(fetch 'pgadmin4-[0-9.]+\.tar\.gz')
+          wheel=$(fetch 'pgadmin4-[0-9.]+-py3-none-any\.whl')
+          docs=$(fetch 'pgadmin4-[0-9.]+-docs\.tar\.gz')
+          pdf=$(fetch 'pgadmin4-[0-9.]+\.pdf')
+          epub=$(fetch 'pgadmin4-[0-9.]+\.epub')
+
+          echo "=== signatures, as a user would verify them ==="
+          export GNUPGHOME=$(mktemp -d); chmod 700 "${GNUPGHOME}"
+          curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | gpg --import
+          for f in "${tarball}" "${wheel}" "${docs}" "${pdf}" "${epub}"; do
+              curl -fsS -O "${BASE_URL}/${f}.asc"
+              gpg --verify "${f}.asc" "${f}"
+          done
+
+          echo "=== the documents are what they claim to be ==="
+          file "${pdf}" | grep -q 'PDF document'
+          file "${epub}" | grep -q 'EPUB'
+          # A truncated PDF still says PDF, so size is checked too.
+          [ "$(stat -c%s "${pdf}")" -gt 1000000 ] || { echo "PDF is implausibly small" >&2; exit 1; }
+
+          echo "=== the tarballs contain what they should ==="
+          tar tzf "${tarball}" | grep -E '/web/pgAdmin4\.py$' >/dev/null
+          tar tzf "${tarball}" | grep -E '/requirements\.txt$' >/dev/null
+          tar tzf "${docs}" | grep -E 'index\.html$' >/dev/null
+
+      - name: Install the wheel
+        run: |
+          set -euo pipefail
+          cd dl
+          python3 -m venv /tmp/wheeltest
+          /tmp/wheeltest/bin/pip install --quiet pgadmin4-*-py3-none-any.whl
+          /tmp/wheeltest/bin/python -c 'import pgadmin4; print("imported", pgadmin4.__file__)'
