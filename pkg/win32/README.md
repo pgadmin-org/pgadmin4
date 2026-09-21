@@ -61,9 +61,12 @@ predictable URL rather than buried in a workflow run:
     https://github.com/pgadmin-org/pgbuild/releases/download/krb5-windows-x86_64-latest/krb5-windows-x86_64-latest.zip
 
 Extract both into the same directory, such as `C:\Build64`; they unpack into
-*postgresql* and *krb5* subdirectories. Kerberos is a separate download
-because the PostgreSQL build doesn't include gssapi support, using native SSPI
-instead.
+*postgresql* and *krb5* subdirectories. PostgreSQL 18 and later are built with
+GSSAPI support, so `libpq.dll` and the client binaries have a load-time
+dependency on `gssapi64.dll`, and the installer stages the Kerberos runtime
+next to them. Take care to refresh both together: a PostgreSQL build paired
+with a stale MIT Kerberos build is exactly the sort of skew that is hard to
+spot until someone tries to connect.
 
 The build checks in *.github/workflows* fetch exactly these, through the
 *install-pgbuild-deps* action, so a local build and a CI build are working

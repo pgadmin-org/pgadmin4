@@ -21,7 +21,7 @@ from types import MethodType
 from collections import defaultdict
 from importlib import import_module
 
-from flask import Flask, abort, request, current_app, session, url_for
+from flask import Flask, abort, request, current_app, g, session, url_for
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
 from flask_babel import Babel, gettext
@@ -181,6 +181,36 @@ def _find_blueprint():
 
 
 current_blueprint = LocalProxy(_find_blueprint)
+
+
+def _remember_authenticated_user():
+    """Stash the username so a logout within this request doesn't lose it."""
+    if current_app.config.get('LOG_AUTHENTICATED_USER') and \
+            current_user.is_authenticated:
+        g.authenticated_user_name = current_user.username
+
+
+def _set_remote_user_header(response):
+    """Report the authenticated user to the HTTP access log."""
+    if not current_app.config.get('LOG_AUTHENTICATED_USER'):
+        return response
+
+    username = current_user.username if current_user.is_authenticated \
+        else g.get('authenticated_user_name')
+
+    if username:
+        # HTTP headers are latin-1 only, so transliterate anything outside
+        # that range to avoid gunicorn 500s for unicode names.
+        safe = username.encode('latin-1', 'replace').decode('latin-1')
+        # CR/LF and other control chars are valid latin-1 but Werkzeug
+        # rejects them in header values (would 500 every request for that
+        # user), so drop any non-printable characters too.
+        safe = ''.join(c for c in safe if c.isprintable())
+        response.headers['X-Remote-User'] = safe
+    else:
+        response.headers.pop('X-Remote-User', None)
+
+    return response
 
 
 def create_app(app_name=None):
@@ -838,6 +868,10 @@ def create_app(app_name=None):
     def before_request():
         """Login the default user if running in desktop mode"""
 
+        # current_user is already anonymous by the time after_request runs on
+        # a logout, so remember who made the request while we still can.
+        _remember_authenticated_user()
+
         # Check the auth key is valid, if it's set, and we're not in server
         # mode, and it's not a help file request.
 
@@ -879,19 +913,7 @@ def create_app(app_name=None):
 
     @app.after_request
     def after_request(response):
-        if config.LOG_AUTHENTICATED_USER:
-            if current_user.is_authenticated and current_user.username:
-                # HTTP headers are latin-1 only, so transliterate anything
-                # outside that range to avoid gunicorn 500s for unicode names.
-                safe = current_user.username.encode(
-                    'latin-1', 'replace').decode('latin-1')
-                # CR/LF and other control chars are valid latin-1 but Werkzeug
-                # rejects them in header values (would 500 every request for
-                # that user), so drop any non-printable characters too.
-                safe = ''.join(c for c in safe if c.isprintable())
-                response.headers['X-Remote-User'] = safe
-            else:
-                response.headers.pop('X-Remote-User', None)
+        _set_remote_user_header(response)
 
         if 'key' in request.args:
             domain = dict()
