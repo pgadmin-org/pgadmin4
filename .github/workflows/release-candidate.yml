@@ -1,0 +1,374 @@
+# Release candidate builds, replacing the buildfarm's pgadmin4-*-build jobs.
+#
+# The same builds as the nightly snapshot, published to the development server
+# instead of the download server. That difference is the point: a snapshot is
+# finished when it is published, whereas a candidate is published in order to
+# be tested, and promoted to the download server only afterwards.
+#
+# developer.pgadmin.org serves this tree over HTTP as soon as it is written, so
+# a candidate's repositories can be added and installed from immediately,
+# rather than waiting on the hourly sync between the download server and the
+# mirrors.
+#
+# Never scheduled. A candidate exists because somebody decided to make one.
+
+name: Release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      location:
+        description: >-
+          Build directory name, normally today's date. A second
+          candidate on the same day needs a -N suffix, for example
+          2026-09-17-2.
+        required: false
+        default: ''
+      publish:
+        description: Upload to the development server when the build succeeds
+        type: boolean
+        required: false
+        default: false
+
+
+concurrency:
+  # One candidate at a time, and never cancelled: a cancelled run can abandon a
+  # notarisation already submitted to Apple, and leaves the signing token in an
+  # unknown state.
+  group: 'release-candidate'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # The directory name, decided once. Two jobs need it and they must agree:
+  # the repo RPMs carry the candidate's own URL inside them, so if that job and
+  # the assemble job each called date(1) a run straddling midnight would ship a
+  # repository configuration pointing at a build that does not exist.
+  location:
+    runs-on: ubuntu-24.04
+    outputs:
+      name: ${{ steps.pick.outputs.name }}
+    steps:
+      - id: pick
+        env:
+          REQUESTED: ${{ inputs.location }}
+        run: |
+          set -euo pipefail
+          NAME="${REQUESTED:-}"
+          [ -n "${NAME}" ] || NAME=$(date +%Y-%m-%d)
+
+          # Validated here so that everything downstream, including a shell on
+          # the machine holding the publishing keys, is working with a name
+          # that cannot be anything but a date and an optional suffix. The
+          # wrapper on the server applies its own rule to the same value; this
+          # one exists so a bad input fails in five seconds rather than after
+          # an hour of building.
+          if ! printf '%s' "${NAME}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}(-[1-9][0-9]?)?$'; then
+              echo "Not a valid build location: ${NAME}" >&2
+              echo "Expected YYYY-MM-DD, optionally with a -N suffix." >&2
+              exit 1
+          fi
+
+          echo "Build location: ${NAME}"
+          echo "name=${NAME}" >> "${GITHUB_OUTPUT}"
+
+  deb:
+    uses: ./.github/workflows/check-deb-build.yml
+  rpm:
+    uses: ./.github/workflows/check-rpm-build.yml
+  tarball:
+    uses: ./.github/workflows/check-tarball-build.yml
+  wheel:
+    uses: ./.github/workflows/check-python-build.yml
+  docs:
+    uses: ./.github/workflows/check-doc-builds.yml
+  # No helm job here. The chart is not part of the download tree: the
+  # buildfarm pushed it to an OCI registry, which nothing in this workflow
+  # does yet. Calling the build and then discarding its artefact, which is what
+  # happened before, cost a runner and proved nothing that check-helm-build
+  # does not already prove on every push.
+
+  # The repository configuration RPMs. These are not built by the QA
+  # workflows, because they are not a build of pgAdmin: they are a one-file
+  # package carrying a .repo pointing at the tree they ship in, which is why
+  # the URL has to be known before they are built.
+  repo-rpm:
+    needs: location
+    runs-on: ubuntu-24.04
+    container: almalinux:9
+    steps:
+      - name: Install the build environment
+        run: dnf install -y --setopt=install_weak_deps=False rpm-build python3 git
+
+      - uses: actions/checkout@v7
+
+      - name: Mark the workspace as a safe git directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
+      - name: Build the repository RPMs
+        env:
+          LOCATION: ${{ needs.location.outputs.name }}
+        run: |
+          # Through the environment rather than interpolated into the script.
+          # The location is a dispatch input, so it is text somebody chose, and
+          # ${{ }} substitution happens before the shell ever sees the line.
+          export PGADMIN_REPO_DIR="https://developer.pgadmin.org/builds/${LOCATION}/yum"
+          echo "Repositories will point at ${PGADMIN_REPO_DIR}"
+          pkg/redhat/repo-rpm.sh
+
+      - name: Archive the repository RPMs
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-repo-rpm-build-output
+          if-no-files-found: error
+          path: dist/*.noarch.rpm
+
+  # snapshot-macos.yml and snapshot-windows.yml are the signed-build
+  # workflows rather than snapshot-only ones; the name predates there being
+  # a second caller.
+  macos:
+    uses: ./.github/workflows/snapshot-macos.yml
+    secrets: inherit
+
+  windows:
+    uses: ./.github/workflows/snapshot-windows.yml
+    secrets: inherit
+
+  assemble:
+    needs: [location, deb, rpm, tarball, wheel, docs, repo-rpm, macos, windows]
+
+    # roadie, not a hosted runner. This job assembles a tree of several
+    # hundred megabytes and then, when publishing, sends it to the development
+    # server; splitting the two meant uploading that tree as an artifact and
+    # immediately downloading it again on roadie, having first queued for a
+    # hosted runner behind whatever else the organisation was building.
+    runs-on: [self-hosted, roadie]
+
+    # For the variables naming the keys and the target, which live here. The
+    # environment carries no protection rules, so a run that is not publishing
+    # is not gated by it.
+    environment: publishing
+
+    # Everything must have built except Windows. That is the one runner which
+    # can legitimately be offline, and a candidate without the installer is
+    # still worth having; a candidate missing its documentation, source tarball,
+    # wheel or repository RPMs is not, and the repository RPMs are worse than
+    # missing, since install-repo-readme.py then fails after the packages have
+    # been uploaded and signed, leaving half a candidate on the server.
+    if: >-
+      always()
+      && needs.location.result == 'success'
+      && needs.deb.result == 'success'
+      && needs.rpm.result == 'success'
+      && needs.tarball.result == 'success'
+      && needs.wheel.result == 'success'
+      && needs.docs.result == 'success'
+      && needs.repo-rpm.result == 'success'
+      && needs.macos.result == 'success'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Collect the build artefacts
+        uses: actions/download-artifact@v7
+        with:
+          path: artefacts
+
+      # The layout is the one the publishing scripts and the download site
+      # expect, and is what the wrapper's stage-create verb creates on procyon.
+      # The Debian architecture comes from the package filename rather than a
+      # table, since dpkg already encodes it there; the codename does not, so
+      # that mapping is explicit.
+      - name: Assemble the staging tree
+        env:
+          LOCATION: ${{ needs.location.outputs.name }}
+        run: |
+          set -euo pipefail
+          # Flat, beside apt/ and yum/, which is how both the staging server
+          # and the snapshots tree are laid out. The docs/macos/pip/source/
+          # windows subdivision belongs to a published release, and it is the
+          # promotion step that sorts files into it on the way there.
+          # Explicitly, rather than trusting the checkout to have cleaned it.
+          # This runs on a self-hosted runner whose workspace persists between
+          # jobs, and a previous run's tree left behind here is indistinguishable
+          # from this one's until something downstream has to choose between
+          # them.
+          rm -rf stage
+
+          STAGE="stage/${LOCATION}"
+          mkdir -p "${STAGE}/yum"
+
+          # An artefact can be legitimately absent: the Windows signing host is
+          # allowed to be offline, and a failed matrix leg is reported by its
+          # own job rather than by a confusing cp error here.
+          copy_into() {
+              DEST=$1; shift
+              for SRC in "$@"; do
+                  [ -e "${SRC}" ] || continue
+                  mkdir -p "${DEST}"
+                  cp "${SRC}" "${DEST}/"
+              done
+          }
+
+          codename_for() {
+              case "$1" in
+                  debian-12)   echo bookworm ;;
+                  debian-13)   echo trixie ;;
+                  ubuntu-2204) echo jammy ;;
+                  ubuntu-2404) echo noble ;;
+                  ubuntu-2604) echo resolute ;;
+                  *) echo "Unknown Debian build name: $1" >&2; exit 1 ;;
+              esac
+          }
+
+          for DIR in artefacts/pgadmin4-deb-build-output-*; do
+              [ -d "${DIR}" ] || continue
+              CODENAME=$(codename_for "${DIR##*-output-}")
+              for DEB in "${DIR}"/*.deb; do
+                  ARCH=$(basename "${DEB}" .deb); ARCH=${ARCH##*_}
+                  TARGET="${STAGE}/apt/${CODENAME}/dists/pgadmin4/main/binary-${ARCH}"
+                  mkdir -p "${TARGET}"
+                  cp "${DEB}" "${TARGET}/"
+              done
+          done
+
+          # RPM trees are named for the distribution, which the build name
+          # already carries: el-9 becomes redhat/rhel-9-x86_64.
+          for DIR in artefacts/pgadmin4-rpm-build-output-*; do
+              [ -d "${DIR}" ] || continue
+              NAME=${DIR##*-output-}
+              case "${NAME}" in
+                  el-*)     FAMILY=redhat; TREE="rhel-${NAME#el-}" ;;
+                  fedora-*) FAMILY=fedora; TREE="${NAME}" ;;
+                  *) echo "Unknown RPM build name: ${NAME}" >&2; exit 1 ;;
+              esac
+              # Every RPM for a distribution goes in that distribution's
+              # tree, including the noarch ones. Taking the directory from the
+              # package's own architecture would file pgadmin4 and
+              # pgadmin4-web, both noarch, under rhel-9-noarch, where no
+              # client looks: dnf asks for <name>-<version>-$basearch. The
+              # RPM matrix is x86_64 only for now, so this is a constant; when
+              # aarch64 arrives it becomes a property of the build.
+              TARGET="${STAGE}/yum/${FAMILY}/${TREE}-x86_64"
+              mkdir -p "${TARGET}"
+              cp "${DIR}"/*.rpm "${TARGET}/"
+          done
+
+          copy_into "${STAGE}" artefacts/pgadmin4-tarball-build-output/*
+          copy_into "${STAGE}" artefacts/pgadmin4-python-build-output/*
+          # The version is read once here and used for the documentation
+          # filenames, which the build leaves unversioned as pgadmin4.pdf and
+          # pgAdmin4.epub whilst the download site has always carried
+          # pgadmin4-<version>.pdf and .epub.
+          VERSION=$(python3 -c "import sys; sys.path.insert(0, 'web'); import version; print(version.APP_VERSION)")
+
+          for SRC in artefacts/pgadmin4-pdf-build-output/*.pdf; do
+              [ -e "${SRC}" ] && cp "${SRC}" "${STAGE}/pgadmin4-${VERSION}.pdf"
+          done
+          for SRC in artefacts/pgadmin4-epub-build-output/*.epub; do
+              [ -e "${SRC}" ] && cp "${SRC}" "${STAGE}/pgadmin4-${VERSION}.epub"
+          done
+
+          # The docs tarball is what load-docs.sh unpacks on the web server, so
+          # it ships as a tarball rather than as the directory of files the
+          # build produces.
+          if [ -d artefacts/pgadmin4-html-build-output ]; then
+              tar -czf "${STAGE}/pgadmin4-${VERSION}-docs.tar.gz" \
+                  -C artefacts/pgadmin4-html-build-output .
+          fi
+
+          # At the root of yum/, beside the family directories, which is
+          # where the README instructions tell people to fetch them from.
+          copy_into "${STAGE}/yum" artefacts/pgadmin4-repo-rpm-build-output/*
+
+          copy_into "${STAGE}" artefacts/pgadmin4-macos-snapshot-*/*
+          copy_into "${STAGE}" artefacts/pgadmin4-windows-snapshot/*
+
+          find "${STAGE}" -type f | sort
+
+      - name: Check the keys are present
+        if: inputs.publish
+        env:
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
+        run: |
+          set -euo pipefail
+          for TOOL in ssh rsync; do
+              command -v "${TOOL}" >/dev/null || {
+                  echo "This runner has no ${TOOL}." >&2; exit 1; }
+          done
+
+          for KEY in "${PUBLISH_KEY/#\~/$HOME}" "${UPLOAD_KEY/#\~/$HOME}"; do
+              if [ ! -r "${KEY}" ]; then
+                  echo "Missing or unreadable SSH key: ${KEY}" >&2
+                  exit 1
+              fi
+              # A public key is readable too, and pointing -i at one fails
+              # later inside ssh with a message that does not mention which
+              # file was wrong. Both halves of a pair sit in the same
+              # directory with names one suffix apart, so this is an easy
+              # thing to configure wrongly and a cheap thing to catch.
+              if head -c 4 "${KEY}" | grep -q '^ssh-'; then
+                  echo "${KEY} is a public key; -i needs the private one." >&2
+                  echo "Drop the .pub suffix from the variable that names it." >&2
+                  exit 1
+              fi
+          done
+          if [ ! -r ~/.ssh/known_hosts ]; then
+              echo "This runner has no ~/.ssh/known_hosts, so host key" >&2
+              echo "checking would fail. Add the servers' host keys." >&2
+              exit 1
+          fi
+
+      - name: Publish the candidate
+        if: inputs.publish
+        env:
+          STAGING: ${{ vars.STAGING_SSH_TARGET }}
+          LOCATION: ${{ inputs.location }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
+        run: |
+          set -euo pipefail
+          if [ -z "${STAGING}" ]; then
+              echo "The STAGING_SSH_TARGET variable is not set." >&2
+              exit 1
+          fi
+
+          # One directory came out of assemble, named for the date. An explicit
+          # location overrides it so that a test run does not land on the
+          # build the buildfarm is still writing on the same server.
+          # assemble produces exactly one directory, named for the date.
+          # Anything else means the artefact is not what this step thinks it
+          # is, and guessing which one to publish is not a decision to make at
+          # three in the morning.
+          if [ "$(find stage -mindepth 1 -maxdepth 1 -type d | wc -l)" != "1" ]; then
+              echo "Expected one directory in the build artefact:" >&2
+              ls -l stage >&2
+              exit 1
+          fi
+          BUILT=$(basename "$(find stage -mindepth 1 -maxdepth 1 -type d)")
+          DEST=${LOCATION:-${BUILT}}
+          echo "Publishing ${BUILT} as ${DEST}"
+
+          publish() {
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes "${STAGING}" "$@"
+          }
+
+          publish stage-create "${DEST}"
+
+          # No --delete, deliberately: rrsync refuses it anyway, and a
+          # publishing step that can remove things is a publishing step that
+          # can remove the wrong things.
+          rsync -rlt --safe-links --no-specials --no-devices \
+              -e "ssh -i ${UPLOAD_KEY/#\~/$HOME} -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              "stage/${BUILT}/" "${STAGING}:${DEST}/"
+
+          # Signing before indexing: the metadata has to describe the signed
+          # packages rather than the unsigned ones just uploaded.
+          publish stage-sign "${DEST}"
+          publish stage-index-apt "${DEST}"
+          publish stage-index-yum "${DEST}"
+
