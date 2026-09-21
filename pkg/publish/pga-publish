@@ -630,12 +630,15 @@ def pull_staging_files(datestamp, dest):
     ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
                % (BIN_SSH, PULL_KEY))
     makedirs(dest)
+    # -r with the two trees excluded, rather than no -r at all: without it
+    # rsync reports "skipping directory ." and transfers nothing, which is
+    # exactly what the first rehearsal did.
     run([BIN_RSYNC,
-         "-lt",                 # no -r: the loose files only, not the trees
+         "-rlt",
          "--safe-links",
          "--no-specials", "--no-devices",
          "--delay-updates",
-         "--exclude", "apt/", "--exclude", "yum/",
+         "--exclude", "/apt/***", "--exclude", "/yum/***",
          "-e", ssh_cmd,
          remote, dest + "/"])
 
@@ -862,15 +865,17 @@ def cmd_release_fetch(args, raw):
         print("would sort the staging downloads into %s" % root)
         return
 
-    zips, unknown = [], []
+    unknown = []
     for name in sorted(os.listdir(incoming)):
         source = os.path.join(incoming, name)
         if not os.path.isfile(source):
             continue
 
-        # The ZIPs are the auto-updater's, not a release download.
+        # The ZIPs belong to the auto-updater rather than to this release
+        # directory, and autoupdate-publish deals with them: leaving them here
+        # keeps this verb confined to v<VERSION>, which is what makes it the
+        # one step of a promotion that deleting a directory undoes.
         if name.endswith(".zip"):
-            zips.append(name)
             continue
 
         for suffix, subdir in RELEASE_FILE_MAP:
@@ -887,19 +892,41 @@ def cmd_release_fetch(args, raw):
                          % ", ".join(unknown))
         sys.exit(EX_UNAVAILABLE)
 
-    # The auto-updater looks for exactly one release, so the previous one goes
-    # rather than accumulating beside it.
-    if zips:
-        makedirs(AUTOUPDATE_DIR)
+    # Whatever is left is the auto-updater's, and autoupdate-publish moves it.
+    print("fetched %s into %s" % (datestamp, root))
+
+
+def cmd_autoupdate_publish(args, raw):
+    """autoupdate-publish <VERSION>
+
+    Move the ZIPs left behind by release-fetch into the auto-updater's
+    directory, replacing the previous release's rather than accumulating
+    beside them, because Electron looks for exactly one.
+
+    Separate from release-fetch because it writes outside v<VERSION>, and
+    release-fetch being confined to that one directory is what makes it the
+    part of a promotion that can be rehearsed and then simply deleted.
+    """
+    version = v_version(args[0], raw)
+    incoming = under(FTP_ROOT, "v%s" % version, ".incoming")
+    require_dir(incoming, "run release-fetch first")
+
+    zips = sorted(n for n in os.listdir(incoming) if n.endswith(".zip"))
+    if not zips:
+        sys.stderr.write("pga-publish: no auto-updater archives in %s\n"
+                         % incoming)
+        sys.exit(EX_UNAVAILABLE)
+
+    makedirs(AUTOUPDATE_DIR)
+    if not DRY_RUN:
         for stale in sorted(os.listdir(AUTOUPDATE_DIR)):
             if stale.endswith(".zip"):
                 os.unlink(os.path.join(AUTOUPDATE_DIR, stale))
         for name in zips:
             shutil.move(os.path.join(incoming, name),
                         os.path.join(AUTOUPDATE_DIR, name))
-
-    os.rmdir(incoming)
-    print("fetched %s into %s" % (datestamp, root))
+        os.rmdir(incoming)
+    print("published %d auto-updater archive(s)" % len(zips))
 
 
 def cmd_packages_fetch(args, raw):
@@ -1162,6 +1189,7 @@ VERBS = {
     "release-exists":   (ROLE_DOWNLOAD, 1, 1, cmd_release_exists),
     "release-create":   (ROLE_DOWNLOAD, 1, 1, cmd_release_create),
     "release-fetch":    (ROLE_DOWNLOAD, 2, 2, cmd_release_fetch),
+    "autoupdate-publish": (ROLE_DOWNLOAD, 1, 1, cmd_autoupdate_publish),
     "packages-fetch":   (ROLE_DOWNLOAD, 1, 1, cmd_packages_fetch),
     "snapshot-create":  (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_create),
     "snapshot-sign":    (ROLE_DOWNLOAD, 1, 1, cmd_snapshot_sign),

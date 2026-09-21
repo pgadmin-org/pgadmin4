@@ -144,6 +144,7 @@ jobs:
       - name: Publish the packages
         if: ${{ inputs.scope != 'release-directory' }}
         env:
+          VERSION: ${{ inputs.version }}
           LOCATION: ${{ inputs.location }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
@@ -154,6 +155,10 @@ jobs:
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
                   -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
           }
+
+          # The auto-updater archives, which release-fetch deliberately left
+          # behind because they belong outside the release directory.
+          publish autoupdate-publish "${VERSION}"
 
           publish packages-fetch "${LOCATION}"
 
