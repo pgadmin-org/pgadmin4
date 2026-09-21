@@ -1,0 +1,37 @@
+# Purge the cache in front of the website.
+#
+# Promotion purges it once, but the website edits that follow a release, the
+# downloads being activated, the current version record and the news article,
+# all happen afterwards and are all cached. This is the button for that, and
+# for the times somebody edits the site outside a release.
+#
+# It takes no arguments: the verb behind it clears everything, and there is
+# nothing for a caller to choose.
+
+name: Purge website cache
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: 'purge-website-cache'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    runs-on: [self-hosted, roadie]
+    environment: publishing
+
+    steps:
+      - name: Purge
+        env:
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+          [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }
+          ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes "${DOWNLOAD}" purge-cache
