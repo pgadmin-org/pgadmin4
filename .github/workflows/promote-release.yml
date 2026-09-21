@@ -1,0 +1,172 @@
+# Promote a tested release candidate to the download server.
+#
+# This is the irreversible one. Everything before it produces something that
+# can be rebuilt or deleted without anybody noticing; this puts packages in
+# front of every pgAdmin user, and within the hour they are on the PostgreSQL
+# mirror network and in the S3 archive, which has no --delete and therefore no
+# undo.
+#
+# So it builds nothing. It takes a candidate that already exists on the
+# development server, having been built, signed, indexed and installed from by
+# the acceptance test, and moves it across. If a candidate needs changing, the
+# answer is a new candidate rather than a repair applied here.
+#
+# The version is separate from the location deliberately: 2026-09-21-1 is a
+# build, 9.18 is what users will call it, and conflating them is how somebody
+# publishes the wrong tree under the right name.
+
+name: Promote release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, for example 9.18'
+        required: true
+        type: string
+      location:
+        description: 'Candidate to promote, for example 2026-09-21-1'
+        required: true
+        type: string
+      confirm:
+        description: 'Type the version again to confirm'
+        required: true
+        type: string
+
+concurrency:
+  group: 'promote-release'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: [self-hosted, roadie]
+    environment: publishing
+
+    steps:
+      - name: Check the request
+        env:
+          VERSION: ${{ inputs.version }}
+          LOCATION: ${{ inputs.location }}
+          CONFIRM: ${{ inputs.confirm }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+
+          # Typed twice, because the cost of getting this wrong is a version
+          # published from the wrong tree and no way to unpublish it.
+          if [ "${VERSION}" != "${CONFIRM}" ]; then
+              echo "The confirmation does not match the version." >&2
+              exit 1
+          fi
+
+          # The same shapes the wrapper enforces, checked here so a mistake
+          # costs a second rather than a round trip.
+          printf '%s' "${VERSION}" | grep -Eq '^[0-9]{1,2}\.[0-9]{1,2}(\.[0-9]{1,2})?$' || {
+              echo "Not a version: ${VERSION}" >&2; exit 1; }
+          printf '%s' "${LOCATION}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}(-[1-9][0-9]?)?$' || {
+              echo "Not a build location: ${LOCATION}" >&2; exit 1; }
+
+          [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }
+
+          KEY="${PUBLISH_KEY/#\~/$HOME}"
+          [ -r "${KEY}" ] || { echo "Missing SSH key: ${KEY}" >&2; exit 1; }
+          if head -c 4 "${KEY}" | grep -q '^ssh-'; then
+              echo "${KEY} is a public key; -i needs the private one." >&2
+              exit 1
+          fi
+
+      # Checked before anything is created, so that a version published by
+      # mistake is caught here rather than by release-create failing halfway
+      # through and leaving a directory behind.
+      - name: Refuse to republish
+        env:
+          VERSION: ${{ inputs.version }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+          }
+          if publish release-exists "${VERSION}" 2>/dev/null; then
+              echo "Version ${VERSION} is already published." >&2
+              echo "Publishing is single-shot; a correction needs a new version." >&2
+              exit 1
+          fi
+          echo "Version ${VERSION} is not yet published."
+
+      - name: Publish
+        env:
+          VERSION: ${{ inputs.version }}
+          LOCATION: ${{ inputs.location }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              echo "+ $*"
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+          }
+
+          # The downloads first: the directory, then the files sorted into it,
+          # then the packages into the live repository trees. Nothing is
+          # visible to a package manager until the indices are rebuilt below,
+          # so an interruption here leaves packages that nothing points at
+          # rather than a repository describing packages that are not there.
+          publish release-create "${VERSION}"
+          publish release-fetch "${VERSION}" "${LOCATION}"
+          publish packages-fetch "${LOCATION}"
+
+          # Now the indices, which is the point at which the new packages
+          # become installable.
+          for codename in bookworm trixie jammy noble resolute; do
+              publish rebuild-apt "${codename}"
+          done
+          publish rebuild-yum redhat rhel 9 x86_64
+          publish rebuild-yum redhat rhel 10 x86_64
+          publish rebuild-yum fedora fedora 43 x86_64
+          publish rebuild-yum fedora fedora 44 x86_64
+
+          # The platform tables carry the release history, so they change with
+          # every release rather than only when a platform is added.
+          publish rebuild-readme apt
+          publish rebuild-readme yum
+
+      - name: Update the website
+        env:
+          VERSION: ${{ inputs.version }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              echo "+ $*"
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+          }
+
+          # Separate from the packages, and after them, because the website
+          # announcing a release whose files are not there yet is worse than
+          # files sitting there unannounced for a minute.
+          publish create-release "${VERSION}"
+          publish load-docs "${VERSION}"
+          publish purge-cache
+
+      - name: Archive to S3
+        env:
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+          # Last, and on its own, because it is the slowest step and the one
+          # with no undo: the sync has no --delete, so anything it copies is
+          # in the archive permanently.
+          echo "+ sync-s3"
+          ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes "${DOWNLOAD}" sync-s3

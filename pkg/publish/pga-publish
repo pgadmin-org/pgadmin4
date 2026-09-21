@@ -615,6 +615,46 @@ def pull_from_staging(datestamp, src_subpath, dest):
          remote, dest + "/"])
 
 
+def pull_staging_files(datestamp, dest):
+    """Copy the loose downloads of a staging build, and nothing else.
+
+    A staging build is flat: apt/ and yum/ beside the files a user downloads
+    directly. Those two are excluded here because packages-fetch handles them,
+    and pulling several gigabytes of repository twice would be a poor way to
+    publish a release.
+    """
+    remote = "%s@%s:%s/" % (PULL_USER, PULL_HOST, datestamp)
+    ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
+               % (BIN_SSH, PULL_KEY))
+    makedirs(dest)
+    run([BIN_RSYNC,
+         "-lt",                 # no -r: the loose files only, not the trees
+         "--safe-links",
+         "--no-specials", "--no-devices",
+         "--delay-updates",
+         "--exclude", "apt/", "--exclude", "yum/",
+         "-e", ssh_cmd,
+         remote, dest + "/"])
+
+
+# Where each kind of download belongs once it reaches a release directory.
+# Order matters: the documentation tarball is also a .tar.gz, so it has to be
+# recognised before the source tarball is.
+RELEASE_FILE_MAP = (
+    ("-docs.tar.gz", "docs"),
+    (".pdf", "docs"),
+    (".epub", "docs"),
+    (".tar.gz", "source"),
+    (".whl", "pip"),
+    (".dmg", "macos"),
+    (".exe", "windows"),
+)
+
+# The Electron auto-updater reads these, and only ever wants the current
+# release, so unlike everything else they replace rather than accumulate.
+AUTOUPDATE_DIR = os.path.join(FTP_ROOT, "autoupdate", "macos")
+
+
 def acquire_lock():
     """One mutating operation at a time, per host."""
     if DRY_RUN:
@@ -796,16 +836,66 @@ def cmd_release_create(args, raw):
 def cmd_release_fetch(args, raw):
     """release-fetch <VERSION> <DATESTAMP>
 
-    Copy the content directories of a staging build into a release directory
-    that release-create has already made. Both arguments are validated; the
-    source host, the transport and the subdirectory list are all constants.
+    Copy the downloads of a staging build into a release directory that
+    release-create has already made, sorting them as they arrive.
+
+    The sorting is the part worth understanding. A staging build keeps its
+    downloads loose at the top level, whilst a published release divides them
+    into docs, macos, pip, source and windows; the buildfarm did this with a
+    series of scp commands carrying shell globs. Here the map is a table, the
+    destination is derived from the file's own name, and anything unrecognised
+    stops the publication rather than being dropped silently, because a new
+    kind of artefact appearing is exactly the moment somebody should look.
     """
     version = v_version(args[0], raw)
     datestamp = v_datestamp(args[1], raw)
     root = under(FTP_ROOT, "v%s" % version)
     require_dir(root, "run release-create first")
-    for name in RELEASE_CONTENT_DIRS:
-        pull_from_staging(datestamp, name, under(root, name))
+
+    incoming = under(root, ".incoming")
+    pull_staging_files(datestamp, incoming)
+
+    if DRY_RUN:
+        print("would sort the staging downloads into %s" % root)
+        return
+
+    zips, unknown = [], []
+    for name in sorted(os.listdir(incoming)):
+        source = os.path.join(incoming, name)
+        if not os.path.isfile(source):
+            continue
+
+        # The ZIPs are the auto-updater's, not a release download.
+        if name.endswith(".zip"):
+            zips.append(name)
+            continue
+
+        for suffix, subdir in RELEASE_FILE_MAP:
+            if name.endswith(suffix) or name.endswith(suffix + ".asc"):
+                shutil.move(source, os.path.join(under(root, subdir), name))
+                break
+        else:
+            unknown.append(name)
+
+    if unknown:
+        for name in unknown:
+            log(syslog.LOG_WARNING, "UNSORTED %s" % name)
+        sys.stderr.write("pga-publish: no destination for: %s\n"
+                         % ", ".join(unknown))
+        sys.exit(EX_UNAVAILABLE)
+
+    # The auto-updater looks for exactly one release, so the previous one goes
+    # rather than accumulating beside it.
+    if zips:
+        makedirs(AUTOUPDATE_DIR)
+        for stale in sorted(os.listdir(AUTOUPDATE_DIR)):
+            if stale.endswith(".zip"):
+                os.unlink(os.path.join(AUTOUPDATE_DIR, stale))
+        for name in zips:
+            shutil.move(os.path.join(incoming, name),
+                        os.path.join(AUTOUPDATE_DIR, name))
+
+    os.rmdir(incoming)
     print("fetched %s into %s" % (datestamp, root))
 
 
@@ -943,6 +1033,26 @@ def cmd_rebuild_yum(args, raw):
     print("rebuilt yum %s %s %s %s" % (family, name, elversion, arch))
 
 
+def cmd_rebuild_readme(args, raw):
+    """rebuild-readme <apt|yum>
+
+    Regenerate the README at the top of a production repository tree.
+
+    Unlike the staging and snapshot ones, this carries the release history:
+    which platform first got a package, and which release was the last for a
+    platform no longer supported. That comes from the S3 archive rather than
+    from this server, because old releases are purged from here as they age,
+    so deriving it locally would rewrite history every time somebody tidied up.
+    """
+    kind = v_name(args[0], raw)
+    if kind not in ("apt", "yum"):
+        reject(EX_NOPERM, "unknown-repository-kind", raw)
+    write_readme(FTP_ROOT, kind,
+                 "https://ftp.postgresql.org/pub/pgadmin/pgadmin4",
+                 history=True)
+    print("rebuilt the %s README" % kind)
+
+
 def cmd_create_release(args, raw):
     """create-release <VERSION>
 
@@ -1057,6 +1167,7 @@ VERBS = {
     "snapshot-purge":   (ROLE_DOWNLOAD, 0, 0, cmd_snapshot_purge),
     "rebuild-apt":      (ROLE_DOWNLOAD, 1, 1, cmd_rebuild_apt),
     "rebuild-yum":      (ROLE_DOWNLOAD, 4, 4, cmd_rebuild_yum),
+    "rebuild-readme":   (ROLE_DOWNLOAD, 1, 1, cmd_rebuild_readme),
     "create-release":   (ROLE_DOWNLOAD, 1, 1, cmd_create_release),
     "load-docs":        (ROLE_DOWNLOAD, 1, 1, cmd_load_docs),
     "purge-cache":      (ROLE_DOWNLOAD, 0, 0, cmd_purge_cache),
