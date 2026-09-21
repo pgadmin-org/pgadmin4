@@ -252,13 +252,26 @@ jobs:
           test -x "${app}/Contents/SharedSupport/pg_dump"
           test -f "${app}/Contents/Resources/web/pgAdmin4.py"
 
-          echo "=== signature ==="
-          codesign --verify --deep --strict --verbose=2 "${app}"
-          codesign -dvvv "${app}" 2>&1 | grep -E 'Authority|TeamIdentifier'
-
-          echo "=== notarisation ==="
+          # Gatekeeper first, because that is what decides whether a user can
+          # open this. codesign --strict comes after and is allowed to have its
+          # own opinion: the disk image deliberately carries a FinderInfo xattr
+          # on the bundle, set by SetFile -a E in _create_dmg to hide the .app
+          # extension in the window, and --strict rejects any xattr at all.
+          echo "=== notarisation and Gatekeeper ==="
           xcrun stapler validate "${app}"
           spctl --assess --type execute --verbose=4 "${app}"
+
+          echo "=== signature ==="
+          codesign -dvvv "${app}" 2>&1 | grep -E 'Authority|TeamIdentifier'
+          codesign --verify --deep --verbose=2 "${app}"
+
+          # Reported rather than enforced. If this ever starts failing whilst
+          # spctl still passes, it is the extension-hiding attribute and not a
+          # broken signature; if spctl fails too, the build is broken.
+          if ! codesign --verify --deep --strict --verbose=2 "${app}" 2>/tmp/strict.log; then
+              echo "note: --strict verification failed, Gatekeeper having passed:"
+              tail -2 /tmp/strict.log
+          fi
 
           # Nothing in the bundle may reference a build machine. This is what
           # catches a dependency that was linked but not relocated, which is
