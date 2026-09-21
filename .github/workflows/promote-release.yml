@@ -32,14 +32,21 @@ on:
         description: 'Type the version again to confirm'
         required: true
         type: string
-      files-only:
+      scope:
         description: >-
-          Stop after moving and indexing the files. Skips the website
-          update and the S3 archive, neither of which can be undone,
-          so that a promotion can be rehearsed and then deleted.
-        type: boolean
-        required: false
-        default: false
+          How much to do. "everything" is a real promotion. "files" stops
+          before the website and the S3 archive, neither of which can be
+          undone. "release-directory" stops before the package
+          repositories as well, touching only v<VERSION>, which is the
+          only setting that leaves the live repositories alone and so the
+          only one safe to rehearse with.
+        type: choice
+        required: true
+        default: release-directory
+        options:
+          - release-directory
+          - files
+          - everything
 
 concurrency:
   group: 'promote-release'
@@ -108,7 +115,7 @@ jobs:
           fi
           echo "Version ${VERSION} is not yet published."
 
-      - name: Publish
+      - name: Publish the release directory
         env:
           VERSION: ${{ inputs.version }}
           LOCATION: ${{ inputs.location }}
@@ -129,10 +136,29 @@ jobs:
           # rather than a repository describing packages that are not there.
           publish release-create "${VERSION}"
           publish release-fetch "${VERSION}" "${LOCATION}"
+
+      # Separate from the step above because this is where a promotion stops
+      # being reversible in practice. The step above creates one directory that
+      # can simply be deleted; this copies packages into the live repositories
+      # and re-signs the indices every client reads.
+      - name: Publish the packages
+        if: ${{ inputs.scope != 'release-directory' }}
+        env:
+          LOCATION: ${{ inputs.location }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              echo "+ $*"
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+          }
+
           publish packages-fetch "${LOCATION}"
 
-          # Now the indices, which is the point at which the new packages
-          # become installable.
+          # The indices, which is the point at which the new packages become
+          # installable.
           for codename in bookworm trixie jammy noble resolute; do
               publish rebuild-apt "${codename}"
           done
@@ -147,7 +173,7 @@ jobs:
           publish rebuild-readme yum
 
       - name: Update the website
-        if: ${{ !inputs.files-only }}
+        if: ${{ inputs.scope == 'everything' }}
         env:
           VERSION: ${{ inputs.version }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
@@ -168,7 +194,7 @@ jobs:
           publish purge-cache
 
       - name: Archive to S3
-        if: ${{ !inputs.files-only }}
+        if: ${{ inputs.scope == 'everything' }}
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
@@ -182,9 +208,18 @@ jobs:
               -o StrictHostKeyChecking=yes "${DOWNLOAD}" sync-s3
 
       - name: Note what was skipped
-        if: ${{ inputs.files-only }}
+        if: ${{ inputs.scope != 'everything' }}
+        env:
+          SCOPE: ${{ inputs.scope }}
+          VERSION: ${{ inputs.version }}
         run: |
-          echo "files-only was set, so the website was not updated and"
-          echo "nothing was archived to S3. The files are on the download"
-          echo "server and will reach the mirrors at the next hourly sync"
-          echo "unless they are removed before then."
+          echo "scope was ${SCOPE}, so this was not a full promotion."
+          if [ "${SCOPE}" = "release-directory" ]; then
+              echo "Only /var/ftp/pgadmin4/v${VERSION} was written. The package"
+              echo "repositories, the website and the S3 archive are untouched,"
+              echo "so removing that directory undoes this entirely."
+          else
+              echo "The website was not updated and nothing was archived to S3."
+              echo "The packages are live and will reach the mirrors at the next"
+              echo "hourly sync."
+          fi
