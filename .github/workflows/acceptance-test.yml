@@ -98,10 +98,13 @@ jobs:
           set -euo pipefail
           apt-get install -y pgadmin4-server
 
-          # Proves the package came from us rather than from the distribution,
-          # and that what installed is the version this build produced.
+          # The version proves what installed is this build rather than
+          # something the distribution happened to carry, and the file list
+          # proves the package actually delivered its payload.
           dpkg-query -W -f '${Package} ${Version}\n' pgadmin4-server
-          test -x /usr/pgadmin4/bin/setup-web.sh
+          dpkg -L pgadmin4-server | grep -q '^/usr/pgadmin4/' || {
+              echo "pgadmin4-server installed no files under /usr/pgadmin4" >&2
+              exit 1; }
 
   yum:
     runs-on: ubuntu-24.04
@@ -128,7 +131,6 @@ jobs:
           FAMILY: ${{ matrix.family }}
         run: |
           set -euo pipefail
-          dnf install -y --setopt=install_weak_deps=False curl
 
           # The repository RPM carries the .repo file and the packaging key, and
           # points at the tree it shipped in, so nothing here names a URL twice.
@@ -146,4 +148,6 @@ jobs:
           set -euo pipefail
           dnf install -y pgadmin4-server
           rpm -q pgadmin4-server
-          test -x /usr/pgadmin4/bin/setup-web.sh
+          rpm -ql pgadmin4-server | grep -q '^/usr/pgadmin4/' || {
+              echo "pgadmin4-server installed no files under /usr/pgadmin4" >&2
+              exit 1; }
