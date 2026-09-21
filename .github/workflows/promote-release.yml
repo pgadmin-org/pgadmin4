@@ -46,7 +46,12 @@ on:
           undone. "release-directory" stops before the package
           repositories as well, touching only v<VERSION>, which is the
           only setting that leaves the live repositories alone and so the
-          only one safe to rehearse with.
+          only one safe to rehearse the download server with.
+          "registries" is the other half: it skips the download server
+          entirely and runs only the container re-tag and the chart push,
+          so those can be exercised against a candidate tag without a
+          release. It does not upload to PyPI, there being no published
+          wheel to upload.
         type: choice
         required: true
         default: release-directory
@@ -54,6 +59,7 @@ on:
           - release-directory
           - files
           - everything
+          - registries
 
 concurrency:
   group: 'promote-release'
@@ -64,6 +70,9 @@ permissions:
 
 jobs:
   promote:
+    # Skipped entirely when only the registries are being exercised, so a
+    # rehearsal of those never touches the download server.
+    if: ${{ inputs.scope != 'registries' }}
     runs-on: [self-hosted, roadie]
     environment: publishing
 
@@ -242,7 +251,13 @@ jobs:
   # runner holding the SSH keys never handles registry credentials.
   registries:
     needs: promote
-    if: ${{ inputs.scope == 'everything' }}
+    # always(), because under the registries scope promote is skipped rather
+    # than run, and a plain needs would skip this with it.
+    if: >-
+      ${{ always()
+          && (inputs.scope == 'everything' || inputs.scope == 'registries')
+          && (needs.promote.result == 'success'
+              || needs.promote.result == 'skipped') }}
     runs-on: ubuntu-24.04
     environment: publishing
 
@@ -325,6 +340,7 @@ jobs:
       # Fetched from the published release rather than rebuilt, so what
       # reaches PyPI is the file the acceptance test installed.
       - name: Collect the wheel
+        if: ${{ inputs.scope == 'everything' }}
         env:
           VERSION: ${{ inputs.version }}
         run: |
@@ -337,6 +353,7 @@ jobs:
       # Trusted publishing: PyPI verifies this workflow's OIDC identity, so
       # there is no API token to hold, rotate or leak.
       - name: Upload to PyPI
+        if: ${{ inputs.scope == 'everything' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: pypi-dist
