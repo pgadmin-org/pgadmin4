@@ -69,6 +69,14 @@ configuration, so it lives here rather than in the source tree:
 echo '<distribution id>' > /etc/pga-publish.cloudfront
 ```
 
+And the staging server it pulls from during a release, which is site
+configuration rather than code, and is deliberately not something the caller
+can name:
+
+```sh
+echo '<staging server>' > /etc/pga-publish.pull-host
+```
+
 Also on the download server, move `aptftp.conf` out of `~pgaupload`: it is an
 input to what gets indexed and therefore to what gets signed, and nothing
 needs the publishing account to be able to write it.

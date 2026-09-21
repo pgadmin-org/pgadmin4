@@ -166,11 +166,18 @@ CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
 # constant here; the client never names a host. The key on paxsor is confined
 # on the procyon side by rrsync in read-only mode, so the worst this edge can do
 # is read a tree that developer.pgadmin.org already publishes over HTTP anyway.
-# The fully qualified name, not the short one: the short name resolves from
-# the download server but the host key is recorded under both, and being
-# explicit here means the name in known_hosts and the name in this file cannot
-# drift apart without somebody noticing.
-PULL_HOST = "procyon.postgresql.org"
+# Which host the download server pulls staged content from. Read from the
+# server rather than written here, for two reasons.
+#
+# It is site configuration, like the CloudFront distribution, and a public
+# repository is the wrong place to record how one machine reaches another.
+#
+# More importantly it is read here rather than accepted from the client. The
+# caller names a verb and a datestamp; it never names a host, a path, a binary
+# or a signing key, which is what stops a compromised runner asking for a
+# signature over something it fetched from somewhere of its own choosing. A
+# workflow variable would put this on the wrong side of that line.
+PULL_HOST_CONF = "/etc/pga-publish.pull-host"
 PULL_USER = "pgaupload"
 PULL_KEY = os.path.expanduser("~/.ssh/id_ed25519_paxsor_pull")
 
@@ -605,7 +612,7 @@ def pull_from_staging(datestamp, src_subpath, dest):
     execs it directly, without a shell, so the same rule applies here as
     everywhere else: no client input goes anywhere near it.
     """
-    remote = "%s@%s:%s/%s/" % (PULL_USER, PULL_HOST, datestamp, src_subpath)
+    remote = "%s@%s:%s/%s/" % (PULL_USER, pull_host(), datestamp, src_subpath)
     ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
                % (BIN_SSH, PULL_KEY))
     makedirs(dest)
@@ -618,6 +625,28 @@ def pull_from_staging(datestamp, src_subpath, dest):
          remote, dest + "/"])
 
 
+def pull_host():
+    """The staging server's name, from the file the site owns.
+
+    Validated as a hostname rather than trusted, because it becomes part of an
+    rsync remote specification: a value carrying a colon or a space would
+    change what that argument means.
+    """
+    try:
+        with open(PULL_HOST_CONF) as handle:
+            host = handle.read().strip()
+    except OSError:
+        if DRY_RUN:
+            return "staging.example.com"
+        sys.stderr.write("pga-publish: cannot read %s\n" % PULL_HOST_CONF)
+        sys.exit(EX_UNAVAILABLE)
+
+    if not re.match(r"\A[A-Za-z0-9][A-Za-z0-9.-]{0,252}[A-Za-z0-9]\Z", host):
+        sys.stderr.write("pga-publish: invalid host in %s\n" % PULL_HOST_CONF)
+        sys.exit(EX_UNAVAILABLE)
+    return host
+
+
 def pull_staging_files(datestamp, dest):
     """Copy the loose downloads of a staging build, and nothing else.
 
@@ -626,7 +655,7 @@ def pull_staging_files(datestamp, dest):
     and pulling several gigabytes of repository twice would be a poor way to
     publish a release.
     """
-    remote = "%s@%s:%s/" % (PULL_USER, PULL_HOST, datestamp)
+    remote = "%s@%s:%s/" % (PULL_USER, pull_host(), datestamp)
     ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
                % (BIN_SSH, PULL_KEY))
     makedirs(dest)
