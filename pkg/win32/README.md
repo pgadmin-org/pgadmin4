@@ -165,9 +165,12 @@ directory such as `C:\Build64`.
 
 Repeat the process with the latest build of 
 [MIT Kerberos](https://github.com/dpage/winpgbuild/actions/workflows/krb5.yml),
-merging the files into the same set of directories. This is required because
-the PostgreSQL build doesn't include Kerberos (gssapi) support as it uses 
-native SSPI instead.
+merging the files into the same set of directories. PostgreSQL 18 and later are
+built with GSSAPI support, so `libpq.dll` and the client binaries have a
+load-time dependency on `gssapi64.dll`, and the installer stages the Kerberos
+runtime next to them. Take care to refresh both assets together: a PostgreSQL
+build paired with a stale MIT Kerberos build is exactly the sort of skew that is
+hard to spot until someone tries to connect.
 
 ## Setting up a dev environment
 
