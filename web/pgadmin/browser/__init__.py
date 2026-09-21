@@ -383,13 +383,14 @@ def _get_supported_browser():
 
 
 @blueprint.add_app_template_filter
-def gravatar(username):
+def gravatar(identifier):
     """
     This function adds a template filter which
     returns gravatar image for user.
+    :param identifier: email address or username to hash
     :return: gravatar image
     """
-    g = Gravatar(username)
+    g = Gravatar(identifier)
     return g.get_image(
         size=100,
         rating='g',
@@ -555,6 +556,7 @@ def utils():
             is_admin=current_user.has_role("Administrator"),
             login_url=login_url,
             username=current_user.username.replace("'","\\'"),
+            gravatar_identifier=current_user.email or current_user.username,
             auth_source=auth_source,
             heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
             password_length_min=config.PASSWORD_LENGTH_MIN,
