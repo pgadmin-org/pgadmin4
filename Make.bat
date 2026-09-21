@@ -197,12 +197,8 @@ REM Main build sequence Ends
     REM NOTE: There is intentionally no space after "site" in the line below, to prevent Python barfing if there's one in the file
     ECHO import site>> "%BUILDROOT%\python\python%PYTHON_MAJOR%%PYTHON_MINOR%._pth"
 
-    ECHO Staging Kerberos components...
-    COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
+    REM NOTE: The Kerberos components are staged into the runtime directory
+    REM alongside libpq.dll, not here. See :CREATE_RUNTIME_ENV.
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
     FOR /R "%BUILDROOT%\python" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
@@ -360,9 +356,30 @@ REM Main build sequence Ends
     IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" "%BUILDROOT%\runtime" > nul
     COPY "%PGADMIN_POSTGRES_DIR%\bin\zlib1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dump.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dumpall.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1L%
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dumpall.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_restore.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\psql.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+
+    REM The Kerberos runtime belongs here, next to libpq.dll and the client
+    REM binaries: PostgreSQL 18 and later are built with GSSAPI support, so
+    REM libpq.dll has a load-time dependency on gssapi64.dll, and pg_dump.exe
+    REM and friends resolve it from their own directory. The pgAdmin server
+    REM process finds it here too, because the runtime prepends this directory
+    REM to PATH before spawning Python.
+    REM
+    REM krb5_64.dll loads krbcc64.dll dynamically rather than importing it, but
+    REM it is not optional: on Windows krb5 defaults the credential cache type
+    REM to CCAPI, and the entry points for that are left null when the DLL
+    REM cannot be loaded, so the first use of the default credential cache
+    REM calls address zero. ccapiserver.exe is the process krbcc64.dll drives.
+    ECHO Staging Kerberos components...
+    COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\krbcc64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\ccapiserver.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
 
     ECHO Staging VC++ runtime...
     MKDIR "%BUILDROOT%\installer" || EXIT /B 1
