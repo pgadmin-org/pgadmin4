@@ -199,7 +199,7 @@ msgid ""
 "**API URL**: Custom API endpoint URL (leave empty for default: https://api."
 "openai.com/v1). Include the ``/v1`` path prefix if required by your provider."
 msgstr ""
-"**API URL**: адресоПользовательский URL-адрес конечной точки API (оставьте "
+"**API URL**: Пользовательский URL-адрес конечной точки API (оставьте "
 "пустым для использования значения по умолчанию: https://api.openai.com/v1). "
 "Укажите префикс ``/v1``, если этого требует ваш провайдер."
 
@@ -471,7 +471,7 @@ msgstr "Для создания отчета о производительнос
 
 #: ../../ai_tools.rst:163
 msgid "In the *Browser* tree, select a server or database."
-msgstr "В дереве *Браузер* выберите базу данных или схему."
+msgstr "В дереве *Браузер* выберите сервер или базу данных."
 
 #: ../../ai_tools.rst:165
 msgid ""
@@ -553,7 +553,7 @@ msgstr "Для создания отчета об анализе структу�
 
 #: ../../ai_tools.rst:197
 msgid "In the *Browser* tree, select a database or schema."
-msgstr "В дереве *Браузер* выберите сервер или базу данных."
+msgstr "В дереве *Браузер* выберите схему или базу данных"
 
 #: ../../ai_tools.rst:199
 msgid ""
