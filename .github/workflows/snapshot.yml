@@ -295,7 +295,12 @@ jobs:
           find "${STAGE}" -type f | sort
 
       - name: Check the keys are present
-        if: inputs.publish
+        # A scheduled run always publishes, that being the entire point of the
+        # nightly; the input exists so that a dispatched test run does not.
+        # It has to be spelled out because a schedule event carries no inputs
+        # at all, so `inputs.publish` is null rather than false, and the two
+        # publishing steps were quietly skipped on every nightly.
+        if: ${{ github.event_name == 'schedule' || inputs.publish }}
         env:
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
@@ -329,7 +334,7 @@ jobs:
           fi
 
       - name: Publish the snapshot
-        if: inputs.publish
+        if: ${{ github.event_name == 'schedule' || inputs.publish }}
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           LOCATION: ${{ inputs.location }}
