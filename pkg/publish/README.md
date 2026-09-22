@@ -119,7 +119,7 @@ grows new options.
 ## Checking it
 
 ```sh
-./selftest.sh                       # 56 cases, touches nothing
+./selftest.sh                       # 70 cases, touches nothing
 pga-publish --dry-run --role download rebuild-apt bookworm
 ```
 
@@ -133,6 +133,19 @@ The GPG key that signs packages and repository metadata stays on the servers.
 A workflow uploads unsigned artefacts and asks for `stage-sign`, so a
 compromised run can ask for a signature over something it has just uploaded,
 but never holds the key, signs out of band, or signs with a different one.
+
+Be clear about how wide that is, because it is wider than "the packages it
+just built". The signing verbs select by file extension across the tree, so
+anything ending `.tar.gz`, `.whl`, `.pdf` or `.epub` gets a detached armoured
+signature, and every `.rpm` under `yum/` is re-signed. The content is
+arbitrary, and a detached signature carries no context tying it to pgAdmin, so
+a signature obtained this way can be presented anywhere alongside the file it
+covers. Selecting by name instead would not change this: an attacker who can
+write to the tree can name a file whatever a filter expects. What actually
+bounds it is where the upload key can write, which on the download server is
+the snapshots tree alone, and on the staging server a build directory that
+nothing publishes without a promotion. Treat write access to either as
+equivalent to a signing oracle, and rotate the key if one is suspected.
 
 The exceptions are the macOS notarisation and the Windows Authenticode
 signature, which happen on the runners because the Apple credentials and the

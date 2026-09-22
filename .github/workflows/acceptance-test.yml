@@ -43,7 +43,36 @@ permissions:
   contents: read
 
 jobs:
+  # The URL is fetched from, installed from and, in the apt job, written into
+  # a file, so it is checked once here rather than trusted in nine places. The
+  # host allowlist is the point: everything below downloads and then installs
+  # as root whatever that host serves, so this is what decides who gets to ask
+  # for that.
+  check:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check the base URL
+        env:
+          BASE_URL: ${{ inputs.base-url }}
+        run: |
+          set -euo pipefail
+          case "${BASE_URL}" in
+              https://developer.pgadmin.org/builds/*) ;;
+              https://ftp.postgresql.org/pub/pgadmin/pgadmin4/*) ;;
+              *)
+                  echo "Not a tree this test will install from: ${BASE_URL}" >&2
+                  echo "Expected developer.pgadmin.org or ftp.postgresql.org." >&2
+                  exit 1 ;;
+          esac
+          # No trailing slash, no shell metacharacters, nothing that could be
+          # read as a second word: the value is interpolated into commands.
+          printf '%s' "${BASE_URL}" | grep -Eq '^https://[A-Za-z0-9./_-]+[A-Za-z0-9]$' || {
+              echo "The base URL may contain only letters, digits, dot, slash, underscore and hyphen." >&2
+              exit 1; }
+
   apt:
+    needs: check
     runs-on: ubuntu-24.04
 
     # The images default to sh, which has no pipefail, so every step that set
@@ -83,8 +112,12 @@ jobs:
           curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub \
               | gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
 
-          sh -c "echo \"deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] ${BASE_URL}/apt/\$(lsb_release -cs) pgadmin4 main\" \
-              > /etc/apt/sources.list.d/pgadmin4.list"
+          # Written by this shell rather than handed to `sh -c`, which
+          # re-parsed the expanded URL as source and was the one place in the
+          # pipeline where a caller-supplied value reached a shell.
+          CODENAME=$(lsb_release -cs)
+          echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] ${BASE_URL}/apt/${CODENAME} pgadmin4 main" \
+              > /etc/apt/sources.list.d/pgadmin4.list
           cat /etc/apt/sources.list.d/pgadmin4.list
 
           # A repository apt will not verify makes this fail here, before any
@@ -110,6 +143,7 @@ jobs:
               exit 1; }
 
   yum:
+    needs: check
     runs-on: ubuntu-24.04
 
     # The images default to sh, which has no pipefail, so every step that set
@@ -163,6 +197,7 @@ jobs:
   # inside it either: Make.bat's own check tested a stale %ERRORLEVEL%, and the
   # workflow step that claimed to cover the gap only re-verified the installer.
   windows:
+    needs: check
     runs-on: windows-2025
     steps:
       - name: Download and install
@@ -219,6 +254,7 @@ jobs:
   # user downloads, which has been through a DMG, a web server and a browser's
   # quarantine attribute.
   macos:
+    needs: check
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -293,6 +329,7 @@ jobs:
   # Shallow by design, but it does verify every detached signature from the
   # published URL rather than on the server, which is what a user would get.
   artefacts:
+    needs: check
     runs-on: ubuntu-24.04
     steps:
       - name: Fetch and check

@@ -69,12 +69,12 @@ permissions:
   contents: read
 
 jobs:
-  promote:
-    # Skipped entirely when only the registries are being exercised, so a
-    # rehearsal of those never touches the download server.
-    if: ${{ inputs.scope != 'registries' }}
-    runs-on: [self-hosted, roadie]
-    environment: publishing
+  # Every input is checked here, before either of the jobs that act on one
+  # runs, because the checks used to live in promote and the registries scope
+  # skips that job: under that scope the confirmation gate did not apply to
+  # the step that moves the latest tag.
+  check:
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check the request
@@ -82,8 +82,8 @@ jobs:
           VERSION: ${{ inputs.version }}
           LOCATION: ${{ inputs.location }}
           CONFIRM: ${{ inputs.confirm }}
-          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+          TAGS: ${{ inputs.container-tags }}
+          SCOPE: ${{ inputs.scope }}
         run: |
           set -euo pipefail
 
@@ -100,6 +100,42 @@ jobs:
               echo "Not a version: ${VERSION}" >&2; exit 1; }
           printf '%s' "${LOCATION}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}(-[1-9][0-9]?)?$' || {
               echo "Not a build location: ${LOCATION}" >&2; exit 1; }
+
+          # Only the scopes that publish containers need tags, but when they
+          # are given they are checked whatever the scope, so a bad value is
+          # not discovered halfway through a promotion.
+          if [ "${SCOPE}" = "everything" ] || [ "${SCOPE}" = "registries" ]; then
+              [ -n "${TAGS}" ] || {
+                  echo "container-tags is required for scope ${SCOPE}." >&2
+                  exit 1; }
+          fi
+          # -f, because an unquoted expansion is also a glob: a tag of * would
+          # otherwise be replaced by whatever is in the working directory.
+          set -f
+          for tag in ${TAGS}; do
+              printf '%s' "${tag}" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$' || {
+                  echo "Not a container tag: ${tag}" >&2; exit 1; }
+          done
+          set +f
+
+          echo "Request accepted: ${VERSION} from ${LOCATION}, scope ${SCOPE}."
+
+  promote:
+    needs: check
+    # Skipped entirely when only the registries are being exercised, so a
+    # rehearsal of those never touches the download server.
+    if: ${{ inputs.scope != 'registries' }}
+    runs-on: [self-hosted, roadie]
+    environment: publishing
+
+    steps:
+      # The inputs are checked in the job above; this is about the runner.
+      - name: Check the runner
+        env:
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
 
           [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }
 
@@ -251,11 +287,14 @@ jobs:
   # cannot leave a half-finished promotion on the download server, and so the
   # runner holding the SSH keys never handles registry credentials.
   registries:
-    needs: promote
+    needs: [check, promote]
     # always(), because under the registries scope promote is skipped rather
-    # than run, and a plain needs would skip this with it.
+    # than run, and a plain needs would skip this with it. check is never
+    # skipped, so requiring its success is what keeps the inputs validated on
+    # both paths.
     if: >-
       ${{ always()
+          && needs.check.result == 'success'
           && (inputs.scope == 'everything' || inputs.scope == 'registries')
           && (needs.promote.result == 'success'
               || needs.promote.result == 'skipped') }}
@@ -273,10 +312,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # By commit rather than by tag, since this script is piped into a shell
+      # in the same job that then logs in to two registries, and a tag can be
+      # moved. bec5b06 is v4.3.0.
       - name: Install Helm
         run: |
           set -euo pipefail
-          curl -fsSL https://raw.githubusercontent.com/helm/helm/v4.3.0/scripts/get-helm-3 -o get-helm-3
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/bec5b06ed841fe5269972d864d5177944fd5970f/scripts/get-helm-3 -o get-helm-3
           chmod +x get-helm-3
           ./get-helm-3
 
@@ -293,11 +335,9 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
           set -euo pipefail
-          [ -n "${TAGS}" ] || { echo "container-tags is required." >&2; exit 1; }
-          for tag in ${TAGS}; do
-              printf '%s' "${tag}" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$' || {
-                  echo "Not a container tag: ${tag}" >&2; exit 1; }
-          done
+          # Validated by the check job. -f so that the word splitting below
+          # does not also glob against the workspace.
+          set -f
 
           printf '%s' "${DOCKERHUB_TOKEN}" \
               | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
@@ -355,6 +395,6 @@ jobs:
       # there is no API token to hold, rotate or leak.
       - name: Upload to PyPI
         if: ${{ inputs.scope == 'everything' }}
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           packages-dir: pypi-dist
