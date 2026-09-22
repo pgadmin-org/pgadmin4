@@ -1,0 +1,796 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) (C) 2013 - 2026, The pgAdmin Development Team
+# This file is distributed under the same license as the pgAdmin 4 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pgAdmin 4 9.18\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-22 13:12+0500\n"
+"PO-Revision-Date: 2026-09-22 16:14+0500\n"
+"Last-Translator: \n"
+"Language-Team: ru <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Generated-By: Babel 2.18.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../ai_tools.rst:5
+msgid "`AI Reports`:index:"
+msgstr "`Отчеты ИИ`:index:"
+
+#: ../../ai_tools.rst:7
+msgid ""
+"**AI Reports** is a feature that provides AI-powered database analysis and "
+"insights using Large Language Models (LLMs). Use the *Tools → AI Reports* "
+"menu to access the various AI-powered reports."
+msgstr ""
+"**Отчеты ИИ** - это функция, которая предоставляет анализ базы данных и "
+"аналитику на основе искусственного интеллекта с использованием больших "
+"языковых моделей (LLM). Используйте меню *Инструменты → Отчеты ИИ* для "
+"доступа к различным отчетам на базе ИИ."
+
+#: ../../ai_tools.rst:11
+msgid "The AI Reports feature allows you to:"
+msgstr "Функция отчетов на основе ИИ позволяет вам:"
+
+#: ../../ai_tools.rst:13
+msgid ""
+"Generate security reports to identify potential security vulnerabilities and "
+"configuration issues."
+msgstr ""
+"Создавать отчеты по безопасности для выявления потенциальных уязвимостей и "
+"проблем с конфигурацией."
+
+#: ../../ai_tools.rst:15
+msgid ""
+"Create performance reports with optimization recommendations for queries and "
+"configurations."
+msgstr ""
+"Создавать отчеты о производительности с рекомендациями по оптимизации "
+"запросов и конфигураций."
+
+#: ../../ai_tools.rst:17
+msgid ""
+"Perform design reviews to analyze database schema structure and suggest "
+"improvements."
+msgstr ""
+"Проводить анализ архитектурных решений для оценки структуры схемы базы данных "
+"и внесения предложений по ее улучшению."
+
+#: ../../ai_tools.rst:19
+msgid "**Prerequisites:**"
+msgstr "**Предварительные требования:**"
+
+#: ../../ai_tools.rst:21
+msgid "Before using AI Reports, you must:"
+msgstr ""
+"Перед использованием отчетов ИИ необходимо убедиться в выполнении следующих "
+"условий:"
+
+#: ../../ai_tools.rst:23
+msgid ""
+"Ensure AI features are enabled in the server configuration (set "
+"``LLM_ENABLED`` to ``True`` in ``config.py``)."
+msgstr ""
+"Функции ИИ включены в конфигурации сервера (параметр ``LLM_ENABLED`` имеет "
+"значение ``True`` в файле ``config.py``)."
+
+#: ../../ai_tools.rst:25
+msgid "Configure an LLM provider in :ref:`Preferences → AI <preferences>`."
+msgstr "Провайдер LLM настроен в разделе :ref:`Настройки → ИИ <preferences>`."
+
+#: ../../ai_tools.rst:27
+msgid "**Note:**"
+msgstr "**Примечание:**"
+
+#: ../../ai_tools.rst:29
+msgid ""
+"AI Reports using cloud providers (Anthropic, OpenAI) require an active "
+"internet connection. Local providers (Ollama, Docker Model Runner) do not "
+"require internet access."
+msgstr ""
+"Отчеты ИИ с использованием облачных провайдеров (Anthropic, OpenAI) требуют "
+"активного подключения к интернету. Локальные провайдеры (Ollama, Docker Model "
+"Runner) работают без доступа к сети."
+
+#: ../../ai_tools.rst:32
+msgid ""
+"API usage may incur costs depending on your LLM provider's pricing model. "
+"Local providers (Ollama, Docker Model Runner) are free to use."
+msgstr ""
+"Использование API может повлечь за собой дополнительные расходы в зависимости "
+"от модели тарификации вашего провайдера LLM. Локальные провайдеры (Ollama, "
+"Docker Model Runner) бесплатны."
+
+#: ../../ai_tools.rst:35
+msgid ""
+"The quality and accuracy of reports depend on the LLM provider and model "
+"configured."
+msgstr ""
+"Качество и точность отчетов напрямую зависят от выбранного провайдера LLM и "
+"настроенной модели."
+
+#: ../../ai_tools.rst:39
+msgid "Configuring AI Reports"
+msgstr "Настройка отчетов ИИ"
+
+#: ../../ai_tools.rst:41
+msgid ""
+"To configure AI Reports, navigate to *File → Preferences → AI* (or click the "
+"*Settings* button and select *AI*)."
+msgstr ""
+"Для настройки отчетов ИИ перейдите по пути *Файл → Настройки → ИИ* (или "
+"нажмите кнопку *Настройки* и выберите раздел *ИИ*)."
+
+#: ../../ai_tools.rst:44
+msgid "AI preferences"
+msgstr "Настройки ИИ"
+
+#: ../../ai_tools.rst:48
+msgid "Select your preferred LLM provider from the dropdown:"
+msgstr "Выберите предпочтительного провайдера LLM из выпадающего списка:"
+
+#: ../../ai_tools.rst:50
+msgid "**Anthropic**"
+msgstr "**Anthropic**"
+
+#: ../../ai_tools.rst:51
+msgid ""
+"Use Claude models from Anthropic, or any Anthropic-compatible API provider."
+msgstr ""
+"Используйте модели Claude от Anthropic или любого поставщика API, "
+"совместимого с Anthropic."
+
+#: ../../ai_tools.rst:53
+msgid ""
+"**API URL**: Custom API endpoint URL (leave empty for default: https://api."
+"anthropic.com/v1)."
+msgstr ""
+"**API URL**: Пользовательский URL-адрес конечной точки API (оставьте пустым "
+"для использования значения по умолчанию: https://api.anthropic.com/v1)."
+
+#: ../../ai_tools.rst:54
+msgid ""
+"**API Key File**: Path to a file containing your Anthropic API key (obtain "
+"from https://console.anthropic.com/). This path refers to the filesystem "
+"where the pgAdmin server is running (e.g., inside the container if using "
+"Docker). The ``~`` prefix is expanded to the home directory of the user "
+"running the pgAdmin server process. Optional when using a custom URL with a "
+"provider that does not require authentication."
+msgstr ""
+"**API Key File**: Путь к файлу, содержащему ваш API-ключ Anthropic (можно "
+"получить на https://console.anthropic.com/). Этот путь указывает на файловую "
+"систему, в которой запущен сервер pgAdmin (например, внутри контейнера при "
+"использовании Docker). Префикс ``~`` разворачивается в домашний каталог "
+"пользователя, от имени которого запущен процесс сервера pgAdmin. Необязателен "
+"при использовании пользовательского URL с провайдером, не требующим "
+"аутентификации."
+
+#: ../../ai_tools.rst:55
+msgid ""
+"**Model**: Select from available Claude models (e.g., claude-"
+"sonnet-4-20250514)."
+msgstr ""
+"**Model**: Выберите одну из доступных моделей Claude (например, claude-"
+"sonnet-4-20250514)."
+
+#: ../../ai_tools.rst:57
+msgid "**OpenAI**"
+msgstr "**OpenAI**"
+
+#: ../../ai_tools.rst:58
+msgid ""
+"Use GPT models from OpenAI, or any OpenAI-compatible API provider (e.g., "
+"LiteLLM, LM Studio, EXO, or other local inference servers)."
+msgstr ""
+"Используйте модели GPT от OpenAI или любого поставщика API, совместимого с "
+"OpenAI (например, LiteLLM, LM Studio, EXO или другие локальные серверы "
+"вывода)."
+
+#: ../../ai_tools.rst:61
+msgid ""
+"**API URL**: Custom API endpoint URL (leave empty for default: https://api."
+"openai.com/v1). Include the ``/v1`` path prefix if required by your provider."
+msgstr ""
+"Пользовательский URL-адрес конечной точки API (оставьте пустым для "
+"использования значения по умолчанию: https://api.openai.com/v1). Укажите "
+"префикс ``/v1``, если этого требует ваш провайдер."
+
+#: ../../ai_tools.rst:62
+msgid ""
+"**API Key File**: Path to a file containing your OpenAI API key (obtain from "
+"https://platform.openai.com/). This path refers to the filesystem where the "
+"pgAdmin server is running (e.g., inside the container if using Docker). The "
+"``~`` prefix is expanded to the home directory of the user running the "
+"pgAdmin server process. Optional when using a custom URL with a provider that "
+"does not require authentication."
+msgstr ""
+"**API Key File**: Путь к файлу, содержащему ваш API-ключ OpenAI (можно "
+"получить на https://platform.openai.com/). Этот путь указывает на файловую "
+"систему, в которой запущен сервер pgAdmin (например, внутри контейнера при "
+"использовании Docker). Префикс ``~`` разворачивается в домашний каталог "
+"пользователя, от имени которого запущен процесс сервера pgAdmin. Необязателен "
+"при использовании пользовательского URL с провайдером, не требующим "
+"аутентификации."
+
+#: ../../ai_tools.rst:63
+msgid "**Model**: Select from available GPT models (e.g., gpt-4)."
+msgstr "**Model**: Выберите одну из доступных моделей GPT (например, gpt-4)."
+
+#: ../../ai_tools.rst:65
+msgid "**Ollama**"
+msgstr "**Ollama**"
+
+#: ../../ai_tools.rst:66
+msgid ""
+"Use locally-hosted open-source models via Ollama. Requires a running Ollama "
+"instance."
+msgstr ""
+"Используйте локально запущенные open-source модели через Ollama. Требуется "
+"предварительно запущенный экземпляр Ollama."
+
+#: ../../ai_tools.rst:68
+msgid ""
+"**API URL**: The URL of your Ollama server (default: http://localhost:11434)."
+msgstr ""
+"**API URL**: URL-адрес вашего сервера Ollama (по умолчанию: http://"
+"localhost:11434)."
+
+#: ../../ai_tools.rst:69
+msgid ""
+"**Model**: Enter the name of the Ollama model to use (e.g., llama2, mistral)."
+msgstr ""
+"**Model**: Введите имя модели Ollama для использования (например, llama2, "
+"mistral)."
+
+#: ../../ai_tools.rst:71
+msgid "**Docker Model Runner**"
+msgstr "**Docker Model Runner**"
+
+#: ../../ai_tools.rst:72
+msgid ""
+"Use models running in Docker Desktop's built-in model runner (available in "
+"Docker Desktop 4.40+). No API key is required."
+msgstr ""
+"Используйте модели, запущенные во встроенном механизме запуска моделей Docker "
+"(доступно в Docker Desktop 4.40+). API-ключ не требуется."
+
+#: ../../ai_tools.rst:75
+msgid ""
+"**API URL**: The URL of the Docker Model Runner API (default: http://"
+"localhost:12434)."
+msgstr ""
+"**API URL**: URL-адрес API Docker-контейнера для запуска моделей (по "
+"умолчанию: http://localhost:12434)."
+
+#: ../../ai_tools.rst:76
+msgid "**Model**: Select from available models or enter a custom model name."
+msgstr ""
+"**Model**: Выберите одну из доступных моделей или введите пользовательское "
+"название модели."
+
+#: ../../ai_tools.rst:78
+msgid ""
+"You can also use the *OpenAI* provider with a custom API URL for any OpenAI-"
+"compatible endpoint, including Docker Model Runner and other local inference "
+"servers."
+msgstr ""
+"Вы также можете использовать провайдера *OpenAI* с пользовательским URL-"
+"адресом API для любых целей. Совместимые с OpenAI конечные точки включают "
+"Docker Model Runner и другие локальные серверы вывода."
+
+#: ../../ai_tools.rst:82
+msgid "After configuring your provider, click *Save* to apply the changes."
+msgstr ""
+"После настройки провайдера нажмите кнопку *Сохранить* для применения "
+"изменений."
+
+#: ../../ai_tools.rst:88
+msgid "Data Handling and Provider Selection"
+msgstr "Обработка данных и конфиденциальность"
+
+#: ../../ai_tools.rst:90
+msgid ""
+"When a cloud LLM provider is configured, pgAdmin transmits information about "
+"your database to that provider's API. Depending on the feature in use, this "
+"may include schema definitions such as table, column, index and constraint "
+"names and data types; server and database configuration settings read from "
+"``pg_settings``; query text; and EXPLAIN plan output. The *AI Assistant* in "
+"the Query Tool is also able to run queries against your database, within a "
+"read-only transaction and limited to 1000 rows, so row data may be included "
+"where the assistant determines it is needed to answer a question."
+msgstr ""
+"Когда настроен облачный провайдер LLM, pgAdmin передает информацию о вашей "
+"базе данных поставщику API. В зависимости от используемой функции, "
+"передаваемые данные могут включать определения схем (имена таблиц, столбцов, "
+"индексов и ограничений), типы данных, параметры конфигурации сервера и базы "
+"данных из файла ``pg_settings``, текст самого запроса, а также план его "
+"выполнения. Инструмент *ИИ-помощник* в Редакторе запросов также позволяет "
+"выполнять запросы к базе данных в режиме транзакции «только для чтения» с "
+"ограничением в 1000 строк; при этом в ответ могут включаться реальные данные "
+"строк, если ИИ-помощник сочтет их необходимыми для формирования ответа."
+
+#: ../../ai_tools.rst:99
+msgid ""
+"None of this is transmitted unless you invoke an AI feature, and none of it "
+"is transmitted at all when no provider has been configured, which is the "
+"default; when AI features have been disabled by the administrator through the "
+"``LLM_ENABLED`` setting; or when a locally hosted provider such as Ollama or "
+"Docker Model Runner is configured."
+msgstr ""
+"Никакие данные не передаются до тех пор, пока вы сами не воспользуетесь "
+"функцией ИИ. Данные вообще не отправляются в сеть, если провайдеры не "
+"настроены (настройка по умолчанию), если функции ИИ принудительно отключены "
+"администратором с помощью параметра ``LLM_ENABLED``, либо если используется "
+"локальный провайдер, такой как Ollama или Docker Model Runner."
+
+#: ../../ai_tools.rst:105
+msgid ""
+"Each provider processes this data under its own terms of service, privacy "
+"policy and legal jurisdiction, and operates its infrastructure in locations "
+"of its own choosing. If you work in an environment subject to data residency "
+"requirements, procurement policies, or sector-specific rules governing the "
+"handling of database metadata, review both the provider's terms and your own "
+"organisation's policies before enabling a cloud provider."
+msgstr ""
+"Каждый провайдер обрабатывает эти данные в соответствии с собственными "
+"условиями обслуживания, политикой конфиденциальности и требованиями "
+"применимого законодательства, а также размещает вычислительную инфраструктуру "
+"в выбранных им локациях. Если ваша деятельность регулируется требованиями к "
+"месту хранения данных, политиками безопасности или отраслевыми стандартами "
+"обработки метаданных баз данных, перед началом работы ознакомьтесь как с "
+"условиями поставщика, так и с внутренними регламентами вашей организации."
+
+#: ../../ai_tools.rst:112
+msgid ""
+"The providers listed in pgAdmin reflect the APIs that pgAdmin is able to "
+"communicate with. Their inclusion is not a recommendation, and no provider is "
+"enabled by default."
+msgstr ""
+"Провайдеры, перечисленные в pgAdmin, соответствуют API, с которыми программа "
+"умеет взаимодействовать. Их наличие в списке не является прямой "
+"рекомендацией, и ни один из них не включен по умолчанию."
+
+#: ../../ai_tools.rst:118
+msgid "Security Reports"
+msgstr "Отчеты по безопасности"
+
+#: ../../ai_tools.rst:120
+msgid ""
+"Security Reports analyze your PostgreSQL server, database, or schema for "
+"potential security vulnerabilities and configuration issues."
+msgstr ""
+"Отчеты по безопасности анализируют ваш сервер PostgreSQL, базу данных или "
+"схему на предмет потенциальных уязвимостей и ошибок конфигурации."
+
+#: ../../ai_tools.rst:123
+msgid "To generate a security report:"
+msgstr "Для создания отчета по безопасности:"
+
+#: ../../ai_tools.rst:125
+msgid "In the *Browser* tree, select a server, database, or schema."
+msgstr "В дереве *Браузер* выберите базу данных или схему."
+
+#: ../../ai_tools.rst:127
+msgid ""
+"Choose *Tools → AI Reports → Security* from the menu, or right-click the "
+"object and select *Security* from the context menu."
+msgstr ""
+"В верхнем меню выберите *Инструменты → Отчеты ИИ → Безопасность* или нажмите "
+"правой кнопкой мыши по объекту и выберите пункт *Безопасность* из "
+"контекстного меню."
+
+#: ../../ai_tools.rst:130 ../../ai_tools.rst:168 ../../ai_tools.rst:202
+msgid "The report will be generated and displayed in a new tab."
+msgstr "Отчет будет сформирован и отображен на новой вкладке."
+
+#: ../../ai_tools.rst:132
+msgid "AI security report"
+msgstr "Отчет ИИ по безопасности"
+
+#: ../../ai_tools.rst:136
+msgid "**Security Report Scope:**"
+msgstr "**Область охвата отчета по безопасности:**"
+
+#: ../../ai_tools.rst:138
+msgid ""
+"**Server Level**: Analyzes server configuration, authentication settings, "
+"roles, and permissions."
+msgstr ""
+"**Уровень сервера**: Анализ конфигурации сервера, настроек аутентификации, "
+"ролей и прав доступа."
+
+#: ../../ai_tools.rst:140
+msgid ""
+"**Database Level**: Reviews database-specific security settings, roles with "
+"database access, and object permissions."
+msgstr ""
+"**Уровень базы данных**: Проверка настроек безопасности конкретной базы "
+"данных, ролей с доступом к ней и прав доступа к объектам."
+
+#: ../../ai_tools.rst:142
+msgid ""
+"**Schema Level**: Examines schema permissions, object ownership, and access "
+"controls."
+msgstr ""
+"**Уровень схемы**: Рассмотрение прав доступа к схемам, владельцев объектов и "
+"механизмов контроля доступа."
+
+#: ../../ai_tools.rst:144 ../../ai_tools.rst:176 ../../ai_tools.rst:210
+msgid "Each report includes:"
+msgstr "Каждый отчет включает в себя:"
+
+#: ../../ai_tools.rst:146
+msgid "**Security Findings**: Identified vulnerabilities or security concerns."
+msgstr ""
+"**Результаты проверки безопасности**: Выявленные уязвимости или бреши в "
+"защите."
+
+#: ../../ai_tools.rst:148
+msgid ""
+"**Risk Assessment**: Severity levels for each finding (Critical, High, "
+"Medium, Low)."
+msgstr ""
+"**Оценка рисков**: Уровень серьезности для каждого нарушения (Критический, "
+"Высокий, Средний, Низкий)."
+
+#: ../../ai_tools.rst:150
+msgid "**Recommendations**: Specific actions to remediate security issues."
+msgstr ""
+"**Рекомендации**: Конкретные действия по устранению проблем безопасности."
+
+#: ../../ai_tools.rst:152
+msgid "**Best Practices**: General security recommendations for PostgreSQL."
+msgstr ""
+"**Лучшие практики**: Общие рекомендации по обеспечению безопасности "
+"PostgreSQL."
+
+#: ../../ai_tools.rst:156
+msgid "Performance Reports"
+msgstr "Отчеты о производительности"
+
+#: ../../ai_tools.rst:158
+msgid ""
+"Performance Reports analyze query performance, configuration settings, and "
+"provide optimization recommendations."
+msgstr ""
+"Отчеты о производительности анализируют быстродействие запросов и параметры "
+"конфигурации, а также содержат рекомендации по оптимизации."
+
+#: ../../ai_tools.rst:161
+msgid "To generate a performance report:"
+msgstr "Для создания отчета о производительности:"
+
+#: ../../ai_tools.rst:163
+msgid "In the *Browser* tree, select a server or database."
+msgstr "В дереве *Браузер* выберите базу данных или схему."
+
+#: ../../ai_tools.rst:165
+msgid ""
+"Choose *Tools → AI Reports → Performance* from the menu, or right-click the "
+"object and select *Performance* from the context menu."
+msgstr ""
+"В меню выберите *Инструменты → Отчеты ИИ → Производительность* или нажмите "
+"правой кнопкой мыши по объекту и выберите пункт *Производительность* из "
+"контекстного меню."
+
+#: ../../ai_tools.rst:170
+msgid "**Performance Report Scope:**"
+msgstr "**Область охвата отчета о производительности:**"
+
+#: ../../ai_tools.rst:172
+msgid ""
+"**Server Level**: Analyzes server configuration parameters, resource "
+"utilization, and overall server performance metrics."
+msgstr ""
+"**Уровень сервера**: Анализ параметров конфигурации сервера, использования "
+"ресурсов и общих показателей производительности."
+
+#: ../../ai_tools.rst:174
+msgid ""
+"**Database Level**: Reviews database-specific configuration, query "
+"performance, index usage, and table statistics."
+msgstr ""
+"**Уровень базы данных**: Анализ конфигурации конкретной базы данных, "
+"производительности запросов, эффективности использования индексов и "
+"статистики таблиц."
+
+#: ../../ai_tools.rst:178
+msgid "**Performance Metrics**: Key performance indicators and statistics."
+msgstr ""
+"**Показатели эффективности**: Ключевые метрики производительности и "
+"статистика."
+
+#: ../../ai_tools.rst:180
+msgid "**Configuration Analysis**: Review of relevant configuration parameters."
+msgstr ""
+"**Анализ конфигурации**: Обзор влияющих на быстродействие параметров "
+"конфигурации."
+
+#: ../../ai_tools.rst:182
+msgid "**Query Optimization**: Recommendations for improving slow queries."
+msgstr ""
+"**Оптимизация запросов**: Рекомендации по оптимизации медленных SQL-запросов."
+
+#: ../../ai_tools.rst:184
+msgid ""
+"**Index Recommendations**: Suggestions for adding, removing, or modifying "
+"indexes."
+msgstr ""
+"**Рекомендации по индексам**: Предложения по добавлению, удалению или "
+"изменению структуры индексов."
+
+#: ../../ai_tools.rst:186
+msgid "**Capacity Planning**: Resource utilization trends and recommendations."
+msgstr ""
+"**Планирование мощностей**: Тенденции использования ресурсов и рекомендации "
+"по масштабированию."
+
+#: ../../ai_tools.rst:190
+msgid "Design Review Reports"
+msgstr "Отчеты об анализе архитектуры"
+
+#: ../../ai_tools.rst:192
+msgid ""
+"Design Review Reports analyze your database schema structure and suggest "
+"improvements for normalization, naming conventions, and best practices."
+msgstr ""
+"Отчеты об анализе архитектуры содержат аудит структуры схемы базы данных и "
+"рекомендации по ее улучшению с учетом принципов нормализации, правил "
+"именования и передовых практик."
+
+#: ../../ai_tools.rst:195
+msgid "To generate a design review report:"
+msgstr "Для создания отчета об анализе структуры:"
+
+#: ../../ai_tools.rst:197
+msgid "In the *Browser* tree, select a database or schema."
+msgstr "В дереве *Браузер* выберите базу данных или схему."
+
+#: ../../ai_tools.rst:199
+msgid ""
+"Choose *Tools → AI Reports → Design* from the menu, or right-click the object "
+"and select *Design* from the context menu."
+msgstr ""
+"В меню выберите *Инструменты → Отчеты ИИ → Дизайн* или нажмите правой кнопкой "
+"мыши по объекту и выберите пункт *Дизайн* из контекстного меню."
+
+#: ../../ai_tools.rst:204
+msgid "**Design Review Scope:**"
+msgstr "**Область анализа проектных решений:**"
+
+#: ../../ai_tools.rst:206
+msgid ""
+"**Database Level**: Reviews overall database structure, schema organization, "
+"and cross-schema dependencies."
+msgstr ""
+"**Уровень базы данных**: Анализ общей структуры базы данных, организации схем "
+"и межсхемных зависимостей."
+
+#: ../../ai_tools.rst:208
+msgid ""
+"**Schema Level**: Analyzes tables, views, functions, and other objects within "
+"the schema."
+msgstr ""
+"**Уровень схемы**: Анализ таблиц, представлений, функций и других объектов "
+"внутри схемы."
+
+#: ../../ai_tools.rst:212
+msgid ""
+"**Schema Structure Analysis**: Review of table structures, relationships, and "
+"constraints."
+msgstr ""
+"**Анализ структуры схемы**: Анализ структуры таблиц, связей и ограничений."
+
+#: ../../ai_tools.rst:214
+msgid ""
+"**Normalization Review**: Recommendations for database normalization (1NF, "
+"2NF, 3NF, etc.)."
+msgstr ""
+"**Проверка нормализации**: Рекомендации по нормализации базы данных (1NF, "
+"2NF, 3NF и т. д.)."
+
+#: ../../ai_tools.rst:216
+msgid "**Naming Conventions**: Suggestions for consistent naming patterns."
+msgstr ""
+"**Соглашения о наименованиях**: Рекомендации по единообразным правилам "
+"именования."
+
+#: ../../ai_tools.rst:218
+msgid "**Data Type Usage**: Review of data type choices and recommendations."
+msgstr ""
+"**Использование типов данных**: Анализ выбора типов данных и соответствующие "
+"рекомендации."
+
+#: ../../ai_tools.rst:220
+msgid "**Index Design**: Analysis of indexing strategy."
+msgstr "**Проектирование индексов**: Анализ стратегии индексирования."
+
+#: ../../ai_tools.rst:222
+msgid "**Best Practices**: General PostgreSQL schema design recommendations."
+msgstr ""
+"**Лучшие практики**: Общие рекомендации по проектированию схем PostgreSQL."
+
+#: ../../ai_tools.rst:226
+msgid "Working with Reports"
+msgstr "Работа с отчетами"
+
+#: ../../ai_tools.rst:228
+msgid ""
+"All AI reports are displayed in a dedicated panel with the following features:"
+msgstr ""
+"Все отчеты ИИ отображаются на специальной панели со следующими возможностями:"
+
+#: ../../ai_tools.rst:230
+msgid "**Report Display**"
+msgstr "**Отображение отчета**"
+
+#: ../../ai_tools.rst:231
+msgid ""
+"Reports are formatted as Markdown and rendered with syntax highlighting for "
+"SQL code."
+msgstr ""
+"Отчеты форматируются в Markdown и отображаются с подсветкой синтаксиса для "
+"SQL-кода."
+
+#: ../../ai_tools.rst:233
+msgid "**Toolbar Actions**"
+msgstr "**Действия на панели инструментов**"
+
+#: ../../ai_tools.rst:235
+msgid ""
+"**Stop** - Cancel the current report generation. This is useful if the report "
+"is taking too long or if you want to change parameters."
+msgstr ""
+"**Остановить** — отмена текущей генерации отчета. Это полезно, если процесс "
+"занимает слишком много времени или если вы хотите изменить параметры."
+
+#: ../../ai_tools.rst:238
+msgid ""
+"**Regenerate** - Generate a new report for the same object. Useful when you "
+"want to get a fresh analysis or if data has changed."
+msgstr ""
+"**Перегенерировать** — создание нового отчета для того же объекта. Полезно, "
+"если вам нужно получить актуальный анализ или если данные изменились."
+
+#: ../../ai_tools.rst:241
+msgid ""
+"**Download** - Download the report as a Markdown (.md) file. The filename "
+"includes the report type, object name, and date for easy identification."
+msgstr ""
+"**Скачать** — скачивание отчета в виде файла Markdown (.md). Имя файла "
+"включает в себя тип отчета, имя объекта и дату для удобства идентификации."
+
+#: ../../ai_tools.rst:244
+msgid "**Multiple Reports**"
+msgstr "**Несколько отчетов**"
+
+#: ../../ai_tools.rst:245
+msgid ""
+"You can generate and view multiple reports simultaneously. Each report opens "
+"in a new tab, allowing you to compare reports across different servers, "
+"databases, or schemas."
+msgstr ""
+"Вы можете генерировать и просматривать несколько отчетов одновременно. Каждый "
+"отчет открывается во вкладке, что позволяет сравнивать отчеты по разным "
+"серверам, базам данных или схемам."
+
+#: ../../ai_tools.rst:249
+msgid "**Report Management**"
+msgstr "**Управление отчетами**"
+
+#: ../../ai_tools.rst:250
+msgid ""
+"Each report tab can be closed individually by clicking the *X* in the tab. "
+"Panel titles show the object name and report type for easy identification."
+msgstr ""
+"Каждую вкладку отчета можно закрыть по отдельности, нажав на *X* на вкладке. "
+"В заголовках панелей отображаются имя объекта и тип отчета для удобства "
+"идентификации."
+
+#: ../../ai_tools.rst:253
+msgid "**Copying Content**"
+msgstr "**Копирование содержимого**"
+
+#: ../../ai_tools.rst:254
+msgid ""
+"You can select and copy text from reports to use in documentation or share "
+"with your team."
+msgstr ""
+"Вы можете выделять и копировать текст из отчетов для использования в "
+"документации или обмена с вашей командой."
+
+#: ../../ai_tools.rst:259
+msgid "Troubleshooting"
+msgstr "Устранение неполадок"
+
+#: ../../ai_tools.rst:261
+msgid "**\"AI features are disabled in the server configuration\"**"
+msgstr "**«Функции ИИ отключены в конфигурации сервера»**"
+
+#: ../../ai_tools.rst:262
+msgid ""
+"The administrator has disabled AI features on the server. Contact your "
+"pgAdmin administrator to enable the ``LLM_ENABLED`` configuration option."
+msgstr ""
+"Администратор отключил функции ИИ на сервере. Обратитесь к вашему "
+"администратору pgAdmin, чтобы включить параметр конфигурации ``LLM_ENABLED``."
+
+#: ../../ai_tools.rst:265
+msgid "**\"Please configure an LLM provider in Preferences\"**"
+msgstr "**«Пожалуйста, настройте провайдера LLM в \"Параметрах\"»**"
+
+#: ../../ai_tools.rst:266
+msgid ""
+"You need to configure an LLM provider before using AI Reports. See "
+"*Configuring AI Reports* above."
+msgstr ""
+"Вам необходимо настроить провайдера LLM перед использованием отчетов ИИ. См. "
+"раздел *Настройка отчетов ИИ* выше."
+
+#: ../../ai_tools.rst:268
+msgid "**\"Please connect to the server/database first\"**"
+msgstr "**«Пожалуйста, сначала подключитесь к серверу/базе данных»**"
+
+#: ../../ai_tools.rst:269
+msgid ""
+"You must establish a connection to the server or database before generating "
+"reports."
+msgstr ""
+"Вам необходимо установить подключение к серверу или базе данных перед "
+"генерацией отчетов."
+
+#: ../../ai_tools.rst:271
+msgid "**API Connection Errors**"
+msgstr "**Ошибки API-подключения**"
+
+#: ../../ai_tools.rst:272
+msgid "Verify your API key is correct (for Anthropic and OpenAI)."
+msgstr "Убедитесь, что ваш API-ключ указан верно (для Anthropic и OpenAI)."
+
+#: ../../ai_tools.rst:273
+msgid "Check your internet connection (for cloud providers)."
+msgstr "Проверьте ваше интернет-соединение (для облачных провайдеров)."
+
+#: ../../ai_tools.rst:274
+msgid "For Ollama, ensure the Ollama server is running and accessible."
+msgstr "Для Ollama убедитесь, что сервер Ollama запущен и доступен."
+
+#: ../../ai_tools.rst:275
+msgid ""
+"For Docker Model Runner, ensure Docker Desktop 4.40+ is running with the "
+"model runner enabled."
+msgstr ""
+"Для Docker Model Runner убедитесь, что запущен Docker Desktop версии 4.40+ с "
+"включенным модулем запуска моделей."
+
+#: ../../ai_tools.rst:276
+msgid "Check that your firewall allows connections to the LLM provider's API."
+msgstr ""
+"Убедитесь, что ваш брандмауэр (файрвол) разрешает подключения к API "
+"провайдера LLM."
+
+#: ../../ai_tools.rst:278
+msgid "**Report Generation Fails**"
+msgstr "**Сбой генерации отчета**"
+
+#: ../../ai_tools.rst:279
+msgid "Check the pgAdmin logs for detailed error messages."
+msgstr "Проверьте логи pgAdmin для получения подробных сообщений об ошибках."
+
+#: ../../ai_tools.rst:280
+msgid "Verify the database connection is still active."
+msgstr "Убедитесь, что подключение к базе данных всё ещё активно."
+
+#: ../../ai_tools.rst:281
+msgid "Ensure the selected model is available for your account/subscription."
+msgstr ""
+"Убедитесь, что выбранная модель доступна для вашей учетной записи или "
+"подписки."
