@@ -53,12 +53,15 @@ Download a pre-built set of dependencies from the
 release builds use. Building them from source is possible but not documented
 here: PostgreSQL 17 and later use Meson and pkg-config, which takes a fair
 amount of setting up, and doing it by hand gets you binaries built against
-different libraries from the ones we ship. Each dependency is published as a
-release whose tag ends in *-latest*, so the current build is always at a
-predictable URL rather than buried in a workflow run:
+different libraries from the ones we ship. Two are needed on Windows,
+postgresql-18 and krb5, and each is published as a release of its own:
 
-    https://github.com/pgadmin-org/pgbuild/releases/download/postgresql-18-windows-x86_64-latest/postgresql-18-windows-x86_64-latest.zip
-    https://github.com/pgadmin-org/pgbuild/releases/download/krb5-windows-x86_64-latest/krb5-windows-x86_64-latest.zip
+    https://github.com/pgadmin-org/pgbuild/releases/download/<tag>/<tag>.zip
+
+where `<tag>` is the release tag named in *pkg/pgbuild-deps.lock*, on the
+*postgresql-18-windows-x86_64* and *krb5-windows-x86_64* lines. Use those
+rather than the rolling *-latest* tags, so that what you build locally is what
+CI builds and what we ship.
 
 Extract both into the same directory, such as `C:\Build64`; they unpack into
 *postgresql* and *krb5* subdirectories. PostgreSQL 18 and later are built with
@@ -71,6 +74,40 @@ spot until someone tries to connect.
 The build checks in *.github/workflows* fetch exactly these, through the
 *install-pgbuild-deps* action, so a local build and a CI build are working
 from the same binaries.
+
+### Pinned dependencies
+
+*pkg/pgbuild-deps.lock* records, for every dependency the *install-pgbuild-deps*
+action can fetch on either platform, the pgbuild release tag to download and the
+SHA-256 the archive must hash to. The action checks each download against it and
+refuses to unpack anything that does not match, which matters because a Windows
+installer is Authenticode signed and a macOS appbundle notarised, so without the
+lock write access to pgbuild would be write access to what pgAdmin ships, and
+two builds of the same commit would not contain the same binaries.
+
+When pgbuild publishes a new build of something, the action says so as a
+warning and carries on with the pinned version, since a dependency that
+appeared overnight is not a reason to fail a build. To take the new one, run
+the refresh tool, naming the package so that nothing else is disturbed, then
+read the diff and commit it:
+
+    python tools\refresh_pgbuild_lock.py openssl
+
+That diff, one line per dependency with the version visible in the tag, is the
+record of a change to what we sign, and is the reason to bump dependencies
+through the tool rather than by editing the lock by hand.
+
+A checksum mismatch fails the build, and the message names the archive, the
+expected digest and the one that arrived. Most such tags are per-version and so
+never change, the exception being PostgreSQL, whose tag carries only the major
+and is therefore rebuilt in place on every minor release. Satisfy yourself that
+a rebuild is what happened before re-running, since this is also what would
+catch a tampered dependency on its way into a signed build. An archive with no
+entry in the lock fails the same way, rather than being unpacked unverified.
+
+pgbuild publishes a *.sha256* beside each archive. That is a convenience for
+people, not a source of trust, since whoever rebuilds an archive rebuilds its
+checksum too, so the action verifies against the lock instead.
 
 ## Setting up a dev environment
 

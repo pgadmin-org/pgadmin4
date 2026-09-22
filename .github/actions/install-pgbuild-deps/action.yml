@@ -19,6 +19,29 @@
 # are predictable, so this needs neither a CLI nor authentication, and both
 # curl --fail and Invoke-WebRequest fail on a 404 rather than writing an error
 # page to disk and failing later at the unpack.
+#
+# What gets downloaded is decided by pkg/pgbuild-deps.lock rather than by the
+# rolling -latest tags, whose assets pgbuild replaces in place on every
+# rebuild. Building from those means that what is Authenticode signed on
+# Windows and Developer ID signed and notarised on macOS is whatever pgbuild
+# happened to be publishing that morning, which is neither reproducible nor
+# something anybody reviewed. The lock names a per-version tag and the SHA-256
+# of its archive, and an archive that does not hash to the recorded digest, or
+# that has no lock entry at all, fails the build rather than being unpacked
+# unverified. pgbuild publishes a .sha256 beside each archive, which is
+# deliberately not consulted: whoever rebuilds an archive rebuilds that too, so
+# it is a convenience rather than a source of trust, and the lock is the only
+# thing here that pins anything.
+#
+# Being out of date is a different thing from being wrong, so once an archive
+# has been verified, pgbuild's releases are consulted to see whether a newer
+# build of that dependency exists, and if one does the job carries a warning
+# naming it. It stays a warning, because the build goes on to ship the pinned
+# version and a dependency published overnight is no reason to turn pgAdmin
+# red, and the check is best effort, so an API that will not answer leaves a
+# build whose downloads are already verified alone.
+# tools/refresh_pgbuild_lock.py is what turns such a warning into a reviewed
+# commit.
 
 name: Install pgbuild dependencies
 description: Download and unpack the PostgreSQL build dependencies from pgadmin-org/pgbuild
@@ -50,20 +73,129 @@ runs:
       env:
         PGBUILD_ARCH: ${{ inputs.arch }}
         POSTGRES_MAJOR: ${{ inputs.postgres-major }}
+        # Only so that the out-of-date check does not run into the
+        # unauthenticated rate limit, which is shared with everything else
+        # coming from a hosted runner's address and would leave the warning
+        # firing only sometimes. Nothing else here needs authentication,
+        # pgbuild being public.
+        GH_TOKEN: ${{ github.token }}
       run: |
         set -euo pipefail
         BASE=https://github.com/pgadmin-org/pgbuild/releases/download
+        RELEASES=https://api.github.com/repos/pgadmin-org/pgbuild/releases
+
+        # GITHUB_ACTION_PATH rather than the workspace, so that the lock is
+        # found even where a workflow checks the repository out somewhere
+        # other than the default directory.
+        LOCK="${GITHUB_ACTION_PATH}/../../../pkg/pgbuild-deps.lock"
+
+        # The hosted macOS images have shasum, which comes with the system
+        # perl, but not sha256sum, whereas a Linux-alike self-hosted runner is
+        # the other way about, so take whichever is there.
+        if command -v shasum > /dev/null; then
+            sha256() { shasum -a 256 "$1" | cut -d' ' -f1; }
+        else
+            sha256() { sha256sum "$1" | cut -d' ' -f1; }
+        fi
+
+        # Column 2 of a lock line is the tag to fetch and column 3 the digest
+        # its archive must hash to. Trailing comments are stripped first,
+        # which also rebuilds awk's idea of the fields.
+        lock_field() {
+            awk -v key="$1" -v col="$2" '
+                { sub(/#.*/, "") }
+                $1 == key { print $col; exit }
+            ' "${LOCK}"
+        }
+
+        # pgbuild's tags, newest first, for the out-of-date check below. This
+        # is deliberately best effort: a build whose downloads have been
+        # verified must not fail because GitHub would not say what else has
+        # been published since.
+        TAGS="${RUNNER_TEMP}/pgbuild-tags.txt"
+        : > "${TAGS}"
+
+        if ! curl --fail --silent --location --max-time 30 \
+                -H "Accept: application/vnd.github+json" \
+                ${GH_TOKEN:+-H "Authorization: Bearer ${GH_TOKEN}"} \
+                "${RELEASES}?per_page=100" \
+                | grep -o '"tag_name": *"[^"]*"' \
+                | sed 's/.*"\(.*\)"/\1/' > "${TAGS}"; then
+            echo "Could not list pgbuild's releases, so this build will not"
+            echo "report whether its pinned dependencies are still current."
+        fi
 
         sudo mkdir -p /opt/pgbuild
         sudo chown "$(id -u):$(id -g)" /opt/pgbuild
 
         for PKG in openssl krb5 zstd lz4 "postgresql-${POSTGRES_MAJOR}"; do
-            TAG="${PKG}-macos-${PGBUILD_ARCH}-latest"
-            echo "Fetching ${TAG}..."
+            KEY="${PKG}-macos-${PGBUILD_ARCH}"
+            TAG=$(lock_field "${KEY}" 2)
+            EXPECTED=$(lock_field "${KEY}" 3)
+
+            if [ -z "${TAG}" ] || [ -z "${EXPECTED}" ]; then
+                echo "ERROR: ${KEY} has no entry in pkg/pgbuild-deps.lock"
+                echo
+                echo "An unpinned dependency must not reach a build we sign,"
+                echo "so this is a failure rather than a warning. Add it with:"
+                echo
+                echo "    tools/refresh_pgbuild_lock.py ${PKG%%-*}"
+                echo
+                echo "If this is a PostgreSQL major the lock has never seen,"
+                echo "add it to POSTGRES_MAJORS in that script first."
+                exit 1
+            fi
+
+            ARCHIVE="${TAG}.tar.gz"
+            echo "Fetching ${ARCHIVE}..."
             curl --fail --silent --show-error --location \
-                -o "${RUNNER_TEMP}/${TAG}.tar.gz" \
-                "${BASE}/${TAG}/${TAG}.tar.gz"
-            tar -xzf "${RUNNER_TEMP}/${TAG}.tar.gz" -C /opt/pgbuild
+                -o "${RUNNER_TEMP}/${ARCHIVE}" "${BASE}/${TAG}/${ARCHIVE}"
+
+            ACTUAL=$(sha256 "${RUNNER_TEMP}/${ARCHIVE}")
+
+            if [ "${ACTUAL}" != "${EXPECTED}" ]; then
+                echo "ERROR: checksum mismatch for ${ARCHIVE}"
+                echo "    expected: ${EXPECTED}"
+                echo "    actual:   ${ACTUAL}"
+                echo
+                echo "The bytes behind ${TAG} are not the"
+                echo "ones that were reviewed when the lock was written."
+                echo "Usually that means pgbuild rebuilt the tag in place,"
+                echo "which it does for PostgreSQL whenever a new minor comes"
+                echo "out, that tag carrying only the major. Satisfy yourself"
+                echo "that a rebuild is what happened before re-running,"
+                echo "because this is also the one check standing between a"
+                echo "tampered dependency and a signed pgAdmin build, and then"
+                echo "record the new archive, read the diff and commit it:"
+                echo
+                echo "    tools/refresh_pgbuild_lock.py ${PKG%%-*}"
+                exit 1
+            fi
+
+            echo "Verified ${ARCHIVE} (sha256 ${ACTUAL})"
+
+            # The first tag of the right shape is the newest, the listing
+            # coming back in reverse chronological order. The rolling tag is
+            # skipped because it names no version.
+            NEWEST=""
+
+            while read -r CANDIDATE; do
+                case "${CANDIDATE}" in
+                    *-latest)
+                        continue
+                        ;;
+                    ${PKG}*-macos-${PGBUILD_ARCH})
+                        NEWEST="${CANDIDATE}"
+                        break
+                        ;;
+                esac
+            done < "${TAGS}"
+
+            if [ -n "${NEWEST}" ] && [ "${NEWEST}" != "${TAG}" ]; then
+                echo "::warning title=pgbuild dependency out of date::${KEY} is pinned to ${TAG}, but pgbuild has since published ${NEWEST}. This build is using the pinned version, which is what the lock file is for, and nothing is broken. To move to the newer build, run tools/refresh_pgbuild_lock.py ${PKG%%-*}, review the change to pkg/pgbuild-deps.lock and commit it."
+            fi
+
+            tar -xzf "${RUNNER_TEMP}/${ARCHIVE}" -C /opt/pgbuild
         done
 
         ls -l /opt/pgbuild
@@ -76,20 +208,127 @@ runs:
       env:
         PGBUILD_ARCH: ${{ inputs.arch }}
         POSTGRES_MAJOR: ${{ inputs.postgres-major }}
+        # See the macOS step: this is for the out-of-date check's rate limit
+        # alone, and the downloads themselves need no authentication.
+        GH_TOKEN: ${{ github.token }}
       run: |
         # Without this, Invoke-WebRequest spends most of a 90 MB download
         # rendering a progress bar into a log nobody will read.
         $ProgressPreference = 'SilentlyContinue'
 
+        $base = 'https://github.com/pgadmin-org/pgbuild/releases/download'
+        $releases = 'https://api.github.com/repos/pgadmin-org/pgbuild/releases'
+
+        # GITHUB_ACTION_PATH rather than the workspace, so that the lock is
+        # found even where a workflow checks the repository out somewhere
+        # other than the default directory.
+        $lock = Join-Path $env:GITHUB_ACTION_PATH '..\..\..\pkg\pgbuild-deps.lock'
+
+        # Column 2 of a lock line is the tag to fetch and column 3 the digest
+        # its archive must hash to; anything after a # is a comment.
+        function Get-LockEntry($key) {
+            foreach ($line in Get-Content $lock) {
+                $text = ($line -split '#', 2)[0].Trim()
+
+                if ($text -eq '') { continue }
+
+                $fields = $text -split '\s+'
+
+                if ($fields.Count -eq 3 -and $fields[0] -eq $key) {
+                    return @{ Tag = $fields[1]; Digest = $fields[2] }
+                }
+            }
+
+            return $null
+        }
+
+        # pgbuild's tags, newest first, for the out-of-date check below. This
+        # is deliberately best effort: a build whose downloads have been
+        # verified must not fail because GitHub would not say what else has
+        # been published since.
+        $tags = @()
+
+        try {
+            $headers = @{ 'Accept' = 'application/vnd.github+json' }
+
+            if ($env:GH_TOKEN) {
+                $headers['Authorization'] = "Bearer $env:GH_TOKEN"
+            }
+
+            $tags = (Invoke-RestMethod -Uri "${releases}?per_page=100" -Headers $headers -UseBasicParsing) | ForEach-Object { $_.tag_name }
+        } catch {
+            Write-Output "Could not list pgbuild's releases, so this build will not"
+            Write-Output "report whether its pinned dependencies are still current."
+        }
+
+        # The first tag of the right shape is the newest, the listing coming
+        # back in reverse chronological order. The rolling tag is skipped
+        # because it names no version.
+        function Get-NewestTag($pattern) {
+            foreach ($tag in $tags) {
+                if ($tag -like '*-latest') { continue }
+
+                if ($tag -like $pattern) { return $tag }
+            }
+
+            return $null
+        }
+
         $depsDir = Join-Path $env:RUNNER_TEMP 'pgbuild-deps'
         New-Item -ItemType Directory -Force -Path $depsDir | Out-Null
 
-        $base = 'https://github.com/pgadmin-org/pgbuild/releases/download'
         foreach ($pkg in @("postgresql-$env:POSTGRES_MAJOR", 'krb5')) {
-            $tag = "$pkg-windows-$env:PGBUILD_ARCH-latest"
-            $zip = Join-Path $env:RUNNER_TEMP "$tag.zip"
-            Write-Output "Fetching $tag..."
-            Invoke-WebRequest -Uri "$base/$tag/$tag.zip" -OutFile $zip -UseBasicParsing
+            $key = "$pkg-windows-$env:PGBUILD_ARCH"
+            $pin = Get-LockEntry $key
+            $family = ($pkg -split '-')[0]
+
+            if (-not $pin) {
+                Write-Output "ERROR: $key has no entry in pkg/pgbuild-deps.lock"
+                Write-Output ""
+                Write-Output "An unpinned dependency must not reach a build we sign,"
+                Write-Output "so this is a failure rather than a warning. Add it with:"
+                Write-Output ""
+                Write-Output "    tools/refresh_pgbuild_lock.py $family"
+                Write-Output ""
+                Write-Output "If this is a PostgreSQL major the lock has never seen,"
+                Write-Output "add it to POSTGRES_MAJORS in that script first."
+                exit 1
+            }
+
+            $archive = "$($pin.Tag).zip"
+            $zip = Join-Path $env:RUNNER_TEMP $archive
+            Write-Output "Fetching $archive..."
+            Invoke-WebRequest -Uri "$base/$($pin.Tag)/$archive" -OutFile $zip -UseBasicParsing
+
+            $actual = (Get-FileHash -Algorithm SHA256 -Path $zip).Hash.ToLower()
+
+            if ($actual -ne $pin.Digest) {
+                Write-Output "ERROR: checksum mismatch for $archive"
+                Write-Output "    expected: $($pin.Digest)"
+                Write-Output "    actual:   $actual"
+                Write-Output ""
+                Write-Output "The bytes behind $($pin.Tag) are not the"
+                Write-Output "ones that were reviewed when the lock was written."
+                Write-Output "Usually that means pgbuild rebuilt the tag in place,"
+                Write-Output "which it does for PostgreSQL whenever a new minor comes"
+                Write-Output "out, that tag carrying only the major. Satisfy yourself"
+                Write-Output "that a rebuild is what happened before re-running,"
+                Write-Output "because this is also the one check standing between a"
+                Write-Output "tampered dependency and a signed pgAdmin build, and then"
+                Write-Output "record the new archive, read the diff and commit it:"
+                Write-Output ""
+                Write-Output "    tools/refresh_pgbuild_lock.py $family"
+                exit 1
+            }
+
+            Write-Output "Verified $archive (sha256 $actual)"
+
+            $newest = Get-NewestTag "$pkg*-windows-$env:PGBUILD_ARCH"
+
+            if ($newest -and $newest -ne $pin.Tag) {
+                Write-Output "::warning title=pgbuild dependency out of date::$key is pinned to $($pin.Tag), but pgbuild has since published $newest. This build is using the pinned version, which is what the lock file is for, and nothing is broken. To move to the newer build, run tools/refresh_pgbuild_lock.py $family, review the change to pkg/pgbuild-deps.lock and commit it."
+            }
+
             Expand-Archive -Path $zip -DestinationPath $depsDir -Force
         }
 

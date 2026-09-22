@@ -10,13 +10,15 @@ Either build the sources or get them from macports or similar:
    dependencies from the
    [pgbuild project](https://github.com/pgadmin-org/pgbuild), which is what the
    release builds use. Five are needed, openssl, krb5, zstd, lz4 and
-   postgresql-18, each published as a release whose tag ends in *-latest* so
-   that the current build is always at a predictable URL:
+   postgresql-18, each published as a release of its own:
 
-       https://github.com/pgadmin-org/pgbuild/releases/download/<pkg>-macos-<arch>-latest/<pkg>-macos-<arch>-latest.tar.gz
+       https://github.com/pgadmin-org/pgbuild/releases/download/<tag>/<tag>.tar.gz
 
-   where <arch> is arm64 or x86_64. They unpack into subdirectories of a
-   common prefix, /opt/pgbuild in CI, which is then given to the build as
+   where <tag> is the release tag named in *pkg/pgbuild-deps.lock*, on the
+   *<pkg>-macos-<arch>* line, and <arch> is arm64 or x86_64. Use those rather
+   than the rolling *-latest* tags, so that what you build locally is what CI
+   builds and what we ship. They unpack into subdirectories of a common prefix,
+   /opt/pgbuild in CI, which is then given to the build as
    *PGADMIN_POSTGRES_DIR=/opt/pgbuild/postgresql*.
 
    These matter beyond convenience: they are built against each other with
@@ -33,6 +35,43 @@ Either build the sources or get them from macports or similar:
    Electron:
 
        brew install syft wget
+
+
+## Pinned dependencies
+
+*pkg/pgbuild-deps.lock* records, for every dependency the
+*install-pgbuild-deps* action can fetch on either platform, the pgbuild
+release tag to download and the SHA-256 the archive must hash to. The action
+checks each download against it and refuses to unpack anything that does not
+match, which matters because a macOS appbundle is Developer ID signed and
+notarised and a Windows installer Authenticode signed, so without the lock
+write access to pgbuild would be write access to what pgAdmin ships, and two
+builds of the same commit would not contain the same binaries.
+
+When pgbuild publishes a new build of something, the action says so as a
+warning and carries on with the pinned version, since a dependency that
+appeared overnight is not a reason to fail a build. To take the new one, run
+the refresh tool, naming the package so that nothing else is disturbed, then
+read the diff and commit it:
+
+    tools/refresh_pgbuild_lock.py openssl
+
+That diff, one line per dependency with the version visible in the tag, is
+the record of a change to what we sign, and is the reason to bump
+dependencies through the tool rather than by editing the lock by hand.
+
+A checksum mismatch fails the build, and the message names the archive, the
+expected digest and the one that arrived. Most such tags are per-version and
+so never change, the exception being PostgreSQL, whose tag carries only the
+major and is therefore rebuilt in place on every minor release. Satisfy
+yourself that a rebuild is what happened before re-running, since this is also
+what would catch a tampered dependency on its way into a signed build. An
+archive with no entry in the lock fails the same way, rather than being
+unpacked unverified.
+
+pgbuild publishes a *.sha256* beside each archive. That is a convenience for
+people, not a source of trust, since whoever rebuilds an archive rebuilds its
+checksum too, so the action verifies against the lock instead.
 
 
 ## Building
