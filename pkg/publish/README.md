@@ -32,7 +32,7 @@ which verbs exist.
 | `aptftp.conf` | `apt-ftparchive` settings: Origin, Label, Suite, Description |
 | `CURRENT_MAINTAINER` | The marker the PostgreSQL mirror network expects in each published directory |
 | `pga-publish` | The forced-command wrapper |
-| `authorized_keys.procyon`, `authorized_keys.paxsor` | Annotated templates for the two servers |
+| `authorized_keys.staging`, `authorized_keys.download` | Annotated templates |
 | `selftest.sh` | Exercises the wrapper's parser without touching anything |
 
 The three scripts work standalone. Rebuilding a repository by hand after
@@ -84,23 +84,23 @@ account to be able to write it.
 
 ## Access
 
-Three key pairs. `roadie-publish` and `roadie-upload` belong to the runner;
-`paxsor-pull` belongs to the download server, which uses it to fetch staged
-content from the staging server during publication. Its private half must be at
-`~pgaupload/.ssh/id_ed25519_paxsor_pull` on the download server, which is
-where `pga-publish` looks for it; the name in the key management system is
-only a label, and the path is what matters.
+Three key pairs. A publishing key and an upload key belong to the runner; a
+pull key belongs to the download server, which uses it to fetch staged content
+from the staging server during publication. The pull key's private half must be
+at `~pgaupload/.ssh/id_ed25519_pull` on the download server, which is where
+`pga-publish` looks for it; the name in the key management system is only a
+label, and the path is what matters.
 
-`authorized_keys.procyon` and `authorized_keys.paxsor` are annotated templates:
-substitute the addresses and the public keys, and read the annotations before
-changing an option, since each is there for a reason that is easier to write
-down than to rediscover.
+`authorized_keys.staging` and `authorized_keys.download` are annotated
+templates: substitute the addresses and the public keys, and read the
+annotations before changing an option, since each is there for a reason that is
+easier to write down than to rediscover.
 
-The private keys live on the runner's filesystem, at `~/.ssh/roadie-publish`
-and `~/.ssh/roadie-upload`, and the workflow references them by path rather
-than carrying copies in GitHub's secret store: they are already on the machine,
-and a second copy would mean a second place to rotate and a second place to
-leak from. The runner also needs the two servers in its `~/.ssh/known_hosts`,
+The runner's two private keys live on its own filesystem, and the workflows
+reference them by path, taken from the `PUBLISH_SSH_KEY` and `UPLOAD_SSH_KEY`
+repository variables, rather than carrying copies in GitHub's secret store:
+they are already on the machine, and a second copy would mean a second place to
+rotate and a second place to leak from. The runner also needs the two servers in its `~/.ssh/known_hosts`,
 since host key checking is on and there is nobody to answer a prompt.
 
 The trade-off is that the boundary moves. An environment secret is gated by a

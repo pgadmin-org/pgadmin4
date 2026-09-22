@@ -7,8 +7,8 @@
 # WHY THIS FILE EXISTS, AND WHY IT IS SHAPED THE WAY IT IS
 # ---------------------------------------------------------------------------
 #
-# The GitHub Actions runner (roadie) holds an SSH private key that can reach
-# procyon and paxsor. The GPG signing keys, the live download tree and the web
+# The GitHub Actions runner holds an SSH private key that can reach
+# both servers. The GPG signing keys, the live download tree and the web
 # root all live on those two servers, so a shell on either of them is, for
 # practical purposes, the ability to ship a signed package of somebody else's
 # choosing to every pgAdmin user. The runner is the weakest link in that chain:
@@ -18,7 +18,7 @@
 # This wrapper is therefore the whole security boundary. It is named in the
 # authorized_keys `command=` option, so sshd runs it *instead of* whatever the
 # client asked for, and the client's request text is handed to us in the
-# environment variable SSH_ORIGINAL_COMMAND. A compromise of roadie should
+# environment variable SSH_ORIGINAL_COMMAND. A compromise of the runner should
 # yield the ability to run the publishing steps, and nothing else.
 #
 # The rules below are load-bearing. If you are reading this because you want to
@@ -86,19 +86,19 @@ VERSION = "1.0"
 # ---------------------------------------------------------------------------
 #
 # One script, two roles. The role is read from a file rather than compiled in,
-# so that procyon and paxsor run byte-identical copies of the wrapper and a
+# so that both servers run byte-identical copies of the wrapper and a
 # review of one is a review of both. The file contains exactly one word.
 #
 ROLE_FILE = "/etc/pga-publish.role"
-ROLE_STAGING = "staging"        # procyon, developer.pgadmin.org
-ROLE_DOWNLOAD = "download"      # paxsor, ftp.pgadmin.org
+ROLE_STAGING = "staging"        # developer.pgadmin.org
+ROLE_DOWNLOAD = "download"      # ftp.pgadmin.org
 VALID_ROLES = (ROLE_STAGING, ROLE_DOWNLOAD)
 
 # Filesystem roots. Nothing this script touches lives outside these, and every
 # path handed to a child process is built from one of them plus components that
 # have been through assert_component().
-STAGING_ROOT = "/var/www/html/builds"           # procyon
-FTP_ROOT = "/var/ftp/pgadmin4"                  # paxsor
+STAGING_ROOT = "/var/www/html/builds"           # the staging server
+FTP_ROOT = "/var/ftp/pgadmin4"                  # the download server
 SNAPSHOT_ROOT = os.path.join(FTP_ROOT, "snapshots")
 SNAPSHOT_KEEP = 5                               # as pgadmin4-all-snapshot kept
 TOOLS_DIR = "/var/www/pgaweb/tools"             # the pgaweb website scripts
@@ -114,7 +114,8 @@ BIN_SSH = "/usr/bin/ssh"
 BIN_PYTHON = "/usr/bin/python3"
 
 # The signing identity. Hard-coded on purpose: the client never says which key
-# to sign with, so a compromise of roadie cannot ask for a signature from some
+# to sign with, so a compromise of the runner cannot ask for a signature from
+# some
 # other secret key that happens to be in the keyring.
 GPG_KEY = "packages@pgadmin.org"
 GNUPGHOME = os.path.expanduser("~/.gnupg")
@@ -163,8 +164,9 @@ YUM_TREES = tuple("yum/%s/%s-%s-%s" % (family, name, version, arch)
 CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
 
 # How the download server pulls from the staging server. The source host is a
-# constant here; the client never names a host. The key on paxsor is confined
-# on the procyon side by rrsync in read-only mode, so the worst this edge can do
+# constant here; the client never names a host. The key the download server
+# uses is confined on the staging side by rrsync in read-only mode, so the
+# worst this edge can do
 # is read a tree that developer.pgadmin.org already publishes over HTTP anyway.
 # Which host the download server pulls staged content from. Read from the
 # server rather than written here, for two reasons.
@@ -179,7 +181,7 @@ CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
 # workflow variable would put this on the wrong side of that line.
 PULL_HOST_CONF = "/etc/pga-publish.pull-host"
 PULL_USER = "pgaupload"
-PULL_KEY = os.path.expanduser("~/.ssh/id_ed25519_paxsor_pull")
+PULL_KEY = os.path.expanduser("~/.ssh/id_ed25519_pull")
 
 # One publishing operation at a time. Two concurrent workflow runs indexing the
 # same repository would produce a Release file describing packages that are half
@@ -601,10 +603,10 @@ def sign_packages(root):
 
 
 def pull_from_staging(datestamp, src_subpath, dest):
-    """Copy one subdirectory of a staging build from procyon to paxsor.
+    """Copy one subdirectory of a staging build to the download server.
 
     The remote path is relative because the key used here is confined on the
-    procyon side by `rrsync -ro /var/www/html/builds`, so rrsync resolves it
+    staging side by `rrsync -ro /var/www/html/builds`, so rrsync resolves it
     against that root and refuses anything that climbs out. That is the real
     control; the validation on this side is the belt to its braces.
 
@@ -706,13 +708,14 @@ def acquire_lock():
 
 
 # ---------------------------------------------------------------------------
-# Verb handlers: staging role (procyon)
+# Verb handlers: staging role (the staging server)
 # ---------------------------------------------------------------------------
 
 def index_tree(root, url, kind):
     """Index, sign and document one kind of repository inside a build tree.
 
-    Used for both a staging build on procyon and a snapshot on the download
+    Used for both a staging build on the staging server and a snapshot on the
+    download
     server, which differ in where they live and in nothing else.
     """
     if kind == "apt":
@@ -833,7 +836,7 @@ def cmd_stage_sign(args, raw):
 
 
 # ---------------------------------------------------------------------------
-# Verb handlers: download role (paxsor)
+# Verb handlers: download role (the download server)
 # ---------------------------------------------------------------------------
 
 def cmd_release_exists(args, raw):
@@ -1227,7 +1230,7 @@ def cmd_hello(args, raw):
 VERBS = {
     "hello":            (None, 0, 0, cmd_hello),
 
-    # procyon
+    # the staging server
     "stage-create":     (ROLE_STAGING, 1, 1, cmd_stage_create),
     "stage-list":       (ROLE_STAGING, 0, 0, cmd_stage_list),
     "stage-exists":     (ROLE_STAGING, 1, 1, cmd_stage_exists),
@@ -1235,7 +1238,7 @@ VERBS = {
     "stage-index-apt":  (ROLE_STAGING, 1, 1, cmd_stage_index_apt),
     "stage-index-yum":  (ROLE_STAGING, 1, 1, cmd_stage_index_yum),
 
-    # paxsor
+    # the download server
     "release-exists":   (ROLE_DOWNLOAD, 1, 1, cmd_release_exists),
     "release-create":   (ROLE_DOWNLOAD, 1, 1, cmd_release_create),
     "release-fetch":    (ROLE_DOWNLOAD, 2, 2, cmd_release_fetch),

@@ -153,10 +153,10 @@ jobs:
   assemble:
     needs: [location, deb, rpm, tarball, wheel, docs, repo-rpm, macos, windows]
 
-    # roadie, not a hosted runner. This job assembles a tree of several
+    # the runner, not a hosted runner. This job assembles a tree of several
     # hundred megabytes and then, when publishing, sends it to the development
     # server; splitting the two meant uploading that tree as an artifact and
-    # immediately downloading it again on roadie, having first queued for a
+    # immediately downloading it again on the runner, having first queued for a
     # hosted runner behind whatever else the organisation was building.
     runs-on: [self-hosted, roadie]
 
@@ -191,7 +191,8 @@ jobs:
           path: artefacts
 
       # The layout is the one the publishing scripts and the download site
-      # expect, and is what the wrapper's stage-create verb creates on procyon.
+      # expect, and is what the wrapper's stage-create verb creates on the
+      # staging server.
       # The Debian architecture comes from the package filename rather than a
       # table, since dpkg already encodes it there; the codename does not, so
       # that mapping is explicit.
@@ -305,8 +306,8 @@ jobs:
       - name: Check the keys are present
         if: inputs.publish
         env:
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
-          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/pga-upload' }}
         run: |
           set -euo pipefail
           for TOOL in ssh rsync; do
@@ -341,8 +342,8 @@ jobs:
         env:
           STAGING: ${{ vars.STAGING_SSH_TARGET }}
           LOCATION: ${{ inputs.location }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
-          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/roadie-upload' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+          UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/pga-upload' }}
         run: |
           set -euo pipefail
           if [ -z "${STAGING}" ]; then

@@ -1,4 +1,4 @@
-# ~pgaupload/.ssh/authorized_keys on procyon (developer.pgadmin.org)
+# ~pgaupload/.ssh/authorized_keys on the staging server (developer.pgadmin.org)
 #
 # Two keys, two jobs, two blast radii. Neither of them can give you a shell.
 #
@@ -7,8 +7,8 @@
 # secret, but publishing the exact shape of the firewall is free reconnaissance
 # for somebody who has not earned it.
 #
-#   <ROADIE-IPV4>, <ROADIE-IPV6>   the runner's addresses
-#   <PAXSOR-IPV4>                  the download server's address
+#   <RUNNER-IPV4>, <RUNNER-IPV6>   the runner's addresses
+#   <DOWNLOAD-IPV4>                  the download server's address
 #   <...KEY...>                    the public key, one line, no line breaks
 #
 # Options used, and why:
@@ -40,11 +40,11 @@
 # ---------------------------------------------------------------------------
 # Key 1: publishing. Verbs only. No file content passes through this key.
 # ---------------------------------------------------------------------------
-# What a holder of this key can do on procyon: create a staging directory from
+# What a holder of this key can do here: create a staging directory from
 # a fixed template, list staging directories, and rebuild and sign the apt and
 # yum metadata inside one. That is the entire capability set; it is enumerated
 # in the VERBS table in pga-publish, on one screen, on purpose.
-restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@roadie
+restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
 
 # ---------------------------------------------------------------------------
 # Key 2: upload. Bytes only. No verbs, no metadata, no signing.
@@ -70,20 +70,23 @@ restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/local/sbin/pga-publish
 # The trailing path is the root the client is confined to. Every path the
 # client names is resolved relative to it, and rrsync refuses anything that
 # climbs out, so the client never sees an absolute path at all.
-restrict,from="<ROADIE-IPV4>,<ROADIE-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/www/html/builds" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@roadie
+restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/www/html/builds" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner
 
 # ---------------------------------------------------------------------------
 # Key 3: the download server's read-only pull.
 # ---------------------------------------------------------------------------
-# paxsor fetches staging content from procyon during publication, so it holds a
+# The download server fetches staging content from here during publication, so
+# it holds a
 # key here. It is read-only and confined to the same staging root, which is a
 # tree that developer.pgadmin.org already serves over plain HTTP; this edge
-# therefore grants paxsor nothing it could not have fetched with curl, and it
+# therefore grants that server nothing it could not have fetched with curl,
+# and it
 # is worth saying so explicitly in review, because "the download server can SSH
 # to the staging server" sounds worse than it is.
 #
-# If that reasoning is ever rejected, the alternative is for roadie to pull the
+# If that reasoning is ever rejected, the alternative is for the runner to pull
+# the
 # content down and push it up again over its own two keys, at the cost of
 # moving every byte twice. The wrapper would lose release-fetch,
 # packages-fetch and snapshot-fetch, and gain nothing else.
-restrict,from="<PAXSOR-IPV4>",command="/usr/bin/rrsync -ro /var/www/html/builds" ssh-ed25519 <...PULL-KEY...> pga-pull@paxsor
+restrict,from="<DOWNLOAD-IPV4>",command="/usr/bin/rrsync -ro /var/www/html/builds" ssh-ed25519 <...PULL-KEY...> pga-pull@download

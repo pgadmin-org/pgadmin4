@@ -65,7 +65,7 @@ check_ssh() {
     fi
 }
 
-echo "== accepted requests: staging role (procyon) =="
+echo "== accepted requests: staging role (the staging server) =="
 check 0 staging "hello"                         hello
 check 0 staging "stage-create"                  stage-create 2026-09-17
 check 0 staging "stage-create with -N suffix"   stage-create 2026-09-17-2
@@ -75,7 +75,7 @@ check 0 staging "stage-index-apt"               stage-index-apt 2026-09-17
 check 0 staging "stage-index-yum"               stage-index-yum 2026-09-17
 
 echo
-echo "== accepted requests: download role (paxsor) =="
+echo "== accepted requests: download role (the download server) =="
 check 0 download "snapshot-create"               snapshot-create 2026-09-17
 check 0 download "snapshot-sign"                 snapshot-sign 2026-09-17
 check 0 download "snapshot-index-apt"            snapshot-index-apt 2026-09-17

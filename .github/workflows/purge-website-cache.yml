@@ -29,7 +29,7 @@ jobs:
       - name: Purge
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
           [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }

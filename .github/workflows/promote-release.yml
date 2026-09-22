@@ -83,7 +83,7 @@ jobs:
           LOCATION: ${{ inputs.location }}
           CONFIRM: ${{ inputs.confirm }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
 
@@ -117,7 +117,7 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
           publish() {
@@ -136,7 +136,7 @@ jobs:
           VERSION: ${{ inputs.version }}
           LOCATION: ${{ inputs.location }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
           publish() {
@@ -163,7 +163,7 @@ jobs:
           VERSION: ${{ inputs.version }}
           LOCATION: ${{ inputs.location }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
           publish() {
@@ -198,7 +198,7 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
           publish() {
@@ -218,7 +218,7 @@ jobs:
         if: ${{ inputs.scope == 'everything' }}
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/roadie-publish' }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
         run: |
           set -euo pipefail
           # Last, and on its own, because it is the slowest step and the one
@@ -245,7 +245,8 @@ jobs:
               echo "hourly sync."
           fi
 
-  # The registries, which need none of the publishing keys and none of roadie:
+  # The registries, which need none of the publishing keys and no self-hosted
+  # runner:
   # nothing here touches our servers. Separate so that a Docker Hub outage
   # cannot leave a half-finished promotion on the download server, and so the
   # runner holding the SSH keys never handles registry credentials.
