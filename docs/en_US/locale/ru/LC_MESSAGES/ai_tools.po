@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../ai_tools.rst:5
 msgid "`AI Reports`:index:"
-msgstr "Поль`Отчеты ИИ`:index:"
+msgstr "`Отчеты ИИ`:index:"
 
 #: ../../ai_tools.rst:7
 msgid ""
