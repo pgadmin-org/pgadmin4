@@ -45,6 +45,7 @@ currently names, give the tag outright:
 import argparse
 import hashlib
 import json
+import re
 import os
 import sys
 import urllib.error
@@ -209,15 +210,40 @@ def manifest_versions():
             for package in manifest['packages']}
 
 
+def postgres_version(versions, major):
+    """The full PostgreSQL version pgbuild builds for one major.
+
+    The manifest lists every supported major's current version, and pgbuild
+    tags the release with the full one, so 18 has to be resolved to 18.6
+    rather than guessed at.
+    """
+    # The manifest records PostgreSQL's supported versions as one string
+    # holding a list, which is what the workflows hand to fromJSON, so the
+    # versions are picked out of it rather than indexed.
+    listed = versions.get('postgresql') or ''
+
+    if isinstance(listed, str):
+        listed = re.findall(r'\d+(?:\.\d+)+', listed)
+
+    for version in listed:
+        if str(version).split('.')[0] == str(major):
+            return version
+
+    raise SystemExit(
+        'pgbuild\'s manifest lists no PostgreSQL %s, so there is no version '
+        'to pin to' % major)
+
+
 def tag_for(entry, versions):
     """Return the release tag to pin one dependency to.
 
-    PostgreSQL is tagged by major rather than by the full version, so that
-    there is one tag per supported major; everything else carries the
-    upstream version pgbuild's manifest names.
+    Everything, PostgreSQL included, is tagged with the full upstream
+    version pgbuild's manifest names, so a PostgreSQL major has to be
+    resolved to the version built for it: the rolling tag says 18, whilst
+    the release that never changes says 18.6.
     """
     if entry['package'] == 'postgresql':
-        version = entry['major']
+        version = postgres_version(versions, entry['major'])
     else:
         version = versions.get(entry['package'])
 
@@ -264,27 +290,19 @@ def download_digest(tag, platform):
 def digest_for(entry, tag):
     """Hash the archive a dependency is pinned to.
 
-    Whilst pgbuild is still rolling out its per-version releases some tags
-    do not exist yet, and since the archive in one is the same archive the
-    corresponding -latest release carries, the digest can be taken from
-    there and stays correct once the per-version release appears. That
-    fallback is noisy because it is temporary, and it should be deleted
-    along with this docstring once pgbuild has published the lot.
+    A tag that does not exist is an error rather than something to work
+    around: the whole point of pinning is that the lock names an archive
+    which will still be there months from now, so a missing one means
+    pgbuild has not published that version and the lock would be recording
+    something nobody can fetch.
     """
     digest = download_digest(tag, entry['platform'])
 
-    if digest is not None:
-        return digest
-
-    rolling = '%s-latest' % entry['key']
-    print('WARNING: %s does not exist yet, so the digest comes from %s, '
-          'which pgbuild publishes the same archive in'
-          % (tag, rolling))
-
-    digest = download_digest(rolling, entry['platform'])
-
     if digest is None:
-        raise SystemExit('Neither %s nor %s exists' % (tag, rolling))
+        raise SystemExit(
+            '%s does not exist in pgbuild, so there is nothing to pin. If '
+            'its build has not finished yet, wait for it and try again.'
+            % tag)
 
     return digest
 

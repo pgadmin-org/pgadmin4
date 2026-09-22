@@ -41,19 +41,19 @@
 # rather than by hand.
 
 # macOS, arm64
-krb5-macos-arm64              krb5-1.22.2-macos-arm64       dcb562cd627bcf0ce84c80e76c101687ee3f9ab9ab256001ae6c3ac6b4527ea9
-lz4-macos-arm64               lz4-1.10.0-macos-arm64        6731febb7e20772dc5afe5f24918cb401da4ab53ee7439c82ccfdeebaa52d8f5
-openssl-macos-arm64           openssl-3.5.8-macos-arm64     f7f4ed5f8c6d59683998b644fc7d8b06449d7a132690c697062c29495e426ba2
-postgresql-18-macos-arm64     postgresql-18-macos-arm64     25e264610a33f0db50865a2ccaed409b00f2f54aa560541c88703438ef08ddbe
-zstd-macos-arm64              zstd-1.5.7-macos-arm64        f6710788a428cd63503c385ab8609e86b28e8b403123a170fd889a6a0c57f3ae
+krb5-macos-arm64              krb5-1.22.2-macos-arm64         d61ec76f7adc79b915bb88f55bc4755db2edb5f215431aff01959e0fe38214ea
+lz4-macos-arm64               lz4-1.10.0-macos-arm64          50824e82cf864469b7d5e01d46896db07a48c4b143d7d4edb4bd7355ea5ebe29
+openssl-macos-arm64           openssl-3.5.8-macos-arm64       e319fda192735b7b4f7b5742388b9b2264c6e94078f79a9dbb856d2cadcb0c4c
+postgresql-18-macos-arm64     postgresql-18.6-macos-arm64     b21232335b76b3cb828839f98572da4298e19cad4a69b31f7b234d218e149c28
+zstd-macos-arm64              zstd-1.5.7-macos-arm64          6703acb18b9db260df484828d0e823017742be82c87cdd3d42fde85efdd232ad
 
 # macOS, x86_64
-krb5-macos-x86_64             krb5-1.22.2-macos-x86_64      a5dd2a76f19aa023d3285543d7a43b4141e167a3f7b1032dcf182f600540176f
-lz4-macos-x86_64              lz4-1.10.0-macos-x86_64       4df8131532d4036c247f17ee9b52d1754b6728f21eba314f28b156e7766d278d
-openssl-macos-x86_64          openssl-3.5.8-macos-x86_64    d5aec1f363cb5ef823c56e1caf0cb53be53a83b62f86b5032e250b681f4bb46a
-postgresql-18-macos-x86_64    postgresql-18-macos-x86_64    849c77974b4ebfe24483b04fe06e9c96b3aab15115fd17a355fbef367b859070
-zstd-macos-x86_64             zstd-1.5.7-macos-x86_64       838e40cc74ba1ffc7e1be66cd14d1c70a74d64205e9240deb2ccf886215a8bf2
+krb5-macos-x86_64             krb5-1.22.2-macos-x86_64        40e123c1a85dba06b1d808cecf6c1e5ac2818fb8a722122400a1ffac9494651f
+lz4-macos-x86_64              lz4-1.10.0-macos-x86_64         ff1e23e0150533abf0f81c1341e7dab8e7e18dd51158084ae4ac9b847be6df7c
+openssl-macos-x86_64          openssl-3.5.8-macos-x86_64      e5a947e1ddecd9a75c9c0f8f3b92d7de74958d6a3bbcea99c509fb4900dad431
+postgresql-18-macos-x86_64    postgresql-18.6-macos-x86_64    b36aa6afe7515806aa9724ae6ceebed214b1fec9c2849609598b19c4ecae893e
+zstd-macos-x86_64             zstd-1.5.7-macos-x86_64         77634c1dafe07882d63ace5e13e4f59f583b4763e04076611515335fe1168a41
 
 # Windows, x86_64
-krb5-windows-x86_64           krb5-1.22.2-windows-x86_64    dca2a386c641086a70b549c8ae43b19b570af0eb65f1e1bb546361f9e57e2a6c
-postgresql-18-windows-x86_64  postgresql-18-windows-x86_64  657be0adac82544895d915fafb9f76b1e01347ce3bdede999f62b478122be66b
+krb5-windows-x86_64           krb5-1.22.2-windows-x86_64      7557cf16faf8af1ee450ef211ac8f74a513914d722c776a3645d996e7cd08dfc
+postgresql-18-windows-x86_64  postgresql-18.6-windows-x86_64  4eba1f86561238348a39040809f7b1d08f434ef110c2ffe37e291d63c0407d67
