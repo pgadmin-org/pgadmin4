@@ -292,8 +292,18 @@ jobs:
           # it ships as a tarball rather than as the directory of files the
           # build produces.
           if [ -d artefacts/pgadmin4-html-build-output ]; then
+              # Under a pgadmin4-<version>-docs/ directory, not flat. The
+              # web server's load-docs.sh unpacks this into the docs root
+              # and then hands docloader that directory name, so a flat
+              # archive would scatter several hundred files across the root
+              # and then fail on a directory that does not exist. Every
+              # released tarball has carried that top level; the tar here
+              # had not.
+              DOCS_DIR="pgadmin4-${VERSION}-docs"
+              rm -rf "artefacts/${DOCS_DIR}"
+              mv artefacts/pgadmin4-html-build-output "artefacts/${DOCS_DIR}"
               tar -czf "${STAGE}/pgadmin4-${VERSION}-docs.tar.gz" \
-                  -C artefacts/pgadmin4-html-build-output .
+                  -C artefacts "${DOCS_DIR}"
           fi
 
           # At the root of yum/, beside the family directories, which is
