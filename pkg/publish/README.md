@@ -77,9 +77,10 @@ can name:
 echo '<staging server>' > /etc/pga-publish.pull-host
 ```
 
-Also on the download server, move `aptftp.conf` out of `~pgaupload`: it is an
-input to what gets indexed and therefore to what gets signed, and nothing
-needs the publishing account to be able to write it.
+`aptftp.conf` is installed with the scripts above rather than kept in
+`~pgaupload`, which is where it lived before this: it is an input to what gets
+indexed and therefore to what gets signed, and nothing needs the publishing
+account to be able to write it.
 
 ## Access
 
