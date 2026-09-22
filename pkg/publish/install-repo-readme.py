@@ -101,7 +101,8 @@ def archive_keys(object_list=None):
 def parse_apt(key):
     """pgadmin4/apt/<codename>/dists/pgadmin4/main/binary-<arch>/<file>"""
     parts = key.split("/")
-    if len(parts) != 8 or parts[1] != "apt" or not parts[6].startswith("binary-"):
+    if (len(parts) != 8 or parts[1] != "apt" or
+            not parts[6].startswith("binary-")):
         return None
     match = DEB.match(parts[7])
     if not match or match.group("package") not in VERSIONED_PACKAGES:
@@ -133,7 +134,8 @@ def collect(keys, kind):
         if not parsed:
             continue
         platform, arch, version = parsed
-        entry = found.setdefault(platform, {"arches": set(), "versions": set()})
+        entry = found.setdefault(platform,
+                                 {"arches": set(), "versions": set()})
         entry["arches"].add(arch)
         entry["versions"].add(upstream_version(version))
     return found
@@ -193,8 +195,8 @@ def render_table(headings, rows):
                                  else text.ljust(width)))
         return "|" + "|".join(out) + "|"
 
-    return "\n".join([rule, line(headings, False), rule]
-                     + [line(r, True) for r in rows] + [rule])
+    return "\n".join([rule, line(headings, False), rule] +
+                     [line(r, True) for r in rows] + [rule])
 
 
 def main():
@@ -204,7 +206,8 @@ def main():
     parser.add_argument("-r", "--root", default="/var/ftp/pgadmin4",
                         help="the tree holding apt/ and yum/")
     parser.add_argument("-u", "--base-url",
-                        default="https://ftp.postgresql.org/pub/pgadmin/pgadmin4",
+                        default="https://ftp.postgresql.org/pub/pgadmin"
+                                "/pgadmin4",
                         help="what the instructions tell users to fetch from")
     parser.add_argument("--no-archive", action="store_true",
                         help="list only what this tree holds, with no release "
@@ -225,7 +228,8 @@ def main():
     if args.no_archive:
         supported = render_table(
             ["Platform", "Architecture"],
-            [[p, " ".join(sorted(present[p]))] for p in sorted(present, key=platform_key)])
+            [[p, " ".join(sorted(present[p]))]
+             for p in sorted(present, key=platform_key)])
     else:
         history = collect(archive_keys(args.object_list), args.kind)
         for platform in present:
@@ -252,7 +256,8 @@ def main():
     # A snapshot or pre-release tree has no history to show, so the whole
     # section goes rather than being left saying "(none)".
     if args.no_archive:
-        text = re.sub(r"@ARCHIVE_SECTION_START@\n.*?@ARCHIVE_SECTION_END@\n\n?",
+        text = re.sub(r"@ARCHIVE_SECTION_START@\n"
+                      r".*?@ARCHIVE_SECTION_END@\n\n?",
                       "", text, flags=re.S)
     else:
         text = text.replace("@ARCHIVE_SECTION_START@\n", "")
@@ -267,8 +272,8 @@ def main():
         for name, placeholder in (("fedora", "@FEDORA_REPO_RPM@"),
                                   ("redhat", "@REDHAT_REPO_RPM@")):
             matches = sorted(f for f in os.listdir(tree)
-                             if f.startswith("pgadmin4-%s-repo-" % name)
-                             and f.endswith(".noarch.rpm"))
+                             if f.startswith("pgadmin4-%s-repo-" % name) and
+                             f.endswith(".noarch.rpm"))
             if not matches:
                 sys.exit("Could not find the %s repository RPM in %s"
                          % (name, tree))
