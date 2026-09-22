@@ -88,10 +88,47 @@ sleeps briefly first.
 ### The PIN helper
 
 `certum-pin-handler.ahk`, next to this file, is the AutoHotkey v2 script that
-watches for the card's PIN dialog and answers it. Compile it with Ahk2Exe, or
-run it under AutoHotkey directly, and start it in the same session, by the same
-mechanism, at login. The script's own comments carry the detail; what matters
-here is where the PIN lives and what happens when it does not.
+watches for the card's PIN dialog and answers it. The script's own comments
+carry the detail of how it works; what matters here is getting it onto the
+machine, started at login, and given the PIN.
+
+Install AutoHotkey v2 and copy the script out of a checkout to a path of its
+own, rather than running it from the checkout, since the runner deletes and
+recreates its workspace:
+
+```powershell
+choco install autohotkey -y
+New-Item -ItemType Directory -Force -Path C:\pgadmin-signing | Out-Null
+Copy-Item C:\actions-runner\_work\pgadmin4\pgadmin4\pkg\win32\certum-pin-handler.ahk `
+          C:\pgadmin-signing\
+```
+
+Then start it at login, from the same Startup folder as the runner, so that
+both land in the interactive session:
+
+```powershell
+$startup = [Environment]::GetFolderPath('Startup')
+$s = (New-Object -ComObject WScript.Shell).CreateShortcut("$startup\certum-pin-handler.lnk")
+$s.TargetPath       = 'C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe'
+$s.Arguments        = 'C:\pgadmin-signing\certum-pin-handler.ahk'
+$s.WorkingDirectory = 'C:\pgadmin-signing'
+$s.Save()
+```
+
+Compiling it with Ahk2Exe and pointing the shortcut at the resulting `.exe`
+works equally well and is what the buildfarm did; the script reads the PIN from
+a file either way, so nothing secret ends up in the executable. If you use Task
+Scheduler instead of the Startup folder, choose "Run only when user is logged
+on", for the reason given above.
+
+To check it is running, look for the AutoHotkey icon in the notification area,
+or read the log at `%LOCALAPPDATA%\pgAdmin\certum-pin-handler.log`, which
+records one line at startup naming the PIN file it read.
+
+Updating the script means copying the new version over and restarting it,
+either by logging the build user out and in or by ending the AutoHotkey process
+and running the shortcut again. Do that between builds: restarting it whilst a
+signature is waiting leaves the prompt unanswered.
 
 The PIN is read at startup from a file rather than being held in the script,
 so that neither this repository nor the compiled executable contains it:
