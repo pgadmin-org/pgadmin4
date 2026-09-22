@@ -2,7 +2,7 @@
 # pgadmin4-windows-x64-snapshot job.
 #
 # This is the one workflow that cannot use a hosted runner. The certificate is
-# on a Certum hardware token plugged into the machine in Dave's rack, reached
+# on a Certum hardware token plugged into a machine we host ourselves, reached
 # through the Windows machine certificate store, and a PIN handler answers the
 # prompt from the interactive desktop session. None of that can be moved to a
 # runner GitHub provides.
