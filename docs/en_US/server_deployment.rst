@@ -195,7 +195,7 @@ the Python Wheel (you may need to adjust the path to suit your installation):
     gunicorn  --bind 0.0.0.0:80 \
               --workers=1 \
               --threads=25 \
-              --chdir /usr/lib/python3.7/dist-packages/pgadmin4 \
+              --chdir /usr/lib/python3.13/dist-packages/pgadmin4 \
               pgAdmin4:app
 
 Standalone uWSGI Configuration
@@ -210,8 +210,47 @@ the Python Wheel (you may need to adjust the path to suit your installation):
     uwsgi --http-socket 0.0.0.0:80 \
           --processes 1 \
           --threads 25 \
-          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --chdir /usr/lib/python3.13/dist-packages/pgadmin4/ \
           --mount /=pgAdmin4:app
+
+.. _sub_directory_hosting:
+
+Hosting in a Sub-Directory
+--------------------------
+
+Any of the reverse proxy configurations described below can host pgAdmin in a
+sub-directory of the server (``/pgadmin4`` in each of the examples) rather than
+at its root, but doing so requires that the ``SCRIPT_NAME`` environment
+variable is set for the Gunicorn or uWSGI process, whichever is in use.
+
+pgAdmin reads ``SCRIPT_NAME`` from the process environment once, at startup,
+and uses it to set ``APPLICATION_ROOT`` and ``SESSION_COOKIE_PATH``, so that
+URLs, redirects (including the one issued after a successful login) and
+session cookies are all generated relative to the sub-directory rather than to
+the root of the server. Without it, a successful login redirects to the root of
+the server, which typically presents to the user as a redirect loop.
+
+This is a separate mechanism from the per-request ``X-Script-Name`` header that
+the NGINX Gunicorn example below sets, and neither substitutes for the other.
+It is also separate from uWSGI's ``--manage-script-name``, which only affects
+the per-request WSGI environment that uWSGI builds; the uWSGI examples below
+set ``SCRIPT_NAME`` alongside it so that both mechanisms agree, and so that the
+session cookie is confined to the sub-directory rather than being issued for
+the root of the server.
+
+.. _proxy_headers:
+
+Reverse Proxy Headers
+---------------------
+
+pgAdmin honours the ``X-Script-Name`` and ``X-Scheme`` request headers
+unconditionally, unlike the ``X-Forwarded-*`` headers, which are trusted only
+to the depth configured by the ``PROXY_X_*_COUNT`` settings. A client that
+supplied its own ``X-Script-Name`` could therefore change every URL pgAdmin
+generates, so the reverse proxy must always either overwrite both headers with
+values of its own or remove them outright, rather than passing on whatever the
+client sent. Each of the examples below does one or the other, and a proxy
+configuration not derived from them should do the same.
 
 NGINX Configuration with Gunicorn
 ---------------------------------
@@ -228,7 +267,7 @@ command similar to:
     gunicorn --bind unix:/tmp/pgadmin4.sock \
              --workers=1 \
              --threads=25 \
-             --chdir /usr/lib/python3.7/dist-packages/pgadmin4 \
+             --chdir /usr/lib/python3.13/dist-packages/pgadmin4 \
              pgAdmin4:app
 
 And configure NGINX:
@@ -238,11 +277,24 @@ And configure NGINX:
     location / {
         include proxy_params;
         proxy_pass http://unix:/tmp/pgadmin4.sock;
+        proxy_set_header X-Script-Name "";
+        proxy_set_header X-Scheme "";
     }
 
 Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this case)
-on the server. Start Gunicorn as when using the root directory, but configure
-NGINX as follows:
+on the server. Start Gunicorn as when using the root directory, but also set the
+``SCRIPT_NAME`` environment variable for the Gunicorn process, as described in
+:ref:`sub_directory_hosting`:
+
+.. code-block:: bash
+
+    SCRIPT_NAME=/pgadmin4 gunicorn --bind unix:/tmp/pgadmin4.sock \
+                                   --workers=1 \
+                                   --threads=25 \
+                                   --chdir /usr/lib/python3.13/dist-packages/pgadmin4 \
+                                   pgAdmin4:app
+
+Then configure NGINX:
 
 .. code-block:: nginx
 
@@ -250,6 +302,7 @@ NGINX as follows:
         include proxy_params;
         proxy_pass http://unix:/tmp/pgadmin4.sock;
         proxy_set_header X-Script-Name /pgadmin4;
+        proxy_set_header X-Scheme "";
     }
 
 NGINX Configuration with uWSGI
@@ -267,7 +320,7 @@ command similar to:
     uwsgi --socket /tmp/pgadmin4.sock \
           --processes 1 \
           --threads 25 \
-          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
+          --chdir /usr/lib/python3.13/dist-packages/pgadmin4/ \
           --manage-script-name \
           --mount /=pgAdmin4:app
 
@@ -279,20 +332,23 @@ And configure NGINX:
     location @pgadmin4 {
         include uwsgi_params;
         uwsgi_pass unix:/tmp/pgadmin4.sock;
+        uwsgi_param HTTP_X_SCRIPT_NAME "";
+        uwsgi_param HTTP_X_SCHEME "";
     }
 
 Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this case)
 on the server. Start uWSGI, noting that the directory name is specified in the
-``mount`` parameter:
+``mount`` parameter, and that the ``SCRIPT_NAME`` environment variable should
+be set alongside it, as described in :ref:`sub_directory_hosting`:
 
 .. code-block:: bash
 
-    uwsgi --socket /tmp/pgadmin4.sock \
-          --processes 1 \
-          --threads 25 \
-          --chdir /usr/lib/python3.7/dist-packages/pgadmin4/ \
-          --manage-script-name \
-          --mount /pgadmin4=pgAdmin4:app
+    SCRIPT_NAME=/pgadmin4 uwsgi --socket /tmp/pgadmin4.sock \
+                                --processes 1 \
+                                --threads 25 \
+                                --chdir /usr/lib/python3.13/dist-packages/pgadmin4/ \
+                                --manage-script-name \
+                                --mount /pgadmin4=pgAdmin4:app
 
 Then, configure NGINX:
 
@@ -303,6 +359,161 @@ Then, configure NGINX:
     location @pgadmin4 {
       include uwsgi_params;
       uwsgi_pass unix:/tmp/pgadmin4.sock;
+      uwsgi_param HTTP_X_SCRIPT_NAME "";
+      uwsgi_param HTTP_X_SCHEME "";
+    }
+
+Caddy Configuration with Gunicorn
+----------------------------------
+
+pgAdmin can be hosted by Gunicorn, with Caddy in front of it as a reverse
+proxy. Note that these examples assume pgAdmin was installed using the Python
+Wheel (you may need to adjust the path to suit your installation).
+
+To run with pgAdmin in the root directory of the server, start Gunicorn using
+a command similar to:
+
+.. code-block:: bash
+
+    gunicorn --bind unix:/run/pgadmin4/pgadmin4.sock \
+             --workers=1 \
+             --threads=25 \
+             --chdir /usr/lib/python3.13/dist-packages/pgadmin4 \
+             pgAdmin4:app
+
+And configure Caddy:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        reverse_proxy unix//run/pgadmin4/pgadmin4.sock {
+            header_up -X-Script-Name
+            header_up -X-Scheme
+        }
+    }
+
+.. _caddy_socket_location:
+
+.. note:: The examples deliberately avoid ``/tmp`` for the socket. The systemd
+    unit shipped with Caddy sets ``PrivateTmp=true``, which gives the Caddy
+    process a private ``/tmp`` directory of its own, so a socket created by
+    Gunicorn or uWSGI in the system ``/tmp`` is invisible to Caddy, which will
+    report a 502 error for every request. Any directory outside ``/tmp`` that
+    both processes can access will do, provided the user Caddy runs as has
+    permission to read and write the socket; alternatively, have Gunicorn or
+    uWSGI listen on a TCP port such as ``127.0.0.1:5050`` and proxy to that
+    instead. Whichever directory is used, it must exist and be writable by the
+    user Gunicorn or uWSGI runs as before the socket can be bound; under
+    systemd, ``RuntimeDirectory=pgadmin4`` in the unit that starts Gunicorn or
+    uWSGI will create ``/run/pgadmin4`` on start and remove it on stop. The
+    same applies to the uWSGI examples below.
+
+.. _caddy_header_stripping:
+
+.. note:: The two ``header_up`` directives remove any ``X-Script-Name`` and
+    ``X-Scheme`` headers that arrive from the client, for the reasons given in
+    :ref:`proxy_headers`. Each of the Caddy examples removes both, except that
+    the Gunicorn sub-directory example sets ``X-Script-Name`` to the
+    sub-directory instead, which likewise replaces whatever the client sent.
+
+Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this
+case) on the server. Start Gunicorn as when using the root directory, but
+also set the ``SCRIPT_NAME`` environment variable for the Gunicorn process, as
+described in :ref:`sub_directory_hosting`:
+
+.. code-block:: bash
+
+    SCRIPT_NAME=/pgadmin4 gunicorn --bind unix:/run/pgadmin4/pgadmin4.sock \
+                                   --workers=1 \
+                                   --threads=25 \
+                                   --chdir /usr/lib/python3.13/dist-packages/pgadmin4 \
+                                   pgAdmin4:app
+
+Then configure Caddy. The request path must be passed through to Gunicorn
+unchanged, so do not strip the /pgadmin4 prefix; the ``X-Script-Name`` header
+is set to the sub-directory, both to tell pgAdmin which requests are made
+under it and to replace any value the client may have sent; and the path
+matcher must include both ``/pgadmin4`` and ``/pgadmin4/*``, so that pgAdmin's
+own redirect to the bare sub-directory path (with no trailing slash) is also
+proxied, rather than falling through to Caddy's default (and rather unhelpful)
+empty response for an unmatched path:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        @pgadmin path /pgadmin4 /pgadmin4/*
+        handle @pgadmin {
+            reverse_proxy unix//run/pgadmin4/pgadmin4.sock {
+                header_up X-Script-Name /pgadmin4
+                header_up -X-Scheme
+            }
+        }
+    }
+
+Caddy Configuration with uWSGI
+-------------------------------
+
+Caddy does not speak the native uwsgi protocol used by NGINX's
+``uwsgi_pass``, so uWSGI must be run in HTTP mode instead, using
+``--http-socket`` rather than ``--socket``. Note that these examples assume
+pgAdmin was installed using the Python Wheel (you may need to adjust the
+path to suit your installation).
+
+To run with pgAdmin in the root directory of the server, start uWSGI using a
+command similar to:
+
+.. code-block:: bash
+
+    uwsgi --http-socket /run/pgadmin4/pgadmin4.sock \
+          --processes 1 \
+          --threads 25 \
+          --chdir /usr/lib/python3.13/dist-packages/pgadmin4/ \
+          --mount /=pgAdmin4:app
+
+And configure Caddy, again keeping the socket out of ``/tmp`` (see
+:ref:`the note above <caddy_socket_location>`) and stripping the headers
+pgAdmin trusts unconditionally (see :ref:`the note above
+<caddy_header_stripping>`):
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        reverse_proxy unix//run/pgadmin4/pgadmin4.sock {
+            header_up -X-Script-Name
+            header_up -X-Scheme
+        }
+    }
+
+Alternatively, pgAdmin can be hosted in a sub-directory (/pgadmin4 in this
+case) on the server. Start uWSGI, noting that the directory name is specified
+in the ``mount`` parameter, and that the ``SCRIPT_NAME`` environment variable
+should still be set alongside it, as described in
+:ref:`sub_directory_hosting`:
+
+.. code-block:: bash
+
+    SCRIPT_NAME=/pgadmin4 uwsgi --http-socket /run/pgadmin4/pgadmin4.sock \
+                                --processes 1 \
+                                --threads 25 \
+                                --chdir /usr/lib/python3.13/dist-packages/pgadmin4/ \
+                                --manage-script-name \
+                                --mount /pgadmin4=pgAdmin4:app
+
+Then configure Caddy as for the Gunicorn sub-directory example above, except
+that no ``X-Script-Name`` header needs to be set: ``--manage-script-name`` has
+uWSGI report the mount point to pgAdmin with every request, as in the NGINX
+uWSGI example above, so the header is only removed:
+
+.. code-block:: text
+
+    pgadmin.example.com {
+        @pgadmin path /pgadmin4 /pgadmin4/*
+        handle @pgadmin {
+            reverse_proxy unix//run/pgadmin4/pgadmin4.sock {
+                header_up -X-Script-Name
+                header_up -X-Scheme
+            }
+        }
     }
 
 Additional Information
