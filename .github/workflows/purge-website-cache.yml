@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   purge:
-    runs-on: [self-hosted, roadie]
+    runs-on: [self-hosted, publish]
     environment: publishing
 
     steps:

@@ -125,7 +125,7 @@ jobs:
     # Skipped entirely when only the registries are being exercised, so a
     # rehearsal of those never touches the download server.
     if: ${{ inputs.scope != 'registries' }}
-    runs-on: [self-hosted, roadie]
+    runs-on: [self-hosted, publish]
     environment: publishing
 
     steps:

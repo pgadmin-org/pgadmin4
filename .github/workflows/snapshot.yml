@@ -160,7 +160,7 @@ jobs:
     # server; splitting the two meant uploading that tree as an artifact and
     # immediately downloading it again on the runner, having first queued for a
     # hosted runner behind whatever else the organisation was building.
-    runs-on: [self-hosted, roadie]
+    runs-on: [self-hosted, publish]
 
     # For the variables naming the keys and the target, which live here. The
     # environment carries no protection rules, so a run that is not publishing
