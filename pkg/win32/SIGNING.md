@@ -87,8 +87,53 @@ sleeps briefly first.
 
 ### The PIN helper
 
-An AutoHotkey executable that watches for the card's PIN dialog and answers it.
-It must start in the same session, by the same mechanism, at login.
+`certum-pin-handler.ahk`, next to this file, is the AutoHotkey v2 script that
+watches for the card's PIN dialog and answers it. Compile it with Ahk2Exe, or
+run it under AutoHotkey directly, and start it in the same session, by the same
+mechanism, at login. The script's own comments carry the detail; what matters
+here is where the PIN lives and what happens when it does not.
+
+The PIN is read at startup from a file rather than being held in the script,
+so that neither this repository nor the compiled executable contains it:
+
+```
+%LOCALAPPDATA%\pgAdmin\certum-pin.txt
+```
+
+It holds the PIN on a single line and nothing else, and it is the one secret on
+the machine, so lock it down to the build user and take it out of anything that
+gets backed up off the box:
+
+```batch
+icacls "%LOCALAPPDATA%\pgAdmin\certum-pin.txt" /inheritance:r ^
+    /grant:r "%USERNAME%:R" /grant:r "SYSTEM:F" /grant:r "Administrators:F"
+```
+
+Set `PGADMIN_CERTUM_PIN_FILE` to read it from somewhere else, which is mostly
+useful for testing the helper against a dummy dialog without the real PIN being
+on the machine at all. If the file is missing or empty the helper says so and
+exits rather than sitting there looking healthy whilst answering nothing, and
+either way it writes to:
+
+```
+%LOCALAPPDATA%\pgAdmin\certum-pin-handler.log
+```
+
+That log is the first place to look when a signed build misbehaves, since it
+records every prompt seen and answered. The helper never logs the PIN itself.
+
+Two things about it are deliberate and worth not undoing. It never opens a
+dialog of its own, not even an error dialog, because a modal window on an
+unattended machine is a build that waits for somebody who is not coming: an
+AutoHotkey error dialog behind a failed `WinActivate` is precisely how a build
+was lost. And it retries rather than giving up, because finding the window and
+activating it are separate operations with a gap in between, so the window can
+perfectly well disappear or refuse focus in that gap without anything actually
+being wrong.
+
+The card blocks after enough consecutive wrong PINs, and a helper holding a
+stale PIN will happily supply them, so after a PIN change watch the log for a
+prompt that does not close.
 
 ### Build prerequisites
 
@@ -213,6 +258,16 @@ certificate-to-key link is intact.
 **The build hangs rather than failing.** The runner is almost certainly running
 as a service, or as a scheduled task set to "run whether user is logged on or
 not", so the PIN prompt is somewhere nothing can answer it. See above.
+
+**The build hangs and the runner is in the right session.** Read
+`%LOCALAPPDATA%\pgAdmin\certum-pin-handler.log`. Nothing in it since the last
+boot means the helper is not running, or exited at startup because the PIN file
+is missing or unreadable; a prompt it saw but could not bring to the foreground
+means something else is holding the foreground, usually a leftover dialog from
+an earlier run; and a prompt that was answered but did not close means the PIN
+is wrong, which needs the card checking before it is retried enough times to
+block. Recovery is to log in to the console, clear whatever is on screen,
+restart the helper, and rerun the job.
 
 **The first signature after the card is inserted prompts for a PIN.** Expected.
 Subsequent operations in the same session may be cached, depending on proCertum
