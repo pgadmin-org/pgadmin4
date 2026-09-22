@@ -231,23 +231,64 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $root = 'C:\pgadmin4-test'
 
-          foreach ($f in @(
-              "$root\runtime\pgAdmin4.exe",
-              "$root\runtime\libpq.dll",
-              "$root\runtime\pg_dump.exe",
-              "$root\runtime\gssapi64.dll",
-              "$root\python\python.exe",
-              "$root\web\pgAdmin4.py")) {
+          # The components that carry no signature of ours, and so are only
+          # checked for presence. Everything we do sign is covered by the step
+          # below, which checks that it is there as a side effect of verifying
+          # it.
+          foreach ($f in @("$root\python\python.exe", "$root\web\pgAdmin4.py")) {
               if (-not (Test-Path $f)) { throw "Missing from the installation: $f" }
               Write-Output "present: $f"
           }
 
-          # The executable users actually run. Verified here because it is the
-          # only place it can be: it does not exist outside the installer until
-          # the installer has run.
-          $sig = Get-AuthenticodeSignature "$root\runtime\pgAdmin4.exe"
-          Write-Output "pgAdmin4.exe signature: $($sig.Status) / $($sig.SignerCertificate.Subject)"
-          if ($sig.Status -ne 'Valid') { throw "pgAdmin4.exe signature is $($sig.Status)" }
+      # Everything Make.bat's :SIGN_COMPONENTS signs, verified where it lands.
+      # None of it exists outside the installer until the installer has run, so
+      # this is the only place a published build can be checked: the runtime
+      # executable, and the PostgreSQL and Kerberos binaries we ship alongside
+      # it. The Electron, Python and VC++ runtime components are deliberately
+      # not signed by us and so are not listed here.
+      - name: Check the component signatures
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = 'C:\pgadmin4-test'
+
+          # The publisher is taken from the installer rather than hard coded,
+          # so that a component signed by somebody else is caught without this
+          # needing an edit every time the certificate is renewed.
+          $expected = (Get-AuthenticodeSignature installer.exe).SignerCertificate.Subject
+          Write-Output "Expected publisher: $expected"
+
+          # winpgbuild does not always ship these four, and Make.bat copies them
+          # only when they are present, so an empty match is not a failure.
+          $optional = @('libintl-*.dll', 'libiconv-*.dll', 'liblz4.dll', 'libzstd.dll')
+
+          foreach ($pattern in @(
+              'pgAdmin4.exe',
+              'libpq.dll', 'libcrypto-*-x64.dll', 'libssl-*-x64.dll', 'zlib1.dll',
+              'pg_dump.exe', 'pg_dumpall.exe', 'pg_restore.exe', 'psql.exe',
+              'kinit.exe', 'krb5_64.dll', 'comerr64.dll', 'k5sprt64.dll',
+              'gssapi64.dll', 'krbcc64.dll', 'ccapiserver.exe') + $optional) {
+
+              $files = @(Get-ChildItem -Path "$root\runtime\$pattern" -ErrorAction SilentlyContinue)
+              if ($files.Count -eq 0) {
+                  if ($optional -contains $pattern) {
+                      Write-Output "absent, and optional: $pattern"
+                      continue
+                  }
+                  throw "Missing from the installation: $root\runtime\$pattern"
+              }
+
+              foreach ($f in $files) {
+                  $sig = Get-AuthenticodeSignature $f.FullName
+                  Write-Output "$($f.Name): $($sig.Status) / $($sig.SignerCertificate.Subject)"
+                  if ($sig.Status -ne 'Valid') {
+                      throw "$($f.Name) signature is $($sig.Status)"
+                  }
+                  if ($sig.SignerCertificate.Subject -ne $expected) {
+                      throw "$($f.Name) was signed by $($sig.SignerCertificate.Subject)"
+                  }
+              }
+          }
 
   # The macOS disk image as published, rather than the bundle as built. The
   # snapshot workflow checks the bundle it has just made; this checks what a
