@@ -87,7 +87,7 @@ account to be able to write it.
 Three key pairs. A publishing key and an upload key belong to the runner; a
 pull key belongs to the download server, which uses it to fetch staged content
 from the staging server during publication. The pull key's private half must be
-at `~pgaupload/.ssh/id_ed25519_pull` on the download server, which is where
+at `~pgaupload/.ssh/pga-pull` on the download server, which is where
 `pga-publish` looks for it; the name in the key management system is only a
 label, and the path is what matters.
 

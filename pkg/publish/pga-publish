@@ -152,6 +152,12 @@ YUM_TARGETS = (
 # The package trees inside a staging directory, derived from the tables above
 # so that the two cannot disagree.
 APT_COMPONENT = "main"
+
+# What packages-fetch must not bring across from staging, because the live
+# tree's own copies are still the ones its signed metadata describes. The
+# rebuild verbs regenerate both from whatever is on disk afterwards.
+APT_INDEX_FILES = ("Packages", "Packages.*")
+YUM_INDEX_FILES = ("repodata",)
 YUM_TREES = tuple("yum/%s/%s-%s-%s" % (family, name, version, arch)
                   for family, name, version, arch in YUM_TARGETS)
 
@@ -181,7 +187,7 @@ CLOUDFRONT_CONF = "/etc/pga-publish.cloudfront"
 # workflow variable would put this on the wrong side of that line.
 PULL_HOST_CONF = "/etc/pga-publish.pull-host"
 PULL_USER = "pgaupload"
-PULL_KEY = os.path.expanduser("~/.ssh/id_ed25519_pull")
+PULL_KEY = os.path.expanduser("~/.ssh/pga-pull")
 
 # One publishing operation at a time. Two concurrent workflow runs indexing the
 # same repository would produce a Release file describing packages that are half
@@ -602,7 +608,7 @@ def sign_packages(root):
                  "--armour", "--detach-sign", "--output", signature, target])
 
 
-def pull_from_staging(datestamp, src_subpath, dest):
+def pull_from_staging(datestamp, src_subpath, dest, excludes=()):
     """Copy one subdirectory of a staging build to the download server.
 
     The remote path is relative because the key used here is confined on the
@@ -618,13 +624,16 @@ def pull_from_staging(datestamp, src_subpath, dest):
     ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
                % (BIN_SSH, PULL_KEY))
     makedirs(dest)
-    run([BIN_RSYNC,
-         "-rlt",                # no -p, no -o, no -g: local ownership wins
-         "--safe-links",        # drop any symlink pointing outside the tree
-         "--no-specials", "--no-devices",
-         "--delay-updates",
-         "-e", ssh_cmd,
-         remote, dest + "/"])
+    argv = [BIN_RSYNC,
+            "-rlt",             # no -p, no -o, no -g: local ownership wins
+            "--safe-links",     # drop any symlink pointing outside the tree
+            "--no-specials", "--no-devices",
+            "--delay-updates"]
+    # Module constants, never anything from the client.
+    for pattern in excludes:
+        argv.append("--exclude=%s" % pattern)
+    argv += ["-e", ssh_cmd, remote, dest + "/"]
+    run(argv)
 
 
 def pull_host():
@@ -991,18 +1000,30 @@ def cmd_packages_fetch(args, raw):
     There is no shared apt pool: each distribution release has its own tree,
     with the packages sitting directly in binary-<arch>, which is the layout
     apt-ftparchive is pointed at and the one the download site has always had.
-    Only the indices are left behind, because the rebuild verbs regenerate
-    those from whatever is on disk afterwards.
+
+    The indices are deliberately left behind, and the exclusions below are
+    what implements that. Staging's Packages files describe staging's tree,
+    whilst the signed Release, Release.gpg and InRelease that clients check
+    them against live one directory further up and are not part of this copy;
+    importing the former without the latter leaves every live apt repository
+    failing on a hash sum mismatch until the rebuild catches up, which is
+    minutes later given the rebuilds are sequential and each takes the lock.
+    The same applies to yum's repodata, more gently: a signed repomd.xml
+    describing the wrong package set rather than an outright failure. Keeping
+    the old indices means the tree stays self-consistent throughout, with the
+    new packages simply invisible until the rebuild verb indexes them.
     """
     datestamp = v_datestamp(args[0], raw)
     for codename in APT_CODENAMES:
         relative = "apt/%s/dists/pgadmin4/%s" % (codename, APT_COMPONENT)
         pull_from_staging(datestamp, relative,
                           under(FTP_ROOT, "apt", codename, "dists",
-                                "pgadmin4", APT_COMPONENT))
+                                "pgadmin4", APT_COMPONENT),
+                          excludes=APT_INDEX_FILES)
     for relative in YUM_TREES:
         pull_from_staging(datestamp, relative,
-                          under(FTP_ROOT, *relative.split("/")))
+                          under(FTP_ROOT, *relative.split("/")),
+                          excludes=YUM_INDEX_FILES)
     print("fetched packages from %s" % datestamp)
 
 
@@ -1055,6 +1076,23 @@ def cmd_snapshot_index_yum(args, raw):
     print("indexed %s/yum" % root)
 
 
+def snapshot_order(name):
+    """(date, suffix) for a snapshot directory, or None if it is not one.
+
+    Used for retention. A name the regex accepts can still carry an
+    impossible date, 2026-02-31 say, in which case it is not a snapshot
+    either and is left alone.
+    """
+    match = DATESTAMP_RE.match(name)
+    if not match:
+        return None
+    try:
+        when = date(*(int(match.group(i)) for i in (1, 2, 3)))
+    except ValueError:
+        return None
+    return (when, int(match.group(4) or 0))
+
+
 def cmd_snapshot_purge(args, raw):
     """snapshot-purge
 
@@ -1066,15 +1104,37 @@ def cmd_snapshot_purge(args, raw):
     retention the server already has. Directories that do not look like a
     snapshot are left alone rather than swept up, because the day somebody
     parks something in that tree by hand is the day a tidy-up should not eat
-    it.
+    it, and so are any dated after today, since those cannot be snapshots this
+    server has built.
+
+    The ordering is by date and then by suffix as a number, not by name.
+    Sorting the names put 2026-09-22-10 before 2026-09-22-2, so a day with
+    more than nine builds retained the older ones, and it let a directory
+    whose name merely sorted late decide what survived.
     """
     if not os.path.isdir(SNAPSHOT_ROOT):
         print("no snapshots")
         return
 
-    names = sorted(name for name in os.listdir(SNAPSHOT_ROOT)
-                   if DATESTAMP_RE.match(name)
-                   and os.path.isdir(os.path.join(SNAPSHOT_ROOT, name)))
+    today = date.today()
+    dated = []
+    for name in os.listdir(SNAPSHOT_ROOT):
+        when = snapshot_order(name)
+        if when is None:
+            continue
+        if not os.path.isdir(os.path.join(SNAPSHOT_ROOT, name)):
+            continue
+        # A directory dated in the future is not a snapshot this server has
+        # built, so it neither counts towards the retention nor gets removed
+        # by it. Without this, five future-dated directories, which
+        # snapshot-create will happily make, fill the keep set and every real
+        # snapshot falls off the end.
+        if when[0] > today:
+            continue
+        dated.append((when, name))
+
+    dated.sort()
+    names = [name for _, name in dated]
     doomed = names[:-SNAPSHOT_KEEP] if len(names) > SNAPSHOT_KEEP else []
     for name in doomed:
         path = under(SNAPSHOT_ROOT, name)
