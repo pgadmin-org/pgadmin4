@@ -283,7 +283,7 @@ REM Main build sequence Ends
         EXIT /B 1
     )
     CALL yarn set version %YARN_VERSION% || EXIT /B 1
-    CALL yarn install || EXIT /B 1
+    CALL yarn install --immutable || EXIT /B 1
     CALL npm rebuild || EXIT /B 1
 
     ECHO Bundling javascript...
