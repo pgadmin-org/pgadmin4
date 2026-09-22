@@ -139,7 +139,22 @@ jobs:
 
           [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }
 
+          # Both variables reach option positions: the target is the first
+          # positional argument to every ssh below, and the key path follows
+          # -i, so a value beginning with a hyphen would be read as an option
+          # rather than as the host or the path it is meant to be. Only an
+          # administrator can set a repository variable, which makes this
+          # defence in depth rather than a live hole, but it is checked here,
+          # once, before anything is published; the -- at each call site
+          # closes the same gap from the other end.
+          TARGET_RE='^[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9.-]*)?$'
+          printf '%s' "${DOWNLOAD}" | grep -Eq "${TARGET_RE}" || {
+              echo "DOWNLOAD_SSH_TARGET is not a [user@]host." >&2; exit 1; }
+
           KEY="${PUBLISH_KEY/#\~/$HOME}"
+          printf '%s' "${KEY}" | grep -Eq '^/[A-Za-z0-9._/-]+$' || {
+              echo "PUBLISH_SSH_KEY is not a plain absolute path." >&2
+              exit 1; }
           [ -r "${KEY}" ] || { echo "Missing SSH key: ${KEY}" >&2; exit 1; }
           if head -c 4 "${KEY}" | grep -q '^ssh-'; then
               echo "${KEY} is a public key; -i needs the private one." >&2
@@ -158,7 +173,7 @@ jobs:
           set -euo pipefail
           publish() {
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
           }
           if publish release-exists "${VERSION}" 2>/dev/null; then
               echo "Version ${VERSION} is already published." >&2
@@ -178,7 +193,7 @@ jobs:
           publish() {
               echo "+ $*"
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
           }
 
           # The downloads first: the directory, then the files sorted into it,
@@ -205,7 +220,7 @@ jobs:
           publish() {
               echo "+ $*"
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
           }
 
           # The auto-updater archives, which release-fetch deliberately left
@@ -240,7 +255,7 @@ jobs:
           publish() {
               echo "+ $*"
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
           }
 
           # Separate from the packages, and after them, because the website
@@ -262,7 +277,7 @@ jobs:
           # in the archive permanently.
           echo "+ sync-s3"
           ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-              -o StrictHostKeyChecking=yes "${DOWNLOAD}" sync-s3
+              -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" sync-s3
 
       - name: Note what was skipped
         if: ${{ inputs.scope != 'everything' }}
@@ -387,9 +402,41 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p pypi-dist
-          curl -fsS -o "pypi-dist/pgadmin4-${VERSION}-py3-none-any.whl" \
-              "https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v${VERSION}/pip/pgadmin4-${VERSION}-py3-none-any.whl"
+          BASE="https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v${VERSION}"
+          WHEEL="pgadmin4-${VERSION}-py3-none-any.whl"
+          curl -fsS -o "pypi-dist/${WHEEL}" "${BASE}/pip/${WHEEL}"
+          # Beside the wheel rather than in pypi-dist, because everything in
+          # that directory is uploaded and PyPI has not accepted detached
+          # signatures since 2023.
+          curl -fsS -o "${WHEEL}.asc" "${BASE}/pip/${WHEEL}.asc"
           ls -l pypi-dist
+
+      # The wheel arrives over TLS, which says it came from the mirror and
+      # nothing about what the mirror was given: the tree is replicated from
+      # our download server to machines we do not run, and the signature that
+      # has been sitting beside the file all along is the only thing that ties
+      # these bytes back to the key on the publishing server. Checking it
+      # costs a second and turns the last hop of a release into something an
+      # attacker cannot quietly alter.
+      - name: Verify the wheel before uploading it
+        if: ${{ inputs.scope == 'everything' }}
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          curl -fsS -o packages_pgadmin_org.pub \
+              https://www.pgadmin.org/static/packages_pgadmin_org.pub
+
+          # A keyring of its own, holding that one key and nothing the runner
+          # image happened to trust already, so a signature made by any other
+          # key fails for want of a public key rather than passing on the
+          # strength of somebody else's.
+          GNUPGHOME=$(mktemp -d)
+          export GNUPGHOME
+          gpg --batch --import packages_pgadmin_org.pub
+          gpg --batch --verify "pgadmin4-${VERSION}-py3-none-any.whl.asc" \
+              "pypi-dist/pgadmin4-${VERSION}-py3-none-any.whl"
+          echo "Signature verified; the upload may proceed."
 
       # Trusted publishing: PyPI verifies this workflow's OIDC identity, so
       # there is no API token to hold, rotate or leak.

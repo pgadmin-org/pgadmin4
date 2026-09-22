@@ -353,8 +353,16 @@ def under(root, *components):
 # They are deliberately strict about shape: a datestamp is a real calendar date
 # in a plausible range, not merely eight digits and some hyphens.
 
-DATESTAMP_RE = re.compile(r"\A(\d{4})-(\d{2})-(\d{2})(?:-([1-9]\d?))?\Z")
-VERSION_RE = re.compile(r"\A(\d{1,2})\.(\d{1,2})(?:\.(\d{1,2}))?\Z")
+# re.ASCII on both, because \d otherwise matches every Unicode decimal digit
+# and int() parses those just as happily, so a directory whose name is written
+# in fullwidth or Devanagari digits reads back as a perfectly ordinary date.
+# The character gate would catch that in a request, but these patterns are
+# also applied to names taken from the filesystem, where the upload key chose
+# them, and only ASCII digits are ever meant.
+DATESTAMP_RE = re.compile(r"\A(\d{4})-(\d{2})-(\d{2})(?:-([1-9]\d?))?\Z",
+                          re.ASCII)
+VERSION_RE = re.compile(r"\A(\d{1,2})\.(\d{1,2})(?:\.(\d{1,2}))?\Z",
+                        re.ASCII)
 
 
 def v_datestamp(value, raw):
@@ -432,7 +440,7 @@ def child_env():
 DRY_RUN = False
 
 
-def run(argv, cwd=None, stdout_path=None):
+def run(argv, cwd=None, stdout_path=None, capture=False):
     """Execute a fixed argv. Never a string, never a shell.
 
     stdin is /dev/null: none of these steps has any business reading from the
@@ -442,6 +450,12 @@ def run(argv, cwd=None, stdout_path=None):
     stdout_path exists because apt-ftparchive writes its index to standard
     output and the Jenkins job redirected it. We do the redirection here, in
     Python, rather than reaching for a shell to do it for us.
+
+    capture returns the child's standard output as text instead of letting it
+    through to the client, for the one caller that has to read what rsync said
+    rather than merely pass it on. The text is a child's output rather than a
+    client's input, but it can still carry names an upload chose, so it goes
+    through sanitise_for_log() before it is printed or logged.
     """
     log(syslog.LOG_INFO, "EXEC %s%s%s"
         % (" ".join(argv),
@@ -453,18 +467,22 @@ def run(argv, cwd=None, stdout_path=None):
               % (" ".join(argv),
                  "   [cwd %s]" % cwd if cwd else "",
                  "   [> %s]" % stdout_path if stdout_path else ""))
-        return
+        return ""
 
     out = None
     try:
         if stdout_path:
             out = open(stdout_path, "wb")
+        if capture:
+            destination = subprocess.PIPE
+        else:
+            destination = out if out else None
         result = subprocess.run(
             argv,
             cwd=cwd,
             env=child_env(),
             stdin=subprocess.DEVNULL,
-            stdout=out if out else None,
+            stdout=destination,
             shell=False,          # the default; stated to make the audit easy
             check=False,
         )
@@ -478,6 +496,10 @@ def run(argv, cwd=None, stdout_path=None):
         sys.stderr.write("pga-publish: step failed: %s (rc=%d)\n"
                          % (argv[0], result.returncode))
         sys.exit(EX_FAIL)
+
+    if capture:
+        return result.stdout.decode("utf-8", "replace")
+    return ""
 
 
 def makedirs(path):
@@ -517,6 +539,45 @@ def refuse_if_exists(path, reason):
 # Shared building blocks
 # ---------------------------------------------------------------------------
 
+# Where rsync parks a file whilst --delay-updates holds it back. The name is
+# rsync's default and is not configured anywhere: --partial-dir would move it,
+# which is exactly what we do not want, for the reason clear_delayed_updates()
+# gives.
+PARTIAL_DIR = ".~tmp~"
+
+
+def clear_delayed_updates(tree):
+    """Remove any holding directory an interrupted pull left behind.
+
+    --delay-updates stages each incoming file under .~tmp~ in its own
+    destination directory and renames the lot into place at the end, which is
+    what makes a pull either wholly visible or not visible at all. A transfer
+    that dies in the middle leaves those part-written files sitting in the
+    published tree, and both apt-ftparchive and createrepo_c descend into
+    whatever they find, so the next rebuild would index a truncated package,
+    sign the index that describes it, and sync-s3 would then put both in an
+    archive that has no --delete.
+
+    The holding directory stays where rsync puts it rather than being moved out
+    of the tree with --partial-dir, because the final rename is only atomic
+    whilst source and destination are on one filesystem, and the account's home
+    directory is not guaranteed to be on the same one as /var/ftp; a
+    --partial-dir elsewhere would quietly turn the rename into a copy and give
+    back the half-visible publication that --delay-updates exists to prevent.
+    Sweeping instead, immediately before indexing, costs a walk of one tree and
+    is the last moment at which the leftovers could do any harm.
+    """
+    if DRY_RUN or not os.path.isdir(tree):
+        return
+    for directory, subdirs, _names in os.walk(tree):
+        if PARTIAL_DIR not in subdirs:
+            continue
+        subdirs.remove(PARTIAL_DIR)     # nothing below it is worth walking
+        stale = os.path.join(directory, PARTIAL_DIR)
+        log(syslog.LOG_WARNING, "STALE %s" % stale)
+        shutil.rmtree(stale)
+
+
 def index_apt(root, codename):
     """Index and sign one apt tree, by running the script that does that.
 
@@ -526,13 +587,21 @@ def index_apt(root, codename):
     staging trees are indexed with, and what production is indexed with. The
     wrapper deliberately does not carry a second copy, because a second copy is
     how the staging and production indexes came to differ in the first place.
+
+    The sweep is here rather than in that script because the leftovers are this
+    wrapper's own doing, from its pulls, and because the script is run by hand
+    against whatever -r it is given: a recursive delete is a thing to keep on
+    the side of the boundary where deletion is already confined and logged.
     """
+    clear_delayed_updates(under(root, "apt", codename))
     run([os.path.join(PUBLISH_DIR, "rebuild-apt-repo.sh"),
          "-r", root, codename])
 
 
 def index_yum(root, family, name, version, arch):
     """Index and sign one yum tree, including the EL compatibility links."""
+    clear_delayed_updates(under(root, "yum", family,
+                                "%s-%s-%s" % (name, version, arch)))
     run([os.path.join(PUBLISH_DIR, "rebuild-yum-repo.sh"),
          "-r", root, "-a", arch, family, name, version])
 
@@ -619,6 +688,16 @@ def pull_from_staging(datestamp, src_subpath, dest, excludes=()):
     -e is given as a fixed list of words. rsync splits it on whitespace and
     execs it directly, without a shell, so the same rule applies here as
     everywhere else: no client input goes anywhere near it.
+
+    --ignore-existing is what keeps a promotion from rewriting history. The
+    live tree's copy of a package is the one its signed metadata describes and
+    the one the mirrors and the archive bucket already hold, so a staging build
+    that happens to carry the same filename must not become those bytes: the
+    rebuild that follows would sign the replacement, and every client that had
+    already fetched the original would be holding something else entirely.
+    Returns whatever was skipped, because a collision during a genuine
+    promotion means two builds have produced one filename and somebody needs to
+    know which one is live.
     """
     remote = "%s@%s:%s/%s/" % (PULL_USER, pull_host(), datestamp, src_subpath)
     ssh_cmd = ("%s -i %s -o BatchMode=yes -o StrictHostKeyChecking=yes"
@@ -628,12 +707,19 @@ def pull_from_staging(datestamp, src_subpath, dest, excludes=()):
             "-rlt",             # no -p, no -o, no -g: local ownership wins
             "--safe-links",     # drop any symlink pointing outside the tree
             "--no-specials", "--no-devices",
-            "--delay-updates"]
+            "--delay-updates",
+            "--ignore-existing",
+            "--info=skip"]      # name what was skipped, do not pass it over
     # Module constants, never anything from the client.
     for pattern in excludes:
         argv.append("--exclude=%s" % pattern)
     argv += ["-e", ssh_cmd, remote, dest + "/"]
-    run(argv)
+    skipped = [line.strip() for line in run(argv, capture=True).splitlines()
+               if line.strip()]
+    for line in skipped:
+        log(syslog.LOG_WARNING, "SKIPPED %s: %s"
+            % (dest, sanitise_for_log(line)))
+    return skipped
 
 
 def pull_host():
@@ -900,6 +986,50 @@ def write_maintainer(directory):
     shutil.copyfile(src, dst)
 
 
+def refuse_if_release_touched(root, incoming, version):
+    """Refuse unless v<VERSION> is still exactly what release-create left.
+
+    A freshly created release directory holds the content subdirectories and
+    nothing in them but the maintainer marker, so anything else is either a
+    promotion already run or an attempt to move new files over published ones.
+    Both are refused, and the operator is told the answer is a new version
+    rather than a repair, because by the time a release is on the mirrors and
+    in the archive bucket there is no version of it left to correct.
+
+    The half-finished case is caught by the same rule. The pull lands in
+    .incoming and nothing removes that directory until autoupdate-publish has
+    taken the archives out of it, so finding one here means a promotion
+    stopped partway and wants a human rather than a second attempt.
+    """
+    if DRY_RUN:
+        return
+
+    problems = []
+    if os.path.exists(incoming):
+        problems.append(".incoming/ (a promotion stopped partway)")
+    for subdir in RELEASE_CONTENT_DIRS:
+        directory = under(root, subdir)
+        if not os.path.isdir(directory):
+            continue
+        published = [name for name in sorted(os.listdir(directory))
+                     if name != "CURRENT_MAINTAINER"]
+        if published:
+            problems.append("%s/ (%s)" % (subdir, ", ".join(published)))
+
+    if not problems:
+        return
+
+    detail = sanitise_for_log("; ".join(problems))
+    log(syslog.LOG_WARNING, "PRECONDITION v%s is not empty: %s"
+        % (version, detail))
+    sys.stderr.write("pga-publish: v%s already holds published files: %s\n"
+                     % (version, detail))
+    sys.stderr.write("pga-publish: publication is single-shot, so nothing "
+                     "here will be overwritten. Publish a new version rather "
+                     "than repairing this one.\n")
+    sys.exit(EX_UNAVAILABLE)
+
+
 def cmd_release_fetch(args, raw):
     """release-fetch <VERSION> <DATESTAMP>
 
@@ -913,6 +1043,17 @@ def cmd_release_fetch(args, raw):
     destination is derived from the file's own name, and anything unrecognised
     stops the publication rather than being dropped silently, because a new
     kind of artefact appearing is exactly the moment somebody should look.
+
+    Single-shot, and enforced here rather than left to release-create. That
+    verb refuses to make a directory that already exists, which made the first
+    step of a promotion single-shot and left the rest of it quietly repeatable:
+    run against a version published months ago, this one would move staging's
+    files over the published ones, and autoupdate-publish and sync-s3 would
+    then carry the replacements to the auto-updater and to an archive that has
+    no --delete and therefore no undo. The guarantee the README and the
+    authorized_keys annotations make is about publication, not about one verb
+    of it, so it is checked over the whole sequence: before anything moves, and
+    again for each file as it moves.
     """
     version = v_version(args[0], raw)
     datestamp = v_datestamp(args[1], raw)
@@ -920,6 +1061,7 @@ def cmd_release_fetch(args, raw):
     require_dir(root, "run release-create first")
 
     incoming = under(root, ".incoming")
+    refuse_if_release_touched(root, incoming, version)
     pull_staging_files(datestamp, incoming)
 
     if DRY_RUN:
@@ -941,7 +1083,18 @@ def cmd_release_fetch(args, raw):
 
         for suffix, subdir in RELEASE_FILE_MAP:
             if name.endswith(suffix) or name.endswith(suffix + ".asc"):
-                shutil.move(source, os.path.join(under(root, subdir), name))
+                # Checked per file as well as once up front, because the guard
+                # above ran before the pull and shutil.move onto an existing
+                # regular file replaces it without a word. This is the moment a
+                # published file would actually be overwritten, so this is
+                # where the refusal belongs.
+                target = os.path.join(under(root, subdir), name)
+                refuse_if_exists(
+                    target,
+                    "v%s already publishes %s, and a published file is never "
+                    "replaced: publish a new version rather than repairing "
+                    "this one" % (version, sanitise_for_log(name)))
+                shutil.move(source, target)
                 break
         else:
             unknown.append(name)
@@ -981,12 +1134,19 @@ def cmd_autoupdate_publish(args, raw):
     makedirs(AUTOUPDATE_DIR)
     write_maintainer(AUTOUPDATE_DIR)
     if not DRY_RUN:
-        for stale in sorted(os.listdir(AUTOUPDATE_DIR)):
-            if stale.endswith(".zip"):
-                os.unlink(os.path.join(AUTOUPDATE_DIR, stale))
+        # The new archives in first, the old ones out afterwards. Removing
+        # them first left a window, however brief, in which the directory held
+        # no archive at all, and a move that failed in the middle of it, or a
+        # connection dropped between the two loops, made that window permanent:
+        # every pgAdmin asking for an update would be told there was nothing
+        # there. This way the worst an interrupted run leaves behind is both
+        # releases present at once, which is a tidy-up rather than an outage.
         for name in zips:
             shutil.move(os.path.join(incoming, name),
                         os.path.join(AUTOUPDATE_DIR, name))
+        for stale in sorted(os.listdir(AUTOUPDATE_DIR)):
+            if stale.endswith(".zip") and stale not in zips:
+                os.unlink(os.path.join(AUTOUPDATE_DIR, stale))
         os.rmdir(incoming)
     print("published %d auto-updater archive(s)" % len(zips))
 
@@ -1014,16 +1174,31 @@ def cmd_packages_fetch(args, raw):
     new packages simply invisible until the rebuild verb indexes them.
     """
     datestamp = v_datestamp(args[0], raw)
+    skipped = []
     for codename in APT_CODENAMES:
         relative = "apt/%s/dists/pgadmin4/%s" % (codename, APT_COMPONENT)
-        pull_from_staging(datestamp, relative,
-                          under(FTP_ROOT, "apt", codename, "dists",
-                                "pgadmin4", APT_COMPONENT),
-                          excludes=APT_INDEX_FILES)
+        skipped += pull_from_staging(
+            datestamp, relative,
+            under(FTP_ROOT, "apt", codename, "dists",
+                  "pgadmin4", APT_COMPONENT),
+            excludes=APT_INDEX_FILES)
     for relative in YUM_TREES:
-        pull_from_staging(datestamp, relative,
-                          under(FTP_ROOT, *relative.split("/")),
-                          excludes=YUM_INDEX_FILES)
+        skipped += pull_from_staging(datestamp, relative,
+                                     under(FTP_ROOT, *relative.split("/")),
+                                     excludes=YUM_INDEX_FILES)
+
+    # Not fatal, because the rest of the promotion is still worth finishing and
+    # nothing has been damaged, but loud, because this is how a maintainer
+    # finds out that the packages now live are not the ones this build
+    # produced.
+    if skipped:
+        sys.stderr.write("pga-publish: %d file(s) were already published and "
+                         "have been left as they are:\n" % len(skipped))
+        for line in skipped:
+            sys.stderr.write("  %s\n" % sanitise_for_log(line))
+        sys.stderr.write("pga-publish: a live package is never replaced. If "
+                         "this is a real promotion, two builds have produced "
+                         "the same filename and the live one wins.\n")
     print("fetched packages from %s" % datestamp)
 
 
@@ -1076,28 +1251,49 @@ def cmd_snapshot_index_yum(args, raw):
     print("indexed %s/yum" % root)
 
 
-def snapshot_order(name):
-    """(date, suffix) for a snapshot directory, or None if it is not one.
+def snapshot_date(name):
+    """The date a snapshot directory is named for, or None if it is not one.
 
-    Used for retention. A name the regex accepts can still carry an
-    impossible date, 2026-02-31 say, in which case it is not a snapshot
-    either and is left alone.
+    Retention turns on the date alone, so the -N suffix that distinguishes the
+    second and later builds of a day is parsed only to confirm the name is a
+    snapshot name and is then discarded: two builds on the same day are kept
+    or removed together.
+
+    A name the regex accepts can still carry an impossible date, 2026-02-31
+    say, in which case it is not a snapshot either and is left alone.
     """
     match = DATESTAMP_RE.match(name)
     if not match:
         return None
     try:
-        when = date(*(int(match.group(i)) for i in (1, 2, 3)))
+        return date(*(int(match.group(i)) for i in (1, 2, 3)))
     except ValueError:
         return None
-    return (when, int(match.group(4) or 0))
 
 
 def cmd_snapshot_purge(args, raw):
     """snapshot-purge
 
-    Keep the newest SNAPSHOT_KEEP snapshots and remove the rest, as
-    pgadmin4-all-snapshot did with `ls -dt | tail -n +6 | xargs rm -rf`.
+    Keep every snapshot built on one of the newest SNAPSHOT_KEEP dates and
+    remove the rest, in place of the buildfarm's
+    `ls -dt | tail -n +6 | xargs rm -rf`.
+
+    Retention is therefore counted in days rather than in directories, and
+    that distinction is the whole point of the rule. Keeping the newest five
+    directories sounds equivalent but hands the decision to whoever can create
+    a directory, which both keys can: snapshot-create makes one with the
+    publishing key, and an upload under a name of the client's choosing makes
+    one with the upload key, since rrsync confines where a path may land but
+    has nothing to say about what it is called. Five directories dated today,
+    with high suffixes, filled the keep set and every genuine snapshot fell
+    off the end of it. Counting days makes that impossible, because the newest
+    date anybody can produce is today, and today is kept however many
+    directories carry it.
+
+    The consequence is that a day with several builds keeps all of that day's
+    builds, which is intended rather than accidental: the tree holds the last
+    five days of snapshots rather than the last five snapshots, and a day that
+    rebuilt four times keeps four.
 
     This is the one verb that deletes anything, so it takes no argument: it
     cannot be asked to remove a particular snapshot, only to enforce the
@@ -1106,11 +1302,6 @@ def cmd_snapshot_purge(args, raw):
     parks something in that tree by hand is the day a tidy-up should not eat
     it, and so are any dated after today, since those cannot be snapshots this
     server has built.
-
-    The ordering is by date and then by suffix as a number, not by name.
-    Sorting the names put 2026-09-22-10 before 2026-09-22-2, so a day with
-    more than nine builds retained the older ones, and it let a directory
-    whose name merely sorted late decide what survived.
     """
     if not os.path.isdir(SNAPSHOT_ROOT):
         print("no snapshots")
@@ -1119,23 +1310,23 @@ def cmd_snapshot_purge(args, raw):
     today = date.today()
     dated = []
     for name in os.listdir(SNAPSHOT_ROOT):
-        when = snapshot_order(name)
+        when = snapshot_date(name)
         if when is None:
             continue
         if not os.path.isdir(os.path.join(SNAPSHOT_ROOT, name)):
             continue
         # A directory dated in the future is not a snapshot this server has
         # built, so it neither counts towards the retention nor gets removed
-        # by it. Without this, five future-dated directories, which
-        # snapshot-create will happily make, fill the keep set and every real
-        # snapshot falls off the end.
-        if when[0] > today:
+        # by it. Keeping whole days already stops a flood of today-dated
+        # directories evicting anything, but a date years hence would still
+        # occupy a day of the keep set for as long as it sat there.
+        if when > today:
             continue
         dated.append((when, name))
 
-    dated.sort()
-    names = [name for _, name in dated]
-    doomed = names[:-SNAPSHOT_KEEP] if len(names) > SNAPSHOT_KEEP else []
+    keep = sorted({when for when, _ in dated}, reverse=True)[:SNAPSHOT_KEEP]
+    doomed = sorted(name for when, name in dated if when not in keep)
+
     for name in doomed:
         path = under(SNAPSHOT_ROOT, name)
         log(syslog.LOG_NOTICE, "PURGE %s" % path)
@@ -1143,8 +1334,8 @@ def cmd_snapshot_purge(args, raw):
             print("would remove: %s" % path)
         else:
             shutil.rmtree(path)
-    print("kept %d snapshot(s), removed %d"
-          % (min(len(names), SNAPSHOT_KEEP), len(doomed)))
+    print("kept %d snapshot(s) across %d day(s), removed %d"
+          % (len(dated) - len(doomed), len(keep), len(doomed)))
 
 
 def cmd_rebuild_apt(args, raw):

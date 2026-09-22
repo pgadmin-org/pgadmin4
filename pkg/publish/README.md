@@ -116,6 +116,43 @@ write-only, with deletion and symlink-following refused. `restrict` turns off
 everything optional, PTY allocation included, and keeps doing so as OpenSSH
 grows new options.
 
+## What the wrapper will not do, however it is asked
+
+Neither key can give you a shell, but a key meant only to add something can
+still do damage if the verbs behind it will quietly change something that is
+already published. Three of them will not.
+
+**Publication is single-shot, over the whole promotion rather than over its
+first verb.** `release-create` has always refused to make a `v<VERSION>` that
+exists, but `release-fetch` used to move a staging build's files over the
+contents of a release published months ago, and `autoupdate-publish` and
+`sync-s3` would then carry the replacements to the auto-updater and into the
+archive bucket, which has no `--delete` and so no undo. It now refuses before
+moving anything if the release directory holds more than the maintainer
+markers `release-create` left, and refuses each individual file whose
+destination already exists. A release that needs correcting gets a new
+version, never a repair applied to the old one.
+
+**A live package is never replaced.** `packages-fetch` pulls with
+`--ignore-existing`, so a staging build carrying a filename that is already
+published leaves the published bytes where they are rather than handing the
+rebuild something else to sign, and it names what it skipped rather than
+passing over it: during a genuine promotion, a collision means two builds have
+produced one filename and somebody needs to know which of them the mirrors
+have.
+
+**Snapshot retention is counted in days, not in directories.** Keeping the
+newest five directories sounds equivalent, and is not, because a directory is
+something either key can create: `snapshot-create` makes one with the
+publishing key, and an upload under a name of its own choosing makes one with
+the upload key, since rrsync confines where a path lands but has nothing to
+say about what it is called. Five directories dated today with high suffixes
+filled the keep set and every real snapshot fell off the end of it. Keeping
+the newest five *dates* cannot be steered that way, because the newest date
+anybody can produce is today and today is kept however many directories carry
+it. The price, and it is the intended one rather than an accident, is that a
+day which built four times keeps all four.
+
 ## Checking it
 
 ```sh

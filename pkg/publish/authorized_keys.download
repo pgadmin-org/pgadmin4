@@ -21,16 +21,26 @@
 # ---------------------------------------------------------------------------
 # Key 1: publishing. Verbs only.
 # ---------------------------------------------------------------------------
-# What a holder of this key can do here: create a v<VERSION> or snapshot
-# directory (refusing if it already exists), pull the matching staging content
-# from the staging server, rebuild and sign the apt and yum metadata for an
-# allowlisted distribution, and run the four existing publication scripts with
-# arguments
+# What a holder of this key can do here: create a v<VERSION> directory, which
+# it cannot do twice, or a snapshot directory, which is deliberately
+# repeatable; pull the matching staging content from the staging server;
+# rebuild and sign the apt and yum metadata for an allowlisted distribution;
+# and run the four existing publication scripts with arguments
 # that have been validated or allowlisted first.
 #
-# What it cannot do, and this is the point of the exercise: delete anything,
-# name a file, name a path, name a host, name a signing key, choose which
-# binary runs, or supply a single character that reaches a shell.
+# What it cannot do, and this is the point of the exercise: choose something
+# to delete, name a file, name a path, name a host, name a signing key, choose
+# which binary runs, or supply a single character that reaches a shell.
+#
+# Nor can it change anything already published, which is a separate claim and
+# worth stating separately, because the verbs that add content are the ones
+# that would otherwise overwrite it. release-fetch refuses to run at all if
+# v<VERSION> holds anything beyond the markers release-create left, and
+# refuses each file whose destination exists, so a promotion is single-shot
+# end to end rather than only at its first verb; packages-fetch pulls with
+# --ignore-existing, so a package already live keeps the bytes its signed
+# metadata describes and the mirrors already hold. A release that needs
+# correcting gets a new version.
 restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
 
 # ---------------------------------------------------------------------------
@@ -46,9 +56,13 @@ restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish
 # confined anywhere else under /var/ftp would have both of those as a side
 # effect of a single bad upload.
 #
-# Retention is not this key's business either: the wrapper's snapshot-purge
-# verb enforces it, and -no-del means this key cannot remove a snapshot even
-# if asked to.
+# Retention is not this key's business either, and it cannot be made to be.
+# -no-del means this key cannot remove a snapshot even if asked to, and
+# snapshot-purge keeps the newest SNAPSHOT_KEEP dates rather than the newest
+# that many directories, so an upload cannot evict a real snapshot by arriving
+# under today's date with a high suffix. rrsync confines where an upload lands
+# but has nothing to say about what it is called, which is precisely why
+# retention must not turn on names the client chose.
 #
 # SITE: check `command -v rrsync`; the path moved between rsync packages.
 restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/pgadmin4/snapshots" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner

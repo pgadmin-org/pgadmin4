@@ -59,6 +59,13 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       name: ${{ steps.pick.outputs.name }}
+      # Whether a location was asked for by name, which decides both what the
+      # published directory is called and whether retention runs. It travels
+      # as a flag so that the steps downstream never need the raw input to
+      # work out what was requested: this job is where that input is checked,
+      # and a value that has not been through the check below has no business
+      # reaching the machine holding the publishing keys.
+      named: ${{ steps.pick.outputs.named }}
     steps:
       - id: pick
         env:
@@ -66,6 +73,7 @@ jobs:
         run: |
           set -euo pipefail
           NAME="${REQUESTED:-}"
+          if [ -n "${NAME}" ]; then NAMED=yes; else NAMED=no; fi
           [ -n "${NAME}" ] || NAME=$(date +%Y-%m-%d)
 
           # Validated here so that everything downstream, including a shell on
@@ -82,6 +90,7 @@ jobs:
 
           echo "Snapshot location: ${NAME}"
           echo "name=${NAME}" >> "${GITHUB_OUTPUT}"
+          echo "named=${NAMED}" >> "${GITHUB_OUTPUT}"
 
   deb:
     uses: ./.github/workflows/check-deb-build.yml
@@ -304,6 +313,7 @@ jobs:
         # publishing steps were quietly skipped on every nightly.
         if: ${{ github.event_name == 'schedule' || inputs.publish }}
         env:
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/pga-upload' }}
         run: |
@@ -313,7 +323,23 @@ jobs:
                   echo "This runner has no ${TOOL}." >&2; exit 1; }
           done
 
+          # These three variables reach option positions. The target is the
+          # first positional argument to ssh, and the key paths are spliced
+          # into the -e string that rsync splits on whitespace before exec'ing
+          # it, so a value beginning with a hyphen, or one carrying a space,
+          # would be read as an option or as a second word rather than as the
+          # host or the path it is meant to be. Only an administrator can set
+          # a repository variable, which makes this defence in depth rather
+          # than a live hole, but it is checked here, once, rather than at
+          # each point of use; the -- in the publish step below closes the
+          # same gap from the other end.
+          TARGET_RE='^[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9.-]*)?$'
+          printf '%s' "${DOWNLOAD}" | grep -Eq "${TARGET_RE}" || {
+              echo "DOWNLOAD_SSH_TARGET is not a [user@]host." >&2; exit 1; }
+
           for KEY in "${PUBLISH_KEY/#\~/$HOME}" "${UPLOAD_KEY/#\~/$HOME}"; do
+              printf '%s' "${KEY}" | grep -Eq '^/[A-Za-z0-9._/-]+$' || {
+                  echo "Not a plain absolute path: ${KEY}" >&2; exit 1; }
               if [ ! -r "${KEY}" ]; then
                   echo "Missing or unreadable SSH key: ${KEY}" >&2
                   exit 1
@@ -339,7 +365,13 @@ jobs:
         if: ${{ github.event_name == 'schedule' || inputs.publish }}
         env:
           DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
-          LOCATION: ${{ inputs.location }}
+          # From the location job rather than from inputs.location, so the
+          # name reaching the publishing key is the one that job checked the
+          # shape of. The two agree today, which is exactly why it is worth
+          # fixing: the validation sat upstream of this step by coincidence
+          # rather than by construction.
+          LOCATION: ${{ needs.location.outputs.name }}
+          NAMED: ${{ needs.location.outputs.named }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/pga-upload' }}
         run: |
@@ -362,12 +394,20 @@ jobs:
               exit 1
           fi
           BUILT=$(basename "$(find stage -mindepth 1 -maxdepth 1 -type d)")
-          DEST=${LOCATION:-${BUILT}}
+          # An empty input still means "whatever assemble called it", which is
+          # why this turns on the flag rather than on the name being empty:
+          # the location job fills a blank input in with today's date, so the
+          # name itself no longer says whether anybody asked for one.
+          if [ "${NAMED}" = "yes" ]; then
+              DEST=${LOCATION}
+          else
+              DEST=${BUILT}
+          fi
           echo "Publishing ${BUILT} as ${DEST}"
 
           publish() {
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${DOWNLOAD}" "$@"
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
           }
 
           publish snapshot-create "${DEST}"
@@ -392,7 +432,7 @@ jobs:
           # Skipped when the directory was named by hand, because that is a
           # test run, and a test run has no business deciding which of the
           # real snapshots are old enough to delete.
-          if [ -n "${LOCATION}" ]; then
+          if [ "${NAMED}" = "yes" ]; then
               echo "Named location, so leaving retention alone."
           else
               publish snapshot-purge

@@ -33,5 +33,22 @@ jobs:
         run: |
           set -euo pipefail
           [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }
-          ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-              -o StrictHostKeyChecking=yes "${DOWNLOAD}" purge-cache
+
+          # The target is the first positional argument to ssh and the key
+          # path follows -i, so a value beginning with a hyphen would be read
+          # as an option rather than as what it is meant to be. Only an
+          # administrator can set a repository variable, so this is defence in
+          # depth rather than a live hole, but it costs a line and rules out a
+          # whole shape of mistake; the -- below does the same job from the
+          # other direction.
+          TARGET_RE='^[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9.-]*)?$'
+          printf '%s' "${DOWNLOAD}" | grep -Eq "${TARGET_RE}" || {
+              echo "DOWNLOAD_SSH_TARGET is not a [user@]host." >&2; exit 1; }
+
+          KEY="${PUBLISH_KEY/#\~/$HOME}"
+          printf '%s' "${KEY}" | grep -Eq '^/[A-Za-z0-9._/-]+$' || {
+              echo "PUBLISH_SSH_KEY is not a plain absolute path." >&2
+              exit 1; }
+
+          ssh -i "${KEY}" -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" purge-cache

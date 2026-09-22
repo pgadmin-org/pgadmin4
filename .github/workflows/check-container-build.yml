@@ -82,6 +82,12 @@ concurrency:
   group: 'check-container-build @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
+# Read-only by default, as everywhere else here. The publish job below names
+# the wider set it genuinely needs, and a job-level block replaces this one
+# rather than adding to it, so its packages: write is unaffected.
+permissions:
+  contents: read
+
 jobs:
   # The check. No environment, and so no access to the registry credentials:
   # this runs on every pull request, and a build check has no business being

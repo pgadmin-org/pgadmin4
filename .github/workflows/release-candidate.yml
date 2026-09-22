@@ -306,6 +306,7 @@ jobs:
       - name: Check the keys are present
         if: inputs.publish
         env:
+          STAGING: ${{ vars.STAGING_SSH_TARGET }}
           PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
           UPLOAD_KEY: ${{ vars.UPLOAD_SSH_KEY || '~/.ssh/pga-upload' }}
         run: |
@@ -315,7 +316,23 @@ jobs:
                   echo "This runner has no ${TOOL}." >&2; exit 1; }
           done
 
+          # These three variables reach option positions. The target is the
+          # first positional argument to ssh, and the key paths are spliced
+          # into the -e string that rsync splits on whitespace before exec'ing
+          # it, so a value beginning with a hyphen, or one carrying a space,
+          # would be read as an option or as a second word rather than as the
+          # host or the path it is meant to be. Only an administrator can set
+          # a repository variable, which makes this defence in depth rather
+          # than a live hole, but it is checked here, once, rather than at
+          # each point of use; the -- in the publish step below closes the
+          # same gap from the other end.
+          TARGET_RE='^[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9.-]*)?$'
+          printf '%s' "${STAGING}" | grep -Eq "${TARGET_RE}" || {
+              echo "STAGING_SSH_TARGET is not a [user@]host." >&2; exit 1; }
+
           for KEY in "${PUBLISH_KEY/#\~/$HOME}" "${UPLOAD_KEY/#\~/$HOME}"; do
+              printf '%s' "${KEY}" | grep -Eq '^/[A-Za-z0-9._/-]+$' || {
+                  echo "Not a plain absolute path: ${KEY}" >&2; exit 1; }
               if [ ! -r "${KEY}" ]; then
                   echo "Missing or unreadable SSH key: ${KEY}" >&2
                   exit 1
@@ -369,7 +386,7 @@ jobs:
 
           publish() {
               ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
-                  -o StrictHostKeyChecking=yes "${STAGING}" "$@"
+                  -o StrictHostKeyChecking=yes -- "${STAGING}" "$@"
           }
 
           publish stage-create "${DEST}"
