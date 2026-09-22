@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4 9.18\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-22 13:12+0500\n"
-"PO-Revision-Date: 2026-09-22 16:14+0500\n"
+"PO-Revision-Date: 2026-09-22 16:17+0500\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -38,7 +38,7 @@ msgstr ""
 
 #: ../../ai_tools.rst:11
 msgid "The AI Reports feature allows you to:"
-msgstr "Функция отчетов на основе ИИ позволяет вам:"
+msgstr "Функция отчетов на основе ИИ позволяет:"
 
 #: ../../ai_tools.rst:13
 msgid ""
