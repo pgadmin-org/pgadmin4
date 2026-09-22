@@ -8,8 +8,7 @@
 #
 # Placeholders in angle brackets must be substituted at install time:
 #
-#   <RUNNER-IPV4>, <RUNNER-IPV6>   the runner's addresses
-#   <...KEY...>                    the public key, one line, no line breaks
+#   <...KEY...>   the public key, one line, no line breaks
 #
 # Note that these are the same two key pairs as on the staging server, not
 # four. One publishing key and one upload key, each trusted by both hosts, each
@@ -41,7 +40,7 @@
 # --ignore-existing, so a package already live keeps the bytes its signed
 # metadata describes and the mirrors already hold. A release that needs
 # correcting gets a new version.
-restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
+restrict,command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
 
 # ---------------------------------------------------------------------------
 # Key 2: upload. Bytes only, and only into the snapshots tree.
@@ -65,4 +64,4 @@ restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish
 # retention must not turn on names the client chose.
 #
 # SITE: check `command -v rrsync`; the path moved between rsync packages.
-restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/pgadmin4/snapshots" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner
+restrict,command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/pgadmin4/snapshots" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner

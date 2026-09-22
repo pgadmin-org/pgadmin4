@@ -121,9 +121,9 @@ at `~pgaupload/.ssh/pga-pull` on the download server, which is where
 label, and the path is what matters.
 
 `authorized_keys.staging` and `authorized_keys.download` are annotated
-templates: substitute the addresses and the public keys, and read the
-annotations before changing an option, since each is there for a reason that is
-easier to write down than to rediscover.
+templates: substitute the public keys, and read the annotations before changing
+an option, since each is there for a reason that is easier to write down than
+to rediscover.
 
 The runner's two private keys live on its own filesystem, and the workflows
 reference them by path, taken from the `PUBLISH_SSH_KEY` and `UPLOAD_SSH_KEY`

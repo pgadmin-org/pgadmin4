@@ -2,14 +2,9 @@
 #
 # Two keys, two jobs, two blast radii. Neither of them can give you a shell.
 #
-# Placeholders in angle brackets must be substituted at install time. Do not
-# commit the substituted file to a public repository: the addresses are not
-# secret, but publishing the exact shape of the firewall is free reconnaissance
-# for somebody who has not earned it.
+# Placeholders in angle brackets must be substituted at install time:
 #
-#   <RUNNER-IPV4>, <RUNNER-IPV6>   the runner's addresses
-#   <DOWNLOAD-IPV4>                  the download server's address
-#   <...KEY...>                    the public key, one line, no line breaks
+#   <...KEY...>   the public key, one line, no line breaks
 #
 # Options used, and why:
 #
@@ -24,10 +19,16 @@
 #                 ask for a terminal, and a terminal is an interactive channel
 #                 into whatever the forced command turns out to be.
 #
-#   from=         Defence in depth behind the firewall, not instead of it. The
-#                 firewall can be misconfigured during maintenance; this line
-#                 is in the same file as the key it constrains, so the two are
-#                 reviewed together and rotated together.
+#                 There is deliberately no from= here. Restricting a key to
+#                 the addresses it should be used from would be worth having,
+#                 but these files are generated rather than hand written and
+#                 that option is not among the ones we can set, so the whole
+#                 of the containment rests on restrict and command= instead.
+#                 That is the part which decides what a key can do; what a
+#                 from= would have added is a second answer to where it can be
+#                 used from, which is a loss worth knowing about rather than a
+#                 hole: a stolen key still gets one verb, or one rsync
+#                 confined to one directory, and no shell either way.
 #
 #   command=      The forced command. Whatever the client asked to run is put
 #                 in SSH_ORIGINAL_COMMAND and this runs instead. The wrapper
@@ -44,7 +45,7 @@
 # a fixed template, list staging directories, and rebuild and sign the apt and
 # yum metadata inside one. That is the entire capability set; it is enumerated
 # in the VERBS table in pga-publish, on one screen, on purpose.
-restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
+restrict,command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
 
 # ---------------------------------------------------------------------------
 # Key 2: upload. Bytes only. No verbs, no metadata, no signing.
@@ -70,7 +71,7 @@ restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/local/sbin/pga-publish
 # The trailing path is the root the client is confined to. Every path the
 # client names is resolved relative to it, and rrsync refuses anything that
 # climbs out, so the client never sees an absolute path at all.
-restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/bin/rrsync -wo -no-del -munge /var/www/html/builds" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner
+restrict,command="/usr/bin/rrsync -wo -no-del -munge /var/www/html/builds" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner
 
 # ---------------------------------------------------------------------------
 # Key 3: the download server's read-only pull.
@@ -89,4 +90,4 @@ restrict,from="<RUNNER-IPV4>,<RUNNER-IPV6>",command="/usr/bin/rrsync -wo -no-del
 # content down and push it up again over its own two keys, at the cost of
 # moving every byte twice. The wrapper would lose release-fetch,
 # packages-fetch and snapshot-fetch, and gain nothing else.
-restrict,from="<DOWNLOAD-IPV4>",command="/usr/bin/rrsync -ro /var/www/html/builds" ssh-ed25519 <...PULL-KEY...> pga-pull@download
+restrict,command="/usr/bin/rrsync -ro /var/www/html/builds" ssh-ed25519 <...PULL-KEY...> pga-pull@download
