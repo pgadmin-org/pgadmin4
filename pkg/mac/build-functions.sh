@@ -767,6 +767,74 @@ _codesign_dmg() {
              "${DMG_NAME}"
 }
 
+# The submission's status, or an empty string if Apple could not be reached.
+# Separate from the waiting below because both need it and because a failure
+# to ask is not the same thing as an answer.
+_notarize_status() {
+    local SUBMISSION_ID="$1"
+
+    xcrun notarytool info "${SUBMISSION_ID}" \
+        --team-id "${DEVELOPER_TEAM_ID}" \
+        --apple-id "${DEVELOPER_USER}" \
+        --password "${DEVELOPER_ASP}" 2>&1 | \
+        awk -F ': ' '/status:/ { print $2; }'
+}
+
+# Wait for a submission Apple has already accepted for processing.
+#
+# notarytool wait polls Apple for as long as the notarisation takes, which is
+# minutes at best and has been much longer, and it exits non-zero if any one of
+# those polls fails. A build farm runner losing its route for a few seconds
+# therefore failed a notarisation that was proceeding perfectly well on Apple's
+# side, which is what cost the 22nd September snapshot: the DMG had been
+# submitted, the ID was in hand, and the wait died with "The Internet
+# connection appears to be offline" twenty six minutes in.
+#
+# So a failed wait is retried rather than being taken as the answer. The
+# submission is not resubmitted, since it is still queued under the same ID and
+# a second copy would only be a second thing to wait for. Each failure asks for
+# the status directly, because notarytool wait also exits non-zero when the
+# submission genuinely finishes as Invalid or Rejected, and retrying that would
+# be waiting for an answer already given: any terminal status ends the loop and
+# leaves the caller's own check to decide what it means.
+_notarize_wait() {
+    local SUBMISSION_ID="$1"
+    local ATTEMPT=1
+    local ATTEMPTS=10
+    local DELAY=60
+    local STATUS
+
+    while [ "${ATTEMPT}" -le "${ATTEMPTS}" ]; do
+        if xcrun notarytool wait "${SUBMISSION_ID}" \
+                --team-id "${DEVELOPER_TEAM_ID}" \
+                --apple-id "${DEVELOPER_USER}" \
+                --password "${DEVELOPER_ASP}"; then
+            return 0
+        fi
+
+        STATUS=$(_notarize_status "${SUBMISSION_ID}")
+        case "${STATUS}" in
+            Accepted|Invalid|Rejected)
+                echo "Notarization finished whilst waiting, with status: ${STATUS}"
+                return 0
+                ;;
+        esac
+
+        if [ "${ATTEMPT}" -eq "${ATTEMPTS}" ]; then
+            break
+        fi
+
+        echo "Could not wait on submission ${SUBMISSION_ID} (attempt ${ATTEMPT} of ${ATTEMPTS})."
+        echo "The submission is still with Apple; retrying in ${DELAY} seconds."
+        sleep "${DELAY}"
+        ATTEMPT=$((ATTEMPT + 1))
+    done
+
+    echo "Gave up waiting for submission ${SUBMISSION_ID} after ${ATTEMPTS} attempts."
+    echo "Check it by hand with: xcrun notarytool info ${SUBMISSION_ID} ..."
+    return 1
+}
+
 _notarize_pkg() {
     local FILE_NAME="$1"
     local STAPLE_TARGET="$2"
@@ -789,17 +857,10 @@ _notarize_pkg() {
     echo "Notarization submission ID: ${SUBMISSION_ID}"
 
     echo "Waiting for Notarization to be completed ..."
-    xcrun notarytool wait "${SUBMISSION_ID}" \
-        --team-id "${DEVELOPER_TEAM_ID}" \
-        --apple-id "${DEVELOPER_USER}" \
-        --password "${DEVELOPER_ASP}"
+    _notarize_wait "${SUBMISSION_ID}"
 
     # Print status information
-    REQUEST_STATUS=$(xcrun notarytool info "${SUBMISSION_ID}" \
-        --team-id "${DEVELOPER_TEAM_ID}" \
-        --apple-id "${DEVELOPER_USER}" \
-        --password "${DEVELOPER_ASP}" 2>&1 | \
-        awk -F ': ' '/status:/ { print $2; }')
+    REQUEST_STATUS=$(_notarize_status "${SUBMISSION_ID}")
 
     if [[ "${REQUEST_STATUS}" != "Accepted" ]]; then
         echo "Notarization failed with status: ${REQUEST_STATUS}"
