@@ -116,10 +116,11 @@ $s.Save()
 ```
 
 Compiling it with Ahk2Exe and pointing the shortcut at the resulting `.exe`
-works equally well and is what the buildfarm did; the script reads the PIN from
-a file either way, so nothing secret ends up in the executable. If you use Task
-Scheduler instead of the Startup folder, choose "Run only when user is logged
-on", for the reason given above.
+works equally well, and the script reads the PIN from a file either way, so
+nothing secret ends up in the executable. Running the `.ahk` directly is one
+less thing to rebuild when the script changes, which is why it is written up
+that way here. If you use Task Scheduler instead of the Startup folder, choose
+"Run only when user is logged on", for the reason given above.
 
 To check it is running, look for the AutoHotkey icon in the notification area,
 or read the log at `%LOCALAPPDATA%\pgAdmin\certum-pin-handler.log`, which
