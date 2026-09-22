@@ -28,6 +28,8 @@ which verbs exist.
 | `rebuild-apt-repo.sh` | Index and sign one APT tree |
 | `rebuild-yum-repo.sh` | Index and sign one YUM tree, and make the EL compatibility links |
 | `install-repo-readme.py` | Write the README at the top of an APT or YUM tree |
+| `sync-ftp-to-s3.py` | Copy the download tree to the archive bucket, build its indexes and invalidate the CDN |
+| `purge-pgadmin-releases.sh` | Delete superseded releases from the download tree and from both repositories |
 | `README.apt.in`, `README.yum.in` | The prose those READMEs are built from |
 | `aptftp.conf` | `apt-ftparchive` settings: Origin, Label, Suite, Description |
 | `CURRENT_MAINTAINER` | The marker the PostgreSQL mirror network expects in each published directory |
@@ -35,10 +37,36 @@ which verbs exist.
 | `authorized_keys.staging`, `authorized_keys.download` | Annotated templates |
 | `selftest.sh` | Exercises the wrapper's parser without touching anything |
 
-The three scripts work standalone. Rebuilding a repository by hand after
+All five scripts work standalone. Rebuilding a repository by hand after
 purging old releases is what `rebuild-apt-repo.sh bookworm` has always been
 for, and that has not changed; the wrapper calls the same script rather than
 carrying its own copy of the logic.
+
+`sync-ftp-to-s3.py` and `purge-pgadmin-releases.sh` used to live in the
+`pgadmin-org/pgaweb` checkout under `tools/`, which was never really where
+they belonged: neither of them touches Django, the site database or Varnish,
+and both work on the download tree at `/var/ftp/pgadmin4`, so they are part of
+publishing rather than part of the website. They have moved here, and the
+wrapper's `sync-s3` verb now runs the copy installed from this directory
+rather than the one in the website checkout.
+
+That move has an order to it. The wrapper and the copy of `sync-ftp-to-s3.py`
+that it names must both be installed on the download server before the pgaweb
+side deletes its own copy, because until the new wrapper is in place the one
+running there is still looking for the script under `/var/www/pgaweb/tools`.
+The other three verbs that reach into that directory, `create-release`,
+`load-docs` and `purge-cache`, are genuinely website operations and stay
+exactly where they are.
+
+`purge-pgadmin-releases.sh` has no verb and is not meant to get one. It is run
+by hand, on the download server, by somebody who has decided that a release is
+old enough to go; it deletes things, and the whole point of the wrapper is
+that a compromised runner cannot delete anything that is already published.
+Its default is a dry run, so the shape of the work is to read what it proposes
+and then re-run it with `--live`, which is a conversation rather than a
+command, and nothing a workflow could sensibly have. Rebuilding the
+repositories afterwards is the standalone use of `rebuild-apt-repo.sh` and
+`rebuild-yum-repo.sh` described above.
 
 ## Installing
 
@@ -47,6 +75,7 @@ On both servers, as root:
 ```sh
 install -d -m 755 /usr/local/lib/pga-publish
 install -m 755 rebuild-apt-repo.sh rebuild-yum-repo.sh install-repo-readme.py \
+    sync-ftp-to-s3.py purge-pgadmin-releases.sh \
     /usr/local/lib/pga-publish/
 install -m 644 aptftp.conf README.apt.in README.yum.in CURRENT_MAINTAINER \
     /usr/local/lib/pga-publish/

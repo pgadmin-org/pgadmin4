@@ -1426,6 +1426,19 @@ def cmd_sync_s3(args, raw):
     snapshots, so there is nothing here for a caller to name. Its one argument
     is the CloudFront distribution, which is site configuration and is read
     from the server rather than accepted from the client.
+
+    sync-ftp-to-s3.py is run from PUBLISH_DIR rather than TOOLS_DIR because it
+    now ships in pkg/publish alongside the rebuild scripts: it writes to the
+    download tree and the archive bucket and has nothing to do with the
+    website, so keeping it in the pgaweb checkout meant the publishing
+    pipeline depended on a repository that has no other part in it.
+
+    That makes this a deployment-ordering change. This wrapper, and the copy
+    of the script in PUBLISH_DIR that it now names, must both be installed on
+    the download server before the pgaweb side deletes its own copy; do it the
+    other way round and the wrapper still deployed there goes looking in
+    TOOLS_DIR for a file that is no longer present, and sync-s3 fails for as
+    long as the gap lasts.
     """
     try:
         with open(CLOUDFRONT_CONF) as handle:
@@ -1441,7 +1454,7 @@ def cmd_sync_s3(args, raw):
         sys.stderr.write("pga-publish: invalid distribution id in %s\n"
                          % CLOUDFRONT_CONF)
         sys.exit(EX_UNAVAILABLE)
-    run([BIN_PYTHON, os.path.join(TOOLS_DIR, "sync-ftp-to-s3.py"),
+    run([BIN_PYTHON, os.path.join(PUBLISH_DIR, "sync-ftp-to-s3.py"),
          distribution])
     print("synced the download archive")
 
