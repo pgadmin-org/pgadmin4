@@ -121,7 +121,7 @@ define('pgadmin.browser.utils',
       menus: [
         {% if auth_only_internal %}
         {
-          label: '{{ _('Change Password') }}',
+          label: '{{ _('Change pgAdmin Password') }}',
           type: 'normal',
           callback: ()=>{
             pgAdmin.UserManagement.change_password(
