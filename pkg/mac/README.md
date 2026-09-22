@@ -38,9 +38,9 @@ Either build the sources or get them from macports or similar:
 ## Building
 
 1. The version of Python that gets bundled is read from
-   *pkg/python-version.txt*, which every platform's packaging shares so that
-   one commit cannot ship different interpreters on different systems. To
-   bundle a different version, edit that file.
+   *pkg/python-version.txt*, which the Windows packaging reads as well so that
+   one commit cannot ship different interpreters on the two platforms that
+   bundle one. To bundle a different version, edit that file.
 
 2. If a path different from the default of /usr/local/pgsql for the PostgreSQL
    installation has been used, set the *PGADMIN_POSTGRES_DIR* environment variable

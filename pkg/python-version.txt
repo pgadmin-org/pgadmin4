@@ -1,10 +1,15 @@
 # The Python that pgAdmin builds against and ships.
 #
-# Every platform's packaging reads this file, so that a given commit produces
-# the same interpreter everywhere rather than whichever one happened to be
-# installed on the machine that ran the build, and so that a change of version
-# arrives as a reviewable commit rather than as a settings change somebody made
-# on a build agent.
+# The Windows and macOS packaging read this file. Both ship an interpreter
+# inside the package, because the one on the user's machine may be missing
+# altogether or far too old, so the version has to be decided somewhere; fixing
+# it here means a given commit produces the same interpreter rather than
+# whichever one happened to be installed on the machine that ran the build, and
+# that a change of version arrives as a reviewable commit rather than as a
+# settings change somebody made on a build agent.
+#
+# The Linux packages do not read it and should not: they depend on the
+# distribution's Python, which is the distribution's business rather than ours.
 #
 # The format is deliberately dull: KEY=value, one per line, with # comments. It
 # has to be read by a batch file, a shell script and occasionally a person, and
