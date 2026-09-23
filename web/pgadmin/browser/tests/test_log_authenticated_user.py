@@ -21,6 +21,7 @@ Covers the two request hooks that emit the X-Remote-User response header
     strips any incoming/spoofed header when there is no user.
 """
 
+import config
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -186,9 +187,15 @@ class TestHeaderOnLiveLogoutRequest(BaseTestGenerator):
             response = self.tester.get('/logout')
             self.assertEqual(response.headers.get('X-Remote-User'), username)
 
-            # ...and once logged out, nothing is reported any more.
+            # ...and once logged out, nothing is reported any more. In
+            # desktop mode the next request logs the desktop user straight
+            # back in, so it is reported again instead.
             response = self.tester.get('/browser/')
-            self.assertIsNone(response.headers.get('X-Remote-User'))
+            if config.SERVER_MODE:
+                self.assertIsNone(response.headers.get('X-Remote-User'))
+            else:
+                self.assertEqual(response.headers.get('X-Remote-User'),
+                                 username)
         finally:
             self.app.config['LOG_AUTHENTICATED_USER'] = False
 
