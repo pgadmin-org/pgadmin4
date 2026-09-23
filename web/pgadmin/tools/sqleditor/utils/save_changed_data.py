@@ -337,11 +337,9 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 )
 
                 try:
-                    # Fetch oids/primary keys
-                    if 'select_sql' in item and item['select_sql']:
-                        status, res = conn.execute_dict(
-                            item['sql'], item['data'])
-                    elif needs_rows_affected:
+                    # Fetch oids/primary keys, or the true rows-affected
+                    # count for a view's UPDATE/DELETE
+                    if item.get('select_sql') or needs_rows_affected:
                         status, res = conn.execute_dict(
                             item['sql'], item['data'])
                     else:
