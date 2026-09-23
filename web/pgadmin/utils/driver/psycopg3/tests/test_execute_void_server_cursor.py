@@ -228,6 +228,20 @@ class IsTransactionControlTest(BaseTestGenerator):
         # "beginx" is not "begin".
         ('a keyword prefix', dict(sql='BEGINNING;', expected=False)),
         ('an empty statement', dict(sql='   ', expected=False)),
+        ('a leading line comment',
+         dict(sql='-- finish up\nCOMMIT;', expected=True)),
+        ('a leading block comment',
+         dict(sql='/* finish up */ COMMIT;', expected=True)),
+        ('a nested block comment',
+         dict(sql='/* outer /* inner */ still outer */ROLLBACK;',
+              expected=True)),
+        ('several leading comments',
+         dict(sql='  -- one\n/* two */\n\t-- three\nBEGIN;', expected=True)),
+        ('a comment ahead of a SELECT',
+         dict(sql='/* COMMIT */ SELECT 1;', expected=False)),
+        ('only a comment', dict(sql='-- COMMIT', expected=False)),
+        ('an unterminated block comment',
+         dict(sql='/* COMMIT;', expected=False)),
     ]
 
     def runTest(self):

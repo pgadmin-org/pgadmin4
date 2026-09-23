@@ -69,15 +69,52 @@ TRANSACTION_CONTROL_KEYWORDS = frozenset({
 })
 
 
+def _skip_leading_comments(query):
+    """
+    Return the given statement with any leading whitespace and SQL comments
+    removed. Both -- line comments and /* */ block comments are skipped,
+    the latter nesting as they do in PostgreSQL.
+
+    Args:
+        query: SQL statement
+    """
+    pos = 0
+    length = len(query)
+
+    while pos < length:
+        if query[pos].isspace():
+            pos += 1
+        elif query.startswith('--', pos):
+            newline = query.find('\n', pos)
+            pos = length if newline == -1 else newline + 1
+        elif query.startswith('/*', pos):
+            depth = 1
+            pos += 2
+            while pos < length and depth:
+                if query.startswith('/*', pos):
+                    depth += 1
+                    pos += 2
+                elif query.startswith('*/', pos):
+                    depth -= 1
+                    pos += 2
+                else:
+                    pos += 1
+        else:
+            break
+
+    return query[pos:]
+
+
 def _is_transaction_control(query):
     """
     Report whether the given statement is a transaction-control statement,
-    judged by its leading keyword.
+    judged by its leading keyword once any leading comments are skipped.
 
     Args:
         query: SQL statement, as passed to execute_void()
     """
-    keyword = query.strip().split(None, 1)[0] if query.strip() else ''
+    words = _skip_leading_comments(query).split(None, 1)
+    keyword = words[0] if words else ''
 
     return keyword.rstrip(';').lower() in TRANSACTION_CONTROL_KEYWORDS
 
