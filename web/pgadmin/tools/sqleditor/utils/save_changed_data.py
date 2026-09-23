@@ -192,6 +192,11 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     columns_info[k].get('is_editable', True)
                 }
 
+                # Nothing editable left to write, so there is no UPDATE
+                # to run (rendering one would leave an empty SET clause).
+                if not data:
+                    continue
+
                 pk_escaped = {
                     pk: pk_val.replace('%', '%%') if hasattr(
                         pk_val, 'replace') else pk_val

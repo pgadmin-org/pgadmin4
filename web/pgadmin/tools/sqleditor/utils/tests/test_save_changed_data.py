@@ -1102,6 +1102,45 @@ class TestSaveUpdatedRowSkipsNonEditableColumn(TestSaveChangedData):
                        'FROM %s WHERE id = 1',
              check_result=[[1, "Jane", "Doe"]]
          )),
+        ('Update containing only an aliased expression column is a '
+         'no-op', dict(
+             save_payload={
+                 "updated": {
+                     "1": {
+                         "err": False,
+                         "data": {"the_name": "Jane Doe"},
+                         "primary_keys": {"id": 1}
+                     }
+                 },
+                 "added": {},
+                 "staged_rows": {},
+                 "deleted": {},
+                 "updated_index": {"1": "1"},
+                 "added_index": {},
+                 "columns": [
+                     {"name": "id", "pos": 0, "can_edit": True,
+                      "type": "integer", "cell": "number",
+                      "not_null": True, "has_default_val": False,
+                      "is_array": False, "display_name": "id"},
+                     {"name": "first_name", "pos": 1, "can_edit": True,
+                      "type": "text", "cell": "string",
+                      "not_null": False, "has_default_val": False,
+                      "is_array": False, "display_name": "first_name"},
+                     {"name": "last_name", "pos": 2, "can_edit": True,
+                      "type": "text", "cell": "string",
+                      "not_null": False, "has_default_val": False,
+                      "is_array": False, "display_name": "last_name"},
+                     {"name": "the_name", "pos": 3, "can_edit": False,
+                      "type": "text", "cell": "string",
+                      "not_null": False, "has_default_val": False,
+                      "is_array": False, "display_name": "the_name"},
+                 ]
+             },
+             save_status=True,
+             check_sql='SELECT id, first_name, last_name '
+                       'FROM %s WHERE id = 1',
+             check_result=[[1, "John", "Doe"]]
+         )),
     ]
 
     def _create_test_table(self):
