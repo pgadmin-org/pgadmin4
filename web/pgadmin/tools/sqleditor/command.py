@@ -667,9 +667,18 @@ class ViewCommand(GridCommand):
         # call base class init to fetch the table name
         super().__init__(**kwargs)
 
-        # Cache for the editability check (and the primary key info it
-        # resolves along the way), so a view's updatability only needs to
-        # be worked out once per request. None means "not yet determined".
+        self._reset_edit_cache()
+
+    def _reset_edit_cache(self):
+        """
+        Cache for the editability check (and the primary key info it
+        resolves along the way). The command object is pickled into the
+        session, so this lives for as long as the grid does; get_sql()
+        clears it so that every data load (initial, refresh, filter or
+        sort) re-checks the view's current definition, and the save path
+        then uses what that load resolved. None means "not yet
+        determined".
+        """
         self._can_edit = None
         self._pk_names = ''
         self._primary_keys = OrderedDict()
@@ -679,6 +688,10 @@ class ViewCommand(GridCommand):
         This method is used to create a proper SQL query
         to fetch the data for the specified view
         """
+        # A new data load: re-check the view's editability and key
+        # columns rather than trusting what an earlier load resolved.
+        self._reset_edit_cache()
+
         sql_filter = self.get_filter()
         data_sorting = self.get_data_sorting()
 
