@@ -380,19 +380,35 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 # while not actually identifying a single base row. Refuse
                 # to let such a change stand rather than silently
                 # rewriting more rows than intended.
-                if needs_rows_affected and \
-                        rows_affected != item.get('expected_rows', 1):
-                    return failure_handle(
-                        gettext(
+                expected_rows = item.get('expected_rows', 1)
+                if needs_rows_affected and rows_affected != expected_rows:
+                    if rows_affected > expected_rows:
+                        msg = gettext(
                             'This change was not applied: it would have '
                             'affected %(actual)s row(s) in the '
                             'underlying table instead of the %(expected)s '
                             'expected. The view\'s apparent primary key '
                             'does not uniquely identify the affected '
                             'row(s).'
-                        ) % {
+                        )
+                    else:
+                        # Fewer rows than expected: the target row(s)
+                        # have gone, changed key, or are no longer
+                        # visible through the view (its WHERE clause,
+                        # row-level security, or another session).
+                        msg = gettext(
+                            'This change was not applied: it would have '
+                            'affected %(actual)s row(s) in the '
+                            'underlying table instead of the %(expected)s '
+                            'expected. The row(s) may have been changed '
+                            'or deleted by another session, or may no '
+                            'longer be visible through the view; refresh '
+                            'the data and try again.'
+                        )
+                    return failure_handle(
+                        msg % {
                             'actual': rows_affected,
-                            'expected': item.get('expected_rows', 1)
+                            'expected': expected_rows
                         },
                         item.get('row_id', 0)
                     )
