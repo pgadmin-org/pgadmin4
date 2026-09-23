@@ -458,10 +458,23 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                     ).format(arg)
                 )
 
+        # The templates iterate over these, so a string (whose len() is its
+        # character count) must not slip past the checks below.
+        for arg in ('columns', 'stat_types'):
+            if data.get(arg) is not None and \
+                    not isinstance(data.get(arg), list):
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "The parameter ({}) must be a list."
+                    ).format(arg)
+                )
+
         # The expression list is passed to the server verbatim: it is a list
         # of SQL expressions, and splitting it on commas here would mangle
         # anything with an argument list, such as coalesce(col1, col2).
-        has_columns = 'columns' in data and len(data.get('columns', [])) > 0
+        has_columns = len(data.get('columns') or []) > 0
         has_expressions = bool(
             (data.get('expression_list') or '').strip()
         )
@@ -481,7 +494,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         # so only the columns-only case can be checked here; PostgreSQL has
         # the final say on the expression list.
         if has_columns and not has_expressions and \
-                len(data.get('columns', [])) < 2:
+                len(data['columns']) < 2:
             return make_json_response(
                 status=400,
                 success=0,
@@ -495,7 +508,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         # form. PostgreSQL's univariate expression statistics (a single
         # expression, no columns) do not accept a statistics-kind clause at
         # all, so that form is left for the server to validate.
-        if has_columns and len(data.get('stat_types', [])) < 1:
+        if has_columns and len(data.get('stat_types') or []) < 1:
             return make_json_response(
                 status=400,
                 success=0,

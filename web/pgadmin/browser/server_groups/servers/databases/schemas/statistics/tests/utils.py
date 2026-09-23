@@ -90,6 +90,7 @@ def create_table_for_statistics(server, db_name, schema_name, table_name):
     Returns:
         table OID
     """
+    connection = None
     try:
         connection = test_utils.get_db_connection(
             db_name,
@@ -125,12 +126,14 @@ def create_table_for_statistics(server, db_name, schema_name, table_name):
         )
         table = pg_cursor.fetchone()
         table_oid = table[0] if table else None
-        connection.close()
 
         return table_oid
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+    finally:
+        if connection:
+            connection.close()
 
 
 def create_statistics(server, db_name, schema_name, table_name,
@@ -150,6 +153,7 @@ def create_statistics(server, db_name, schema_name, table_name,
     Returns:
         statistics OID
     """
+    connection = None
     try:
         connection = test_utils.get_db_connection(
             db_name,
@@ -182,12 +186,14 @@ def create_statistics(server, db_name, schema_name, table_name,
         statistics_oid = statistics[0]
         test_utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
-        connection.close()
 
         return statistics_oid
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+    finally:
+        if connection:
+            connection.close()
 
 
 def execute_statement(server, db_name, statement):
@@ -342,6 +348,7 @@ def verify_statistics(server, db_name, statistics_name):
     Returns:
         statistics details (oid, name)
     """
+    connection = None
     try:
         connection = test_utils.get_db_connection(
             db_name,
@@ -357,11 +364,13 @@ def verify_statistics(server, db_name, statistics_name):
             f"WHERE s.stxname = '{statistics_name}'"
         )
         statistics = pg_cursor.fetchone()
-        connection.close()
         return statistics
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+    finally:
+        if connection:
+            connection.close()
 
 
 def get_statistics_id(server, db_name, statistics_name):
@@ -376,6 +385,7 @@ def get_statistics_id(server, db_name, statistics_name):
     Returns:
         statistics OID or None
     """
+    connection = None
     try:
         connection = test_utils.get_db_connection(
             db_name,
@@ -392,11 +402,13 @@ def get_statistics_id(server, db_name, statistics_name):
         )
         statistics = pg_cursor.fetchone()
         statistics_id = statistics[0] if statistics else None
-        connection.close()
         return statistics_id
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+    finally:
+        if connection:
+            connection.close()
 
 
 def delete_statistics(server, db_name, schema_name, statistics_name):
@@ -412,6 +424,7 @@ def delete_statistics(server, db_name, schema_name, statistics_name):
     Returns:
         None
     """
+    connection = None
     try:
         connection = test_utils.get_db_connection(
             db_name,
@@ -430,10 +443,12 @@ def delete_statistics(server, db_name, schema_name, statistics_name):
 
         test_utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
-        connection.close()
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+    finally:
+        if connection:
+            connection.close()
 
 
 def get_statistics_columns(server, db_name, statistics_oid):
@@ -448,6 +463,7 @@ def get_statistics_columns(server, db_name, statistics_oid):
     Returns:
         list of column names
     """
+    connection = None
     try:
         connection = test_utils.get_db_connection(
             db_name,
@@ -468,8 +484,10 @@ def get_statistics_columns(server, db_name, statistics_oid):
             f"WHERE s.oid = {statistics_oid}"
         )
         columns = pg_cursor.fetchone()
-        connection.close()
         return columns[0] if columns else []
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+    finally:
+        if connection:
+            connection.close()

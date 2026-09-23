@@ -34,16 +34,16 @@ describe('StatisticsSchema', () => {
     genericBeforeEach();
   });
 
-  it('create', () => {
-    getCreateView(createSchemaObj());
+  it('create', async () => {
+    await getCreateView(createSchemaObj());
   });
 
-  it('edit', () => {
-    getEditView(createSchemaObj(), getInitData);
+  it('edit', async () => {
+    await getEditView(createSchemaObj(), getInitData);
   });
 
-  it('properties', () => {
-    getPropertiesView(createSchemaObj(), getInitData);
+  it('properties', async () => {
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('name is required before PostgreSQL 16 and optional from 16', () => {
