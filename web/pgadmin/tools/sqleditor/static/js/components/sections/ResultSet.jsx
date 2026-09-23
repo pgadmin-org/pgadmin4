@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState }  from 'react';
 import QueryToolDataGrid, { GRID_ROW_SELECT_KEY } from '../QueryToolDataGrid';
-import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS} from '../QueryToolConstants';
+import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS, DEFAULT_RESULT_DOWNLOAD_FORMAT} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -476,7 +476,7 @@ export class ResultSetUtils {
       });
   }
 
-  async saveResultsToFile(fileName, onProgress, dataFormat='csv') {
+  async saveResultsToFile(fileName, onProgress, dataFormat=DEFAULT_RESULT_DOWNLOAD_FORMAT) {
     const mimeTypes = {csv: 'text/csv', json: 'application/json', xml: 'application/xml'};
     try {
       await DownloadUtils.downloadFileStream({
@@ -1053,7 +1053,7 @@ export function ResultSet() {
       setLoaderText(null);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async (dataFormat='csv')=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async (dataFormat=DEFAULT_RESULT_DOWNLOAD_FORMAT)=>{
       const csvExtension = queryToolCtx.preferences?.sqleditor?.csv_field_separator === ',' ? '.csv': '.txt';
       let extension = {csv: csvExtension, json: '.json', xml: '.xml'}[dataFormat] ?? csvExtension;
       let fileName = 'data-' + new Date().getTime() + extension;

@@ -26,7 +26,7 @@ import EditOffRoundedIcon from '@mui/icons-material/EditOffRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import AllInboxRoundedIcon from '@mui/icons-material/AllInboxRounded';
 
-import {QUERY_TOOL_EVENTS} from '../QueryToolConstants';
+import {QUERY_TOOL_EVENTS, RESULT_DOWNLOAD_FORMATS, DEFAULT_RESULT_DOWNLOAD_FORMAT} from '../QueryToolConstants';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
@@ -310,7 +310,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   const addRow = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, [[]], {isNewRow: true});
   }, []);
-  const downloadResult = useCallback((fmt='csv')=>{
+  const downloadResult = useCallback((fmt=DEFAULT_RESULT_DOWNLOAD_FORMAT)=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, fmt);
   }, []);
   const showGraphVisualiser = useCallback(()=>{
@@ -441,7 +441,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
           </PgButtonGroup>
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('Save results to file')} icon={<GetAppRoundedIcon />}
-              onClick={()=>downloadResult('csv')} shortcut={queryToolPref.download_results}
+              onClick={()=>downloadResult(DEFAULT_RESULT_DOWNLOAD_FORMAT)} shortcut={queryToolPref.download_results}
               disabled={buttonsDisabled['save-result']} />
             <PgIconButton title={gettext('Save results options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-downloadoptions" ref={downloadMenuRef} onClick={openMenu}
@@ -508,9 +508,9 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
         onClose={handleMenuClose}
         label={gettext('Save Results Options Menu')}
       >
-        <PgMenuItem onClick={()=>downloadResult('csv')}>{gettext('Save as CSV/Text')}</PgMenuItem>
-        <PgMenuItem onClick={()=>downloadResult('json')}>{gettext('Save as JSON')}</PgMenuItem>
-        <PgMenuItem onClick={()=>downloadResult('xml')}>{gettext('Save as XML')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult(RESULT_DOWNLOAD_FORMATS.CSV)}>{gettext('Save as CSV/Text')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult(RESULT_DOWNLOAD_FORMATS.JSON)}>{gettext('Save as JSON')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult(RESULT_DOWNLOAD_FORMATS.XML)}>{gettext('Save as XML')}</PgMenuItem>
       </PgMenu>
     </>
   );

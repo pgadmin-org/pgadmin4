@@ -2211,11 +2211,13 @@ def start_query_download_tool(trans_id):
             '-', '').replace('_', '')
         is_utf = normalized_encoding.startswith('utf')
         # The 'utf-16' and 'utf-32' codecs (without an explicit endianness
-        # suffix) emit their own BOM, so we must not hand-prepend one too;
-        # doing so would produce two BOMs and corrupt the output. The
-        # explicit-endian forms (utf-16-le/-be, utf-32-le/-be) and utf-8 do
-        # not self-emit a BOM, so for those we keep writing it ourselves.
-        codec_self_emits_bom = normalized_encoding in ('utf16', 'utf32')
+        # suffix) and 'utf-8-sig' emit their own BOM, so we must not
+        # hand-prepend one too; doing so would produce two BOMs and corrupt
+        # the output. The explicit-endian forms (utf-16-le/-be,
+        # utf-32-le/-be) and utf-8 do not self-emit a BOM, so for those we
+        # keep writing it ourselves.
+        codec_self_emits_bom = normalized_encoding in (
+            'utf16', 'utf32', 'utf8sig')
 
         str_gen = gen(conn_obj,
                       trans_obj,

@@ -321,6 +321,33 @@ class TestDownloadResultFormats(BaseTestGenerator):
                      'FROM generate_series(1, 25) g')
         ),
         (
+            # utf-8-sig self-emits a BOM too, so asking for one as well
+            # must still produce exactly one.
+            'Download CSV as utf-8-sig has exactly one BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-8-sig',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
+            # JSON and XML are streamed a fetched batch at a time, so a
+            # result spanning several batches must still join up into one
+            # well-formed document holding every row.
+            'Download multi-chunk results as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json', expected_rows=25,
+                 sql='SELECT g as "A", g * 2 as "B", \'x\' as "C" '
+                     'FROM generate_series(1, 25) g')
+        ),
+        (
+            'Download multi-chunk results as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml', expected_rows=25,
+                 sql='SELECT g as "A", g * 2 as "B", \'x\' as "C" '
+                     'FROM generate_series(1, 25) g')
+        ),
+        (
             # A bogus, non-existent codec must be rejected up front with a
             # clean 400, rather than blowing up mid-stream after a 200.
             'Download CSV with an invalid output encoding returns 400',
@@ -427,6 +454,7 @@ class TestDownloadResultFormats(BaseTestGenerator):
     empty_result = False
     filename_override = None
     non_latin1_char = None
+    expected_rows = None
 
     def setUp(self):
         self._db_name = 'download_results_fmt_' + str(
@@ -590,6 +618,7 @@ class TestDownloadResultFormats(BaseTestGenerator):
             # that already self-emit one, e.g. utf-16/utf-32).
             bom = {
                 'utf8': codecs.BOM_UTF8,
+                'utf8sig': codecs.BOM_UTF8,
                 'utf16': codecs.BOM_UTF16,
                 'utf32': codecs.BOM_UTF32,
             }[normalized]
@@ -619,11 +648,17 @@ class TestDownloadResultFormats(BaseTestGenerator):
             self.assertEqual(parsed[0]['A'], 1)
             self.assertEqual(parsed[0]['B'], 2)
             self.assertEqual(parsed[0]['C'], 'x')
+            if self.expected_rows is not None:
+                self.assertEqual(len(parsed), self.expected_rows)
         elif self.data_format == 'xml':
             self.assertIn('<data_output>', body)
             self.assertIn('<column name="A">1</column>', body)
             self.assertIn('<column name="C">x</column>', body)
             self.assertIn('</data_output>', body)
+            if self.expected_rows is not None:
+                root = ElementTree.fromstring(body)
+                self.assertEqual(len(root.findall('row')),
+                                 self.expected_rows)
         else:
             self.assertIn('"A","B","C"', body)
             if self.non_latin1_char:

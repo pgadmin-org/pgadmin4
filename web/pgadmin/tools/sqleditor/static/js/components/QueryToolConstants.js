@@ -123,4 +123,12 @@ export const PANELS = {
 
 export const MAX_QUERY_LENGTH = 1000000;
 
+export const RESULT_DOWNLOAD_FORMATS = {
+  CSV: 'csv',
+  JSON: 'json',
+  XML: 'xml',
+};
+
+export const DEFAULT_RESULT_DOWNLOAD_FORMAT = RESULT_DOWNLOAD_FORMATS.CSV;
+
 export const OS_EOL = getPlatform() === 'Windows' ? 'crlf' : 'lf';

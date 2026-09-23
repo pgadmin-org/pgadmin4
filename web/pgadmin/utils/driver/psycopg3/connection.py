@@ -39,7 +39,7 @@ from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
 from .typecast import register_binary_data_typecasters,\
     register_global_typecasters, register_string_typecasters,\
     register_binary_typecasters, register_array_to_string_typecasters,\
-    register_numeric_typecasters, ALL_JSON_TYPES
+    register_numeric_typecasters
 from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.utils import csv_lib as csv
@@ -133,15 +133,18 @@ def _generate_json(cur, records, results):
     NULL, whereas JSON has null, and substituting the placeholder string
     would turn every NULL into ordinary text.
     """
-    yield '['
-    is_first_row = True
+    # One chunk per fetched batch rather than per row, as the CSV path does,
+    # so a large export is not streamed as a very long run of tiny pieces.
+    separator = '['
     while results:
+        batch = []
         for row in results:
-            row_json = json.dumps(
+            batch.append(separator)
+            batch.append(json.dumps(
                 {key: _json_safe(value) for key, value in dict(row).items()},
-                default=_json_default, allow_nan=False)
-            yield row_json if is_first_row else ',' + row_json
-            is_first_row = False
+                default=_json_default, allow_nan=False))
+            separator = ','
+        yield ''.join(batch)
         results = cur.fetchmany(records)
     yield ']'
 
@@ -156,19 +159,21 @@ def _generate_xml(cur, records, results, header):
     """
     yield '<?xml version="1.0" encoding="UTF-8"?>\n<data_output>'
     while results:
+        # As with JSON, one chunk per fetched batch rather than per row.
+        batch = []
         for row in results:
-            row_io = ['<row>']
+            batch.append('<row>')
             for column in header:
                 value = row.get(column)
                 if value is None:
-                    row_io.append(
+                    batch.append(
                         '<column name={0} null="true"/>'.format(
                             _xml_attr(column)))
                 else:
-                    row_io.append('<column name={0}>{1}</column>'.format(
+                    batch.append('<column name={0}>{1}</column>'.format(
                         _xml_attr(column), _xml_text(value)))
-            row_io.append('</row>')
-            yield ''.join(row_io)
+            batch.append('</row>')
+        yield ''.join(batch)
         results = cur.fetchmany(records)
     yield '</data_output>'
 
@@ -1075,14 +1080,10 @@ WHERE db.datname = current_database()""")
             results = cur.fetchmany(records)
 
             header = []
-            json_columns = []
 
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
-                column_name = c.to_dict()['name']
-                header.append(column_name)
-                if c.to_dict()['type_code'] in ALL_JSON_TYPES:
-                    json_columns.append(column_name)
+                header.append(c.to_dict()['name'])
 
             if not results:
                 # An empty result must still come back in the requested

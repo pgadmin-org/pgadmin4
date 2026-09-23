@@ -591,11 +591,13 @@ Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
   specified string in the output file. Default is set to 'NULL'.
 * Use the *Output file encoding* drop-down listbox to specify the character
   encoding used when saving query results to a file. The default is utf-8; an
-  encoding that is not listed can also be typed in.
+  encoding that is not listed can also be typed in. Any character that the
+  chosen encoding cannot represent is written as a question mark (?).
 * Use the *Add byte order mark (BOM)?* switch to add a byte order mark at the
   start of the saved file when a UTF encoding is used. This helps applications
   such as Microsoft Excel detect the encoding correctly. This applies to the
-  CSV/TXT output only.
+  CSV/TXT output only. The utf-16, utf-32 and utf-8-sig encodings always
+  include a BOM, whatever this is set to.
 
 .. image:: images/preferences_sql_display.png
     :alt: Preferences sqleditor display options

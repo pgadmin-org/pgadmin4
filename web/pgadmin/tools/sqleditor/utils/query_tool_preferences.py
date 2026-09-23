@@ -322,7 +322,9 @@ def register_query_tool_preferences(self):
         },
         help_str=gettext('The character encoding used when saving query '
                          'results to a file. Defaults to utf-8. A different '
-                         'encoding can be typed in if it is not listed.')
+                         'encoding can be typed in if it is not listed. '
+                         'Any character that the chosen encoding cannot '
+                         'represent is written as a question mark (?).')
     )
 
     self.csv_add_bom = self.preference.register(
@@ -332,7 +334,9 @@ def register_query_tool_preferences(self):
         help_str=gettext('If set to True, a byte order mark (BOM) is added at '
                          'the start of the saved file when a UTF encoding is '
                          'used. This helps applications such as Microsoft '
-                         'Excel detect the encoding correctly.')
+                         'Excel detect the encoding correctly. The utf-16, '
+                         'utf-32 and utf-8-sig encodings always include a '
+                         'BOM, whatever this is set to.')
     )
 
     self.results_grid_quoting = self.preference.register(
