@@ -34,6 +34,9 @@ class TestNormaliseSerialColumn(BaseTestGenerator):
         ('A partial update that never mentions cltype leaves an '
          'already-SERIAL column alone',
          dict(test_method='test_partial_update_without_cltype_is_ignored')),
+        ('A partial update that only changes the type of a SERIAL column '
+         'keeps its sequence',
+         dict(test_method='test_type_change_without_defval_keeps_serial')),
     ]
 
     def runTest(self):
@@ -122,3 +125,19 @@ class TestNormaliseSerialColumn(BaseTestGenerator):
         BaseTableView._normalise_serial_column(data, old_col_data)
 
         self.assertEqual(data, {'attacl': {'added': []}})
+
+    def test_type_change_without_defval_keeps_serial(self):
+        # Widening a SERIAL column to bigint in the table dialog sends
+        # only the new 'cltype'. With its nextval() default untouched the
+        # column is still SERIAL, so its sequence must not be queued for
+        # dropping (PostgreSQL would refuse whilst the default uses it).
+        data = {'cltype': 'bigint'}
+        old_col_data = {
+            'cltype': 'integer', 'typname': 'integer',
+            'defval': "nextval('public.t_id_seq'::regclass)",
+            'seqrelid': 100, 'defseqrelid': 100, 'attidentity': '',
+        }
+
+        BaseTableView._normalise_serial_column(data, old_col_data)
+
+        self.assertEqual(data, {'cltype': 'bigint'})
