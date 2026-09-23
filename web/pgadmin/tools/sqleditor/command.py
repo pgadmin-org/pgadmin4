@@ -11,7 +11,7 @@
 
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
-from flask import render_template
+from flask import render_template, current_app
 from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 from pgadmin.utils.ajax import forbidden
@@ -439,6 +439,30 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         self.server_cursor = server_cursor
 
 
+def _grid_columns_types(command_obj, conn):
+    """
+    Fetch column type/attribute info for the result of a TableCommand or
+    ViewCommand, resolved against the relation's own catalog entry.
+    """
+    columns_info = conn.get_column_info()
+    has_oids = command_obj.has_oids()
+    table_name = None
+    table_nspname = None
+    table_oid = _check_single_table(columns_info)
+    if table_oid is None:
+        table_name = command_obj.object_name
+        table_nspname = command_obj.nsp_name
+
+    return get_columns_types(conn=conn,
+                             columns_info=columns_info,
+                             has_oids=has_oids,
+                             table_oid=table_oid,
+                             is_query_tool=False,
+                             table_name=table_name,
+                             table_nspname=table_nspname,
+                             )
+
+
 class TableCommand(GridCommand):
     """
     class TableCommand(GridCommand)
@@ -620,23 +644,7 @@ class TableCommand(GridCommand):
                                  conn=conn)
 
     def get_columns_types(self, conn):
-        columns_info = conn.get_column_info()
-        has_oids = self.has_oids()
-        table_name = None
-        table_nspname = None
-        table_oid = _check_single_table(columns_info)
-        if table_oid is None:
-            table_name = self.object_name
-            table_nspname = self.nsp_name
-
-        return get_columns_types(conn=conn,
-                                 columns_info=columns_info,
-                                 has_oids=has_oids,
-                                 table_oid=table_oid,
-                                 is_query_tool=False,
-                                 table_name=table_name,
-                                 table_nspname=table_nspname,
-                                 )
+        return _grid_columns_types(self, conn)
 
 
 class ViewCommand(GridCommand):
@@ -801,7 +809,11 @@ class ViewCommand(GridCommand):
             self._primary_keys = primary_keys
             self._can_edit = True
         except Exception:
-            # Fail closed - never let can_edit() raise.
+            # Fail closed - never let can_edit() raise, but keep the
+            # cause diagnosable.
+            current_app.logger.debug(
+                'Could not determine whether view %s.%s is editable',
+                self.nsp_name, self.object_name, exc_info=True)
             return False
 
         return self._can_edit
@@ -883,29 +895,13 @@ class ViewCommand(GridCommand):
     def get_columns_types(self, conn):
         """
         Fetch column type/attribute info for the view's own output
-        columns, the same way TableCommand does for a table. Reused
-        as-is: for a simple 1:1 view the driver reports every result
+        columns, the same way TableCommand does for a table: for a
+        simple 1:1 view the driver reports every result
         column's table_oid as the view's own oid (see
         _check_single_table), so this resolves against the view's own
         catalog entry exactly like it does for a table.
         """
-        columns_info = conn.get_column_info()
-        has_oids = self.has_oids()
-        table_name = None
-        table_nspname = None
-        table_oid = _check_single_table(columns_info)
-        if table_oid is None:
-            table_name = self.object_name
-            table_nspname = self.nsp_name
-
-        return get_columns_types(conn=conn,
-                                 columns_info=columns_info,
-                                 has_oids=has_oids,
-                                 table_oid=table_oid,
-                                 is_query_tool=False,
-                                 table_name=table_name,
-                                 table_nspname=table_nspname,
-                                 )
+        return _grid_columns_types(self, conn)
 
     def can_filter(self):
         return True

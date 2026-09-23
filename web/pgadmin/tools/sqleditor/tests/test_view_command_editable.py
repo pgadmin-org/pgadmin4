@@ -29,7 +29,81 @@ from pgadmin.tools.sqleditor.tests.execute_query_test_utils import \
 VIEW_ALL_ROWS = 3
 
 
-class TestViewCommandEditable(BaseTestGenerator):
+class _ViewSaveTestMixin:
+    """ Shared plumbing for every test class below: a fresh connection,
+    a helper to fetch a relation's oid, and the
+    initialize/start/poll/save/close HTTP calls, without any
+    scenario-table machinery (each class brings its own setup and
+    assertions). """
+
+    def _connect(self):
+        database_info = parent_node_dict["database"][-1]
+        self.db_name = database_info["db_name"]
+        self.server_id = database_info["server_id"]
+        self.db_id = database_info["db_id"]
+
+        db_con = database_utils.connect_database(
+            self, utils.SERVER_GROUP, self.server_id, self.db_id)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to the database.")
+
+        self.connection = utils.get_db_connection(
+            self.db_name,
+            self.server['username'],
+            self.server['db_password'],
+            self.server['host'],
+            self.server['port']
+        )
+
+    def _get_relation_oid(self, relname, relkind='v'):
+        pg_cursor = self.connection.cursor()
+        pg_cursor.execute(
+            "SELECT oid FROM pg_catalog.pg_class WHERE relname = %s "
+            "AND relkind = %s", (relname, relkind))
+        result = pg_cursor.fetchall()
+        self.connection.commit()
+        return result[0][0]
+
+    def _initialize_view_data(self, obj_id, obj_type='view', body=None):
+        trans_id = str(secrets.choice(range(1, 9999999)))
+        url = '/sqleditor/initialize/viewdata/{0}/{1}/{2}/{3}/{4}/{5}/{6}' \
+            .format(trans_id, VIEW_ALL_ROWS, obj_type,
+                    utils.SERVER_GROUP, self.server_id, self.db_id, obj_id)
+        if body is not None:
+            response = self.tester.post(
+                url, data=json.dumps(body), content_type='html/json')
+        else:
+            response = self.tester.post(url)
+        self.assertEqual(response.status_code, 200)
+        return trans_id
+
+    def _start_and_poll(self, trans_id):
+        url = "/sqleditor/view_data/start/{0}".format(trans_id)
+        response = self.tester.get(url)
+        self.assertEqual(response.status_code, 200)
+        start_data = json.loads(response.data.decode('utf-8'))
+
+        poll_response = async_poll(
+            tester=self.tester,
+            poll_url='/sqleditor/poll/{0}'.format(trans_id))
+        self.assertEqual(poll_response.status_code, 200)
+        poll_data = json.loads(poll_response.data.decode('utf-8'))
+
+        return start_data, poll_data
+
+    def _save(self, trans_id, save_payload):
+        url = '/sqleditor/save/{0}'.format(trans_id)
+        response = self.tester.post(
+            url, data=json.dumps(save_payload), content_type='html/json')
+        self.assertEqual(response.status_code, 200)
+        return json.loads(response.data.decode('utf-8'))
+
+    def _close_query_tool(self, trans_id):
+        url = '/sqleditor/close/{0}'.format(trans_id)
+        self.tester.delete(url)
+
+
+class TestViewCommandEditable(_ViewSaveTestMixin, BaseTestGenerator):
     """ This class tests whether ViewCommand.can_edit() correctly
     classifies simple auto-updatable views as editable, and that an
     actual save() through an editable view lands in the base table. """
@@ -207,14 +281,16 @@ class TestViewCommandEditable(BaseTestGenerator):
 
     def setUp(self):
         self.trans_id = None
-        self._initialize_database_connection()
+        self._connect()
 
     def runTest(self):
         self._build_names()
         self._create_test_objects()
         try:
-            self._initialize_view_data()
-            start_data, poll_data = self._start_view_data()
+            self.trans_id = self._initialize_view_data(
+                self._get_relation_oid(self.relname, self.relkind),
+                self.obj_type)
+            start_data, poll_data = self._start_and_poll(self.trans_id)
             self.assertEqual(
                 start_data['data']['can_edit'], self.expected_can_edit)
 
@@ -228,33 +304,13 @@ class TestViewCommandEditable(BaseTestGenerator):
                 self._check_base_table_updated()
         finally:
             if self.trans_id is not None:
-                self._close_query_tool()
+                self._close_query_tool(self.trans_id)
 
     def tearDown(self):
         self._drop_test_objects()
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 
     # -- setup helpers -----------------------------------------------
-
-    def _initialize_database_connection(self):
-        database_info = parent_node_dict["database"][-1]
-        self.db_name = database_info["db_name"]
-        self.server_id = database_info["server_id"]
-        self.db_id = database_info["db_id"]
-
-        db_con = database_utils.connect_database(
-            self, utils.SERVER_GROUP, self.server_id, self.db_id)
-
-        if not db_con["info"] == "Database connected.":
-            raise Exception("Could not connect to the database.")
-
-        self.connection = utils.get_db_connection(
-            self.db_name,
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port']
-        )
 
     def _build_names(self):
         suffix = str(secrets.choice(range(100000, 999999)))
@@ -289,45 +345,6 @@ class TestViewCommandEditable(BaseTestGenerator):
 
     # -- View/Edit Data flow (mirrors test_view_data.py) --------------
 
-    def _get_relation_oid(self):
-        pg_cursor = self.connection.cursor()
-        pg_cursor.execute(
-            "SELECT oid FROM pg_catalog.pg_class WHERE relname = %s "
-            "AND relkind = %s", (self.relname, self.relkind))
-        result = pg_cursor.fetchall()
-        self.connection.commit()
-        return result[0][0]
-
-    def _initialize_view_data(self):
-        obj_id = self._get_relation_oid()
-        self.trans_id = str(secrets.choice(range(1, 9999999)))
-        url = '/sqleditor/initialize/viewdata/{0}/{1}/{2}/{3}/{4}/{5}/{6}' \
-            .format(self.trans_id, VIEW_ALL_ROWS, self.obj_type,
-                    utils.SERVER_GROUP, self.server_id, self.db_id, obj_id)
-        response = self.tester.post(url)
-        self.assertEqual(response.status_code, 200)
-
-    def _start_view_data(self):
-        """Kick off the view/edit data query and poll it to completion.
-
-        Returns (start_data, poll_data): the JSON response from
-        `view_data/start` (which carries `can_edit`) and the final `poll`
-        response (which carries `primary_keys`, resolved from
-        `get_primary_keys()`).
-        """
-        url = "/sqleditor/view_data/start/{0}".format(self.trans_id)
-        response = self.tester.get(url)
-        self.assertEqual(response.status_code, 200)
-        start_data = json.loads(response.data.decode('utf-8'))
-
-        poll_response = async_poll(
-            tester=self.tester,
-            poll_url='/sqleditor/poll/{0}'.format(self.trans_id))
-        self.assertEqual(poll_response.status_code, 200)
-        poll_data = json.loads(poll_response.data.decode('utf-8'))
-
-        return start_data, poll_data
-
     def _save_through_view(self):
         save_payload = {
             "updated": {
@@ -354,83 +371,6 @@ class TestViewCommandEditable(BaseTestGenerator):
         result = pg_cursor.fetchall()
         self.connection.commit()
         self.assertEqual(result[0][0], 'bar')
-
-    def _close_query_tool(self):
-        url = '/sqleditor/close/{0}'.format(self.trans_id)
-        self.tester.delete(url)
-
-
-class _ViewSaveTestMixin:
-    """ Shared plumbing for the ad-hoc single-scenario tests below: a
-    fresh connection, a helper to fetch a relation's oid, and the
-    initialize/start/poll/save/close HTTP calls used by
-    TestViewCommandEditable, without the scenario-table machinery (each
-    of these tests needs its own bespoke setup/assertions). """
-
-    def _connect(self):
-        database_info = parent_node_dict["database"][-1]
-        self.db_name = database_info["db_name"]
-        self.server_id = database_info["server_id"]
-        self.db_id = database_info["db_id"]
-
-        db_con = database_utils.connect_database(
-            self, utils.SERVER_GROUP, self.server_id, self.db_id)
-        if not db_con["info"] == "Database connected.":
-            raise Exception("Could not connect to the database.")
-
-        self.connection = utils.get_db_connection(
-            self.db_name,
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port']
-        )
-
-    def _get_relation_oid(self, relname, relkind='v'):
-        pg_cursor = self.connection.cursor()
-        pg_cursor.execute(
-            "SELECT oid FROM pg_catalog.pg_class WHERE relname = %s "
-            "AND relkind = %s", (relname, relkind))
-        result = pg_cursor.fetchall()
-        self.connection.commit()
-        return result[0][0]
-
-    def _initialize_view_data(self, obj_id, obj_type='view', body=None):
-        trans_id = str(secrets.choice(range(1, 9999999)))
-        url = '/sqleditor/initialize/viewdata/{0}/{1}/{2}/{3}/{4}/{5}/{6}' \
-            .format(trans_id, VIEW_ALL_ROWS, obj_type,
-                    utils.SERVER_GROUP, self.server_id, self.db_id, obj_id)
-        if body is not None:
-            response = self.tester.post(
-                url, data=json.dumps(body), content_type='html/json')
-        else:
-            response = self.tester.post(url)
-        self.assertEqual(response.status_code, 200)
-        return trans_id
-
-    def _start_and_poll(self, trans_id):
-        url = "/sqleditor/view_data/start/{0}".format(trans_id)
-        response = self.tester.get(url)
-        self.assertEqual(response.status_code, 200)
-        start_data = json.loads(response.data.decode('utf-8'))
-
-        poll_response = async_poll(
-            tester=self.tester,
-            poll_url='/sqleditor/poll/{0}'.format(trans_id))
-        self.assertEqual(poll_response.status_code, 200)
-
-        return start_data
-
-    def _save(self, trans_id, save_payload):
-        url = '/sqleditor/save/{0}'.format(trans_id)
-        response = self.tester.post(
-            url, data=json.dumps(save_payload), content_type='html/json')
-        self.assertEqual(response.status_code, 200)
-        return json.loads(response.data.decode('utf-8'))
-
-    def _close_query_tool(self, trans_id):
-        url = '/sqleditor/close/{0}'.format(trans_id)
-        self.tester.delete(url)
 
 
 class TestViewSaveRejectsAmbiguousPrimaryKey(
@@ -482,7 +422,7 @@ class TestViewSaveRejectsAmbiguousPrimaryKey(
 
             # Confirm the exploit precondition: can_edit() is fooled by
             # the name-only match.
-            start_data = self._start_and_poll(trans_id)
+            start_data, _ = self._start_and_poll(trans_id)
             self.assertTrue(start_data['data']['can_edit'])
 
             save_payload = {
@@ -559,7 +499,7 @@ class TestViewSaveRejectsInsertedRow(_ViewSaveTestMixin, BaseTestGenerator):
             obj_id = self._get_relation_oid(self.view)
             trans_id = self._initialize_view_data(obj_id)
 
-            start_data = self._start_and_poll(trans_id)
+            start_data, _ = self._start_and_poll(trans_id)
             self.assertTrue(start_data['data']['can_edit'])
 
             save_payload = {
@@ -661,7 +601,7 @@ class TestViewCommandEditableForNonOwnerRole(
                 }
             )
 
-            start_data = self._start_and_poll(trans_id)
+            start_data, _ = self._start_and_poll(trans_id)
             self.assertTrue(start_data['data']['can_edit'])
 
             self._close_query_tool(trans_id)
@@ -750,7 +690,7 @@ class TestViewSaveGuardsNonEditable(_ViewSaveTestMixin, BaseTestGenerator):
             obj_id = self._get_relation_oid(self.relname, relkind)
             trans_id = self._initialize_view_data(obj_id, self.obj_type)
 
-            start_data = self._start_and_poll(trans_id)
+            start_data, _ = self._start_and_poll(trans_id)
             # Precondition: this instance really is non-editable.
             self.assertFalse(start_data['data']['can_edit'])
 
