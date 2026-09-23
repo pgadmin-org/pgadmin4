@@ -114,8 +114,18 @@ class SSHTunnelAllowAgentTestCase(BaseTestGenerator):
             success, error = manager.create_ssh_tunnel(self.stored_password)
 
         forwarder.assert_called_once()
-        self.assertEqual(forwarder.call_args.kwargs['allow_agent'],
-                         self.expected_allow_agent)
+        kwargs = forwarder.call_args.kwargs
+        self.assertEqual(kwargs['allow_agent'], self.expected_allow_agent)
+
+        # The credential itself must reach sshtunnel too, not just the flag.
+        if self.tunnel_authentication == 1:
+            self.assertEqual(kwargs['ssh_pkey'], self.resolved_identity_file)
+        else:
+            # A stored password is decrypted; an absent or empty one is
+            # passed through untouched.
+            expected_password = 'tunnelpassword' \
+                if self.stored_password else self.stored_password
+            self.assertEqual(kwargs['ssh_password'], expected_password)
 
         if self.forwarder_error:
             self.assertFalse(success)
