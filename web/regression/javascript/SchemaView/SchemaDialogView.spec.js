@@ -212,6 +212,25 @@ describe('SchemaView', ()=>{
           expect(rowEl.classList.contains('pgrt-row--static')).toBe(false);
         });
       });
+
+      it('does not virtualise a grid holding exactly the threshold', async ()=>{
+        // Virtualisation starts only above the threshold, so a grid of
+        // exactly that many rows must still render every row statically.
+        const rowsAtThreshold = Array.from({length: 5}, (_, i)=>(
+          {field3: i, field4: 'field4val', field5: `field5val${i}`}
+        ));
+
+        await ctrlMount({
+          viewHelperProps: {mode: 'create', virtualiseThreshold: 5},
+          getInitData: ()=>Promise.resolve({fieldcoll: rowsAtThreshold}),
+        });
+
+        const pgrtRows = ctrl.container.querySelectorAll('.pgrt-row');
+        expect(pgrtRows.length).toBe(rowsAtThreshold.length);
+        pgrtRows.forEach((rowEl)=>{
+          expect(rowEl.classList.contains('pgrt-row--static')).toBe(true);
+        });
+      });
     });
 
     describe('SQL tab', ()=>{
