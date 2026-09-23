@@ -147,4 +147,27 @@ describe('SchemaDialogView keyboard handling', () => {
     expect(onSave).toHaveBeenCalled();
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
+
+  // A second Ctrl/Cmd+Enter whilst the first save is still in flight must not
+  // start another save: the Save button is disabled during a save, but the
+  // shortcut reaches onSaveClick directly.
+  it('ignores Ctrl/Cmd+Enter whilst a save is in progress', async () => {
+    const onClose = jest.fn();
+    let resolveSave;
+    const onSave = jest.fn(() => new Promise(resolve => { resolveSave = resolve; }));
+    const ctrl = await renderDialog(onClose, onSave, new MinimalSchema());
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    });
+    await user.type(ctrl.container.querySelector('[name="field1"]'), 'val1');
+
+    await pressCtrlEnter(ctrl);
+    await pressCtrlEnter(ctrl);
+
+    expect(onSave).toHaveBeenCalledTimes(1);
+
+    await act(async () => { resolveSave(); });
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+  });
 });

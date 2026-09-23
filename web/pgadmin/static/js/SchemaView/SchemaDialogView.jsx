@@ -125,7 +125,10 @@ export default function SchemaDialogView({
   // which is never === true, so a plain Save click keeps its existing
   // behaviour (some dialogs, e.g. object properties, stay open after Save).
   const onSaveClick = (closeOnSave) => {
-    // Do nothing when there is no change or there is an error
+    // Do nothing when a save is already in flight, when there is no change,
+    // or when there is an error. The Save button is disabled whilst saving,
+    // but the Ctrl/Cmd+Enter shortcut calls this directly.
+    if (schemaState.isSaving) return;
     if (
       !schemaState._changes || Object.keys(schemaState._changes).length === 0 ||
       schemaState.errors.name
