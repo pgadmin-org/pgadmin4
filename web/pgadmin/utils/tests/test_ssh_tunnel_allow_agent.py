@@ -54,6 +54,12 @@ class SSHTunnelAllowAgentTestCase(BaseTestGenerator):
             stored_password=None,
             expected_allow_agent=True,
         )),
+        ('An empty tunnel password leaves the agent enabled', dict(
+            tunnel_authentication=0,
+            resolved_identity_file=None,
+            stored_password='',
+            expected_allow_agent=True,
+        )),
         ('A missing credential is reported, not raised', dict(
             tunnel_authentication=0,
             resolved_identity_file=None,
