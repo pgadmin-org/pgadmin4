@@ -62,6 +62,7 @@ class TestNormaliseSerialColumn(BaseTestGenerator):
                          "nextval('public.t_id_seq'::regclass)")
         self.assertEqual(data['serial_seq_create']['name'], 'public.t_id_seq')
         self.assertEqual(data['serial_seq_create']['increment'], 1)
+        self.assertEqual(data['serial_seq_create']['data_type'], 'bigint')
         self.assertNotIn('serial_defval', data)
         self.assertNotIn('seqincrement', data)
 
