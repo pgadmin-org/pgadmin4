@@ -5,10 +5,9 @@ Redhat distributions.
 
 ## Supported platforms
 
-* Fedora 40 & 41
-* RHEL 8
-* Rocky Linux 8 (x86_64)
-* AlmaLinux/RHEL/Rocky Linux 9 (x86_64)
+The platforms built are the ones in the matrix in
+`.github/workflows/check-rpm-build.yml`; see `pkg/linux/PLATFORMS.md` for how
+to add or retire one.
 
 ## Build configuration
 
