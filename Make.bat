@@ -445,7 +445,7 @@ REM Main build sequence Ends
 
     ECHO Creating windows installer using INNO tool...
     IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
-        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v $f" || EXIT /B 1
+        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v $f" || EXIT /B 1
     ) ELSE (
         CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" || EXIT /B 1
     )
@@ -492,10 +492,17 @@ REM Main build sequence Ends
 REM Sign one or more files, passed as quoted arguments. Signing is done in a
 REM single signtool invocation as the hardware token prompts for a PIN on the
 REM first signature of a session.
+REM
+REM The file digest is SHA-1 because that is all the build host's key can do:
+REM the certificate is bound to the Certum card's legacy CryptoAPI provider,
+REM crypto3 CSP, and asking it for a SHA-256 digest fails in SignerSign() with
+REM 0xc0000225 before the PIN is even requested. Moving to SHA-256 means
+REM rebinding the certificate to the CNG provider first; see pkg\win32\SIGNING.md.
+REM The same flag appears in the Inno Setup signtool string in :CREATE_INSTALLER.
 :SIGN_FILES
     IF "%PGADMIN_WINDOWS_CSC%" == "" EXIT /B 0
 
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v %*
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v %*
     REM IF ERRORLEVEL, not IF %ERRORLEVEL%: the latter would be expanded before
     REM signtool had run were this ever moved inside a parenthesised block.
     IF ERRORLEVEL 1 (

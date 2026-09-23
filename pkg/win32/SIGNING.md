@@ -191,8 +191,8 @@ update does not require editing anything.
 ## Certificate setup
 
 The card's "simple" registration through proCertum Card Manager does not
-correctly link the certificate to its private key. Without the repair below,
-signing either fails or silently degrades to SHA1.
+correctly link the certificate to its private key, and without the repair
+below signing fails.
 
 **All of this needs local console access.** Smart card operations do not work
 over Remote Desktop, and the usual symptom is `certutil -key` failing with
@@ -256,16 +256,26 @@ unsigned installer that looks like a successful build.
 The signing call it makes is equivalent to:
 
 ```batch
-signtool sign /sm /n "<certificate subject>" /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v <file>
+signtool sign /sm /n "<certificate subject>" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v <file>
 ```
 
 | Parameter | Why |
 |---|---|
 | `/sm` | machine store, which is where the certificate was installed |
 | `/n` | selects the certificate by subject name |
-| `/fd sha256` | file digest algorithm |
+| `/fd sha1` | file digest algorithm; see below for why it is not SHA-256 |
 | `/tr` | RFC 3161 timestamp server; prefer this over the legacy `/t` |
 | `/td sha256` | timestamp digest algorithm |
+
+The file digest is SHA-1 because the key, bound through step 3 to the legacy
+CryptoAPI provider `crypto3 CSP`, cannot produce anything else: `/fd sha256`
+fails within a couple of seconds, before the PIN is requested, with
+`Error: SignerSign() failed. (-1073741275/0xc0000225)`. The timestamp digest is
+unaffected, since the card's key plays no part in the timestamp, which is why
+`/td sha256` works. Getting to SHA-256 file digests means binding the certificate to
+Certum's CNG provider, `cryptoCertum3 KSP`, instead. That is untested; before
+switching the build over, sign a scratch copy of an executable with each digest
+at the console, and snapshot the host before changing the binding.
 
 Timestamping matters: without it, signatures stop validating when the
 certificate expires. If DigiCert's server is unavailable,
