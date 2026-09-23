@@ -22,7 +22,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% endif %}
 {###  Create the sequence a column becoming SERIAL needs, before its default below can reference it (#10292). IF NOT EXISTS is deliberately not used here: it would silently skip an existing, unrelated relation of the same name (without checking it is even a sequence), and the unconditional ALTER SEQUENCE ... OWNED BY below would then reassign ownership of that unrelated object instead of failing loudly (#10318). ###}
 {% if data.serial_seq_create is defined %}
-CREATE SEQUENCE {{data.serial_seq_create.name}}{% if data.serial_seq_create.cycled %}
+CREATE SEQUENCE {{data.serial_seq_create.name}} AS {{data.serial_seq_create.data_type}}{% if data.serial_seq_create.cycled %}
 
     CYCLE{% endif %}{% if data.serial_seq_create.increment is not none %}
 

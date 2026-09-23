@@ -1363,6 +1363,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             if seq_name:
                 data['serial_seq_create'] = {
                     'name': seq_name,
+                    # A bare CREATE SEQUENCE is always bigint, whereas the
+                    # sequence a SERIAL/SMALLSERIAL owns matches the
+                    # column's own integer type.
+                    'data_type': data['cltype'],
                     'increment': data.get('seqincrement'),
                     'start': data.get('seqstart'),
                     'minimum': data.get('seqmin'),

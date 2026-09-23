@@ -42,6 +42,11 @@ CREATE TABLE {0}.serial_to_int (
     id integer NOT NULL,
     val text
 );
+
+CREATE TABLE {0}.int_to_smallserial (
+    id smallserial NOT NULL,
+    val text
+);
 """
 
 TAR_DDL = """
@@ -56,6 +61,28 @@ CREATE TABLE {0}.serial_to_int (
     id bigserial NOT NULL,
     val text
 );
+
+CREATE TABLE {0}.int_to_smallserial (
+    id smallint NOT NULL,
+    val text
+);
+"""
+
+# Fails the batch unless the sequence a SMALLSERIAL conversion created has
+# the same smallint type PostgreSQL itself gives a SMALLSERIAL's sequence,
+# rather than the bigint a bare CREATE SEQUENCE defaults to.
+CHECK_SMALLSERIAL_SEQ_TYPE = """
+DO $$
+BEGIN
+    IF (SELECT s.seqtypid::regtype::text
+          FROM pg_catalog.pg_sequence s
+         WHERE s.seqrelid = pg_catalog.pg_get_serial_sequence(
+                   '{0}.int_to_smallserial', 'id')::regclass)
+       IS DISTINCT FROM 'smallint' THEN
+        RAISE EXCEPTION 'SMALLSERIAL sequence is not smallint';
+    END IF;
+END
+$$;
 """
 
 
@@ -180,6 +207,14 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
         self.assertLess(fwd_ddl.index('CREATE SEQUENCE'),
                         fwd_ddl.index('SET DEFAULT nextval('))
 
+        # The same for SMALLSERIAL, whose sequence must be smallint.
+        int_to_smallserial = self.find_object(response_data, 'table',
+                                              'int_to_smallserial')
+        self.assertEqual(int_to_smallserial['status'], 'Different')
+        small_ddl = int_to_smallserial['diff_ddl']
+        self.assertIn('AS smallint', small_ddl)
+        self.assertIn('SET DEFAULT nextval(', small_ddl)
+
         # Reverse: target's BIGSERIAL column must become plain integer,
         # which means the ALTER script must drop the column's DEFAULT
         # before it drops the now-unused sequence (PostgreSQL refuses to
@@ -197,9 +232,13 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
         # including the underlying sequence objects.
         self.execute_sql(self.tar_database, fwd_ddl)
         self.execute_sql(self.tar_database, rev_ddl)
+        self.execute_sql(self.tar_database, small_ddl)
+        self.execute_sql(self.tar_database,
+                         CHECK_SMALLSERIAL_SEQ_TYPE.format(SCHEMA_NAME))
 
         response_data = self.compare()
-        for title in ('int_to_serial', 'serial_to_int'):
+        for title in ('int_to_serial', 'serial_to_int',
+                      'int_to_smallserial'):
             self.assertEqual(
                 self.find_object(response_data, 'table', title)['status'],
                 'Identical')
