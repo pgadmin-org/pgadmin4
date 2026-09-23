@@ -39,11 +39,14 @@ CREATE SEQUENCE {{data.serial_seq_create.name}} AS {{data.serial_seq_create.data
 ALTER SEQUENCE {{data.serial_seq_create.name}}
     OWNED BY {{conn|qtIdent(data.schema)}}.{{conn|qtIdent(data.table)}}.{% if data.name %}{{conn|qtIdent(data.name)}}{% else %}{{conn|qtIdent(o_data.name)}}{% endif %};
 
-{###  Move the new sequence past any values the column already holds, or the next insert omitting the column would reuse one of them; an empty column leaves the sequence at its START ###}
-{% set serial_last = ('MIN(' if data.serial_seq_create.increment is not none and data.serial_seq_create.increment|int < 0 else 'MAX(') ~ conn|qtIdent(data.name or o_data.name) ~ ')' %}
+{###  Move the new sequence past any values the column already holds, or the next insert omitting the column would reuse one of them; a column that is empty, or holds nothing at or past START, leaves the sequence at its START (setval() below START would also go backwards, or out of bounds below MINVALUE) ###}
+{% set serial_desc = data.serial_seq_create.increment is not none and data.serial_seq_create.increment|int < 0 %}
+{% set serial_last = ('MIN(' if serial_desc else 'MAX(') ~ conn|qtIdent(data.name or o_data.name) ~ ')' %}
 SELECT setval({{data.serial_seq_create.name|qtLiteral(conn)}}, {{serial_last}})
     FROM {{conn|qtIdent(data.schema, data.table)}}
-    HAVING {{serial_last}} IS NOT NULL;
+    HAVING {{serial_last}} IS NOT NULL{% if data.serial_seq_create.start is not none %}
+
+        AND {{serial_last}} {{ '<=' if serial_desc else '>=' }} {{data.serial_seq_create.start|int}}{% endif %};
 
 {% endif %}
 {###  Alter column default value ###}

@@ -71,6 +71,7 @@ CREATE TABLE {0}.int_to_smallserial (
 # Rows the target's plain column already holds before it becomes SERIAL.
 TAR_ROWS = """
 INSERT INTO {0}.int_to_serial (id, val) VALUES (1, 'a'), (5, 'b');
+INSERT INTO {0}.int_to_smallserial (id, val) VALUES (0, 'a');
 """
 
 # Fails the batch unless the converted column's new sequence carries on
@@ -83,6 +84,22 @@ BEGIN
     INSERT INTO {0}.int_to_serial (val) VALUES ('x') RETURNING id INTO new_id;
     IF new_id <> 6 THEN
         RAISE EXCEPTION 'expected the next id to be 6, got %', new_id;
+    END IF;
+END
+$$;
+"""
+
+# Fails the batch unless the SMALLSERIAL column, which held nothing past
+# its sequence's START (only a 0, below MINVALUE 1), still starts at 1.
+CHECK_INT_TO_SMALLSERIAL_NEXT_ID = """
+DO $$
+DECLARE
+    new_id smallint;
+BEGIN
+    INSERT INTO {0}.int_to_smallserial (val) VALUES ('x')
+        RETURNING id INTO new_id;
+    IF new_id <> 1 THEN
+        RAISE EXCEPTION 'expected the next id to be 1, got %', new_id;
     END IF;
 END
 $$;
@@ -269,6 +286,8 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
         # reuse a value the column already held.
         self.execute_sql(self.tar_database,
                          CHECK_INT_TO_SERIAL_NEXT_ID.format(SCHEMA_NAME))
+        self.execute_sql(self.tar_database,
+                         CHECK_INT_TO_SMALLSERIAL_NEXT_ID.format(SCHEMA_NAME))
 
     def tearDown(self):
         """This function drops the added databases"""
