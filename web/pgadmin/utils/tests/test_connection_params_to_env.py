@@ -96,6 +96,20 @@ class TestConnectionParamsToEnv(BaseTestGenerator):
              file_paths={},
              expected_env={'PGSSLKEY': ''}
          )),
+        ('A CRL directory is resolved without the file check',
+         dict(
+             connection_params={'sslcrldir': 'crls'},
+             file_paths={'crls': '/storage/crls'},
+             dirs=['/storage/crls'],
+             expected_env={'PGSSLCRLDIR': '/storage/crls'}
+         )),
+        ('A CRL directory that does not exist is passed as an empty value',
+         dict(
+             connection_params={'sslcrldir': 'missing'},
+             file_paths={'missing': '/storage/missing'},
+             dirs=[],
+             expected_env={'PGSSLCRLDIR': ''}
+         )),
         ('A root certificate of "system" is left alone',
          dict(
              connection_params={'sslrootcert': 'system'},
@@ -110,8 +124,11 @@ class TestConnectionParamsToEnv(BaseTestGenerator):
         if file_paths is None:
             env = connection_params_to_env(self.connection_params)
         else:
+            dirs = getattr(self, 'dirs', [])
             with patch('pgadmin.utils.get_complete_file_path',
-                       side_effect=lambda f, **kwargs: file_paths.get(f)):
+                       side_effect=lambda f, **kwargs: file_paths.get(f)), \
+                    patch('pgadmin.utils.os.path.isdir',
+                          side_effect=lambda d: d in dirs):
                 env = connection_params_to_env(self.connection_params)
 
         self.assertEqual(env, self.expected_env)
