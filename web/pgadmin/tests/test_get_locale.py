@@ -34,19 +34,33 @@ class GetLocaleTestCase(BaseTestGenerator):
         return self.app.extensions['babel'].locale_selector()
 
     def runTest(self):
-        # The 'language' form field sets the language for this request and
-        # must persist it to the session for subsequent requests.
         from flask import session
+        from werkzeug.http import parse_cookie
+        cookie_name = self.app.config['SESSION_COOKIE_NAME']
+
+        # The 'language' form field sets the language for this request and
+        # must persist it to the session. Save the session through the app's
+        # real session interface to get the cookie a browser would send back.
         with self.app.test_request_context(
                 '/', method='POST', data={'language': 'fr'}):
             self.assertEqual(self._get_locale(), 'fr')
-            self.assertEqual(session.get('PGADMIN_LANGUAGE'), 'fr')
+            response = self.app.response_class()
+            self.app.session_interface.save_session(
+                self.app, session, response)
 
-        # A request with no 'language' field but an existing session value
-        # must keep using that language.
-        with self.app.test_request_context('/'):
-            session['PGADMIN_LANGUAGE'] = 'de'
-            self.assertEqual(self._get_locale(), 'de')
+        session_cookie = None
+        for header in response.headers.getlist('Set-Cookie'):
+            value = parse_cookie(header).get(cookie_name)
+            if value:
+                session_cookie = value
+        self.assertIsNotNone(session_cookie)
+
+        # A later request with no 'language' field, carrying only the
+        # session cookie, must restore the language from the saved session.
+        with self.app.test_request_context(
+                '/', headers={'Cookie': '%s=%s' % (cookie_name,
+                                                   session_cookie)}):
+            self.assertEqual(self._get_locale(), 'fr')
 
         # With no session value, the PGADMIN_LANGUAGE cookie must be read.
         with self.app.test_request_context(
