@@ -208,6 +208,50 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
 
         self.fail('{0} {1} was not compared'.format(node_type, title))
 
+    @staticmethod
+    def generate_full_script(response_data):
+        """
+        Build the script Schema Diff's "Generate Script" produces for every
+        differing object, following computeDependLevels() and
+        generateFinalScript() in static/js/components/SchemaDiffCompare.jsx:
+        anything another object depends on is written first, and objects
+        on the same level keep the comparison's own order.
+
+        :param response_data: Result of compare()
+        :return: The script, wrapped in a single transaction
+        """
+        rows = [diff for diff in response_data
+                if diff.get('status') != 'Identical']
+        by_oid = {diff['oid']: idx for idx, diff in enumerate(rows)
+                  if diff.get('oid') is not None}
+        dependents = {}
+        for idx, diff in enumerate(rows):
+            for dep in diff.get('dependencies') or []:
+                if dep.get('oid') in by_oid:
+                    dependents.setdefault(by_oid[dep['oid']], []).append(idx)
+
+        levels = {}
+
+        def level_of(idx, resolving=frozenset()):
+            if idx in levels:
+                return levels[idx]
+            if idx in resolving:
+                return 1
+            level = 1
+            for dependent in dependents.get(idx, []):
+                level = max(level,
+                            level_of(dependent, resolving | {idx}) + 1)
+            levels[idx] = level
+            return level
+
+        buckets = {}
+        for idx, diff in enumerate(rows):
+            buckets.setdefault(level_of(idx), []).append(diff['diff_ddl'])
+
+        return 'BEGIN;\n' + ''.join(
+            '\n'.join(buckets[level]) + '\n\n'
+            for level in sorted(buckets, reverse=True)) + 'END;'
+
     def runTest(self):
         """ This function will test converting a column between integer
         and SERIAL, in both directions. """
@@ -266,20 +310,27 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
         self.assertLess(rev_ddl.index('DROP DEFAULT'),
                         rev_ddl.index('DROP SEQUENCE'))
 
-        # Applying both must succeed, and must settle the differences,
-        # including the underlying sequence objects.
-        self.execute_sql(self.tar_database, fwd_ddl)
-        self.execute_sql(self.tar_database, rev_ddl)
-        self.execute_sql(self.tar_database, small_ddl)
+        # Applying the whole script, which also carries the owned
+        # sequences' own Source Only / Target Only rows, must succeed in a
+        # single transaction and settle every difference, so the column
+        # diffs' CREATE/DROP SEQUENCE must not collide with those rows.
+        self.execute_sql(self.tar_database,
+                         self.generate_full_script(response_data))
         self.execute_sql(self.tar_database,
                          CHECK_SMALLSERIAL_SEQ_TYPE.format(SCHEMA_NAME))
 
         response_data = self.compare()
-        for title in ('int_to_serial', 'serial_to_int',
-                      'int_to_smallserial'):
+        for node_type, title in (
+                ('table', 'int_to_serial'), ('table', 'serial_to_int'),
+                ('table', 'int_to_smallserial'),
+                ('sequence', 'int_to_serial_id_seq'),
+                ('sequence', 'int_to_smallserial_id_seq')):
             self.assertEqual(
-                self.find_object(response_data, 'table', title)['status'],
+                self.find_object(response_data, node_type, title)['status'],
                 'Identical')
+        self.assertFalse(any(
+            diff.get('title') == 'serial_to_int_id_seq'
+            for diff in response_data))
 
         # The forward conversion must have made the column a genuine
         # SERIAL: an insert omitting it must now succeed, and must not
