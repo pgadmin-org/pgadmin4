@@ -19,8 +19,8 @@ def check_external_config_db(database_uri):
     engine = None
     try:
         engine = create_engine(normalize_database_uri(database_uri))
-        with engine.connect():
-            return inspect(engine).has_table("server")
+        with engine.connect() as connection:
+            return inspect(connection).has_table("server")
     except Exception:
         # Anything that stops us reaching the database, a wrong password or
         # an unreachable host as much as a malformed URI, is reported as
