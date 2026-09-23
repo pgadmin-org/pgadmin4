@@ -168,10 +168,13 @@ class RoleUpdateAdminOptionMembershipOnlyTest(BaseTestGenerator):
         get_driver_mock.return_value.connection_manager.return_value = \
             manager
 
-        # The client sends only 'rolmembers' - exactly what an ADMIN
-        # OPTION holder (who may manage membership only) is allowed to
-        # change.
+        # The body the properties dialog actually sends: the changed
+        # 'rolmembers' collection plus the role's 'oid', which
+        # SchemaState.changes() appends to every edit-mode payload.
+        # 'rolmembers' is exactly what an ADMIN OPTION holder (who may
+        # manage membership only) is allowed to change.
         body = {
+            'oid': 10,
             'rolmembers': {
                 'added': [
                     {'role': 'member_role', 'admin': True,
@@ -193,6 +196,15 @@ class RoleUpdateAdminOptionMembershipOnlyTest(BaseTestGenerator):
         self.assertTrue(view.membership_only_update)
         # ... and update() must let it through rather than forbidding it.
         self.assertNotEqual(response.status_code, 403)
+
+        # Anything beyond membership is still forbidden to an ADMIN
+        # OPTION holder, so this can't be used to escalate the role.
+        body['rolsuper'] = True
+        with self.app.test_request_context(
+            data=json.dumps(body), content_type='application/json'
+        ):
+            response = view.update(gid=1, sid=1, rid=10)
+        self.assertEqual(response.status_code, 403)
 
     def tearDown(self):
         pass

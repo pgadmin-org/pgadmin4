@@ -1045,8 +1045,11 @@ rolmembership:{
     @check_precondition(action='update')
     @validate_request
     def update(self, gid, sid, rid):
+        # The properties dialog always sends the role's 'oid' alongside the
+        # changed fields, so it is allowed here as well; the role being
+        # updated is identified by 'rid' from the URL, not by that value.
         if getattr(self, 'membership_only_update', False) and \
-                not self.request_keys <= {'rolmembers'}:
+                not self.request_keys <= {'rolmembers', 'oid'}:
             return forbidden(
                 _("The current user does not have permission to update "
                   "the role. Users with ADMIN OPTION on this role may "
