@@ -28,7 +28,7 @@ from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
     MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL, \
     CONNECTION_PARAM_ENV_VARS, CONNECTION_PARAM_FILE_PATHS, \
-    CONNECTION_PARAM_BOOLEANS
+    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
@@ -249,6 +249,9 @@ def get_complete_file_path(file, validate=True):
     """
     Args:
         file: File returned by file manager
+        validate: if True, return None unless the path names an existing
+            file; pass False for a directory, or for a file that may not
+            exist yet
 
     Returns:
          Full path for the file
@@ -258,6 +261,8 @@ def get_complete_file_path(file, validate=True):
 
     # If desktop mode
     if current_app.PGADMIN_RUNTIME or not current_app.config['SERVER_MODE']:
+        if not validate:
+            return file
         return file if os.path.isfile(file) else None
 
     # get dir name and file name
@@ -305,7 +310,12 @@ def connection_params_to_env(connection_params):
         if env_var is None or value is None or value == '':
             continue
 
-        if param in CONNECTION_PARAM_FILE_PATHS or \
+        if param in CONNECTION_PARAM_DIR_PATHS:
+            # A directory, which the file check in get_complete_file_path()
+            # would reject, so resolve it unvalidated and check it here.
+            value = get_complete_file_path(value, validate=False)
+            value = value if value and os.path.isdir(value) else ''
+        elif param in CONNECTION_PARAM_FILE_PATHS or \
                 (param == 'sslrootcert' and value != 'system'):
             # An unresolvable path is passed on as an empty value, matching
             # what the connection string does, so that libpq reports the

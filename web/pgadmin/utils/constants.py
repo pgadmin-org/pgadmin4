@@ -186,8 +186,12 @@ RESTRICT_COMMAND = '\\restrict'
 # to libpq.  'sslrootcert' is handled separately, because the literal value
 # 'system' asks libpq for the trusted CA store rather than naming a file.
 CONNECTION_PARAM_FILE_PATHS = [
-    'passfile', 'sslcert', 'sslkey', 'sslcrl', 'sslcrldir'
+    'passfile', 'sslcert', 'sslkey', 'sslcrl'
 ]
+
+# Connection parameters whose value is a directory selected through the
+# file manager, resolved in the same way but checked as a directory.
+CONNECTION_PARAM_DIR_PATHS = ['sslcrldir']
 
 # Connection parameters that pgAdmin stores as a boolean but libpq expects
 # as an integer.
