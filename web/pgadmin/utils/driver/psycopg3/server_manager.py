@@ -54,6 +54,9 @@ class ServerManager(object):
         self.tunnel_object = None
         self.tunnel_created = False
         self.display_connection_string = ''
+        # fs_uniquifier of the pgAdmin user this manager was built for;
+        # set by the driver, see Driver._current_pga_user.
+        self.pga_user = None
 
         self.update(server)
 
@@ -165,6 +168,7 @@ class ServerManager(object):
         res['user'] = self.user
         res['service'] = self.service
         res['tunnel_host'] = self.tunnel_host
+        res['pga_user'] = self.pga_user
 
         self._set_password(res)
 

@@ -182,3 +182,41 @@ class TestSavedStateIsStaleChecksEachIdentityField(
             self.assertTrue(
                 Driver._saved_state_is_stale(saved, changed_server_data),
                 "expected stale saved state when %s changes" % field)
+
+
+class TestManagerIsStaleDetectsDifferentPgAdminUser(
+        _PureUnitTestSetupMixin, BaseTestGenerator):
+    """A manager built for one pgAdmin user must not be reused for
+    another user who logs in on the same browser session, even when
+    every connection field matches (issue #6090: the same servers
+    re-imported by a new user after the configuration database was
+    reset)."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        manager = make_manager(pga_user='old-user-uniquifier')
+        server_data = make_server_data()
+
+        self.assertTrue(Driver._manager_is_stale(
+            manager, server_data, 'new-user-uniquifier'))
+        self.assertFalse(Driver._manager_is_stale(
+            manager, server_data, 'old-user-uniquifier'))
+
+
+class TestSavedStateIsStaleDetectsDifferentPgAdminUser(
+        _PureUnitTestSetupMixin, BaseTestGenerator):
+    """Serialized state saved by one pgAdmin user must not be restored
+    for another user on the same browser session, even when every
+    connection field matches."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        saved = make_saved_state(pga_user='old-user-uniquifier')
+        server_data = make_server_data()
+
+        self.assertTrue(Driver._saved_state_is_stale(
+            saved, server_data, 'new-user-uniquifier'))
+        self.assertFalse(Driver._saved_state_is_stale(
+            saved, server_data, 'old-user-uniquifier'))
