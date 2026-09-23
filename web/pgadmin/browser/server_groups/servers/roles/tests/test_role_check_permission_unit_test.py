@@ -206,5 +206,13 @@ class RoleUpdateAdminOptionMembershipOnlyTest(BaseTestGenerator):
             response = view.update(gid=1, sid=1, rid=10)
         self.assertEqual(response.status_code, 403)
 
+        # A body that isn't a JSON object is rejected as a client error
+        # rather than failing with a server error.
+        with self.app.test_request_context(
+            data=json.dumps([{}]), content_type='application/json'
+        ):
+            response = view.update(gid=1, sid=1, rid=10)
+        self.assertEqual(response.status_code, 428)
+
     def tearDown(self):
         pass
