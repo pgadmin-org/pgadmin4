@@ -48,12 +48,15 @@ class OAuth2UserinfoEndpointNoneTestCase(BaseTestGenerator):
         mock_client = MagicMock()
         auth.oauth2_clients = {'test_provider': mock_client}
 
+        # Left over from an earlier login with a provider that had one.
+        fake_session = {'oauth2_logout_url': 'https://idp.example.com/out'}
+
         with self.app.app_context(), \
                 patch.object(auth, '_authorize_access_token',
                              return_value={'access_token': 'tok'}), \
                 patch.object(auth, '_is_oidc_provider',
                              return_value=False), \
-                patch('pgadmin.authenticate.oauth2.session', {}):
+                patch('pgadmin.authenticate.oauth2.session', fake_session):
             profile = auth.get_user_profile()
 
         # Pre-fix, the None endpoint was handed straight to client.get(), so
@@ -62,3 +65,6 @@ class OAuth2UserinfoEndpointNoneTestCase(BaseTestGenerator):
         # guard skips the call.
         self.assertEqual(profile, {})
         mock_client.get.assert_not_called()
+        # OAUTH2_LOGOUT_URL is absent here, so the stale URL must not
+        # survive to be used by the next logout.
+        self.assertNotIn('oauth2_logout_url', fake_session)

@@ -135,6 +135,9 @@ def init_app(app):
             session.pop('oauth2_current_client', None)
             return redirect(get_safe_post_login_redirect())
         session.pop('oauth2_current_client', None)
+        # get_user_profile() may already have stored the provider's logout
+        # URL before the login failed; don't leave it for a later logout.
+        session.pop('oauth2_logout_url', None)
         logout_user()
         flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
@@ -687,11 +690,15 @@ class OAuth2Authentication(BaseAuthentication):
         session['pass_enc_key'] = session['oauth2_token']['access_token']
 
         # As above, the shipped config.py sets this to None, so only stash
-        # it in the session when it actually holds a URL.
+        # it in the session when it actually holds a URL, and otherwise drop
+        # any left over from an earlier login so that logout cannot redirect
+        # to a different provider's URL.
         logout_url = self.oauth2_config.get(
             self.oauth2_current_client, {}).get('OAUTH2_LOGOUT_URL')
         if logout_url:
             session['oauth2_logout_url'] = logout_url
+        else:
+            session.pop('oauth2_logout_url', None)
 
         # For OIDC providers, parse the ID token JWT to extract claims.
         # We can skip the userinfo endpoint call if the ID token has
