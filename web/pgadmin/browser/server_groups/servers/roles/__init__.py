@@ -567,6 +567,11 @@ rolmembership:{
                     except ValueError:
                         data[k] = v
 
+            if not isinstance(data, dict):
+                return precondition_required(
+                    _("Request data must be a JSON object.")
+                )
+
             # Capture the client-supplied keys before the validators below
             # mutate 'data' (e.g. _validate_rolemembers adds derived keys
             # such as 'rol_members_list'), so callers that need to know what
