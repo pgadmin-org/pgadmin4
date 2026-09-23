@@ -244,6 +244,26 @@
         "error_msg": "At least 1 statistics type must be selected.",
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create statistics: With invalid data - Statistics types not a list.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_stats_types_str",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": "ndistinct"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "The parameter (stat_types) must be a list.",
+        "test_result_data": {}
+      }
     }
   ],
   "statistics_delete": [
