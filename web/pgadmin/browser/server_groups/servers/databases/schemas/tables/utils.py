@@ -1337,8 +1337,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # whatsoever, and is not a request to change the type, however
         # SERIAL the column already is; unlike Schema Diff's columns,
         # which always carry the full properties and so always have one.
+        # Nor is a change of type alone (e.g. widening integer to bigint
+        # in the table dialog, which sends no 'defval'): the column only
+        # stops being SERIAL once its nextval() default is replaced or
+        # dropped, and until then PostgreSQL would refuse to drop the
+        # sequence that default still references.
         leaving_serial = was_serial and not becomes_serial \
-            and 'cltype' in data
+            and 'cltype' in data and 'defval' in data \
+            and data['defval'] != old_col_data.get('defval')
 
         if not becomes_serial and not leaving_serial:
             return
