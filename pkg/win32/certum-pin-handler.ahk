@@ -41,16 +41,20 @@ Persistent
 ; The proCertum software is localised, and the host runs it in Polish, so the
 ; dialog is titled "Logowanie do profilu zwyklego" ("log in to the common
 ; profile"), with a Polish barred l in the last word, rather than anything in
-; English. Only the leading, unaccented part of that is matched, with
+; English. Only the part of that before the barred l is matched, with
 ; SetTitleMatchMode 2 for a substring match: it survives the wording after it
-; changing between proCertum releases or profiles, and it keeps this file to
-; plain ASCII, so that no editor or AutoHotkey version can quietly mangle an
-; accented character and leave behind a title that never matches. If the
-; display language is ever changed, this is the line to change with it.
+; changing between proCertum releases, and it keeps this file to plain ASCII,
+; so that no editor or AutoHotkey version can quietly mangle an accented
+; character and leave behind a title that never matches. The match stops no
+; earlier than "zwyk" because a login to the card's Secure profile, which
+; has a different PIN, would otherwise match too; nothing in the build uses
+; that profile, but should anything ever ask, it must not be answered with
+; this PIN. If the display language is ever changed, this is the line to
+; change with it.
 SetTitleMatchMode 2
 DetectHiddenWindows false
 
-PIN_DIALOG := "Logowanie do profilu"
+PIN_DIALOG := "Logowanie do profilu zwyk"
 
 PIN_DIR := EnvGet("LOCALAPPDATA")
 if (PIN_DIR = "")

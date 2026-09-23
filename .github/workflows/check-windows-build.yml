@@ -1,10 +1,11 @@
 # Replaces the pgadmin4-windows-x64-qa Jenkins job.
 #
 # This runs on a hosted runner, not a self-hosted one. Code signing in Make.bat
-# is conditional on PGADMIN_WINDOWS_CSC being set (see Make.bat:393, :447 and
-# :469), so an unsigned build check needs neither the Certum hardware token nor
-# the machine it is plugged into. Only the release and snapshot builds, which
-# do sign, need the self-hosted runner.
+# is conditional on PGADMIN_WINDOWS_CSC being set (see :SIGN_FILES,
+# :CREATE_INSTALLER and :VERIFY_SIGNATURE in Make.bat), so an unsigned build
+# check needs neither the Certum hardware token nor the machine it is plugged
+# into. Only the release and snapshot builds, which do sign, need the
+# self-hosted runner.
 #
 # Dependencies come from dpage/winpgbuild, which is exactly where the
 # buildfarm's winpgbuild-update job gets them, so the toolchain matches what

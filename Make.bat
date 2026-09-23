@@ -127,7 +127,7 @@ REM Main build sequence Ends
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
     IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
     IF "%PGADMIN_VCREDIST_FILE%" == "" SET "PGADMIN_VCREDIST_FILE=vc_redist.x64.exe"
-    IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
+    IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64"
     IF "%PGADMIN_WINDOWS_CSC%" == "" SET "PGADMIN_WINDOWS_CSC="
 
     REM Set additional variables we need
@@ -444,8 +444,12 @@ REM Main build sequence Ends
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
 
     ECHO Creating windows installer using INNO tool...
+    REM Inno signs the installer and its uninstaller itself, one file per call,
+    REM through the same script as :SIGN_FILES. Inno replaces $q with a quote
+    REM and $f with the already-quoted file name. The outer pair of quotes is
+    REM for cmd /c, which strips the first and last quote of its command line.
     IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
-        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v $f" || EXIT /B 1
+        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%ComSpec% /c $q$q%WD%\pkg\win32\sign-files.bat$q $q%PGADMIN_WINDOWS_CSC%$q $f$q" || EXIT /B 1
     ) ELSE (
         CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" || EXIT /B 1
     )
@@ -489,22 +493,18 @@ REM Main build sequence Ends
     EXIT /B 0
 
 
-REM Sign one or more files, passed as quoted arguments. Signing is done in a
-REM single signtool invocation as the hardware token prompts for a PIN on the
-REM first signature of a session.
-REM
-REM The file digest is SHA-1 because that is all the build host's key can do:
-REM the certificate is bound to the Certum card's legacy CryptoAPI provider,
-REM crypto3 CSP, and asking it for a SHA-256 digest fails in SignerSign() with
-REM 0xc0000225 before the PIN is even requested. Moving to SHA-256 means
-REM rebinding the certificate to the CNG provider first; see pkg\win32\SIGNING.md.
-REM The same flag appears in the Inno Setup signtool string in :CREATE_INSTALLER.
+REM Sign one or more files, passed as quoted arguments, with a SHA-256 file
+REM digest. pkg\win32\sign-files.bat does the work, in signtool's split
+REM digest, sign and ingest steps, because the one-step form cannot use a
+REM SHA-2 digest with the card's key; the script explains why. All the files
+REM go in one call because each call costs one PIN prompt, and their names
+REM must be unique, which the script checks.
 :SIGN_FILES
     IF "%PGADMIN_WINDOWS_CSC%" == "" EXIT /B 0
 
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v %*
+    CALL "%WD%\pkg\win32\sign-files.bat" "%PGADMIN_WINDOWS_CSC%" %*
     REM IF ERRORLEVEL, not IF %ERRORLEVEL%: the latter would be expanded before
-    REM signtool had run were this ever moved inside a parenthesised block.
+    REM the script had run were this ever moved inside a parenthesised block.
     IF ERRORLEVEL 1 (
         ECHO.
         ECHO ************************************************************

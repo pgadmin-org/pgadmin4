@@ -191,38 +191,71 @@ update does not require editing anything.
 ## Certificate setup
 
 The card's "simple" registration through proCertum Card Manager does not
-correctly link the certificate to its private key, and without the repair
-below signing fails.
+correctly link the certificate to its private key, and without the repair in
+step 4 signing fails.
 
 **All of this needs local console access.** Smart card operations do not work
 over Remote Desktop, and the usual symptom is `certutil -key` failing with
 `NTE_KEYSET_NOT_DEF (0x80090019)`.
 
+### 0. Before starting
+
+Take a VM snapshot, or a full backup if the host is physical. Install the ACS
+CCID reader driver, proCertum Card Manager and the Windows SDK's Signing Tools;
+the versions known to work are driver 1.0.6.1, Card Manager 4.14.0 and SDK
+10.0.26100.0. Keep the Common profile PIN to hand, remembering that wrong PINs
+count towards blocking the card.
+
 ### 1. Put proCertum in CSP mode
 
-Open proCertum Card Manager, go to Options, select **CSP driver** rather than
-Minidriver, apply, and restart Windows.
-
-### 2. Import the certificate to the machine store
-
-In proCertum Card Manager: Read Card, then the Common Profile tab, select the
-code signing certificate, Show certificate details, and install it into the
-Windows **machine** store, under Personal. The machine store is why the build
-signs with `/sm`.
-
-### 3. Link the certificate to the key
-
-`certutil -store My` will show the certificate with `No key provider
-information`, which is expected at this point.
-
-Find the key container:
+Open proCertum Card Manager, go to Options, set the driver for the Common
+profile to **CSP** rather than Minidriver, leave "Enable PIN cache for
+CSP-based applications" on, apply, and restart Windows. Then check:
 
 ```batch
-certutil -key -csp "crypto3 CSP"
+certutil -csplist | findstr /i "crypto3 Certum"
 ```
 
-Create `keyprov.inf`, substituting the container ID. The trailing `&` on each
-line is required INF syntax, not a typo:
+which should list `Provider Name: crypto3 CSP` with
+`Provider Type: 1 - PROV_RSA_FULL`.
+
+### 2. Check the key is reachable
+
+```batch
+certutil -csp "crypto3 CSP" -key
+```
+
+should list one container, marked `[Default Container]`, with `RSA` and
+`AT_KEYEXCHANGE, AT_SIGNATURE`; note its ID for step 4. `NTE_KEYSET_NOT_DEF`
+here means Remote Desktop, the wrong driver mode, no restart since changing
+it, or a card that is not seated.
+
+The other Certum providers are no use for this key: `cryptoCertum3 KSP` only
+sees the card's Secure profile, and the code-signing key is in the Common
+profile, whilst `cryptoCertum3 CSP` fails with `NTE_BAD_PROVIDER`.
+
+### 3. Import the certificate to the machine store
+
+In proCertum Card Manager: Read Card, then the Common Profile tab, select the
+code signing certificate, Show certificate details, and Install certificate
+into the Windows **machine** store (Local Machine, Personal). The machine
+store is why the build signs with `/sm`.
+
+`certutil -store My` will then show the certificate, issued by `Certum Code
+Signing 2021 CA`, with its `Cert Hash(sha1)` thumbprint and `No key provider
+information`, which is expected at this point.
+
+### 4. Link the certificate to the key
+
+As Administrator, first save the certificate's current properties, which are
+what a rollback puts back:
+
+```batch
+certutil -store -v My "<thumbprint>" > before-repair.txt
+```
+
+Create `keyprov.inf`, substituting the container ID from step 2. The trailing
+`&` on each line is required INF syntax, not a typo:
 
 ```ini
 [Properties]
@@ -234,15 +267,55 @@ line is required INF syntax, not a typo:
     _continue_ = "KeySpec=2"
 ```
 
-Find the certificate's SHA1 thumbprint with `certutil -store My`, looking for
-`Cert Hash(sha1)`, and repair the store as Administrator:
+Then repair the store and check it:
 
 ```batch
 certutil -repairstore My "<thumbprint>" keyprov.inf
+certutil -store My "<thumbprint>"
 ```
 
-`certutil -store My` should now report `Provider = crypto3 CSP` and a
-`Key Container`.
+The second command runs a signature test, so it raises one PIN prompt, and
+should report the `Key Container`, `Provider = crypto3 CSP`, `Private key is
+NOT exportable` and `Signature test passed`. If the test does not pass, check
+the container ID, that the provider name is exactly `crypto3 CSP`, and
+`KeySpec=2`.
+
+Only the certificate's store properties change here; the key on the card is
+not touched. To undo it, rerun `-repairstore` with the values saved in
+`before-repair.txt`, or restore the snapshot.
+
+### 5. Prove signing works
+
+On a throwaway copy of any unsigned executable, run the same steps the build
+does (see below), at the console so that the PIN prompt can be answered by
+hand if the helper is not yet running:
+
+```batch
+powershell -NoProfile -Command "[IO.File]::WriteAllBytes('signer.cer', (Get-Item Cert:\LocalMachine\My\<thumbprint>).Export('Cert'))"
+mkdir dig
+signtool sign /dg dig /fd sha256 /f signer.cer test.exe
+signtool sign /ds /sm /n "<certificate subject>" /fd sha256 dig\test.exe.dig
+signtool sign /di dig test.exe
+signtool timestamp /tr http://timestamp.digicert.com /td sha256 test.exe
+signtool verify /pa /v test.exe
+```
+
+Only the `/ds` step prompts for the PIN. Each sign step should report
+`Successfully signed`, the timestamp `Successfully timestamped`, and the
+verification a `Hash of file (sha256)`, `The signature is timestamped` and
+`Successfully verified`.
+
+The one-step form, `signtool sign /sm /n "<certificate subject>" /fd sha256
+... test.exe`, fails after about a second, without asking for the PIN, with
+`SignerSign() failed. (-1073741275/0xc0000225)`. That is expected, and is not
+a setup fault; see below.
+
+### Undoing it all
+
+Restore the snapshot. Without one, set the proCertum driver back and restart,
+then put the certificate's properties back as in step 4. Deleting and
+reimporting the certificate in the store would probably also work, but whether
+that can delete the key on the card was not tested, so prefer the snapshot.
 
 ## How the build signs
 
@@ -253,36 +326,71 @@ certificate renewal is a settings change rather than a commit. The snapshot
 workflow fails immediately if it is unset, rather than quietly producing an
 unsigned installer that looks like a successful build.
 
-The signing call it makes is equivalent to:
+All signing goes through `pkg\win32\sign-files.bat`, called by `Make.bat` for
+the components it signs, and by Inno Setup (through `cmd /c`) for the
+installer and its uninstaller. For a set of files, it:
 
-```batch
-signtool sign /sm /n "<certificate subject>" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v <file>
-```
+1. exports the certificate's public part from the machine store, requiring
+   exactly one certificate whose name is the subject, with a private key;
+2. `signtool sign /dg <dir> /fd sha256 /f signer.cer <files>` writes each
+   file's SHA-256 digest into a private working directory, without the key;
+3. `signtool sign /ds /sm /n "<subject>" /fd sha256 <dir>\<file>.dig ...`
+   signs the digests with the card, which is the only step that uses it;
+4. `signtool sign /di <dir> <files>` puts the signatures into the files;
+5. `signtool timestamp /tr http://timestamp.digicert.com /td sha256 <files>`
+   adds the timestamp, which the split steps cannot do as part of signing;
+6. `signtool verify /pa <files>` checks the result.
 
-| Parameter | Why |
-|---|---|
-| `/sm` | machine store, which is where the certificate was installed |
-| `/n` | selects the certificate by subject name |
-| `/fd sha1` | file digest algorithm; see below for why it is not SHA-256 |
-| `/tr` | RFC 3161 timestamp server; prefer this over the legacy `/t` |
-| `/td sha256` | timestamp digest algorithm |
+`/dg` names each digest after the file's name alone, so two files with the
+same name in one call would overwrite each other's digest; the script refuses
+such a call rather than sign one file with the other's signature. Everything
+`Make.bat` signs in one call comes from the one directory, so this does not
+arise in the build.
 
-The file digest is SHA-1 because the key, bound through step 3 to the legacy
-CryptoAPI provider `crypto3 CSP`, cannot produce anything else: `/fd sha256`
-fails within a couple of seconds, before the PIN is requested, with
-`Error: SignerSign() failed. (-1073741275/0xc0000225)`. The timestamp digest is
-unaffected, since the card's key plays no part in the timestamp, which is why
-`/td sha256` works. Getting to SHA-256 file digests means binding the certificate to
-Certum's CNG provider, `cryptoCertum3 KSP`, instead. That is untested; before
-switching the build over, sign a scratch copy of an executable with each digest
-at the console, and snapshot the host before changing the binding.
+Each `/ds` process asks for the PIN once, however many files it signs, and the
+PIN is not cached between processes, so a build raises three prompts: one for
+the components, and one each for Inno's installer and uninstaller. Each of
+Inno's retries (`SignToolRetryCount`, 2 by default) is another prompt. The
+helper answers them all.
+
+### Why not a single `signtool sign /fd sha256`
+
+That is the usual command, and it fails here, as step 5 above shows. The card,
+the CSP and the binding are all capable of SHA-256: the CSP signs a SHA-256
+hash correctly through CryptoAPI, and the split steps work. The failure is in
+crypt32's message-signing code, which signtool uses through `SignerSign()`.
+For a SHA-2 digest it does not sign with a legacy CryptoAPI key directly, but
+first converts the key handle to a CNG one with `NCryptTranslateHandle`,
+which, as
+[Microsoft documents](https://learn.microsoft.com/en-us/windows/win32/api/ncrypt/nf-ncrypt-ncrypttranslatehandle),
+only works when a CNG key storage provider is registered under the CSP's name
+or an alias of it. None is registered for `crypto3 CSP` (Certum's
+`cryptoCertum3 KSP` aliases only `cryptoCertum3 CSP`), so the call fails with
+`STATUS_NOT_FOUND`, 0xc0000225, before the card is used. SHA-1 takes the older
+CryptoAPI path, which is why it worked. That `NCryptTranslateHandle` is the
+failing call is inferred from it returning the same code when called directly,
+rather than confirmed under a debugger, and why `/ds` avoids the conversion is
+observed rather than documented.
+
+Binding the certificate to `cryptoCertum3 KSP` instead cannot work, as that
+provider cannot see the code-signing key (step 2).
+
+Certum's own answer to SHA-2 problems with signtool, in their manual *Code
+Signing: Using Signtool and Jarsigner*, is to switch proCertum to Minidriver
+mode, which would make the one-step command work through Microsoft's Smart
+Card Key Storage Provider. That is untested here. It changes the driver and the
+certificate binding, so it needs this setup redone and a snapshot first, and
+the PIN prompt would probably become a Windows Security dialog, which the
+helper does not answer.
+
+### Timestamps and verification
 
 Timestamping matters: without it, signatures stop validating when the
 certificate expires. If DigiCert's server is unavailable,
 `http://timestamp.sectigo.com` and `http://ts.ssl.com` are alternatives.
 Certum's own, `http://time.certum.pl`, was unreliable during setup.
 
-Verify with:
+To check a signed file by hand:
 
 ```batch
 signtool verify /pa /v <file>
@@ -295,13 +403,21 @@ Remote Desktop: smart card operations need a local console session. Otherwise
 check proCertum is in CSP mode rather than Minidriver, that Windows was
 restarted after changing it, and that the card is seated and readable.
 
-**"No certificates were found that met all the given criteria".** Check `/sm`
-is being passed, that `certutil -store My` shows the certificate, and that the
-key provider link from step 3 exists.
+**"No certificates were found that met all the given criteria", or
+`sign-files: expected exactly one certificate`.** Check that
+`certutil -store My` shows the certificate, that `PGADMIN_WINDOWS_CSC` is its
+subject name exactly, that no second certificate (an expired predecessor, say)
+has the same name, and that the key provider link from step 4 exists.
 
-**`SignerSign() failed`.** Check the card is inserted and readable, that the
-PIN prompt has not appeared behind another window, and that the
-certificate-to-key link is intact.
+**`SignerSign() failed. (-1073741275/0xc0000225)`, with no PIN prompt.**
+Something has run the one-step `signtool sign /fd sha256`, which cannot work
+with this key; see 'Why not a single `signtool sign /fd sha256`'. Sign through
+`sign-files.bat` instead.
+
+**Any other `SignerSign() failed`.** Check the card is inserted and readable,
+that the PIN prompt has not appeared behind another window, and that the
+certificate-to-key link is intact. A failed call leaves its working files in
+the directory it names, under `%TEMP%`.
 
 **The build hangs rather than failing.** The runner is almost certainly running
 as a service, or as a scheduled task set to "run whether user is logged on or
@@ -317,9 +433,11 @@ is wrong, which needs the card checking before it is retried enough times to
 block. Recovery is to log in to the console, clear whatever is on screen,
 restart the helper, and rerun the job.
 
-**The first signature after the card is inserted prompts for a PIN.** Expected.
-Subsequent operations in the same session may be cached, depending on proCertum
-settings.
+**Every signing call prompts for the PIN.** Expected: the PIN is asked for
+once per process that uses the key, and is not cached between processes, so a
+build raises one prompt for the components and one each for the installer and
+the uninstaller. `certutil -store My` raises one too, because it runs a
+signature test.
 
 ## Fully unattended signing
 
