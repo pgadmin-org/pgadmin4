@@ -280,8 +280,9 @@ tab to provide other backup options.
      command to determine object ownership (instead of an ALTER OWNER command).
 
    * Move the switch next to *Dump statistics* to the *Yes* position to include
-     optimizer statistics in the backup. **Note:** This option is visible only
-     for database server greater than or equal to 18.
+     optimizer statistics in the backup. It cannot be combined with *Only
+     data*, *Only schemas* or *Do not save* *Statistics*. **Note:** This option
+     is visible only for database server greater than or equal to 18.
 
    * Move the switch next to *Sequence data* to the *Yes* position to include
      sequence data that would normally be excluded. **Note:** This option is

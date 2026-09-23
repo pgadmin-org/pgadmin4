@@ -372,7 +372,14 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
     set_param('use_set_session_auth', '--use-set-session-authorization')
-    set_param('statistics', '--statistics', manager.version >= 180000)
+    # pg_dump rejects --statistics alongside --data-only, --schema-only or
+    # --no-statistics. Statistics are not dumped by default, so dropping
+    # --statistics gives the result the other option asked for.
+    set_param('statistics', '--statistics',
+              manager.version >= 180000 and
+              not data.get('only_data', None) and
+              not data.get('only_schema', None) and
+              not data.get('no_statistics', None))
     set_param('sequence_data', '--sequence-data', manager.version >= 180000)
     set_value('exclude_schema', '--exclude-schema')
     set_value('extra_float_digits', '--extra-float-digits', None,

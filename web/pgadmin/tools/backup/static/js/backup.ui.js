@@ -343,9 +343,9 @@ export class SaveOptSchema extends BaseUISchema {
       group: gettext('Do not save'),
       inlineGroup: 'do_not_save',
       min_version: 180000,
-      deps: ['only_statistics'],
+      deps: ['only_statistics', 'statistics'],
       disabled: function(state) {
-        return state.only_statistics;
+        return state.only_statistics || state.statistics;
       },
     }];
   }
@@ -453,7 +453,10 @@ export class MiscellaneousSchema extends BaseUISchema {
       id: 'statistics',
       label: gettext('Dump statistics'),
       type: 'switch',
-      disabled: false,
+      deps: ['only_data', 'only_schema', 'no_statistics'],
+      disabled: function(state) {
+        return state.only_data || state.only_schema || state.no_statistics;
+      },
       group: gettext('Miscellaneous'),
       inlineGroup: 'miscellaneous',
       min_version: 180000

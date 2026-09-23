@@ -16,7 +16,8 @@ test_backup_create_job_unit_test.py can only assert the v18 options where a
 v18 server is available to test against, and silently skip otherwise.
 
 Each of --statistics-only, --no-data, --no-schema and --no-statistics
-conflicts with one of the --*-only options, verified against pg_dump 18:
+conflicts with one of the --*-only options, and --statistics conflicts with
+--data-only, --schema-only and --no-statistics, verified against pg_dump 18:
 "options -s/--schema-only and --statistics-only cannot be used together" and
 so on. The utility rejects the whole command, so pgAdmin must not emit both
 even if a request arrives with both set.
@@ -84,6 +85,30 @@ class BackupPG18ArgsTestCase(BaseTestGenerator):
             data=dict(only_statistics=True, no_statistics=True),
             expected=['--statistics-only'],
             not_expected=['--no-statistics'],
+        )),
+        ('Only data wins over statistics', dict(
+            version=V18,
+            data=dict(only_data=True, statistics=True),
+            expected=['--data-only'],
+            not_expected=['--statistics'],
+        )),
+        ('Only schema wins over statistics', dict(
+            version=V18,
+            data=dict(only_schema=True, statistics=True),
+            expected=['--schema-only'],
+            not_expected=['--statistics'],
+        )),
+        ('No statistics wins over statistics', dict(
+            version=V18,
+            data=dict(no_statistics=True, statistics=True),
+            expected=['--no-statistics'],
+            not_expected=['--statistics'],
+        )),
+        ('Statistics may be combined with only statistics', dict(
+            version=V18,
+            data=dict(only_statistics=True, statistics=True),
+            expected=['--statistics-only', '--statistics'],
+            not_expected=[],
         )),
     ]
 
