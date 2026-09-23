@@ -177,31 +177,16 @@ REM Main build sequence Ends
     ECHO ****************************************************************
 
     ECHO Checking the environment...
-    IF NOT EXIST "%PGADMIN_INNOTOOL_DIR%" (
-        ECHO %PGADMIN_INNOTOOL_DIR% does not exist
-        ECHO Please install InnoTool and set the PGADMIN_INNOTOOL_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_VCREDIST_DIR%" (
-        ECHO %PGADMIN_VCREDIST_DIR% does not exist
-        ECHO Please install Microsoft Visual studio and set the PGADMIN_VCREDIST_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_KRB5_DIR%" (
-        ECHO %PGADMIN_KRB5_DIR% does not exist.
-        ECHO Please install MIT Kerberos for Windows, from the winpgbuild project or
-        ECHO elsewhere, and set the PGADMIN_KRB5_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_POSTGRES_DIR%" (
-        ECHO %PGADMIN_POSTGRES_DIR% does not exist.
-        ECHO Please install PostgreSQL, from the winpgbuild project or elsewhere, and
-        ECHO set the PGADMIN_POSTGRES_DIR environment variable.
-        EXIT /B 1
-    )
+    REM The checks are made by :REQUIRE_DIR rather than inline, because the
+    REM message names the directory that was looked for, and a default such as
+    REM "C:\Program Files (x86)\Inno Setup 6" carries a closing parenthesis.
+    REM Inside a parenthesised block that parenthesis ends the block, as cmd
+    REM expands the variable when it parses the block rather than when it runs it,
+    REM so the block failed to parse whether or not the directory was there.
+    CALL :REQUIRE_DIR "%PGADMIN_INNOTOOL_DIR%" "Please install InnoTool and set the PGADMIN_INNOTOOL_DIR environment variable." || EXIT /B 1
+    CALL :REQUIRE_DIR "%PGADMIN_VCREDIST_DIR%" "Please install Microsoft Visual Studio and set the PGADMIN_VCREDIST_DIR environment variable." || EXIT /B 1
+    CALL :REQUIRE_DIR "%PGADMIN_KRB5_DIR%" "Please install MIT Kerberos for Windows, from the winpgbuild project or elsewhere, and set the PGADMIN_KRB5_DIR environment variable." || EXIT /B 1
+    CALL :REQUIRE_DIR "%PGADMIN_POSTGRES_DIR%" "Please install PostgreSQL, from the winpgbuild project or elsewhere, and set the PGADMIN_POSTGRES_DIR environment variable." || EXIT /B 1
 
     SET "PATH=%PGADMIN_POSTGRES_DIR%\bin;%PATH%"
 
@@ -569,3 +554,16 @@ REM and some of them are optional.
 :CHECK_ROBOCOPY_ERROR
     IF %ERRORLEVEL% GEQ 8 EXIT /B %ERRORLEVEL%
     EXIT /B 0
+
+
+REM Check that a prerequisite directory exists, reporting the path that was
+REM looked for and how to correct it if it does not. The first argument is the
+REM directory and the second the hint; both are echoed here, outside any
+REM parenthesised block, so a parenthesis in either is just a character.
+:REQUIRE_DIR
+    IF EXIST "%~1" EXIT /B 0
+
+    ECHO %~1 does not exist.
+    ECHO %~2
+
+    EXIT /B 1
