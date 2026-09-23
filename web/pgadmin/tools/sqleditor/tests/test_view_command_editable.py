@@ -440,6 +440,8 @@ class TestViewSaveRejectsAmbiguousPrimaryKey(
 
             # Rejected, not silently applied to both rows.
             self.assertEqual(response_data['data']['status'], False)
+            self.assertIn('does not uniquely identify',
+                          response_data['data']['result'])
 
             self._close_query_tool(trans_id)
 
@@ -530,6 +532,146 @@ class TestViewSaveRejectsInsertedRow(_ViewSaveTestMixin, BaseTestGenerator):
             self.connection.commit()
             # No row was actually inserted into the base table.
             self.assertEqual(int(result[0][0]), 1)
+        finally:
+            self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1};".format(
+                    view=self.view, base1=self.base1))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestViewSaveRejectsVanishedRow(_ViewSaveTestMixin, BaseTestGenerator):
+    """ An UPDATE through a view that matches no base row (the row was
+    deleted by another session, or is no longer visible through the
+    view) must be refused by the rows-affected check with a message
+    saying so, not one blaming the view's primary key. """
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_gone_base_' + suffix
+        self.view = 'test_editview_gone_v_' + suffix
+
+    def runTest(self):
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+            CREATE VIEW {view} AS SELECT id, name FROM {base1};
+        """.format(base1=self.base1, view=self.view)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            trans_id = self._initialize_view_data(obj_id)
+
+            start_data, _ = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+
+            # Another session deletes the row after it was loaded.
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DELETE FROM {0} WHERE id = 1".format(self.base1))
+
+            save_payload = {
+                "updated": {
+                    "1": {
+                        "err": False,
+                        "data": {"name": "CHANGED"},
+                        "primary_keys": {"id": 1}
+                    }
+                },
+                "added": {},
+                "deleted": {},
+            }
+            response_data = self._save(trans_id, save_payload)
+
+            self.assertEqual(response_data['data']['status'], False)
+            self.assertIn('no longer be visible',
+                          response_data['data']['result'])
+            self.assertNotIn('does not uniquely identify',
+                             response_data['data']['result'])
+
+            self._close_query_tool(trans_id)
+        finally:
+            self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1};".format(
+                    view=self.view, base1=self.base1))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestViewEditabilityRecheckedOnReload(
+        _ViewSaveTestMixin, BaseTestGenerator):
+    """ The command object, and with it can_edit()'s cached result, is
+    pickled into the session for the life of the grid. Re-running the
+    data load (refresh, filter or sort) on the same transaction must
+    re-check the view's current definition rather than reuse the result
+    from the first load. """
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_reload_base_' + suffix
+        self.view = 'test_editview_reload_v_' + suffix
+
+    def runTest(self):
+        # The primary key is not exposed at first, so the view is not
+        # editable.
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+            CREATE VIEW {view} AS SELECT name FROM {base1};
+        """.format(base1=self.base1, view=self.view)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            trans_id = self._initialize_view_data(obj_id)
+
+            start_data, _ = self._start_and_poll(trans_id)
+            self.assertFalse(start_data['data']['can_edit'])
+
+            # Expose the primary key, then reload the same grid.
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "CREATE OR REPLACE VIEW {view} AS "
+                "SELECT name, id FROM {base1};".format(
+                    view=self.view, base1=self.base1))
+
+            start_data, poll_data = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+            self.assertEqual(poll_data['data']['primary_keys'],
+                             {'id': 'int4'})
+
+            self._close_query_tool(trans_id)
         finally:
             self._drop_test_objects()
 
