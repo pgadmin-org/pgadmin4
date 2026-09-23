@@ -68,6 +68,26 @@ CREATE TABLE {0}.int_to_smallserial (
 );
 """
 
+# Rows the target's plain column already holds before it becomes SERIAL.
+TAR_ROWS = """
+INSERT INTO {0}.int_to_serial (id, val) VALUES (1, 'a'), (5, 'b');
+"""
+
+# Fails the batch unless the converted column's new sequence carries on
+# past the values it already held, rather than starting again at 1.
+CHECK_INT_TO_SERIAL_NEXT_ID = """
+DO $$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO {0}.int_to_serial (val) VALUES ('x') RETURNING id INTO new_id;
+    IF new_id <> 6 THEN
+        RAISE EXCEPTION 'expected the next id to be 6, got %', new_id;
+    END IF;
+END
+$$;
+"""
+
 # Fails the batch unless the sequence a SMALLSERIAL conversion created has
 # the same smallint type PostgreSQL itself gives a SMALLSERIAL's sequence,
 # rather than the bigint a bare CREATE SEQUENCE defaults to.
@@ -108,6 +128,7 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
 
         self.execute_sql(self.src_database, SRC_DDL.format(SCHEMA_NAME))
         self.execute_sql(self.tar_database, TAR_DDL.format(SCHEMA_NAME))
+        self.execute_sql(self.tar_database, TAR_ROWS.format(SCHEMA_NAME))
 
     def execute_sql(self, db_name, sql):
         """
@@ -244,11 +265,10 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
                 'Identical')
 
         # The forward conversion must have made the column a genuine
-        # SERIAL: an insert omitting it must now succeed.
-        self.execute_sql(
-            self.tar_database,
-            "INSERT INTO {0}.int_to_serial (val) VALUES ('x')".format(
-                SCHEMA_NAME))
+        # SERIAL: an insert omitting it must now succeed, and must not
+        # reuse a value the column already held.
+        self.execute_sql(self.tar_database,
+                         CHECK_INT_TO_SERIAL_NEXT_ID.format(SCHEMA_NAME))
 
     def tearDown(self):
         """This function drops the added databases"""

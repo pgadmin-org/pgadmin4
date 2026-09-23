@@ -39,6 +39,12 @@ CREATE SEQUENCE {{data.serial_seq_create.name}} AS {{data.serial_seq_create.data
 ALTER SEQUENCE {{data.serial_seq_create.name}}
     OWNED BY {{conn|qtIdent(data.schema)}}.{{conn|qtIdent(data.table)}}.{% if data.name %}{{conn|qtIdent(data.name)}}{% else %}{{conn|qtIdent(o_data.name)}}{% endif %};
 
+{###  Move the new sequence past any values the column already holds, or the next insert omitting the column would reuse one of them; an empty column leaves the sequence at its START ###}
+{% set serial_last = ('MIN(' if data.serial_seq_create.increment is not none and data.serial_seq_create.increment|int < 0 else 'MAX(') ~ conn|qtIdent(data.name or o_data.name) ~ ')' %}
+SELECT setval({{data.serial_seq_create.name|qtLiteral(conn)}}, {{serial_last}})
+    FROM {{conn|qtIdent(data.schema, data.table)}}
+    HAVING {{serial_last}} IS NOT NULL;
+
 {% endif %}
 {###  Alter column default value ###}
 {% if is_view_only and data.defval is defined and data.defval is not none and data.defval != '' and data.defval != o_data.defval %}
