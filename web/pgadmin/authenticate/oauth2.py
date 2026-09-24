@@ -135,6 +135,9 @@ def init_app(app):
             session.pop('oauth2_current_client', None)
             return redirect(get_safe_post_login_redirect())
         session.pop('oauth2_current_client', None)
+        # get_user_profile() may already have stored the provider's logout
+        # URL before the login failed; don't leave it for a later logout.
+        session.pop('oauth2_logout_url', None)
         logout_user()
         flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
@@ -600,13 +603,10 @@ class OAuth2Authentication(BaseAuthentication):
             current_app.logger.error(error_msg)
             return False, error_msg
 
-        additional_claims = None
-        if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
-                self.oauth2_current_client]:
-
-            additional_claims = self.oauth2_config[
-                self.oauth2_current_client
-            ]['OAUTH2_ADDITIONAL_CLAIMS']
+        # config.py ships the key with a value of None, so test whether it
+        # is set rather than whether it is present.
+        additional_claims = self.oauth2_config.get(
+            self.oauth2_current_client, {}).get('OAUTH2_ADDITIONAL_CLAIMS')
 
         # For OIDC providers, check ID token claims first, then userinfo
         # For non-OIDC providers, check userinfo only
@@ -689,10 +689,16 @@ class OAuth2Authentication(BaseAuthentication):
 
         session['pass_enc_key'] = session['oauth2_token']['access_token']
 
-        if 'OAUTH2_LOGOUT_URL' in self.oauth2_config[
-                self.oauth2_current_client]:
-            session['oauth2_logout_url'] = self.oauth2_config[
-                self.oauth2_current_client]['OAUTH2_LOGOUT_URL']
+        # As above, the shipped config.py sets this to None, so only stash
+        # it in the session when it actually holds a URL, and otherwise drop
+        # any left over from an earlier login so that logout cannot redirect
+        # to a different provider's URL.
+        logout_url = self.oauth2_config.get(
+            self.oauth2_current_client, {}).get('OAUTH2_LOGOUT_URL')
+        if logout_url:
+            session['oauth2_logout_url'] = logout_url
+        else:
+            session.pop('oauth2_logout_url', None)
 
         # For OIDC providers, parse the ID token JWT to extract claims.
         # We can skip the userinfo endpoint call if the ID token has
@@ -744,8 +750,9 @@ class OAuth2Authentication(BaseAuthentication):
 
         # For non-OIDC providers or when ID token is insufficient,
         # call the userinfo endpoint
-        if 'OAUTH2_USERINFO_ENDPOINT' not in self.oauth2_config[
-                self.oauth2_current_client]:
+        userinfo_endpoint = self.oauth2_config.get(
+            self.oauth2_current_client, {}).get('OAUTH2_USERINFO_ENDPOINT')
+        if not userinfo_endpoint:
             if self._is_oidc_provider():
                 # OIDC provider should have provided claims in ID token
                 current_app.logger.warning(
@@ -758,8 +765,7 @@ class OAuth2Authentication(BaseAuthentication):
             return {}
 
         resp = self.oauth2_clients[self.oauth2_current_client].get(
-            self.oauth2_config[
-                self.oauth2_current_client]['OAUTH2_USERINFO_ENDPOINT'],
+            userinfo_endpoint,
             token=session['oauth2_token']
         )
         resp.raise_for_status()

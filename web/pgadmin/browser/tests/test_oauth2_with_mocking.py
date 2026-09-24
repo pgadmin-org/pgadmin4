@@ -139,6 +139,12 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={},
             id_token_claims=None,
         )),
+        ('OAuth2 Failed Callback Clears Stored Logout URL', dict(
+            oauth2_provider='github',
+            kind='callback_login_failure_clears_logout_url',
+            profile={},
+            id_token_claims=None,
+        )),
         ('OAuth2 openid Scope Without Metadata URL Fails Fast', dict(
             oauth2_provider='oidc-no-metadata',
             kind='openid_without_metadata_url',
@@ -327,6 +333,9 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self._test_session_state_after_redirect(self.oauth2_provider)
         elif self.kind == 'callback_missing_provider_state':
             self._test_oauth2_callback_missing_provider_state()
+        elif self.kind == 'callback_login_failure_clears_logout_url':
+            self._test_oauth2_callback_failure_clears_logout_url(
+                self.oauth2_provider)
         elif self.kind == 'openid_without_metadata_url':
             self._test_openid_scope_without_metadata_url_fails_fast()
         else:
@@ -784,6 +793,26 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         # Allow a redirect (302) or a 4xx error response — anything except
         # an unhandled exception.
         self.assertLess(res.status_code, 500)
+
+    def _test_oauth2_callback_failure_clears_logout_url(self, provider):
+        """A failed OAuth2 callback must drop any logout URL already stored
+        in the session, since get_user_profile() stores it before the login
+        can fail, and a later logout would otherwise redirect to it.
+        """
+        with self.tester.session_transaction() as sess:
+            sess['oauth2_current_client'] = provider
+            sess['oauth2_logout_url'] = 'https://idp.example.com/logout'
+
+        with patch('pgadmin.authenticate.AuthSourceManager.login',
+                   return_value=(False, 'Login failed')):
+            res = self.tester.get('/oauth2/authorize',
+                                  follow_redirects=False)
+
+        self.assertEqual(res.status_code, 302)
+        with self.tester.session_transaction() as sess:
+            self.assertNotIn('oauth2_logout_url', sess)
+            self.assertNotIn('oauth2_current_client', sess)
+        self._assert_oauth2_session_not_logged_in()
 
     def _test_openid_scope_without_metadata_url_fails_fast(self):
         """'openid' in OAUTH2_SCOPE without OAUTH2_SERVER_METADATA_URL must
