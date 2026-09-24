@@ -587,13 +587,14 @@ WHERE db.oid = {0}""".format(did))
                 ssh_logger.setLevel(logging.DEBUG)
                 for h in current_app.logger.handlers:
                     ssh_logger.addHandler(h)
-            # Only keep sshtunnel away from the agent when we have a
-            # credential of our own for it to use (#9814). Given neither a
-            # usable key nor a password it raises ValueError from
-            # _consolidate_auth() before it ever connects, so leaving the
-            # agent enabled in that case preserves the previous behaviour
-            # for anyone relying on "Prompt for Password?" or on the agent
-            # itself to authenticate.
+            # Keep sshtunnel away from the agent whenever the user has
+            # configured a credential of their own (#9814). The identity file
+            # check uses the configured path, not the resolved one, so a
+            # missing key file is reported as a failure rather than silently
+            # authenticating with some other key from the agent. With no
+            # identity file or password configured the agent stays enabled,
+            # preserving the previous behaviour for anyone relying on
+            # "Prompt for Password?" or on the agent itself.
             if self.tunnel_authentication == 1:
                 tunnel_identity_file = get_complete_file_path(
                     self.tunnel_identity_file)
@@ -602,7 +603,7 @@ WHERE db.oid = {0}""".format(did))
                     ssh_username=self.tunnel_username,
                     ssh_pkey=tunnel_identity_file,
                     ssh_private_key_password=tunnel_password,
-                    allow_agent=not tunnel_identity_file,
+                    allow_agent=not self.tunnel_identity_file,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)

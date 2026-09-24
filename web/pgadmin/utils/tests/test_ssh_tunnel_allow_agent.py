@@ -11,7 +11,9 @@
 
 Probing the agent when pgAdmin already has an identity file or a password of
 its own produces repeated prompts or denials (#9814), so the agent is disabled
-whenever a credential is available. It must stay enabled when none is, because
+whenever one is configured, even if the identity file turns out to be missing,
+since falling back to the agent would authenticate with some other key. It
+must stay enabled when no credential is configured at all, because
 sshtunnel raises ValueError from _consolidate_auth() if it is left with
 nothing at all to authenticate with, and that would be a worse failure than
 the one being fixed: ValueError is not a BaseSSHTunnelForwarderError, so it
@@ -36,8 +38,15 @@ class SSHTunnelAllowAgentTestCase(BaseTestGenerator):
             stored_password=None,
             expected_allow_agent=False,
         )),
-        ('Unusable identity file leaves the agent enabled', dict(
+        ('Missing identity file still disables the agent', dict(
             tunnel_authentication=1,
+            resolved_identity_file=None,
+            stored_password=None,
+            expected_allow_agent=False,
+        )),
+        ('No identity file configured leaves the agent enabled', dict(
+            tunnel_authentication=1,
+            configured_identity_file=None,
             resolved_identity_file=None,
             stored_password=None,
             expected_allow_agent=True,
@@ -70,8 +79,10 @@ class SSHTunnelAllowAgentTestCase(BaseTestGenerator):
         )),
     ]
 
-    # Overridden per scenario where the forwarder is meant to fail.
+    # Overridden per scenario where the forwarder is meant to fail, or where
+    # no identity file is configured.
     forwarder_error = None
+    configured_identity_file = 'id_rsa'
 
     def setUp(self):
         # Deliberately no server connection: this exercises the argument
@@ -86,7 +97,7 @@ class SSHTunnelAllowAgentTestCase(BaseTestGenerator):
         manager.tunnel_host = 'tunnel.example.com'
         manager.tunnel_port = 22
         manager.tunnel_username = 'tunneluser'
-        manager.tunnel_identity_file = 'id_rsa'
+        manager.tunnel_identity_file = self.configured_identity_file
         manager.tunnel_keep_alive = 0
         manager.host = 'db.example.com'
         manager.port = 5432
