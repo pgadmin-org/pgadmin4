@@ -54,6 +54,9 @@ class ServerManager(object):
         self.tunnel_object = None
         self.tunnel_created = False
         self.display_connection_string = ''
+        # fs_uniquifier of the pgAdmin user this manager was built for;
+        # set by the driver, see Driver._current_pga_user.
+        self.pga_user = None
 
         self.update(server)
 
@@ -153,6 +156,19 @@ class ServerManager(object):
         res['sid'] = self.sid
         res['ver'] = self.ver
         res['sversion'] = self.sversion
+
+        # Persisted alongside the connection state so a later restore
+        # (e.g. after a worker restart) can tell whether this blob still
+        # belongs to the Server row for this id, or whether the id was
+        # reused by an unrelated row after the configuration database
+        # was reset/restored - see Driver._manager_is_stale.
+        res['host'] = self.host
+        res['port'] = self.port
+        res['db'] = self.db
+        res['user'] = self.user
+        res['service'] = self.service
+        res['tunnel_host'] = self.tunnel_host
+        res['pga_user'] = self.pga_user
 
         self._set_password(res)
 
