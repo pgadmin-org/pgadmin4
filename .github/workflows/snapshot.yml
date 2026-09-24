@@ -55,7 +55,16 @@ jobs:
   # the repo RPMs carry the snapshot's own URL inside them, so if that job and
   # the assemble job each called date(1) a run straddling midnight would ship a
   # repository configuration pointing at a snapshot that does not exist.
+  #
+  # It is also where a scheduled run on a fork stops. A fork with Actions
+  # enabled inherits the schedule but none of the signing secrets or
+  # self-hosted runners, so the macOS jobs would fail at the certificate and
+  # the Windows job would queue for a day. Every other job waits on this one,
+  # so skipping it skips the run. A dispatch still runs anywhere.
   location:
+    if: >-
+      github.event_name != 'schedule'
+      || github.repository == 'pgadmin-org/pgadmin4'
     runs-on: ubuntu-24.04
     outputs:
       name: ${{ steps.pick.outputs.name }}
@@ -93,14 +102,19 @@ jobs:
           echo "named=${NAMED}" >> "${GITHUB_OUTPUT}"
 
   deb:
+    needs: location
     uses: ./.github/workflows/check-deb-build.yml
   rpm:
+    needs: location
     uses: ./.github/workflows/check-rpm-build.yml
   tarball:
+    needs: location
     uses: ./.github/workflows/check-tarball-build.yml
   wheel:
+    needs: location
     uses: ./.github/workflows/check-python-build.yml
   docs:
+    needs: location
     uses: ./.github/workflows/check-doc-builds.yml
   # No helm job here. The chart is not part of the download tree: the
   # buildfarm pushed it to an OCI registry, which nothing in this workflow
@@ -145,10 +159,12 @@ jobs:
           path: dist/*.noarch.rpm
 
   macos:
+    needs: location
     uses: ./.github/workflows/snapshot-macos.yml
     secrets: inherit
 
   windows:
+    needs: location
     uses: ./.github/workflows/snapshot-windows.yml
     secrets: inherit
 
