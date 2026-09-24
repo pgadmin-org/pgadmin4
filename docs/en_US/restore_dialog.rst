@@ -77,6 +77,10 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
    * Move the switch next to *Only schema* to limit the restoration to
      schema-level database objects.
 
+   * Move the switch next to *Only statistics* to the *Yes* position to limit
+     the restoration to optimizer statistics. **Note:** This option is visible
+     only for database server greater than or equal to 18.
+
 .. image:: images/restore_do_not_save.png
     :alt: Restore dialog do not save section
     :align: center
@@ -109,6 +113,22 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
    * Move the switch next to *Table access methods* to the *Yes* position to exclude
      Table access methods. **Note:** This option is visible only for
      database server greater than or equal to 15.
+
+   * Move the switch next to *Row security policies* to the *Yes* position to
+     exclude row security policies. **Note:** This option is visible only for
+     database server greater than or equal to 18.
+
+   * Move the switch next to *Data* to the *Yes* position to exclude data from
+     the restore. **Note:** This option is visible only for database server
+     greater than or equal to 18.
+
+   * Move the switch next to *Schema* to the *Yes* position to exclude schema
+     (the data definitions) from the restore. **Note:** This option is visible
+     only for database server greater than or equal to 18.
+
+   * Move the switch next to *Statistics* to the *Yes* position to exclude
+     optimizer statistics from the restore. **Note:** This option is visible
+     only for database server greater than or equal to 18.
 
 .. image:: images/restore_queries.png
     :alt: Restore dialog queries section
