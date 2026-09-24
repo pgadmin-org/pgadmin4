@@ -322,6 +322,32 @@
       "expected_msql_file": "alter_mview_remove_table_parameter_msql.sql"
     },
     {
+      "type": "alter",
+      "name": "Alter Materialised Views (adding MAINTAIN privilege)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "datacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "m",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview_add_maintain_priv.sql",
+      "expected_msql_file": "alter_mview_add_maintain_priv_msql.sql"
+    },
+    {
       "type": "create",
       "name": "Create Materialised Views with access method",
       "endpoint": "NODE-mview.obj",

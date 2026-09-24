@@ -223,6 +223,32 @@
       "expected_msql_file": "alter_view_delete_priv_msql.sql"
     },
     {
+      "type": "alter",
+      "name": "Alter View (adding MAINTAIN privilege)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "datacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "m",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_view_add_maintain_priv.sql",
+      "expected_msql_file": "alter_view_add_maintain_priv_msql.sql"
+    },
+    {
       "type": "delete",
       "name": "Drop View",
       "endpoint": "NODE-view.obj_id",
