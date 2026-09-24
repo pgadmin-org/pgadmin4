@@ -242,6 +242,12 @@ class IsTransactionControlTest(BaseTestGenerator):
         ('only a comment', dict(sql='-- COMMIT', expected=False)),
         ('an unterminated block comment',
          dict(sql='/* COMMIT;', expected=False)),
+        ('a block comment straight after the keyword',
+         dict(sql='COMMIT/* note */;', expected=True)),
+        ('a line comment straight after the semicolon',
+         dict(sql='COMMIT;-- note', expected=True)),
+        ('a keyword followed by digits',
+         dict(sql='BEGIN1;', expected=False)),
     ]
 
     def runTest(self):

@@ -14,6 +14,7 @@ object.
 """
 
 import os
+import re
 import secrets
 import datetime
 import asyncio
@@ -69,6 +70,10 @@ TRANSACTION_CONTROL_KEYWORDS = frozenset({
 })
 
 
+# A leading identifier or keyword, as PostgreSQL's lexer reads one.
+_LEADING_WORD = re.compile(r'[^\W\d][\w$]*')
+
+
 def _skip_leading_comments(query):
     """
     Return the given statement with any leading whitespace and SQL comments
@@ -113,10 +118,13 @@ def _is_transaction_control(query):
     Args:
         query: SQL statement, as passed to execute_void()
     """
-    words = _skip_leading_comments(query).split(None, 1)
-    keyword = words[0] if words else ''
+    # Take the keyword as a whole word, so that a comment or semicolon
+    # written straight after it (COMMIT/* note */; or COMMIT;-- note) does
+    # not become part of it, whilst BEGINNING is still not BEGIN.
+    match = _LEADING_WORD.match(_skip_leading_comments(query))
 
-    return keyword.rstrip(';').lower() in TRANSACTION_CONTROL_KEYWORDS
+    return bool(match) and \
+        match.group().lower() in TRANSACTION_CONTROL_KEYWORDS
 
 
 class Connection(BaseConnection):
