@@ -975,10 +975,7 @@ class ServerNode(PGChildNodeView):
             if _is_non_owner(server):
                 manager.passexec = shared_server_passexec(server)
             else:
-                manager.passexec = PasswordExec(
-                    server.passexec_cmd, server.host, server.port,
-                    server.username, server.passexec_expiration) \
-                    if server.passexec_cmd else None
+                manager.passexec = PasswordExec.from_server(server)
 
         return jsonify(
             node=self.blueprint.generate_browser_node(

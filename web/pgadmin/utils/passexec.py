@@ -33,6 +33,15 @@ class PasswordExec:
         self.password = None
         self.last_result = None
 
+    @classmethod
+    def from_server(cls, server):
+        """Return a PasswordExec built from a server's own
+        passexec_cmd, or None if it has none."""
+        if not server.passexec_cmd:
+            return None
+        return cls(server.passexec_cmd, server.host, server.port,
+                   server.username, server.passexec_expiration)
+
     def get(self):
         if config.SERVER_MODE and not config.ENABLE_SERVER_PASS_EXEC_CMD:
             # Arbitrary shell execution on server is a security risk
