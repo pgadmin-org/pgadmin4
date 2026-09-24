@@ -180,3 +180,58 @@ DATA_TYPE_WITH_LENGTH = [1560, 'bit', 1561, 'bit[]',
 RESTRICTION_TYPE_DATABASES = 'databases'
 RESTRICTION_TYPE_SQL = 'sql'
 RESTRICT_COMMAND = '\\restrict'
+
+# Connection parameters whose value is a file selected through the file
+# manager, and so must be resolved to a complete path before it is handed
+# to libpq.  'sslrootcert' is handled separately, because the literal value
+# 'system' asks libpq for the trusted CA store rather than naming a file.
+CONNECTION_PARAM_FILE_PATHS = [
+    'passfile', 'sslcert', 'sslkey', 'sslcrl'
+]
+
+# Connection parameters whose value is a directory selected through the
+# file manager, resolved in the same way but checked as a directory.
+CONNECTION_PARAM_DIR_PATHS = ['sslcrldir']
+
+# Connection parameters that pgAdmin stores as a boolean but libpq expects
+# as an integer.
+CONNECTION_PARAM_BOOLEANS = ['sslcompression', 'sslsni', 'gssdelegation']
+
+# Connection parameters that libpq also reads from the environment, mapped
+# to the variable that carries them.  Taken from PQconninfoOptions in
+# src/interfaces/libpq/fe-connect.c; parameters that libpq offers no
+# environment variable for (keepalives and friends, sslpassword,
+# fallback_application_name, replication) are absent, and cannot be passed
+# to a utility this way.
+CONNECTION_PARAM_ENV_VARS = {
+    'application_name': 'PGAPPNAME',
+    'channel_binding': 'PGCHANNELBINDING',
+    'client_encoding': 'PGCLIENTENCODING',
+    'connect_timeout': 'PGCONNECT_TIMEOUT',
+    'gssdelegation': 'PGGSSDELEGATION',
+    'gssencmode': 'PGGSSENCMODE',
+    'gsslib': 'PGGSSLIB',
+    'hostaddr': 'PGHOSTADDR',
+    'krbsrvname': 'PGKRBSRVNAME',
+    'load_balance_hosts': 'PGLOADBALANCEHOSTS',
+    'max_protocol_version': 'PGMAXPROTOCOLVERSION',
+    'min_protocol_version': 'PGMINPROTOCOLVERSION',
+    'options': 'PGOPTIONS',
+    'passfile': 'PGPASSFILE',
+    'require_auth': 'PGREQUIREAUTH',
+    'requirepeer': 'PGREQUIREPEER',
+    'service': 'PGSERVICE',
+    'ssl_max_protocol_version': 'PGSSLMAXPROTOCOLVERSION',
+    'ssl_min_protocol_version': 'PGSSLMINPROTOCOLVERSION',
+    'sslcert': 'PGSSLCERT',
+    'sslcertmode': 'PGSSLCERTMODE',
+    'sslcompression': 'PGSSLCOMPRESSION',
+    'sslcrl': 'PGSSLCRL',
+    'sslcrldir': 'PGSSLCRLDIR',
+    'sslkey': 'PGSSLKEY',
+    'sslmode': 'PGSSLMODE',
+    'sslnegotiation': 'PGSSLNEGOTIATION',
+    'sslrootcert': 'PGSSLROOTCERT',
+    'sslsni': 'PGSSLSNI',
+    'target_session_attrs': 'PGTARGETSESSIONATTRS',
+}
