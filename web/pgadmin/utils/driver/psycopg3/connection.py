@@ -17,7 +17,11 @@ import os
 import secrets
 import datetime
 import asyncio
+import json
+import re
 from collections import deque
+from math import isfinite, isnan
+from xml.sax.saxutils import escape as xml_escape, quoteattr as xml_quoteattr
 import psycopg
 from flask import g, current_app
 from flask_babel import gettext
@@ -35,7 +39,7 @@ from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
 from .typecast import register_binary_data_typecasters,\
     register_global_typecasters, register_string_typecasters,\
     register_binary_typecasters, register_array_to_string_typecasters,\
-    register_numeric_typecasters, ALL_JSON_TYPES
+    register_numeric_typecasters, PSYCOPG_SUPPORTED_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.utils import csv_lib as csv
@@ -53,6 +57,157 @@ if os.name == 'nt':
     )
 
 _ = gettext
+
+
+def _json_default(value):
+    """Fallback serialiser for values that json cannot encode natively
+    (dates, Decimals, intervals, etc.)."""
+    return str(value)
+
+
+# XML 1.0 permits tab, newline, carriage return and nothing else below U+0020,
+# and forbids the surrogate range and U+FFFE/U+FFFF. Those characters cannot
+# even be written as character references, so a parser rejects the whole
+# document: a text column legally holding chr(1) would otherwise produce a
+# file nothing can open.
+_XML_ILLEGAL_CHARS = re.compile(
+    '[^\u0009\u000a\u000d\u0020-\ud7ff\ue000-\ufffd'
+    '\U00010000-\U0010ffff]'
+)
+
+# Substituted for anything XML cannot carry.
+_XML_REPLACEMENT = '\ufffd'
+
+
+def _to_text(value):
+    """Render a value as text for the structured output formats."""
+    if isinstance(value, (memoryview, bytes, bytearray)):
+        # Match the hex form PostgreSQL itself uses for bytea, rather than
+        # letting str() produce something like '<memory at 0x7f...>'.
+        return '\\x' + bytes(value).hex()
+    if isinstance(value, float) and not isfinite(value):
+        return 'NaN' if isnan(value) else \
+            ('Infinity' if value > 0 else '-Infinity')
+    return str(value)
+
+
+def _xml_text(value):
+    """Escape a value for XML, dropping characters XML cannot represent."""
+    return xml_escape(
+        _XML_ILLEGAL_CHARS.sub(_XML_REPLACEMENT, _to_text(value)))
+
+
+def _xml_attr(value):
+    """Quote an attribute value for XML, with the same sanitising."""
+    return xml_quoteattr(_XML_ILLEGAL_CHARS.sub(_XML_REPLACEMENT, str(value)))
+
+
+def _json_safe(value):
+    """Convert a value into something json can encode, and validly.
+
+    NaN and Infinity are not JSON tokens: json.dumps emits them bare by
+    default, which Python itself will read back but most other parsers
+    reject, so they become the strings PostgreSQL uses for them. bytea is
+    rendered in the same hex form as elsewhere. Containers are walked
+    because a float8[] or a json column can hold either case nested.
+    """
+    if isinstance(value, (memoryview, bytes, bytearray)):
+        return _to_text(value)
+    if isinstance(value, float) and not isfinite(value):
+        return _to_text(value)
+    if isinstance(value, dict):
+        return {key: _json_safe(val) for key, val in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(val) for val in value]
+    return value
+
+
+def _generate_json(cur, records, results):
+    """Stream the result set as a JSON array of row objects.
+
+    The first batch of rows (``results``) has already been fetched by the
+    caller; subsequent batches are pulled with ``fetchmany(records)``.
+
+    The 'Replace null values with' preference is deliberately not applied:
+    it exists because CSV has no way to distinguish an empty field from a
+    NULL, whereas JSON has null, and substituting the placeholder string
+    would turn every NULL into ordinary text.
+    """
+    # One chunk per fetched batch rather than per row, as the CSV path does,
+    # so a large export is not streamed as a very long run of tiny pieces.
+    separator = '['
+    while results:
+        batch = []
+        for row in results:
+            batch.append(separator)
+            batch.append(json.dumps(
+                {key: _json_safe(value) for key, value in dict(row).items()},
+                default=_json_default, allow_nan=False))
+            separator = ','
+        yield ''.join(batch)
+        results = cur.fetchmany(records)
+    yield ']'
+
+
+def _generate_xml(cur, records, results, header):
+    """Stream the result set as XML.
+
+    Column names are emitted as escaped ``name`` attributes (rather than
+    element names) so that column names which are not valid XML element
+    names are handled safely. As with JSON, NULLs are reported natively,
+    via null="true", rather than through the CSV placeholder preference.
+    """
+    yield '<?xml version="1.0" encoding="UTF-8"?>\n<data_output>'
+    while results:
+        # As with JSON, one chunk per fetched batch rather than per row.
+        batch = []
+        for row in results:
+            batch.append('<row>')
+            for column in header:
+                value = row.get(column)
+                if value is None:
+                    batch.append(
+                        '<column name={0} null="true"/>'.format(
+                            _xml_attr(column)))
+                else:
+                    batch.append('<column name={0}>{1}</column>'.format(
+                        _xml_attr(column), _xml_text(value)))
+            batch.append('</row>')
+        yield ''.join(batch)
+        results = cur.fetchmany(records)
+    yield '</data_output>'
+
+
+# The xml type's OID.
+PG_XML_TYPE = 142
+
+
+def _generate_single_value(data_format, value, type_code=None):
+    """Render a genuine single-row, single-column result directly, per
+    issue #3205: no array wrapper for JSON, no <row>/<column> wrapper for
+    XML, just the value itself. NULL is reported the same way it is
+    elsewhere: JSON null, or an empty element with null="true".
+
+    A json or jsonb value saved as JSON, or an xml value saved as XML, is
+    already a document in that format (the loaders hand them over as
+    text), so it is written as it is rather than quoted or escaped.
+    """
+    if value is not None and (
+            (data_format == 'json' and
+             type_code in PSYCOPG_SUPPORTED_JSON_TYPES) or
+            (data_format == 'xml' and type_code == PG_XML_TYPE)):
+        return value
+
+    if data_format == 'json':
+        return json.dumps(
+            _json_safe(value), default=_json_default, allow_nan=False)
+
+    if value is None:
+        return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<data_output null="true"/>')
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<data_output>{0}</data_output>'.format(_xml_text(value)))
+
 
 # Register global type caster which will be applicable to all connections.
 register_global_typecasters()
@@ -927,7 +1082,8 @@ WHERE db.datname = current_database()""")
             return results
 
         def gen(conn_obj, trans_obj, quote='strings', quote_char="'",
-                field_separator=',', replace_nulls_with=None):
+                field_separator=',', replace_nulls_with=None,
+                data_format='csv'):
 
             try:
                 cur.scroll(0, mode='absolute')
@@ -936,50 +1092,60 @@ WHERE db.datname = current_database()""")
             # Make sure numeric values will be fetched without quoting
             register_numeric_typecasters(cur)
             results = cur.fetchmany(records)
-            if not results:
-                yield gettext('The query executed did not return any data.')
-                return
 
             header = []
-            json_columns = []
+            type_codes = []
 
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
-                column_name = c.to_dict()['name']
-                header.append(column_name)
-                if c.to_dict()['type_code'] in ALL_JSON_TYPES:
-                    json_columns.append(column_name)
+                column = c.to_dict()
+                header.append(column['name'])
+                type_codes.append(column['type_code'])
 
-            res_io = StringIO()
+            if not results:
+                # An empty result must still come back in the requested
+                # format: JSON/XML consumers expect a (empty) document of
+                # that type, not the CSV-era plain-text message under an
+                # application/json or application/xml content type.
+                if data_format == 'json':
+                    yield '[]'
+                elif data_format == 'xml':
+                    yield ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                           '<data_output/>')
+                else:
+                    yield gettext(
+                        'The query executed did not return any data.')
+                return
 
-            if quote == 'strings':
-                quote = csv.QUOTE_NONNUMERIC
-            elif quote == 'all':
-                quote = csv.QUOTE_ALL
+            if data_format in ('json', 'xml') and len(header) == 1 and \
+                    len(results) == 1:
+                # A genuine single-row, single-column result is written as
+                # the bare value, without the usual array/row wrapper, per
+                # #3205. Confirm there really is only one row before
+                # committing to that shape: a batch boundary can make the
+                # first fetchmany() return exactly one row even though more
+                # follow.
+                more = cur.fetchmany(records)
+                if not more:
+                    yield _generate_single_value(
+                        data_format, results[0].get(header[0]),
+                        type_codes[0])
+                    return
+                results = results + more
+
+            if data_format == 'json':
+                yield from _generate_json(cur, records, results)
+            elif data_format == 'xml':
+                yield from _generate_xml(cur, records, results, header)
             else:
-                quote = csv.QUOTE_NONE
-
-            csv_writer = csv.DictWriter(
-                res_io, fieldnames=header, delimiter=field_separator,
-                quoting=quote,
-                quotechar=quote_char,
-                replace_nulls_with=replace_nulls_with
-            )
-
-            csv_writer.writeheader()
-            # Replace the null values with given string if configured.
-            if replace_nulls_with is not None:
-                results = handle_null_values(results, replace_nulls_with)
-            csv_writer.writerows(results)
-
-            yield res_io.getvalue()
-
-            while True:
-                results = cur.fetchmany(records)
-
-                if not results:
-                    break
                 res_io = StringIO()
+
+                if quote == 'strings':
+                    quote = csv.QUOTE_NONNUMERIC
+                elif quote == 'all':
+                    quote = csv.QUOTE_ALL
+                else:
+                    quote = csv.QUOTE_NONE
 
                 csv_writer = csv.DictWriter(
                     res_io, fieldnames=header, delimiter=field_separator,
@@ -988,11 +1154,34 @@ WHERE db.datname = current_database()""")
                     replace_nulls_with=replace_nulls_with
                 )
 
+                csv_writer.writeheader()
                 # Replace the null values with given string if configured.
                 if replace_nulls_with is not None:
                     results = handle_null_values(results, replace_nulls_with)
                 csv_writer.writerows(results)
+
                 yield res_io.getvalue()
+
+                while True:
+                    results = cur.fetchmany(records)
+
+                    if not results:
+                        break
+                    res_io = StringIO()
+
+                    csv_writer = csv.DictWriter(
+                        res_io, fieldnames=header, delimiter=field_separator,
+                        quoting=quote,
+                        quotechar=quote_char,
+                        replace_nulls_with=replace_nulls_with
+                    )
+
+                    # Replace the null values with given string if configured.
+                    if replace_nulls_with is not None:
+                        results = handle_null_values(results,
+                                                     replace_nulls_with)
+                    csv_writer.writerows(results)
+                    yield res_io.getvalue()
 
             try:
                 # try to reset the cursor scroll back to where it was,
