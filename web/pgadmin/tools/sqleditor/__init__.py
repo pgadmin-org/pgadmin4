@@ -2196,8 +2196,11 @@ def start_query_download_tool(trans_id):
         # Validate the (free-text, user-configurable) encoding up front so
         # an invalid codec returns a clean 400 here, rather than raising a
         # LookupError mid-stream after the 200 Response has been returned.
+        # Carry on with the codec's canonical name rather than the raw text:
+        # lookup() accepts aliases ('u8'), case and stray whitespace, and
+        # the BOM decisions and the charset header below need the real name.
         try:
-            codecs.lookup(output_encoding)
+            output_encoding = codecs.lookup(output_encoding).name
         except LookupError:
             return make_json_response(
                 status=400,
@@ -2207,17 +2210,15 @@ def start_query_download_tool(trans_id):
                 ).format(output_encoding)
             )
 
-        normalized_encoding = output_encoding.lower().replace(
-            '-', '').replace('_', '')
-        is_utf = normalized_encoding.startswith('utf')
+        is_utf = output_encoding.startswith('utf')
         # The 'utf-16' and 'utf-32' codecs (without an explicit endianness
         # suffix) and 'utf-8-sig' emit their own BOM, so we must not
         # hand-prepend one too; doing so would produce two BOMs and corrupt
         # the output. The explicit-endian forms (utf-16-le/-be,
         # utf-32-le/-be) and utf-8 do not self-emit a BOM, so for those we
         # keep writing it ourselves.
-        codec_self_emits_bom = normalized_encoding in (
-            'utf16', 'utf32', 'utf8sig')
+        codec_self_emits_bom = output_encoding in (
+            'utf-16', 'utf-32', 'utf-8-sig')
 
         str_gen = gen(conn_obj,
                       trans_obj,

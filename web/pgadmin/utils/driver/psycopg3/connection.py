@@ -39,7 +39,7 @@ from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
 from .typecast import register_binary_data_typecasters,\
     register_global_typecasters, register_string_typecasters,\
     register_binary_typecasters, register_array_to_string_typecasters,\
-    register_numeric_typecasters
+    register_numeric_typecasters, PSYCOPG_SUPPORTED_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.utils import csv_lib as csv
@@ -178,12 +178,26 @@ def _generate_xml(cur, records, results, header):
     yield '</data_output>'
 
 
-def _generate_single_value(data_format, value):
+# The xml type's OID.
+PG_XML_TYPE = 142
+
+
+def _generate_single_value(data_format, value, type_code=None):
     """Render a genuine single-row, single-column result directly, per
     issue #3205: no array wrapper for JSON, no <row>/<column> wrapper for
     XML, just the value itself. NULL is reported the same way it is
     elsewhere: JSON null, or an empty element with null="true".
+
+    A json or jsonb value saved as JSON, or an xml value saved as XML, is
+    already a document in that format (the loaders hand them over as
+    text), so it is written as it is rather than quoted or escaped.
     """
+    if value is not None and (
+            (data_format == 'json' and
+             type_code in PSYCOPG_SUPPORTED_JSON_TYPES) or
+            (data_format == 'xml' and type_code == PG_XML_TYPE)):
+        return value
+
     if data_format == 'json':
         return json.dumps(
             _json_safe(value), default=_json_default, allow_nan=False)
@@ -1080,10 +1094,13 @@ WHERE db.datname = current_database()""")
             results = cur.fetchmany(records)
 
             header = []
+            type_codes = []
 
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
-                header.append(c.to_dict()['name'])
+                column = c.to_dict()
+                header.append(column['name'])
+                type_codes.append(column['type_code'])
 
             if not results:
                 # An empty result must still come back in the requested
@@ -1111,7 +1128,8 @@ WHERE db.datname = current_database()""")
                 more = cur.fetchmany(records)
                 if not more:
                     yield _generate_single_value(
-                        data_format, results[0].get(header[0]))
+                        data_format, results[0].get(header[0]),
+                        type_codes[0])
                     return
                 results = results + more
 

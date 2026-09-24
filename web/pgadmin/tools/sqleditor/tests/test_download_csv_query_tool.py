@@ -329,6 +329,23 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_extension='.csv')
         ),
         (
+            # The encoding is free text, and codecs.lookup() accepts aliases
+            # and stray whitespace, so the BOM decision must be made on the
+            # codec's real name: 'u8' is utf-8 and still gets its BOM...
+            'Download CSV with an aliased utf-8 encoding has a BOM',
+            dict(data_format='csv', add_bom=True, encoding='u8',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
+            # ...and 'utf-16 ' is utf-16, which self-emits its BOM, so it
+            # must not be given a second one.
+            'Download CSV as utf-16 with trailing space has one BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-16 ',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
             # JSON and XML are streamed a fetched batch at a time, so a
             # result spanning several batches must still join up into one
             # well-formed document holding every row.
@@ -409,6 +426,33 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  sql='SELECT 42 as "Value"', single_value=True)
         ),
         (
+            # A single json, jsonb or xml value is already a document in
+            # the requested format, so it is written as it is rather than
+            # being quoted as a string or escaped as text.
+            'Download a single json value as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT \'{"a": [1, 2]}\'::json as "Value"',
+                 single_value=True, single_value_expected={'a': [1, 2]})
+        ),
+        (
+            'Download a single jsonb value as JSON',
+            dict(data_format='json', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/json',
+                 expected_extension='.json',
+                 sql='SELECT \'{"a": [1, 2]}\'::jsonb as "Value"',
+                 single_value=True, single_value_expected={'a': [1, 2]})
+        ),
+        (
+            'Download a single xml value as XML',
+            dict(data_format='xml', add_bom=False, encoding='utf-8',
+                 expected_content_type='application/xml',
+                 expected_extension='.xml',
+                 sql='SELECT \'<item id="1">x</item>\'::xml as "Value"',
+                 single_value=True, single_xml_document=True)
+        ),
+        (
             # A single-row, single-column NULL is still the direct-value
             # shape, i.e. a bare JSON null / an empty element with
             # null="true", not a row containing one null column.
@@ -451,6 +495,8 @@ class TestDownloadResultFormats(BaseTestGenerator):
     awkward_data = False
     single_value = False
     single_value_is_null = False
+    single_value_expected = 42
+    single_xml_document = False
     empty_result = False
     filename_override = None
     non_latin1_char = None
@@ -520,10 +566,17 @@ class TestDownloadResultFormats(BaseTestGenerator):
             if self.single_value_is_null:
                 self.assertIsNone(parsed)
             else:
-                self.assertEqual(parsed, 42)
+                self.assertEqual(parsed, self.single_value_expected)
             return
 
         root = ElementTree.fromstring(body)
+        if self.single_xml_document:
+            # The xml value is the whole document, with no wrapper.
+            self.assertEqual(root.tag, 'item')
+            self.assertEqual(root.get('id'), '1')
+            self.assertEqual(root.text, 'x')
+            return
+
         self.assertEqual(root.tag, 'data_output')
         # No row/column wrapper, and no column name anywhere in sight.
         self.assertIsNone(root.find('row'))
@@ -595,7 +648,10 @@ class TestDownloadResultFormats(BaseTestGenerator):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.expected_content_type, headers['Content-Type'])
-        self.assertIn('charset={0}'.format(self.encoding),
+        # The header carries the codec's canonical name, not the raw
+        # preference text, which may be an alias or hold stray whitespace.
+        canonical = codecs.lookup(self.encoding).name
+        self.assertIn('charset={0}'.format(canonical),
                       headers['Content-Type'])
         disposition = headers['Content-Disposition']
         try:
@@ -611,17 +667,16 @@ class TestDownloadResultFormats(BaseTestGenerator):
             self.assertIn('filename="{0}"'.format(filename), disposition)
 
         raw = response.data
-        normalized = self.encoding.lower().replace('-', '').replace('_', '')
-        if self.add_bom and normalized.startswith('utf'):
+        if self.add_bom and canonical.startswith('utf'):
             # The output must carry exactly one BOM for the encoding, never
             # two (which happened when a BOM was hand-prepended for codecs
             # that already self-emit one, e.g. utf-16/utf-32).
             bom = {
-                'utf8': codecs.BOM_UTF8,
-                'utf8sig': codecs.BOM_UTF8,
-                'utf16': codecs.BOM_UTF16,
-                'utf32': codecs.BOM_UTF32,
-            }[normalized]
+                'utf-8': codecs.BOM_UTF8,
+                'utf-8-sig': codecs.BOM_UTF8,
+                'utf-16': codecs.BOM_UTF16,
+                'utf-32': codecs.BOM_UTF32,
+            }[canonical]
             self.assertTrue(raw.startswith(bom))
             # No second, redundant BOM immediately after the first.
             self.assertFalse(raw[len(bom):].startswith(bom))
