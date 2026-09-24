@@ -101,6 +101,24 @@ describe('SchemaDialogView keyboard handling', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  // An inner control that handles Escape itself (react-select closing an open
+  // menu, for example) calls preventDefault, and the event still bubbles up
+  // to the dialog, which must then leave the dialog open.
+  it('does not close when an inner control consumes Escape', async () => {
+    const onClose = jest.fn();
+    const ctrl = await renderDialog(onClose, undefined, new MinimalSchema());
+    const control = ctrl.container.querySelector('[name="field1"]');
+    control.addEventListener(
+      'keydown', (event) => event.preventDefault(), {once: true}
+    );
+
+    await act(async () => {
+      fireEvent.keyDown(control, {key: 'Escape'});
+    });
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it('calls the current onClose, not the one from the first render',
     async () => {
       const firstOnClose = jest.fn();
