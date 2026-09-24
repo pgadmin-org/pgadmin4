@@ -17,10 +17,10 @@ ALTER STATISTICS {{ conn|qtIdent(data.schema if data.schema else o_data.schema, 
     OWNER TO {{ conn|qtIdent(data.owner) }};
 
 {% endif %}
-{### Set statistics target (PostgreSQL 13+) ###}
+{### Set statistics target; before PostgreSQL 17, -1 resets it ###}
 {% if data.stattarget is defined and data.stattarget != o_data.stattarget %}
 ALTER STATISTICS {{ conn|qtIdent(data.schema if data.schema else o_data.schema, data.name if data.name else o_data.name) }}
-    SET STATISTICS {{ data.stattarget|int }};
+    SET STATISTICS {% if data.stattarget == 'DEFAULT' %}-1{% else %}{{ data.stattarget|int }}{% endif %};
 
 {% endif %}
 {### Update comment ###}

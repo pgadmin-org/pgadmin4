@@ -46,22 +46,11 @@ class StatisticsGetTestCase(BaseTestGenerator):
                             "statistics.")
 
         # Check server version (Statistics require PG 14+)
-        if "server_min_version" in self.data:
-            server_con = server_utils.connect_server(self, self.server_id)
-            if server_con["info"] != "Server connected.":
-                raise Exception(
-                    "Could not connect to server to check version")
-            ver = server_con["data"]["version"]
-            if ver < self.data["server_min_version"]:
-                self.skipTest(self.data["skip_msg"])
-
-        if "server_max_version" in self.data:
-            server_con = server_utils.connect_server(self, self.server_id)
-            if server_con["info"] != "Server connected.":
-                raise Exception("Could not connect to server to check version")
-            ver = server_con["data"]["version"]
-            if ver > self.data["server_max_version"]:
-                self.skipTest(self.data["skip_msg"])
+        server_con = server_utils.connect_server(self, self.server_id)
+        if server_con["info"] != "Server connected.":
+            raise Exception("Could not connect to server to check version")
+        if server_con["data"]["version"] < 140000:
+            self.skipTest("Statistics not supported below PG 14")
 
         # Create schema
         self.schema_id = schema_info["schema_id"]

@@ -264,6 +264,27 @@
         "error_msg": "The parameter (stat_types) must be a list.",
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create statistics: With invalid data - Statistics target not an integer.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_stats_bad_target",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": ["ndistinct"],
+        "stattarget": "abc"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "Statistics target must be an integer.",
+        "test_result_data": {}
+      }
     }
   ],
   "statistics_delete": [
@@ -409,7 +430,29 @@
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {
+          "stattarget": 500
+        }
+      }
+    },
+    {
+      "name": "Update statistics: Reset the statistics target to DEFAULT.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "initial_stattarget": 500
+      },
+      "test_data": {
+        "stattarget": "DEFAULT"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "stattarget": -1
+        }
       }
     },
     {

@@ -12,7 +12,7 @@ CREATE STATISTICS{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn
 ALTER STATISTICS {{ conn|qtIdent(data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif %}
-{% if data.stattarget is defined and data.stattarget is not none and data.stattarget != -1 %}
+{% if data.stattarget is defined and data.stattarget is not none and data.stattarget != -1 and data.stattarget != 'DEFAULT' %}
 
 ALTER STATISTICS {{ conn|qtIdent(data.schema, data.name) }}
     SET STATISTICS {{ data.stattarget|int }};

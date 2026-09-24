@@ -517,6 +517,10 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
 
+        error = self._validate_stattarget(data)
+        if error is not None:
+            return error[0]
+
         try:
             # Generate CREATE STATISTICS SQL
             sql = render_template(
@@ -641,7 +645,9 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         Returns:
           JSON response with updated node
         """
-        data = request.form if request.form else json.loads(
+        # get_SQL() normalises stattarget in place, and request.form is an
+        # ImmutableMultiDict, so take a copy.
+        data = dict(request.form) if request.form else json.loads(
             request.data
         )
         sql, _sql_name = self.get_SQL(gid, sid, did, data, scid, stid)
