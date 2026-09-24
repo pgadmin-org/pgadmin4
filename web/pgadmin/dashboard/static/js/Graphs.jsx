@@ -64,16 +64,27 @@ export function statsReducer(state, action) {
     action.counterData = action.incoming;
   }
 
+  /* When the counter represents a rate (e.g. transactions per second),
+   * the raw delta between two polls must be normalised by the number of
+   * seconds elapsed between them, otherwise it only reads correctly when
+   * the refresh interval happens to be 1 second.
+   */
+  let elapsed = action.elapsed > 0 ? action.elapsed : 1;
+
   let newState = {};
   Object.keys(action.incoming).forEach(label => {
+    let value = action.incoming[label];
+    if(action.counter) {
+      value = (action.incoming[label] - action.counterData[label]) / elapsed;
+    }
     if(state[label]) {
       newState[label] = [
-        action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label],
+        value,
         ...state[label].slice(0, X_AXIS_LENGTH-1),
       ];
     } else {
       newState[label] = [
-        action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label],
+        value,
       ];
     }
   });
@@ -164,12 +175,21 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
     });
 
     let path = getStatsUrl(sid, did, getFor);
+    /* Normalise TPS by the time actually measured between two samples
+     * rather than the configured refresh interval, as timers can be
+     * delayed or throttled by the browser.
+     */
+    const sampledAt = Date.now();
     axios.get(path)
       .then((resp)=>{
         let data = resp.data;
         setErrorMsg(null);
         sessionStatsReduce({incoming: data['session_stats']});
-        tpsStatsReduce({incoming: data['tps_stats'], counter: true, counterData: counterData['tps_stats']});
+        tpsStatsReduce({
+          incoming: data['tps_stats'], counter: true,
+          counterData: counterData['tps_stats'],
+          elapsed: (sampledAt - counterData['tps_stats_sampled_at']) / 1000,
+        });
         tiStatsReduce({incoming: data['ti_stats'], counter: true, counterData: counterData['ti_stats']});
         toStatsReduce({incoming: data['to_stats'], counter: true, counterData: counterData['to_stats']});
         bioStatsReduce({incoming: data['bio_stats'], counter: true, counterData: counterData['bio_stats']});
@@ -178,6 +198,7 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
           return {
             ...prevCounterData,
             ...data,
+            ...(data['tps_stats'] ? {'tps_stats_sampled_at': sampledAt} : {}),
           };
         });
       })
