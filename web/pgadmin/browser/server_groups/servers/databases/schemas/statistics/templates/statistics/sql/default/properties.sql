@@ -19,8 +19,14 @@ SELECT
     CASE WHEN 'f' = ANY(s.stxkind) THEN true ELSE false END AS has_dependencies,
     CASE WHEN 'm' = ANY(s.stxkind) THEN true ELSE false END AS has_mcv,
     s.stxstattarget AS stattarget,
-{### stxexprs added in PostgreSQL 14 for expression statistics ###}
-    pg_catalog.pg_get_expr(s.stxexprs, s.stxrelid) AS expression_list,
+{### stxexprs added in PostgreSQL 14 for expression statistics. The ###}
+{### deparsed expressions may lack the parentheses CREATE STATISTICS ###}
+{### needs, as with (a)::text or a CASE, so wrap each one of them ###}
+    (SELECT pg_catalog.string_agg('(' || e.expr || ')', ', ' ORDER BY e.ord)
+     FROM pg_catalog.unnest(
+         pg_catalog.pg_get_statisticsobjdef_expressions(s.oid)
+     ) WITH ORDINALITY AS e(expr, ord)
+    ) AS expression_list,
 {### pg_statistic_ext_data is readable by superusers only, so the data ###}
 {### ANALYZE collected is only selected when we are allowed to read it ###}
 {% if has_ext_data_access %}

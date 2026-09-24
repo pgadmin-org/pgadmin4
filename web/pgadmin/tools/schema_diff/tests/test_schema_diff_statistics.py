@@ -58,12 +58,32 @@ ANALYZE {0}.table_for_statistics;
 SOURCE_ONLY_DDL = """
 CREATE STATISTICS {0}.statistics_source_only (mcv)
     ON col2, (col1 + col2) FROM {0}.table_for_statistics;
+
+-- These expressions deparse without the parentheses CREATE STATISTICS
+-- needs: (col1)::text and a bare CASE.
+CREATE STATISTICS {0}.statistics_source_casts (ndistinct)
+    ON (col1::text), (CASE WHEN col2 > 1 THEN col3 END)
+    FROM {0}.table_for_statistics;
+
+-- The target's definitions of these differ, which PostgreSQL cannot alter,
+-- so the diff has to drop and recreate them.
+CREATE STATISTICS {0}.statistics_redefined (ndistinct, dependencies)
+    ON col1, col2 FROM {0}.table_for_statistics;
+
+CREATE STATISTICS {0}.statistics_exprs_only (ndistinct)
+    ON (lower(col3)), (col1 + 1) FROM {0}.table_for_statistics;
 """
 
 # Only the target has this one, so the diff has to drop it.
 TARGET_ONLY_DDL = """
 CREATE STATISTICS {0}.statistics_target_only (ndistinct)
     ON col1, col3 FROM {0}.table_for_statistics;
+
+CREATE STATISTICS {0}.statistics_redefined (ndistinct)
+    ON col1, col3 FROM {0}.table_for_statistics;
+
+CREATE STATISTICS {0}.statistics_exprs_only (ndistinct)
+    ON col1, (lower(col3)), (col1 + 1) FROM {0}.table_for_statistics;
 """
 
 
@@ -229,14 +249,31 @@ class SchemaDiffStatisticsTestCase(BaseSocketTestGenerator):
         self.assertEqual(changed['status'], 'Different')
         self.assertIn('COMMENT ON STATISTICS', changed['diff_ddl'])
 
+        # A difference in the definition, which PostgreSQL cannot alter,
+        # means dropping and recreating the object.
+        redefined = []
+        for title in ('statistics_redefined', 'statistics_exprs_only'):
+            diff = self.find_object(response_data, title)
+            self.assertEqual(diff['status'], 'Different')
+            self.assertIn('DROP STATISTICS', diff['diff_ddl'])
+            self.assertIn('CREATE STATISTICS', diff['diff_ddl'])
+            redefined.append(diff)
+
+        source_casts = self.find_object(response_data,
+                                        'statistics_source_casts')
+        self.assertEqual(source_casts['status'], 'Source Only')
+
         # Applying the whole script must succeed, and must settle every
         # difference.
-        for diff in (source_only, target_only, changed):
+        for diff in [source_only, source_casts, target_only, changed] + \
+                redefined:
             self.execute_sql(self.tar_database, diff['diff_ddl'])
 
         response_data = self.compare()
         for title in ('statistics_identical', 'statistics_mixed',
-                      'statistics_source_only', 'statistics_changed'):
+                      'statistics_source_only', 'statistics_source_casts',
+                      'statistics_changed', 'statistics_redefined',
+                      'statistics_exprs_only'):
             self.assertEqual(
                 self.find_object(response_data, title)['status'], 'Identical',
                 '{0} was not settled by the generated SQL'.format(title))

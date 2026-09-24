@@ -94,11 +94,16 @@ define('pgadmin.node.statistics', [
         return new StatisticsSchema(
           {
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
-            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
+            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {includeItemKeys: ['_id']}, (m)=>{
               // Exclude pg_* schemas
               return !(m.label.match(/^pg_/));
             }),
-            getTables: (params)=>getNodeListByName('table', treeNodeInfo, itemNodeData, {urlParams: params, includeItemKeys: ['_id']}),
+            // The table list comes from the schema in the request URL, so
+            // point it at the selected schema rather than the tree's one.
+            getTables: (scid)=>getNodeListByName('table', scid ? {
+              ...treeNodeInfo,
+              schema: {...treeNodeInfo.schema, _id: scid},
+            } : treeNodeInfo, itemNodeData, {includeItemKeys: ['_id']}),
             getColumns: (params)=>{
               return getNodeAjaxOptions('get_columns', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData, {urlParams: params, useCache:false}, (rows)=>{
                 return rows.map((r)=>({
