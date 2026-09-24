@@ -18,6 +18,7 @@ from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.utils import unquote_ident
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
@@ -878,7 +879,7 @@ class IndexConstraintView(PGChildNodeView):
 
         columns = []
         for row in res['rows']:
-            columns.append({"column": row['column'].strip('"')})
+            columns.append({"column": unquote_ident(row['column'])})
 
         data['columns'] = columns
 

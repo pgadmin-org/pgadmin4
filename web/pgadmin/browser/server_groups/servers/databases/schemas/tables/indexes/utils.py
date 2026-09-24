@@ -11,6 +11,7 @@
 
 from flask import render_template
 from flask_babel import gettext
+from pgadmin.utils import unquote_ident
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -120,7 +121,7 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
         # we will not strip down colname when using in SQL to display
         cols_data = {
             'colname': row['attdef'] if mode == 'create' else
-            row['attdef'].strip('"'),
+            unquote_ident(row['attdef']),
             'collspcname': row['collnspname'],
             'op_class': row['opcname'],
             'col_num': row['attnum'],
