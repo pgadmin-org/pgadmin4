@@ -243,11 +243,11 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
 
 
 def windows_platform(connection_data, sid, max_read_bytes, server_id):
-    process = PtyProcess.spawn('cmd.exe', env=get_user_env())
+    # Spawn psql directly rather than typing its command line into cmd.exe,
+    # so that the user is not left at a shell prompt when psql exits, and
+    # the connection string is never parsed by cmd.exe.
+    process = PtyProcess.spawn(connection_data, env=get_user_env())
 
-    process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
-                                              connection_data[1]))
-    process.write("\r\n")
     app.config['sessions'][request.sid] = process
     pdata[request.sid] = process
     cdata[request.sid] = process.fd
