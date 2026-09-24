@@ -88,6 +88,19 @@ class StatisticsUpdateTestCase(BaseTestGenerator):
                 ["ndistinct", "dependencies"]
             )
 
+        # A second schema to move the object into.
+        self.new_schema = None
+        if self.inventory_data.get("move_schema"):
+            self.new_schema = "test_stats_schema_%s" % \
+                              (str(uuid.uuid4())[1:8])
+            self.new_schema_id = schema_utils.create_schema(
+                utils.get_db_connection(
+                    self.db_name, self.server['username'],
+                    self.server['db_password'], self.server['host'],
+                    self.server['port'], self.server['sslmode']),
+                self.new_schema)[0]
+            self.data["schema"] = self.new_schema
+
         if "initial_stattarget" in self.inventory_data:
             statistics_utils.execute_statement(
                 self.server, self.db_name,
@@ -114,6 +127,11 @@ class StatisticsUpdateTestCase(BaseTestGenerator):
             # Verify the update in the response
             response_data = json.loads(response.data.decode('utf-8'))
             self.assertIn('node', response_data)
+
+            # The node must be returned under the schema it now lives in.
+            if self.new_schema:
+                self.assertEqual(response_data['node']['_pid'],
+                                 self.new_schema_id)
 
             # The target PostgreSQL reports, with the default (NULL from
             # PostgreSQL 17, -1 before) folded to -1.
@@ -143,5 +161,9 @@ class StatisticsUpdateTestCase(BaseTestGenerator):
         statistics_utils.drop_table_for_statistics(
             self.server, self.db_name, self.schema_name, self.table_name
         )
+        if self.new_schema:
+            statistics_utils.execute_statement(
+                self.server, self.db_name,
+                'DROP SCHEMA "%s" CASCADE' % self.new_schema)
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

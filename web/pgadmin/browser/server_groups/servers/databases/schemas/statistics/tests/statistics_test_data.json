@@ -402,6 +402,22 @@
   ],
   "statistics_put": [
     {
+      "name": "Update statistics: Move to another schema.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "move_schema": true
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
       "name": "Update statistics: Change name.",
       "url": "/browser/statistics/obj/",
       "is_positive_test": true,

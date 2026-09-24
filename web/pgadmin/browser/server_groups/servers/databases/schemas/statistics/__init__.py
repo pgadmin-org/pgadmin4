@@ -168,7 +168,9 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
     # the data ANALYZE happened to collect, which differs between two servers
     # holding identical definitions. None of them may take part in a schema
     # diff comparison.
-    keys_to_ignore = ['oid', 'oid-2', 'schemaoid', 'tableoid',
+    # The schema name is ignored too, as it is for other schema objects, so
+    # that comparing two differently named schemas works.
+    keys_to_ignore = ['oid', 'oid-2', 'schema', 'schemaoid', 'tableoid',
                       'column_attnums', 'stat_types_raw', 'ndistinct_values',
                       'dependencies_values', 'has_mcv_values',
                       'has_ext_data_access']
@@ -662,10 +664,10 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
-        # Fetch updated node info
+        # Fetch updated node info by OID alone, since the update may have
+        # moved the object to another schema.
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
-            scid=scid,
             stid=stid,
             conn=self.conn
         )
@@ -681,7 +683,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 stid,
-                scid,
+                row['schemaoid'],
                 row['name'],
                 icon=self.node_icon,
                 description=row['comment']
@@ -797,9 +799,11 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return old_data, None
 
-            # Remove keys that shouldn't be compared
+            # Remove keys that shouldn't be compared, except the schema,
+            # which the update template needs to name the object.
             for key in self.keys_to_ignore:
-                old_data.pop(key, None)
+                if key != 'schema':
+                    old_data.pop(key, None)
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
@@ -960,9 +964,60 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in rset['rows']:
             status, data = self._fetch_properties(scid, row['oid'])
             if status:
+                # The comparison drops a list that is empty in the source
+                # from the differences it reports, so an object whose source
+                # side has no columns (or no kinds) would be recreated with
+                # the target's. None is reported like any other value.
+                for key in ('columns', 'stat_types'):
+                    if not data.get(key):
+                        data[key] = None
                 res[row['name']] = data
 
         return res
+
+    # PostgreSQL cannot alter these, so a difference in any of them means
+    # dropping the target's object and creating it afresh.
+    definition_keys = ('table', 'columns', 'expression_list', 'stat_types',
+                       'has_ndistinct', 'has_dependencies', 'has_mcv')
+
+    @check_precondition(action='sql')
+    def _recreate_sql(self, gid, sid, did, scid, stid, data,
+                      target_schema=None):
+        """
+        Generate the SQL to drop the target's statistics object and create
+        it with the source's definition, for schema diff.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            stid: Statistics ID of the target's object
+            data: The source's values for the keys that differ
+            target_schema: The schema to create the object in
+        """
+        status, res = self._fetch_properties(scid, stid)
+        if not status:
+            return res
+
+        drop_sql = render_template(
+            "/".join([self.template_path, self._DELETE_SQL]),
+            name=res['name'], schema=res['schema'], cascade=False,
+            conn=self.conn
+        )
+
+        # Only the keys that differ are in data, so the target's values
+        # stand for the rest of the source's definition.
+        res.update(data)
+        if target_schema:
+            res['schema'] = target_schema
+
+        create_sql = render_template(
+            "/".join([self.template_path, self._CREATE_SQL]),
+            data=res, conn=self.conn, add_not_exists_clause=False
+        )
+
+        return drop_sql.strip('\n') + '\n\n' + create_sql.strip('\n')
 
     def get_sql_from_diff(self, **kwargs):
         """
@@ -984,7 +1039,11 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         # check_precondition decorator, so that the connection is bound to the
         # server and database named in the parameters: schema diff calls this
         # for the source and the target in turn.
-        if data:
+        if data and any(key in data for key in self.definition_keys):
+            sql = self._recreate_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                     stid=oid, data=data,
+                                     target_schema=target_schema)
+        elif data:
             if target_schema:
                 data['schema'] = target_schema
             sql, _sql_name = self.get_SQL(gid=gid, sid=sid, did=did,

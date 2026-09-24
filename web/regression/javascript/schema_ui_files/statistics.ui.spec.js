@@ -46,6 +46,24 @@ describe('StatisticsSchema', () => {
     await getPropertiesView(createSchemaObj(), getInitData);
   });
 
+  it('tables are listed from the selected schema', () => {
+    const getTables = jest.fn(() => []);
+    const obj = new StatisticsSchema(
+      {role: () => [], schema: () => [], getTables, getColumns: () => []},
+      {owner: 'postgres', schema: 'public'},
+      {server: {version: 180000}},
+    );
+    const field = (id) => obj.baseFields.find((f) => f.id == id);
+
+    field('schema').optionsLoaded([
+      {label: 'public', value: 'public', _id: 2200},
+      {label: 'other', value: 'other', _id: 16400},
+    ]);
+    field('table').type({schema: 'other'}).options();
+
+    expect(getTables).toHaveBeenCalledWith(16400);
+  });
+
   it('name is required before PostgreSQL 16 and optional from 16', () => {
     const nameField = (obj) => obj.baseFields.find((f) => f.id == 'name');
 

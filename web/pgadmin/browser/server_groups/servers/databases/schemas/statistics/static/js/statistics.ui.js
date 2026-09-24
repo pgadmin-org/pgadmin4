@@ -38,12 +38,17 @@ export default class StatisticsSchema extends BaseUISchema {
     };
     this.nodeInfo = nodeInfo;
     this.allTablesOptions = [];
+    this.allSchemaOptions = [];
   }
 
   get isNameOptional() {
     // PostgreSQL 16 made the statistics name optional, generating one from
     // the table and the columns or expressions when it is left blank.
     return (this.nodeInfo?.server?.version ?? 0) >= 160000;
+  }
+
+  getSchemaOid(schemaName) {
+    return this.allSchemaOptions.find((s) => s.label === schemaName)?._id;
   }
 
   getTableOid(tabName) {
@@ -95,6 +100,7 @@ export default class StatisticsSchema extends BaseUISchema {
         mode: ['create', 'edit'],
         cache_node: 'database',
         cache_level: 'database',
+        optionsLoaded: (res) => obj.allSchemaOptions = res,
         depChange: () => ({ table: null, columns: [] }),
       },
       {
@@ -103,7 +109,7 @@ export default class StatisticsSchema extends BaseUISchema {
         type: (state) => ({
           type: 'select',
           options: state.schema
-            ? () => obj.fieldOptions.getTables({ schema: state.schema })
+            ? () => obj.fieldOptions.getTables(obj.getSchemaOid(state.schema))
             : [],
           optionsReloadBasis: state.schema,
         }),
