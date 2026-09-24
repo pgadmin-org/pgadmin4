@@ -88,6 +88,13 @@ class StatisticsUpdateTestCase(BaseTestGenerator):
                 ["ndistinct", "dependencies"]
             )
 
+        if "initial_stattarget" in self.inventory_data:
+            statistics_utils.execute_statement(
+                self.server, self.db_name,
+                'ALTER STATISTICS "%s"."%s" SET STATISTICS %d' % (
+                    self.schema_name, self.statistics_name,
+                    self.inventory_data["initial_stattarget"]))
+
     def runTest(self):
         """This function will update the statistics under schema node."""
         statistics_response = statistics_utils.verify_statistics(
@@ -107,6 +114,15 @@ class StatisticsUpdateTestCase(BaseTestGenerator):
             # Verify the update in the response
             response_data = json.loads(response.data.decode('utf-8'))
             self.assertIn('node', response_data)
+
+            # The target PostgreSQL reports, with the default (NULL from
+            # PostgreSQL 17, -1 before) folded to -1.
+            expected = self.expected_data["test_result_data"]
+            if "stattarget" in expected:
+                self.assertEqual(
+                    statistics_utils.get_statistics_target(
+                        self.server, self.db_name, self.statistics_id),
+                    expected["stattarget"])
         else:
             if self.mocking_required:
                 with patch(

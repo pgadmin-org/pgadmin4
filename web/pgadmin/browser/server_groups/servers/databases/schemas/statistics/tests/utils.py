@@ -411,6 +411,41 @@ def get_statistics_id(server, db_name, statistics_name):
             connection.close()
 
 
+def get_statistics_target(server, db_name, statistics_oid):
+    """
+    This function returns a statistics object's statistics target, with
+    the default (NULL from PostgreSQL 17, -1 before) returned as -1.
+
+    Args:
+        server: server details
+        db_name: database name
+        statistics_oid: statistics object OID
+
+    Returns:
+        the statistics target
+    """
+    connection = None
+    try:
+        connection = test_utils.get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            "SELECT COALESCE(s.stxstattarget, -1) "
+            "FROM pg_catalog.pg_statistic_ext s "
+            "WHERE s.oid = %s", (statistics_oid,)
+        )
+        return pg_cursor.fetchone()[0]
+    finally:
+        if connection:
+            connection.close()
+
+
 def delete_statistics(server, db_name, schema_name, statistics_name):
     """
     This function deletes a statistics object from the database.

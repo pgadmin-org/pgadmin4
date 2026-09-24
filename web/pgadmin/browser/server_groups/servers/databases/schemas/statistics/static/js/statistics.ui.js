@@ -242,6 +242,15 @@ export default class StatisticsSchema extends BaseUISchema {
   validate(state, setError) {
     let errors = false;
 
+    // The name is optional only when creating on PostgreSQL 16+: an
+    // existing object cannot be renamed to nothing.
+    if (state.oid && isEmptyString(state.name)) {
+      setError('name', gettext('Name must be specified.'));
+      errors = true;
+    } else {
+      setError('name', null);
+    }
+
     // Validate table is selected
     if (isEmptyString(state.table) && !state.oid) {
       setError('table', gettext('Table must be selected.'));

@@ -122,4 +122,16 @@ describe('StatisticsSchema', () => {
     state.stat_types = [];
     expect(schemaObj.validate(state, setError)).toBe(false);
   });
+
+  it('an existing object cannot be left without a name', () => {
+    const setError = jest.fn();
+    const state = {oid: 1234, name: '', table: 'test_table'};
+
+    expect(createSchemaObj(160000).validate(state, setError)).toBe(true);
+    expect(setError).toHaveBeenCalledWith('name', 'Name must be specified.');
+
+    state.name = 'test_stats';
+    expect(createSchemaObj(160000).validate(state, setError)).toBe(false);
+    expect(setError).toHaveBeenLastCalledWith('stat_types', null);
+  });
 });
