@@ -197,7 +197,8 @@ class KerberosAuthentication(BaseAuthentication):
                         retval = self.__auto_create_user(
                             str(negotiate.initiator_name))
                     elif isinstance(negotiate, Exception):
-                        flash(gettext(negotiate), MessageType.ERROR)
+                        flash(gettext("Kerberos authentication failed."),
+                              MessageType.ERROR)
                         retval = [status,
                                   Response(render_template(
                                       "security/login_user.html",
