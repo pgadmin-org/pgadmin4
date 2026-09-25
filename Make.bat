@@ -349,9 +349,33 @@ REM Main build sequence Ends
     ECHO Downloading Electron to %TMPDIR%...
     REM Get a fresh copy of electron.
 
-    REM WGET
-    FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
+    REM Resolve the electron version from runtime\yarn.lock, NOT from the npm
+    REM registry and NOT from the range in runtime\package.json. The registry's
+    REM `latest` dist-tag lands any newly published electron release in shipped
+    REM binaries without review, whilst the package.json range is only a lower
+    REM bound, so yarn is free to resolve it to a build other than the one we
+    REM ship. The lockfile is the single source of truth, and `yarn info`
+    REM reports its resolution without touching the network or needing
+    REM node_modules.
+    REM
+    REM It must run inside runtime\ though: outside a yarn project, `yarn info`
+    REM silently falls back to querying the registry and still exits 0, so check
+    REM the lockfile is present first and validate what comes back.
+    IF NOT EXIST "%WD%\runtime\yarn.lock" (
+        ECHO ERROR: %WD%\runtime\yarn.lock not found; cannot resolve the pinned Electron version.
+        EXIT /B 1
+    )
 
+    SET "ELECTRON_VERSION="
+    PUSHD "%WD%\runtime" || EXIT /B 1
+    FOR /f "delims=" %%i IN ('yarn info electron --json ^| node -e "const lines=require('fs').readFileSync(0,'utf8').split('\n').filter(Boolean);const pkg=lines.map(l=>{try{return JSON.parse(l);}catch(e){return null;}}).find(o=>o&&typeof o.value==='string'&&o.value.startsWith('electron@npm:'));const version=(pkg&&pkg.children&&pkg.children.Version)||'';process.stdout.write(/^[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?$/.test(version)?version:'');"') DO SET "ELECTRON_VERSION=%%i"
+    POPD
+    IF "%ELECTRON_VERSION%"=="" (
+        ECHO ERROR: Could not resolve the pinned Electron version from %WD%\runtime\yarn.lock.
+        EXIT /B 1
+    )
+
+    REM WGET
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
