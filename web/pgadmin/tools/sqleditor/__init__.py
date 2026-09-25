@@ -42,7 +42,7 @@ from pgadmin.tools.sqleditor.utils.start_running_query import StartRunningQuery
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
     update_session_grid_transaction
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils import get_storage_directory
+from pgadmin.utils import get_storage_directory, str_to_bool
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, service_unavailable, gone
 from pgadmin.utils.driver import get_driver
@@ -267,6 +267,7 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
                         "username": user or server.username,
                         "errmsg": msg,
                         "prompt_password": True,
+                        "save_password": bool(server.save_password),
                         "allow_save_password": True
                         if ALLOW_SAVE_PASSWORD and
                         session.get('allow_save_password', None)
@@ -592,6 +593,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                             "username": user or server.username,
                             "errmsg": msg,
                             "prompt_password": True,
+                            "save_password": bool(server.save_password),
                             "allow_save_password": True
                             if ALLOW_SAVE_PASSWORD and
                             session.get('allow_save_password', None)
@@ -2713,7 +2715,7 @@ def connect_server(sid):
         # password the user just entered at that prompt is cached here so the
         # tool's connection can use it, instead of being discarded and
         # re-prompted in a loop.
-        _cache_manager_password_from_request(manager)
+        _cache_manager_password_from_request(manager, server)
         return make_json_response(
             success=1,
             info=gettext("Server connected."),
@@ -2726,7 +2728,7 @@ def connect_server(sid):
     )
 
 
-def _cache_manager_password_from_request(manager):
+def _cache_manager_password_from_request(manager, server=None):
     """
     Cache the password supplied with the current request (from a tool's
     password prompt) onto the server manager, so that connections opened by
@@ -2736,6 +2738,13 @@ def _cache_manager_password_from_request(manager):
     is unavailable.  When a password is supplied it overwrites any cached
     password, so a freshly entered credential (e.g. a regenerated, short-lived
     cloud auth token) takes effect immediately.
+
+    When "Save Password" is requested and allowed, the freshly entered
+    password is also persisted to the server record (overwriting any stale
+    stored ciphertext).  Without this, a rotated/regenerated password entered
+    at the prompt would work for the current session only and the tool would
+    keep re-using the stale saved password and re-prompt on the next
+    connection.
 
     This is best-effort: any failure (including malformed request data) is
     logged and swallowed so it never turns the caller's "Server connected"
@@ -2757,10 +2766,114 @@ def _cache_manager_password_from_request(manager):
         if not crypt_key_present:
             return
 
-        manager._update_password(encrypt(password, crypt_key))
+        # This request never actually uses `password` to open a connection
+        # (the manager's primary connection was already established
+        # beforehand), so it must be validated against the server before
+        # caching it on the manager or persisting it -- otherwise a typo at
+        # the prompt would silently replace a working password, for the
+        # current session as well as in durable storage.
+        if not _password_is_valid(manager, password):
+            return
+
+        enc_password = encrypt(password, crypt_key)
+        manager._update_password(enc_password)
         manager.update_session()
+
+        if server is None or not ALLOW_SAVE_PASSWORD:
+            return
+
+        save_password_provided = 'save_password' in data
+        save_password = str_to_bool(data.get('save_password', False))
+
+        # Persist the freshly entered password if the user asked to save
+        # it, so the stale stored ciphertext is replaced. An explicit
+        # false instead clears any previously saved credential -- mirrors
+        # the same "Save Password" opt-out handling in
+        # browser.server_groups.servers.ServerNode.connect -- so
+        # unchecking the box here doesn't leave a stale saved password.
+        if save_password:
+            _persist_saved_password(server, enc_password)
+        elif save_password_provided:
+            _clear_saved_password(server)
     except Exception as e:
         current_app.logger.exception(e)
+
+
+def _password_is_valid(manager, password):
+    """
+    Verify that `password` (plaintext) actually authenticates against the
+    server, using a standalone connection that is closed immediately
+    afterwards -- it is never registered with the manager.
+    """
+    import psycopg
+    try:
+        conn_string = manager.create_connection_string(
+            manager.db, manager.user, password)
+        test_conn = psycopg.Connection.connect(
+            conn_string, connect_timeout=10)
+        test_conn.close()
+        return True
+    except psycopg.Error as e:
+        current_app.logger.info(
+            'Not persisting the re-entered password: it failed '
+            f'validation against the server.\nError: {e}'
+        )
+        return False
+
+
+def _get_save_password_target(server):
+    """
+    Return the record ("save_password"/"password" live on the owned Server
+    row, or on the current user's SharedServer row for a shared server they
+    don't own).
+    """
+    from pgadmin.browser.server_groups.servers import (
+        ServerModule, _is_non_owner)
+
+    if _is_non_owner(server):
+        shared_server = ServerModule.get_shared_server(
+            server, server.servergroup_id)
+        if shared_server is not None:
+            return shared_server
+    return server
+
+
+def _persist_saved_password(server, enc_password):
+    """
+    Persist the encrypted password to the server record (owned or shared),
+    replacing any stale stored ciphertext.
+    """
+    from pgadmin.model import db
+
+    target = _get_save_password_target(server)
+    setattr(target, 'save_password', 1)
+    setattr(target, 'password', enc_password)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+
+def _clear_saved_password(server):
+    """
+    Clear a previously saved password on the owned or shared server record,
+    so an explicit "Save Password" opt-out doesn't leave a stale saved
+    credential behind.
+    """
+    from pgadmin.model import db
+
+    target = _get_save_password_target(server)
+    if not target.save_password:
+        return
+
+    setattr(target, 'save_password', 0)
+    setattr(target, 'password', None)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
 
 @blueprint.route(
