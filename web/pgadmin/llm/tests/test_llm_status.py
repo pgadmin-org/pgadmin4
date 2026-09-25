@@ -34,6 +34,12 @@ class LLMStatusTestCase(BaseTestGenerator):
             expected_enabled=True,
             provider_name='openai'
         )),
+        ('LLM Status - GLM Enabled', dict(
+            url='/llm/status',
+            provider_enabled=True,
+            expected_enabled=True,
+            provider_name='glm'
+        )),
         ('LLM Status - Ollama Enabled', dict(
             url='/llm/status',
             provider_enabled=True,
