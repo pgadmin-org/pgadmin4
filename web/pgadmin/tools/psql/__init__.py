@@ -292,6 +292,13 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id):
 
     drain_stdout(process, sid, max_read_bytes)
 
+    # psql has exited, so forget the session now. The \q handler has
+    # already removed it from the sessions map, which would otherwise stop
+    # the disconnect handler from ever cleaning up the other maps.
+    app.config['sessions'].pop(request.sid, None)
+    if request.sid in pdata:
+        cleanup_globals()
+
 
 def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
     while p and p.poll() is None:
