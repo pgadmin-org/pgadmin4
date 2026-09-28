@@ -156,31 +156,20 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             NavMenuLocators.process_watcher_detailed_command_css
         ).get_attribute('innerHTML')
 
+        # Both tools pass the database name to --dbname, so it appears in
+        # the displayed command, and it must be escaped there.
+        self._check_escaped_characters(
+            command_html,
+            '&lt;h1&gt;test_me&lt;/h1&gt;',
+            '{0} detailed window command'.format(tool_name)
+        )
         if tool_name == 'Backup':
-            # The database name is passed via the PGDATABASE environment
-            # variable (not as a command-line argument), so it no longer
-            # appears in the displayed command string. It is still
-            # interpolated into the process message, so check there.
+            # Backup also interpolates it into the process message.
             self._check_escaped_characters(
                 message_html,
                 '&lt;h1&gt;test_me&lt;/h1&gt;',
-                '{0} detailed window'.format(tool_name)
+                '{0} detailed window message'.format(tool_name)
             )
-        else:
-            # Restore always passes the database via PGDATABASE too, and
-            # unlike Backup, the restore command's --dbname is always sent
-            # empty (see restore/__init__.py:get_restore_util_args) and the
-            # restore message never mentions the database at all. So the
-            # database name should not surface anywhere here, escaped or
-            # raw - assert its absence instead of its escaping.
-            for html, source in (
-                (message_html, 'message'),
-                (command_html, 'command'),
-            ):
-                assert '<h1>test_me</h1>' not in html and \
-                    '&lt;h1&gt;test_me&lt;/h1&gt;' not in html, \
-                    "Restore detailed window {0} unexpectedly contains " \
-                    "the database name".format(source)
 
     def initiate_backup(self):
         self.page.retry_click(

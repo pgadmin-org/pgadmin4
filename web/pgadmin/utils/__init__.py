@@ -30,7 +30,6 @@ from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
-from psycopg.conninfo import make_conninfo
 
 ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
@@ -1068,4 +1067,8 @@ def database_conninfo(database):
     :param database: Name of the database to connect to.
     :return: A connection string such as "dbname='my db'".
     """
+    # Imported here rather than at module level, because pgadmin.utils is
+    # also imported where libpq is unavailable, such as the documentation
+    # build, and importing psycopg needs libpq.
+    from psycopg.conninfo import make_conninfo
     return make_conninfo(dbname=database)
