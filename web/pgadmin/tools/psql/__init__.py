@@ -255,9 +255,12 @@ def drain_stdout(process, sid, max_read_bytes, idle_timeout=1,
     seconds, or max_wait seconds have passed.
     """
     deadline = time.monotonic() + max_wait
-    while time.monotonic() < deadline:
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
         (data_ready, _, _) = select.select([process.fd], [], [],
-                                           idle_timeout)
+                                           min(idle_timeout, remaining))
         if process.fd not in data_ready:
             break
         try:

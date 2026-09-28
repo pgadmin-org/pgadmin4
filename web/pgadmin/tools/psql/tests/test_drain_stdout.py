@@ -8,6 +8,7 @@
 ##########################################################################
 
 import socket
+import time
 from unittest.mock import patch
 
 from pgadmin.utils.route import BaseTestGenerator
@@ -44,7 +45,18 @@ class PSQLDrainStdout(BaseTestGenerator):
          dict(chunks=[b'bye\r\n'],
               close_writer=False,
               expected='bye\r\n')),
+        ('Draining stops at the overall deadline',
+         dict(chunks=[b'bye\r\n'],
+              close_writer=False,
+              idle_timeout=5,
+              max_wait=0.2,
+              elapsed_limit=1,
+              expected='bye\r\n')),
     ]
+
+    idle_timeout = 0.1
+    max_wait = 2
+    elapsed_limit = None
 
     def runTest(self):
         reader, writer = socket.socketpair()
@@ -55,8 +67,14 @@ class PSQLDrainStdout(BaseTestGenerator):
                 writer.close()
 
             with patch.object(psql.sio, 'emit') as emit:
+                started = time.monotonic()
                 psql.drain_stdout(FakePtyProcess(reader), 'room', 1024,
-                                  idle_timeout=0.1, max_wait=2)
+                                  idle_timeout=self.idle_timeout,
+                                  max_wait=self.max_wait)
+                elapsed = time.monotonic() - started
+
+            if self.elapsed_limit is not None:
+                self.assertLess(elapsed, self.elapsed_limit)
 
             forwarded = ''.join(
                 call.args[1]['result'] for call in emit.call_args_list)
