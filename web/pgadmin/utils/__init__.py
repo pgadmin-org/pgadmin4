@@ -30,6 +30,7 @@ from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
+from psycopg.conninfo import make_conninfo
 
 ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
@@ -1049,3 +1050,22 @@ def check_extension_exists(conn, extension_name):
     else:
         # If the query fails, we assume the extension does not exist
         return status, res
+
+
+def database_conninfo(database):
+    """
+    Build the value to pass to a utility's --dbname option so that it
+    connects to the named database.
+
+    A bare --dbname value containing "=" (or a postgresql:// URI) is expanded
+    by libpq into a connection string, which would let a user redirect the
+    connection, and the credentials exported with it, to another server.
+    Passing a conninfo string in which the name is the quoted value of the
+    dbname keyword avoids that, since libpq never expands a dbname given
+    inside a connection string. Unlike the PGDATABASE environment variable,
+    it also takes precedence over a dbname set in the server's service file.
+
+    :param database: Name of the database to connect to.
+    :return: A connection string such as "dbname='my db'".
+    """
+    return make_conninfo(dbname=database)
