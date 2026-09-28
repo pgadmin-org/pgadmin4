@@ -10,6 +10,7 @@ import json
 import os
 import select
 import struct
+import time
 
 import config
 import re
@@ -242,6 +243,34 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
     sio.sleep(0.01)
 
 
+def drain_stdout(process, sid, max_read_bytes, idle_timeout=1,
+                 max_wait=5):
+    """
+    Forward any output left unread when the process exited.
+
+    pywinpty copies the pseudo-terminal's output to a socket from a reader
+    thread, so output written just before psql exits (such as a connection
+    error) can still be queued after isalive() returns False. Read until the
+    reader thread closes the socket, nothing arrives within idle_timeout
+    seconds, or max_wait seconds have passed.
+    """
+    deadline = time.monotonic() + max_wait
+    while time.monotonic() < deadline:
+        (data_ready, _, _) = select.select([process.fd], [], [],
+                                           idle_timeout)
+        if process.fd not in data_ready:
+            break
+        try:
+            output = process.read(max_read_bytes)
+        except (EOFError, OSError):
+            break
+        if output:
+            sio.emit('pty-output',
+                     {'result': output,
+                      'error': False},
+                     namespace='/pty', room=sid)
+
+
 def windows_platform(connection_data, sid, max_read_bytes, server_id):
     # Spawn psql directly rather than typing its command line into cmd.exe,
     # so that the user is not left at a shell prompt when psql exits, and
@@ -257,6 +286,8 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id):
     while process.isalive():
         read_stdout(process, sid, max_read_bytes,
                     win_emit_output=True)
+
+    drain_stdout(process, sid, max_read_bytes)
 
 
 def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
