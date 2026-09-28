@@ -63,8 +63,10 @@ class PSQLWindowsSessionCleanup(BaseTestGenerator):
                       'check_and_delete_adhoc_server') as adhoc:
             request.sid = sid
             self.app.config.setdefault('sessions', dict())
-            self.app.config.setdefault('sid_soid_mapping', dict())
-            self.app.config['sid_soid_mapping']['7'] = [sid, 'other']
+            soid_mapping = self.app.config.setdefault('sid_soid_mapping',
+                                                      dict())
+            saved_soids = soid_mapping.get('7')
+            soid_mapping['7'] = [sid, 'other']
             psql.session_input[sid] = ''
 
             try:
@@ -89,7 +91,10 @@ class PSQLWindowsSessionCleanup(BaseTestGenerator):
                 adhoc.assert_called_once_with(7)
             finally:
                 self.app.config['sessions'].pop(sid, None)
-                self.app.config['sid_soid_mapping'].pop('7', None)
+                if saved_soids is None:
+                    soid_mapping.pop('7', None)
+                else:
+                    soid_mapping['7'] = saved_soids
                 for registry in (psql.pdata, psql.cdata,
                                  psql.open_psql_connections,
                                  psql.session_input):
