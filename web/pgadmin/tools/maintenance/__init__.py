@@ -17,7 +17,8 @@ from flask_babel import gettext as _
 from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, html, does_utility_exist, get_server
+from pgadmin.utils import PgAdminModule, html, does_utility_exist, \
+    get_server, database_conninfo
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.driver import get_driver
 
@@ -218,9 +219,9 @@ def create_maintenance_job(sid, did):
         return bad_request(errormsg=validation_error)
 
     # A target database is mandatory. Reject an empty/missing value up front:
-    # otherwise PGDATABASE is left unset and libpq falls back down its chain to
-    # a database named after the login role, silently running maintenance on
-    # the wrong database instead of failing safely.
+    # otherwise the empty name would make libpq fall back to the service file
+    # or to a database named after the login role, silently
+    # running maintenance on the wrong database instead of failing safely.
     if not data.get('database'):
         return bad_request(
             errormsg=_("Database parameter is required."))
@@ -263,10 +264,8 @@ def create_maintenance_job(sid, did):
         index_name=index_name
     )
 
-    # The target database is passed via the PGDATABASE environment variable
-    # below, not as a --dbname argument -- a user-controlled value containing
-    # "=" is expanded by libpq into a connection string (connection and
-    # credential redirection).
+    # Never pass the user-supplied database name directly: see
+    # database_conninfo() for why it is wrapped in a connection string.
     args = [
         '--host',
         manager.local_bind_host if manager.use_ssh_tunnel else server.host,
@@ -274,18 +273,16 @@ def create_maintenance_job(sid, did):
         str(manager.local_bind_port) if manager.use_ssh_tunnel
         else str(server.port),
         '--username', server.username,
+        '--dbname', database_conninfo(data['database']),
         '--command', query
     ]
 
     try:
-        env = {}
-        if data.get('database'):
-            env['PGDATABASE'] = data['database']
         p = BatchProcess(
             desc=Message(server.id, data, query),
             cmd=utility, args=args, manager_obj=manager
         )
-        p.set_env_variables(server, env=env)
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:
