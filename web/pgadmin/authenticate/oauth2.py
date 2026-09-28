@@ -687,6 +687,8 @@ class OAuth2Authentication(BaseAuthentication):
             self.oauth2_current_client, provider, client
         )
 
+        session["oauth2_provider"] = self.oauth2_current_client
+
         session['pass_enc_key'] = session['oauth2_token']['access_token']
 
         if 'OAUTH2_LOGOUT_URL' in self.oauth2_config[

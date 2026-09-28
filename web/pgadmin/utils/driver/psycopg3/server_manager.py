@@ -677,6 +677,10 @@ WHERE db.oid = {0}""".format(did))
         # Loop through all the connection parameters set in the server dialog.
         if self.connection_params and isinstance(self.connection_params, dict):
             for key, value in self.connection_params.items():
+                # pgAdmin-only parameter, not a libpq connection option
+                if key == "oauth_pgadmin_token_mode":
+                    continue
+
                 with_complete_path = False
                 orig_value = value
                 # Getting complete file path if the key is one of the below.

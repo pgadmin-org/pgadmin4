@@ -165,6 +165,12 @@ export function getConnectionParameters() {
   }, {
     'value': 'oauth_scope', 'label': gettext('OAuth scope'), 'vartype': 'string',
     'min_server_version': '18'
+  }, {
+    'value': 'oauth_pgadmin_token_mode',
+    'label': gettext('OAuth pgAdmin token mode'),
+    'vartype': 'enum',
+    'enumvals': ['disabled', 'direct', 'exchange'],
+    'min_server_version': '18'
   }];
 
   conParams.sort(function (a, b) {

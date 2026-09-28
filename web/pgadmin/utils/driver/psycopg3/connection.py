@@ -43,6 +43,12 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.pg_oauth2 import (
+    install_oauth_hook,
+    get_postgres_oauth_token,
+    oauth_token_context,
+    OAuthTokenError,
+)
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -362,25 +368,51 @@ class Connection(BaseConnection):
                 connection_string = manager.create_connection_string(
                     database, user, password)
 
-                if self.async_:
-                    autocommit = True
-                    if 'auto_commit' in kwargs:
-                        autocommit = kwargs['auto_commit']
+                connection_params = manager.connection_params or {}
 
-                    async def connectdbserver():
-                        return await psycopg.AsyncConnection.connect(
-                            connection_string,
-                            cursor_factory=AsyncDictCursor,
-                            autocommit=autocommit,
-                            prepare_threshold=manager.prepare_threshold
+                oauth_mode = connection_params.get(
+                    "oauth_pgadmin_token_mode",
+                    "disabled",
+                )
+
+                oauth_token = None
+
+                if oauth_mode != "disabled":
+                    try:
+                        oauth_token = get_postgres_oauth_token(
+                            oauth_mode,
+                            manager.connection_params.get("oauth_client_id"),
                         )
-                    pg_conn = asyncio.run(connectdbserver())
-                    pg_conn.server_cursor_factory = AsyncDictServerCursor
-                else:
-                    pg_conn = psycopg.Connection.connect(
-                        connection_string,
-                        cursor_factory=DictCursor,
-                        prepare_threshold=manager.prepare_threshold)
+                        install_oauth_hook()
+                    except OAuthTokenError as exc:
+                        current_app.logger.warning(
+                            "PostgreSQL OAuth authentication "
+                            "failed for server %s: %s",
+                            manager.sid,
+                            exc,
+                        )
+                        return False, str(exc)
+
+                with oauth_token_context(oauth_token):
+                    if self.async_:
+                        autocommit = True
+                        if 'auto_commit' in kwargs:
+                            autocommit = kwargs['auto_commit']
+
+                        async def connectdbserver():
+                            return await psycopg.AsyncConnection.connect(
+                                connection_string,
+                                cursor_factory=AsyncDictCursor,
+                                autocommit=autocommit,
+                                prepare_threshold=manager.prepare_threshold
+                            )
+                        pg_conn = asyncio.run(connectdbserver())
+                        pg_conn.server_cursor_factory = AsyncDictServerCursor
+                    else:
+                        pg_conn = psycopg.Connection.connect(
+                            connection_string,
+                            cursor_factory=DictCursor,
+                            prepare_threshold=manager.prepare_threshold)
 
         except psycopg.Error as e:
             manager.stop_ssh_tunnel()

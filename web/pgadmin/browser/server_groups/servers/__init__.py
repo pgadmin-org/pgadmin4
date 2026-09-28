@@ -1636,6 +1636,13 @@ class ServerNode(PGChildNodeView):
                 manager.passexec = None
         conn = manager.connection()
 
+        connection_params = manager.connection_params or {}
+
+        use_pgadmin_oauth = connection_params.get(
+            "oauth_pgadmin_token_mode",
+            "disabled",
+        ) in ("direct", "exchange")
+
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1664,8 +1671,13 @@ class ServerNode(PGChildNodeView):
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
-        if 'password' not in data and (server.kerberos_conn is False or
-                                       server.kerberos_conn is None):
+
+        if use_pgadmin_oauth:
+            # The pgAdmin OAuth bearer token is the database credential.
+            password = None
+            save_password = False
+        elif 'password' not in data and (server.kerberos_conn is False or
+                                         server.kerberos_conn is None):
 
             passfile_param = None
             if hasattr(server, 'connection_params') and \
@@ -1716,9 +1728,19 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
+            error_message = getattr(e, 'message', str(e))
+
+            if use_pgadmin_oauth:
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=error_message
+                )
+
             return self.get_response_for_password(
                 server, 401, not server.save_password, prompt_tunnel_password,
-                getattr(e, 'message', str(e)))
+                error_message
+            )
 
         if not status:
             current_app.logger.error(
@@ -1727,6 +1749,13 @@ class ServerNode(PGChildNodeView):
             )
             if errmsg.find('Ticket expired') != -1:
                 return internal_server_error(errmsg)
+
+            if use_pgadmin_oauth:
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=errmsg
+                )
 
             return self.get_response_for_password(
                 server, 401, not server.save_password,
