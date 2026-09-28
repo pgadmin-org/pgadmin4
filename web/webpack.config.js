@@ -135,6 +135,14 @@ module.exports = [{
         fullySpecified: false
       },
     },{
+      // react-frame-component 5.3 declares "type": "module" but maps its
+      // "require" export to a UMD build. Babel compiles our imports to
+      // require(), so webpack picks the UMD file and, honouring the package
+      // type, parses it as ESM, where the UMD wrapper finds no exports object
+      // and exports nothing. Parse it as CommonJS/auto so the UMD works.
+      test: /[\\/]node_modules[\\/]react-frame-component[\\/].*\.js$/,
+      type: 'javascript/auto',
+    },{
       test: /\.tsx?$|\.ts?$|\.jsx?$/,
       exclude: [/node_modules/, /vendor/],
       use: {
