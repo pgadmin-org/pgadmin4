@@ -295,8 +295,11 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id):
     # psql has exited, so forget the session now. The \q handler has
     # already removed it from the sessions map, which would otherwise stop
     # the disconnect handler from ever cleaning up the other maps.
-    app.config['sessions'].pop(request.sid, None)
-    if request.sid in pdata:
+    # Compare with the process, so that an older process cannot clear the
+    # state of a newer one registered against the same socket.
+    if app.config['sessions'].get(request.sid) is process:
+        del app.config['sessions'][request.sid]
+    if pdata.get(request.sid) is process:
         cleanup_globals()
 
 
@@ -632,6 +635,11 @@ def cleanup_globals():
     del cdata[request.sid]
     server_id = open_psql_connections[request.sid]
     del open_psql_connections[request.sid]
+    session_input.pop(request.sid, None)
+    # Stop a later server disconnect from signalling this socket.
+    soids = app.config.get('sid_soid_mapping', {}).get(str(server_id))
+    if soids and request.sid in soids:
+        soids.remove(request.sid)
     # Check if all the connections of the adhoc server is closed
     # then delete the server from the pgadmin database.
     from pgadmin.misc.workspaces import check_and_delete_adhoc_server
