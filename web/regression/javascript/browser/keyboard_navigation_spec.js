@@ -21,8 +21,8 @@ import '../../../pgadmin/browser/static/js/keyboard';
 // dock-tab-active class (issue #7232).
 describe('keyboardNavigation.bindRightPanel', () => {
   const shortcutObj = {
-    tabbed_panel_forward: 'ctrl+alt+]',
-    tabbed_panel_backward: 'ctrl+alt+[',
+    tabbed_panel_forward: 'ctrl+alt+pagedown',
+    tabbed_panel_backward: 'ctrl+alt+pageup',
     close_tab_panel: 'shift+alt+w',
   };
 

@@ -187,7 +187,7 @@ def register_browser_preferences(self):
             'alt': True,
             'shift': False,
             'control': True,
-            'key': {'key_code': 219, 'char': '['}
+            'key': {'key_code': 33, 'char': 'PageUp'}
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields
@@ -217,7 +217,7 @@ def register_browser_preferences(self):
             'alt': True,
             'shift': False,
             'control': True,
-            'key': {'key_code': 221, 'char': ']'}
+            'key': {'key_code': 34, 'char': 'PageDown'}
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields
