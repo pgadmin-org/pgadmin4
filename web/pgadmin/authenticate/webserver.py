@@ -9,6 +9,8 @@
 
 """A blueprint module implementing the Webserver authentication."""
 
+import hmac
+import ipaddress
 import secrets
 import string
 import config
@@ -24,6 +26,161 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
 from flask_security.utils import logout_user
 from pgadmin.utils.master_password import set_crypt_key
+
+
+def _is_cgi_var_name(name):
+    """Return True only for a genuine CGI/WSGI environment variable name,
+    e.g. REMOTE_USER. Anything HTTP_-prefixed or hyphenated is, in practice,
+    a client-supplied HTTP header (e.g. HTTP_X_FORWARDED_USER or
+    X-Forwarded-User), so it must never be trusted as-is. A name that is
+    not a non-empty string at all (a misconfigured WEBSERVER_REMOTE_USER)
+    is not a CGI variable name either.
+    """
+    return isinstance(name, str) and bool(name) and \
+        not name.startswith('HTTP_') and '-' not in name
+
+
+def _get_untrusted_peer_addr():
+    """Return the raw peer address of the socket that connected to pgAdmin,
+    ignoring anything ProxyFix derived from a client-controlled
+    X-Forwarded-For header. request.remote_addr is NOT safe for this
+    purpose: with the default PROXY_X_FOR_COUNT = 1, ProxyFix rewrites it
+    from X-Forwarded-For even when nothing is actually in front of pgAdmin.
+    """
+    orig = request.environ.get('werkzeug.proxy_fix.orig', {})
+    return orig.get('REMOTE_ADDR') or request.environ.get('REMOTE_ADDR')
+
+
+def _peer_is_trusted_proxy():
+    """Check the raw peer address against WEBSERVER_TRUSTED_PROXIES. Never
+    raises - a malformed config entry or an unparseable/missing peer address
+    is treated as untrusted. A per-request rejection (no proxy in front, an
+    untrusted peer) is logged at info, since an unauthenticated client can
+    trigger it on every request; a malformed WEBSERVER_TRUSTED_PROXIES
+    itself is an operator misconfiguration and stays at warning.
+    """
+    if not isinstance(config.WEBSERVER_TRUSTED_PROXIES, (list, tuple)):
+        current_app.logger.warning(
+            "Webserver auth: WEBSERVER_TRUSTED_PROXIES must be a list or "
+            "tuple of IP/CIDR strings; rejecting the header-asserted "
+            "identity.")
+        return False
+
+    peer_addr = _get_untrusted_peer_addr()
+    if not peer_addr:
+        current_app.logger.info(
+            "Webserver auth: could not determine the peer address; "
+            "rejecting the header-asserted identity.")
+        return False
+
+    try:
+        peer = ipaddress.ip_address(peer_addr)
+    except ValueError:
+        current_app.logger.info(
+            "Webserver auth: peer address {0} is not a valid IP; "
+            "rejecting the header-asserted identity.".format(peer_addr))
+        return False
+
+    for entry in config.WEBSERVER_TRUSTED_PROXIES:
+        try:
+            network = ipaddress.ip_network(entry, strict=False)
+        except ValueError:
+            current_app.logger.warning(
+                "Webserver auth: WEBSERVER_TRUSTED_PROXIES entry {0} is "
+                "not a valid IP/CIDR; ignoring it.".format(entry))
+            continue
+        if peer in network:
+            return True
+
+    current_app.logger.info(
+        "Webserver auth: peer {0} is not in WEBSERVER_TRUSTED_PROXIES; "
+        "rejecting the header-asserted identity.".format(peer_addr))
+    return False
+
+
+def _shared_secret_matches():
+    """When a shared secret is configured, require the proxy to have sent
+    it back in the configured header, compared with hmac.compare_digest to
+    avoid a timing side-channel. When no secret is configured, this check is
+    skipped (returns True). Never raises - a non-str/bytes or non-ASCII
+    secret is treated as a mismatch, with a warning logged for the operator.
+    """
+    if not config.WEBSERVER_SHARED_SECRET:
+        return True
+
+    supplied = request.headers.get(config.WEBSERVER_SHARED_SECRET_HEADER)
+    if not supplied:
+        return False
+
+    # Compare as bytes: hmac.compare_digest rejects a str carrying any
+    # non-ASCII character, so an accented passphrase would otherwise raise
+    # rather than simply match or not.
+    secret = config.WEBSERVER_SHARED_SECRET
+    if isinstance(secret, str):
+        secret = secret.encode('utf-8')
+
+    try:
+        return hmac.compare_digest(supplied.encode('utf-8'), secret)
+    except TypeError:
+        current_app.logger.warning(
+            "Webserver auth: WEBSERVER_SHARED_SECRET must be a str or "
+            "bytes value; rejecting the header-asserted identity.")
+        return False
+
+
+def _get_trusted_value(name):
+    """Read a value that the client cannot forge: the WSGI/CGI environment,
+    but only for a genuine CGI variable name (see _is_cgi_var_name). Any
+    HTTP_-prefixed or hyphenated name is, under this WSGI server, indistin-
+    guishable from a client-supplied header, so it is never read here.
+    """
+    if not _is_cgi_var_name(name):
+        return None
+    return request.environ.get(name)
+
+
+def _header_name_for(name):
+    """Translate a CGI-style HTTP_FOO_BAR name to the HTTP header name a
+    client/proxy actually sends (Foo-Bar), so an operator can set
+    WEBSERVER_REMOTE_USER to either spelling and have the header path
+    resolve it. Werkzeug's header lookup normalizes '_' to '-' but does not
+    strip an HTTP_ prefix, so that translation has to happen here. Any
+    other name (e.g. an ordinary hyphenated header name) is returned as-is.
+    """
+    if name.startswith('HTTP_'):
+        return '-'.join(
+            part.capitalize() for part in name[len('HTTP_'):].split('_'))
+    return name
+
+
+def _get_header_value(name):
+    """Read a value from an inbound HTTP request header - a client-
+    controlled source. Only returned when the operator has explicitly
+    opted in via WEBSERVER_REMOTE_USER_FROM_HEADER, the request came from a
+    peer listed in WEBSERVER_TRUSTED_PROXIES, and (if configured) the
+    shared secret matches. A client-triggered rejection here (untrusted
+    peer, secret mismatch) is logged at info, since an unauthenticated
+    client can trigger it on every request and warning-level logging
+    would let it flood the log. A malformed WEBSERVER_REMOTE_USER is a
+    static operator misconfiguration, not something a client varies per
+    request, and stays at warning so it doesn't go unnoticed while every
+    login silently fails.
+    """
+    if not config.WEBSERVER_REMOTE_USER_FROM_HEADER:
+        return None
+    if not isinstance(name, str) or not name:
+        current_app.logger.warning(
+            "Webserver auth: WEBSERVER_REMOTE_USER is not set to a "
+            "non-empty name; rejecting the header-asserted identity.")
+        return None
+    if not _peer_is_trusted_proxy():
+        return None
+    if not _shared_secret_matches():
+        current_app.logger.info(
+            "Webserver auth: shared secret mismatch; rejecting the "
+            "header-asserted identity.")
+        return None
+    return request.headers.get(_header_name_for(name))
 
 
 class WebserverModule(PgAdminModule):
@@ -77,10 +234,12 @@ class WebserverAuthentication(BaseAuthentication):
         return True, None
 
     def get_user(self):
-        username = request.environ.get(config.WEBSERVER_REMOTE_USER)
+        username = _get_trusted_value(config.WEBSERVER_REMOTE_USER)
         if not username:
-            # One more try to get the Remote User from the hearders
-            username = request.headers.get(config.WEBSERVER_REMOTE_USER)
+            # Gated fallback: only for deployments that have explicitly
+            # opted in to trusting a header-asserted identity. See
+            # _get_header_value() for the checks this requires.
+            username = _get_header_value(config.WEBSERVER_REMOTE_USER)
         return username
 
     def authenticate(self, form):
@@ -93,7 +252,7 @@ class WebserverAuthentication(BaseAuthentication):
         session['pass_enc_key'] = ''.join(
             (secrets.choice(string.ascii_lowercase) for _ in range(10)))
 
-        useremail = request.environ.get('mail')
+        useremail = _get_trusted_value('mail')
         if not useremail:
             useremail = ''
         return self.__auto_create_user(username, '')
@@ -102,6 +261,21 @@ class WebserverAuthentication(BaseAuthentication):
         username = self.get_user()
         if username:
             user = User.query.filter_by(username=username).first()
+            if user is None:
+                current_app.logger.warning(
+                    "Webserver auth: no User row matches the asserted "
+                    "identity {0}.".format(username))
+                return False, self.messages('LOGIN_FAILED')
+            # Defense in depth: a header-asserted identity must never be
+            # able to log in an account that was not created via Webserver
+            # authentication (e.g. the internal default admin), even if the
+            # trust gate above is misconfigured.
+            if user.auth_source != WEBSERVER:
+                current_app.logger.warning(
+                    "Webserver auth: rejecting login for {0}, whose "
+                    "auth_source is {1}, not {2}.".format(
+                        username, user.auth_source, WEBSERVER))
+                return False, self.messages('LOGIN_FAILED')
             status = login_user(user)
             if not status:
                 current_app.logger.exception(self.messages('LOGIN_FAILED'))

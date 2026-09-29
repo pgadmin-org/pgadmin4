@@ -1,15 +1,47 @@
 name: Check documentation builds
 
 on:
+  # Callable from snapshot.yml, so that what gets published is the
+  # same build that runs on every push rather than a second
+  # definition of it that can drift.
+  workflow_call:
+
   push:
     branches: [ "master" ]
+    paths:
+      - 'docs/**'
+      - 'web/version.py'
+      - 'web/branding.py'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'web/config.py'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-doc-builds.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'docs/**'
+      - 'web/version.py'
+      - 'web/branding.py'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'web/config.py'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-doc-builds.yml'
 
   workflow_dispatch:
 
 concurrency:
-  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  # The workflow's own name, spelled out rather than taken from
+  # github.workflow, because in a reusable workflow that expression is
+  # the CALLER's name. Every workflow Snapshot calls would otherwise
+  # share one group and, with cancel-in-progress, cancel each other.
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-doc-builds @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
 jobs:
@@ -17,7 +49,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install platform dependencies
         run: |
@@ -33,9 +65,10 @@ jobs:
           make docs
 
       - name: Archive HTML
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-html-build-output
+          if-no-files-found: error
           path: docs/en_US/_build/html/*
 
       - name: Check the ePub build
@@ -44,9 +77,10 @@ jobs:
           make docs-epub
 
       - name: Archive ePub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-epub-build-output
+          if-no-files-found: error
           path: docs/en_US/_build/epub/pgAdmin4.epub
 
       - name: Check the PDF build
@@ -55,7 +89,8 @@ jobs:
           make docs-pdf
 
       - name: Archive PDF
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pgadmin4-pdf-build-output
+          if-no-files-found: error
           path: docs/en_US/_build/latex/pgadmin4.pdf

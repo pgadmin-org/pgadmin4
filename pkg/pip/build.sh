@@ -62,7 +62,7 @@ if [ -z "${YARN_VERSION}" ]; then
     exit 1
 fi
 yarn set version "${YARN_VERSION}"
-yarn install
+yarn install --immutable
 yarn run bundle
 
 # Copy the commit_hash file, it doesn't show up in git ls-files

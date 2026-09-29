@@ -348,7 +348,6 @@ export const MappedFormControl = ({
   const [key, setKey] = useState(0);
   const subscriberManager = useSchemaStateSubscriber(setKey);
   const schemaState = useContext(SchemaStateContext);
-  const state = schemaState.data;
   const value = useFieldValue(accessPath, schemaState, subscriberManager);
   const options = useFieldOptions(accessPath, schemaState, subscriberManager);
   const {hasError} = useFieldError(accessPath, schemaState, subscriberManager);
@@ -401,15 +400,21 @@ export const MappedFormControl = ({
   }
 
   if (typeof (field.type) === 'function') {
-    // 'state' here is the whole top-level schema data, not this field's
-    // row, since a field nested inside a collection row shares the same
-    // accessPath resolution as any other field. 'depVals' (already resolved
-    // against this field's own row via 'deps', see listenDepChanges above)
-    // is passed as a 2nd argument so a field.type() callback can access
-    // sibling fields from its own row, mirroring what field.cell() already
-    // gets via its row argument. Existing field.type() callbacks that only
-    // take a single argument are unaffected.
-    const typeProps = evalFunc(null, field.type, state, depVals);
+    // Resolve 'state' against the field's own container, mirroring what
+    // field.cell() already gets via its row argument: for a field inside a
+    // collection row that is the row itself, and for a top-level field the
+    // parent path is empty, so schemaState.value() hands back the whole
+    // schema data as before. Nested tabs and fieldsets carry no 'id', so
+    // they do not extend the access path and their fields keep resolving
+    // against the data they share with the parent schema.
+    //
+    // 'depVals' (resolved against this field's own row via 'deps', see
+    // listenDepChanges above) is still passed as a 2nd argument for the
+    // callbacks that already take it; those taking a single argument are
+    // unaffected.
+    const typeProps = evalFunc(
+      null, field.type, schemaState.value(accessPath.slice(0, -1)), depVals
+    );
     newProps = {
       ...newProps,
       ...typeProps,

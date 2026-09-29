@@ -1,0 +1,173 @@
+# Replaces the pgadmin4-rpm-qa Jenkins job, as check-deb-build.yml replaces the
+# DEB one: a container per distribution on a hosted runner, rather than a
+# dedicated EC2 VM per distribution.
+#
+# Unlike the DEB build, the PGDG repository is not optional here.
+# pkg/redhat/build.sh opens with `export PATH=$(ls -d /usr/pgsql-1* | ...)` and
+# runs under `set -e`, so the build dies immediately without a PGDG PostgreSQL
+# installed.
+#
+# The QA job does not sign anything; `rpmsign --resign` is a separate step in
+# the release and snapshot jobs.
+
+name: Check RPM builds
+
+on:
+  # Callable from snapshot.yml, so that what gets published is the
+  # same build that runs on every push rather than a second
+  # definition of it that can drift.
+  workflow_call:
+
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'pkg/redhat/**'
+      - 'pkg/linux/**'
+      - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
+      - 'docs/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-rpm-build.yml'
+
+  workflow_dispatch:
+
+concurrency:
+  # The workflow's own name, spelled out rather than taken from
+  # github.workflow, because in a reusable workflow that expression is
+  # the CALLER's name. Every workflow Snapshot calls would otherwise
+  # share one group and, with cancel-in-progress, cancel each other.
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-rpm-build @ ${{ github.ref }} @ ${{ github.event_name }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # "name" exists only because artifact names may not contain a colon.
+          # "repo" selects the PGDG repository RPM, which is built per
+          # distribution family and major version.
+          - name: 'el-9'
+            image: 'almalinux:9'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
+          - name: 'el-10'
+            image: 'almalinux:10'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/EL-10-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
+          - name: 'fedora-43'
+            image: 'fedora:43'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/F-43-x86_64/pgdg-fedora-repo-latest.noarch.rpm'
+          - name: 'fedora-44'
+            image: 'fedora:44'
+            repo: 'https://download.postgresql.org/pub/repos/yum/reporpms/F-44-x86_64/pgdg-fedora-repo-latest.noarch.rpm'
+
+    container: ${{ matrix.image }}
+
+    steps:
+      # Before checkout, so the action has git available.
+      - name: Install the build environment
+        env:
+          PGDG_REPO: ${{ matrix.repo }}
+        run: |
+          dnf install -y dnf-plugins-core
+
+          # EL needs EPEL and CRB for the build dependencies; Fedora has
+          # everything in the main repositories.
+          if [ ! -f /etc/fedora-release ]; then
+              dnf install -y epel-release
+              dnf config-manager --set-enabled crb
+          fi
+
+          # The distro's own PostgreSQL module would shadow PGDG's packages.
+          dnf -qy module disable postgresql || true
+
+          dnf install -y --nogpgcheck "${PGDG_REPO}"
+
+          # The compiler toolchain is not optional: psycopg-c and gssapi are
+          # both built from source (pkg/linux/build-functions.sh passes
+          # --no-binary psycopg), and rpmbuild needs redhat-rpm-config. The
+          # buildfarm gets these from the @development-tools group; they are
+          # listed individually here so the container stays small.
+          dnf install -y \
+              diffutils \
+              expect \
+              fakeroot \
+              file \
+              findutils \
+              gcc \
+              gcc-c++ \
+              git \
+              krb5-devel \
+              libpq5-devel \
+              make \
+              openssl-devel \
+              patch \
+              postgresql18-devel \
+              python3-devel \
+              python3-pip \
+              python3-sphinx \
+              redhat-rpm-config \
+              rpm-build \
+              rpm-sign \
+              unzip \
+              wget \
+              yum-utils \
+              zlib-devel
+
+          # pkg/redhat/build.sh:229 shells out to yumdownloader, and a missing
+          # one surfaces as a bare exit 127 twelve minutes into the build,
+          # after the docs and the webpack bundle. Fail here instead, where the
+          # message is obvious. dnf5 distributions (EL10, Fedora 41+) get
+          # yumdownloader through yum-utils' compatibility shims rather than
+          # from yum itself, so it is worth checking rather than assuming.
+          command -v yumdownloader >/dev/null || {
+              echo "ERROR: yumdownloader is not on PATH; pkg/redhat/build.sh needs it." >&2
+              exit 1
+          }
+
+      - name: Install the Sphinx extensions
+        run: python3 -m pip install --break-system-packages sphinxcontrib-youtube || python3 -m pip install sphinxcontrib-youtube
+
+      - name: Install syft
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/v1.52.0/install.sh | sh -s -- -b /usr/local/bin v1.52.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20.x'
+
+      - uses: actions/checkout@v7
+
+      # The container runs as root while the workspace is owned by the runner
+      # user, so git refuses to operate on it ("detected dubious ownership").
+      # The build shells out to git for the commit hash during `yarn run
+      # bundle`, which fails with exit 128 without this.
+      - name: Mark the workspace as a safe git directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Check the RPM build
+        run: make redhat
+
+      - name: Archive the packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-rpm-build-output-${{ matrix.name }}
+          if-no-files-found: error
+          path: dist/*.rpm

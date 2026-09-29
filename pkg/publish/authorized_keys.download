@@ -1,0 +1,67 @@
+# ~pgaupload/.ssh/authorized_keys on the download server (ftp.pgadmin.org)
+#
+# The same two keys as on the staging server, with the same options and for
+# the same reasons; read the annotations in authorized_keys.staging first,
+# since they are not repeated here. What differs is the blast radius, because
+# this host serves the packages that end users install, and the yum and apt
+# signing keys live here.
+#
+# Placeholders in angle brackets must be substituted at install time:
+#
+#   <...KEY...>   the public key, one line, no line breaks
+#
+# Note that these are the same two key pairs as on the staging server, not
+# four. One publishing key and one upload key, each trusted by both hosts, each
+# confined
+# differently on each host by the options below. Two more key pairs would mean
+# two more things to rotate and no reduction in what a compromised runner can
+# reach, since a compromised runner has both of them anyway.
+
+# ---------------------------------------------------------------------------
+# Key 1: publishing. Verbs only.
+# ---------------------------------------------------------------------------
+# What a holder of this key can do here: create a v<VERSION> directory, which
+# it cannot do twice, or a snapshot directory, which is deliberately
+# repeatable; pull the matching staging content from the staging server;
+# rebuild and sign the apt and yum metadata for an allowlisted distribution;
+# and run the four existing publication scripts with arguments
+# that have been validated or allowlisted first.
+#
+# What it cannot do, and this is the point of the exercise: choose something
+# to delete, name a file, name a path, name a host, name a signing key, choose
+# which binary runs, or supply a single character that reaches a shell.
+#
+# Nor can it change anything already published, which is a separate claim and
+# worth stating separately, because the verbs that add content are the ones
+# that would otherwise overwrite it. release-fetch refuses to run at all if
+# v<VERSION> holds anything beyond the markers release-create left, and
+# refuses each file whose destination exists, so a promotion is single-shot
+# end to end rather than only at its first verb; packages-fetch pulls with
+# --ignore-existing, so a package already live keeps the bytes its signed
+# metadata describes and the mirrors already hold. A release that needs
+# correcting gets a new version.
+restrict,command="/usr/local/sbin/pga-publish" ssh-ed25519 <...PUBLISH-KEY...> pga-publish@runner
+
+# ---------------------------------------------------------------------------
+# Key 2: upload. Bytes only, and only into the snapshots tree.
+# ---------------------------------------------------------------------------
+# Snapshots are built straight onto this server rather than staged elsewhere
+# and promoted, so unlike the release flow they do need an upload path here.
+#
+# The confinement root is the snapshots tree itself, which is the right place
+# on two counts. It is where snapshots belong, and it is the one part of the
+# download tree that sync-ftp-to-s3.py excludes, so nothing written through
+# this key can reach the archive bucket or the PostgreSQL mirrors. A key
+# confined anywhere else under /var/ftp would have both of those as a side
+# effect of a single bad upload.
+#
+# Retention is not this key's business either, and it cannot be made to be.
+# -no-del means this key cannot remove a snapshot even if asked to, and
+# snapshot-purge keeps the newest SNAPSHOT_KEEP dates rather than the newest
+# that many directories, so an upload cannot evict a real snapshot by arriving
+# under today's date with a high suffix. rrsync confines where an upload lands
+# but has nothing to say about what it is called, which is precisely why
+# retention must not turn on names the client chose.
+#
+# SITE: check `command -v rrsync`; the path moved between rsync packages.
+restrict,command="/usr/bin/rrsync -wo -no-del -munge /var/ftp/pgadmin4/snapshots" ssh-ed25519 <...UPLOAD-KEY...> pga-upload@runner

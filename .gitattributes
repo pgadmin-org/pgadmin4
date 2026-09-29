@@ -1,2 +1,7 @@
 # Auto detect text files and normalize end of lines to LF (\n)
 * text=auto eol=lf
+
+# Make.bat has always been stored with CRLF; the blanket eol=lf above would
+# silently rewrite the whole file the first time anything touches it.
+Make.bat -text
+pkg/win32/*.bat text eol=crlf

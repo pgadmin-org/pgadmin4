@@ -322,7 +322,7 @@ _copy_code() {
             exit 1
         fi
         yarn set version "${YARN_VERSION}"
-        yarn install
+        yarn install --immutable
         yarn run bundle
     popd > /dev/null || exit
 
