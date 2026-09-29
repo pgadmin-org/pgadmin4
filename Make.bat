@@ -362,7 +362,7 @@ REM Main build sequence Ends
     REM silently falls back to querying the registry and still exits 0, so check
     REM the lockfile is present first and validate what comes back.
     IF NOT EXIST "%WD%\runtime\yarn.lock" (
-        ECHO ERROR: %WD%\runtime\yarn.lock not found; cannot resolve the pinned Electron version.
+        ECHO ERROR: "%WD%\runtime\yarn.lock" not found; cannot resolve the pinned Electron version.
         EXIT /B 1
     )
 
@@ -371,7 +371,7 @@ REM Main build sequence Ends
     FOR /f "delims=" %%i IN ('yarn info electron --json ^| node -e "const lines=require('fs').readFileSync(0,'utf8').split('\n').filter(Boolean);const pkg=lines.map(l=>{try{return JSON.parse(l);}catch(e){return null;}}).find(o=>o&&typeof o.value==='string'&&o.value.startsWith('electron@npm:'));const version=(pkg&&pkg.children&&pkg.children.Version)||'';process.stdout.write(/^[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?$/.test(version)?version:'');"') DO SET "ELECTRON_VERSION=%%i"
     POPD
     IF "%ELECTRON_VERSION%"=="" (
-        ECHO ERROR: Could not resolve the pinned Electron version from %WD%\runtime\yarn.lock.
+        ECHO ERROR: Could not resolve the pinned Electron version from "%WD%\runtime\yarn.lock".
         EXIT /B 1
     )
 
