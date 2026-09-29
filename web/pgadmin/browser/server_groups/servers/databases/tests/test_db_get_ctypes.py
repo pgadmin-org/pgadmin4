@@ -113,7 +113,8 @@ class GetCtypesTestCase(BaseTestGenerator):
                 # open a database whose collation and character type differ,
                 # so the pair that proves which of the two columns was read
                 # cannot be exercised there.
-                if 'not supported on this platform' not in str(exc):
+                if 'collations with different collate and ctype values ' \
+                        'are not supported on this platform' not in str(exc):
                     raise
                 self.skipTest('This server will not open a database whose '
                               'collate and ctype differ: %s' % exc)
