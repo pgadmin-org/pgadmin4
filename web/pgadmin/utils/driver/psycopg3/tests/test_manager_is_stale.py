@@ -8,7 +8,8 @@
 ##########################################################################
 
 """
-Unit tests for Driver._manager_is_stale and Driver._saved_state_is_stale.
+Unit tests for Driver._manager_is_stale, Driver._saved_state_is_stale and
+Driver._connection_identity.
 
 These are pure attribute-comparison tests, run as plain unittest
 TestCases without needing a Postgres server connection.
@@ -16,6 +17,7 @@ TestCases without needing a Postgres server connection.
 
 import unittest
 from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils.driver.psycopg3 import Driver
@@ -220,3 +222,73 @@ class TestSavedStateIsStaleDetectsDifferentPgAdminUser(
             saved, server_data, 'new-user-uniquifier'))
         self.assertFalse(Driver._saved_state_is_stale(
             saved, server_data, 'old-user-uniquifier'))
+
+
+class TestConnectionIdentityUsesSharedServerOverlay(
+        _PureUnitTestSetupMixin, BaseTestGenerator):
+    """A non-owner's manager for a shared server is built from their
+    SharedServer overlay, so its username/service/tunnel host differ
+    from the owner's Server row. It must still compare as not stale,
+    otherwise its live connection would be released on every request."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        server_data = make_server_data(
+            id=7, shared=True, user_id=1, username='owner-user',
+            service='owner-service', tunnel_host='owner-bastion')
+        shared_server = SimpleNamespace(
+            username='other-user', service=None,
+            tunnel_host='other-bastion')
+        # The manager as the connect endpoint leaves it for the
+        # non-owner, after manager.update() with the overlay.
+        manager = make_manager(
+            user='other-user', service=None, tunnel_host='other-bastion',
+            pga_user='other-uniquifier')
+
+        shared_model = MagicMock()
+        shared_model.query.filter_by.return_value.first.return_value = \
+            shared_server
+        module = 'pgadmin.utils.driver.psycopg3'
+        with patch(module + '.config.SERVER_MODE', True), \
+                patch(module + '.current_user', SimpleNamespace(id=2)), \
+                patch(module + '.SharedServer', shared_model):
+            identity = Driver._connection_identity(server_data)
+
+        shared_model.query.filter_by.assert_called_once_with(
+            user_id=2, osid=7)
+        self.assertFalse(Driver._manager_is_stale(
+            manager, identity, 'other-uniquifier'))
+        # Compared against the owner's row, the same manager would be
+        # (wrongly) treated as stale.
+        self.assertTrue(Driver._manager_is_stale(
+            manager, server_data, 'other-uniquifier'))
+
+
+class TestConnectionIdentityOwnerUsesServerRow(
+        _PureUnitTestSetupMixin, BaseTestGenerator):
+    """The owner of a shared server, or anyone in desktop mode, is
+    compared against the Server row itself, with no SharedServer
+    lookup."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        server_data = make_server_data(
+            id=7, shared=True, user_id=1, service='owner-service')
+        shared_model = MagicMock()
+        module = 'pgadmin.utils.driver.psycopg3'
+
+        for server_mode, user_id in ((True, 1), (False, 2)):
+            with patch(module + '.config.SERVER_MODE', server_mode), \
+                    patch(module + '.current_user',
+                          SimpleNamespace(id=user_id)), \
+                    patch(module + '.SharedServer', shared_model):
+                identity = Driver._connection_identity(server_data)
+
+            self.assertEqual(identity.username, 'old-user')
+            self.assertEqual(identity.service, 'owner-service')
+            self.assertFalse(Driver._manager_is_stale(
+                make_manager(service='owner-service'), identity))
+
+        shared_model.query.filter_by.assert_not_called()

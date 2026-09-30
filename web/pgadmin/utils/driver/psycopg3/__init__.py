@@ -15,6 +15,7 @@ object.
 """
 import datetime
 import re
+from types import SimpleNamespace
 from flask import session
 from flask_babel import gettext
 from flask_login import current_user
@@ -23,7 +24,7 @@ import psycopg
 from threading import Lock
 
 import config
-from pgadmin.model import Server
+from pgadmin.model import Server, SharedServer
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query
 from pgadmin.utils.exception import ObjectGone
@@ -95,7 +96,8 @@ class Driver(BaseDriver):
                     if server.id in session_managers:
                         saved = session_managers[server.id]
                         if self._saved_state_is_stale(
-                                saved, server, pga_user):
+                                saved, self._connection_identity(server),
+                                pga_user):
                             # The persisted blob was serialized under
                             # this numeric id by whatever Server row
                             # held it before (e.g. the configuration
@@ -124,6 +126,41 @@ class Driver(BaseDriver):
         reset and a new user is created.
         """
         return getattr(current_user, 'fs_uniquifier', None)
+
+    @staticmethod
+    def _connection_identity(server_data):
+        """
+        The connection fields a ServerManager for this server is expected
+        to hold, for _manager_is_stale and _saved_state_is_stale to
+        compare against.
+
+        For a non-owner of a shared server these are not all on the
+        Server row: the connect endpoint builds the manager from the
+        user's SharedServer overlay (see
+        ServerModule.get_shared_server_properties), which replaces the
+        username, service and tunnel host with the user's own values.
+        Comparing against the owner's row instead would treat every
+        such manager as stale and drop its live connection on every
+        request. The SharedServer record is only read here, never
+        created, and server_data is left untouched.
+        """
+        identity = SimpleNamespace(
+            host=server_data.host,
+            port=server_data.port,
+            maintenance_db=server_data.maintenance_db,
+            username=server_data.username,
+            service=server_data.service,
+            tunnel_host=server_data.tunnel_host,
+        )
+        if config.SERVER_MODE and server_data.shared and \
+                server_data.user_id != current_user.id:
+            shared_server = SharedServer.query.filter_by(
+                user_id=current_user.id, osid=server_data.id).first()
+            if shared_server is not None:
+                identity.username = shared_server.username
+                identity.service = shared_server.service
+                identity.tunnel_host = shared_server.tunnel_host
+        return identity
 
     @staticmethod
     def _saved_state_is_stale(saved, server_data, pga_user=None):
@@ -226,7 +263,8 @@ class Driver(BaseDriver):
                 pga_user = self._current_pga_user()
                 with connection_restore_lock:
                     if self._manager_is_stale(
-                            manager, server_data, pga_user):
+                            manager, self._connection_identity(server_data),
+                            pga_user):
                         # The id has been reused by an unrelated Server
                         # row (e.g. the configuration database was reset
                         # or restored without restarting pgAdmin), so the
