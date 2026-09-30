@@ -219,6 +219,8 @@ Use the fields in the *Advanced* tab to configure a connection:
   You can pass server hostname, port and DB username to the password exec command as variable by providing placeholders
   like ``%HOSTNAME%``, ``%PORT%`` and ``%USERNAME%`` which will be replace with the server connection information.
   Example: ``/path/to/script --hostname %HOSTNAME% --port %PORT% --username %USERNAME%``
+  On a shared server, the owner's command is never run for other users; each
+  user who needs one must set their own *Password exec command* on the server.
 * Use the *Password exec expiration* field to specify a maximum age, in seconds,
   of the password generated with a *Password exec command*. If not specified,
   the password will not expire until your pgAdmin session does.
