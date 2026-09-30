@@ -621,11 +621,18 @@ class ServerNode(PGChildNodeView):
             data['connection_params'] = existing_conn_params
 
     @staticmethod
-    def update_tags(data, server):
+    def update_tags(data, server, fallback_tags=None):
         """
-        This function is used to update tags
+        This function is used to update tags.
+
+        fallback_tags is the base to apply the delta to when server has
+        NULL tags; a non-owner's SharedServer row created before tags
+        were copied across is shown the owner's tags, so an edit must
+        start from those rather than from nothing.
         """
         old_tags = getattr(server, 'tags', [])
+        if old_tags is None:
+            old_tags = fallback_tags
         # add old_text for comparison
         old_tags = [{**tag, 'old_text': tag['text']}
                     for tag in old_tags] if old_tags is not None else []
@@ -927,7 +934,8 @@ class ServerNode(PGChildNodeView):
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
-        self.update_tags(data, sharedserver or server)
+        self.update_tags(data, sharedserver or server,
+                         server.tags if sharedserver else None)
 
         if 'connection_params' in data and \
             'hostaddr' in data['connection_params'] and \

@@ -687,6 +687,10 @@ class TestUpdateTagsBase(BaseTestGenerator):
          dict(test_method='test_nonowner_tags_base')),
         ('Owner tag delta uses server tags',
          dict(test_method='test_owner_tags_base')),
+        ('Non-owner delta on NULL tags starts from owner tags',
+         dict(test_method='test_nonowner_null_tags_fallback')),
+        ('Non-owner delta on empty tags ignores owner tags',
+         dict(test_method='test_nonowner_empty_tags_no_fallback')),
     ]
 
     def runTest(self):
@@ -730,6 +734,43 @@ class TestUpdateTagsBase(BaseTestGenerator):
         texts = {t['text'] for t in data['tags']}
         self.assertIn('owner-tag', texts)
         self.assertIn('new-tag', texts)
+
+    def test_nonowner_null_tags_fallback(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server(
+            tags=[{'text': 'owner-tag', 'color': '#000'}])
+        ss = _make_shared_server(tags=None)
+
+        data = {'tags': {
+            'added': [{'text': 'my-tag', 'color': '#f00'}],
+        }}
+
+        # A SharedServer row with NULL tags is shown the owner's tags,
+        # so adding one must keep them rather than replace them.
+        ServerNode.update_tags(data, ss, server.tags)
+
+        texts = {t['text'] for t in data['tags']}
+        self.assertEqual(texts, {'owner-tag', 'my-tag'})
+
+    def test_nonowner_empty_tags_no_fallback(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server(
+            tags=[{'text': 'owner-tag', 'color': '#000'}])
+        ss = _make_shared_server(tags=[])
+
+        data = {'tags': {
+            'added': [{'text': 'my-tag', 'color': '#f00'}],
+        }}
+
+        # An explicitly emptied list is the user's choice, so the
+        # owner's tags must not come back.
+        ServerNode.update_tags(data, ss, server.tags)
+
+        self.assertEqual([t['text'] for t in data['tags']], ['my-tag'])
 
 
 class TestGetSharedServerRaisesOnNone(BaseTestGenerator):
