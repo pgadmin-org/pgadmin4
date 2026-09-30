@@ -11,6 +11,7 @@
 
 from flask import render_template
 from flask_babel import gettext as _
+from pgadmin.utils import unquote_ident
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -126,7 +127,7 @@ def search_coveringindex(conn, tid, cols, template_path=None):
 
         index_cols = set()
         for r in rest['rows']:
-            index_cols.add(r['column'].strip('"'))
+            index_cols.add(unquote_ident(r['column']))
 
         if len(cols - index_cols) == len(index_cols - cols) == 0:
             return constraint["idxname"]
