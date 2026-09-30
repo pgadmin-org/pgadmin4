@@ -141,6 +141,10 @@ For more information, please see the documentation on <a href="https://www.postg
         uniqueCol: ['order_id'],
         columns: ['order_id', 'value'],
         depChange: (state, source, topState, actionObj) => {
+          // Touch every row so the collection reports all of them as
+          // 'changed'. The server deletes a task's parameters and
+          // re-inserts only the rows it receives, so without this an
+          // edit to one parameter would drop the others.
           if (state?.parameters) {
             state.parameters.forEach(p => { p._t = true; });
           }

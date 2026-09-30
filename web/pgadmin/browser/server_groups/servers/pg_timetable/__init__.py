@@ -309,7 +309,7 @@ class ChainView(PGChildNodeView):
         )
 
         if not status:
-            self.conn.execute_void('END')
+            self.conn.execute_void('ROLLBACK')
             return internal_server_error(errormsg=res)
 
         # We need oid of newly created database
@@ -496,7 +496,7 @@ class ChainView(PGChildNodeView):
                     v = 'NULL'
                 elif key in ('max_instances', 'timeout'):
                     if val is not None:
-                        v = f"{val}::integer"
+                        v = f"{qt(val, self.conn)}::integer"
                     elif key == 'timeout':
                         v = '0'
                     else:
@@ -748,6 +748,11 @@ class ChainView(PGChildNodeView):
         return True, None
 
     def _upsert_task_params(self, task_id, parameters):
+        # Deletes every parameter of the task and re-inserts the ones
+        # sent. This is only safe because the parameters grid's
+        # depChange (pgt_chaintask.ui.js) marks every row with _t, so
+        # the collection reports all remaining rows as 'changed' rather
+        # than just the edited ones. Rows left out are deleted.
         def _insert_param(idx, param):
             if not isinstance(param, dict):
                 param = {
