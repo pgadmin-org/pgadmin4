@@ -350,3 +350,75 @@ class SharedServerRenameDoesNotOrphanTestCase(BaseTestGenerator):
             return
         utils.delete_server_with_api(
             self.__class__.tester, self.server_id)
+
+
+class SharedServerNonOwnerConnectionPersistsTestCase(BaseTestGenerator):
+    """Verify that a non-owner's connection to a shared server survives
+    later requests. The non-owner connects with their own shared
+    username, which differs from the owner's, and the cached server
+    manager must not be mistaken for a stale one (and released) when it
+    is next looked up."""
+
+    scenarios = [
+        ('Non-owner connection to shared server stays connected',
+         dict(is_positive_test=True)),
+    ]
+
+    def setUp(self):
+        self.server_id = None
+        if not config.SERVER_MODE:
+            self.skipTest(
+                'Data isolation tests only apply to server mode.'
+            )
+
+        # The owner's username is never used to connect; only the
+        # non-owner's shared username has to be a real role.
+        self.server['shared'] = True
+        self.server['shared_username'] = self.server['username']
+        self.server['username'] = 'pga_test_owner_only_role'
+        url = "/browser/server/obj/{0}/".format(utils.SERVER_GROUP)
+        response = self.tester.post(
+            url,
+            data=json.dumps(self.server),
+            content_type='html/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.data.decode('utf-8'))
+        self.assertIn('node', response_data)
+        self.server_id = response_data['node']['_id']
+
+    @create_user_wise_test_client(test_user_details)
+    def runTest(self):
+        """The non-owner stays connected after connecting."""
+        if not self.server_id:
+            raise Exception("Server not found to test shared access")
+
+        url = '/browser/server/connect/{0}/{1}'.format(
+            utils.SERVER_GROUP, self.server_id)
+        response = self.tester.post(
+            url,
+            data=json.dumps({'password': self.server['db_password']}),
+            content_type='html/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertTrue(
+            data.get('data', {}).get('connected'),
+            'Non-owner should be able to connect to the shared server.'
+            ' Got {0}'.format(data))
+
+        response = self.tester.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertTrue(
+            data.get('data', {}).get('connected'),
+            'Non-owner connection to the shared server should still be'
+            ' open on the next request. Got {0}'.format(data))
+
+        self.tester.delete(url)
+
+    def tearDown(self):
+        if self.server_id is None:
+            return
+        utils.delete_server_with_api(
+            self.__class__.tester, self.server_id)

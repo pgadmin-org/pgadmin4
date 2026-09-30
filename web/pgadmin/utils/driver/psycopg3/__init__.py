@@ -15,10 +15,10 @@ object.
 """
 import datetime
 import re
-from types import SimpleNamespace
 from flask import session
 from flask_babel import gettext
 from flask_login import current_user
+from sqlalchemy import inspect as sa_inspect
 from werkzeug.exceptions import InternalServerError
 import psycopg
 from threading import Lock
@@ -84,6 +84,7 @@ class Driver(BaseDriver):
                     Server.is_adhoc == 0)
                 pga_user = self._current_pga_user()
                 for server in servers:
+                    server = self._manager_source(server)
                     manager = managers[str(server.id)] = \
                         ServerManager(server)
                     manager.pga_user = pga_user
@@ -96,8 +97,7 @@ class Driver(BaseDriver):
                     if server.id in session_managers:
                         saved = session_managers[server.id]
                         if self._saved_state_is_stale(
-                                saved, self._connection_identity(server),
-                                pga_user):
+                                saved, server, pga_user):
                             # The persisted blob was serialized under
                             # this numeric id by whatever Server row
                             # held it before (e.g. the configuration
@@ -128,39 +128,47 @@ class Driver(BaseDriver):
         return getattr(current_user, 'fs_uniquifier', None)
 
     @staticmethod
-    def _connection_identity(server_data):
+    def _manager_source(server_data):
         """
-        The connection fields a ServerManager for this server is expected
-        to hold, for _manager_is_stale and _saved_state_is_stale to
-        compare against.
+        The Server a ServerManager for this server should be built from,
+        and compared against by _manager_is_stale and
+        _saved_state_is_stale.
 
-        For a non-owner of a shared server these are not all on the
-        Server row: the connect endpoint builds the manager from the
-        user's SharedServer overlay (see
+        For a non-owner of a shared server that is not the owner's row:
+        the connect endpoint builds the manager from the user's
+        SharedServer overlay (see
         ServerModule.get_shared_server_properties), which replaces the
-        username, service and tunnel host with the user's own values.
-        Comparing against the owner's row instead would treat every
-        such manager as stale and drop its live connection on every
-        request. The SharedServer record is only read here, never
-        created, and server_data is left untouched.
+        username, service, tunnel host, password and so on with the
+        user's own values. Building or comparing against the owner's row
+        instead would treat every such manager as stale and drop its
+        live connection on every request.
+
+        The overlay is applied to a transient copy of the row's columns,
+        so the session-bound instance other code may be holding is never
+        detached or modified. The SharedServer record is only read here,
+        never created; until the user has one (it is created when they
+        first connect), the row itself is returned.
         """
-        identity = SimpleNamespace(
-            host=server_data.host,
-            port=server_data.port,
-            maintenance_db=server_data.maintenance_db,
-            username=server_data.username,
-            service=server_data.service,
-            tunnel_host=server_data.tunnel_host,
-        )
-        if config.SERVER_MODE and server_data.shared and \
-                server_data.user_id != current_user.id:
-            shared_server = SharedServer.query.filter_by(
-                user_id=current_user.id, osid=server_data.id).first()
-            if shared_server is not None:
-                identity.username = shared_server.username
-                identity.service = shared_server.service
-                identity.tunnel_host = shared_server.tunnel_host
-        return identity
+        if not (config.SERVER_MODE and server_data.shared and
+                server_data.user_id != current_user.id):
+            return server_data
+
+        shared_server = SharedServer.query.filter_by(
+            user_id=current_user.id, osid=server_data.id).first()
+        if shared_server is None:
+            return server_data
+
+        # Imported here, as the servers module imports this driver.
+        from pgadmin.browser.server_groups.servers import ServerModule
+
+        # Columns only: Server.clone() would also copy the servergroup
+        # relationship, which cascades the copy into the session.
+        overlay = Server(**{
+            attr.key: getattr(server_data, attr.key)
+            for attr in sa_inspect(Server).column_attrs
+        })
+        return ServerModule.get_shared_server_properties(
+            overlay, shared_server)
 
     @staticmethod
     def _saved_state_is_stale(saved, server_data, pga_user=None):
@@ -261,10 +269,10 @@ class Driver(BaseDriver):
             if str(sid) in managers:
                 manager = managers[str(sid)]
                 pga_user = self._current_pga_user()
+                manager_source = self._manager_source(server_data)
                 with connection_restore_lock:
                     if self._manager_is_stale(
-                            manager, self._connection_identity(server_data),
-                            pga_user):
+                            manager, manager_source, pga_user):
                         # The id has been reused by an unrelated Server
                         # row (e.g. the configuration database was reset
                         # or restored without restarting pgAdmin), so the
@@ -275,7 +283,7 @@ class Driver(BaseDriver):
                         # The same applies to a manager built for another
                         # pgAdmin user on this browser session.
                         manager.release()
-                        manager.update(server_data)
+                        manager.update(manager_source)
                         manager.pga_user = pga_user
                     else:
                         manager._restore_connections()
@@ -298,7 +306,7 @@ class Driver(BaseDriver):
         if str(sid) not in managers:
             # server_data was already access-checked above;
             # it cannot be None at this point.
-            manager = ServerManager(server_data)
+            manager = ServerManager(self._manager_source(server_data))
             manager.pga_user = self._current_pga_user()
             # Suppress passexec for non-owners of shared
             # servers — it runs commands on the client machine
