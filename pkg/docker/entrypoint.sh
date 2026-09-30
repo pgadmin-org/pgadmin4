@@ -24,7 +24,7 @@ if [[ ! $PGID =~ ^[0-9]+$ ]]; then
     echo "ERROR: PGID must be a numeric value, got '$PGID'"
     exit 1
 fi
-if (( PUID == 0 )); then
+if (( 10#$PUID == 0 )); then
     echo "ERROR: PUID=0 (root) is not allowed. Use a non-root UID."
     exit 1
 fi
@@ -240,29 +240,36 @@ if [[ ! -f /var/lib/pgadmin/pgadmin4.db && $external_config_db_exists == "False"
     fi
 
     # Validate PGADMIN_DEFAULT_EMAIL
-    CHECK_EMAIL_DELIVERABILITY="False"
-    if [[ -n $PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY ]]; then
-        CHECK_EMAIL_DELIVERABILITY=$PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY
-    fi
-    ALLOW_SPECIAL_EMAIL_DOMAINS="[]"
-    if [[ -n $PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS ]]; then
-        ALLOW_SPECIAL_EMAIL_DOMAINS=$PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS
-    fi
-    GLOBALLY_DELIVERABLE="True"
-    if [[ -n $PGADMIN_CONFIG_GLOBALLY_DELIVERABLE ]]; then
-        GLOBALLY_DELIVERABLE=$PGADMIN_CONFIG_GLOBALLY_DELIVERABLE
-    fi
-    email_config="{'CHECK_EMAIL_DELIVERABILITY': $CHECK_EMAIL_DELIVERABILITY, 'ALLOW_SPECIAL_EMAIL_DOMAINS': $ALLOW_SPECIAL_EMAIL_DOMAINS, 'GLOBALLY_DELIVERABLE': $GLOBALLY_DELIVERABLE}"
-    echo "email config is $email_config"
+    #
+    # The settings and the email address are read inside Python via
+    # os.environ rather than interpolated into the Python source. Boolean
+    # settings are normalised in the same way as config_distro.py above, so
+    # 'true' and 'false' in any case are accepted.
     is_valid_email=$(cd /pgadmin4/pgadmin/utils && $SU_EXEC /venv/bin/python3 -c "
-import ast, sys
+import ast, os, sys
 from validation_utils import validate_email
-try:
-    email_config = ast.literal_eval(sys.argv[1])
-except (ValueError, SyntaxError):
-    sys.exit(f'Failed to evaluate email validation config: {sys.argv[1]}')
-print(validate_email(sys.argv[2], email_config))
-" "$email_config" "$PGADMIN_DEFAULT_EMAIL") || exit 1
+
+
+def setting(name, default):
+    raw = os.environ.get('PGADMIN_CONFIG_' + name, '')
+    if not raw:
+        return default
+    if raw.lower() in ('true', 'false'):
+        return raw.lower() == 'true'
+    try:
+        return ast.literal_eval(raw)
+    except (ValueError, SyntaxError):
+        return raw
+
+
+email_config = {
+    'CHECK_EMAIL_DELIVERABILITY': setting('CHECK_EMAIL_DELIVERABILITY', False),
+    'ALLOW_SPECIAL_EMAIL_DOMAINS': setting('ALLOW_SPECIAL_EMAIL_DOMAINS', []),
+    'GLOBALLY_DELIVERABLE': setting('GLOBALLY_DELIVERABLE', True),
+}
+print(f'email config is {email_config}', file=sys.stderr)
+print(validate_email(os.environ['PGADMIN_DEFAULT_EMAIL'], email_config))
+") || exit 1
     if [[ $is_valid_email == *False* ]]; then
         echo "'$PGADMIN_DEFAULT_EMAIL' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
         echo "Validation output: $is_valid_email"
