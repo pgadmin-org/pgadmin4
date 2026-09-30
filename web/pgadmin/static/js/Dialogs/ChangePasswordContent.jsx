@@ -4,7 +4,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from '../SchemaView/base_schema.ui';
 import SchemaView from '../SchemaView';
 
-class ChangePasswordSchema extends BaseUISchema {
+export class ChangePasswordSchema extends BaseUISchema {
   constructor(user, isPgpassFileUsed, hasCsrfToken=false, showUser=true) {
     super({
       user: user,
@@ -64,11 +64,11 @@ class ChangePasswordSchema extends BaseUISchema {
 }
 
 export default function ChangePasswordContent({getInitData=() => { /*This is intentional (SonarQube)*/ },
-  onSave, onClose, hasCsrfToken=false, showUser=true, userName=''}) {
+  onSave, onClose, hasCsrfToken=false, showUser=true, userName='', isPgpassFileUsed=false}) {
   const schema=React.useRef(null);
   if (!schema.current)
     schema.current = new ChangePasswordSchema(
-      userName, false, hasCsrfToken, showUser
+      userName, isPgpassFileUsed, hasCsrfToken, showUser
     );
 
   return <SchemaView
@@ -78,7 +78,7 @@ export default function ChangePasswordContent({getInitData=() => { /*This is int
     viewHelperProps={{
       mode: 'create',
     }}
-    customSaveBtnName={'Change'}
+    customSaveBtnName={gettext('Change')}
     onSave={onSave}
     onClose={onClose}
     hasSQL={false}
@@ -93,5 +93,6 @@ ChangePasswordContent.propTypes = {
   getInitData: PropTypes.func,
   hasCsrfToken: PropTypes.bool,
   showUser: PropTypes.bool,
-  userName: PropTypes.string
+  userName: PropTypes.string,
+  isPgpassFileUsed: PropTypes.bool
 };
