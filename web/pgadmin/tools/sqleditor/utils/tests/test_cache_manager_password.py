@@ -61,6 +61,12 @@ class CacheManagerPasswordTest(BaseTestGenerator):
             crypt_key_present=False,
             expect_cached=False,
         )),
+        ('When the password fails validation it is not cached', dict(
+            form_data={'password': LONG_TOKEN},
+            crypt_key_present=True,
+            password_valid=False,
+            expect_cached=False,
+        )),
         ('When the request body is malformed JSON it is a silent no-op', dict(
             form_data={},
             request_data=b'{not-valid-json',
@@ -86,6 +92,8 @@ class CacheManagerPasswordTest(BaseTestGenerator):
 
         with patch.object(sqleditor, 'request', mock_request), \
             patch.object(sqleditor, 'current_app', MagicMock()), \
+            patch.object(sqleditor, '_password_is_valid',
+                         return_value=getattr(self, 'password_valid', True)), \
             patch.object(sqleditor, 'get_crypt_key',
                          return_value=(self.crypt_key_present, crypt_key)):
             sqleditor._cache_manager_password_from_request(manager)
