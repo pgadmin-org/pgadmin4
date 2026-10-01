@@ -14489,6 +14489,7 @@ __metadata:
     css-minimizer-webpack-plugin: "npm:^8.0.0"
     date-fns: "npm:^4.4.0"
     diff-arrays-of-objects: "npm:^1.1.11"
+    dnd-core: "npm:^16.0.1"
     dompurify: "npm:^3.4.14"
     eslint: "npm:^9.39.5"
     eslint-plugin-jest: "npm:^29.16.6"

@@ -22,8 +22,8 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
-import {HTML5Backend} from 'react-dnd-html5-backend';
 
+import { getDndManager } from 'sources/dnd_manager';
 import { usePgAdmin } from 'sources/PgAdminProvider';
 import {
   PgReactTable, PgReactTableBody, PgReactTableHeader,
@@ -45,12 +45,7 @@ import { DataGridRow } from './row';
 import { FeatureSet } from './features';
 import { createGridColumns, GRID_STATE } from './utils';
 
-// NOTE: Passing the 'context' explicitly opts out of react-dnd's global
-// reference counting, which nulls the shared manager when any DndProvider
-// unmounts, even though the HTML5 backend is still attached to 'window' and
-// used by a grid in another React root (dialogs are mounted in separate
-// roots). A fresh backend then fails with "Cannot have two HTML5 backends at
-// the same time." (react-dnd/react-dnd#3178)
+
 export default function DataGridView({
   field, viewHelperProps, accessPath, dataDispatch, containerClassName
 }) {
@@ -152,7 +147,7 @@ export default function DataGridView({
       <StyleDataGridBox className={classList.join(' ')}>
         <Box className='DataGridView-grid'>
           <GridHeader tableEleRef={tableEleRef} rows={rows} />
-          <DndProvider backend={HTML5Backend} context={window}>
+          <DndProvider manager={getDndManager()}>
             <PgReactTable
               ref={tableEleRef} table={table} data-test="data-grid-view"
               tableClassName='DataGridView-table'>
