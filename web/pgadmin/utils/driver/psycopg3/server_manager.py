@@ -20,7 +20,7 @@ from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils import get_complete_file_path
-from pgadmin.utils.crypto import decrypt
+from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
 from pgadmin.utils.master_password import process_masterpass_disabled
 from .connection import Connection
 from pgadmin.model import Server, User
@@ -67,6 +67,7 @@ class ServerManager(object):
         self.server_cls = None
         self.password = None
         self.tunnel_password = None
+        self.saved_tunnel_password_discarded = False
 
         self.sid = server.id
         self.host = server.host
@@ -545,7 +546,17 @@ WHERE db.oid = {0}""".format(did))
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
                 return False, crypt_key
-            password = decrypt(self.password, crypt_key).decode()
+            try:
+                password = decrypt(self.password, crypt_key).decode()
+            except DECRYPT_ERRORS as e:
+                # Skip the password, the utility will prompt/fail on its own.
+                current_app.logger.warning(
+                    'Ignoring the saved password of the server (#{0}) as it '
+                    'could not be decrypted. Error: {1}'.format(
+                        self.sid, str(e)),
+                    exc_info=True
+                )
+                return
             os.environ[str(env)] = password
         elif self.passexec:
             password = self.passexec.get()
@@ -573,10 +584,19 @@ WHERE db.oid = {0}""".format(did))
                 # password is in bytes, for python3 we need it in string
                 if isinstance(tunnel_password, bytes):
                     tunnel_password = tunnel_password.decode()
-            except Exception as e:
-                current_app.logger.exception(e)
-                return False, gettext("Failed to decrypt the SSH tunnel "
-                                      "password.\nError: {0}").format(str(e))
+            except DECRYPT_ERRORS as e:
+                # Same treatment as the server password: discard the
+                # undecryptable password and carry on, so that the user is
+                # prompted for it again when the tunnel fails to authenticate.
+                current_app.logger.warning(
+                    'Ignoring the saved SSH tunnel password of the server '
+                    '(#{0}) as it could not be decrypted. Error: {1}'.format(
+                        self.sid, str(e)),
+                    exc_info=True
+                )
+                self.tunnel_password = None
+                self.saved_tunnel_password_discarded = True
+                tunnel_password = None
 
         try:
             # If authentication method is 1 then it uses identity file
