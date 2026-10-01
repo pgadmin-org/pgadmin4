@@ -38,6 +38,11 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
             auth_source=[KERBEROS],
             auto_create_user=True,
             flag=3
+        )),
+        ('Spnego/Kerberos Authentication: Test Negotiate Failure', dict(
+            auth_source=[KERBEROS],
+            auto_create_user=True,
+            flag=4
         ))
     ]
 
@@ -68,7 +73,7 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         # path that redirects to /kerberos/login would 500 with
         # BuildError. Skip when that endpoint isn't reachable.
         endpoint_map = self.app.url_map._rules_by_endpoint
-        if 'authenticate.kerberos_login' not in endpoint_map:
+        if 'kerberos.login' not in endpoint_map:
             self.skipTest(
                 "Kerberos blueprint not loaded — set "
                 "AUTHENTICATION_SOURCES=['kerberos'] in config_local.py at "
@@ -97,6 +102,12 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
                     "Can not run Kerberos Authentication in the Desktop mode."
                 )
             self.test_update_ticket()
+        elif self.flag == 4:
+            if app_config.SERVER_MODE is False:
+                self.skipTest(
+                    "Can not run Kerberos Authentication in the Desktop mode."
+                )
+            self.test_negotiate_failure_exception()
 
     def test_unauthorized(self):
         """
@@ -154,6 +165,29 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
                                    headers=krb_token)
         self.assertEqual(response.status_code, 200)
         self.tester.logout()
+
+    def test_negotiate_failure_exception(self):
+        """
+        Ensure that when negotiate_start returns an Exception (e.g.
+        MissingCredentialsError), the server returns the HTML login page with
+        the error instead of crashing with a 500 JSON serialisation error.
+        """
+        class MissingCredentialsError(Exception):
+            pass
+
+        with patch.object(
+            AuthSourceRegistry._registry[KERBEROS], 'negotiate_start',
+            return_value=[False, MissingCredentialsError(
+                "No Kerberos credentials available")]
+        ):
+            res = self.tester.login(
+                None, None, True,
+                headers={'Authorization': 'Negotiate CTOKEN'})
+            self.assertEqual(res.status_code, 200)
+            self.assertIn('text/html', res.content_type)
+            self.assertIn('Kerberos authentication failed.',
+                          res.data.decode('utf-8'))
+            self.tester.logout()
 
     def tearDown(self):
         pass

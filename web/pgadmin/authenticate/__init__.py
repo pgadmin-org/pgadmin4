@@ -209,7 +209,7 @@ def _login():
             if current_auth_obj['current_source'] == \
                     KERBEROS:
                 return redirect('{0}?next={1}'.format(url_for(
-                    'authenticate.kerberos_login'), url_for('browser.index')))
+                    'kerberos.login'), url_for('browser.index')))
 
             flash(msg, MessageType.ERROR)
             return redirect(pga_utils.get_safe_post_logout_redirect())
