@@ -31,8 +31,13 @@ class TestEncoding(BaseTestGenerator):
     scenarios = [
         ('UTF8 maps to the utf-8 python codec',
          dict(key='UTF8', expected=['utf-8', 'utf-8'])),
+        # psycopg >= 3.3.5 carries an ISO88591 alias in its encoding
+        # table, so inverting py_codecs resolves iso8859-1 to that name;
+        # <= 3.3.4 only has LATIN1. Both are valid PostgreSQL names for
+        # the same encoding, so accept either.
         ('LATIN1 maps to the iso8859-1 python codec',
-         dict(key='LATIN1', expected=['ISO88591', 'iso8859-1'])),
+         dict(key='LATIN1', expected=['ISO88591', 'iso8859-1'],
+              also_valid=['LATIN1', 'iso8859-1'])),
         ('SQL_ASCII falls back to the pgAdmin-only override',
          dict(key='SQL_ASCII', expected=['utf-8', 'utf-8'])),
         ('EUC_TW falls back to the pgAdmin-only override',
@@ -43,6 +48,9 @@ class TestEncoding(BaseTestGenerator):
          dict(key='ascii', expected=['SQLASCII', 'raw-unicode-escape'])),
     ]
 
+    # Only set by scenarios where more than one result is correct.
+    also_valid = None
+
     def setUp(self):
         # No DB connection needed for this test.
         pass
@@ -52,7 +60,12 @@ class TestEncoding(BaseTestGenerator):
         configure_driver_encodings(encodings)
 
         with self.app.app_context():
-            self.assertEqual(get_encoding(self.key), self.expected)
+            result = get_encoding(self.key)
+
+        if self.also_valid is None:
+            self.assertEqual(result, self.expected)
+        else:
+            self.assertIn(result, [self.expected, self.also_valid])
 
         # py_codecs/pg_codecs must stay plain dicts and stay in sync,
         # regardless of how psycopg represents its internal encoding

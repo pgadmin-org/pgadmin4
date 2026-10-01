@@ -43,7 +43,7 @@
     "eslint-plugin-unused-imports": "^4.4.1",
     "exports-loader": "^5.0.0",
     "globals": "^17.12.0",
-    "html-react-parser": "^5.2.17",
+    "html-react-parser": "^6.1.7",
     "image-minimizer-webpack-plugin": "^5.0.0",
     "imports-loader": "^5.0.0",
     "jest": "^30.5.1",
@@ -79,7 +79,7 @@
     "@date-io/date-fns": "^3.2.1",
     "@emotion/sheet": "^1.4.0",
     "@fluentui/keyboard-key": "^0.4.23",
-    "@fortawesome/fontawesome-free": "latest",
+    "@fortawesome/fontawesome-free": "7.3.1",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
     "@mui/x-date-pickers": "^8.29.3",
@@ -101,7 +101,7 @@
     "aspen-decorations": "^1.1.1",
     "axios": "^1.20.0",
     "babelify": "~10.0.0",
-    "bignumber.js": "^10.0.2",
+    "bignumber.js": "^11.1.5",
     "brace": "^0.11.1",
     "chart.js": "^4.5.1",
     "chartjs-plugin-zoom": "^2.2.0",
@@ -114,13 +114,13 @@
     "html-to-image": "1.11.13",
     "immutability-helper": "^3.1.1",
     "insert-if": "^1.2.0",
-    "ip-address": "^10.7.0",
+    "ip-address": "^10.7.1",
     "json-bignumber": "^1.1.1",
     "leaflet": "^1.9.4",
     "lodash": "4.*",
     "lossless-json": "^4.3.1",
     "marked": "^18.0.11",
-    "moment": "^2.30.1",
+    "moment": "^2.31.0",
     "moment-timezone": "^0.6.3",
     "notificar": "^1.0.1",
     "notistack": "^3.0.2",
@@ -158,14 +158,22 @@
     "wkx": "^0.5.0",
     "zustand": "^5.0.15"
   },
+  "dependenciesMeta": {
+    "ttf2woff2": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "resolutions": {
     "rc-resize-observer": "1.4.0",
-    "@xmldom/xmldom": "^0.8.13",
+    "@xmldom/xmldom": "^0.8.15",
     "serialize-javascript": "^7.0.5",
     "ip-address": "^10.3.1",
     "postcss": "^8.5.23",
     "ws": "^8.20.1",
-    "qs": "^6.15.2",
+    "qs": "^6.16.0",
     "@tootallnate/once": "^2.0.1",
     "tar@npm:^7.5.4": "^7.5.21",
     "ttf2woff2/node-gyp": "^11.2.0",

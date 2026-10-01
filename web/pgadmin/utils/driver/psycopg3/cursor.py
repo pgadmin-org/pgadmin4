@@ -418,5 +418,21 @@ class AsyncDictServerCursor(AsyncDictCursor, _async_server_cursor):
         _async_server_cursor.__init__(self, name=name, *args, **kwargs)
         self.cursor = _async_server_cursor
 
+    async def _execute(self, query, params=None, *,
+                       prepare=None, binary=None):
+        """
+        Execute function
+
+        Unlike ``AsyncDictCursor``, this does not forward ``prepare`` to
+        the underlying cursor: ``psycopg``'s ``AsyncServerCursor.execute``
+        never accepts it (a server-side ``DECLARE CURSOR`` can't be a
+        prepared statement) and raises ``TypeError`` on any unexpected
+        keyword, even one whose value is ``None``.
+        """
+        if params is not None and len(params) == 0:
+            params = None
+
+        return await self.cursor.execute(self, query, params, binary=binary)
+
     def get_rowcount(self):
         return 1

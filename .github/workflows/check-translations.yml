@@ -3,8 +3,16 @@ name: Check translations
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'Makefile'
+      - '.github/workflows/check-translations.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**'
+      - 'Makefile'
+      - '.github/workflows/check-translations.yml'
 
   workflow_dispatch:
 
@@ -17,7 +25,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install platform dependencies
         run: |

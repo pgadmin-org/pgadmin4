@@ -3,8 +3,24 @@ name: Check Javascript style
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+      - 'web/package.json'
+      - 'web/yarn.lock'
+      - 'web/.eslintrc.js'
+      - 'web/.yarnrc.yml'
+      - '.github/workflows/check-javascript-style.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+      - 'web/package.json'
+      - 'web/yarn.lock'
+      - 'web/.eslintrc.js'
+      - 'web/.yarnrc.yml'
+      - '.github/workflows/check-javascript-style.yml'
 
   workflow_dispatch:
 
@@ -17,7 +33,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Corepack reads packageManager from web/package.json and provisions
       # exactly that Yarn: a single pinned download, with nothing written
@@ -28,7 +44,7 @@ jobs:
       - name: Install Node modules
         run: |
           cd web
-          yarn install
+          yarn install --immutable
 
       - name: Run the linter
         run: |

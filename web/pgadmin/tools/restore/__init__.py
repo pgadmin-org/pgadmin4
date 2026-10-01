@@ -311,7 +311,18 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
         args.append('--no-password')
 
         set_value('role', '--role', data, args)
-        set_value('database', '--dbname', data, args)
+        # Pass an EMPTY --dbname so pg_restore still restores directly into a
+        # database (it requires -d/--dbname), while the real target name is
+        # supplied via the PGDATABASE environment variable in
+        # create_restore_job. libpq treats PGDATABASE as a literal name and
+        # never expands it, whereas a user-controlled --dbname value
+        # containing "=" would be expanded into a connection string,
+        # redirecting the connection (and the exported PGPASSWORD credential)
+        # to an arbitrary server.
+        # Use the attached form "--dbname=" (a single argv token) rather than
+        # ['--dbname', ''] so the process-details command renders correctly
+        # (an empty standalone token is dropped from the displayed command).
+        args.append('--dbname=')
 
         if data['format'] == 'directory':
             args.extend(['--format=d'])
@@ -388,8 +399,10 @@ def get_sql_util_args(data, manager, server, filepath):
         else server.host
     port = manager.local_bind_port if manager.use_ssh_tunnel \
         else server.port
+    # The target database is provided via the PGDATABASE environment variable
+    # (set in create_restore_job), never as a --dbname argument -- a value
+    # containing "=" would be expanded by libpq into a connection string.
     args = [
-        '--dbname', data['database'],
         '-c', f'\\restrict {restrict_key}',
         '--file', fs_short_path(filepath)
     ]
@@ -444,7 +457,16 @@ def create_restore_job(sid):
     if is_error:
         return errmsg
 
-    is_error, errmsg, driver, manager, conn, _, server = _connect_server(sid)
+    # A target database is mandatory. Reject an empty/missing value up front:
+    # otherwise PGDATABASE is left unset and libpq falls back down its chain to
+    # a database named after the login role, silently restoring into the wrong
+    # database instead of failing safely.
+    if not data.get('database'):
+        return bad_request(
+            errormsg=_("Database parameter is required."))
+
+    is_error, errmsg, driver, manager, conn, connected, server = \
+        _connect_server(sid)
     if is_error:
         return errmsg
 
@@ -462,6 +484,12 @@ def create_restore_job(sid):
         )
 
     try:
+        # Pass the target database via PGDATABASE (libpq treats it as a
+        # literal database name and never expands it into a connection
+        # string), rather than as a user-controlled --dbname argument.
+        env = {}
+        if data.get('database'):
+            env['PGDATABASE'] = data['database']
         p = BatchProcess(
             desc=RestoreMessage(
                 server.id,
@@ -473,7 +501,7 @@ def create_restore_job(sid):
             ),
             cmd=utility, args=args, manager_obj=manager
         )
-        p.set_env_variables(server)
+        p.set_env_variables(server, env=env)
         p.start()
         jid = p.id
     except Exception as e:

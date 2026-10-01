@@ -408,6 +408,88 @@ class RestoreCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When restore (plain/psql) passes the database via PGDATABASE and '
+         'never via --dbname (connection-string injection guard)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='plain',
+                 database='host=127.0.0.1 port=9999 dbname=postgres'
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd='psql',
+             expected_cmd_opts=[],
+             # the --dbname flag must be gone entirely...
+             not_expected_cmd_opts=['--dbname'],
+             # ...and the value must not appear even inside a single token
+             forbidden_arg_substr=[
+                 'host=127.0.0.1 port=9999 dbname=postgres'],
+             expected_env={
+                 'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
+             expected_exit_code=[0, None]
+         )),
+        ('When restore (custom/pg_restore) keeps the user database value out '
+         'of argv and passes it via PGDATABASE',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 database='host=127.0.0.1 port=9999 dbname=postgres'
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
+             # pg_restore MUST keep the (empty) --dbname flag, otherwise it
+             # errors with "one of -d/--dbname and -f/--file must be specified"
+             expected_cmd_opts=['--dbname='],
+             not_expected_cmd_opts=[],
+             # the user value must not appear even inside a single argv token
+             forbidden_arg_substr=[
+                 'host=127.0.0.1 port=9999 dbname=postgres'],
+             expected_env={
+                 'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
+             expected_exit_code=[0, None]
+         )),
+        ('When restore rejects an empty database value up front '
+         '(prevents libpq falling back to a role-named database)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 database=''
+             ),
+             url=RESTORE_JOB_URL,
+             # An empty database must be rejected before the job is built:
+             # with no PGDATABASE and an empty --dbname, libpq would silently
+             # connect to a database named after the login role.
+             expected_status_code=400,
+         )),
     ]
 
     def setUp(self):
@@ -488,7 +570,15 @@ class RestoreCreateJobTest(BaseTestGenerator):
         response = self.tester.post(url,
                                     data=json.dumps(self.params),
                                     content_type='html/json')
-        self.assertEqual(response.status_code, 200)
+
+        expected_status_code = getattr(self, 'expected_status_code', 200)
+        self.assertEqual(response.status_code, expected_status_code)
+
+        # A non-200 means the request was rejected up front, so the job must
+        # never have been built and BatchProcess must not have run.
+        if expected_status_code != 200:
+            self.assertFalse(batch_process_mock.called)
+            return
 
         self.assertTrue(restore_message_mock.called)
         self.assertTrue(batch_process_mock.called)
@@ -510,3 +600,20 @@ class RestoreCreateJobTest(BaseTestGenerator):
                     opt,
                     batch_process_mock.call_args_list[0][1]['args']
                 )
+        # Injection guard: the value must not appear even embedded inside a
+        # single argv token (e.g. "--dbname=host=..."), which plain
+        # assertNotIn membership would miss. Scan every arg for the substring.
+        if getattr(self, 'forbidden_arg_substr', None):
+            _args = batch_process_mock.call_args_list[0][1]['args']
+            for _sub in self.forbidden_arg_substr:
+                for _a in _args:
+                    self.assertNotIn(_sub, str(_a))
+        # The target database must be carried in PGDATABASE (a literal name
+        # libpq never expands), not in argv where a value containing "="
+        # would be turned into a connection string.
+        if getattr(self, 'expected_env', None):
+            _call = \
+                batch_process_mock.return_value.set_env_variables.call_args
+            _env = (_call.kwargs.get('env') or {}) if _call else {}
+            for _key, _val in self.expected_env.items():
+                self.assertEqual(_env.get(_key), _val)

@@ -1,8 +1,8 @@
 .. _change_user_password:
 
-************************************
-`Change User Password Dialog`:index:
-************************************
+***************************************
+`Change pgAdmin Password Dialog`:index:
+***************************************
 
 It is a good policy to routinely change your password to protect data, even in
 what you may consider a 'safe' environment. In the workplace, failure to apply
@@ -30,11 +30,12 @@ comprehensive list and they **will not guarantee security**.
     :alt: Change current user password dialog
     :align: center
 
-Use the *Change Password* dialog to change your password:
+Use the *Change pgAdmin Password* dialog to change the password you use to log
+in to pgAdmin itself, rather than the password of a database server connection:
 
 * Enter your existing password in the *Current Password* field.
 * Enter the desired password for in the *New Password* field.
 * Re-enter the new password in the *Confirm Password* field.
 
-Click the *Change Password* button to change your password; click *Close* to
-exit the dialog.
+Click the *Change* button to change your password; click *Close* to exit the
+dialog.

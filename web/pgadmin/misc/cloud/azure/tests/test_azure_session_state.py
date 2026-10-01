@@ -206,3 +206,101 @@ class TestUnsafeDeserializerEliminatedFromAzureModule(
             "cloud.azure must not import the unsafe deserializer")
         self.assertNotIn(forbidden + '.dumps(', src)
         self.assertNotIn(forbidden + '.loads(', src)
+
+
+class TestAzureImportErrorHandling(
+        _SkipServerSetUpMixin, BaseTestGenerator):
+    """Azure methods must handle ImportError cleanly without raising."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from flask import Flask, current_app
+        from unittest.mock import patch
+        from pgadmin.misc.cloud.azure import Azure
+        import pgadmin.misc.cloud.azure as azure_mod
+
+        app = Flask(__name__)
+        app.secret_key = 'test'
+        a = Azure.from_state({'tenant_id': 'tid'})
+        with app.app_context(), patch.object(
+                azure_mod, '_azure_sdk',
+                side_effect=ImportError('No module named azure.mgmt')):
+            client, err = a._get_azure_client('postgresql')
+            self.assertIsNone(client)
+            self.assertIn('azure.mgmt', err)
+
+            avail, msg = a.check_cluster_name_availability('server')
+            self.assertFalse(avail)
+            self.assertIn('azure.mgmt', msg)
+
+            # Capabilities come back empty, so the zone-redundancy probe
+            # must answer False rather than indexing an empty list.
+            with patch.object(current_app.logger, 'error'):
+                ha = a.is_zone_redundant_ha_supported('eastus')
+                self.assertFalse(ha)
+
+            # The lookup methods hand the route an empty list and log the
+            # reason, rather than letting the ImportError reach the view.
+            with patch.object(current_app.logger, 'error') as mock_log:
+                self.assertEqual(a.list_subscriptions(), [])
+                mock_log.assert_called()
+                self.assertIn('azure.mgmt', str(mock_log.call_args[0][0]))
+
+            with patch.object(current_app.logger, 'error') as mock_log:
+                self.assertEqual(a.list_resource_groups('sub-1'), [])
+                mock_log.assert_called()
+                self.assertIn('azure.mgmt', str(mock_log.call_args[0][0]))
+
+            with patch.object(current_app.logger, 'error') as mock_log:
+                self.assertEqual(a.list_regions('sub-1'), [])
+                mock_log.assert_called()
+                self.assertIn('azure.mgmt', str(mock_log.call_args[0][0]))
+
+
+class TestAzureCredentialFailureHandling(
+        _SkipServerSetUpMixin, BaseTestGenerator):
+    """Azure methods must propagate or log credential errors cleanly."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from flask import Flask, current_app
+        from unittest.mock import patch
+        from pgadmin.misc.cloud.azure import Azure
+
+        a = Azure.from_state({'tenant_id': 'tid'})
+        cred_error = 'Azure authentication failed: az login expired'
+        with patch.object(
+                a, '_get_azure_credentials',
+                return_value=(False, cred_error)):
+            client, err = a._get_azure_client('postgresql')
+            self.assertIsNone(client)
+            self.assertEqual(err, cred_error)
+
+            avail, msg = a.check_cluster_name_availability('server')
+            self.assertFalse(avail)
+            self.assertEqual(msg, cred_error)
+
+            app = Flask(__name__)
+            app.secret_key = 'test'
+            with app.app_context():
+                with patch.object(current_app.logger, 'error') as mock_log:
+                    subs = a.list_subscriptions()
+                    self.assertEqual(subs, [])
+                    mock_log.assert_called_with(cred_error)
+
+                with patch.object(current_app.logger, 'error') as mock_log:
+                    rgs = a.list_resource_groups('sub-1')
+                    self.assertEqual(rgs, [])
+                    mock_log.assert_called_with(cred_error)
+
+                with patch.object(current_app.logger, 'error') as mock_log:
+                    regs = a.list_regions('sub-1')
+                    self.assertEqual(regs, [])
+                    mock_log.assert_called_with(cred_error)
+
+                with patch.object(current_app.logger, 'error') as mock_log:
+                    caps = a._get_available_capabilities_object('eastus')
+                    self.assertEqual(caps, [])
+                    mock_log.assert_called_with(cred_error)

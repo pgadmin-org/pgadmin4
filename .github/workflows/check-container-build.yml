@@ -1,28 +1,175 @@
 name: Check container build
 
 on:
+  # Callable, so that a workflow which needs a container build gets this one
+  # rather than a second definition of it that can drift. Snapshot does not
+  # call it today, the image not being part of the download tree.
+  workflow_call:
+    inputs:
+      publish:
+        description: >-
+          Build for both architectures and push to the registry, tagged
+          with the location below. A build check does neither: it proves
+          the Dockerfile still works and throws the image away.
+        type: boolean
+        required: false
+        default: false
+      location:
+        description: The tag to push, normally the build's date
+        type: string
+        required: false
+        default: ''
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+
   push:
     branches: [ "master" ]
+    paths:
+      - 'Dockerfile'
+      - 'pkg/docker/**'
+      - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
+      - 'requirements.txt'
+      - 'docs/**'
+      - '.dockerignore'
+      - 'LICENSE'
+      - '.github/workflows/check-container-build.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'Dockerfile'
+      - 'pkg/docker/**'
+      - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
+      - 'requirements.txt'
+      - 'docs/**'
+      - '.dockerignore'
+      - 'LICENSE'
+      - '.github/workflows/check-container-build.yml'
 
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Build for both architectures and push to the registries
+        type: boolean
+        required: false
+        default: false
+      location:
+        description: The tag to push, normally the build's date
+        type: string
+        required: false
+        default: ''
 
 concurrency:
-  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  # The workflow's own name, spelled out rather than taken from
+  # github.workflow, because in a reusable workflow that expression is
+  # the CALLER's name. Every workflow Snapshot calls would otherwise
+  # share one group and, with cancel-in-progress, cancel each other.
+  # github.event_name is in the key because a called workflow inherits the
+  # caller's ref: once this is on master, the nightly Snapshot's deb build
+  # and an ordinary push's deb build would otherwise share a group and,
+  # with cancel-in-progress, kill each other. A push landing mid-nightly
+  # would cancel the snapshot's build and skip the publish entirely.
+  group: 'check-container-build @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }} @ ${{ github.event_name }}'
   cancel-in-progress: true
 
+# Read-only by default, as everywhere else here. The publish job below names
+# the wider set it genuinely needs, and a job-level block replaces this one
+# rather than adding to it, so its packages: write is unaffected.
+permissions:
+  contents: read
+
 jobs:
+  # The check. No environment, and so no access to the registry credentials:
+  # this runs on every pull request, and a build check has no business being
+  # able to push anything.
   build-container:
+    if: ${{ !inputs.publish }}
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
-      - name: Build the container
-        uses: docker/build-push-action@v6
+      - name: Check the container builds
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc  # v7.4.0
         with:
           push: false
           context: .
+
+  # The publish. Declared on the publishing environment, which is where the
+  # Docker Hub credentials live: an environment secret is not available to a
+  # job that does not name the environment, which is what secrets: inherit
+  # alone does not solve.
+  publish-container:
+    if: inputs.publish
+    runs-on: ubuntu-22.04
+    environment: publishing
+
+    permissions:
+      contents: read
+      # For GHCR, which takes the workflow's own token rather than a stored
+      # registry credential.
+      packages: write
+
+    steps:
+      # Before anything is logged in to, because this value becomes a tag in
+      # a job holding the Docker Hub credentials, and the tags input is
+      # newline separated: an unchecked value could name a second tag, and a
+      # tag can name another repository. The shape is the one the wrapper
+      # requires of a build location.
+      - name: Check the location
+        env:
+          LOCATION: ${{ inputs.location }}
+        run: |
+          set -euo pipefail
+          printf '%s' "${LOCATION}" \
+              | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}(-([1-9][0-9]?|[A-Za-z][A-Za-z0-9]*))?$' || {
+              echo "Not a build location: ${LOCATION}" >&2; exit 1; }
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      # Emulation is slow, so only the publishing path pays for it.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130  # v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f  # v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9  # v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9  # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tagged with the build's location rather than a version. Promotion
+      # re-tags this exact image, so what ships is the manifest that was
+      # tested rather than a rebuild of the same source.
+      - name: Build and push the container
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc  # v7.4.0
+        with:
+          push: true
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            dpage/pgadmin4:${{ inputs.location }}
+            ghcr.io/pgadmin-org/pgadmin4:${{ inputs.location }}

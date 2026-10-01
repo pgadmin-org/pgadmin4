@@ -796,6 +796,59 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              url=MAINTENANCE_URL,
              expected_cmd_opts=['CLUSTER VERBOSE my_schema.my_table '
                                 'USING my_index;\n'],
+         )),
+        ('When maintaining an object the database is passed via PGDATABASE '
+         'and never as --dbname (connection-string injection guard)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='host=127.0.0.1 port=9999 dbname=postgres',
+                 op='VACUUM',
+                 vacuum_analyze=False,
+                 vacuum_freeze=False,
+                 vacuum_full=False,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE);\n'],
+             # the --dbname flag must be gone entirely...
+             not_expected_cmd_opts=['--dbname'],
+             # ...and the value must not appear even inside a single argv
+             # token (e.g. "--dbname=host=...")
+             forbidden_arg_substr=[
+                 'host=127.0.0.1 port=9999 dbname=postgres'],
+             expected_env={
+                 'PGDATABASE': 'host=127.0.0.1 port=9999 dbname=postgres'},
+         )),
+        ('When maintenance rejects an empty database value up front '
+         '(prevents libpq falling back to a role-named database)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='',
+                 op='VACUUM',
+                 vacuum_analyze=False,
+                 vacuum_freeze=False,
+                 vacuum_full=False,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             # An empty database must be rejected before the job is built:
+             # with no PGDATABASE, libpq would silently connect to a database
+             # named after the login role.
+             expected_status_code=400,
          ))
     ]
 
@@ -872,7 +925,15 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
         response = self.tester.post(url,
                                     data=json.dumps(self.params),
                                     content_type='html/json')
-        self.assertEqual(response.status_code, 200)
+
+        expected_status_code = getattr(self, 'expected_status_code', 200)
+        self.assertEqual(response.status_code, expected_status_code)
+
+        # A non-200 means the request was rejected up front, so the job must
+        # never have been built and BatchProcess must not have run.
+        if expected_status_code != 200:
+            self.assertFalse(batch_process_mock.called)
+            return
 
         self.assertTrue(message_mock.called)
         self.assertTrue(batch_process_mock.called)
@@ -881,3 +942,24 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
             for opt in self.expected_cmd_opts:
                 self.assertIn(opt,
                               batch_process_mock.call_args_list[0][1]['args'])
+        if getattr(self, 'not_expected_cmd_opts', None):
+            for opt in self.not_expected_cmd_opts:
+                self.assertNotIn(
+                    opt, batch_process_mock.call_args_list[0][1]['args'])
+        # Injection guard: the value must not appear even embedded inside a
+        # single argv token (e.g. "--dbname=host=..."), which plain
+        # assertNotIn membership would miss. Scan every arg for the substring.
+        if getattr(self, 'forbidden_arg_substr', None):
+            _args = batch_process_mock.call_args_list[0][1]['args']
+            for _sub in self.forbidden_arg_substr:
+                for _a in _args:
+                    self.assertNotIn(_sub, str(_a))
+        # The target database must be carried in PGDATABASE (a literal name
+        # libpq never expands), not in argv where a value containing "="
+        # would be turned into a connection string.
+        if getattr(self, 'expected_env', None):
+            _call = \
+                batch_process_mock.return_value.set_env_variables.call_args
+            _env = (_call.kwargs.get('env') or {}) if _call else {}
+            for _key, _val in self.expected_env.items():
+                self.assertEqual(_env.get(_key), _val)

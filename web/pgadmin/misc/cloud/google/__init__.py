@@ -38,11 +38,6 @@ from oauthlib.oauth2 import AccessDeniedError
 # fall back to google-auth cleanly. See issue #10110.
 sys.modules.setdefault('oauth2client', None)
 
-from googleapiclient import discovery
-from googleapiclient.errors import HttpError
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-
 MODULE_NAME = 'google'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Required for Oauth2
 
@@ -264,12 +259,11 @@ def get_instance_types(project_id, region, instance_class):
     """
     google_obj = _get_google_from_session()
     if google_obj is not None and project_id and region:
-        instance_types_dict = google_obj.get_instance_types(
+        instance_types_dict, error = google_obj.get_instance_types(
             project_id, region)
-        instance_types_list, error = (
-            instance_types_dict.get(instance_class, []))
         if error:
             return bad_request(errormsg=sanitize_external_text(error))
+        instance_types_list = instance_types_dict.get(instance_class, [])
         return make_json_response(data=instance_types_list)
     else:
         return make_json_response(data=[])
@@ -374,6 +368,20 @@ def clear_google_session():
         session.pop('google')
 
 
+def _google_sdk():
+    """Defer heavy Google API client imports until required by user actions.
+    Repeat calls are cheap via sys.modules caching.
+
+    Note: The oauth2client sentinel installed at module import (line 39)
+    must precede this googleapiclient import. See issue #10110.
+    """
+    from types import SimpleNamespace
+    from googleapiclient import discovery
+    from googleapiclient.errors import HttpError
+
+    return SimpleNamespace(discovery=discovery, HttpError=HttpError)
+
+
 class Google:
     def __init__(self, client_config=None):
         # Google cloud sql api versions
@@ -468,6 +476,8 @@ class Google:
         self._verification_error = None
         try:
             self._redirect_url = host_url + 'google/callback'
+            # Defer InstalledAppFlow (heavy import, user action only, cached)
+            from google_auth_oauthlib.flow import InstalledAppFlow
             flow = InstalledAppFlow.from_client_config(
                 client_config=self._client_config, scopes=self._scopes,
                 redirect_uri=self._redirect_url)
@@ -491,6 +501,8 @@ class Google:
             if session['state'] != flask_request.args.get('state', None):
                 self._verification_successful = False,
                 self._verification_error = 'Invalid state parameter'
+            # Defer InstalledAppFlow (heavy import, user action only, cached)
+            from google_auth_oauthlib.flow import InstalledAppFlow
             flow = InstalledAppFlow.from_client_config(
                 client_config=self._client_config, scopes=self._scopes,
                 redirect_uri=self._redirect_url)
@@ -506,6 +518,10 @@ class Google:
             self._verification_error = er.error
             if self._verification_error == 'access_denied':
                 self._verification_error = 'Access denied.'
+            return self._verification_error
+        except ImportError as er:
+            self._verification_successful = False
+            self._verification_error = str(er)
             return self._verification_error
 
     @staticmethod
@@ -532,6 +548,8 @@ class Google:
             if self._credentials and self._credentials.expired and \
                     self._credentials.refresh_token and \
                     self._credentials.has_scopes(scopes):
+                # Defer Request (heavy import, user action only, cached)
+                from google.auth.transport.requests import Request
                 self._credentials.refresh(Request())
                 return self._credentials
         return self._credentials
@@ -543,17 +561,22 @@ class Google:
         """
         projects = []
         error = None
-        credentials = self._get_credentials(self._scopes)
-        service = discovery.build('cloudresourcemanager',
-                                  self._cloud_resource_manager_api_version,
-                                  credentials=credentials)
         try:
+            sdk = _google_sdk()
+        except ImportError as e:
+            return projects, str(e)
+        try:
+            credentials = self._get_credentials(self._scopes)
+            service = sdk.discovery.build(
+                'cloudresourcemanager',
+                self._cloud_resource_manager_api_version,
+                credentials=credentials)
             req = service.projects().list()
             res = req.execute()
             for project in res.get('projects', []):
                 projects.append({'label': project['projectId'],
                                  'value': project['projectId']})
-        except HttpError as e:
+        except sdk.HttpError as e:
             error = e.reason
         except Exception as e:
             error = str(e)
@@ -566,12 +589,16 @@ class Google:
         :return:
         """
         self._project_id = project
-        credentials = self._get_credentials(self._scopes)
-        service = discovery.build('compute',
-                                  self._compute_api_version,
-                                  credentials=credentials)
+        try:
+            sdk = _google_sdk()
+        except ImportError as e:
+            return self._regions, str(e)
         error = None
         try:
+            credentials = self._get_credentials(self._scopes)
+            service = sdk.discovery.build('compute',
+                                          self._compute_api_version,
+                                          credentials=credentials)
             req = service.regions().list(project=project)
             res = req.execute()
             for item in res.get('items', []):
@@ -582,7 +609,7 @@ class Google:
                 region_zones = list(
                     map(lambda region: region.split('/')[-1], region_zones))
                 self._availability_zones[region_name] = region_zones
-        except HttpError as e:
+        except sdk.HttpError as e:
             error = e.reason
         except Exception as e:
             error = str(e)
@@ -611,11 +638,15 @@ class Google:
         high_mem = []
         instance_types = {}
         error = None
-        credentials = self._get_credentials(self._scopes)
-        service = discovery.build('sqladmin',
-                                  self._sqladmin_api_version,
-                                  credentials=credentials)
         try:
+            sdk = _google_sdk()
+        except ImportError as e:
+            return instance_types, str(e)
+        try:
+            credentials = self._get_credentials(self._scopes)
+            service = sdk.discovery.build('sqladmin',
+                                          self._sqladmin_api_version,
+                                          credentials=credentials)
             req = service.tiers().list(project=project)
             res = req.execute()
             for item in res.get('items', []):
@@ -645,7 +676,7 @@ class Google:
             instance_types = {'standard': standard_instances,
                               'highmem': high_mem,
                               'shared': shared_instances}
-        except HttpError as e:
+        except sdk.HttpError as e:
             error = e.reason
         except Exception as e:
             error = str(e)
@@ -659,11 +690,15 @@ class Google:
         pg_database_versions = []
         database_versions = []
         error = None
-        credentials = self._get_credentials(self._scopes)
-        service = discovery.build('sqladmin',
-                                  self._sqladmin_api_version,
-                                  credentials=credentials)
         try:
+            sdk = _google_sdk()
+        except ImportError as e:
+            return database_versions, str(e)
+        try:
+            credentials = self._get_credentials(self._scopes)
+            service = sdk.discovery.build('sqladmin',
+                                          self._sqladmin_api_version,
+                                          credentials=credentials)
             req = service.flags().list()
             res = req.execute()
             for item in res.get('items', []):
@@ -673,7 +708,7 @@ class Google:
                 label = (version.title().split('_')[0])[0:7] \
                     + 'SQL ' + version.split('_')[1]
                 database_versions.append({'label': label, 'value': version})
-        except HttpError as e:
+        except sdk.HttpError as e:
             error = e.reason
         except Exception as e:
             error = str(e)

@@ -5,8 +5,9 @@ Debian and Ubuntu.
 
 ## Supported platforms
 
-* Debian 11, 12 & 13
-* Ubuntu 22.04, 24.04 & 25.04
+The platforms built are the ones in the matrix in
+`.github/workflows/check-deb-build.yml`; see `pkg/linux/PLATFORMS.md` for how
+to add or retire one.
 
 ## Build configuration
 
