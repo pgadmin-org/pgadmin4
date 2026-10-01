@@ -549,13 +549,15 @@ WHERE db.oid = {0}""".format(did))
             try:
                 password = decrypt(self.password, crypt_key).decode()
             except DECRYPT_ERRORS as e:
-                # Skip the password, the utility will prompt/fail on its own.
                 current_app.logger.warning(
                     'Ignoring the saved password of the server (#{0}) as it '
                     'could not be decrypted. Error: {1}'.format(
                         self.sid, str(e)),
                     exc_info=True
                 )
+                # Fall back to passexec, as when no password is saved.
+                if self.passexec:
+                    os.environ[str(env)] = self.passexec.get()
                 return
             os.environ[str(env)] = password
         elif self.passexec:
@@ -629,6 +631,7 @@ WHERE db.oid = {0}""".format(did))
             # flag tunnel threads in daemon mode to fix hang issue.
             self.tunnel_object.daemon_forward_servers = True
             self.tunnel_object.start()
+            self.saved_tunnel_password_discarded = False
             self.tunnel_created = True
         except BaseSSHTunnelForwarderError as e:
             current_app.logger.exception(e)
