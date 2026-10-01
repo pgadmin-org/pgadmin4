@@ -157,8 +157,10 @@ of the `Preferences JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/pref
 
 Override the default file path for the pgadmin configurations file.This can be used while provisioning
 container with read only root file system to achieve a more secure pgadmin4 deployment for kubernetes.
-Note that if you are externally mapping this file, then environment variables passed using *PGADMIN_CONFIG_*
-suffix will be ignored.
+Note that if you are externally mapping this file, then environment variables
+passed using *PGADMIN_CONFIG_* suffix will be ignored only when that file
+exists and is non-empty. A missing or empty file is generated with those
+values.
 
 **PGPASS_FILE**
 
@@ -211,16 +213,26 @@ is removed before the value is written. The *docker run* example below keeps
 the Python quotes inside shell quotes, for example
 ``-e 'PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"'``.
 
-In Docker Compose, YAML consumes the quotes around a scalar. A YAML-only
-quoted hostname, ``PGADMIN_CONFIG_MAIL_SERVER: "mail.example.com"`` or
-``PGADMIN_CONFIG_MAIL_SERVER: 'mail.example.com'``, reaches the container as
-``mail.example.com`` and cannot serve as a Python string. Nest the Python
+In Docker Compose map syntax, YAML consumes the quotes around a scalar. A
+YAML-only quoted hostname, ``PGADMIN_CONFIG_MAIL_SERVER: "mail.example.com"``
+or ``PGADMIN_CONFIG_MAIL_SERVER: 'mail.example.com'``, reaches the container
+as ``mail.example.com`` and cannot serve as a Python string. Nest the Python
 quotes inside the scalar:
 ``PGADMIN_CONFIG_MAIL_SERVER: "'mail.example.com'"``. The container then
 writes ``MAIL_SERVER = 'mail.example.com'``. ``"587"`` and ``"True"`` are
-already valid Python, so they need no nested quotes. The Compose example in
-the Examples section uses this form for an SMTP server, username, password
-(an ``=`` in the password is preserved), and *SECURITY_EMAIL_SENDER*.
+already valid Python, so they need no nested quotes. The list form keeps
+single quotes, as ``docker run -e`` does
+(``- PGADMIN_CONFIG_MAIL_SERVER='mail.example.com'``); nesting them there
+produces ``"'mail.example.com'"``, which is valid Python but puts stray
+quote characters into the value and fails silently rather than at startup.
+An ``env_file`` value strips one layer of quotes, so the same nesting as the
+map form applies there. The Compose example in the Examples section uses the
+map form for an SMTP server, username, password, and *SECURITY_EMAIL_SENDER*.
+
+Compose substitutes ``$VAR`` and ``${VAR}`` in Compose file values, so write
+a literal dollar as ``$$``. ``"'pa$word'"`` reaches the container as
+``'pa'``, with only a warning about an unset variable. The entrypoint does
+not expand the value again, so ``$$`` is the only escaping required.
 
 Settings are written to */pgadmin4/config_distro.py* within the container, which
 is read after */pgadmin4/config.py* and before */pgadmin4/config_local.py*.
@@ -228,15 +240,18 @@ Any settings given will therefore override anything in config.py, but can be
 overridden by settings in config_local.py.
 
 The file is generated only when it is missing or empty, typically on first
-launch. A nonempty */pgadmin4/config_distro.py* is left unchanged, including
+launch. A non-empty */pgadmin4/config_distro.py* is left unchanged, including
 when the container is restarted or when the file is mapped from persistent
 storage (not recommended - use */pgadmin4/config_local.py* instead).
 Recreate the container after correcting *PGADMIN_CONFIG_* values so the
-entrypoint can write them. Retain persistent data by keeping the
-*/var/lib/pgadmin* mapping. Externally supplied configuration is kept as
-well: a mapped *PGADMIN_CUSTOM_CONFIG_DISTRO_FILE* causes *PGADMIN_CONFIG_*
-variables to be ignored, and *config_local.py* overrides *config_distro.py*.
-Edit that external file after a correction.
+entrypoint can write them. ``docker compose up -d`` recreates the container
+when its environment changes; ``docker compose restart`` does not. Retain
+persistent data by keeping the */var/lib/pgadmin* mapping. *PGADMIN_CONFIG_*
+variables are ignored only when the file selected by
+*PGADMIN_CUSTOM_CONFIG_DISTRO_FILE* exists and is non-empty; a missing or
+empty file is generated with those values. *config_local.py* overrides
+*config_distro.py*. Edit the file selected by
+*PGADMIN_CUSTOM_CONFIG_DISTRO_FILE* after a correction.
 
 See :ref:`config_py` for more information on the available configuration settings.
 
@@ -362,15 +377,6 @@ container is recreated:
 
     volumes:
       pgadmin-data:
-
-*/pgadmin4/config_distro.py* is generated only when it is missing or empty.
-Restarting the container leaves a nonempty file unchanged, so recreate the
-container after correcting these environment values. The volume above retains
-persistent data across that recreate. Configuration supplied from outside the
-image is separate from that data: when *PGADMIN_CUSTOM_CONFIG_DISTRO_FILE*
-is mapped, *PGADMIN_CONFIG_* variables are ignored, and *config_local.py*
-overrides *config_distro.py*. Edit that external file; a restart leaves it
-in place.
 
 Run a TLS secured container using a shared config/storage directory in
 /private/var/lib/pgadmin on the host, and servers pre-loaded from
