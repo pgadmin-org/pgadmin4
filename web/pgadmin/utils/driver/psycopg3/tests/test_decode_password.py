@@ -34,10 +34,14 @@ class TestDecodePassword(BaseTestGenerator):
         conn.saved_password_discarded = False
         manager = MagicMock(sid=1, password='enc')
 
-        with patch(MODULE + '.User') as user, \
-                patch(MODULE + '.current_user'), \
-                patch(MODULE + '.current_app'), \
-                patch(MODULE + '.decrypt') as dec:
+        user = MagicMock()
+        dec = MagicMock()
+        # Explicit replacement objects: patching with the default MagicMock
+        # would make mock inspect the flask proxies outside an app context.
+        with patch(MODULE + '.User', user), \
+                patch(MODULE + '.current_user', MagicMock()), \
+                patch(MODULE + '.current_app', MagicMock()), \
+                patch(MODULE + '.decrypt', dec):
             user.query.filter_by.return_value.first.return_value = object()
             if hasattr(self, 'side_effect'):
                 dec.side_effect = self.side_effect
