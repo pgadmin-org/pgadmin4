@@ -36,8 +36,14 @@ ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
 AllowNoIcons=yes
 WizardImageFile=sidebar.bmp
 MinVersion={#MinimumWindowsVer}
+; Only emitted for a signing build. Make.bat passes /DSIGNED alongside the
+; /SpgAdminSigntool= definition; without both, ISCC aborts with "Value of
+; [Setup] section directive SignTool is invalid" because the named SignTool
+; was never defined.
+#ifdef SIGNED
 SignTool=pgAdminSigntool
 SignedUninstaller=yes
+#endif
 CloseApplications=yes
 
 [Languages]

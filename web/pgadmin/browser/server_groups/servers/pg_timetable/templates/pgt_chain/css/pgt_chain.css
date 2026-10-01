@@ -1,0 +1,26 @@
+.icon-pgt_chain {
+  background-image: url('{{ url_for('NODE-pgt_chain.static', filename='img/pgt_chain.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-pgt_chain-disabled {
+  background-image: url('{{ url_for('NODE-pgt_chain.static', filename='img/pgt_chain-disabled.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-coll-pgt_chain {
+  background-image: url('{{ url_for('NODE-pgt_chain.static', filename='img/coll-pgt_chain.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

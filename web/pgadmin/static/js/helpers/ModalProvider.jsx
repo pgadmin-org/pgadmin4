@@ -68,7 +68,7 @@ export function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLab
   );
 }
 AlertContent.propTypes = {
-  text: PropTypes.string,
+  text: PropTypes.node,
   confirm: PropTypes.bool,
   onOkClick: PropTypes.func,
   onCancelClick: PropTypes.func,

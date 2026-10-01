@@ -1,0 +1,41 @@
+pgAdmin 4: YUM repository
+
+Supported platforms:
+
+@SUPPORTED_TABLE@
+
+@ARCHIVE_SECTION_START@
+Platforms that are no longer supported. Packages for these remain available
+from https://pgadmin-archive.postgresql.org/, from where they can be manually
+downloaded; the archive site cannot be used as a repository.
+
+@ARCHIVED_TABLE@
+@ARCHIVE_SECTION_END@
+
+To use this repository, first uninstall any pgAdmin repo packages that you may 
+already have installed, for example; 'sudo rpm -e pgadmin4-fedora-repo' or 
+'sudo rpm -e pgadmin4-redhat-repo'. 
+
+Then to setup the repository for this set of builds on Fedora run:
+
+sudo rpm -i @BASE_URL@/yum/@FEDORA_REPO_RPM@
+
+On AlmaLinux, RHEL, or Rocky, run:
+
+sudo rpm -i @BASE_URL@/yum/@REDHAT_REPO_RPM@
+
+To install pgAdmin, run one of the following commands:
+
+# Install for both desktop and web modes.
+sudo yum install pgadmin4
+
+# Install for desktop mode only.
+sudo yum install pgadmin4-desktop
+
+# Install for web mode only. 
+sudo yum install pgadmin4-web 
+
+Finally, if you have installed pgadmin4 or pgadmin4-web, run the web setup 
+script to configure the system to run in web mode:
+
+sudo /usr/pgadmin4/bin/setup-web.sh

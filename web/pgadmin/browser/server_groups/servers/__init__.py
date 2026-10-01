@@ -65,6 +65,24 @@ def _is_non_owner(server):
     return server.shared and server.user_id != current_user.id
 
 
+def is_using_passfile(server, manager):
+    """
+    True if the connection authenticates through the configured passfile,
+    i.e. no password is saved or held for the session and the manager uses
+    the server's passfile. The Change Password dialog (check_pgpass) and
+    the change_password endpoint must agree on this, so both call it.
+    """
+    passfile = manager.get_connection_param_value('passfile')
+    return bool(
+        not server.password and not manager.password and
+        hasattr(server, 'connection_params') and
+        server.connection_params and
+        'passfile' in server.connection_params and
+        passfile and
+        server.connection_params['passfile'] == passfile
+    )
+
+
 def has_any(data, keys):
     """
     Checks any one of the keys present in the data given
@@ -389,6 +407,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         self.submodules.append(module)
 
         from .pgagent import blueprint as module
+        self.submodules.append(module)
+
+        from .pg_timetable import blueprint as module
         self.submodules.append(module)
 
         from .resource_groups import blueprint as module
@@ -1991,17 +2012,7 @@ class ServerNode(PGChildNodeView):
 
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
-            is_passfile = False
-
-            # If there is no password found for the server
-            # then check for pgpass file
-            if not server.password and not manager.password and \
-                hasattr(server, 'connection_params') and \
-                'passfile' in server.connection_params and \
-                manager.get_connection_param_value('passfile') and \
-                server.connection_params['passfile'] == \
-                    manager.get_connection_param_value('passfile'):
-                is_passfile = True
+            is_passfile = is_using_passfile(server, manager)
 
             # Check for password only if there is no pgpass file used
             if not is_passfile and data and \
@@ -2187,7 +2198,6 @@ class ServerNode(PGChildNodeView):
             gid: Group id
             sid: Server id
         """
-        is_pgpass = False
         server = get_server(sid)
 
         if server is None:
@@ -2204,13 +2214,7 @@ class ServerNode(PGChildNodeView):
                     errormsg=gettext('Please connect to the server.')
                 )
 
-            if (not server.password or not manager.password) and \
-                hasattr(server, 'connection_params') and \
-                'passfile' in server.connection_params and \
-                manager.get_connection_param_value('passfile') and \
-                server.connection_params['passfile'] == \
-                    manager.get_connection_param_value('passfile'):
-                is_pgpass = True
+            is_pgpass = is_using_passfile(server, manager)
             return make_json_response(
                 success=1,
                 data=dict({'is_pgpass': is_pgpass}),

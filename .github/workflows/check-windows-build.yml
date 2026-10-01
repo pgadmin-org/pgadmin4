@@ -1,0 +1,149 @@
+# Replaces the pgadmin4-windows-x64-qa Jenkins job.
+#
+# This runs on a hosted runner, not a self-hosted one. Code signing in Make.bat
+# is conditional on PGADMIN_WINDOWS_CSC being set (see :SIGN_FILES,
+# :CREATE_INSTALLER and :VERIFY_SIGNATURE in Make.bat), so an unsigned build
+# check needs neither the Certum hardware token nor the machine it is plugged
+# into. Only the release and snapshot builds, which do sign, need the
+# self-hosted runner.
+#
+# Dependencies come from dpage/winpgbuild, which is exactly where the
+# buildfarm's winpgbuild-update job gets them, so the toolchain matches what
+# the release build uses rather than being an approximation of it.
+#
+# UNTESTED as written: unlike the macOS equivalent this has not yet had a
+# successful run, so expect the first few attempts to need adjustment.
+
+name: Check Windows build
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'Make.bat'
+      - 'pkg/win32/**'
+      - 'pkg/python-version.txt'
+      - '.github/actions/install-pgbuild-deps/action.yml'
+      # Which build of each dependency this compiles against, so a
+      # change to it changes what the installer contains.
+      - 'pkg/pgbuild-deps.lock'
+      - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
+      - 'docs/**'
+      - 'requirements.txt'
+      - '.github/workflows/check-windows-build.yml'
+
+  workflow_dispatch:
+
+concurrency:
+  # The workflow's own name, spelled out rather than taken from
+  # github.workflow, because in a reusable workflow that expression is
+  # the CALLER's name. Every workflow Snapshot calls would otherwise
+  # share one group and, with cancel-in-progress, cancel each other.
+  group: 'check-windows-build @ ${{ github.ref }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-installer:
+    runs-on: windows-2025
+    timeout-minutes: 120
+
+    env:
+      # The major version of the PostgreSQL release to pull from pgbuild,
+      # matching DEFAULT_POSTGRESQL_VERSION on the buildfarm.
+      POSTGRES_MAJOR: '18'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      # None of these are on the hosted image. wget matters most: Make.bat's
+      # Electron download is an unbounded retry loop (Make.bat:370), so without
+      # it the build spins on error 9009 until the job times out rather than
+      # failing. syft generates the SBOM, and its absence is silent, since
+      # :GENERATE_SBOM redirects into sbom.json and returns 0 regardless. The
+      # buildfarm's Windows worker installs all three via Chocolatey too.
+      - name: Install Inno Setup, syft and wget
+        run: choco install innosetup syft wget -y --no-progress
+
+      # From pgadmin-org/pgbuild, which supersedes dpage/winpgbuild and is
+      # where the macOS dependencies come from too, so both platforms build
+      # against one manifest of pinned versions. The archives unpack to
+      # <DEPS_DIR>\postgresql and <DEPS_DIR>\krb5.
+      # Unpacked under the runner's own temp directory rather than a fixed
+      # path. C:\build64 was the obvious choice and the wrong one: it is what
+      # the buildfarm's winpgbuild-update job manages on the Windows worker,
+      # deleting and re-extracting postgresql and krb5 inside it. Since the
+      # signing builds will run on that same machine as a self-hosted runner,
+      # a shared path would have the two systems overwriting each other's
+      # dependencies, and the resulting Jenkins failures would look nothing
+      # like their cause.
+      - name: Install the PostgreSQL and Kerberos dependencies
+        id: deps
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: x86_64
+          postgres-major: ${{ env.POSTGRES_MAJOR }}
+
+      - name: Record the dependency location
+        shell: pwsh
+        run: '"DEPS_DIR=${{ steps.deps.outputs.prefix }}" | Out-File -FilePath $env:GITHUB_ENV -Append'
+
+      # The hosted image ships Visual Studio Enterprise at a path that differs
+      # from the Community install Make.bat defaults to, and the redistributable
+      # version directory changes with every VS update, so both are discovered
+      # rather than hardcoded.
+      - name: Locate the Visual Studio toolchain
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products * -property installationPath
+          if (-not $vs) { throw "Could not locate a Visual Studio installation" }
+          Write-Output "Visual Studio: $vs"
+
+          $redist = Get-ChildItem "$vs\VC\Redist\MSVC" -Directory |
+              Where-Object { Test-Path "$($_.FullName)\vc_redist.x64.exe" } |
+              Sort-Object Name -Descending |
+              Select-Object -First 1
+          if (-not $redist) { throw "Could not locate vc_redist.x64.exe under $vs" }
+          Write-Output "VC++ redistributable: $($redist.FullName)"
+
+          "VS_INSTALL_DIR=$vs"                  | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PGADMIN_VCREDIST_DIR=$($redist.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # psycopg[c] compiles against libpq, so the build needs the MSVC
+      # environment. vcvars64.bat only sets it for its own process, hence
+      # invoking it and Make.bat in a single cmd session, as the Jenkins job
+      # does.
+      #
+      # No Python is set up for this job: Make.bat downloads the version named
+      # in pkg/python-version.txt, so the build gets the same interpreter here
+      # as it does on the signing host and on a developer's machine.
+      - name: Check the installer build
+        shell: cmd
+        run: |
+          SET "PGADMIN_POSTGRES_DIR=%DEPS_DIR%\postgresql"
+          SET "PGADMIN_KRB5_DIR=%DEPS_DIR%\krb5"
+          SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
+
+          CALL "%VS_INSTALL_DIR%\VC\Auxiliary\Build\vcvars64.bat" || EXIT /b 1
+          CALL Make.bat || EXIT /b 1
+
+      - name: Archive the installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-windows-build-output
+          if-no-files-found: error
+          path: dist/*.exe

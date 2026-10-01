@@ -1,0 +1,447 @@
+# Promote a tested release candidate to the download server.
+#
+# This is the irreversible one. Everything before it produces something that
+# can be rebuilt or deleted without anybody noticing; this puts packages in
+# front of every pgAdmin user, and within the hour they are on the PostgreSQL
+# mirror network and in the S3 archive, which has no --delete and therefore no
+# undo.
+#
+# So it builds nothing. It takes a candidate that already exists on the
+# development server, having been built, signed, indexed and installed from by
+# the acceptance test, and moves it across. If a candidate needs changing, the
+# answer is a new candidate rather than a repair applied here.
+#
+# The version is separate from the location deliberately: 2026-09-21-1 is a
+# build, 9.18 is what users will call it, and conflating them is how somebody
+# publishes the wrong tree under the right name.
+
+name: Promote release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, for example 9.18'
+        required: true
+        type: string
+      location:
+        description: 'Candidate to promote, for example 2026-09-21-1'
+        required: true
+        type: string
+      confirm:
+        description: 'Type the version again to confirm'
+        required: true
+        type: string
+      container-tags:
+        description: >-
+          Space separated tags for the container, for example
+          "9 9.18 9.18.0 latest". Required when scope is everything.
+        required: false
+        type: string
+        default: ''
+      scope:
+        description: >-
+          How much to do. "everything" is a real promotion. "files" stops
+          before the website and the S3 archive, neither of which can be
+          undone. "release-directory" stops before the package
+          repositories as well, touching only v<VERSION>, which is the
+          only setting that leaves the live repositories alone and so the
+          only one safe to rehearse the download server with.
+          "registries" is the other half: it skips the download server
+          entirely and runs only the container re-tag and the chart push,
+          so those can be exercised against a candidate tag without a
+          release. It does not upload to PyPI, there being no published
+          wheel to upload.
+        type: choice
+        required: true
+        default: release-directory
+        options:
+          - release-directory
+          - files
+          - everything
+          - registries
+
+concurrency:
+  group: 'promote-release'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # Every input is checked here, before either of the jobs that act on one
+  # runs, because the checks used to live in promote and the registries scope
+  # skips that job: under that scope the confirmation gate did not apply to
+  # the step that moves the latest tag.
+  check:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check the request
+        env:
+          VERSION: ${{ inputs.version }}
+          LOCATION: ${{ inputs.location }}
+          CONFIRM: ${{ inputs.confirm }}
+          TAGS: ${{ inputs.container-tags }}
+          SCOPE: ${{ inputs.scope }}
+        run: |
+          set -euo pipefail
+
+          # Typed twice, because the cost of getting this wrong is a version
+          # published from the wrong tree and no way to unpublish it.
+          if [ "${VERSION}" != "${CONFIRM}" ]; then
+              echo "The confirmation does not match the version." >&2
+              exit 1
+          fi
+
+          # The same shapes the wrapper enforces, checked here so a mistake
+          # costs a second rather than a round trip.
+          printf '%s' "${VERSION}" | grep -Eq '^[0-9]{1,2}\.[0-9]{1,2}(\.[0-9]{1,2})?$' || {
+              echo "Not a version: ${VERSION}" >&2; exit 1; }
+          printf '%s' "${LOCATION}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}(-[1-9][0-9]?)?$' || {
+              echo "Not a build location: ${LOCATION}" >&2; exit 1; }
+
+          # Only the scopes that publish containers need tags, but when they
+          # are given they are checked whatever the scope, so a bad value is
+          # not discovered halfway through a promotion.
+          if [ "${SCOPE}" = "everything" ] || [ "${SCOPE}" = "registries" ]; then
+              [ -n "${TAGS}" ] || {
+                  echo "container-tags is required for scope ${SCOPE}." >&2
+                  exit 1; }
+          fi
+          # -f, because an unquoted expansion is also a glob: a tag of * would
+          # otherwise be replaced by whatever is in the working directory.
+          set -f
+          for tag in ${TAGS}; do
+              printf '%s' "${tag}" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$' || {
+                  echo "Not a container tag: ${tag}" >&2; exit 1; }
+          done
+          set +f
+
+          echo "Request accepted: ${VERSION} from ${LOCATION}, scope ${SCOPE}."
+
+  promote:
+    needs: check
+    # Skipped entirely when only the registries are being exercised, so a
+    # rehearsal of those never touches the download server.
+    if: ${{ inputs.scope != 'registries' }}
+    runs-on: [self-hosted, publish]
+    environment: publishing
+
+    steps:
+      # The inputs are checked in the job above; this is about the runner.
+      - name: Check the runner
+        env:
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
+
+          [ -n "${DOWNLOAD}" ] || { echo "DOWNLOAD_SSH_TARGET is not set." >&2; exit 1; }
+
+          # Both variables reach option positions: the target is the first
+          # positional argument to every ssh below, and the key path follows
+          # -i, so a value beginning with a hyphen would be read as an option
+          # rather than as the host or the path it is meant to be. Only an
+          # administrator can set a repository variable, which makes this
+          # defence in depth rather than a live hole, but it is checked here,
+          # once, before anything is published; the -- at each call site
+          # closes the same gap from the other end.
+          TARGET_RE='^[A-Za-z0-9][A-Za-z0-9._-]*(@[A-Za-z0-9][A-Za-z0-9.-]*)?$'
+          printf '%s' "${DOWNLOAD}" | grep -Eq "${TARGET_RE}" || {
+              echo "DOWNLOAD_SSH_TARGET is not a [user@]host." >&2; exit 1; }
+
+          KEY="${PUBLISH_KEY/#\~/$HOME}"
+          printf '%s' "${KEY}" | grep -Eq '^/[A-Za-z0-9._/-]+$' || {
+              echo "PUBLISH_SSH_KEY is not a plain absolute path." >&2
+              exit 1; }
+          [ -r "${KEY}" ] || { echo "Missing SSH key: ${KEY}" >&2; exit 1; }
+          if head -c 4 "${KEY}" | grep -q '^ssh-'; then
+              echo "${KEY} is a public key; -i needs the private one." >&2
+              exit 1
+          fi
+
+      # Checked before anything is created, so that a version published by
+      # mistake is caught here rather than by release-create failing halfway
+      # through and leaving a directory behind.
+      - name: Refuse to republish
+        env:
+          VERSION: ${{ inputs.version }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
+          }
+          if publish release-exists "${VERSION}" 2>/dev/null; then
+              echo "Version ${VERSION} is already published." >&2
+              echo "Publishing is single-shot; a correction needs a new version." >&2
+              exit 1
+          fi
+          echo "Version ${VERSION} is not yet published."
+
+      - name: Publish the release directory
+        env:
+          VERSION: ${{ inputs.version }}
+          LOCATION: ${{ inputs.location }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              echo "+ $*"
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
+          }
+
+          # The downloads first: the directory, then the files sorted into it,
+          # then the packages into the live repository trees. Nothing is
+          # visible to a package manager until the indices are rebuilt below,
+          # so an interruption here leaves packages that nothing points at
+          # rather than a repository describing packages that are not there.
+          publish release-create "${VERSION}"
+          publish release-fetch "${VERSION}" "${LOCATION}"
+
+      # Separate from the step above because this is where a promotion stops
+      # being reversible in practice. The step above creates one directory that
+      # can simply be deleted; this copies packages into the live repositories
+      # and re-signs the indices every client reads.
+      - name: Publish the packages
+        if: ${{ inputs.scope != 'release-directory' }}
+        env:
+          VERSION: ${{ inputs.version }}
+          LOCATION: ${{ inputs.location }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              echo "+ $*"
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
+          }
+
+          # The auto-updater archives, which release-fetch deliberately left
+          # behind because they belong outside the release directory.
+          publish autoupdate-publish "${VERSION}"
+
+          publish packages-fetch "${LOCATION}"
+
+          # The indices, which is the point at which the new packages become
+          # installable.
+          for codename in bookworm trixie jammy noble resolute; do
+              publish rebuild-apt "${codename}"
+          done
+          publish rebuild-yum redhat rhel 9 x86_64
+          publish rebuild-yum redhat rhel 10 x86_64
+          publish rebuild-yum fedora fedora 43 x86_64
+          publish rebuild-yum fedora fedora 44 x86_64
+
+          # The platform tables carry the release history, so they change with
+          # every release rather than only when a platform is added.
+          publish rebuild-readme apt
+          publish rebuild-readme yum
+
+      - name: Update the website
+        if: ${{ inputs.scope == 'everything' }}
+        env:
+          VERSION: ${{ inputs.version }}
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
+          publish() {
+              echo "+ $*"
+              ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+                  -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" "$@"
+          }
+
+          # Separate from the packages, and after them, because the website
+          # announcing a release whose files are not there yet is worse than
+          # files sitting there unannounced for a minute.
+          publish create-release "${VERSION}"
+          publish load-docs "${VERSION}"
+          publish purge-cache
+
+      - name: Archive to S3
+        if: ${{ inputs.scope == 'everything' }}
+        env:
+          DOWNLOAD: ${{ vars.DOWNLOAD_SSH_TARGET }}
+          PUBLISH_KEY: ${{ vars.PUBLISH_SSH_KEY || '~/.ssh/pga-publish' }}
+        run: |
+          set -euo pipefail
+          # Last, and on its own, because it is the slowest step and the one
+          # with no undo: the sync has no --delete, so anything it copies is
+          # in the archive permanently.
+          echo "+ sync-s3"
+          ssh -i "${PUBLISH_KEY/#\~/$HOME}" -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes -- "${DOWNLOAD}" sync-s3
+
+      - name: Note what was skipped
+        if: ${{ inputs.scope != 'everything' }}
+        env:
+          SCOPE: ${{ inputs.scope }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          echo "scope was ${SCOPE}, so this was not a full promotion."
+          if [ "${SCOPE}" = "release-directory" ]; then
+              echo "Only /var/ftp/pgadmin4/v${VERSION} was written. The package"
+              echo "repositories, the website and the S3 archive are untouched,"
+              echo "so removing that directory undoes this entirely."
+          else
+              echo "The website was not updated and nothing was archived to S3."
+              echo "The packages are live and will reach the mirrors at the next"
+              echo "hourly sync."
+          fi
+
+  # The registries, which need none of the publishing keys and no self-hosted
+  # runner:
+  # nothing here touches our servers. Separate so that a Docker Hub outage
+  # cannot leave a half-finished promotion on the download server, and so the
+  # runner holding the SSH keys never handles registry credentials.
+  registries:
+    needs: [check, promote]
+    # always(), because under the registries scope promote is skipped rather
+    # than run, and a plain needs would skip this with it. check is never
+    # skipped, so requiring its success is what keeps the inputs validated on
+    # both paths.
+    if: >-
+      ${{ always()
+          && needs.check.result == 'success'
+          && (inputs.scope == 'everything' || inputs.scope == 'registries')
+          && (needs.promote.result == 'success'
+              || needs.promote.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    environment: publishing
+
+    permissions:
+      contents: read
+      # For PyPI trusted publishing, which exchanges this for a short-lived
+      # upload credential rather than using a stored API token.
+      id-token: write
+      # For GHCR, which needs no stored credential at all.
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # By commit rather than by tag, since this script is piped into a shell
+      # in the same job that then logs in to two registries, and a tag can be
+      # moved. bec5b06 is v4.3.0.
+      - name: Install Helm
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/bec5b06ed841fe5269972d864d5177944fd5970f/scripts/get-helm-3 -o get-helm-3
+          chmod +x get-helm-3
+          ./get-helm-3
+
+      # Re-tagged rather than rebuilt, so what ships is the manifest the
+      # acceptance test ran against. imagetools works registry-side, so
+      # nothing is pulled or pushed through this runner.
+      - name: Publish the container
+        env:
+          LOCATION: ${{ inputs.location }}
+          TAGS: ${{ inputs.container-tags }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          # Validated by the check job. -f so that the word splitting below
+          # does not also glob against the workspace.
+          set -f
+
+          printf '%s' "${DOCKERHUB_TOKEN}" \
+              | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+          printf '%s' "${GITHUB_TOKEN}" \
+              | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+
+          # Docker Hub stays canonical, because every tutorial, compose file
+          # and manifest in the world names dpage/pgadmin4. GHCR is published
+          # alongside it: organisation owned, no stored credential, and not
+          # subject to Docker Hub's anonymous pull limits.
+          for tag in ${TAGS}; do
+              echo "+ ${LOCATION} -> :${tag}"
+              docker buildx imagetools create \
+                  --tag "dpage/pgadmin4:${tag}" \
+                  --tag "ghcr.io/pgadmin-org/pgadmin4:${tag}" \
+                  "dpage/pgadmin4:${LOCATION}"
+          done
+          docker logout ghcr.io
+          docker logout
+
+      # The chart carries the release version from pkg/helm/Chart.yaml, so
+      # unlike the container there is no candidate copy to re-tag: it is
+      # packaged and pushed once, here.
+      #
+      # To GHCR rather than Docker Hub. The chart's install base is a small
+      # fraction of the container's, so moving it breaks far less than moving
+      # the image would, oci://docker.io/dpage was an odd home for a chart in
+      # the first place, and it needs no stored credential here.
+      - name: Publish the Helm chart
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          printf '%s' "${GITHUB_TOKEN}" \
+              | helm registry login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+          helm package pkg/helm
+          helm push pgadmin4-helm-*.tgz oci://ghcr.io/pgadmin-org
+          helm registry logout ghcr.io
+
+      # Fetched from the published release rather than rebuilt, so what
+      # reaches PyPI is the file the acceptance test installed.
+      - name: Collect the wheel
+        if: ${{ inputs.scope == 'everything' }}
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p pypi-dist
+          BASE="https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v${VERSION}"
+          WHEEL="pgadmin4-${VERSION}-py3-none-any.whl"
+          curl -fsS -o "pypi-dist/${WHEEL}" "${BASE}/pip/${WHEEL}"
+          # Beside the wheel rather than in pypi-dist, because everything in
+          # that directory is uploaded and PyPI has not accepted detached
+          # signatures since 2023.
+          curl -fsS -o "${WHEEL}.asc" "${BASE}/pip/${WHEEL}.asc"
+          ls -l pypi-dist
+
+      # The wheel arrives over TLS, which says it came from the mirror and
+      # nothing about what the mirror was given: the tree is replicated from
+      # our download server to machines we do not run, and the signature that
+      # has been sitting beside the file all along is the only thing that ties
+      # these bytes back to the key on the publishing server. Checking it
+      # costs a second and turns the last hop of a release into something an
+      # attacker cannot quietly alter.
+      - name: Verify the wheel before uploading it
+        if: ${{ inputs.scope == 'everything' }}
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          curl -fsS -o packages_pgadmin_org.pub \
+              https://www.pgadmin.org/static/packages_pgadmin_org.pub
+
+          # A keyring of its own, holding that one key and nothing the runner
+          # image happened to trust already, so a signature made by any other
+          # key fails for want of a public key rather than passing on the
+          # strength of somebody else's.
+          GNUPGHOME=$(mktemp -d)
+          export GNUPGHOME
+          gpg --batch --import packages_pgadmin_org.pub
+          gpg --batch --verify "pgadmin4-${VERSION}-py3-none-any.whl.asc" \
+              "pypi-dist/pgadmin4-${VERSION}-py3-none-any.whl"
+          echo "Signature verified; the upload may proceed."
+
+      # Trusted publishing: PyPI verifies this workflow's OIDC identity, so
+      # there is no API token to hold, rotate or leak.
+      - name: Upload to PyPI
+        if: ${{ inputs.scope == 'everything' }}
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          packages-dir: pypi-dist
