@@ -33,14 +33,32 @@ _build_runtime() {
 
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
     # Get a fresh copy of electron
-    # Resolve the electron version from runtime/package.json, NOT from
-    # `npm info electron version`. The latter fetches whatever currently
-    # carries the `latest` dist-tag on the npm registry, which means any
-    # newly published electron release lands in shipped binaries without
-    # review. Keep the build deterministic and pinned.
-    ELECTRON_VERSION=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' "${SOURCE_DIR}/runtime/package.json" | head -1)
+    # Resolve the electron version from runtime/yarn.lock, NOT from the npm
+    # registry and NOT from the range in runtime/package.json. The registry's
+    # `latest` dist-tag lands any newly published electron release in shipped
+    # binaries without review, whilst the package.json range is only a lower
+    # bound, so yarn is free to resolve it to a build other than the one we
+    # ship. The lockfile is the single source of truth, and `yarn info` reports
+    # its resolution without touching the network or needing node_modules.
+    #
+    # It must run inside runtime/ though: outside a yarn project, `yarn info`
+    # silently falls back to querying the registry and still exits 0, so check
+    # the lockfile is present first and validate what comes back.
+    if [ ! -f "${SOURCE_DIR}/runtime/yarn.lock" ]; then
+        echo "ERROR: ${SOURCE_DIR}/runtime/yarn.lock not found; cannot resolve the pinned electron version" >&2
+        exit 1
+    fi
+
+    ELECTRON_VERSION=$(cd "${SOURCE_DIR}/runtime" && yarn info electron --json | node -e "
+        const lines = require('fs').readFileSync(0, 'utf8').split('\n').filter(Boolean);
+        const pkg = lines.map(l => { try { return JSON.parse(l); } catch (e) { return null; } })
+            .find(o => o && typeof o.value === 'string' && o.value.startsWith('electron@npm:'));
+        const version = (pkg && pkg.children && pkg.children.Version) || '';
+        process.stdout.write(/^[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?$/.test(version) ? version : '');
+    ")
+
     if [ -z "${ELECTRON_VERSION}" ]; then
-        echo "ERROR: could not resolve electron version from runtime/package.json" >&2
+        echo "ERROR: could not resolve the pinned electron version from ${SOURCE_DIR}/runtime/yarn.lock" >&2
         exit 1
     fi
 
@@ -145,13 +163,24 @@ _create_python_env() {
 
 _build_docs() {
     echo "Building the docs..."
-    # Create a temporary venv for the doc build, so we don't contaminate the one
-    # that we're going to ship.
-    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m venv "${BUILD_ROOT}/venv"
+    # The doc build imports pgAdmin itself: docs/en_US/build_code_snippet.py
+    # pulls in config, pgadmin.utils, pgadmin.browser.utils and the driver
+    # abstractions, so the whole of requirements.txt has to be importable. It
+    # already is, in the framework we just populated, so the venv inherits
+    # those rather than installing all hundred-odd packages a second time.
+    # Sphinx still goes in the venv rather than the framework, which is the
+    # point of having one: it must not end up in the shipped bundle.
+    #
+    # --system-site-packages is safe here in a way it is not in the Linux
+    # build, which deliberately avoids it (see the long comment in
+    # pkg/linux/build-functions.sh). There the parent is a shared system Python
+    # that may carry other packages' stale .pth files; here it is a framework
+    # we built ourselves moments ago and which contains only our dependencies.
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" \
+        -m venv --system-site-packages "${BUILD_ROOT}/venv"
     # shellcheck disable=SC1091
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
-    pip3 install --no-cache-dir -r "${SOURCE_DIR}/requirements.txt"
     pip3 install sphinx==7.4.7
     pip3 install sphinxcontrib-youtube
 
@@ -308,7 +337,7 @@ _complete_bundle() {
             exit 1
         fi
         yarn set version "${YARN_VERSION}"
-        yarn install 2>&1
+        yarn install --immutable 2>&1
 
         # Record the source commit hash before the heavy lint/webpack
         # steps. `yarn run` needs node_modules so this runs after install,
@@ -346,7 +375,7 @@ _complete_bundle() {
     cp -r "${SOURCE_DIR}/web" "${BUNDLE_DIR}/Contents/Resources/"
     cd "${BUNDLE_DIR}/Contents/Resources/web" || exit
     rm -f pgadmin4.db config_local.*
-    rm -rf jest.config.js babel.* package.json .yarn* yarn* .editorconfig .eslint* node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
+    rm -rf jest.config.js babel.* package.json .yarn* yarn* webpack.* .editorconfig .eslint* node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
     find . -name "tests" -type d -print0 | xargs -0 rm -rf
     find . -name "feature_tests" -type d -print0 | xargs -0 rm -rf
     find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf
@@ -497,7 +526,11 @@ _verify_bundle_linkage() {
     # Build-host prefixes that must never appear in a shipped bundle. SLAVE_HOME
     # (the Jenkins workspace root, under which the self-built OpenSSL and
     # PostgreSQL live) is only added when set, i.e. on the CI builders.
-    local PREFIXES='/usr/local|/opt/homebrew|/opt/local'
+    # /opt/pgbuild is where the PostgreSQL, OpenSSL, Kerberos, zstd and lz4
+    # builds from pgadmin-org/pgbuild are unpacked. Their install names are
+    # absolute, so an unrewritten reference to one is exactly the kind of
+    # build-host path this check exists to catch, no different from Homebrew's.
+    local PREFIXES='/usr/local|/opt/homebrew|/opt/local|/opt/pgbuild'
     if [ -n "${SLAVE_HOME}" ]; then
         PREFIXES="${PREFIXES}|${SLAVE_HOME}"
     fi
@@ -535,14 +568,31 @@ _generate_sbom() {
    syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/sbom.json"
 }
 
-_codesign_binaries() {
+_set_codesign_args() {
+    # Populates CODESIGN_ARGS with the arguments shared by every codesign call.
+    #
+    # Without a Developer ID we sign ad-hoc rather than not signing at all.
+    # That is emphatically not a substitute for a real signature: an ad-hoc
+    # signed bundle is still refused by Gatekeeper and cannot be notarised. It
+    # exists because _fixup_imports has just rewritten install names across
+    # several hundred binaries, which invalidates whatever signatures they
+    # arrived with, Electron's included. On Apple Silicon the kernel refuses to
+    # execute a binary whose signature is broken or absent, so without this an
+    # unsigned bundle cannot be launched at all on arm64, even once the
+    # quarantine attribute has been removed. On Intel it merely leaves every
+    # binary in the bundle carrying a signature that no longer matches its
+    # contents.
     if [ "${CODESIGN}" -eq 0 ]; then
+        echo "Signing ad-hoc: the result will run locally once allowed, but"
+        echo "cannot be distributed. Provide pkg/mac/codesign.conf to sign"
+        echo "properly."
+        # --deep for the same reason the Developer ID path uses it: these are
+        # bundles with nested code, and without it codesign refuses to replace
+        # the signature on one whose nested code is unsigned, reporting "code
+        # object is not signed at all" against a subcomponent.
+        CODESIGN_ARGS=(--deep --force --sign -)
         return
     fi
-
-    echo "Purging build-machine pollution (pycache) before signing..."
-    find "${BUNDLE_DIR}" -name "__pycache__" -type d -exec rm -rf {} +
-    find "${BUNDLE_DIR}" -name "*.pyc" -delete
 
     if [ -z "${DEVELOPER_ID}" ] ; then
         echo "Developer ID Application not found in codesign.conf" >&2
@@ -554,6 +604,20 @@ _codesign_binaries() {
     TEAM_ID=$(echo "${DEVELOPER_ID}" | awk -F"[()]" '{print $2}')
     sed -i '' "s/%TEAMID%/${TEAM_ID}/g" "${BUILD_ROOT}/entitlements.plist"
 
+    CODESIGN_ARGS=(--deep --force --verify --verbose --timestamp
+                   --options runtime
+                   --entitlements "${BUILD_ROOT}/entitlements.plist"
+                   -i org.pgadmin.pgadmin4
+                   --sign "${DEVELOPER_ID}")
+}
+
+_codesign_binaries() {
+    echo "Purging build-machine pollution (pycache) before signing..."
+    find "${BUNDLE_DIR}" -name "__pycache__" -type d -exec rm -rf {} +
+    find "${BUNDLE_DIR}" -name "*.pyc" -delete
+
+    _set_codesign_args
+
     echo Signing "${BUNDLE_DIR}" binaries...
     IFS=$'\n'
     for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
@@ -563,37 +627,21 @@ _codesign_binaries() {
                awk -F":" '{print $1}' | \
                uniq)
     do
-        codesign --deep --force --verify --verbose --timestamp \
-                 --options runtime \
-                 --entitlements "${BUILD_ROOT}/entitlements.plist" \
-                 -i org.pgadmin.pgadmin4 \
-                 --sign "${DEVELOPER_ID}" \
-                 "$i"
+        codesign "${CODESIGN_ARGS[@]}" "$i"
     done
+    unset IFS
 
     echo Signing "${BUNDLE_DIR}" libraries...
-    find "${BUNDLE_DIR}" -type f -name "*.dylib*" -exec \
-        codesign --deep --force --verify --verbose --timestamp \
-                 --options runtime \
-                 --entitlements "${BUILD_ROOT}/entitlements.plist" \
-                 -i org.pgadmin.pgadmin4 \
-                 --sign "${DEVELOPER_ID}" \
-                 {} \;
+    while IFS= read -r lib; do
+        codesign "${CODESIGN_ARGS[@]}" "${lib}"
+    done < <(find "${BUNDLE_DIR}" -type f -name "*.dylib*")
 }
 
 _codesign_bundle() {
-    if [ "${CODESIGN}" -eq 0 ]; then
-        return
-    fi
-
-    # Sign the .app
+    # CODESIGN_ARGS is set by _codesign_binaries, which always runs first and
+    # signs ad-hoc when there is no Developer ID; see _set_codesign_args.
     echo Signing "${BUNDLE_DIR}"...
-    codesign --deep --force --verify --verbose --timestamp \
-             --options runtime \
-             --entitlements "${BUILD_ROOT}/entitlements.plist" \
-             -i org.pgadmin.pgadmin4 \
-             --sign "${DEVELOPER_ID}" \
-             "${BUNDLE_DIR}"
+    codesign "${CODESIGN_ARGS[@]}" "${BUNDLE_DIR}"
 
     echo "Verifying the signature from bundle dir..."
     codesign --verify --deep --verbose=4 "${BUNDLE_DIR}"
@@ -614,32 +662,116 @@ _create_zip() {
     echo "Successfully created ZIP file: ${ZIP_NAME}"
 }
 
+_attach_dmg_eula() {
+    # The licence shown when the image is opened is a resource attached to the
+    # image, not a file inside it. Lifted from create-dmg, which in turn took
+    # the udifrez approach from https://developer.apple.com/forums/thread/668084
+    # after the older flatten/rez/unflatten route stopped working. The template
+    # is vendored alongside this script rather than cloned, so the build does
+    # not depend on another repository for one XML file.
+    echo "Attaching the licence agreement..."
+
+    local template="${SCRIPT_DIR}/eula-resources-template.xml"
+    local plist="${TEMP_DIR}/eula-resources.xml"
+    local licence="${SCRIPT_DIR}/licence.rtf"
+    local format
+
+    test -d "${TEMP_DIR}" || mkdir -p "${TEMP_DIR}"
+
+    case "$(file -b "${licence}")" in
+        'Rich Text Format data'*) format='RTF ' ;;
+        *)                        format='TEXT' ;;
+    esac
+
+    # The payload goes into a plist <data> element, so it is base64 wrapped at
+    # 52 columns and indented to sit inside the element.
+    EULA_FORMAT="${format}" \
+    EULA_DATA="$(openssl base64 -in "${licence}" | tr -d '\n' \
+        | awk '{gsub(/.{52}/, "&\n")}1' | sed $'s/^\\(.*\\)$/\t\t\t\\1/')" \
+    python3 -c 'import os, sys
+tpl = open(sys.argv[1]).read()
+tpl = tpl.replace("${EULA_FORMAT}", os.environ["EULA_FORMAT"])
+tpl = tpl.replace("${EULA_DATA}", os.environ["EULA_DATA"])
+open(sys.argv[2], "w").write(tpl)' "${template}" "${plist}"
+
+    hdiutil udifrez -xml "${plist}" '' -quiet "${DMG_NAME}" || {
+        echo 'ERROR: Failed to attach the licence agreement.'
+        exit 1
+    }
+}
+
 _create_dmg() {
-    # move to the directory where we want to create the DMG
+    # Build the image straight from a staged directory, rather than mounting a
+    # read/write volume, populating it and unmounting again.
+    #
+    # The unmount was the problem. hdiutil waits on DiskArbitration with a
+    # fixed 120 second timeout that nothing exposes a way to raise, and the
+    # cost of unmounting scales with the bundle: measured on GitHub's hosted
+    # runners with an identical payload it takes about 20 seconds on arm64, 41
+    # on macos-26-intel and 90 on macos-15-intel, and with the real bundle it
+    # exceeds 120 on both Intel images every time. `hdiutil detach -force` is
+    # no help, contrary to how it is usually described: it waits on
+    # DiskArbitration too, times out identically, and the conversion then fails
+    # with "Resource temporarily unavailable" because the image is still
+    # attached. `hdiutil create -srcfolder` never mounts anything, so none of
+    # that can arise.
+    #
+    # This also replaces create-dmg, which was cloned unpinned from its default
+    # branch on every build and run against the signed bundle. Everything it
+    # did for us was staging, because we passed --skip-jenkins and so none of
+    # its Finder automation ran: the volume name, the Applications symlink, the
+    # background directory, the pre-built .DS_Store carrying the window and
+    # icon layout, and the hidden bundle extension. The one part that is not a
+    # file in the volume is the licence agreement, attached afterwards.
     test -d "${DIST_ROOT}" || mkdir "${DIST_ROOT}"
 
-    echo "Checking out create-dmg..."
-    git clone https://github.com/create-dmg/create-dmg.git "${BUILD_ROOT}/create-dmg"
+    local stage="${BUILD_ROOT}/dmg-staging"
 
-    "${BUILD_ROOT}/create-dmg/create-dmg" \
-        --volname "${APP_NAME}" \
-        --volicon "${SCRIPT_DIR}/dmg-icon.icns" \
-        --eula "${SCRIPT_DIR}/licence.rtf" \
-        --background "${SCRIPT_DIR}/dmg-background.png" \
-        --app-drop-link 600 220 \
-        --icon "${APP_NAME}.app" 200 220 \
-        --window-pos 200 120 \
-        --window-size 800 400 \
-        --hide-extension "${APP_NAME}.app" \
-        --add-file .DS_Store "${SCRIPT_DIR}/dmg.DS_Store" 5 5 \
-        --format UDBZ \
-        --skip-jenkins \
-        --no-internet-enable \
-        "${DMG_NAME}" \
-        "${BUNDLE_DIR}"
+    echo "Staging the disk image contents..."
+    rm -rf "${stage}"
+    mkdir -p "${stage}/.background"
+
+    # -c clones rather than copies on APFS, which makes staging a bundle of
+    # this size effectively free; fall back for any filesystem that cannot.
+    cp -Rc "${BUNDLE_DIR}" "${stage}/" 2>/dev/null || cp -R "${BUNDLE_DIR}" "${stage}/"
+    cp "${SCRIPT_DIR}/dmg-background.png" "${stage}/.background/"
+    cp "${SCRIPT_DIR}/dmg.DS_Store" "${stage}/.DS_Store"
+    cp "${SCRIPT_DIR}/dmg-icon.icns" "${stage}/.VolumeIcon.icns"
+
+    # hdiutil preserves this as a symlink rather than following it, so the
+    # volume gets the usual drag-to-install target without carrying a copy of
+    # /Applications.
+    ln -s /Applications "${stage}/Applications"
+
+    # C marks the volume root as having a custom icon, so .VolumeIcon.icns is
+    # used; E hides the bundle's extension in Finder. These are what create-dmg
+    # set via --volicon and --hide-extension.
+    SetFile -a C "${stage}" || echo "WARNING: could not set the custom icon attribute"
+    SetFile -a E "${stage}/${APP_NAME}.app" || echo "WARNING: could not hide the bundle extension"
+
+    echo "Creating the disk image..."
+    rm -f "${DMG_NAME}"
+    hdiutil create \
+        -srcfolder "${stage}" \
+        -volname "${APP_NAME}" \
+        -fs HFS+ \
+        -format UDBZ \
+        -ov \
+        "${DMG_NAME}" || { echo 'ERROR: Failed to create the disk image.'; exit 1; }
+
+    _attach_dmg_eula
+
+    hdiutil verify "${DMG_NAME}" || { echo 'ERROR: The disk image did not verify.'; exit 1; }
+
+    rm -rf "${stage}"
 }
 
 _codesign_dmg() {
+    # Unlike the bundle, there is no point signing the image ad-hoc: the
+    # signature on a disk image is about distribution, and an ad-hoc one
+    # satisfies nothing that a missing one does not. What matters for running
+    # the build locally is that the app inside it is signed, which
+    # _codesign_binaries and _codesign_bundle have already seen to.
     if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
@@ -651,6 +783,74 @@ _codesign_dmg() {
              -i org.pgadmin.pgadmin4 \
              --sign "${DEVELOPER_ID}" \
              "${DMG_NAME}"
+}
+
+# The submission's status, or an empty string if Apple could not be reached.
+# Separate from the waiting below because both need it and because a failure
+# to ask is not the same thing as an answer.
+_notarize_status() {
+    local SUBMISSION_ID="$1"
+
+    xcrun notarytool info "${SUBMISSION_ID}" \
+        --team-id "${DEVELOPER_TEAM_ID}" \
+        --apple-id "${DEVELOPER_USER}" \
+        --password "${DEVELOPER_ASP}" 2>&1 | \
+        awk -F ': ' '/status:/ { print $2; }'
+}
+
+# Wait for a submission Apple has already accepted for processing.
+#
+# notarytool wait polls Apple for as long as the notarisation takes, which is
+# minutes at best and has been much longer, and it exits non-zero if any one of
+# those polls fails. A build farm runner losing its route for a few seconds
+# therefore failed a notarisation that was proceeding perfectly well on Apple's
+# side, which is what cost the 22nd September snapshot: the DMG had been
+# submitted, the ID was in hand, and the wait died with "The Internet
+# connection appears to be offline" twenty six minutes in.
+#
+# So a failed wait is retried rather than being taken as the answer. The
+# submission is not resubmitted, since it is still queued under the same ID and
+# a second copy would only be a second thing to wait for. Each failure asks for
+# the status directly, because notarytool wait also exits non-zero when the
+# submission genuinely finishes as Invalid or Rejected, and retrying that would
+# be waiting for an answer already given: any terminal status ends the loop and
+# leaves the caller's own check to decide what it means.
+_notarize_wait() {
+    local SUBMISSION_ID="$1"
+    local ATTEMPT=1
+    local ATTEMPTS=10
+    local DELAY=60
+    local STATUS
+
+    while [ "${ATTEMPT}" -le "${ATTEMPTS}" ]; do
+        if xcrun notarytool wait "${SUBMISSION_ID}" \
+                --team-id "${DEVELOPER_TEAM_ID}" \
+                --apple-id "${DEVELOPER_USER}" \
+                --password "${DEVELOPER_ASP}"; then
+            return 0
+        fi
+
+        STATUS=$(_notarize_status "${SUBMISSION_ID}")
+        case "${STATUS}" in
+            Accepted|Invalid|Rejected)
+                echo "Notarization finished whilst waiting, with status: ${STATUS}"
+                return 0
+                ;;
+        esac
+
+        if [ "${ATTEMPT}" -eq "${ATTEMPTS}" ]; then
+            break
+        fi
+
+        echo "Could not wait on submission ${SUBMISSION_ID} (attempt ${ATTEMPT} of ${ATTEMPTS})."
+        echo "The submission is still with Apple; retrying in ${DELAY} seconds."
+        sleep "${DELAY}"
+        ATTEMPT=$((ATTEMPT + 1))
+    done
+
+    echo "Gave up waiting for submission ${SUBMISSION_ID} after ${ATTEMPTS} attempts."
+    echo "Check it by hand with: xcrun notarytool info ${SUBMISSION_ID} ..."
+    return 1
 }
 
 _notarize_pkg() {
@@ -675,17 +875,10 @@ _notarize_pkg() {
     echo "Notarization submission ID: ${SUBMISSION_ID}"
 
     echo "Waiting for Notarization to be completed ..."
-    xcrun notarytool wait "${SUBMISSION_ID}" \
-        --team-id "${DEVELOPER_TEAM_ID}" \
-        --apple-id "${DEVELOPER_USER}" \
-        --password "${DEVELOPER_ASP}"
+    _notarize_wait "${SUBMISSION_ID}"
 
     # Print status information
-    REQUEST_STATUS=$(xcrun notarytool info "${SUBMISSION_ID}" \
-        --team-id "${DEVELOPER_TEAM_ID}" \
-        --apple-id "${DEVELOPER_USER}" \
-        --password "${DEVELOPER_ASP}" 2>&1 | \
-        awk -F ': ' '/status:/ { print $2; }')
+    REQUEST_STATUS=$(_notarize_status "${SUBMISSION_ID}")
 
     if [[ "${REQUEST_STATUS}" != "Accepted" ]]; then
         echo "Notarization failed with status: ${REQUEST_STATUS}"

@@ -26,6 +26,7 @@ of database objects.
    developer_tools
    processes
    pgagent
+   pgtimetable_chains
    contributions
    release_notes
    licence

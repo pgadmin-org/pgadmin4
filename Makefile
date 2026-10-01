@@ -25,7 +25,7 @@ appbundle:
 	./pkg/mac/build.sh $(BUILD_OPTS)
 
 install-node:
-	cd web && yarn install
+	cd web && yarn install --immutable
 
 install-python:
 	./tools/setup-python-env.sh

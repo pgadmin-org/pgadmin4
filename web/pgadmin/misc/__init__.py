@@ -335,23 +335,19 @@ def validate_binary_path():
     if data != '':
         data = json.loads(data)
 
-    version_str = ''
-
     # Do not allow storage dir as utility path
     if 'utility_path' in data and data['utility_path'] is not None and \
         Path(config.STORAGE_DIR) != Path(data['utility_path']) and \
             Path(config.STORAGE_DIR) not in Path(data['utility_path']).parents:
         binary_versions = get_binary_path_versions(data['utility_path'])
-        for utility, version in binary_versions.items():
-            if version is None:
-                version_str += "<b>" + utility + ":</b> " + \
-                               "not found on the specified binary path.<br/>"
-            else:
-                version_str += "<b>" + utility + ":</b> " + version + "<br/>"
+        utilities = [
+            {'utility': utility, 'version': version}
+            for utility, version in binary_versions.items()
+        ]
     else:
         return precondition_required(gettext('Invalid binary path.'))
 
-    return make_json_response(data=gettext(version_str), status=200)
+    return make_json_response(data=utilities, status=200)
 
 
 @blueprint.route("/upgrade_check", endpoint="upgrade_check",

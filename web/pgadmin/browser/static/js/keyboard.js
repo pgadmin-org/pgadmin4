@@ -14,7 +14,8 @@ import * as commonUtils from '../../../static/js/utils';
 import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
 import usePreferences from '../../../preferences/static/js/store';
-import { SHOW_OBJECT_EXPLORER_EVENT } from './constants';
+import { SHOW_OBJECT_EXPLORER_EVENT, TOGGLE_OBJECT_EXPLORER_EVENT }
+  from './constants';
 
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -41,6 +42,7 @@ _.extend(pgBrowser.keyboardNavigation, {
           ...(prefStore.getPreferences('browser', 'main_menu_tools')?.value) && {'tools_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'main_menu_tools')?.value)},
           ...(prefStore.getPreferences('browser', 'main_menu_help')?.value) && {'help_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'main_menu_help')?.value)},
           'left_tree_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'browser_tree')?.value),
+          'toggle_object_explorer': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'toggle_object_explorer')?.value),
           'tabbed_panel_backward': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'tabbed_panel_backward')?.value),
           'tabbed_panel_forward': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'tabbed_panel_forward')?.value),
           'sub_menu_query_tool': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_query_tool')?.value),
@@ -64,6 +66,7 @@ _.extend(pgBrowser.keyboardNavigation, {
           }}, // Main menu
           'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward, this.keyboardShortcut.close_tab_panel]}, // Main window panels
           'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
+          'bindToggleObjectExplorer': {'shortcuts': this.keyboardShortcut.toggle_object_explorer}, // Collapse/restore the Object Explorer
           'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
           'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
           'bindSubMenuSearchObjects': {'shortcuts': this.keyboardShortcut.sub_menu_search_objects}, // Sub menu - Open search objects,
@@ -212,6 +215,10 @@ _.extend(pgBrowser.keyboardNavigation, {
       document.querySelector('[id="id-object-explorer"]')?.focus();
       tree.t.select(tree.i);
     }, 0);
+  },
+  bindToggleObjectExplorer: function() {
+    // The provider owns the visibility state; it listens for this.
+    pgAdmin.Browser.Events.trigger(TOGGLE_OBJECT_EXPLORER_EVENT);
   },
   bindSubMenuQueryTool: function() {
     const tree = this.getTreeDetails();

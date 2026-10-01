@@ -492,6 +492,16 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         target_data = kwargs['target_data'] if 'target_data' in kwargs \
             else None
 
+        # Work on copies throughout. The caller owns these dictionaries
+        # (they are its view of the compared objects), so stashing the
+        # temporary names on them would leave the table's real name
+        # replaced by a temporary one, and a second call for the same
+        # table would then generate a script that copies from a relation
+        # that never existed.
+        target_data = dict(target_data)
+        source_partitions = [dict(partition) for partition in
+                             source_data.get('partitions', [])]
+
         # Store the original name and create a temporary name for
         # the partitioned(base) table.
         target_data['orig_name'] = target_data['name']
@@ -517,11 +527,11 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             '-- matches the inserted data.'
 
         # Create temporary name for partitions
-        for item in source_data['partitions']:
+        for item in source_partitions:
             item['temp_partition_name'] = 'partition_{0}'.format(
                 secrets.choice(range(1, 9999999)))
 
-        partition_data['partitions'] = source_data['partitions']
+        partition_data['partitions'] = source_partitions
 
         partition_sql = self.get_partitions_sql(partition_data,
                                                 schema_diff=True)

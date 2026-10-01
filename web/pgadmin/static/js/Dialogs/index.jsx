@@ -205,7 +205,7 @@ export function showChangeServerPassword() {
                 // Notify user to update pgpass file
                 if(isPgPassFileUsed) {
                   pgAdmin.Browser.notifier.alert(
-                    gettext('Change Password'),
+                    gettext('Change Server Password'),
                     gettext('Please make sure to disconnect the server'
                     + ' and update the new password in the pgpass file'
                       + ' before performing any other operation')
@@ -228,7 +228,7 @@ export function showChangeServerPassword() {
 }
 
 export function showChangeUserPassword(url) {
-  const title = gettext('Change pgAdmin User Password');
+  const title = gettext('Change pgAdmin Password');
   pgAdmin.Browser.notifier.showModal(title, (onClose) => {
     return <ChangePasswordContent
       getInitData={()=>{

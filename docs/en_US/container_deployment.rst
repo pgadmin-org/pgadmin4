@@ -157,8 +157,10 @@ of the `Preferences JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/pref
 
 Override the default file path for the pgadmin configurations file.This can be used while provisioning
 container with read only root file system to achieve a more secure pgadmin4 deployment for kubernetes.
-Note that if you are externally mapping this file, then environment variables passed using *PGADMIN_CONFIG_*
-suffix will be ignored.
+Note that if you are externally mapping this file, then environment variables
+passed using *PGADMIN_CONFIG_* suffix will be ignored only when that file
+exists and is non-empty. A missing or empty file is generated with those
+values.
 
 **PGPASS_FILE**
 
@@ -195,20 +197,62 @@ where it may be increased.
 
 This is a variable prefix that can be used to override any of the configuration
 options in pgAdmin's *config.py* file. Add the *PGADMIN_CONFIG_* prefix to any
-variable name from *config.py* and give the value in the format 'string value'
-for strings, True/False for booleans or 123 for numbers. See below for an
-example.
+variable name from *config.py* and give the value as a Python expression:
+``'string value'`` (including the quotes) for strings, ``True`` or ``False``
+for booleans, or ``123`` for numbers. See below for an example.
 
-Settings are written to */pgadmin4/config_distro.py* within the container, which
-is read after */pgadmin4/config.py* and before */pgadmin4/config_local.py*.
-Any settings given will therefore override anything in config.py, but can be
-overridden by settings in config_local.py.
+*PGADMIN_DEFAULT_* variables, including *PGADMIN_DEFAULT_EMAIL* and
+*PGADMIN_DEFAULT_PASSWORD*, are ordinary text and take no Python literal
+quotes. *PGADMIN_CONFIG_* values are written as Python code into
+*/pgadmin4/config_distro.py*, or into the file named by
+*PGADMIN_CUSTOM_CONFIG_DISTRO_FILE* if that is set. The values ``true`` and
+``false``, in any letter case, are written as ``True`` and ``False``. A bare
+hostname is a Python name, so ``MAIL_SERVER = mail.example.com`` raises
+``NameError`` at startup.
 
-Settings are only written to */pgadmin4/config_distro.py* once, typically on
-first launch of the container. If */pgadmin4/config_distro.py* contains one or
-more lines, then no changes are made; for example, if the container instance is
-restarted, or */pgadmin4/config_distro.py* is mapped to a file on persistent
-storage (not recommended - use */pgadmin4/config_local.py* instead)!
+Quoting added by the shell or by YAML sits outside that Python expression and
+is removed before the value is written. The *docker run* example below keeps
+the Python quotes inside shell quotes, for example
+``-e 'PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"'``.
+
+In Docker Compose map syntax, YAML consumes the quotes around a scalar. A
+YAML-only quoted hostname, ``PGADMIN_CONFIG_MAIL_SERVER: "mail.example.com"``
+or ``PGADMIN_CONFIG_MAIL_SERVER: 'mail.example.com'``, reaches the container
+as ``mail.example.com`` and cannot serve as a Python string. Nest the Python
+quotes inside the scalar:
+``PGADMIN_CONFIG_MAIL_SERVER: "'mail.example.com'"``. The container then
+writes ``MAIL_SERVER = 'mail.example.com'``. ``"587"`` and ``"True"`` are
+already valid Python, so they need no nested quotes. The list form keeps
+single quotes, as ``docker run -e`` does
+(``- PGADMIN_CONFIG_MAIL_SERVER='mail.example.com'``); nesting them there
+produces ``"'mail.example.com'"``, which is valid Python but puts stray
+quote characters into the value and fails silently rather than at startup.
+An ``env_file`` value strips one layer of quotes, so the same nesting as the
+map form applies there. The Compose example in the Examples section uses the
+map form for an SMTP server, username, password, and *SECURITY_EMAIL_SENDER*.
+
+Compose substitutes ``$VAR`` and ``${VAR}`` in Compose file values, and in
+double-quoted ``env_file`` values, so write a literal dollar as ``$$``.
+``"'pa$word'"`` reaches the container as ``'pa'``, with only a warning about
+an unset variable. The entrypoint does not expand the value again, so ``$$``
+is the only escaping required.
+
+Settings are written to */pgadmin4/config_distro.py* within the container (or
+to the file named by *PGADMIN_CUSTOM_CONFIG_DISTRO_FILE*), which is read after
+*/pgadmin4/config.py* and before */pgadmin4/config_local.py*. Any settings
+given will therefore override anything in config.py, but can be overridden by
+settings in config_local.py.
+
+The file is generated only when it is missing or empty, typically on first
+launch, and a non-empty file is left unchanged, including when the container
+is restarted. To apply corrected *PGADMIN_CONFIG_* values, recreate the
+container (``docker compose up -d`` does this when the environment changes,
+whereas ``docker compose restart`` does not), keeping the */var/lib/pgadmin*
+mapping to retain your data. If the file is on persistent storage, either
+because it is mapped (not recommended; use */pgadmin4/config_local.py*
+instead) or because *PGADMIN_CUSTOM_CONFIG_DISTRO_FILE* points there,
+recreating the container is not enough: edit the file, or empty it so that it
+is regenerated.
 
 See :ref:`config_py` for more information on the available configuration settings.
 
@@ -303,6 +347,37 @@ Run a simple container over port 80, setting some configuration options:
         -e 'PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"' \
         -e 'PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10' \
         -d dpage/pgadmin4
+
+Run pgAdmin with Docker Compose, publishing port 80 and sending mail through
+an external SMTP server. *PGADMIN_DEFAULT_EMAIL* and
+*PGADMIN_DEFAULT_PASSWORD* are ordinary strings. Each *PGADMIN_CONFIG_*
+string below includes the Python quotes that YAML would otherwise remove.
+*PGADMIN_DISABLE_POSTFIX* may be any non-empty value; it is ordinary text,
+not a Python expression. The named volume keeps */var/lib/pgadmin* when the
+container is recreated:
+
+.. code-block:: yaml
+
+    services:
+      pgadmin:
+        image: dpage/pgadmin4
+        ports:
+          - "80:80"
+        environment:
+          PGADMIN_DEFAULT_EMAIL: user@domain.com
+          PGADMIN_DEFAULT_PASSWORD: SuperSecret
+          PGADMIN_DISABLE_POSTFIX: "1"
+          PGADMIN_CONFIG_MAIL_SERVER: "'mail.example.com'"
+          PGADMIN_CONFIG_MAIL_PORT: "587"
+          PGADMIN_CONFIG_MAIL_USE_TLS: "True"
+          PGADMIN_CONFIG_MAIL_USERNAME: "'smtp-user'"
+          PGADMIN_CONFIG_MAIL_PASSWORD: "'s3cret=value'"
+          PGADMIN_CONFIG_SECURITY_EMAIL_SENDER: "'pgadmin@example.com'"
+        volumes:
+          - pgadmin-data:/var/lib/pgadmin
+
+    volumes:
+      pgadmin-data:
 
 Run a TLS secured container using a shared config/storage directory in
 /private/var/lib/pgadmin on the host, and servers pre-loaded from

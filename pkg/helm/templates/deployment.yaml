@@ -32,12 +32,12 @@ spec:
         {{- with omit .Values.commonLabels "app" }}
         {{- . | toYaml | nindent 8 }}
         {{- end }}
-      {{- if or (not (empty .Values.commonAnnotations)) (not .Values.existingSecret) .Values.preferences.enabled .Values.serverDefinitions.enabled }}
+      {{- if or (not (empty .Values.commonAnnotations)) (empty .Values.auth.existingSecret) .Values.preferences.enabled .Values.serverDefinitions.enabled }}
       annotations:
         {{- with .Values.commonAnnotations }}
         {{- . | toYaml | nindent 8 }}
         {{- end }}
-        {{- if not .Values.existingSecret }}
+        {{- if empty .Values.auth.existingSecret }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
         {{- if and .Values.config_local.enabled (empty .Values.config_local.existingSecret) }}

@@ -32,6 +32,10 @@ export default class Feature {
   }
 
   generateColumns() {/*This is intentional (SonarQube)*/}
+  // Return controlled table state slices to merge into the table's 'state'
+  // option. React Table v9 publishes state set through 'table.setOptions()'
+  // to its store immediately, so changing it during render is not safe.
+  tableState() { return {}; }
   onTable() {/*This is intentional (SonarQube)*/}
   onRow() {/*This is intentional (SonarQube)*/}
 }
@@ -109,6 +113,12 @@ export class FeatureSet {
     this.features.forEach((feature) => {
       feature.generateColumns({pgAdmin, columns, columnVisibility, options});
     });
+  }
+
+  tableState({options}) {
+    return this.features.reduce(
+      (state, feature) => ({...state, ...feature.tableState({options})}), {}
+    );
   }
 
   onTable({table, options, classList}) {

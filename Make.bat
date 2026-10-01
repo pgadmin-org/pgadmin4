@@ -20,12 +20,18 @@ IF "%1" == "clean" (
 )
 
 REM Main build sequence
+REM
+REM The clean runs first because :FETCH_PYTHON unpacks into the temp directory
+REM that it removes, and the fetch runs before :SET_ENVIRONMENT because the
+REM latter has no interpreter of its own to ask about the build.
+CALL :CLEAN || EXIT /B 1
+CALL :FETCH_PYTHON || EXIT /B 1
 CALL :SET_ENVIRONMENT
 CALL :VALIDATE_ENVIRONMENT || EXIT /B 1
-CALL :CLEAN || EXIT /B 1
 CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
 CALL :CREATE_PYTHON_ENV || EXIT /B 1
 CALL :CREATE_RUNTIME_ENV || EXIT /B 1
+CALL :SIGN_COMPONENTS || EXIT /B 1
 CALL :GENERATE_SBOM || EXIT /B 1
 CALL :CREATE_INSTALLER || EXIT /B 1
 CALL :VERIFY_SIGNATURE || EXIT /B 1
@@ -50,15 +56,78 @@ REM Main build sequence Ends
     EXIT /B 0
 
 
+:FETCH_PYTHON
+    REM Fetch the Python this build uses, rather than using whatever happens to
+    REM be installed on the machine running it. Which interpreter pgAdmin ships
+    REM is a decision recorded in pkg\python-version.txt, not a property of the
+    REM build agent, and this is the only place on Windows that reads it.
+    REM
+    REM The distribution comes from astral-sh/python-build-standalone: it is
+    REM relocatable, published per exact CPython version, and is a plain tarball
+    REM rather than an installer, so unpacking it raises no UAC prompt. That
+    REM matters on the signing host, where the desktop session is logged in
+    REM automatically and an elevation dialog waits forever for somebody who is
+    REM not there.
+    REM
+    REM curl.exe and tar.exe have shipped in Windows since 1803, so this needs
+    REM nothing installed to bootstrap itself, not even a Python.
+    ECHO Reading the Python version...
+    SET "PYTHON_VERSION="
+    SET "PYTHON_BUILD_STANDALONE_TAG="
+    FOR /F "eol=# usebackq tokens=1,2 delims==" %%a IN ("%WD%\pkg\python-version.txt") DO (
+        IF "%%a" == "PYTHON_VERSION" SET "PYTHON_VERSION=%%b"
+        IF "%%a" == "PYTHON_BUILD_STANDALONE_TAG" SET "PYTHON_BUILD_STANDALONE_TAG=%%b"
+    )
+
+    IF "%PYTHON_VERSION%" == "" (
+        ECHO PYTHON_VERSION is not set in pkg\python-version.txt.
+        EXIT /B 1
+    )
+    IF "%PYTHON_BUILD_STANDALONE_TAG%" == "" (
+        ECHO PYTHON_BUILD_STANDALONE_TAG is not set in pkg\python-version.txt.
+        EXIT /B 1
+    )
+
+    REM Split for the runtime build, where e.g. 3.13.15 becomes 313
+    FOR /F "tokens=1,2,3 delims=." %%a IN ("%PYTHON_VERSION%") DO (
+        SET "PYTHON_MAJOR=%%a"
+        SET "PYTHON_MINOR=%%b"
+        SET "PYTHON_REVISION=%%c"
+    )
+
+    SET "PGADMIN_PYTHON_DIR=%TMPDIR%\python"
+    SET "PYTHON_ARCHIVE=cpython-%PYTHON_VERSION%+%PYTHON_BUILD_STANDALONE_TAG%-x86_64-pc-windows-msvc-install_only.tar.gz"
+
+    IF NOT EXIST "%TMPDIR%"  MKDIR "%TMPDIR%"
+
+    ECHO Downloading Python %PYTHON_VERSION%...
+    curl.exe --fail --location --silent --show-error --output "%TMPDIR%\python.tar.gz" "https://github.com/astral-sh/python-build-standalone/releases/download/%PYTHON_BUILD_STANDALONE_TAG%/%PYTHON_ARCHIVE%" || EXIT /B 1
+
+    ECHO Unpacking Python...
+    REM The archive unpacks to a single python\ directory.
+    tar -x -f "%TMPDIR%\python.tar.gz" -C "%TMPDIR%" || EXIT /B 1
+    DEL /q "%TMPDIR%\python.tar.gz" > nul 2>&1
+
+    "%PGADMIN_PYTHON_DIR%\python.exe" --version || EXIT /B 1
+
+    REM :CREATE_VIRTUAL_ENV needs virtualenv rather than the venv module, as it
+    REM relocates the result. pip is bundled with the distribution, but ask
+    REM ensurepip for it anyway so this does not quietly depend on that.
+    ECHO Installing virtualenv...
+    "%PGADMIN_PYTHON_DIR%\python.exe" -m ensurepip --upgrade || EXIT /B 1
+    "%PGADMIN_PYTHON_DIR%\python.exe" -m pip install --upgrade pip virtualenv || EXIT /B 1
+
+    EXIT /B 0
+
+
 :SET_ENVIRONMENT
     ECHO Configuring the environment...
-    IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python314"
-    IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\Program Files\MIT\Kerberos"
-    IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\17"
+    IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
+    IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\build64\postgresql"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
     IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
     IF "%PGADMIN_VCREDIST_FILE%" == "" SET "PGADMIN_VCREDIST_FILE=vc_redist.x64.exe"
-    IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
+    IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64"
     IF "%PGADMIN_WINDOWS_CSC%" == "" SET "PGADMIN_WINDOWS_CSC="
 
     REM Set additional variables we need
@@ -74,11 +143,6 @@ REM Main build sequence Ends
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-x64.exe
     IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-x64.exe
 
-    REM get Python version for the runtime build ex. 3.9.2 will be 39
-    FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
-    FOR /f "tokens=2 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
-    FOR /f "tokens=3 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_REVISION=%%G
-
     EXIT /B 0
 
 
@@ -90,8 +154,8 @@ REM Main build sequence Ends
     ECHO Output directory:          %DISTROOT%
     ECHO Installer name:            %INSTALLERNAME%
     ECHO.
-    ECHO Python directory:          %PGADMIN_PYTHON_DIR%
     ECHO Python version:            %PYTHON_MAJOR%.%PYTHON_MINOR%.%PYTHON_REVISION%
+    ECHO Python directory:          %PGADMIN_PYTHON_DIR%
     ECHO.
     ECHO KRB5 directory:            %PGADMIN_KRB5_DIR%
     ECHO PostgreSQL directory:      %PGADMIN_POSTGRES_DIR%
@@ -113,41 +177,16 @@ REM Main build sequence Ends
     ECHO ****************************************************************
 
     ECHO Checking the environment...
-    IF NOT EXIST "%PGADMIN_INNOTOOL_DIR%" (
-        ECHO !PGADMIN_INNOTOOL_DIR! does not exist
-        ECHO Please install InnoTool and set the PGADMIN_INNOTOOL_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_VCREDIST_DIR%" (
-        ECHO !PGADMIN_VCREDIST_DIR! does not exist
-        ECHO Please install Microsoft Visual studio and set the PGADMIN_VCREDIST_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_KRB5_DIR%" (
-        ECHO !PGADMIN_KRB5_DIR! does not exist.
-        ECHO Please install MIT Kerberos for Windows and set the PGADMIN_KRB5_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_PYTHON_DIR%" (
-        ECHO !PGADMIN_PYTHON_DIR! does not exist.
-        ECHO Please install Python and set the PGADMIN_PYTHON_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_POSTGRES_DIR%" (
-        ECHO !PGADMIN_POSTGRES_DIR! does not exist.
-        ECHO Please install PostgreSQL and set the PGADMIN_POSTGRES_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" (
-        ECHO !PGADMIN_PYTHON_DIR!\Scripts\virtualenv.exe does not exist.
-        ECHO Please install the virtualenv package in Python.
-        EXIT /B 1
-    )
+    REM The checks are made by :REQUIRE_DIR rather than inline, because the
+    REM message names the directory that was looked for, and a default such as
+    REM "C:\Program Files (x86)\Inno Setup 6" carries a closing parenthesis.
+    REM Inside a parenthesised block that parenthesis ends the block, as cmd
+    REM expands the variable when it parses the block rather than when it runs it,
+    REM so the block failed to parse whether or not the directory was there.
+    CALL :REQUIRE_DIR "%PGADMIN_INNOTOOL_DIR%" "Please install InnoTool and set the PGADMIN_INNOTOOL_DIR environment variable." || EXIT /B 1
+    CALL :REQUIRE_DIR "%PGADMIN_VCREDIST_DIR%" "Please install Microsoft Visual Studio and set the PGADMIN_VCREDIST_DIR environment variable." || EXIT /B 1
+    CALL :REQUIRE_DIR "%PGADMIN_KRB5_DIR%" "Please install MIT Kerberos for Windows, from the winpgbuild project or elsewhere, and set the PGADMIN_KRB5_DIR environment variable." || EXIT /B 1
+    CALL :REQUIRE_DIR "%PGADMIN_POSTGRES_DIR%" "Please install PostgreSQL, from the winpgbuild project or elsewhere, and set the PGADMIN_POSTGRES_DIR environment variable." || EXIT /B 1
 
     SET "PATH=%PGADMIN_POSTGRES_DIR%\bin;%PATH%"
 
@@ -161,10 +200,14 @@ REM Main build sequence Ends
     CD "%TMPDIR%"
 
     REM Note that we must use virtualenv.exe here, as the venv module doesn't allow python.exe to relocate.
-    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
+    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv || EXIT /B 1
 
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
+    REM Copy the standard library, but NOT site-packages: the venv already has its
+    REM own seeded pip there, and overwriting only the files the system Python also
+    REM has leaves a mix of two pip versions behind.
+    ROBOCOPY /E /R:3 /W:5 /NFL /NDL /NP "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" /XD site-packages
+    CALL :CHECK_ROBOCOPY_ERROR || EXIT /B 1
 
     ECHO Activating virtual environment -  %TMPDIR%\venv...
     CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
@@ -181,11 +224,15 @@ REM Main build sequence Ends
     ECHO Staging Python...
     MKDIR "%BUILDROOT%\python\Lib" || EXIT /B 1
 
-    ECHO Downloading embedded Python...
-    REM Get the python embeddable and extract it to %BUILDROOT%\python
-    CD "%TMPDIR%
-    %PGADMIN_PYTHON_DIR%\python -c "import sys; from urllib.request import urlretrieve; urlretrieve('https://www.python.org/ftp/python/' + sys.version.split(' ')[0] + '/python-' + sys.version.split(' ')[0] + '-embed-amd64.zip', 'python-embedded.zip')" || EXIT /B 1
-    %PGADMIN_PYTHON_DIR%\python -c "import zipfile; z = zipfile.ZipFile('python-embedded.zip', 'r'); z.extractall('../win-build/python/')" || EXIT /B 1
+    ECHO Downloading embedded Python %PYTHON_VERSION%...
+    REM What ships is the embeddable distribution from python.org, a different
+    REM build from the one :FETCH_PYTHON downloaded, and it has to be the same
+    REM CPython version: the extension modules in site-packages were compiled
+    REM against the build Python and are about to be run under this one. Both
+    REM therefore read pkg\python-version.txt, rather than either asking the
+    REM other what it is.
+    curl.exe --fail --location --silent --show-error --output "%TMPDIR%\python-embedded.zip" "https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-embed-amd64.zip" || EXIT /B 1
+    tar -x -f "%TMPDIR%\python-embedded.zip" -C "%BUILDROOT%\python" || EXIT /B 1
 
     ECHO Copying site-packages...
     XCOPY /S /I /E /H /Y "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1
@@ -193,12 +240,8 @@ REM Main build sequence Ends
     REM NOTE: There is intentionally no space after "site" in the line below, to prevent Python barfing if there's one in the file
     ECHO import site>> "%BUILDROOT%\python\python%PYTHON_MAJOR%%PYTHON_MINOR%._pth"
 
-    ECHO Staging Kerberos components...
-    COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
-    COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
+    REM NOTE: The Kerberos components are staged into the runtime directory
+    REM alongside libpq.dll, not here. See :CREATE_RUNTIME_ENV.
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
     FOR /R "%BUILDROOT%\python" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
@@ -216,8 +259,8 @@ REM Main build sequence Ends
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    ROBOCOPY /S "%WD%\web" "%BUILDROOT%\web" > nul
-    CALL :CHECK_ROBOCOPY_ERROR
+    ROBOCOPY /S /NFL /NDL /NP "%WD%\web" "%BUILDROOT%\web"
+    CALL :CHECK_ROBOCOPY_ERROR || EXIT /B 1
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
@@ -228,7 +271,7 @@ REM Main build sequence Ends
         EXIT /B 1
     )
     CALL yarn set version %YARN_VERSION% || EXIT /B 1
-    CALL yarn install || EXIT /B 1
+    CALL yarn install --immutable || EXIT /B 1
     CALL npm rebuild || EXIT /B 1
 
     ECHO Bundling javascript...
@@ -242,8 +285,18 @@ REM Main build sequence Ends
     RD /Q /S "%BUILDROOT%\web\regression" 1> nul 2>&1
     ECHO Removing tools...
     RD /Q /S "%BUILDROOT%\web\tools" 1> nul 2>&1
-    ECHO Removing yarn cache...
+    ECHO Removing the JavaScript build configuration...
     RD /Q /S "%BUILDROOT%\web\.yarn" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\yarn.lock" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.yarnrc.yml" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\package.json" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\jest.config.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\babel.cfg" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\babel.config.json" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\webpack.config.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\webpack.shim.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.eslintrc.js" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\.editorconfig" 1> nul 2>&1
     ECHO Removing any existing configurations...
     DEL /q "%BUILDROOT%\web\pgadmin4.db" 1> nul 2>&1
     DEL /q "%BUILDROOT%\web\config_local.py" 1> nul 2>&1
@@ -296,9 +349,33 @@ REM Main build sequence Ends
     ECHO Downloading Electron to %TMPDIR%...
     REM Get a fresh copy of electron.
 
-    REM WGET
-    FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
+    REM Resolve the electron version from runtime\yarn.lock, NOT from the npm
+    REM registry and NOT from the range in runtime\package.json. The registry's
+    REM `latest` dist-tag lands any newly published electron release in shipped
+    REM binaries without review, whilst the package.json range is only a lower
+    REM bound, so yarn is free to resolve it to a build other than the one we
+    REM ship. The lockfile is the single source of truth, and `yarn info`
+    REM reports its resolution without touching the network or needing
+    REM node_modules.
+    REM
+    REM It must run inside runtime\ though: outside a yarn project, `yarn info`
+    REM silently falls back to querying the registry and still exits 0, so check
+    REM the lockfile is present first and validate what comes back.
+    IF NOT EXIST "%WD%\runtime\yarn.lock" (
+        ECHO ERROR: "%WD%\runtime\yarn.lock" not found; cannot resolve the pinned Electron version.
+        EXIT /B 1
+    )
 
+    SET "ELECTRON_VERSION="
+    PUSHD "%WD%\runtime" || EXIT /B 1
+    FOR /f "delims=" %%i IN ('yarn info electron --json ^| node -e "const lines=require('fs').readFileSync(0,'utf8').split('\n').filter(Boolean);const pkg=lines.map(l=>{try{return JSON.parse(l);}catch(e){return null;}}).find(o=>o&&typeof o.value==='string'&&o.value.startsWith('electron@npm:'));const version=(pkg&&pkg.children&&pkg.children.Version)||'';process.stdout.write(/^[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?$/.test(version)?version:'');"') DO SET "ELECTRON_VERSION=%%i"
+    POPD
+    IF "%ELECTRON_VERSION%"=="" (
+        ECHO ERROR: Could not resolve the pinned Electron version from "%WD%\runtime\yarn.lock".
+        EXIT /B 1
+    )
+
+    REM WGET
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
@@ -322,33 +399,48 @@ REM Main build sequence Ends
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%"
 
-    IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
-        ECHO Attempting to sign the pgAdmin4.exe...
-        CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v "%BUILDROOT%\runtime\pgAdmin4.exe"
-        IF %ERRORLEVEL% NEQ 0 (
-            ECHO.
-            ECHO ************************************************************
-            ECHO * Failed to sign the pgAdmin4.exe
-            ECHO ************************************************************
-            PAUSE
-        )
-    ) ELSE (
-        ECHO Skipping code signing ^(PGADMIN_WINDOWS_CSC is not set^)...
-    )
-
     ECHO Staging PostgreSQL components...
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-*-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-*-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" "%BUILDROOT%\runtime" > nul
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" "%BUILDROOT%\runtime" > nul
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" "%BUILDROOT%\runtime" > nul
-    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" "%BUILDROOT%\runtime" > nul
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\liblz4.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libzstd.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
     COPY "%PGADMIN_POSTGRES_DIR%\bin\zlib1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dump.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dumpall.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1L%
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dumpall.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_restore.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     COPY "%PGADMIN_POSTGRES_DIR%\bin\psql.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+
+    REM The Kerberos runtime belongs here, next to libpq.dll and the client
+    REM binaries: PostgreSQL 18 and later are built with GSSAPI support, so
+    REM libpq.dll has a load-time dependency on gssapi64.dll, and pg_dump.exe
+    REM and friends resolve it from their own directory. The pgAdmin server
+    REM process finds it here too, because the runtime prepends this directory
+    REM to PATH before spawning Python.
+    REM
+    REM krb5_64.dll loads krbcc64.dll dynamically rather than importing it, but
+    REM it is not optional: on Windows krb5 defaults the credential cache type
+    REM to CCAPI, and the entry points for that are left null when the DLL
+    REM cannot be loaded, so the first use of the default credential cache
+    REM calls address zero. ccapiserver.exe is the process krbcc64.dll drives.
+    ECHO Staging Kerberos components...
+    COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\krbcc64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\ccapiserver.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
 
     ECHO Staging VC++ runtime...
     MKDIR "%BUILDROOT%\installer" || EXIT /B 1
@@ -376,8 +468,12 @@ REM Main build sequence Ends
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
 
     ECHO Creating windows installer using INNO tool...
+    REM Inno signs the installer and its uninstaller itself, one file per call,
+    REM through the same script as :SIGN_FILES. Inno replaces $q with a quote
+    REM and $f with the already-quoted file name. The outer pair of quotes is
+    REM for cmd /c, which strips the first and last quote of its command line.
     IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
-        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v $f" || EXIT /B 1
+        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/DSIGNED" "/SpgAdminSigntool=%ComSpec% /c $q$q%WD%\pkg\win32\sign-files.bat$q $q%PGADMIN_WINDOWS_CSC%$q $f$q" || EXIT /B 1
     ) ELSE (
         CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" || EXIT /B 1
     )
@@ -406,13 +502,75 @@ REM Main build sequence Ends
     ECHO Verifying the installer signature...
 
     CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" verify /pa /v "%DISTROOT%\%INSTALLERNAME%"
-    IF %ERRORLEVEL% NEQ 0 (
+    REM PAUSE was the old handler here, which on the signing host either returns
+    REM immediately, leaving the build to carry on with an unverified installer,
+    REM or blocks until the job times out. There is nobody at that machine to
+    REM press a key.
+    IF ERRORLEVEL 1 (
         ECHO.
         ECHO ************************************************************
         ECHO * Failed to verify signature of the installer
         ECHO ************************************************************
-        PAUSE
+        EXIT /B 1
     )
+
+    EXIT /B 0
+
+
+REM Sign one or more files, passed as quoted arguments, with a SHA-256 file
+REM digest. pkg\win32\sign-files.bat does the work, in signtool's split
+REM digest, sign and ingest steps, because the one-step form cannot use a
+REM SHA-2 digest with the card's key; the script explains why. All the files
+REM go in one call because each call costs one PIN prompt, and their names
+REM must be unique, which the script checks.
+:SIGN_FILES
+    IF "%PGADMIN_WINDOWS_CSC%" == "" EXIT /B 0
+
+    CALL "%WD%\pkg\win32\sign-files.bat" "%PGADMIN_WINDOWS_CSC%" %*
+    REM IF ERRORLEVEL, not IF %ERRORLEVEL%: the latter would be expanded before
+    REM the script had run were this ever moved inside a parenthesised block.
+    IF ERRORLEVEL 1 (
+        ECHO.
+        ECHO ************************************************************
+        ECHO * Failed to sign one or more files
+        ECHO ************************************************************
+        EXIT /B 1
+    )
+
+    EXIT /B 0
+
+
+REM Sign the components that we build ourselves: the runtime executable, and
+REM the PostgreSQL and Kerberos utilities and libraries obtained from the
+REM winpgbuild project, all of which are staged into the runtime directory by
+REM :CREATE_RUNTIME_ENV. The Electron, Python and VC++ runtime components are
+REM deliberately left alone, as they are third party binaries that we do not
+REM build, and signing them would replace any signature of their own. Names
+REM are matched as patterns as some of the libraries include version numbers,
+REM and some of them are optional.
+:SIGN_COMPONENTS
+    IF "%PGADMIN_WINDOWS_CSC%" == "" (
+        ECHO Skipping code signing ^(PGADMIN_WINDOWS_CSC is not set^)...
+        EXIT /B 0
+    )
+
+    ECHO Attempting to sign the pgAdmin, PostgreSQL and Kerberos components...
+
+    SETLOCAL EnableDelayedExpansion
+    SET "COMPONENTS="
+    FOR %%p IN (pgAdmin4.exe libpq.dll libcrypto-*-x64.dll libssl-*-x64.dll libintl-*.dll libiconv-*.dll liblz4.dll libzstd.dll zlib1.dll pg_dump.exe pg_dumpall.exe pg_restore.exe psql.exe kinit.exe krb5_64.dll comerr64.dll k5sprt64.dll gssapi64.dll krbcc64.dll ccapiserver.exe) DO (
+        FOR /F "delims=" %%f IN ('DIR /B "%BUILDROOT%\runtime\%%p" 2^>nul') DO SET "COMPONENTS=!COMPONENTS! "%BUILDROOT%\runtime\%%f""
+    )
+    IF "!COMPONENTS!" == "" (
+        ECHO.
+        ECHO ************************************************************
+        ECHO * No components were found to sign
+        ECHO ************************************************************
+        ENDLOCAL
+        EXIT /B 1
+    )
+    CALL :SIGN_FILES !COMPONENTS! || EXIT /B 1
+    ENDLOCAL
 
     EXIT /B 0
 
@@ -427,3 +585,16 @@ REM Main build sequence Ends
 :CHECK_ROBOCOPY_ERROR
     IF %ERRORLEVEL% GEQ 8 EXIT /B %ERRORLEVEL%
     EXIT /B 0
+
+
+REM Check that a prerequisite directory exists, reporting the path that was
+REM looked for and how to correct it if it does not. The first argument is the
+REM directory and the second the hint; both are echoed here, outside any
+REM parenthesised block, so a parenthesis in either is just a character.
+:REQUIRE_DIR
+    IF EXIST "%~1" EXIT /B 0
+
+    ECHO %~1 does not exist.
+    ECHO %~2
+
+    EXIT /B 1

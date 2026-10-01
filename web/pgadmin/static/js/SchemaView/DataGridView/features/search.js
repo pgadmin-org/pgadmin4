@@ -23,32 +23,13 @@ export default class GlobalSearch extends Feature {
     super();
   }
 
-  onTable({table, options}) {
+  tableState({options}) {
+    if (!options.canSearch) return { globalFilter: '' };
 
-    if (!options.canSearch) {
-      const searchText = '';
-
-      table.setOptions((prev) => ({
-        ...prev,
-        state: {
-          ...prev.state,
-          globalFilter: searchText,
-        }
-      }));
-
-      return;
-    }
-
-    const searchText = this.schemaState.state(
-      this.accessPath.concat(SEARCH_STATE_PATH)
-    );
-
-    table.setOptions((prev) => ({
-      ...prev,
-      state: {
-        ...prev.state,
-        globalFilter: searchText,
-      }
-    }));
+    return {
+      globalFilter: this.schemaState.state(
+        this.accessPath.concat(SEARCH_STATE_PATH)
+      ),
+    };
   }
 }

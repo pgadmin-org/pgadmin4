@@ -30,7 +30,7 @@ export function connectServerModal(modal, modalData, connectCallback, cancelCall
   });
 }
 
-export async function connectServer(api, modal, sid, user, formData, connectCallback) {
+export async function connectServer(api, modal, sid, user, formData, connectCallback, cancelCallback, promptCallback) {
   try {
     let {data: respData} = await api({
       method: 'POST',
@@ -45,10 +45,12 @@ export async function connectServer(api, modal, sid, user, formData, connectCall
     });
     connectCallback?.(respData.data);
   } catch (error) {
+    promptCallback?.(false);
     connectServerModal(modal, error.response?.data?.result, async (data)=>{
-      connectServer(api, modal, sid, user, data, connectCallback);
+      promptCallback?.(true);
+      connectServer(api, modal, sid, user, data, connectCallback, cancelCallback, promptCallback);
     }, ()=>{
-      /*This is intentional (SonarQube)*/
+      cancelCallback?.();
     });
   }
 }

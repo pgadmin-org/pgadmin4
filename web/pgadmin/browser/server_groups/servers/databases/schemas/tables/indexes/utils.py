@@ -11,7 +11,6 @@
 
 from flask import render_template
 from flask_babel import gettext
-from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
 
@@ -105,11 +104,12 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
         "/".join([template_path, 'column_details.sql']), idx=idx
     )
     status, rset = conn.execute_2darray(SQL)
+    if not status:
+        raise ExecuteError(rset)
+
     # Remove column if duplicate column is present in list.
     rset['rows'] = [i for n, i in enumerate(rset['rows']) if
                     i not in rset['rows'][n + 1:]]
-    if not status:
-        return internal_server_error(errormsg=rset)
 
     # 'attdef' comes with quotes from query so we need to strip them
     # 'options' we need true/false to render switch ASC(false)/DESC(true)
@@ -173,7 +173,7 @@ def get_include_details(conn, idx, data, template_path=None):
     )
     status, rset = conn.execute_2darray(SQL)
     if not status:
-        return internal_server_error(errormsg=rset)
+        raise ExecuteError(rset)
 
     # Push as collection
     data['include'] = [col['colname'] for col in rset['rows']]
@@ -253,7 +253,7 @@ def get_sql(conn, **kwargs):
 
         status, res = conn.execute_dict(sql)
         if not status:
-            return internal_server_error(errormsg=res)
+            raise ExecuteError(res)
 
         if len(res['rows']) == 0:
             raise ObjectGone(gettext('Could not find the index in the table.'))

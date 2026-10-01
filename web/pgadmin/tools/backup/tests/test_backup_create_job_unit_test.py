@@ -1301,6 +1301,67 @@ class BackupCreateJobTest(BaseTestGenerator):
              expected_cmd_opts=['--globals-only'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
+         )),
+        ('When backup an object the database is passed via the PGDATABASE '
+         'environment variable and never appears in argv',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='targetdb'
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[],
+             # The dbname must not leak onto the command line at all.
+             not_expected_cmd_opts=['targetdb'],
+             # It must be carried by the PGDATABASE env var instead.
+             expected_env={'PGDATABASE': 'targetdb'},
+             expected_exit_code=[0, None]
+         )),
+        ('When backup an object a connection-string value in the database '
+         'field is confined to PGDATABASE and cannot reach argv',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 # If this reached argv as a positional dbname, libpq would
+                 # expand it into a connection string and redirect the
+                 # connection (and PGPASSWORD) to an attacker-chosen server.
+                 database='host=127.0.0.1 port=5433 dbname=postgres'
+             ),
+             url=BACKUP_OBJECT_URL,
+             # storage-confined --file still present; injected value absent
+             expected_cmd_opts=['--file'],
+             not_expected_cmd_opts=[
+                 'host=127.0.0.1 port=5433 dbname=postgres', '--'],
+             # Carried literally in PGDATABASE, where libpq does not expand it.
+             expected_env={
+                 'PGDATABASE': 'host=127.0.0.1 port=5433 dbname=postgres'},
+             expected_exit_code=[0, None]
          ))
     ]
 
@@ -1407,3 +1468,13 @@ class BackupCreateJobTest(BaseTestGenerator):
                     opt,
                     batch_process_mock.call_args_list[0][1]['args']
                 )
+        # For object backups the target database must be passed via the
+        # PGDATABASE environment variable, never in argv -- a positional
+        # dbname containing "=" is expanded by libpq into a connection string.
+        # not_expected_cmd_opts (above) guards its absence from argv; this
+        # confirms it is carried in the environment instead.
+        if getattr(self, 'expected_env', None):
+            call = batch_process_mock.return_value.set_env_variables.call_args
+            actual_env = (call.kwargs.get('env') or {}) if call else {}
+            for _key, _val in self.expected_env.items():
+                self.assertEqual(actual_env.get(_key), _val)

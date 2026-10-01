@@ -1,0 +1,126 @@
+# Replaces the pgadmin4-macos-qa Jenkins job. That job runs `make appbundle` on
+# the two EC2 Mac workers; this runs the same build on hosted runners, which
+# cover both architectures.
+#
+# The build is unsigned and unnotarised: pkg/mac/build.sh sets CODESIGN=0 and
+# NOTARIZE=0 when pkg/mac/codesign.conf and pkg/mac/notarization.conf are
+# absent, so this needs no secrets. Signing belongs to the release and snapshot
+# builds.
+#
+# PostgreSQL comes from Homebrew for pg_config (psycopg builds against it) and
+# for the four client binaries copied into the bundle. The release build uses
+# a PostgreSQL built against its own OpenSSL and Kerberos; that difference
+# does not matter for a build check, and _fixup_imports relocates Homebrew's
+# libraries into the bundle correctly (verified by _verify_bundle_linkage,
+# which fails the build if anything still points outside it).
+
+name: Check macOS builds
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'pkg/mac/**'
+      - '.github/actions/install-pgbuild-deps/action.yml'
+      # Which build of each dependency this compiles against, so a
+      # change to it changes what the installer contains.
+      - 'pkg/pgbuild-deps.lock'
+      - 'web/**'
+      # Not the message catalogues: a .po change cannot break a build or a
+      # test, and check-translations already compiles them, which is the
+      # check that would catch a malformed one.
+      - '!web/pgadmin/translations/**'
+      - 'docs/**'
+      - 'requirements.txt'
+      - 'Makefile'
+      - 'tools/setup-python-env.sh'
+      - '.github/workflows/check-macos-build.yml'
+
+  workflow_dispatch:
+
+concurrency:
+  # The workflow's own name, spelled out rather than taken from
+  # github.workflow, because in a reusable workflow that expression is
+  # the CALLER's name. Every workflow Snapshot calls would otherwise
+  # share one group and, with cancel-in-progress, cancel each other.
+  group: 'check-macos-build @ ${{ github.ref }}'
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-appbundle:
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # "arch" is pgbuild's spelling of the architecture, which differs
+          # from the one this build uses internally (x64 rather than x86_64).
+          - { name: 'arm64', arch: 'arm64', runner: 'macos-15' }
+          # macos-26-intel rather than macos-15-intel: create-dmg's unmount
+          # scales with how much real Mach-O content lands on the volume, and
+          # the macos-15-intel image is slow enough that the real bundle
+          # crosses hdiutil's 120-second DiskArbitration timeout. Measured with
+          # an identical payload, unmount to "Disk image done": 19s on arm64,
+          # 41s on macos-26-intel, 82s on macos-15-intel, and that was with a
+          # lighter stand-in than the real bundle. It is also the newer image,
+          # which we would move to regardless since macOS 15 retires first.
+          - { name: 'x64',   arch: 'x86_64', runner: 'macos-26-intel' }
+
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20.x'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      # syft generates the SBOM, wget fetches Electron. PostgreSQL and its
+      # dependencies no longer come from Homebrew; see below.
+      - name: Install the build dependencies
+        run: brew install syft wget
+
+      # The dependencies come from pgadmin-org/pgbuild, built against each
+      # other with --with-zstd --with-lz4 and a 14.0 deployment target, which
+      # is what the release build ships. Homebrew's PostgreSQL was only ever a
+      # stand-in: it has no zstd or lz4 support (issue #9425), links Homebrew's
+      # OpenSSL rather than ours, and carries whatever minimum OS Homebrew
+      # happened to build for.
+      - name: Install the PostgreSQL build dependencies
+        uses: ./.github/actions/install-pgbuild-deps
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Show what pg_dump expects
+        run: otool -L /opt/pgbuild/postgresql/bin/pg_dump
+
+      - name: Check the appbundle build
+        run: |
+          export PGADMIN_POSTGRES_DIR=/opt/pgbuild/postgresql
+
+          # cryptography publishes arm64-only macOS wheels (checked against
+          # 50.0.1), so on Intel pip builds it from the sdist and its
+          # openssl-sys crate links whatever OpenSSL it finds on the build
+          # host. _fixup_imports deliberately skips _rust.abi3.so, so that
+          # reference would survive into the bundle and _verify_bundle_linkage
+          # would fail the build. Linking statically leaves no external
+          # reference at all, and against our own OpenSSL rather than a
+          # different one from Homebrew. See issue #10123.
+          export OPENSSL_DIR=/opt/pgbuild/openssl
+          export OPENSSL_STATIC=1
+
+          make appbundle
+
+      - name: Archive the disk image
+        uses: actions/upload-artifact@v7
+        with:
+          name: pgadmin4-macos-build-output-${{ matrix.name }}
+          if-no-files-found: error
+          path: dist/*.dmg
