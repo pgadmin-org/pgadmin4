@@ -1508,7 +1508,9 @@ WHERE db.datname = current_database()""")
                         getattr(manager, 'sid', None), str(e)),
                     exc_info=True
                 )
-                password = None
+                # Recoverable: let reset() go on and try to connect without
+                # the password (e.g. through a passfile).
+                return False, '', None
         return True, '', password
 
     def reset(self):
