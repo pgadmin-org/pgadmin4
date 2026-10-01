@@ -17,8 +17,8 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
-import {HTML5Backend} from 'react-dnd-html5-backend';
 
+import { getDndManager } from 'sources/dnd_manager';
 import { usePgAdmin } from 'sources/PgAdminProvider';
 import {
   PgReactTable, PgReactTableBody, PgReactTableHeader,
@@ -144,7 +144,7 @@ export default function DataGridView({
       <StyleDataGridBox className={classList.join(' ')}>
         <Box className='DataGridView-grid'>
           <GridHeader tableEleRef={tableEleRef} rows={rows} />
-          <DndProvider backend={HTML5Backend}>
+          <DndProvider manager={getDndManager()}>
             <PgReactTable
               ref={tableEleRef} table={table} data-test="data-grid-view"
               tableClassName='DataGridView-table'>
