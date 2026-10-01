@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { getExpandedRowModel } from '@tanstack/react-table';
 
 import { getEditCell } from 'sources/components/PgReactTableStyled';
 import gettext from 'sources/gettext';
@@ -53,16 +52,6 @@ export default class ExpandedFormView extends Feature {
         title: gettext('Edit row'),
       }),
     });
-  }
-
-  onTable({table}) {
-    table.setOptions(prev => ({
-      ...prev,
-      getExpandedRowModel: getExpandedRowModel(),
-      state: {
-        ...prev.state,
-      }
-    }));
   }
 
   onRow({row, expandedRowContents, rowOptions}) {

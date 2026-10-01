@@ -69,7 +69,7 @@ export function DataGridRow({row, isResizing}) {
                   columnDef.cell, {
                     key: columnDef.cell?.type ?? columnDef.id,
                     row: row,
-                    getValue: cell.getValue,
+                    getValue: () => cell.getValue(),
                   }
                 );
                 let cellObj = evalFunc(null, columnDef?.field?.cell, row.original);

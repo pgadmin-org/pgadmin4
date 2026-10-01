@@ -12,14 +12,7 @@ import _ from 'lodash';
 
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getExpandedRowModel,
-  flexRender,
-} from '@tanstack/react-table';
+import { useTable, flexRender } from '@tanstack/react-table';
 import {
   QueryClient,
   QueryClientProvider,
@@ -36,7 +29,7 @@ import gettext from 'sources/gettext';
 
 import EmptyPanelMessage from './EmptyPanelMessage';
 import { InputText } from './FormComponents';
-import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent, getCheckboxCell, getCheckboxHeaderCell } from './PgReactTableStyled';
+import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent, getCheckboxCell, getCheckboxHeaderCell, pgTableFeatures } from './PgReactTableStyled';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 
@@ -199,7 +192,8 @@ export function Table({
     fetchMoreOnBottomReached(tableRef.current);
   }, [fetchMoreOnBottomReached]);
 
-  const table = useReactTable({
+  const table = useTable({
+    features: pgTableFeatures,
     columns: finalColumns,
     data: flatData.length >0 ? flatData : data,
     defaultColumn,
@@ -212,12 +206,11 @@ export function Table({
       globalFilter: searchVal,
     },
     columnResizeMode: 'onChange',
+    // Rows expand into detail/form panels rather than sub-rows; v9 only
+    // lets rows with sub-rows expand unless told otherwise.
+    getRowCanExpand: () => true,
     onRowSelectionChange: props.setSelectedRows,
     enableRowSelection: (row) => (hasSelectRow && (_.isUndefined(row.original.canDrop) ? true : row.original.canDrop)),
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
     ...tableProps,
   });
 
