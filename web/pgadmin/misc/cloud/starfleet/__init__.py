@@ -10,6 +10,7 @@
 """Deploy databases on pgEdge Starfleet (Managed and BYOC)."""
 
 import json
+import time
 
 from flask import session, current_app, request
 from flask_babel import gettext as _
@@ -33,6 +34,9 @@ MODULE_NAME = 'starfleet'
 TENANTS = '/account/v1/tenants'
 BYOC_PROBE = '/byoc/v1/cloud-accounts'
 SESSION_KEY = 'starfleet'
+# Tokens kept per deployment job, since closing the wizard clears
+# SESSION_KEY long before the job finishes and the password is fetched.
+JOBS_KEY = 'starfleet_jobs'
 USER_TYPES = {'admin': 'admin', 'app': 'application'}
 CONNECTION_PARAMS = {'sslmode': 'require', 'gssencmode': 'disable',
                      'connect_timeout': 30}
@@ -60,9 +64,11 @@ def _api_url():
     return getattr(config, 'STARFLEET_API_URL', None)
 
 
-def get_session_client():
-    """Build a token-only client from the session, or None."""
-    state = session.get(SESSION_KEY)
+def get_session_client(pid=None):
+    """Build a token-only client from the session (or the job's copy of
+    it), or None."""
+    state = session.get(JOBS_KEY, {}).get(pid) if pid \
+        else session.get(SESSION_KEY)
     if not state or not state.get('access_token'):
         return None
     return StarfleetClient(_api_url(), token=state['access_token'],
@@ -71,6 +77,24 @@ def get_session_client():
 
 def clear_starfleet_session():
     session.pop(SESSION_KEY, None)
+
+
+def _keep_token_for_job(pid):
+    """Copy the wizard's token for a job, dropping expired copies."""
+    state = session.get(SESSION_KEY)
+    if not state:
+        return
+    now = time.time()
+    jobs = {k: v for k, v in session.get(JOBS_KEY, {}).items()
+            if (v.get('expires_at') or 0) > now}
+    jobs[pid] = state
+    session[JOBS_KEY] = jobs
+
+
+def clear_starfleet_job(pid):
+    jobs = dict(session.get(JOBS_KEY, {}))
+    if jobs.pop(pid, None) is not None:
+        session[JOBS_KEY] = jobs
 
 
 def _error(e):
@@ -232,6 +256,7 @@ def deploy_on_starfleet(data):
             'STARFLEET_API_URL': _api_url(),
         })
         p.update_server_id(p.id, sid)
+        _keep_token_for_job(p.id)
         p.start()
         return True, p, {'label': inst['name'], 'sid': sid}
     except Exception as e:
@@ -244,9 +269,9 @@ def allow_save_password():
                 session.get('allow_save_password', None))
 
 
-def fetch_password(kind, db_id, role):
+def fetch_password(kind, db_id, role, pid):
     """Read the generated password once; never stored or logged."""
-    client = get_session_client()
+    client = get_session_client(pid)
     if client is None:
         return None
     params = {'user_type': USER_TYPES.get(role, 'admin')} \

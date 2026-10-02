@@ -32,6 +32,7 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         from flask_babel import Babel
         Babel(self.app)  # gettext needs it in a bare app
         self._test_fetch_password()
+        self._test_job_token_survives_wizard_close()
         self._test_update_server()
         self._test_save_password()
 
@@ -52,21 +53,42 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
             with patch.object(sf, 'get_session_client',
                               return_value=client):
                 self.assertEqual(sf.fetch_password('managed', 'db-1',
-                                                   'app'), 'pw-1')
+                                                   'app', 'job-1'), 'pw-1')
                 client.get.assert_called_with(
                     '/managed/v1/databases/db-1',
                     {'user_type': 'application'})
-                sf.fetch_password('byoc', 'db-1', 'admin')
+                sf.fetch_password('byoc', 'db-1', 'admin', 'job-1')
                 client.get.assert_called_with('/byoc/v1/databases/db-1',
                                               None)
             with patch.object(sf, 'get_session_client', return_value=None):
                 self.assertIsNone(sf.fetch_password('managed', 'x',
-                                                    'admin'))
+                                                    'admin', 'job-1'))
             with patch.object(sf, 'get_session_client',
                               return_value=self._session_client(
                                   error=StarfleetError('gone', 404))):
                 self.assertIsNone(sf.fetch_password('managed', 'x',
-                                                    'admin'))
+                                                    'admin', 'job-1'))
+
+    def _test_job_token_survives_wizard_close(self):
+        import pgadmin.misc.cloud as cloud
+        from pgadmin.misc.cloud import starfleet as sf
+        from flask import session
+        with self.app.test_request_context('/'):
+            session['starfleet'] = {'access_token': 'tok',
+                                    'expires_at': 9999999999}
+            session['starfleet_jobs'] = {
+                'old-job': {'access_token': 'old', 'expires_at': 1}}
+            sf._keep_token_for_job('job-1')
+            # The wizard closes as soon as the deployment starts.
+            cloud.clear_cloud_session()
+            self.assertNotIn('starfleet', session)
+            self.assertIsNone(sf.get_session_client())
+            # The expired copy is pruned; the job keeps its token.
+            self.assertEqual(list(session['starfleet_jobs']), ['job-1'])
+            self.assertEqual(sf.get_session_client('job-1').token, 'tok')
+            self.assertIsNone(sf.get_session_client('other-job'))
+            sf.clear_starfleet_job('job-1')
+            self.assertIsNone(sf.get_session_client('job-1'))
 
     def _test_update_server(self):
         import pgadmin.misc.cloud as cloud
@@ -81,28 +103,23 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
             'Role': 'admin', 'Hostname': 'db.example.com', 'Port': 5432,
             'Database': 'appdb', 'Username': 'admin_user', 'sid': 7,
             'status': True, 'pid': 'job-1'}}
-        order = []
-
-        def fake_fetch(*args):
-            # The session must still hold the token when we fetch.
-            from flask import session
-            order.append('fetch' if 'starfleet' in session else 'no-token')
-            return 'pw-1'
-
         from flask import session
+        from pgadmin.misc.cloud import starfleet as sf
+        client = self._session_client({'connection': {'password': 'pw-1'}})
         with self.app.test_request_context('/'), \
                 patch.object(cloud, 'Server', MagicMock(query=query)), \
                 patch.object(cloud, 'db'), \
                 patch.object(cloud, 'current_user', SimpleNamespace(id=1)), \
-                patch.object(cloud, 'fetch_password',
-                             side_effect=fake_fetch):
-            session['starfleet'] = {'access_token': 'tok',
-                                    'expires_at': 9999999999}
+                patch.object(sf, 'StarfleetClient',
+                             return_value=client) as client_cls:
+            # Only the job's copy remains: the wizard has been closed.
+            session['starfleet_jobs'] = {
+                'job-1': {'access_token': 'tok', 'expires_at': 9999999999}}
             status, result = cloud.update_server(instance)
-            # The real clear_cloud_session ran after the fetch.
-            self.assertNotIn('starfleet', session)
+            self.assertEqual(client_cls.call_args.kwargs['token'], 'tok')
+            # The job's token is discarded once the password is read.
+            self.assertNotIn('job-1', session['starfleet_jobs'])
         self.assertTrue(status)
-        self.assertEqual(order, ['fetch'])
         self.assertEqual((server.host, server.port, server.maintenance_db,
                           server.username),
                          ('db.example.com', 5432, 'appdb', 'admin_user'))

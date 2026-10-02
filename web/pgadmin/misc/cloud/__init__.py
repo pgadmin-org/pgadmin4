@@ -29,7 +29,8 @@ from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
 from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
 from pgadmin.misc.cloud.google import clear_google_session, deploy_on_google
 from pgadmin.misc.cloud.starfleet import deploy_on_starfleet, \
-    clear_starfleet_session, fetch_password, allow_save_password
+    clear_starfleet_session, clear_starfleet_job, fetch_password, \
+    allow_save_password
 import config
 
 # set template path for sql scripts
@@ -199,7 +200,7 @@ def update_server(data):
     else:
         _server['status'] = True
 
-    # The password is read before the session (and its token) is cleared.
+    # The password is read with the job's token, which is then discarded.
     instance = server_data['instance']
     if instance.get('Provider') == 'starfleet' and _server['status']:
         _server.update({
@@ -208,9 +209,10 @@ def update_server(data):
             'username': server.username,
             'starfleet_password': fetch_password(
                 instance.get('Kind'), instance.get('Id'),
-                instance.get('Role')),
+                instance.get('Role'), pid),
             'allow_save_password': allow_save_password(),
         })
+    clear_starfleet_job(pid)
     clear_cloud_session(pid)
 
     return True, _server
