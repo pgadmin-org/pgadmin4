@@ -39,6 +39,24 @@ export function isUsableCluster(cluster) {
   return cluster?.status == 'available' && cluster?.node_location != 'private';
 }
 
+/* Cluster select options: unusable clusters are listed but disabled, and an
+ * empty list gets a disabled entry saying why rather than 'No options'. */
+export function clusterOptions(clusters) {
+  if (!clusters?.length) {
+    const label = gettext('No BYOC clusters found; create one in pgEdge Starfleet first.');
+    return [{label, value: '', disabled: true, isDisabled: true}];
+  }
+  return clusters.map((c)=>{
+    const usable = isUsableCluster(c);
+    return {
+      ...c,
+      label: usable ? c.label : `${c.label} (${c.node_location == 'private' ? gettext('private nodes') : c.status})`,
+      disabled: !usable,
+      isDisabled: !usable,
+    };
+  });
+}
+
 export class StarfleetCredSchema extends BaseUISchema {
   constructor(initValues = {}) {
     super({client_id: '', client_secret: '', ...initValues});

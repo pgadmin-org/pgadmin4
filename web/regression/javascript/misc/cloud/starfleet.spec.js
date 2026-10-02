@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {isValidStarfleetName, parseAllowlist, isUsableCluster,
+import {isValidStarfleetName, parseAllowlist, isUsableCluster, clusterOptions,
   StarfleetInstanceSchema} from '../../../../pgadmin/misc/cloud/static/js/starfleet_schema.ui';
 import {validateStarfleetStep1, validateStarfleetStep2,
   validateStarfleetStep3, StarfleetInstanceDetails} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
@@ -49,6 +49,22 @@ describe('Starfleet cloud provider', ()=>{
     expect(isUsableCluster({status: 'available', node_location: 'public'})).toBe(true);
     expect(isUsableCluster({status: 'creating', node_location: 'public'})).toBe(false);
     expect(isUsableCluster({status: 'available', node_location: 'private'})).toBe(false);
+  });
+
+  it('lists clusters, disabling unusable ones and explaining an empty list', ()=>{
+    const opts = clusterOptions([
+      {label: 'c1', value: 'id1', status: 'available', node_location: 'public'},
+      {label: 'c2', value: 'id2', status: 'creating', node_location: 'public'},
+      {label: 'c3', value: 'id3', status: 'available', node_location: 'private'},
+    ]);
+    expect(opts.map((o)=>[o.label, o.isDisabled])).toEqual([
+      ['c1', false], ['c2 (creating)', true], ['c3 (private nodes)', true]]);
+    for (const empty of [[], null]) {
+      const [only, ...rest] = clusterOptions(empty);
+      expect(rest).toEqual([]);
+      expect(only.label).toMatch(/No BYOC clusters found/);
+      expect([only.value, only.isDisabled]).toEqual(['', true]);
+    }
   });
 
   it('validates steps', ()=>{

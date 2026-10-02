@@ -17,7 +17,7 @@ import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
 import {
   StarfleetCredSchema, StarfleetInstanceSchema, StarfleetDatabaseSchema,
-  isValidStarfleetName, parseAllowlist, isUsableCluster,
+  isValidStarfleetName, parseAllowlist, clusterOptions,
 } from './starfleet_schema.ui';
 
 function loadOptions(props, name, endpoint) {
@@ -69,16 +69,10 @@ export function StarfleetInstanceDetails(props) {
         pgVersions: ()=>loadOptions(props, 'get_pg_versions', 'starfleet.pg_versions'),
         byocPgVersions: ()=>loadOptions(props, 'get_byoc_pg_versions', 'starfleet.byoc_pg_versions'),
         clusters: ()=>loadOptions(props, 'get_clusters', 'starfleet.clusters')
-          .then((clusters)=>(clusters || []).map((c)=>{
-            const usable = isUsableCluster(c);
-            clusterLabels.current[c.value] = c.label;
-            return {
-              ...c,
-              label: usable ? c.label : `${c.label} (${c.node_location == 'private' ? gettext('private nodes') : c.status})`,
-              disabled: !usable,
-              isDisabled: !usable,
-            };
-          })),
+          .then((clusters)=>{
+            (clusters || []).forEach((c)=>{ clusterLabels.current[c.value] = c.label; });
+            return clusterOptions(clusters);
+          }),
       }, {
         ...existing,
         byoc: props.byoc,
