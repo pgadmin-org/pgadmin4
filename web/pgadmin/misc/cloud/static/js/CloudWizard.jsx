@@ -276,7 +276,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         beforeBack={onBeforeBack}>
         <WizardStep stepId={0}>
           <Box sx={{ marginBottom: '1em', display: 'flex'}}>
-            <Box sx={{paddingTop: '10px', flex: 2.5}}>{gettext('Select a cloud provider for PostgreSQL database.')}</Box>
+            <Box sx={{paddingTop: '10px', flex: 2.5}}>{gettext('Select a cloud provider for the PostgreSQL database.')}</Box>
           </Box>
           <Box sx={{ marginBottom: '1em', display: 'flex'}}>
             <ToggleButtons cloudProvider={cloudProvider} setCloudProvider={setCloudProvider}

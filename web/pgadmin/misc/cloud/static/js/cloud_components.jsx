@@ -15,7 +15,6 @@ import { getAWSSummary } from './aws';
 import  {getAzureSummary} from './azure';
 import gettext from 'sources/gettext';
 import { getGoogleSummary } from './google';
-import { CLOUD_PROVIDERS_LABELS } from './cloud_constants';
 import Table from '../../../../static/js/components/Table';
 
 
@@ -35,7 +34,7 @@ export function ToggleButtons(props) {
       exclusive>
       {
         (props.options||[]).map((option)=>{
-          return (<ToggleButton value={option.value} key={option.label} aria-label={option.label} sx={{marginTop: '0px !important',padding: '12px'}} className={( option.label==gettext(CLOUD_PROVIDERS_LABELS.GOOGLE) ? 'paddingLeft: 1.5rem' : null )} component={props.cloudProvider == option.value ? PrimaryButton : DefaultButton}>
+          return (<ToggleButton value={option.value} key={option.label} aria-label={option.label} sx={{marginTop: '0px !important', padding: '12px', justifyContent: 'flex-start'}} component={props.cloudProvider == option.value ? PrimaryButton : DefaultButton}>
             <CheckRoundedIcon style={{visibility: props.cloudProvider == option.value  ? 'visible': 'hidden'}}/>&nbsp;
             {option.icon}&nbsp;&nbsp;&nbsp;&nbsp;{option.label}
           </ToggleButton>);
