@@ -55,6 +55,7 @@ StarfleetCredentials.propTypes = {
 export function StarfleetInstanceDetails(props) {
   const [instanceSchema, setInstanceSchema] = React.useState();
   const clusterLabels = React.useRef({});
+  const sizeLabels = React.useRef({});
 
   React.useEffect(() => {
     let cancelled = false;
@@ -65,7 +66,11 @@ export function StarfleetInstanceDetails(props) {
       if (cancelled) return;
       setInstanceSchema(new StarfleetInstanceSchema({
         regions: ()=>loadOptions(props, 'get_regions', 'starfleet.regions'),
-        sizes: ()=>loadOptions(props, 'get_sizes', 'starfleet.sizes'),
+        sizes: ()=>loadOptions(props, 'get_sizes', 'starfleet.sizes')
+          .then((sizes)=>{
+            (sizes || []).forEach((s)=>{ sizeLabels.current[s.value] = s.label; });
+            return sizes;
+          }),
         pgVersions: ()=>loadOptions(props, 'get_pg_versions', 'starfleet.pg_versions'),
         byocPgVersions: ()=>loadOptions(props, 'get_byoc_pg_versions', 'starfleet.byoc_pg_versions'),
         clusters: ()=>loadOptions(props, 'get_clusters', 'starfleet.clusters')
@@ -105,6 +110,7 @@ export function StarfleetInstanceDetails(props) {
       props.setStarfleetInstanceData({
         ...changedData,
         cluster_label: clusterLabels.current[changedData.cluster_id],
+        size_label: sizeLabels.current[changedData.size],
       });
     }}
   />;
@@ -181,7 +187,7 @@ export function getStarfleetSummary(cloud, inst) {
     return [details, [row(gettext('Cluster'), inst.cluster_label || inst.cluster_id)]];
   }
   return [
-    [...details, row(gettext('Region'), inst.region), row(gettext('Size'), inst.size)],
+    [...details, row(gettext('Region'), inst.region), row(gettext('Size'), inst.size_label || inst.size)],
     [row(gettext('Allowed IP addresses'), parseAllowlist(inst.ip_allowlist).cidrs.join(', ')),
       row(gettext('Connect as'), inst.role)],
   ];

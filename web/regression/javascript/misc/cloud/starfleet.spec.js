@@ -10,7 +10,7 @@
 import {isValidStarfleetName, parseAllowlist, isUsableCluster, clusterOptions,
   StarfleetInstanceSchema} from '../../../../pgadmin/misc/cloud/static/js/starfleet_schema.ui';
 import {validateStarfleetStep1, validateStarfleetStep2,
-  validateStarfleetStep3, StarfleetInstanceDetails} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
+  validateStarfleetStep3, StarfleetInstanceDetails, getStarfleetSummary} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
 import {genericBeforeEach, getCreateView, withBrowser} from '../../genericFunctions';
 import {act, render, screen} from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
@@ -83,6 +83,16 @@ describe('Starfleet cloud provider', ()=>{
     const dbDetails = {};
     expect(validateStarfleetStep3(dbDetails, nodeInfo)).toBe(false);
     expect(dbDetails.gid).toBe(3);
+  });
+
+  it('shows the size label in the summary, falling back to its id', ()=>{
+    const inst = {kind: 'managed', name: 'mydb', pg_version: '18',
+      region: 'us-east-2', size: 'small', ip_allowlist: '198.51.100.7',
+      role: 'admin'};
+    const sizeRow = (i)=>getStarfleetSummary('starfleet', i)[0]
+      .find((r)=>r.name == 'Size');
+    expect(sizeRow(inst).value).toBe('small');
+    expect(sizeRow({...inst, size_label: 'Small (1 vCPU)'}).value).toBe('Small (1 vCPU)');
   });
 
   describe('instance schema', ()=>{
