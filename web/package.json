@@ -138,7 +138,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.3.0",
     "react-draggable": "^4.7.2",
-    "react-dropzone": "^15.0.0",
+    "react-dropzone": "^20.1.2",
     "react-frame-component": "~5.3.2",
     "react-leaflet": "^4.2.1",
     "react-new-window": "^1.0.1",
