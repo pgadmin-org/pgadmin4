@@ -9336,10 +9336,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filename-reserved-regex@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "filename-reserved-regex@npm:3.0.0"
-  checksum: 10c0/2b1df851a37f84723f9d8daf885ddfadd3dea2a124474db405295962abc1a01d6c9b6b27edec33bad32ef601e1a220f8a34d34f30ca5a911709700e2b517e268
+"filename-reserved-regex@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "filename-reserved-regex@npm:4.0.1"
+  checksum: 10c0/c85a1b5a2e41294d38fbc5b1805a00bfc4f903cff99511683bdff365138566196ff2cbcec192fc5b56475fa2b1ab6ba3d20340fd352890674d86151f1f875c87
   languageName: node
   linkType: hard
 
@@ -14634,7 +14634,7 @@ __metadata:
     uplot-react: "npm:^1.2.4"
     url-loader: "npm:^4.1.1"
     use-resize-observer: "npm:^10.0.0"
-    valid-filename: "npm:^4.0.0"
+    valid-filename: "npm:^5.0.0"
     vanilla-jsoneditor: "npm:^3.13.0"
     webfonts-loader: "npm:^8.1.1"
     webpack: "npm:^5.111.1"
@@ -16589,12 +16589,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"valid-filename@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "valid-filename@npm:4.0.0"
+"valid-filename@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "valid-filename@npm:5.0.0"
   dependencies:
-    filename-reserved-regex: "npm:^3.0.0"
-  checksum: 10c0/cfbd173134b63ba2e831e464b9828c6ca8e4e00344271693488e42d94387944813cdbde49d1c76026467c3fe3a5b2de8c8c485eb75ec78457007f2dcde000ac4
+    filename-reserved-regex: "npm:^4.0.1"
+  checksum: 10c0/3ede46c8e3ffb54fa8c457cacd2d39330e1c4f76f6dcae41762f1d55edf828383133e557725a3fa2e0631099c6e62eadd0813f30239d62ab2c782b1b58f8e18c
   languageName: node
   linkType: hard
 
