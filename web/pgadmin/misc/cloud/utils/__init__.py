@@ -50,7 +50,8 @@ def _create_server(data):
         maintenance_db=data.get('db'),
         username=data.get('username'),
         cloud_status=data.get('cloud_status'),
-        connection_params={'sslmode': 'prefer', 'connect_timeout': 30}
+        connection_params=data.get(
+            'connection_params', {'sslmode': 'prefer', 'connect_timeout': 30})
     )
 
     db.session.add(server)
@@ -73,6 +74,8 @@ class CloudProcessDesc(IProcessDesc):
             self.provider = 'Azure Database'
         elif _provider == 'google':
             self.provider = 'Google Cloud SQL'
+        elif _provider == 'starfleet':
+            self.provider = 'pgEdge Starfleet'
 
     @property
     def message(self):

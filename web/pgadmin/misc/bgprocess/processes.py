@@ -327,7 +327,10 @@ class BatchProcess:
         if self.env:
             env.update(self.env)
 
-        current_app.logger.debug(self.env)
+        # Log only the names: the values can include secrets.
+        current_app.logger.debug(
+            'Extra process environment variables: %s',
+            sorted((self.env or {}).keys()))
 
         if cb is not None:
             cb(env)
@@ -521,6 +524,18 @@ class BatchProcess:
 
         return pos, completed
 
+    @staticmethod
+    def _cloud_error(stdout):
+        """The error pgacloud printed before exiting, if any."""
+        for value in reversed(stdout):
+            try:
+                data = json.loads(value[1])
+            except ValueError:
+                continue
+            if isinstance(data, dict) and data.get('error'):
+                return str(data['error'])[:500]
+        return None
+
     def update_cloud_details(self):
         """
         Parse the output to get the cloud instance details
@@ -570,6 +585,7 @@ class BatchProcess:
             cloud_instance['instance']['sid'] = _process.server_id
             cloud_instance['instance']['status'] = False
             cloud_instance['instance']['pid'] = _pid
+            cloud_instance['instance']['error'] = self._cloud_error(stdout)
             return update_server(cloud_instance)
         else:
             clear_cloud_session(_pid)
