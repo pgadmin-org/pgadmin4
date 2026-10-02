@@ -15,6 +15,7 @@ import { getAWSSummary } from './aws';
 import  {getAzureSummary} from './azure';
 import gettext from 'sources/gettext';
 import { getGoogleSummary } from './google';
+import { getStarfleetSummary } from './starfleet';
 import Table from '../../../../static/js/components/Table';
 
 
@@ -54,7 +55,10 @@ export function FinalSummary(props) {
   let summary = [],
     summaryHeader = ['Cloud Details', 'Version and Instance Details', 'Storage Details', 'Database Details'];
 
-  if(props.cloudProvider == 'azure') {
+  if(props.cloudProvider == 'starfleet') {
+    summaryHeader = props.instanceData.kind == 'byoc' ? ['Cloud Details', 'Cluster'] : ['Cloud Details', 'Network Connectivity'];
+    summary = getStarfleetSummary(props.cloudProvider, props.instanceData, props.databaseData);
+  }else if(props.cloudProvider == 'azure') {
     summaryHeader.push('Network Connectivity','Availability');
     summary = getAzureSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }else if(props.cloudProvider == 'google') {
