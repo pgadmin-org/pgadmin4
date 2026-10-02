@@ -1040,3 +1040,124 @@ class TestSaveAddedRowSkipsNonEditableColumn(TestSaveChangedData):
             "FROM {0};"
         ).format(self.test_table_name)
         utils.create_table_with_query(self.server, self.db_name, create_sql)
+
+
+def _generated_col_payload(updated=None, added=None):
+    return {
+        "updated": updated or {},
+        "added": added or {},
+        "staged_rows": {},
+        "deleted": {},
+        "updated_index": {k: k for k in (updated or {})},
+        "added_index": {k: k for k in (added or {})},
+        "columns": [
+            {"name": "id", "pos": 0, "can_edit": True,
+             "type": "integer", "cell": "number",
+             "not_null": True, "has_default_val": False,
+             "is_array": False, "display_name": "id"},
+            {"name": "a", "pos": 1, "can_edit": True,
+             "type": "integer", "cell": "number",
+             "not_null": False, "has_default_val": False,
+             "is_array": False, "display_name": "a"},
+            {"name": "g", "pos": 2, "can_edit": False,
+             "type": "integer", "cell": "number",
+             "not_null": False, "has_default_val": True,
+             "is_array": False, "display_name": "g"},
+        ]
+    }
+
+
+class TestSaveChangedDataGeneratedColumns(TestSaveChangedData):
+    """Regression test for issue #9672.
+
+    Generated columns can't be written, so they must be left out of the
+    INSERT and UPDATE, and an UPDATE must return their recalculated values
+    so the grid can show them.
+    """
+
+    _insert = dict(
+        save_payload=_generated_col_payload(added={
+            "2": {"err": False, "data": {
+                "id": "3", "__temp_PK": "2", "a": "5", "g": "999"}}
+        }),
+        save_status=True,
+        check_sql='SELECT id, a, g FROM %s WHERE id = 3',
+        check_result=[[3, 5, 10]]
+    )
+    _update = dict(
+        save_payload=_generated_col_payload(updated={
+            "1": {"err": False, "data": {"a": "7"},
+                  "primary_keys": {"id": 1}}
+        }),
+        save_status=True,
+        check_sql='SELECT id, a, g FROM %s WHERE id = 1',
+        check_result=[[1, 7, 14]],
+        expected_row_added=[{"1": {"g": 14}}]
+    )
+    _update_generated_only = dict(
+        save_payload=_generated_col_payload(updated={
+            "1": {"err": False, "data": {"g": "100"},
+                  "primary_keys": {"id": 1}}
+        }),
+        save_status=True,
+        check_sql='SELECT id, a, g FROM %s WHERE id = 1',
+        check_result=[[1, 1, 2]],
+        expected_row_added=[]
+    )
+
+    scenarios = [
+        ('Insert a row into a table with a stored generated column',
+         dict(_insert, generated_kind='STORED')),
+        ('Update a row in a table with a stored generated column',
+         dict(_update, generated_kind='STORED')),
+        ('Update only a stored generated column',
+         dict(_update_generated_only, generated_kind='STORED')),
+        ('Insert a row into a table with a virtual generated column',
+         dict(_insert, generated_kind='VIRTUAL')),
+        ('Update a row in a table with a virtual generated column',
+         dict(_update, generated_kind='VIRTUAL')),
+    ]
+
+    def setUp(self):
+        server_version = parent_node_dict["schema"][-1]["server_version"]
+        if server_version < 120000:
+            self.skipTest('Generated columns require PostgreSQL 12 or later')
+        if self.generated_kind == 'VIRTUAL' and server_version < 180000:
+            self.skipTest('Virtual generated columns require PostgreSQL 18 '
+                          'or later')
+        super().setUp()
+
+    def _save_changed_data(self):
+        response = self.tester.post(self.save_url,
+                                    data=json.dumps(self.save_payload),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(response_data['data']['status'], self.save_status)
+
+        expected_row_added = getattr(self, 'expected_row_added', None)
+        if expected_row_added is not None:
+            row_added = [
+                qr['row_added']
+                for qr in response_data['data']['query_results']
+                if qr['row_added'] is not None
+            ]
+            self.assertEqual(row_added, expected_row_added)
+
+    def _create_test_table(self):
+        self.test_table_name = "test_for_save_data_generated_" + \
+                               str(secrets.choice(range(1000, 9999)))
+        create_sql = """
+            DROP TABLE IF EXISTS "{0}";
+
+            CREATE TABLE "{0}"(
+                id INT PRIMARY KEY,
+                a INT,
+                g INT GENERATED ALWAYS AS (a * 2) {1}
+            );
+
+            INSERT INTO "{0}" (id, a) VALUES (1, 1), (2, 2);
+        """.format(self.test_table_name, self.generated_kind)
+        self.select_sql = 'SELECT * FROM "{0}";'.format(self.test_table_name)
+        utils.create_table_with_query(self.server, self.db_name, create_sql)

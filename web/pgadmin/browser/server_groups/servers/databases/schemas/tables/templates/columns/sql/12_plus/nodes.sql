@@ -1,10 +1,12 @@
-{# 12_plus/nodes.sql is a copy of this file that adds is_generated; keep the
-   two in step. #}
 SELECT DISTINCT att.attname as name, att.attnum as OID, pg_catalog.format_type(ty.oid,NULL) AS datatype,
 pg_catalog.format_type(ty.oid,att.atttypmod) AS displaytypname,
 att.attnotnull as not_null,
 CASE WHEN att.atthasdef OR att.attidentity != '' OR ty.typdefault IS NOT NULL THEN True
-ELSE False END as has_default_val, des.description, seq.seqtypid
+ELSE False END as has_default_val, des.description, seq.seqtypid,
+{# Detect generated columns (stored, or virtual on PG 18+) to exclude from
+   INSERT/UPDATE in View/Edit Data. Apart from this column, keep this file in
+   step with default/nodes.sql. #}
+CASE WHEN att.attgenerated <> '' THEN true ELSE false END as is_generated
 FROM pg_catalog.pg_attribute att
     JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
     JOIN pg_catalog.pg_namespace tn ON tn.oid=ty.typnamespace

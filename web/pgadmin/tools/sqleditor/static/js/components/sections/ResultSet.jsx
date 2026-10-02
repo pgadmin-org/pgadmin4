@@ -625,7 +625,8 @@ export class ResultSetUtils {
       'column_type_internal': columnTypeInternal,
       'pos': c.pos,
       'cell': cellType,
-      'can_edit': (c.name == 'oid') ? false : isEditable,
+      // Generated columns are computed by the server and can't be written.
+      'can_edit': (c.name == 'oid' || c.is_generated) ? false : isEditable,
       'not_null': c.not_null,
       'has_default_val': c.has_default_val,
       'is_array': arrayBracketIdx > -1 && arrayBracketIdx + 2 == columnTypeInternal.length,
@@ -1309,13 +1310,19 @@ export function ResultSet() {
       }
 
       pageDataOutOfSync.current = true;
-      if(_.size(dataChangeStore.added)) {
-        // Update the rows in a grid after addition
+      // Update the rows in a grid after addition/update.
+      // row_added holds the refetched row for an INSERT, and for an UPDATE
+      // the recalculated values of any generated columns (it is null for
+      // an UPDATE of a table without generated columns).
+      if(_.size(dataChangeStore.added) || _.size(dataChangeStore.updated)) {
         respData.data.query_results.forEach((qr)=>{
           if(!_.isNull(qr.row_added)) {
             let rowClientPK = Object.keys(qr.row_added)[0];
             setRows((prevRows)=>{
               let rowIdx = prevRows.findIndex((r)=>rowKeyGetter(r)==rowClientPK);
+              if(rowIdx < 0) {
+                return prevRows;
+              }
               return [
                 ...prevRows.slice(0, rowIdx),
                 {
