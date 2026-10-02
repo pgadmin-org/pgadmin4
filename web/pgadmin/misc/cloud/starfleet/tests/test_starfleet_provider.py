@@ -99,6 +99,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_byoc_success(starfleet)
         self._test_failed_status(starfleet)
         self._test_timeout(starfleet)
+        self._test_available_without_connection(starfleet)
         self._test_api_error(starfleet)
 
     def _test_managed_success(self, starfleet):
@@ -158,6 +159,36 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
                                   FakeClient(['creating', 'creating']))
         self.assertEqual(code, 1)
         self.assertIn('Timed out', err)
+
+    def _test_available_without_connection(self, starfleet):
+        class Late(FakeClient):
+            def get(self, path, params=None):
+                db = super().get(path, params)
+                if len(self.gets) < 3:
+                    db['connection'] = {'database': 'appdb'}
+                    db.pop('domain')
+                return db
+
+        # Available but without host/port at first: keep polling.
+        prov, args = _parse(starfleet, MANAGED_ARGS)
+        client = Late(['available'] * 3)
+        code, out, err = _run(prov, args, client)
+        self.assertEqual(code, 0)
+        self.assertEqual(len(client.gets), 3)
+        last = json.loads(out.strip().splitlines()[-1])
+        self.assertEqual(last['instance']['Hostname'], 'db.example.com')
+        self.assertEqual(last['instance']['Port'], 5432)
+
+        # Never reported: fail rather than emit a null host and port.
+        prov, args = _parse(starfleet, MANAGED_ARGS)
+        ticks = iter([0, 0, starfleet.POLL_TIMEOUT + 1])
+        client = FakeClient(['available'] * 2, connection={
+            'database': 'appdb'})
+        with patch('time.monotonic', side_effect=lambda: next(ticks)):
+            code, out, err = _run(prov, args, client)
+        self.assertEqual(code, 1)
+        self.assertIn('did not report its host and port', err)
+        self.assertNotIn('"instance"', out)
 
     def _test_api_error(self, starfleet):
         from utils.starfleet_api import StarfleetError

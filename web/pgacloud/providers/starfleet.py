@@ -77,17 +77,27 @@ class StarfleetProvider(AbsProvider):
             body['cluster_id'] = args.cluster_id
         return body
 
+    @staticmethod
+    def _has_connection(db):
+        conn = db.get('connection') or {}
+        return bool((conn.get('host') or db.get('domain')) and
+                    conn.get('port'))
+
     def _wait(self, client, path, params):
         deadline = time.monotonic() + POLL_TIMEOUT
         while True:
             db = client.get(path, params)
             status = db.get('status')
-            if status == READY:
+            if status == READY and self._has_connection(db):
                 return db
             if status in FAILED:
                 error('pgEdge Starfleet reported the database as '
                       '"{}".'.format(status))
             if time.monotonic() > deadline:
+                if status == READY:
+                    error('The database is available, but pgEdge '
+                          'Starfleet did not report its host and port '
+                          'in time.')
                 error('Timed out waiting for the database to become '
                       'available (last status: "{}").'.format(status))
             debug('Database status: {}...'.format(status))
