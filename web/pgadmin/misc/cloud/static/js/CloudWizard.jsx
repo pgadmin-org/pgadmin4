@@ -352,12 +352,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             <Box flexGrow={1}>
               <AzureCredentials cloudProvider={cloudProvider} setAzureCredData={setAzureCredData}/>
             </Box>}
-          <Box flexGrow={1}>
-            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
-          </Box>
-          <Box flexGrow={1}>
-            {cloudProvider == CLOUD_PROVIDERS.STARFLEET && <StarfleetCredentials cloudProvider={cloudProvider} setStarfleetCredData={setStarfleetCredData}/>}
-          </Box>
+          { cloudProvider == CLOUD_PROVIDERS.GOOGLE &&
+            <Box flexGrow={1}>
+              <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>
+            </Box>}
+          { cloudProvider == CLOUD_PROVIDERS.STARFLEET &&
+            <Box flexGrow={1}>
+              <StarfleetCredentials cloudProvider={cloudProvider} setStarfleetCredData={setStarfleetCredData}/>
+            </Box>}
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={2} >
