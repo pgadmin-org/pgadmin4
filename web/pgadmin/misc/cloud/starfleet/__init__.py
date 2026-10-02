@@ -13,22 +13,27 @@ import json
 
 from flask import session, current_app, request
 from flask_babel import gettext as _
+from flask_security import current_user
 
 import config
 from config import root
 from pgacloud.utils.starfleet_api import StarfleetClient, StarfleetError
+from pgadmin.model import db, Server
 from pgadmin.misc.bgprocess import BatchProcess
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    unauthorized
+    unauthorized, forbidden, gone
+from pgadmin.utils.crypto import encrypt
+from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.text_sanitize import sanitize_external_text
 
 MODULE_NAME = 'starfleet'
 TENANTS = '/account/v1/tenants'
 BYOC_PROBE = '/byoc/v1/cloud-accounts'
 SESSION_KEY = 'starfleet'
+USER_TYPES = {'admin': 'admin', 'app': 'application'}
 CONNECTION_PARAMS = {'sslmode': 'require', 'gssencmode': 'disable',
                      'connect_timeout': 30}
 
@@ -43,7 +48,8 @@ class StarfleetModule(PgAdminModule):
                 'starfleet.sizes',
                 'starfleet.client_ip',
                 'starfleet.clusters',
-                'starfleet.byoc_pg_versions']
+                'starfleet.byoc_pg_versions',
+                'starfleet.save_password']
 
 
 blueprint = StarfleetModule(MODULE_NAME, __name__,
@@ -231,3 +237,48 @@ def deploy_on_starfleet(data):
     except Exception as e:
         current_app.logger.exception(e)
         return False, None, str(e)
+
+
+def allow_save_password():
+    return bool(config.ALLOW_SAVE_PASSWORD and
+                session.get('allow_save_password', None))
+
+
+def fetch_password(kind, db_id, role):
+    """Read the generated password once; never stored or logged."""
+    client = get_session_client()
+    if client is None:
+        return None
+    params = {'user_type': USER_TYPES.get(role, 'admin')} \
+        if kind == 'managed' else None
+    try:
+        db_info = client.get('/{}/v1/databases/{}'.format(kind, db_id),
+                             params)
+    except StarfleetError as e:
+        current_app.logger.warning(
+            'Could not fetch the pgEdge Starfleet password: %s',
+            sanitize_external_text(str(e)))
+        return None
+    return (db_info.get('connection') or {}).get('password')
+
+
+@blueprint.route('/save_password/<int:sid>', methods=['POST'],
+                 endpoint='save_password')
+@pga_login_required
+def save_password(sid):
+    """Save the generated password on a deployed server, if allowed."""
+    if not allow_save_password():
+        return forbidden(
+            errmsg=_('Saving passwords is disabled on this server.'))
+    server = Server.query.filter_by(user_id=current_user.id,
+                                    id=sid).first()
+    if server is None:
+        return gone(errormsg=_('Could not find the server.'))
+    password = json.loads(request.data).get('password') or ''
+    crypt_key_present, crypt_key = get_crypt_key()
+    if not crypt_key_present:
+        return forbidden(errmsg=_('The master password is not set.'))
+    server.password = encrypt(password, crypt_key)
+    server.save_password = 1
+    db.session.commit()
+    return make_json_response(success=1)

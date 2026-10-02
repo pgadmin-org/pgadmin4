@@ -29,7 +29,7 @@ from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
 from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
 from pgadmin.misc.cloud.google import clear_google_session, deploy_on_google
 from pgadmin.misc.cloud.starfleet import deploy_on_starfleet, \
-    clear_starfleet_session  # noqa: F401
+    clear_starfleet_session, fetch_password, allow_save_password
 import config
 
 # set template path for sql scripts
@@ -176,6 +176,11 @@ def update_server(data):
         server.host = server_data['instance']['Hostname']
         server.port = server_data['instance']['Port']
         server.cloud_status = 1
+        if server_data['instance'].get('Provider') == 'starfleet':
+            if server_data['instance'].get('Database'):
+                server.maintenance_db = server_data['instance']['Database']
+            if server_data['instance'].get('Username'):
+                server.username = server_data['instance']['Username']
 
     try:
         db.session.commit()
@@ -193,6 +198,19 @@ def update_server(data):
         _server['status'] = False
     else:
         _server['status'] = True
+
+    # The password is read before the session (and its token) is cleared.
+    instance = server_data['instance']
+    if instance.get('Provider') == 'starfleet' and _server['status']:
+        _server.update({
+            'starfleet': True,
+            'host': server.host,
+            'username': server.username,
+            'starfleet_password': fetch_password(
+                instance.get('Kind'), instance.get('Id'),
+                instance.get('Role')),
+            'allow_save_password': allow_save_password(),
+        })
     clear_cloud_session(pid)
 
     return True, _server
@@ -203,6 +221,7 @@ def clear_cloud_session(pid=None):
     clear_aws_session()
     clear_azure_session(pid)
     clear_google_session()
+    clear_starfleet_session()
 
 
 @blueprint.route(
