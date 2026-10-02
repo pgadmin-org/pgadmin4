@@ -84,22 +84,25 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         order = []
 
         def fake_fetch(*args):
-            order.append('fetch')
+            # The session must still hold the token when we fetch.
+            from flask import session
+            order.append('fetch' if 'starfleet' in session else 'no-token')
             return 'pw-1'
 
-        def fake_clear(*args):
-            order.append('clear')
+        from flask import session
         with self.app.test_request_context('/'), \
                 patch.object(cloud, 'Server', MagicMock(query=query)), \
                 patch.object(cloud, 'db'), \
                 patch.object(cloud, 'current_user', SimpleNamespace(id=1)), \
                 patch.object(cloud, 'fetch_password',
-                             side_effect=fake_fetch), \
-                patch.object(cloud, 'clear_cloud_session',
-                             side_effect=fake_clear):
+                             side_effect=fake_fetch):
+            session['starfleet'] = {'access_token': 'tok',
+                                    'expires_at': 9999999999}
             status, result = cloud.update_server(instance)
+            # The real clear_cloud_session ran after the fetch.
+            self.assertNotIn('starfleet', session)
         self.assertTrue(status)
-        self.assertEqual(order, ['fetch', 'clear'])
+        self.assertEqual(order, ['fetch'])
         self.assertEqual((server.host, server.port, server.maintenance_db,
                           server.username),
                          ('db.example.com', 5432, 'appdb', 'admin_user'))
@@ -109,7 +112,17 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         self.assertEqual(result['username'], 'admin_user')
         self.assertIn('allow_save_password', result)
 
-    def _post_save(self, allow=True, owned=True, session_allow=True):
+        # A second call with no session and the real fetch_password.
+        with self.app.test_request_context('/'), \
+                patch.object(cloud, 'Server', MagicMock(query=query)), \
+                patch.object(cloud, 'db'), \
+                patch.object(cloud, 'current_user', SimpleNamespace(id=1)):
+            status, result = cloud.update_server(instance)
+        self.assertTrue(status)
+        self.assertIsNone(result['starfleet_password'])
+
+    def _post_save(self, allow=True, owned=True, session_allow=True,
+                   body=None):
         from flask import session
         from pgadmin.misc.cloud import starfleet as sf
         server = SimpleNamespace(id=7, password=None, save_password=0)
@@ -117,7 +130,8 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         query.filter_by.return_value.first.return_value = \
             server if owned else None
         with self.app.test_request_context(
-                '/', method='POST', data=json.dumps({'password': 'pw-1'}),
+                '/', method='POST', data=json.dumps(
+                    {'password': 'pw-1'} if body is None else body),
                 content_type='application/json'):
             session['allow_save_password'] = session_allow
             with patch.object(sf.config, 'ALLOW_SAVE_PASSWORD', allow), \
@@ -141,5 +155,8 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         self.assertIsNone(server.password)
         resp, _ = self._post_save(session_allow=False)
         self.assertEqual(resp.status_code, 403)
+        resp, server = self._post_save(body={'password': ''})
+        self.assertEqual(resp.status_code, 400)
+        self.assertIsNone(server.password)
         resp, _ = self._post_save(owned=False)
         self.assertEqual(resp.status_code, 410)

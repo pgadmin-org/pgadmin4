@@ -274,7 +274,9 @@ def save_password(sid):
                                     id=sid).first()
     if server is None:
         return gone(errormsg=_('Could not find the server.'))
-    password = json.loads(request.data).get('password') or ''
+    password = (request.get_json(silent=True) or {}).get('password')
+    if not password:
+        return bad_request(errormsg=_('A password is required.'))
     crypt_key_present, crypt_key = get_crypt_key()
     if not crypt_key_present:
         return forbidden(errmsg=_('The master password is not set.'))
