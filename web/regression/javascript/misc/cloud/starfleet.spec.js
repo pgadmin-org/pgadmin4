@@ -10,8 +10,17 @@
 import {isValidStarfleetName, parseAllowlist, isUsableCluster,
   StarfleetInstanceSchema} from '../../../../pgadmin/misc/cloud/static/js/starfleet_schema.ui';
 import {validateStarfleetStep1, validateStarfleetStep2,
-  validateStarfleetStep3} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
-import {genericBeforeEach, getCreateView} from '../../genericFunctions';
+  validateStarfleetStep3, StarfleetInstanceDetails} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
+import {genericBeforeEach, getCreateView, withBrowser} from '../../genericFunctions';
+import {act, render, screen} from '@testing-library/react';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
+import url_for from 'sources/url_for';
+
+jest.mock('pgbrowser/node_ajax', ()=>({
+  getNodeAjaxOptions: jest.fn(()=>Promise.resolve([])),
+  getNodeListById: jest.fn(()=>[]),
+}));
 
 describe('Starfleet cloud provider', ()=>{
   it('validates database names', ()=>{
@@ -69,6 +78,27 @@ describe('Starfleet cloud provider', ()=>{
         byocPgVersions: ()=>Promise.resolve([]),
       }, {byoc: true, ip_allowlist: '198.51.100.7'});
       await getCreateView(schema);
+    });
+  });
+
+  describe('instance details', ()=>{
+    let networkMock;
+    beforeEach(()=>{
+      genericBeforeEach();
+      networkMock = new MockAdapter(axios);
+      networkMock.onGet(url_for('starfleet.client_ip')).reply(200, {data: '198.51.100.7'});
+    });
+    afterEach(()=>{ networkMock.restore(); });
+
+    it('defaults to a managed deployment once the client IP has loaded', async ()=>{
+      const Details = withBrowser(StarfleetInstanceDetails);
+      const setData = jest.fn();
+      await act(async ()=>{
+        render(<Details cloudProvider='starfleet' nodeInfo={{}} nodeData={{}}
+          byoc={false} starfleetInstanceData={{}} setStarfleetInstanceData={setData}/>);
+      });
+      expect(await screen.findByText('Region')).toBeInTheDocument();
+      expect(screen.getByText('Size')).toBeInTheDocument();
     });
   });
 });

@@ -96,6 +96,10 @@ export function StarfleetInstanceDetails(props) {
     return ()=>{ cancelled = true; };
   }, [props.cloudProvider, props.byoc]);
 
+  // SchemaView takes its initial data from the first schema it is given, so
+  // wait for the client IP lookup rather than mounting it without one.
+  if (!instanceSchema) return null;
+
   return <SchemaView
     formType={'dialog'}
     getInitData={() => { /*This is intentional (SonarQube)*/ }}
