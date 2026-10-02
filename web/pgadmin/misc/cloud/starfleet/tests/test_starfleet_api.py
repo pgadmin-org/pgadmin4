@@ -63,6 +63,8 @@ class TestStarfleetClient(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_expiry_remints()
         self._test_token_only_client()
         self._test_params_encoded()
+        self._test_https_required()
+        self._test_bad_success_bodies()
 
     def _test_token_then_get(self):
         client, http = self._client([FakeResponse(200, TOKEN),
@@ -138,3 +140,26 @@ class TestStarfleetClient(_SkipServerSetUpMixin, BaseTestGenerator):
             http.calls[1]['url'],
             'https://api.pgedge.com/managed/v1/databases/abc'
             '?user_type=admin')
+
+    def _test_https_required(self):
+        from pgacloud.utils.starfleet_api import StarfleetError
+        client, http = self._client([], api_url='http://api.example.com')
+        with self.assertRaises(StarfleetError):
+            client.get('/x')
+        # Neither the secret nor a token may leave over plain HTTP.
+        self.assertEqual(http.calls, [])
+
+    def _test_bad_success_bodies(self):
+        from pgacloud.utils.starfleet_api import StarfleetError
+        client, _ = self._client([FakeResponse(200, b'<html>oops</html>')])
+        with self.assertRaises(StarfleetError) as ctx:
+            client.get_token()
+        self.assertEqual(ctx.exception.status, 200)
+        for body in (b'', {}, [], {'access_token': 'x', 'expires_in': 'y'}):
+            client, _ = self._client([FakeResponse(200, body)])
+            with self.assertRaises(StarfleetError):
+                client.get_token()
+        # An empty success body is still a valid "no content" reply.
+        client, _ = self._client([FakeResponse(200, TOKEN),
+                                  FakeResponse(204, b'')])
+        self.assertIsNone(client.get('/x'))

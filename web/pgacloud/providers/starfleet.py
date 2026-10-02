@@ -117,21 +117,24 @@ class StarfleetProvider(AbsProvider):
             created = client.post(prefix, self._create_body(args))
             db = self._wait(client, '{}/{}'.format(prefix, created['id']),
                             params)
+            conn = db.get('connection') or {}
+            # Never output conn['password']: stdout is persisted to disk.
+            instance = {
+                'Provider': 'starfleet',
+                'Kind': args.kind,
+                'Id': db['id'],
+                'Role': role,
+                'Hostname': conn.get('host') or db.get('domain'),
+                'Port': conn.get('port'),
+                'Database': conn.get('database'),
+                'Username': conn.get('username'),
+            }
         except StarfleetError as e:
             error(str(e))
+        except (KeyError, TypeError, AttributeError):
+            error('Unexpected response from pgEdge Starfleet.')
 
-        conn = db.get('connection') or {}
-        # Never output conn['password']: stdout is persisted to disk.
-        output({'instance': {
-            'Provider': 'starfleet',
-            'Kind': args.kind,
-            'Id': db['id'],
-            'Role': role,
-            'Hostname': conn.get('host') or db.get('domain'),
-            'Port': conn.get('port'),
-            'Database': conn.get('database'),
-            'Username': conn.get('username'),
-        }})
+        output({'instance': instance})
 
 
 def load():

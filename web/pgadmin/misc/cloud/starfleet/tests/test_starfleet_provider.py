@@ -101,6 +101,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_timeout(starfleet)
         self._test_available_without_connection(starfleet)
         self._test_api_error(starfleet)
+        self._test_malformed_create(starfleet)
 
     def _test_managed_success(self, starfleet):
         prov, args = _parse(starfleet, MANAGED_ARGS)
@@ -201,3 +202,15 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         code, out, err = _run(prov, args, Boom([]))
         self.assertEqual(code, 1)
         self.assertIn('name already in use', err)
+
+    def _test_malformed_create(self, starfleet):
+        for created in (None, [], {'status': 'creating'}):
+            class Odd(FakeClient):
+                def post(self, path, body, created=created):
+                    return created
+
+            prov, args = _parse(starfleet, MANAGED_ARGS)
+            code, out, err = _run(prov, args, Odd([]))
+            self.assertEqual(code, 1)
+            self.assertIn('Unexpected response from pgEdge Starfleet', err)
+            self.assertNotIn('"instance"', out)

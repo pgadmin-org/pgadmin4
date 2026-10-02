@@ -71,6 +71,7 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_requires_session()
         self._test_malformed_response()
         self._test_verify_null_secret()
+        self._test_verify_malformed()
         self._test_deploy()
 
     def _verify(self, routes, mint_error=None):
@@ -196,6 +197,26 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
             with patch.object(sf, 'StarfleetClient', fake):
                 resp = sf.verify_credentials.__wrapped__()
         self.assertEqual(resp.status_code, 400)
+
+    def _test_verify_malformed(self):
+        from pgadmin.misc.cloud import starfleet as sf
+        from pgadmin.misc.cloud.starfleet import BYOC_PROBE, TENANTS
+        # A tenant list of the wrong shape is a 400, not a 500.
+        resp, sess, _ = self._verify({TENANTS: ['acme'], BYOC_PROBE: []})
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('Unexpected response',
+                      json.loads(resp.data)['errormsg'])
+        self.assertEqual(sess, {})
+        # Neither does a request body or secret of the wrong type.
+        fake = _fake_client_class({}, mint_error='bad credentials')
+        for body in (['x'], {'secret': 'x'}):
+            with self.app.test_request_context(
+                    '/starfleet/verify_credentials/', method='POST',
+                    data=json.dumps(body),
+                    content_type='application/json'):
+                with patch.object(sf, 'StarfleetClient', fake):
+                    resp = sf.verify_credentials.__wrapped__()
+            self.assertEqual(resp.status_code, 400)
 
     def _test_requires_session(self):
         from pgadmin.misc.cloud import starfleet as sf

@@ -134,12 +134,16 @@ def index():
 def verify_credentials():
     """Check the API client credentials and probe BYOC capability."""
     clear_starfleet_session()
-    secret = (request.get_json(silent=True) or {}).get('secret') or {}
+    data = request.get_json(silent=True)
+    secret = data.get('secret') if isinstance(data, dict) else None
+    if not isinstance(secret, dict):
+        secret = {}
     client = StarfleetClient(_api_url(), secret.get('client_id'),
                              secret.get('client_secret'))
     try:
         client.get_token()
         tenants = client.get(TENANTS) or []
+        tenant_name = tenants[0].get('name') if tenants else None
         try:
             client.get(BYOC_PROBE)
             byoc = True
@@ -150,12 +154,16 @@ def verify_credentials():
             byoc = False
     except StarfleetError as e:
         return _error(e)
+    except MALFORMED as e:
+        current_app.logger.warning(
+            'Unexpected pgEdge Starfleet response: %s', type(e).__name__)
+        return bad_request(errormsg=_(
+            'Unexpected response from pgEdge Starfleet.'))
 
     session[SESSION_KEY] = {'access_token': client.token,
                             'expires_at': client.expires_at}
     return make_json_response(success=1, data={
-        'tenant_name': tenants[0].get('name') if tenants else None,
-        'byoc': byoc})
+        'tenant_name': tenant_name, 'byoc': byoc})
 
 
 def _cpu(limit):

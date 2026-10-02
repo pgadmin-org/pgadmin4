@@ -15,7 +15,7 @@ so it must not import anything from pgadmin.
 
 import json
 import time
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import urllib3
 
@@ -57,8 +57,14 @@ class StarfleetClient:
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'grant_type': 'client_credentials'}, auth=False)
-        self.token = resp['access_token']
-        self.expires_at = time.time() + int(resp.get('expires_in', 3600))
+        try:
+            token = resp['access_token']
+            expires_in = int(resp.get('expires_in') or 3600)
+        except (KeyError, TypeError, ValueError, AttributeError):
+            raise StarfleetError('pgEdge Starfleet did not return an access '
+                                 'token.')
+        self.token = token
+        self.expires_at = time.time() + expires_in
         return self.token
 
     def _ensure_token(self):
@@ -78,6 +84,12 @@ class StarfleetClient:
 
     def _request(self, method, path, body=None, params=None, auth=True,
                  retry=True):
+        # Checked here rather than in __init__ so that every caller's
+        # existing StarfleetError handler sees it, before any credential
+        # or token can be sent in the clear.
+        if urlsplit(self.api_url).scheme != 'https':
+            raise StarfleetError('The pgEdge Starfleet API URL must use '
+                                 'HTTPS.')
         headers = {'Accept': 'application/json'}
         if auth:
             self._ensure_token()
@@ -105,6 +117,9 @@ class StarfleetClient:
         try:
             payload = json.loads(resp.data) if resp.data else None
         except ValueError:
+            if resp.status < 400:
+                raise StarfleetError('pgEdge Starfleet returned a response '
+                                     'that is not valid JSON.', resp.status)
             payload = None
 
         if resp.status >= 400:
