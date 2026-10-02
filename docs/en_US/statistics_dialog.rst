@@ -45,6 +45,10 @@ Use the fields in the *General* tab to describe the statistics object:
   * *MCV (Most Common Values)*, which records the most common combinations of
     values.
 
+  If you leave the field empty, PostgreSQL collects every kind it supports.
+  Leave it empty for statistics on a single expression, which do not accept
+  a choice of kinds.
+
 * Use the *Comment* field to store an optional note about the statistics object.
 
 Click the *Definition* tab to continue.

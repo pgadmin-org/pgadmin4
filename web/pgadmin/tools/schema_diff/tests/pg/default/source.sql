@@ -1177,4 +1177,4 @@ CREATE STATISTICS test_schema_diff.statistics_identical (ndistinct, dependencies
 -- Name: statistics_only_in_source; Type: STATISTICS; Schema: test_schema_diff; Owner: postgres
 --
 
-CREATE STATISTICS test_schema_diff.statistics_only_in_source (ndistinct) ON col1, (lower(col2)) FROM test_schema_diff.table_for_index;
+CREATE STATISTICS test_schema_diff.statistics_only_in_source (ndistinct) ON col1, col2 FROM test_schema_diff.table_for_index;

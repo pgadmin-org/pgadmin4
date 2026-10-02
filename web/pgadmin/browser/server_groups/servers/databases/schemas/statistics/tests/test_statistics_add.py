@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import json
 import uuid
 from unittest.mock import patch
 
@@ -100,6 +101,16 @@ class StatisticsAddTestCase(BaseTestGenerator):
                     cross_check_res,
                     "Could not find the newly created statistics object."
                 )
+
+            # The statistics target has to be set even when the server
+            # named the object.
+            expected = self.expected_data["test_result_data"]
+            if "stattarget" in expected:
+                node = json.loads(response.data.decode('utf-8'))['node']
+                self.assertEqual(
+                    statistics_utils.get_statistics_target(
+                        self.server, self.db_name, node['_id']),
+                    expected["stattarget"])
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],

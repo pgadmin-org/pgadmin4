@@ -195,14 +195,18 @@
         "schema": "public",
         "table": "test_table",
         "columns": ["col1", "col2"],
-        "stat_types": ["ndistinct"]
+        "stat_types": ["ndistinct"],
+        "stattarget": 250,
+        "comment": "Named by the server"
       },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {
+          "stattarget": 250
+        }
       }
     },
     {
@@ -226,9 +230,9 @@
       }
     },
     {
-      "name": "Create statistics: With invalid data - No statistics types.",
+      "name": "Create statistics: No statistics types, so the server builds every kind.",
       "url": "/browser/statistics/obj/",
-      "is_positive_test": false,
+      "is_positive_test": true,
       "inventory_data": {},
       "test_data": {
         "name": "test_stats_no_types",
@@ -240,8 +244,8 @@
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
-        "status_code": 400,
-        "error_msg": "At least 1 statistics type must be selected.",
+        "status_code": 200,
+        "error_msg": null,
         "test_result_data": {}
       }
     },

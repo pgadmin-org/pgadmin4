@@ -146,14 +146,8 @@ export default class StatisticsSchema extends BaseUISchema {
           allowClear: true,
         },
         helpMessage: gettext('Select at least two columns, or one column alongside an expression.'),
-        depChange: (state)=>{
-          // Clear columns when table changes
-          if(!state.table) {
-            return {
-              columns: [],
-            };
-          }
-        }
+        // The columns chosen belong to the old table, whatever it changes to.
+        depChange: () => ({ columns: [] }),
       },
       {
         id: 'stat_types',
@@ -290,17 +284,8 @@ export default class StatisticsSchema extends BaseUISchema {
       }
     }
 
-    // Validate at least one stat type, unless this is the expression-only
-    // form. PostgreSQL's univariate expression statistics (a single
-    // expression, no columns) do not accept a statistics-kind clause at
-    // all, so only require one when columns are involved.
-    if (hasColumns && state.stat_types && state.stat_types.length === 0 && !state.oid) {
-      setError('stat_types', gettext('At least one statistics type must be selected.'));
-      errors = true;
-    } else {
-      setError('stat_types', null);
-    }
-
+    // No statistics type need be chosen: PostgreSQL then builds every kind
+    // it supports for the definition.
     return errors;
   }
 }

@@ -478,19 +478,8 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
 
-        # Validate at least 1 stat_type, unless this is the expression-only
-        # form. PostgreSQL's univariate expression statistics (a single
-        # expression, no columns) do not accept a statistics-kind clause at
-        # all, so that form is left for the server to validate.
-        if has_columns and len(data.get('stat_types') or []) < 1:
-            return make_json_response(
-                status=400,
-                success=0,
-                errormsg=_(
-                    "At least 1 statistics type must be selected."
-                )
-            )
-
+        # No statistics type need be given: PostgreSQL then builds every kind
+        # it supports for the definition.
         error = self._validate_stattarget(data)
         if error is not None:
             return error[0]
@@ -530,6 +519,22 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             return gone(errormsg=self.not_found_error_msg())
 
         row = rset['rows'][0]
+
+        # Without a name the create template cannot refer to the new object,
+        # so set its owner, target and comment now the server has named it.
+        if not data.get('name'):
+            sql = render_template(
+                "/".join([self.template_path, self._UPDATE_SQL]),
+                data={k: data[k] for k in ('owner', 'stattarget', 'comment')
+                      if data.get(k) not in (None, '', -1, 'DEFAULT')},
+                o_data={'name': row['name'], 'schema': data['schema']},
+                conn=self.conn
+            ).strip()
+            if sql:
+                status, msg = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=msg)
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 row['oid'],
