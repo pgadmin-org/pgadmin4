@@ -8,8 +8,16 @@ To deploy a PostgreSQL database on pgEdge Starfleet, follow the steps below.
 You can create either a *Managed* database, which Starfleet hosts for you, or
 register a database on an existing *BYOC* (bring your own cloud) cluster.
 
+.. image:: images/cloud_provider_for_postgresql.png
+    :alt: Cloud Deployment Provider
+    :align: center
+
 Once you launch the tool, select the pgEdge Starfleet option and click on the
 *Next* button to proceed.
+
+.. image:: images/cloud_starfleet_credentials.png
+    :alt: pgEdge Starfleet credentials
+    :align: center
 
 In the Credentials step, enter the *Auth ID* and *Auth secret* of a Starfleet
 API client. pgAdmin checks them with Starfleet when you click *Next*.
@@ -19,6 +27,10 @@ API client. pgAdmin checks them with Starfleet when you click *Next*.
  created, so keep a copy of it. See the
  `pgEdge Starfleet documentation <https://docs.pgedge.com/pgedge-starfleet/>`_
  for details.
+
+.. image:: images/cloud_starfleet_instance.png
+    :alt: pgEdge Starfleet instance specification
+    :align: center
 
 Use the fields from the Instance Specification step to specify the database
 details.
@@ -58,14 +70,26 @@ available and have public nodes can be selected, because pgAdmin cannot reach
 private nodes. Access is controlled by the cluster's firewall rules, which
 pgAdmin does not change.
 
+.. image:: images/cloud_starfleet_database.png
+    :alt: pgEdge Starfleet database details
+    :align: center
+
 In the Database Details step, use the *pgAdmin server group* field to select
 the server group the new server will be registered in.
+
+.. image:: images/cloud_starfleet_review.png
+    :alt: pgEdge Starfleet review
+    :align: center
 
 Finally, review the summary in the Review step and click *Finish* to start the
 deployment. The progress of the deployment is shown in the same way as for the
 other cloud providers, and the new server is added to the *Object Explorer*
 when the database is available. pgAdmin connects with *sslmode* set to
 *require* and *gssencmode* set to *disable*.
+
+.. image:: images/cloud_starfleet_password.png
+    :alt: pgEdge Starfleet database password
+    :align: center
 
 pgEdge Starfleet generates the database password. When the deployment
 finishes, pgAdmin shows it once in the *pgEdge Starfleet database password*
