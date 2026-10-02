@@ -862,6 +862,12 @@ KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
 
 AZURE_CREDENTIAL_CACHE_DIR = os.path.join(DATA_DIR, 'azurecredentialcache')
 
+#############################################################################
+# pgEdge Starfleet API base URL, used by the cloud deployment wizard
+#############################################################################
+
+STARFLEET_API_URL = 'https://api.pgedge.com'
+
 ##########################################################################
 # OAuth2 Configuration
 ##########################################################################

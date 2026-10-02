@@ -28,6 +28,8 @@ from pgadmin.misc.cloud.utils import get_my_ip
 from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
 from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
 from pgadmin.misc.cloud.google import clear_google_session, deploy_on_google
+from pgadmin.misc.cloud.starfleet import deploy_on_starfleet, \
+    clear_starfleet_session  # noqa: F401
 import config
 
 # set template path for sql scripts
@@ -69,6 +71,9 @@ class CloudModule(PgAdminModule):
         app.register_blueprint(module)
 
         from .google import blueprint as module
+        app.register_blueprint(module)
+
+        from .starfleet import blueprint as module
         app.register_blueprint(module)
 
 
@@ -117,6 +122,8 @@ def deploy_on_cloud():
         status, p, resp = deploy_on_azure(data)
     elif data['cloud'] == 'google':
         status, p, resp = deploy_on_google(data)
+    elif data['cloud'] == 'starfleet':
+        status, p, resp = deploy_on_starfleet(data)
     else:
         status = False
         resp = gettext('No cloud implementation.')
