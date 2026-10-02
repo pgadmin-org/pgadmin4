@@ -86,6 +86,15 @@ describe('Starfleet cloud provider', ()=>{
   });
 
   describe('instance schema', ()=>{
+    it('clears the PostgreSQL version when the deployment type changes', ()=>{
+      const schema = new StarfleetInstanceSchema({}, {byoc: true});
+      const field = schema.baseFields.find((f)=>f.id == 'pg_version');
+      expect(field.depChange({kind: 'byoc', pg_version: '18'}, ['kind']))
+        .toEqual({pg_version: ''});
+      expect(field.depChange({kind: 'byoc', pg_version: '18'}, ['cluster_id']))
+        .toBeUndefined();
+    });
+
     beforeEach(()=>{ genericBeforeEach(); });
     it('renders in create mode', async ()=>{
       const schema = new StarfleetInstanceSchema({

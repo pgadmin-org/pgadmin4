@@ -122,6 +122,11 @@ export class StarfleetInstanceSchema extends BaseUISchema {
       {
         id: 'pg_version', label: gettext('PostgreSQL version'), deps: ['kind', 'cluster_id'],
         mode: ['create'],
+        // Managed and BYOC offer different versions, so drop one picked from
+        // the other list.
+        depChange: (state, source)=>{
+          if (source[0] == 'kind') return {pg_version: ''};
+        },
         type: (state)=>({
           type: 'select',
           options: byoc(state) ? this.fieldOptions.byocPgVersions : this.fieldOptions.pgVersions,
