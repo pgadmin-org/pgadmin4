@@ -5,7 +5,7 @@
 *************************************
 
 A PostgreSQL server can be deployed on the Amazon, Azure, Google cloud
-using this module. In future more cloud provider options will be
+or pgEdge Starfleet using this module. In future more cloud provider options will be
 available.
 
 To launch the *Cloud Deployment...* tool, right click on the *Server Group* or
@@ -18,3 +18,4 @@ To launch the *Cloud Deployment...* tool, right click on the *Server Group* or
    cloud_aws_rds
    cloud_azure_database
    cloud_google_cloud_sql
+   cloud_pgedge_starfleet
