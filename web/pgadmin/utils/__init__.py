@@ -370,6 +370,16 @@ def does_utility_exist(file):
     return error_msg
 
 
+TRUTHY_STRING_VALUES = ('true', '1', 'on', 'yes')
+
+
+def str_to_bool(value):
+    """Normalise a boolean-ish value received from form/JSON request data
+    (which may arrive as a real bool, an int, or one of several string
+    spellings depending on the client) into an actual bool."""
+    return str(value).lower() in TRUTHY_STRING_VALUES
+
+
 def get_server(sid, only_owned=False):
     """Fetch a server by ID with access check.
 
