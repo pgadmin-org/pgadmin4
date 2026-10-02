@@ -195,10 +195,12 @@ export default class BgProcessManager {
         /* The job may complete more than once (recheck racing the poll);
          * report each result at most once per job. */
         if (!_server.status && !this._failureShown.has(jobId)) {
+          /* Kept until dismissed: the job may finish long after the wizard
+           * closed, and this is the only place the reason is shown. */
           this._failureShown.add(jobId);
           pgAdmin.Browser.notifier.errorText(_server.errmsg ?
             gettext('Cloud deployment failed: %s', _server.errmsg) :
-            gettext('Cloud deployment failed.'));
+            gettext('Cloud deployment failed.'), null);
         }
         if (_server.starfleet && !this._starfleetShown.has(jobId)) {
           this._starfleetShown.add(jobId);

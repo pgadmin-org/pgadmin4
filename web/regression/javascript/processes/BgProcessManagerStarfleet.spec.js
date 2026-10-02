@@ -58,13 +58,13 @@ describe('BgProcessManager Starfleet password dialog', ()=>{
     await complete('job3');
     await complete('job3');
     expect(errorText).toHaveBeenCalledTimes(1);
-    expect(errorText).toHaveBeenCalledWith('Cloud deployment failed: no payment method on file');
+    expect(errorText).toHaveBeenCalledWith('Cloud deployment failed: no payment method on file', null);
 
     networkMock.onPut('/misc/bgprocess/update_cloud_details/job4').reply(200, {
       data: {node: {...baseNode, status: false}},
     });
     await complete('job4');
-    expect(errorText).toHaveBeenLastCalledWith('Cloud deployment failed.');
+    expect(errorText).toHaveBeenLastCalledWith('Cloud deployment failed.', null);
     expect(showStarfleetPassword).not.toHaveBeenCalled();
     errorText.mockRestore();
   });
