@@ -36,6 +36,7 @@ export default class BgProcessManager {
     this._workerId = null;
     this._pendingJobId = [];
     this._starfleetShown = new Set();
+    this._failureShown = new Set();
     this._eventManager = new EventBus();
   }
 
@@ -192,7 +193,13 @@ export default class BgProcessManager {
         }
 
         /* The job may complete more than once (recheck racing the poll);
-         * show the one-time password dialog at most once per job. */
+         * report each result at most once per job. */
+        if (!_server.status && !this._failureShown.has(jobId)) {
+          this._failureShown.add(jobId);
+          pgAdmin.Browser.notifier.errorText(_server.errmsg ?
+            gettext('Cloud deployment failed: %s', _server.errmsg) :
+            gettext('Cloud deployment failed.'));
+        }
         if (_server.starfleet && !this._starfleetShown.has(jobId)) {
           this._starfleetShown.add(jobId);
           showStarfleetPassword(_server);

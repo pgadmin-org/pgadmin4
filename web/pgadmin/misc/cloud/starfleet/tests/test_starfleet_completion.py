@@ -34,6 +34,7 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_fetch_password()
         self._test_job_token_survives_wizard_close()
         self._test_update_server()
+        self._test_failure_error()
         self._test_save_password()
 
     def _session_client(self, payload=None, error=None):
@@ -137,6 +138,35 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
             status, result = cloud.update_server(instance)
         self.assertTrue(status)
         self.assertIsNone(result['starfleet_password'])
+
+    def _test_failure_error(self):
+        import pgadmin.misc.cloud as cloud
+        from pgadmin.misc.bgprocess.processes import BatchProcess
+        stdout = [['t1', 'Creating database...'],
+                  ['t2', json.dumps({'error': 'no payment method on file'})]]
+        self.assertEqual(BatchProcess._cloud_error(stdout),
+                         'no payment method on file')
+        self.assertIsNone(BatchProcess._cloud_error([['t1', 'not json'],
+                                                     ['t2', '[1]']]))
+        self.assertEqual(len(BatchProcess._cloud_error(
+            [['t', json.dumps({'error': 'x' * 900})]])), 500)
+
+        server = SimpleNamespace(id=7, servergroup_id=1, name='mydb',
+                                 cloud_status=-1)
+        query = MagicMock()
+        query.filter_by.return_value.first.return_value = server
+        failed = {'instance': {'sid': 7, 'status': False, 'pid': 'job-2',
+                               'error': 'no payment method on file'}}
+        with self.app.test_request_context('/'), \
+                patch.object(cloud, 'Server', MagicMock(query=query)), \
+                patch.object(cloud, 'db') as db:
+            with patch.object(cloud, 'current_user', SimpleNamespace(id=1)):
+                status, result = cloud.update_server(failed)
+        db.session.delete.assert_called_once_with(server)
+        self.assertTrue(status)
+        self.assertFalse(result['status'])
+        self.assertEqual(result['errmsg'], 'no payment method on file')
+        self.assertNotIn('starfleet', result)
 
     def _post_save(self, allow=True, owned=True, session_allow=True,
                    body=None):

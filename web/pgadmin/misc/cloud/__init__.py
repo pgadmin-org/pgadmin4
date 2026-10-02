@@ -197,6 +197,7 @@ def update_server(data):
     }
     if not server_data['instance']['status']:
         _server['status'] = False
+        _server['errmsg'] = server_data['instance'].get('error')
     else:
         _server['status'] = True
 

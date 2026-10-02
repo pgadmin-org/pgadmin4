@@ -50,6 +50,25 @@ describe('BgProcessManager Starfleet password dialog', ()=>{
     expect(showStarfleetPassword).toHaveBeenCalledTimes(1);
   });
 
+  it('reports a failed deployment with its error once per job', async ()=>{
+    const errorText = jest.spyOn(pgAdmin.Browser.notifier, 'errorText').mockImplementation(()=>{});
+    networkMock.onPut('/misc/bgprocess/update_cloud_details/job3').reply(200, {
+      data: {node: {...baseNode, status: false, errmsg: 'no payment method on file'}},
+    });
+    await complete('job3');
+    await complete('job3');
+    expect(errorText).toHaveBeenCalledTimes(1);
+    expect(errorText).toHaveBeenCalledWith('Cloud deployment failed: no payment method on file');
+
+    networkMock.onPut('/misc/bgprocess/update_cloud_details/job4').reply(200, {
+      data: {node: {...baseNode, status: false}},
+    });
+    await complete('job4');
+    expect(errorText).toHaveBeenLastCalledWith('Cloud deployment failed.');
+    expect(showStarfleetPassword).not.toHaveBeenCalled();
+    errorText.mockRestore();
+  });
+
   it('never opens the dialog for a non-Starfleet node', async ()=>{
     networkMock.onPut('/misc/bgprocess/update_cloud_details/job2').reply(200, {
       data: {node: {...baseNode}},
