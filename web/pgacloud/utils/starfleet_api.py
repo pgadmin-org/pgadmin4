@@ -60,6 +60,8 @@ class StarfleetClient:
         try:
             token = resp['access_token']
             expires_in = int(resp.get('expires_in') or 3600)
+            if not isinstance(token, str) or not token:
+                raise ValueError
         except (KeyError, TypeError, ValueError, AttributeError):
             raise StarfleetError('pgEdge Starfleet did not return an access '
                                  'token.')

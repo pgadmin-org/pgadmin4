@@ -155,7 +155,9 @@ class TestStarfleetClient(_SkipServerSetUpMixin, BaseTestGenerator):
         with self.assertRaises(StarfleetError) as ctx:
             client.get_token()
         self.assertEqual(ctx.exception.status, 200)
-        for body in (b'', {}, [], {'access_token': 'x', 'expires_in': 'y'}):
+        for body in (b'', {}, [], {'access_token': None},
+                     {'access_token': ''}, {'access_token': 42},
+                     {'access_token': 'x', 'expires_in': 'y'}):
             client, _ = self._client([FakeResponse(200, body)])
             with self.assertRaises(StarfleetError):
                 client.get_token()
