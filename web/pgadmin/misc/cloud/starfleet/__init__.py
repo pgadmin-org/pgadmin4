@@ -9,7 +9,6 @@
 
 """Deploy databases on pgEdge Starfleet (Managed and BYOC)."""
 
-import json
 import time
 
 from flask import session, current_app, request
@@ -97,6 +96,10 @@ def clear_starfleet_job(pid):
         session[JOBS_KEY] = jobs
 
 
+# Raised when an upstream response is not the shape we expect.
+MALFORMED = (KeyError, ValueError, TypeError, AttributeError)
+
+
 def _error(e):
     return bad_request(errormsg=sanitize_external_text(str(e)))
 
@@ -112,6 +115,11 @@ def _with_client(fn):
         return make_json_response(data=fn(client))
     except StarfleetError as e:
         return _error(e)
+    except MALFORMED as e:
+        current_app.logger.warning(
+            'Unexpected pgEdge Starfleet response: %s', type(e).__name__)
+        return bad_request(errormsg=_(
+            'Unexpected response from pgEdge Starfleet.'))
 
 
 @blueprint.route("/")
@@ -126,7 +134,7 @@ def index():
 def verify_credentials():
     """Check the API client credentials and probe BYOC capability."""
     clear_starfleet_session()
-    secret = json.loads(request.data).get('secret', {})
+    secret = (request.get_json(silent=True) or {}).get('secret') or {}
     client = StarfleetClient(_api_url(), secret.get('client_id'),
                              secret.get('client_secret'))
     try:
@@ -279,12 +287,16 @@ def fetch_password(kind, db_id, role, pid):
     try:
         db_info = client.get('/{}/v1/databases/{}'.format(kind, db_id),
                              params)
+        return (db_info.get('connection') or {}).get('password')
     except StarfleetError as e:
         current_app.logger.warning(
             'Could not fetch the pgEdge Starfleet password: %s',
             sanitize_external_text(str(e)))
-        return None
-    return (db_info.get('connection') or {}).get('password')
+    except MALFORMED as e:
+        current_app.logger.warning(
+            'Unexpected pgEdge Starfleet response whilst fetching the '
+            'password: %s', type(e).__name__)
+    return None
 
 
 @blueprint.route('/save_password/<int:sid>', methods=['POST'],

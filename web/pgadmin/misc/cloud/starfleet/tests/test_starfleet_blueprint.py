@@ -69,6 +69,8 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_verify_bad_credentials_escaped()
         self._test_choices()
         self._test_requires_session()
+        self._test_malformed_response()
+        self._test_verify_null_secret()
         self._test_deploy()
 
     def _verify(self, routes, mint_error=None):
@@ -173,6 +175,27 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
                 {'name': '14.1.8', 'supported_pg_versions': ['16']}]})
         self.assertEqual([v['value'] for v in body['data']],
                          ['18', '17', '16'])
+
+    def _test_malformed_response(self):
+        # A 2xx without the expected shape is an error, not a 500.
+        resp, body, _ = self._get('get_client_ip', {
+            '/managed/v1/client-ip': {}})
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('Unexpected response', body['errormsg'])
+        resp, body, _ = self._get('get_sizes', {
+            '/managed/v1/sizes': [{'status': 'active'}]})
+        self.assertEqual(resp.status_code, 400)
+
+    def _test_verify_null_secret(self):
+        from pgadmin.misc.cloud import starfleet as sf
+        fake = _fake_client_class({}, mint_error='bad credentials')
+        with self.app.test_request_context(
+                '/starfleet/verify_credentials/', method='POST',
+                data=json.dumps({'secret': None}),
+                content_type='application/json'):
+            with patch.object(sf, 'StarfleetClient', fake):
+                resp = sf.verify_credentials.__wrapped__()
+        self.assertEqual(resp.status_code, 400)
 
     def _test_requires_session(self):
         from pgadmin.misc.cloud import starfleet as sf

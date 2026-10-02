@@ -69,6 +69,13 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
                                   error=StarfleetError('gone', 404))):
                 self.assertIsNone(sf.fetch_password('managed', 'x',
                                                     'admin', 'job-1'))
+            # Malformed upstream data must not raise.
+            for payload in (None, [], 'text', {'connection': 'oops'}):
+                with patch.object(sf, 'get_session_client',
+                                  return_value=self._session_client(
+                                      payload)):
+                    self.assertIsNone(sf.fetch_password(
+                        'managed', 'x', 'admin', 'job-1'))
 
     def _test_job_token_survives_wizard_close(self):
         import pgadmin.misc.cloud as cloud
