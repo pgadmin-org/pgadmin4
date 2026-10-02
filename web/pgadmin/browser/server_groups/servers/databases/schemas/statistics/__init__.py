@@ -175,9 +175,9 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                       'dependencies_values', 'has_mcv_values',
                       'has_ext_data_access']
 
-    # Whether the connected user may read pg_statistic_ext_data, resolved
-    # lazily and reset for every request by check_precondition.
-    ext_data_access = None
+    # The statistics kinds CREATE STATISTICS accepts. They are written into
+    # the SQL as keywords, so nothing else may get through.
+    valid_stat_types = ('ndistinct', 'dependencies', 'mcv')
 
     _PROPERTIES_SQL = 'properties.sql'
     _NODES_SQL = 'nodes.sql'
@@ -210,7 +210,6 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 else:
                     self.conn = self.manager.connection()
 
-                self.ext_data_access = None
                 self.datistemplate = False
                 if (
                     self.manager.db_info is not None and
@@ -245,8 +244,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid,
-            has_ext_data_access=self._has_ext_data_access()
+            scid=scid
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -339,29 +337,6 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def _has_ext_data_access(self):
-        """
-        pg_catalog.pg_statistic_ext_data holds the data ANALYZE collected, and
-        is readable by superusers only: not even pg_read_all_stats grants
-        access to it. Joining it unconditionally would make the whole node
-        unusable for everybody else, so ask first and leave the computed
-        values out when we cannot read them.
-
-        The answer is cached for the lifetime of the request, which keeps
-        schema diff from asking once per object.
-
-        Returns:
-            True if the connected user can read pg_statistic_ext_data
-        """
-        if self.ext_data_access is None:
-            status, res = self.conn.execute_scalar(
-                "SELECT pg_catalog.has_table_privilege("
-                "'pg_catalog.pg_statistic_ext_data', 'SELECT')"
-            )
-            self.ext_data_access = bool(status and res)
-
-        return self.ext_data_access
-
     def _fetch_properties(self, scid, stid):
         """
         This function is used to fetch the properties of the specified object
@@ -375,8 +350,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid, stid=stid,
-            has_ext_data_access=self._has_ext_data_access()
+            scid=scid, stid=stid
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -403,11 +377,6 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         # Ensure columns is an array (convert None to empty array)
         if row.get('columns') is None:
             row['columns'] = []
-
-        # The computed values are only present when the connected user can
-        # read pg_statistic_ext_data; flag it so the dialog can say so rather
-        # than implying ANALYZE has not run.
-        row['has_ext_data_access'] = self._has_ext_data_access()
 
         # Ensure stattarget has a default value if None
         if row.get('stattarget') is None:
@@ -460,18 +429,21 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                     ).format(arg)
                 )
 
-        # The templates iterate over these, so a string (whose len() is its
-        # character count) must not slip past the checks below.
-        for arg in ('columns', 'stat_types'):
-            if data.get(arg) is not None and \
-                    not isinstance(data.get(arg), list):
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=_(
-                        "The parameter ({}) must be a list."
-                    ).format(arg)
-                )
+        # The template iterates over the columns, so a string (whose len() is
+        # its character count) must not slip past the checks below.
+        if data.get('columns') is not None and \
+                not isinstance(data.get('columns'), list):
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=_(
+                    "The parameter ({}) must be a list."
+                ).format('columns')
+            )
+
+        error = self._validate_stat_types(data)
+        if error is not None:
+            return error[0]
 
         # The expression list is passed to the server verbatim: it is a list
         # of SQL expressions, and splitting it on commas here would mangle
@@ -544,6 +516,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([self.template_path, self._OID_SQL]),
             name=data.get('name'),
             schema=data['schema'],
+            table_schema=data.get('table_schema'),
             table=data['table'],
             conn=self.conn
         )
@@ -772,6 +745,55 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return None
 
+    @classmethod
+    def _validate_stat_types(cls, data):
+        """
+        Check that data['stat_types'], if given, is a list of statistics
+        kinds CREATE STATISTICS accepts, as the templates write each one into
+        the SQL verbatim.
+
+        Args:
+            data: Form data
+
+        Returns:
+            An error response tuple (response, None) if invalid, else None.
+        """
+        stat_types = data.get('stat_types')
+        if stat_types is None:
+            return None
+
+        if not isinstance(stat_types, list):
+            errormsg = _(
+                "The parameter ({}) must be a list."
+            ).format('stat_types')
+        elif any(t not in cls.valid_stat_types for t in stat_types):
+            errormsg = _(
+                "Invalid statistics type. Valid types are: {}."
+            ).format(', '.join(cls.valid_stat_types))
+        else:
+            return None
+
+        return make_json_response(
+            status=400,
+            success=0,
+            errormsg=errormsg
+        ), None
+
+    @staticmethod
+    def _retarget_schema(data, target_schema):
+        """
+        Point a statistics object's definition at another schema, for schema
+        diff. A table in the object's own schema moves with it, whilst one in
+        a different schema is left where it is.
+
+        Args:
+            data: The object's properties, updated in place
+            target_schema: The schema to create the object in
+        """
+        if data.get('table_schema') in (None, data.get('schema')):
+            data['table_schema'] = target_schema
+        data['schema'] = target_schema
+
     def get_SQL(self, gid, sid, did, data, scid, stid=None,
                 add_not_exists_clause=False):
         """
@@ -812,7 +834,8 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             return sql, data.get('name', old_data['name'])
         else:
             # Create operation
-            error = self._validate_stattarget(data)
+            error = self._validate_stattarget(data) or \
+                self._validate_stat_types(data)
             if error is not None:
                 return error
 
@@ -847,7 +870,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             return res
 
         if target_schema:
-            res['schema'] = target_schema
+            self._retarget_schema(res, target_schema)
 
         sql = render_template(
             "/".join([self.template_path, self._CREATE_SQL]),
@@ -876,8 +899,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._STATS_SQL]),
                 stid=stid,
-                conn=self.conn,
-                has_ext_data_access=self._has_ext_data_access()
+                conn=self.conn
             )
         else:
             # Collection statistics
@@ -971,14 +993,20 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
                 for key in ('columns', 'stat_types'):
                     if not data.get(key):
                         data[key] = None
+                # The schema names differ between the two sides, so a table
+                # in the object's own schema is reported as None, leaving
+                # only a table in some other schema to be compared by name.
+                if data.get('table_schema') == data.get('schema'):
+                    data['table_schema'] = None
                 res[row['name']] = data
 
         return res
 
     # PostgreSQL cannot alter these, so a difference in any of them means
     # dropping the target's object and creating it afresh.
-    definition_keys = ('table', 'columns', 'expression_list', 'stat_types',
-                       'has_ndistinct', 'has_dependencies', 'has_mcv')
+    definition_keys = ('table', 'table_schema', 'columns', 'expression_list',
+                       'stat_types', 'has_ndistinct', 'has_dependencies',
+                       'has_mcv')
 
     @check_precondition(action='sql')
     def _recreate_sql(self, gid, sid, did, scid, stid, data,
@@ -1010,7 +1038,7 @@ class StatisticsView(PGChildNodeView, SchemaDiffObjectCompare):
         # stand for the rest of the source's definition.
         res.update(data)
         if target_schema:
-            res['schema'] = target_schema
+            self._retarget_schema(res, target_schema)
 
         create_sql = render_template(
             "/".join([self.template_path, self._CREATE_SQL]),

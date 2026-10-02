@@ -62,9 +62,10 @@ Click the *Definition* tab to continue.
 
 When you open the dialog on an existing statistics object, the *Properties*
 view also reports the statistics target and, for roles with access, the values
-that ``ANALYZE`` has collected. Those values are held in
-``pg_catalog.pg_statistic_ext_data``, which is not publicly readable, so the
-*Computed Statistics* group is hidden when the current role lacks access.
+that ``ANALYZE`` has collected. Those values are read through the
+``pg_catalog.pg_stats_ext`` view, which only shows them to roles the server
+allows to see them (the table's owners, on current PostgreSQL releases), so
+the *Computed Statistics* group is hidden when the current role lacks access.
 
 Click the *SQL* tab to continue.
 

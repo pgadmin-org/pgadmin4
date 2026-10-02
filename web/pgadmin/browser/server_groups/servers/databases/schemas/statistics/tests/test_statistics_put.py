@@ -133,6 +133,21 @@ class StatisticsUpdateTestCase(BaseTestGenerator):
                 self.assertEqual(response_data['node']['_pid'],
                                  self.new_schema_id)
 
+                # The table stayed where it was, and the reverse engineered
+                # SQL has to say so.
+                response = self.tester.get(
+                    "/browser/statistics/sql/{0}/{1}/{2}/{3}/{4}".format(
+                        utils.SERVER_GROUP, self.server_id, self.db_id,
+                        self.new_schema_id, self.statistics_id
+                    ),
+                    follow_redirects=True
+                )
+                self.assertEqual(response.status_code, 200)
+                sql = json.loads(response.data.decode('utf-8'))
+                self.assertIn(
+                    'FROM {0}.{1}'.format(self.schema_name, self.table_name),
+                    sql.replace('"', ''))
+
             # The target PostgreSQL reports, with the default (NULL from
             # PostgreSQL 17, -1 before) folded to -1.
             expected = self.expected_data["test_result_data"]

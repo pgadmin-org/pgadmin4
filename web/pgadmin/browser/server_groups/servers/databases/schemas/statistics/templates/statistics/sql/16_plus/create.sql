@@ -7,7 +7,7 @@ CREATE STATISTICS{% if data.name %}{% if add_not_exists_clause %} IF NOT EXISTS{
 
     ON {% if data.columns %}{% for col in data.columns %}{{ conn|qtIdent(col) }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}{% if data.columns and data.expression_list %}, {% endif %}{% if data.expression_list %}{{ data.expression_list }}{% endif %}
 
-    FROM {{ conn|qtIdent(data.schema, data.table) }};
+    FROM {{ conn|qtIdent(data.table_schema if data.table_schema else data.schema, data.table) }};
 {% if data.owner and data.name %}
 
 ALTER STATISTICS {{ conn|qtIdent(data.schema, data.name) }}

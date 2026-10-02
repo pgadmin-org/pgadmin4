@@ -266,6 +266,26 @@
       }
     },
     {
+      "name": "Create statistics: With invalid data - Unknown statistics type.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_stats_types_bad",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": ["ndistinct) ON col1, col2 FROM test_table; --"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "Invalid statistics type. Valid types are: ndistinct, dependencies, mcv.",
+        "test_result_data": {}
+      }
+    },
+    {
       "name": "Create statistics: With invalid data - Statistics target not an integer.",
       "url": "/browser/statistics/obj/",
       "is_positive_test": false,
