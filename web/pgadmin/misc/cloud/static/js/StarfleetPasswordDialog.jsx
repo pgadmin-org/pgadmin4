@@ -42,6 +42,15 @@ export function StarfleetPasswordContent({node, onClose}) {
     });
   };
 
+  const copyPassword = async ()=>{
+    setError('');
+    try {
+      await copyToClipboard(password);
+    } catch (err) {
+      setError(parseApiError(err));
+    }
+  };
+
   return (
     <ModalContent>
       <Box sx={{padding: '1rem', flexGrow: 1}}>
@@ -61,10 +70,10 @@ export function StarfleetPasswordContent({node, onClose}) {
         {hasPassword &&
           <Box sx={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
             <Box sx={{flexGrow: 1}}>
-              <InputText value={password} readonly={true} controlProps={{maxLength: 1024}}
+              <InputText aria-label={gettext('Password')} value={password} readonly={true} controlProps={{maxLength: 1024}}
                 onChange={()=>{/* read-only */}} />
             </Box>
-            <DefaultButton onClick={()=>copyToClipboard(password)}>{gettext('Copy')}</DefaultButton>
+            <DefaultButton onClick={copyPassword}>{gettext('Copy')}</DefaultButton>
           </Box>
         }
         {saved && <Box sx={{marginTop: '0.75rem'}}>{gettext('The password has been saved with the server.')}</Box>}

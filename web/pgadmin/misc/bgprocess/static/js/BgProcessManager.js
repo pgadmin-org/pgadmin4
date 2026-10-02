@@ -35,6 +35,7 @@ export default class BgProcessManager {
     this._procList = [];
     this._workerId = null;
     this._pendingJobId = [];
+    this._starfleetShown = new Set();
     this._eventManager = new EventBus();
   }
 
@@ -190,7 +191,10 @@ export default class BgProcessManager {
           }
         }
 
-        if (_server.starfleet) {
+        /* The job may complete more than once (recheck racing the poll);
+         * show the one-time password dialog at most once per job. */
+        if (_server.starfleet && !this._starfleetShown.has(jobId)) {
+          this._starfleetShown.add(jobId);
           showStarfleetPassword(_server);
         }
       })
