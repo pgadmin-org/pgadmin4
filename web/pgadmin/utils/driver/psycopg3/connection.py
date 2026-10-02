@@ -22,7 +22,7 @@ import psycopg
 from flask import g, current_app
 from flask_babel import gettext
 from flask_security import current_user
-from pgadmin.utils.crypto import decrypt
+from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
 from psycopg._encodings import py_codecs as encodings
 
 import config
@@ -186,6 +186,8 @@ class Connection(BaseConnection):
         self.wasConnected = False
         # This flag indicates the connection reconnecting status.
         self.reconnecting = False
+        # Set when the saved password could not be decrypted and was dropped
+        self.saved_password_discarded = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
         self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
@@ -245,26 +247,52 @@ class Connection(BaseConnection):
         return password, encpass, is_update_password
 
     def _decode_password(self, encpass, manager, password, crypt_key):
+        """
+        Decrypt the saved password.
+
+        Returns a tuple of (is_error, errmsg, password, discarded). 'discarded'
+        is True when the saved password could not be decrypted and was thrown
+        away; the caller must then drop its copy of the ciphertext too.
+        """
         if encpass:
             # Fetch Logged in User Details.
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return True, self.UNAUTHORIZED_REQUEST, password
+                return True, self.UNAUTHORIZED_REQUEST, password, False
 
             try:
                 password = decrypt(encpass, crypt_key)
                 # password is in bytes, for python3 we need it in string
                 if isinstance(password, bytes):
                     password = password.decode()
-            except Exception as e:
-                manager.stop_ssh_tunnel()
-                current_app.logger.exception(e)
-                return True, \
-                    _(
-                        "Failed to decrypt the saved password.\nError: {0}"
-                    ).format(str(e)), password
-        return False, '', password
+            except DECRYPT_ERRORS as e:
+                # The saved password could not be decrypted. This happens
+                # when the stored ciphertext was encrypted with a different
+                # key (e.g. OIDC/OAuth2 logins where the derived encryption
+                # key changed between sessions), leaving un-decodable bytes
+                # (typically a "'utf-8' codec can't decode byte 0x.." error).
+                # Instead of failing every connection attempt permanently,
+                # discard the bad saved password and continue so the user is
+                # prompted for the password again.
+                current_app.logger.warning(
+                    'Ignoring the saved password of the server (#{0}) as it '
+                    'could not be decrypted. The user will be prompted for '
+                    'the password. Error: {1}'.format(
+                        getattr(manager, 'sid', None), str(e)),
+                    exc_info=True
+                )
+                # Clear the cached ciphertext held by this connection and the
+                # manager. This only affects callers that reconnect without
+                # supplying a password (e.g. restoring connections); the main
+                # connect route reloads server.password from the
+                # configuration database through manager.update(), so the
+                # user is still prompted there.
+                self.password = None
+                manager.password = None
+                self.saved_password_discarded = True
+                return False, '', None, True
+        return False, '', password, False
 
     def connect(self, **kwargs):
         if self.conn:
@@ -307,10 +335,16 @@ class Connection(BaseConnection):
         if not crypt_key_present:
             raise CryptKeyMissing()
 
-        is_error, errmsg, password = self._decode_password(
+        self.saved_password_discarded = False
+        is_error, errmsg, password, discarded = self._decode_password(
             encpass, manager, password, crypt_key)
         if is_error:
             return False, errmsg
+
+        if discarded:
+            # Don't let the stale ciphertext skip the passexec fallback, or
+            # be written back to the manager after a successful connection.
+            encpass = None
 
         # If no password credential is found then connect request might come
         # from Query tool, ViewData grid, debugger, etc. In that case, fall
@@ -399,6 +433,10 @@ class Connection(BaseConnection):
                     msg=msg
                 )
             )
+            if discarded:
+                msg = gettext(
+                    "The saved password could not be decrypted; please enter "
+                    "it again.\n{0}").format(msg)
             return False, msg
 
         # Overwrite connection notice attr to support
@@ -1461,7 +1499,18 @@ WHERE db.datname = current_database()""")
             if not crypt_key_present:
                 return False, crypt_key, password
 
-            password = decrypt(password, crypt_key).decode()
+            try:
+                password = decrypt(password, crypt_key).decode()
+            except DECRYPT_ERRORS as e:
+                current_app.logger.warning(
+                    'Ignoring the saved password of the server (#{0}) as it '
+                    'could not be decrypted. Error: {1}'.format(
+                        getattr(manager, 'sid', None), str(e)),
+                    exc_info=True
+                )
+                # Recoverable: let reset() go on and try to connect without
+                # the password (e.g. through a passfile).
+                return False, '', None
         return True, '', password
 
     def reset(self):
@@ -1699,7 +1748,16 @@ Failed to reset the connection to the server due to following error:
                 crypt_key_present, crypt_key = get_crypt_key()
                 if not crypt_key_present:
                     return False, crypt_key
-                password = decrypt(password, crypt_key).decode()
+                try:
+                    password = decrypt(password, crypt_key).decode()
+                except DECRYPT_ERRORS as e:
+                    current_app.logger.warning(
+                        'Ignoring the saved password of the server (#{0}) '
+                        'as it could not be decrypted. Error: {1}'.format(
+                            self.manager.sid, str(e)),
+                        exc_info=True
+                    )
+                    password = None
 
             try:
                 with ConnectionLocker(self.manager.kerberos_conn):
