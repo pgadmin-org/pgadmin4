@@ -327,7 +327,10 @@ class BatchProcess:
         if self.env:
             env.update(self.env)
 
-        current_app.logger.debug(self.env)
+        # Log only the names: the values can include secrets.
+        current_app.logger.debug(
+            'Extra process environment variables: %s',
+            sorted((self.env or {}).keys()))
 
         if cb is not None:
             cb(env)
