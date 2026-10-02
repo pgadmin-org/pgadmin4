@@ -14,6 +14,7 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import * as BgProcessNotify from './BgProcessNotify';
 import pgAdmin from 'sources/pgadmin';
 import { processesPanelData } from '../../../../static/js/BrowserComponent';
+import { showStarfleetPassword } from '../../../cloud/static/js/StarfleetPasswordDialog';
 import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
 
 const WORKER_INTERVAL = 1000;
@@ -187,6 +188,10 @@ export default class BgProcessManager {
             _tree.remove(_item.domNode);
             _tree.refresh(_item.domNode.parent);
           }
+        }
+
+        if (_server.starfleet) {
+          showStarfleetPassword(_server);
         }
       })
       .catch((err)=>{

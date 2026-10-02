@@ -39,6 +39,7 @@ module.exports = {
   'bgprocess.list': '/misc/bgprocess/',
   'bgprocess.stop_process': '/misc/bgprocess/stop/<pid>',
   'bgprocess.acknowledge': '/misc/bgprocess/<pid>',
+  'starfleet.save_password': '/misc/cloud/starfleet/save_password/<int:sid>',
   'user_management.auth_sources': '/user_management/auth_sources',
   'user_management.roles': '/user_management/roles',
   'user_management.users': '/user_management/users',
