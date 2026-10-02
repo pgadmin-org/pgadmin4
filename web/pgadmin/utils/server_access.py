@@ -11,14 +11,52 @@
 
 In server mode, multiple users share the same pgAdmin instance. These
 helpers enforce that users can only access servers they own or that
-have been explicitly shared with them via SharedServer entries.
+have been shared (Server.shared=True).
+
+For OAuth2 users whose provider sets OAUTH2_SERVER_GROUP_CLAIM, shared
+servers owned by other users are further restricted to those in a server
+group whose name was granted by the claim at login.
 """
 
-from sqlalchemy import or_, case, func, literal
+from sqlalchemy import and_, or_, case, func, literal
+from flask import session, has_request_context
 from flask_security import current_user
 
 from pgadmin.model import db, Server, ServerGroup
+from pgadmin.utils.constants import OAUTH2
 import config
+
+
+def _oauth2_server_group_claims():
+    """Return the server group names granted to the current user by their
+    OAuth2 server group claim, or None if no such restriction applies.
+
+    The list is resolved at login (see OAuth2Authentication.login) and is
+    only set when the provider configures OAUTH2_SERVER_GROUP_CLAIM.
+    """
+    if not has_request_context() or \
+            getattr(current_user, 'auth_source', None) != OAUTH2:
+        return None
+
+    groups = session.get('oauth2_server_group_claims')
+    return groups if isinstance(groups, list) else None
+
+
+def _shared_server_condition():
+    """Condition for shared servers the current user may access.
+
+    Combine with ``Server.user_id == current_user.id``; servers the user
+    owns are never restricted by the claim.
+    """
+    claim_groups = _oauth2_server_group_claims()
+    if claim_groups is None:
+        return Server.shared
+
+    granted_groups = (
+        db.session.query(ServerGroup.id)
+        .filter(ServerGroup.name.in_(claim_groups))
+    )
+    return and_(Server.shared, Server.servergroup_id.in_(granted_groups))
 
 
 def get_server(sid, only_owned=False):
@@ -60,7 +98,7 @@ def get_server(sid, only_owned=False):
         Server.id == sid,
         or_(
             Server.user_id == current_user.id,
-            Server.shared
+            _shared_server_condition()
         )
     ).first()
 
@@ -111,6 +149,8 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
 
     Includes groups owned by the user plus groups containing shared
     servers (Server.shared=True, visible to all authenticated users).
+    For OAuth2 users with a server group claim, groups of shared servers
+    are only included if their name was granted by the claim.
 
     is_shared_group is an additional column indicating if the group is a group
     not owned by the user and contains shared servers.
@@ -154,6 +194,8 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
     )
 
     if hide_shared:
+        # Owned groups only. Write paths (e.g. renaming a group) rely on
+        # this, so it must not be widened.
         query = query.filter(ServerGroup.user_id == current_user.id)
     else:
         has_shared_servers = (
@@ -164,6 +206,13 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
             )
             .exists()
         )
+
+        claim_groups = _oauth2_server_group_claims()
+        if claim_groups is not None:
+            has_shared_servers = and_(
+                has_shared_servers,
+                ServerGroup.name.in_(claim_groups)
+            )
 
         query = query.filter(
             or_(
@@ -186,7 +235,8 @@ def get_server_groups_for_user_query(hide_shared=False, servergroup_id=None):
 def get_user_server_query():
     """Return a base query for servers accessible to the current user.
 
-    Includes owned servers + shared servers (visible to all users).
+    Includes owned servers + shared servers (visible to all users, subject
+    to any OAuth2 server group claim).
 
     The Administrator role does not grant visibility into other
     users' private servers.
@@ -197,6 +247,6 @@ def get_user_server_query():
     return Server.query.filter(
         or_(
             Server.user_id == current_user.id,
-            Server.shared
+            _shared_server_condition()
         )
     )

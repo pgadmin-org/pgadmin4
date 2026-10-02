@@ -537,11 +537,68 @@ class OAuth2Authentication(BaseAuthentication):
 
         return None, None
 
+    def _extract_server_group_claims(self, profile_dict, id_token_claims):
+        """
+        Resolve allowed server groups from provider claim configuration.
+
+        Config keys (per provider):
+        - OAUTH2_SERVER_GROUP_CLAIM: claim name to read
+        - OAUTH2_SERVER_GROUP_CLAIM_MAPPING: optional dict mapping
+          claim-value -> server group name or list of names
+
+        Claim values and group names are matched exactly (no trimming or
+        case folding). Values that aren't strings (e.g. group objects
+        emitted by some providers) are ignored.
+
+        Returns:
+            list[str] | None
+            - list of allowed server group names if configured
+            - None when claim-based server group filtering is not configured
+        """
+        provider = self.oauth2_config.get(self.oauth2_current_client) or {}
+        claim_name = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
+        if not claim_name:
+            return None
+
+        claim_values = id_token_claims.get(claim_name)
+        if claim_values is None:
+            claim_values = profile_dict.get(claim_name)
+        if claim_values is None:
+            return []
+
+        if not isinstance(claim_values, list):
+            claim_values = [claim_values]
+
+        mapping = provider.get('OAUTH2_SERVER_GROUP_CLAIM_MAPPING') or {}
+        server_groups = []
+        for value in claim_values:
+            if not isinstance(value, str):
+                current_app.logger.warning(
+                    f'Ignoring non-string value in server group claim '
+                    f'"{claim_name}".')
+                continue
+
+            mapped_groups = mapping.get(value)
+            if mapped_groups is None:
+                server_groups.append(value)
+            elif isinstance(mapped_groups, str):
+                server_groups.append(mapped_groups)
+            elif isinstance(mapped_groups, list):
+                server_groups.extend(
+                    g for g in mapped_groups if isinstance(g, str))
+
+        # Remove duplicates, preserving order
+        return list(dict.fromkeys(server_groups))
+
     def login(self, form):
         if not self.oauth2_current_client:
             error_msg = gettext('No OAuth2 provider available.')
             current_app.logger.error(error_msg)
             return False, error_msg
+
+        # Don't let a previous login's server group claims outlive it; they
+        # are set again below once this login has been authorised.
+        session.pop('oauth2_server_group_claims', None)
 
         profile = self.get_user_profile()
         profile_dict = self.get_profile_dict(profile)
@@ -668,6 +725,16 @@ class OAuth2Authentication(BaseAuthentication):
             current_app.logger.warning(audit_msg)
             return False, return_msg
 
+        # Server groups granted by the identity provider. This is read by
+        # pgadmin.utils.server_access to decide which shared servers the
+        # user can see; claims are only resolved at login.
+        oauth2_server_group_claims = self._extract_server_group_claims(
+            profile_dict, id_token_claims
+        )
+        if oauth2_server_group_claims is not None:
+            session['oauth2_server_group_claims'] = \
+                oauth2_server_group_claims
+
         user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
@@ -716,10 +783,12 @@ class OAuth2Authentication(BaseAuthentication):
                 )
                 username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
                 additional_claims = provider.get('OAUTH2_ADDITIONAL_CLAIMS')
+                server_group_claim = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
 
-                # If custom username claim or additional authorization
-                #  claims are configured, they may exist only in userinfo;
-                # don't skip userinfo unless ID token has them.
+                # If custom username claim, additional authorization
+                # claims, or server-group claims are configured, they may
+                # exist only in userinfo; don't skip userinfo unless ID
+                # token has them.
                 needs_userinfo = False
                 if username_claim and username_claim not in id_token_claims:
                     needs_userinfo = True
@@ -730,6 +799,9 @@ class OAuth2Authentication(BaseAuthentication):
                     ]
                     if missing_authz_keys:
                         needs_userinfo = True
+                if (server_group_claim and
+                        server_group_claim not in id_token_claims):
+                    needs_userinfo = True
 
             if has_sufficient_claims and not needs_userinfo:
                 current_app.logger.debug(

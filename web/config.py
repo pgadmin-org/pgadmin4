@@ -926,6 +926,21 @@ OAUTH2_CONFIG = [
         #     'wids': ["cf1c38e5-3621-4004-a7cb-879624dced7c"],
         # }
         'OAUTH2_ADDITIONAL_CLAIMS': None,
+        # The claim listing the server groups whose shared servers the user
+        # may see (ID token first, then userinfo). When set, shared servers
+        # owned by other users are only visible if their server group's name
+        # is in the claim; if the claim is missing, none are. The user's own
+        # servers are unaffected. Names are matched exactly, and the claim
+        # is only read at login.
+        # Without mapping, claim values are treated as server group names.
+        # Example:
+        # 'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
+        # Optional mapping from claim value -> server group name(s):
+        # 'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': {
+        #     'readonly': ['RO Server 1', 'RO Server 2']
+        # },
+        'OAUTH2_SERVER_GROUP_CLAIM': None,
+        'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': None,
         # Set this variable to False to disable SSL certificate verification
         # for OAuth2 provider.
         # This may need to set False, in case of self-signed certificates.
