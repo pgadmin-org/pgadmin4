@@ -82,4 +82,4 @@ lose it, reset it from the pgEdge Starfleet console.
 
 .. note:: pgAdmin contacts the Starfleet API at the address given by the
  *STARFLEET_API_URL* configuration setting, which defaults to
- *https://api.pgedge.com*.
+ *https://api.pgedge.com*. The address must use HTTPS.
