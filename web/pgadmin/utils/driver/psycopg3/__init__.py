@@ -23,16 +23,42 @@ import psycopg
 from threading import Lock
 
 import config
-from pgadmin.model import Server
+from pgadmin.model import Server, SharedServer
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query
 from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.passexec import PasswordExec
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
 from .server_manager import ServerManager
 
 connection_restore_lock = Lock()
+
+
+def shared_server_passexec(server):
+    """Return a PasswordExec built from a shared-server non-owner's
+    own SharedServer.passexec_cmd, or None.
+
+    The owner's passexec_cmd is never honoured here for a non-owner
+    -- see #9830 / CVE-2026-7813, where any user able to own a shared
+    server could otherwise run an arbitrary command in every other
+    user's request context. A non-owner's own SharedServer.passexec_cmd
+    carries no such risk: it only ever runs in that same user's own
+    request context, exactly like an owned server's passexec_cmd would.
+
+    Also used outside this module (browser.server_groups.servers) to
+    recompute passexec after a manager.update() call, which otherwise
+    rebuilds the manager from the server object alone and drops it.
+    """
+    shared_server = SharedServer.query.filter_by(
+        user_id=current_user.id, osid=server.id).first()
+    if shared_server is None or not shared_server.passexec_cmd:
+        return None
+    return PasswordExec(
+        shared_server.passexec_cmd, server.host, server.port,
+        shared_server.username or server.username,
+        shared_server.passexec_expiration)
 
 
 class Driver(BaseDriver):
@@ -84,12 +110,13 @@ class Driver(BaseDriver):
                 for server in servers:
                     manager = managers[str(server.id)] = \
                         ServerManager(server)
-                    # Suppress passexec for non-owners of shared
-                    # servers — it runs commands on the client
-                    # machine and must not inherit the owner's.
+                    # Never inherit the owner's passexec for
+                    # non-owners of shared servers; only their own
+                    # SharedServer.passexec_cmd, if any.
                     if config.SERVER_MODE and server.shared and \
                             server.user_id != current_user.id:
-                        manager.passexec = None
+                        manager.passexec = \
+                            shared_server_passexec(server)
                     if server.id in session_managers:
                         manager._restore(
                             session_managers[server.id])
@@ -152,12 +179,13 @@ class Driver(BaseDriver):
             # server_data was already access-checked above;
             # it cannot be None at this point.
             manager = ServerManager(server_data)
-            # Suppress passexec for non-owners of shared
-            # servers — it runs commands on the client machine
-            # and must not inherit the owner's.
+            # Never inherit the owner's passexec for non-owners
+            # of shared servers; only their own
+            # SharedServer.passexec_cmd, if any.
             if config.SERVER_MODE and server_data.shared and \
                     server_data.user_id != current_user.id:
-                manager.passexec = None
+                manager.passexec = \
+                    shared_server_passexec(server_data)
             managers[str(sid)] = manager
 
             return manager
