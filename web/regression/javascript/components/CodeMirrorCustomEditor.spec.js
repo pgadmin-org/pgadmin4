@@ -11,6 +11,7 @@
 import { withTheme } from '../fake_theme';
 import CodeMirror from 'sources/components/ReactCodeMirror';
 import { syntaxTree } from '@codemirror/language';
+import { runScopeHandlers } from '@codemirror/view';
 
 import { render } from '@testing-library/react';
 
@@ -320,4 +321,25 @@ describe('CodeMirrorCustomEditorView', ()=>{
     expect(result.to).toBe(stmts[1].to);
   });
 
+
+  it('Mod-Shift-D duplicates the current line',()=>{
+    cmRerender({value: 'select 1;\nselect 2;'});
+    editor.dispatch({selection: {anchor: 0}});
+    // jsdom does not report a Mac platform, so Mod is Ctrl here.
+    const handled = runScopeHandlers(editor, new KeyboardEvent('keydown', {
+      key: 'D', code: 'KeyD', keyCode: 68, ctrlKey: true, shiftKey: true,
+    }), 'editor');
+    expect(handled).toBe(true);
+    expect(editor.state.doc.toString()).toEqual('select 1;\nselect 1;\nselect 2;');
+  });
+
+  it('Mod-Shift-D duplicates every line in the selection',()=>{
+    cmRerender({value: 'select 1;\nselect 2;\nselect 3;'});
+    editor.dispatch({selection: {anchor: 0, head: 12}});
+    runScopeHandlers(editor, new KeyboardEvent('keydown', {
+      key: 'D', code: 'KeyD', keyCode: 68, ctrlKey: true, shiftKey: true,
+    }), 'editor');
+    expect(editor.state.doc.toString()).toEqual(
+      'select 1;\nselect 2;\nselect 1;\nselect 2;\nselect 3;');
+  });
 });
