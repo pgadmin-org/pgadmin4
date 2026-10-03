@@ -10,6 +10,7 @@ import json
 import os
 import select
 import struct
+import time
 
 import config
 import re
@@ -242,12 +243,43 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
     sio.sleep(0.01)
 
 
-def windows_platform(connection_data, sid, max_read_bytes, server_id):
-    process = PtyProcess.spawn('cmd.exe', env=get_user_env())
+def drain_stdout(process, sid, max_read_bytes, idle_timeout=1,
+                 max_wait=5):
+    """
+    Forward any output left unread when the process exited.
 
-    process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
-                                              connection_data[1]))
-    process.write("\r\n")
+    pywinpty copies the pseudo-terminal's output to a socket from a reader
+    thread, so output written just before psql exits (such as a connection
+    error) can still be queued after isalive() returns False. Read until the
+    reader thread closes the socket, nothing arrives within idle_timeout
+    seconds, or max_wait seconds have passed.
+    """
+    deadline = time.monotonic() + max_wait
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        (data_ready, _, _) = select.select([process.fd], [], [],
+                                           min(idle_timeout, remaining))
+        if process.fd not in data_ready:
+            break
+        try:
+            output = process.read(max_read_bytes)
+        except (EOFError, OSError):
+            break
+        if output:
+            sio.emit('pty-output',
+                     {'result': output,
+                      'error': False},
+                     namespace='/pty', room=sid)
+
+
+def windows_platform(connection_data, sid, max_read_bytes, server_id):
+    # Spawn psql directly rather than typing its command line into cmd.exe,
+    # so that the user is not left at a shell prompt when psql exits, and
+    # the connection string is never parsed by cmd.exe.
+    process = PtyProcess.spawn(connection_data, env=get_user_env())
+
     app.config['sessions'][request.sid] = process
     pdata[request.sid] = process
     cdata[request.sid] = process.fd
@@ -257,6 +289,18 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id):
     while process.isalive():
         read_stdout(process, sid, max_read_bytes,
                     win_emit_output=True)
+
+    drain_stdout(process, sid, max_read_bytes)
+
+    # psql has exited, so forget the session now. The \q handler has
+    # already removed it from the sessions map, which would otherwise stop
+    # the disconnect handler from ever cleaning up the other maps.
+    # Compare with the process, so that an older process cannot clear the
+    # state of a newer one registered against the same socket.
+    if app.config['sessions'].get(request.sid) is process:
+        del app.config['sessions'][request.sid]
+    if pdata.get(request.sid) is process:
+        cleanup_globals()
 
 
 def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
@@ -591,6 +635,11 @@ def cleanup_globals():
     del cdata[request.sid]
     server_id = open_psql_connections[request.sid]
     del open_psql_connections[request.sid]
+    session_input.pop(request.sid, None)
+    # Stop a later server disconnect from signalling this socket.
+    soids = app.config.get('sid_soid_mapping', {}).get(str(server_id))
+    if soids and request.sid in soids:
+        soids.remove(request.sid)
     # Check if all the connections of the adhoc server is closed
     # then delete the server from the pgadmin database.
     from pgadmin.misc.workspaces import check_and_delete_adhoc_server
