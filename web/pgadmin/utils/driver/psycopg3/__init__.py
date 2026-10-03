@@ -18,12 +18,13 @@ import re
 from flask import session
 from flask_babel import gettext
 from flask_login import current_user
+from sqlalchemy import inspect as sa_inspect
 from werkzeug.exceptions import InternalServerError
 import psycopg
 from threading import Lock
 
 import config
-from pgadmin.model import Server
+from pgadmin.model import Server, SharedServer
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query
 from pgadmin.utils.exception import ObjectGone
@@ -81,9 +82,12 @@ class Driver(BaseDriver):
                     session['__pgsql_server_managers'].copy()
                 servers = get_user_server_query().filter(
                     Server.is_adhoc == 0)
+                pga_user = self._current_pga_user()
                 for server in servers:
+                    server = self._manager_source(server)
                     manager = managers[str(server.id)] = \
                         ServerManager(server)
+                    manager.pga_user = pga_user
                     # Suppress passexec for non-owners of shared
                     # servers — it runs commands on the client
                     # machine and must not inherit the owner's.
@@ -91,12 +95,133 @@ class Driver(BaseDriver):
                             server.user_id != current_user.id:
                         manager.passexec = None
                     if server.id in session_managers:
-                        manager._restore(
-                            session_managers[server.id])
-                        manager.update_session()
+                        saved = session_managers[server.id]
+                        if self._saved_state_is_stale(
+                                saved, server, pga_user):
+                            # The persisted blob was serialized under
+                            # this numeric id by whatever Server row
+                            # held it before (e.g. the configuration
+                            # database was reset or restored without
+                            # restarting pgAdmin), so it no longer
+                            # describes this row. Restoring it would
+                            # hand the new row the previous row's
+                            # password/connection state. The same goes
+                            # for state saved by a different pgAdmin
+                            # user on this browser session. Drop it and
+                            # let the manager start clean.
+                            manager.update_session()
+                        else:
+                            manager._restore(saved)
+                            manager.update_session()
             return managers
 
         return {}
+
+    @staticmethod
+    def _current_pga_user():
+        """
+        The fs_uniquifier of the logged-in pgAdmin user, which cached and
+        serialized ServerManager state is bound to. Unlike User.id it is
+        random, so it is not reused when the configuration database is
+        reset and a new user is created.
+        """
+        return getattr(current_user, 'fs_uniquifier', None)
+
+    @staticmethod
+    def _manager_source(server_data):
+        """
+        The Server a ServerManager for this server should be built from,
+        and compared against by _manager_is_stale and
+        _saved_state_is_stale.
+
+        For a non-owner of a shared server that is not the owner's row:
+        the connect endpoint builds the manager from the user's
+        SharedServer overlay (see
+        ServerModule.get_shared_server_properties), which replaces the
+        username, service, tunnel host, password and so on with the
+        user's own values. Building or comparing against the owner's row
+        instead would treat every such manager as stale and drop its
+        live connection on every request.
+
+        The overlay is applied to a transient copy of the row's columns,
+        so the session-bound instance other code may be holding is never
+        detached or modified. The SharedServer record is only read here,
+        never created; until the user has one (it is created when they
+        first connect), the row itself is returned.
+        """
+        if not (config.SERVER_MODE and server_data.shared and
+                server_data.user_id != current_user.id):
+            return server_data
+
+        shared_server = SharedServer.query.filter_by(
+            user_id=current_user.id, osid=server_data.id).first()
+        if shared_server is None:
+            return server_data
+
+        # Imported here, as the servers module imports this driver.
+        from pgadmin.browser.server_groups.servers import ServerModule
+
+        # Columns only: Server.clone() would also copy the servergroup
+        # relationship, which cascades the copy into the session.
+        overlay = Server(**{
+            attr.key: getattr(server_data, attr.key)
+            for attr in sa_inspect(Server).column_attrs
+        })
+        return ServerModule.get_shared_server_properties(
+            overlay, shared_server)
+
+    @staticmethod
+    def _saved_state_is_stale(saved, server_data, pga_user=None):
+        """
+        Same identity check as _manager_is_stale, applied to the
+        serialized ServerManager state carried across worker
+        restarts/new sessions in the Flask session
+        ('__pgsql_server_managers'), before it is restored onto a
+        manager that was just built fresh from the current Server row.
+        Without this, a reused server id would have its old serialized
+        password/connections restored onto the new row on the very
+        first request, before any manager exists to run
+        _manager_is_stale against.
+
+        The state is also stale if it was saved by a different pgAdmin
+        user: nothing rotates the session id at login, so a new user
+        logging in on the same browser session must not inherit the
+        previous user's password or connections, even for a server with
+        identical connection details.
+        """
+        return (
+            saved.get('pga_user') != pga_user or
+            saved.get('host') != server_data.host or
+            saved.get('port') != server_data.port or
+            saved.get('db') != server_data.maintenance_db or
+            saved.get('user') != server_data.username or
+            saved.get('service') != server_data.service or
+            saved.get('tunnel_host') != server_data.tunnel_host
+        )
+
+    @staticmethod
+    def _manager_is_stale(manager, server_data, pga_user=None):
+        """
+        A cached manager is normally kept in sync with edits to its
+        Server row via explicit manager.update() calls from the
+        server-edit endpoints. It can still go stale in place if the
+        row itself was swapped out from under it, e.g. a numeric
+        server id reused by an unrelated row after the configuration
+        database was reset or restored without restarting pgAdmin, so
+        compare against what actually identifies the target rather
+        than trusting the id match alone. It is also stale if it was
+        built for a different pgAdmin user on the same browser session
+        (see _saved_state_is_stale).
+        """
+        return (
+            getattr(manager, 'pga_user', None) != pga_user or
+            manager.host != server_data.host or
+            manager.port != server_data.port or
+            manager.db != server_data.maintenance_db or
+            manager.user != server_data.username or
+            manager.service != server_data.service or
+            manager.tunnel_host != server_data.tunnel_host
+        )
 
     def connection_manager(self, sid=None):
         """
@@ -143,15 +268,46 @@ class Driver(BaseDriver):
             managers = self.managers[session.sid]
             if str(sid) in managers:
                 manager = managers[str(sid)]
+                pga_user = self._current_pga_user()
+                manager_source = self._manager_source(server_data)
                 with connection_restore_lock:
-                    manager._restore_connections()
-                    manager.update_session()
+                    if self._manager_is_stale(
+                            manager, manager_source, pga_user):
+                        # The id has been reused by an unrelated Server
+                        # row (e.g. the configuration database was reset
+                        # or restored without restarting pgAdmin), so the
+                        # cached manager still points at whatever server
+                        # it was originally built from. Drop it rather
+                        # than report a live connection to a server that,
+                        # from this row's perspective, was never opened.
+                        # The same applies to a manager built for another
+                        # pgAdmin user on this browser session.
+                        manager.release()
+                        manager.update(manager_source)
+                        manager.pga_user = pga_user
+                    else:
+                        manager._restore_connections()
+                        manager.update_session()
+                        # Identity (host/port/db/user/service/tunnel)
+                        # still matches, so the live connection is kept,
+                        # but access-control-relevant metadata such as
+                        # shared/ownership is not part of that identity
+                        # check and manager.update() was skipped above -
+                        # refresh it here too, otherwise a row whose
+                        # sharing/ownership changed via the same reused-id
+                        # path could keep serving the previous owner's
+                        # passexec to a new, non-owning user.
+                        manager.shared = server_data.shared
+                    if config.SERVER_MODE and server_data.shared and \
+                            server_data.user_id != current_user.id:
+                        manager.passexec = None
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
             # server_data was already access-checked above;
             # it cannot be None at this point.
-            manager = ServerManager(server_data)
+            manager = ServerManager(self._manager_source(server_data))
+            manager.pga_user = self._current_pga_user()
             # Suppress passexec for non-owners of shared
             # servers — it runs commands on the client machine
             # and must not inherit the owner's.
