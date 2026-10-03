@@ -8,11 +8,21 @@ SELECT
     pg_catalog.current_setting('default_tablespace') AS default_tablespace,
     descr.description AS comments, db.datistemplate AS is_template,
     {### Default ACL for Tables ###}
-    '' AS tblacl,
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+     FROM pg_catalog.pg_default_acl
+     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'r') AS tblacl,
     {### Default ACL for Sequnces ###}
-    '' AS seqacl,
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+     FROM pg_catalog.pg_default_acl
+     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'S') AS seqacl,
     {### Default ACL for Functions ###}
-    '' AS funcacl,
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+     FROM pg_catalog.pg_default_acl
+     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'f') AS funcacl,
+    {### Default ACL for Types ###}
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+     FROM pg_catalog.pg_default_acl
+     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'T') AS typeacl,
     pg_catalog.array_to_string(datacl::text[], ', ') AS acl
 FROM pg_catalog.pg_database db
     LEFT OUTER JOIN pg_catalog.pg_tablespace ta ON db.dattablespace=ta.OID
