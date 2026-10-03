@@ -322,6 +322,20 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         pk_diff = self.table_constraint_comp(source, target)
         diff_dict.update(pk_diff)
 
+        # When both the source and target tables are partitioned, the
+        # 'partition' submodule branch below rebuilds the whole table
+        # (and every one of its partitions) from scratch, handling any
+        # added, removed or bound-changed partition itself. The generic
+        # partition add/remove handling in get_sql_from_table_diff (via
+        # _check_for_partitions_in_sql) must not also run in that case:
+        # it would detach/recreate the same partitions using their real
+        # names ahead of the rebuild script, so the rebuild's row-copy
+        # step (which reads from the original table) would miss rows
+        # already detached out from under it, silently losing data.
+        if 'partitions' in diff_dict and \
+                source.get('is_partitioned') and target.get('is_partitioned'):
+            del diff_dict['partitions']
+
         # Get the difference DDL/DML statements for table
         target_params['diff_data'] = diff_dict
         diff = self.get_sql_from_table_diff(**target_params)

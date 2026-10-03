@@ -33,11 +33,7 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
     # with the issue that covers it. The test fails on anything outside
     # this list, and also fails when something on it starts working, so
     # that the list cannot quietly rot.
-    KNOWN_DIFFERENCES = {
-        # Rebuilding a partitioned table leaves its scaffolding default
-        # partition behind.
-        'table table_for_partition_1': 10301,
-    }
+    KNOWN_DIFFERENCES = {}
 
     def setUp(self):
         super().setUp()
