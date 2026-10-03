@@ -26,7 +26,7 @@ Before using AI Reports, you must:
 
 **Note:**
 
- * AI Reports using cloud providers (Anthropic, OpenAI) require an active internet connection.
+ * AI Reports using cloud providers (Anthropic, OpenAI, GLM) require an active internet connection.
    Local providers (Ollama, Docker Model Runner) do not require internet access.
 
  * API usage may incur costs depending on your LLM provider's pricing model.
@@ -61,6 +61,13 @@ Select your preferred LLM provider from the dropdown:
   * **API URL**: Custom API endpoint URL (leave empty for default: https://api.openai.com/v1). Include the ``/v1`` path prefix if required by your provider.
   * **API Key File**: Path to a file containing your OpenAI API key (obtain from https://platform.openai.com/). This path refers to the filesystem where the pgAdmin server is running (e.g., inside the container if using Docker). The ``~`` prefix is expanded to the home directory of the user running the pgAdmin server process. Optional when using a custom URL with a provider that does not require authentication.
   * **Model**: Select from available GPT models (e.g., gpt-4).
+
+**GLM (Z.ai)**
+  Use GLM models from Z.ai through the provider's OpenAI-compatible API.
+
+  * **API URL**: Custom API endpoint URL (leave empty for default: https://api.z.ai/api/paas/v4). Use https://api.z.ai/api/coding/paas/v4 with a Z.ai Coding Plan subscription.
+  * **API Key File**: Path to a file containing your Z.ai API key. This path refers to the filesystem where the pgAdmin server is running (e.g., inside the container if using Docker). The ``~`` prefix is expanded to the home directory of the user running the pgAdmin server process.
+  * **Model**: Select from available GLM models (e.g., glm-4.7). There is no default; a model must be selected before the AI features can be used.
 
 **Ollama**
   Use locally-hosted open-source models via Ollama. Requires a running Ollama instance.
@@ -269,7 +276,7 @@ Troubleshooting
   You must establish a connection to the server or database before generating reports.
 
 **API Connection Errors**
-  * Verify your API key is correct (for Anthropic and OpenAI).
+  * Verify your API key is correct (for Anthropic, OpenAI, and GLM).
   * Check your internet connection (for cloud providers).
   * For Ollama, ensure the Ollama server is running and accessible.
   * For Docker Model Runner, ensure Docker Desktop 4.40+ is running with the model runner enabled.

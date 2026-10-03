@@ -43,7 +43,7 @@ in ``config.py``) for these preferences to be available.
 Use the fields on the *AI* panel to configure your LLM provider:
 
 * Use the *Default Provider* drop-down to select your LLM provider. Options include:
-  *Anthropic*, *OpenAI*, *Ollama*, or *Docker Model Runner*.
+  *Anthropic*, *OpenAI*, *GLM (Z.ai)*, *Ollama*, or *Docker Model Runner*.
 
 **Anthropic Settings:**
 
@@ -80,6 +80,24 @@ Use the fields on the *AI* panel to configure your LLM provider:
 * Use the *Model* field to select from the available GPT models. Click the
   refresh button to fetch the latest available models from your configured
   endpoint.
+
+**GLM (Z.ai) Settings:**
+
+* Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
+  the default GLM API (``https://api.z.ai/api/paas/v4``). Use
+  ``https://api.z.ai/api/coding/paas/v4`` with a Z.ai Coding Plan
+  subscription.
+
+* Use the *API Key File* field to specify the path to a file containing your
+  GLM API key. This path refers to the filesystem where the pgAdmin
+  server is running (e.g., inside the container if using Docker). The ``~``
+  prefix is expanded to the home directory of the user running the pgAdmin
+  server process.
+
+* Use the *Model* field to select from the available GLM models. Click the
+  refresh button to fetch the latest available models from your configured
+  endpoint. There is no default model, so one must be selected before the
+  AI features can be used.
 
 **Ollama Settings:**
 
