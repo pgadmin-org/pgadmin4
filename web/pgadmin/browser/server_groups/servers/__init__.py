@@ -53,8 +53,14 @@ from pgadmin.utils.server_access import get_server, \
 # File-path keys in connection_params that are per-user and must
 # not be copied from the owner to a new SharedServer or leaked
 # through the property merge.
-SENSITIVE_CONN_KEYS = frozenset({
-    'passfile', 'sslcert', 'sslkey',
+#
+# 'passfile' is a file path too, but it is deliberately not in here: it
+# is the mechanism by which a shared server's owner (an administrator
+# provisioning servers.json, say) lets every user of that server
+# authenticate automatically, so it is inherited like any other
+# connection parameter rather than being stripped away.
+PER_USER_CONN_KEYS = frozenset({
+    'sslcert', 'sslkey',
     'sslrootcert', 'sslcrl', 'sslcrldir',
 })
 
@@ -229,13 +235,18 @@ class ServerModule(sg.ServerGroupPluginModule):
             or {}
         ss_conn = getattr(sharedserver, 'connection_params',
                           None) or {}
-        for key in SENSITIVE_CONN_KEYS:
+        # 'passfile' is absent from PER_USER_CONN_KEYS, so the owner's
+        # value survives this loop and reaches the non-owner, including
+        # on SharedServer rows created before it started being copied.
+        for key in PER_USER_CONN_KEYS:
             if key in ss_conn:
                 s_conn[key] = ss_conn[key]
             elif key in s_conn:
                 # Owner has this key but non-owner doesn't —
                 # remove it so the owner's path doesn't leak.
                 del s_conn[key]
+        if 'passfile' in ss_conn:
+            s_conn['passfile'] = ss_conn['passfile']
         server.connection_params = s_conn
 
         server.servergroup_id = sharedserver.servergroup_id
@@ -246,7 +257,14 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.passexec_cmd = sharedserver.passexec_cmd
         server.passexec_expiration = sharedserver.passexec_expiration
         server.kerberos_conn = sharedserver.kerberos_conn
-        server.tags = sharedserver.tags
+        # A SharedServer row created before tags were copied across has
+        # NULL tags, which is not the same thing as a user who has
+        # cleared every tag they had: the latter leaves an empty list.
+        # Fall back to the owner's tags only for the former, so an
+        # existing row picks them up without overriding a deliberate
+        # choice.
+        server.tags = sharedserver.tags \
+            if sharedserver.tags is not None else server.tags
         server.post_connection_sql = sharedserver.post_connection_sql
 
         return server
@@ -458,15 +476,16 @@ class ServerModule(sg.ServerGroupPluginModule):
             db.session.rollback()
             user = User.query.filter_by(id=data.user_id).first()
 
-            # Strip owner's sensitive file paths from
-            # connection_params — each user should configure
-            # their own SSL/passfile paths.
+            # Strip the owner's per-user SSL file paths from
+            # connection_params — each user should configure their own
+            # SSL certificate/key paths. 'passfile' is not among them,
+            # so it is copied like any other connection parameter.
             safe_conn_params = {}
             if data.connection_params:
                 safe_conn_params = {
                     k: v for k, v in
                     data.connection_params.items()
-                    if k not in SENSITIVE_CONN_KEYS
+                    if k not in PER_USER_CONN_KEYS
                 }
 
             shared_server = SharedServer(
@@ -501,7 +520,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 passexec_cmd=None,
                 passexec_expiration=None,
                 kerberos_conn=False,
-                tags=None,
+                tags=data.tags,
                 post_connection_sql=None
             )
             db.session.add(shared_server)
@@ -623,11 +642,18 @@ class ServerNode(PGChildNodeView):
             data['connection_params'] = existing_conn_params
 
     @staticmethod
-    def update_tags(data, server):
+    def update_tags(data, server, fallback_tags=None):
         """
-        This function is used to update tags
+        This function is used to update tags.
+
+        fallback_tags is the base to apply the delta to when server has
+        NULL tags; a non-owner's SharedServer row created before tags
+        were copied across is shown the owner's tags, so an edit must
+        start from those rather than from nothing.
         """
         old_tags = getattr(server, 'tags', [])
+        if old_tags is None:
+            old_tags = fallback_tags
         # add old_text for comparison
         old_tags = [{**tag, 'old_text': tag['text']}
                     for tag in old_tags] if old_tags is not None else []
@@ -929,7 +955,8 @@ class ServerNode(PGChildNodeView):
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
-        self.update_tags(data, sharedserver or server)
+        self.update_tags(data, sharedserver or server,
+                         server.tags if sharedserver else None)
 
         if 'connection_params' in data and \
             'hostaddr' in data['connection_params'] and \
