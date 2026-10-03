@@ -356,6 +356,9 @@ class IECreateJobTest(BaseTestGenerator):
                                 'ESCAPE \\\'\\\'\\\'\\\''],
              not_expected_cmd_opts=['FORMAT binary', 'FORMAT text', 'DEFAULT',
                                     'FORCE_NOT_NULL', 'FORCE_NULL'],
+             # Passed as a connection string so a service file's dbname
+             # cannot override it.
+             expected_dbname='dbname=postgres',
              expected_exit_code=[0, None]
          )),
         ('When export file with csv file, header, delimiter=tab, '
@@ -1183,3 +1186,8 @@ class IECreateJobTest(BaseTestGenerator):
                     opt,
                     arg
                 )
+        if getattr(self, 'expected_dbname', None):
+            args = batch_process_mock.call_args_list[0][1]['args']
+            self.assertIn('--dbname', args)
+            self.assertEqual(args[args.index('--dbname') + 1],
+                             self.expected_dbname)

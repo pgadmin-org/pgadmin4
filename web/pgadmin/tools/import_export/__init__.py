@@ -18,7 +18,8 @@ from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
-    does_utility_exist, get_server, filename_with_file_manager_path
+    does_utility_exist, get_server, filename_with_file_manager_path, \
+    database_conninfo
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -518,7 +519,10 @@ def create_import_export_job(sid):
                             null_columns=null_cols,
                             force_quote_columns=quote_cols)
 
-    args = ['--command', query]
+    # Never pass the user-supplied database name directly: see
+    # database_conninfo() for why it is wrapped in a connection string.
+    args = ['--dbname', database_conninfo(data['database']),
+            '--command', query]
 
     try:
         io_params = {
@@ -547,7 +551,6 @@ def create_import_export_job(sid):
             str(manager.local_bind_port) if manager.use_ssh_tunnel else str(
                 server.port)
         env['PGUSER'] = server.username
-        env['PGDATABASE'] = data['database']
 
         # Delete the empty keys
         for key, value in dict(env).items():

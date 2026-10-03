@@ -1049,3 +1049,26 @@ def check_extension_exists(conn, extension_name):
     else:
         # If the query fails, we assume the extension does not exist
         return status, res
+
+
+def database_conninfo(database):
+    """
+    Build the value to pass to a utility's --dbname option so that it
+    connects to the named database.
+
+    A bare --dbname value containing "=" (or a postgresql:// URI) is expanded
+    by libpq into a connection string, which would let a user redirect the
+    connection, and the credentials exported with it, to another server.
+    Passing a conninfo string in which the name is the quoted value of the
+    dbname keyword avoids that, since libpq never expands a dbname given
+    inside a connection string. Unlike the PGDATABASE environment variable,
+    it also takes precedence over a dbname set in the server's service file.
+
+    :param database: Name of the database to connect to.
+    :return: A connection string such as "dbname='my db'".
+    """
+    # Imported here rather than at module level, because pgadmin.utils is
+    # also imported where libpq is unavailable, such as the documentation
+    # build, and importing psycopg needs libpq.
+    from psycopg.conninfo import make_conninfo
+    return make_conninfo(dbname=database)
