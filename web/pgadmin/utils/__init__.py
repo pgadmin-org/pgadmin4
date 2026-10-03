@@ -26,7 +26,9 @@ import config
 from .paths import get_storage_directory
 from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
-    MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL
+    MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL, \
+    CONNECTION_PARAM_ENV_VARS, CONNECTION_PARAM_FILE_PATHS, \
+    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
@@ -247,6 +249,9 @@ def get_complete_file_path(file, validate=True):
     """
     Args:
         file: File returned by file manager
+        validate: if True, return None unless the path names an existing
+            file; pass False for a directory, or for a file that may not
+            exist yet
 
     Returns:
          Full path for the file
@@ -256,6 +261,8 @@ def get_complete_file_path(file, validate=True):
 
     # If desktop mode
     if current_app.PGADMIN_RUNTIME or not current_app.config['SERVER_MODE']:
+        if not validate:
+            return file
         return file if os.path.isfile(file) else None
 
     # get dir name and file name
@@ -276,6 +283,51 @@ def get_complete_file_path(file, validate=True):
         return file if os.path.isfile(file) else None
     else:
         return file
+
+
+def connection_params_to_env(connection_params):
+    """
+    Translate the connection parameters configured against a server into the
+    libpq environment variables that carry them, so that a utility such as
+    pg_dump or psql connects the same way the server dialog says it should.
+
+    Only the parameters libpq actually reads from the environment can be
+    passed this way; anything else in connection_params is dropped.
+
+    Args:
+        connection_params: the server's connection parameters, as a dict
+
+    Returns:
+        A dict of environment variables and their values
+    """
+    env = dict()
+
+    if not connection_params or not isinstance(connection_params, dict):
+        return env
+
+    for param, value in connection_params.items():
+        env_var = CONNECTION_PARAM_ENV_VARS.get(param, None)
+        if env_var is None or value is None or value == '':
+            continue
+
+        if param in CONNECTION_PARAM_DIR_PATHS:
+            # A directory, which the file check in get_complete_file_path()
+            # would reject, so resolve it unvalidated and check it here.
+            value = get_complete_file_path(value, validate=False)
+            value = value if value and os.path.isdir(value) else ''
+        elif param in CONNECTION_PARAM_FILE_PATHS or \
+                (param == 'sslrootcert' and value != 'system'):
+            # An unresolvable path is passed on as an empty value, matching
+            # what the connection string does, so that libpq reports the
+            # missing file rather than silently falling back to its default.
+            value = get_complete_file_path(value)
+            value = '' if value is None else value
+        elif param in CONNECTION_PARAM_BOOLEANS:
+            value = 1 if value else 0
+
+        env[env_var] = str(value)
+
+    return env
 
 
 def filename_with_file_manager_path(_file, create_file=False,
