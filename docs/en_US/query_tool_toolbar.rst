@@ -210,10 +210,12 @@ Data Editing Options
    | *Save Data Changes*  | Click the *Save Data Changes* icon to save data changes (insert, update, or delete) in the Data   | F6             |
    |                      | Output Panel to the server.                                                                       |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Save results to*    | Click the Save results to file icon to save the result set of the current query as a delimited    | F8             |
-   | *file*               | text file (CSV, if the field separator is set to a comma). This button will only be enabled when  |                |
-   |                      | a query has been executed and there are results in the data grid. You can specify the CSV/TXT     |                |
-   |                      | settings in the Preference Dialogue under SQL Editor -> CSV/TXT output.                           |                |
+   | *Save results to*    | Click the Save results to file icon to save the result set of the current query. By               | F8             |
+   | *file*               | default it is saved as a delimited text file (CSV, if the field separator is set to a             |                |
+   |                      | comma). Use the adjacent drop-down list to instead save the results as JSON or XML.               |                |
+   |                      | This button is only enabled when a query has been executed and there are results in               |                |
+   |                      | the data grid. You can specify the CSV/TXT settings (including the output file encoding           |                |
+   |                      | and byte order mark) in the Preferences dialog under Query Tool -> CSV/TXT Output.                |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Graph Visualiser     | Use the Graph Visualiser button to generate graphs of the query results.                          |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
