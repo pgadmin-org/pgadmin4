@@ -11,21 +11,37 @@ SELECT
     pg_catalog.current_setting('default_tablespace') AS default_tablespace,
     descr.description AS comments, db.datistemplate AS is_template,
     {### Default ACL for Tables ###}
-    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
-     FROM pg_catalog.pg_default_acl
-     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'r') AS tblacl,
+    CASE WHEN db.datname = pg_catalog.current_database() THEN
+        (SELECT pg_catalog.string_agg(
+            pg_catalog.array_to_string(defaclacl::text[], ', '), ', '
+            ORDER BY defaclrole)
+         FROM pg_catalog.pg_default_acl
+         WHERE defaclnamespace = 0::OID AND defaclobjtype = 'r')
+    END AS tblacl,
     {### Default ACL for Sequnces ###}
-    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
-     FROM pg_catalog.pg_default_acl
-     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'S') AS seqacl,
+    CASE WHEN db.datname = pg_catalog.current_database() THEN
+        (SELECT pg_catalog.string_agg(
+            pg_catalog.array_to_string(defaclacl::text[], ', '), ', '
+            ORDER BY defaclrole)
+         FROM pg_catalog.pg_default_acl
+         WHERE defaclnamespace = 0::OID AND defaclobjtype = 'S')
+    END AS seqacl,
     {### Default ACL for Functions ###}
-    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
-     FROM pg_catalog.pg_default_acl
-     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'f') AS funcacl,
+    CASE WHEN db.datname = pg_catalog.current_database() THEN
+        (SELECT pg_catalog.string_agg(
+            pg_catalog.array_to_string(defaclacl::text[], ', '), ', '
+            ORDER BY defaclrole)
+         FROM pg_catalog.pg_default_acl
+         WHERE defaclnamespace = 0::OID AND defaclobjtype = 'f')
+    END AS funcacl,
     {### Default ACL for Types ###}
-    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
-     FROM pg_catalog.pg_default_acl
-     WHERE defaclnamespace = 0::OID AND defaclobjtype = 'T') AS typeacl,
+    CASE WHEN db.datname = pg_catalog.current_database() THEN
+        (SELECT pg_catalog.string_agg(
+            pg_catalog.array_to_string(defaclacl::text[], ', '), ', '
+            ORDER BY defaclrole)
+         FROM pg_catalog.pg_default_acl
+         WHERE defaclnamespace = 0::OID AND defaclobjtype = 'T')
+    END AS typeacl,
     pg_catalog.array_to_string(datacl::text[], ', ') AS acl
 FROM pg_catalog.pg_database db
     LEFT OUTER JOIN pg_catalog.pg_tablespace ta ON db.dattablespace=ta.OID
