@@ -45,5 +45,32 @@ describe('RoleSchema', ()=>{
   it('properties', async ()=>{
     await getPropertiesView(createSchemaObject(), getInitData);
   });
+
+  describe('membersReadOnly', ()=>{
+    it('is read only for a plain user who is not an admin member', ()=>{
+      const schemaObj = createSchemaObject();
+      const state = {oid: 123, rolmembers: [{role: 'postgres', admin: false}]};
+      expect(schemaObj.membersReadOnly(state)).toBe(true);
+    });
+
+    it('is editable for a user with ADMIN OPTION on the role', ()=>{
+      const schemaObj = createSchemaObject();
+      const state = {oid: 123, rolmembers: [{role: 'postgres', admin: true}]};
+      expect(schemaObj.membersReadOnly(state)).toBe(false);
+    });
+
+    it('is editable regardless when the user is a superuser/can create roles', ()=>{
+      const schemaObj = new RoleSchema(
+        ()=>new MockSchema(),
+        ()=>new MockSchema(),
+        {
+          role: ()=>[],
+          nodeInfo: {server: {user: {name: 'postgres', id: 0, is_superuser: true}}}
+        },
+      );
+      const state = {oid: 123, rolmembers: []};
+      expect(schemaObj.membersReadOnly(state)).toBe(false);
+    });
+  });
 });
 

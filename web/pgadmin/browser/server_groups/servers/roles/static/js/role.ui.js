@@ -55,6 +55,18 @@ export default class RoleSchema extends BaseUISchema {
     return (!(user.is_superuser || user.can_create_role) && user.id != state.oid);
   }
 
+  // A role that isn't a superuser or CREATEROLE holder can still manage
+  // this role's membership if they hold ADMIN OPTION on it themselves.
+  isMemberAdmin(state) {
+    return (state.rolmembers ?? []).some(
+      (member) => member.role === this.user.name && member.admin
+    );
+  }
+
+  membersReadOnly(state) {
+    return this.readOnly(state) && !this.isMemberAdmin(state);
+  }
+
   memberDataFormatter(rawData) {
     let members = '';
     if(_.isObject(rawData)) {
@@ -194,8 +206,8 @@ export default class RoleSchema extends BaseUISchema {
         mode: ['edit', 'create'], cell: 'text',
         type: 'collection',
         schema: obj.membershipSchema,
-        disabled: obj.readOnly,
-        canDelete: (state) => !obj.readOnly(state),
+        disabled: (state) => obj.membersReadOnly(state),
+        canDelete: (state) => !obj.membersReadOnly(state),
         canDeleteRow: true,
         helpMessage: obj.isReadOnly ? gettext('Select the checkbox for roles to include WITH ADMIN OPTION.') : gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.'),
       },
