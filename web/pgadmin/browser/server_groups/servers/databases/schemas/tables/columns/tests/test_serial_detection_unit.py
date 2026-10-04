@@ -51,15 +51,20 @@ class TestSerialColumnDetection(BaseTestGenerator):
          dict(test_method='test_genuine_serial_is_detected')),
         ('Identity column is never reprojected',
          dict(test_method='test_identity_column_not_serial')),
+        ('Inherited column preserves parent OID',
+         dict(test_method='test_inherited_column_preserves_parent_oid')),
     ]
 
     @patch(UTILS_MODULE + '.render_template', return_value='SELECT 1;')
     def runTest(self, mock_render):
         getattr(self, self.test_method)()
 
-    def _run(self, column_row):
+    def _run(self, column_row, other_columns=None):
         from pgadmin.browser.server_groups.servers.databases.schemas.\
             tables.columns.utils import get_formatted_columns
+
+        if other_columns is None:
+            other_columns = []
 
         conn = MagicMock()
         conn.execute_dict.return_value = (True, {'rows': [column_row]})
@@ -67,7 +72,7 @@ class TestSerialColumnDetection(BaseTestGenerator):
 
         with patch(UTILS_MODULE + '.column_formatter'):
             data = get_formatted_columns(
-                conn, tid=1, data={}, other_columns=[],
+                conn, tid=1, data={}, other_columns=other_columns,
                 table_or_type='table', template_path='columns/sql/default')
 
         return data['columns'][0]
@@ -97,6 +102,19 @@ class TestSerialColumnDetection(BaseTestGenerator):
         self.assertEqual(result['typname'], 'serial')
         self.assertEqual(result['cltype'], 'serial')
         self.assertEqual(result['defval'], '')
+
+    def test_inherited_column_preserves_parent_oid(self):
+        col = _make_column()
+        other_col = {
+            'name': 'id',
+            'inheritedfrom': 'public.parent',
+            'inheritedid': 140391,
+        }
+
+        result = self._run(col, [other_col])
+
+        self.assertEqual(result['inheritedfromtable'], 'public.parent')
+        self.assertEqual(result['inheritedid'], 140391)
 
     def test_identity_column_not_serial(self):
         # Identity columns can carry an internal sequence dependency on
