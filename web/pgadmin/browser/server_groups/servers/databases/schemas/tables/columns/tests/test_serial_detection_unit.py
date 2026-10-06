@@ -104,16 +104,34 @@ class TestSerialColumnDetection(BaseTestGenerator):
         self.assertEqual(result['defval'], '')
 
     def test_inherited_column_preserves_parent_oid(self):
-        col = _make_column(inheritedid=140391)
-        other_col = {
-            'name': 'id',
-            'inheritedfrom': 'public.parent',
-            'inheritedid': 987654,
-        }
-
-        result = self._run(col, [other_col])
+        result = self._run(
+            _make_column(),
+            [{
+                'name': 'id',
+                'inheritedfrom': 'public.parent',
+                'inheritedid': 987654,
+            }]
+        )
 
         self.assertEqual(result['inheritedfromtable'], 'public.parent')
+        self.assertEqual(result['inheritedid'], 987654)
+
+        result = self._run(
+            _make_column(inheritedid=140391),
+            [
+                {
+                    'name': 'id',
+                    'inheritedfrom': 'public.parent_a',
+                    'inheritedid': 987654,
+                },
+                {
+                    'name': 'id',
+                    'inheritedfrom': 'public.parent_b',
+                    'inheritedid': 123456,
+                },
+            ]
+        )
+
         self.assertEqual(result['inheritedid'], 140391)
 
     def test_identity_column_not_serial(self):
