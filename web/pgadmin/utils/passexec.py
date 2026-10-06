@@ -120,6 +120,34 @@ def convert_legacy_server_passexec(logger):
     return changed
 
 
+# Variables copied from pgAdmin's environment into a server-mode password
+# exec command's environment. Everything else is withheld, because the
+# process environment can hold secrets such as another user's PGPASSWORD
+# (set by export_password_env) or the container's setup password.
+PASSEXEC_BASE_ENV = ('PATH', 'HOME', 'LANG', 'LANGUAGE', 'TZ', 'TMPDIR',
+                     'TMP', 'TEMP', 'USER', 'LOGNAME')
+PASSEXEC_WINDOWS_ENV = ('SYSTEMROOT', 'SYSTEMDRIVE', 'PATHEXT', 'COMSPEC',
+                        'WINDIR')
+
+
+def server_passexec_base_env():
+    """Return the reduced environment for a server-mode password exec
+    command: the base allowlist, any LC_* variable, the Windows system
+    variables on Windows, and the names in
+    SERVER_PASSEXEC_ENV_PASSTHROUGH, each copied only if it is set."""
+    names = set(PASSEXEC_BASE_ENV)
+    if os.name == 'nt':
+        names.update(PASSEXEC_WINDOWS_ENV)
+    extra = getattr(config, 'SERVER_PASSEXEC_ENV_PASSTHROUGH', None) or []
+    if isinstance(extra, (list, tuple)):
+        names.update(n for n in extra if isinstance(n, str))
+    if os.name == 'nt':
+        # os.environ upper-cases its keys on Windows.
+        names = {n.upper() for n in names}
+    return {k: v for k, v in os.environ.items()
+            if k in names or k.startswith('LC_')}
+
+
 def server_passexec_startup(app, cli_mode):
     """Run the server-mode password exec checks when the app starts.
 
@@ -218,7 +246,7 @@ class ServerPasswordExec(PasswordExec):
                          timeout)
         self.name = name
         self.argv = list(argv)
-        self.env = dict(os.environ)
+        self.env = server_passexec_base_env()
         self.env.update({
             'PGADMIN_PASSEXEC_HOST': host or '',
             'PGADMIN_PASSEXEC_PORT': str(port) if port is not None else '',

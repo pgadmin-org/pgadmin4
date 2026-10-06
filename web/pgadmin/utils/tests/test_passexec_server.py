@@ -146,6 +146,44 @@ class TestFreeTextRefusedInServerMode(BaseTestGenerator):
         mock_run.assert_not_called()
 
 
+class TestServerPasswordExecReducedEnv(BaseTestGenerator):
+    """The child gets a reduced environment: secrets in pgAdmin's
+    environment stay out, PATH and configured passthrough names get in,
+    and the PGADMIN_PASSEXEC_* values cannot be overridden."""
+
+    def runTest(self):
+        import json
+        import sys
+        fake_env = {
+            'PATH': '/usr/bin:/bin',
+            'PGPASSWORD': 'other-users-password',
+            'PGADMIN_SETUP_PASSWORD': 'setup-password',
+            'VAULT_ADDR': 'https://vault.example.com',
+            'LC_ALL': 'C.UTF-8',
+            'PGADMIN_PASSEXEC_HOST': 'spoofed.example.com',
+        }
+        argv = [sys.executable, '-c',
+                'import json, os; print(json.dumps(dict(os.environ)))']
+        with self.app.app_context(), \
+                patch.dict('os.environ', fake_env, clear=True), \
+                patch.object(passexec.config,
+                             'SERVER_PASSEXEC_ENV_PASSTHROUGH',
+                             ['VAULT_ADDR', 'NOT_SET_ANYWHERE'],
+                             create=True), \
+                patch('pgadmin.utils.passexec.config.SERVER_MODE', True):
+            pexec = ServerPasswordExec('t', argv, 'db.example.com', 5432,
+                                       'u', 'postgres',
+                                       'jane.doe@example.com', 'internal')
+            env = json.loads(pexec.get())
+        self.assertNotIn('PGPASSWORD', env)
+        self.assertNotIn('PGADMIN_SETUP_PASSWORD', env)
+        self.assertNotIn('NOT_SET_ANYWHERE', env)
+        self.assertEqual(env['PATH'], '/usr/bin:/bin')
+        self.assertEqual(env['VAULT_ADDR'], 'https://vault.example.com')
+        self.assertEqual(env['LC_ALL'], 'C.UTF-8')
+        self.assertEqual(env['PGADMIN_PASSEXEC_HOST'], 'db.example.com')
+
+
 class TestServerPasswordExecFailureHidesArgv(BaseTestGenerator):
     """Failures name the command but never reveal its arguments, in
     either the raised message or the log."""
