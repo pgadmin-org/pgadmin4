@@ -120,6 +120,19 @@ def convert_legacy_server_passexec(logger):
     return changed
 
 
+def server_passexec_startup(app, cli_mode):
+    """Run the server-mode password exec checks when the app starts.
+
+    The legacy conversion is skipped in CLI mode: setup.py does not set
+    SERVER_MODE, so it would otherwise clear the free-text commands in a
+    desktop configuration database passed with --sqlite-path."""
+    if not config.SERVER_MODE:
+        return
+    check_server_passexec_config(app.logger)
+    if not cli_mode:
+        convert_legacy_server_passexec(app.logger)
+
+
 class PasswordExec:
 
     lock = Lock()
