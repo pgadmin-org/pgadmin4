@@ -10,6 +10,7 @@
 """Tests for server data isolation between users in server mode."""
 
 import json
+import sqlite3
 import config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -135,7 +136,7 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
     when a non-owner accesses a shared server's properties."""
 
     scenarios = [
-        ('Shared server suppresses passexec_cmd and '
+        ('Shared server suppresses '
          'post_connection_sql for non-owner',
          dict(is_positive_test=True)),
     ]
@@ -149,7 +150,6 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
 
         # Create a shared server with sensitive owner-only fields
         self.server['shared'] = True
-        self.server['passexec_cmd'] = '/usr/bin/get-secret'
         self.server['passexec_expiration'] = 100
         self.server['post_connection_sql'] = 'SET role admin;'
         url = "/browser/server/obj/{0}/".format(utils.SERVER_GROUP)
@@ -163,10 +163,22 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         self.assertIn('node', response_data)
         self.server_id = response_data['node']['_id']
 
+        # The API no longer accepts a free-text command in server mode,
+        # so plant one as a row left over from an older release would be.
+        conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+        try:
+            conn.execute(
+                'UPDATE server SET passexec_cmd=?, passexec_name=? '
+                'WHERE id=?',
+                ('/usr/bin/get-secret', 'vault', self.server_id))
+            conn.commit()
+        finally:
+            conn.close()
+
     @create_user_wise_test_client(test_user_details)
     def runTest(self):
-        """Non-owner should NOT see passexec_cmd or
-        post_connection_sql in properties response."""
+        """Non-owner should NOT see post_connection_sql in the
+        properties response."""
         if not self.server_id:
             raise Exception("Server not found to test suppression")
 
@@ -176,17 +188,19 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode('utf-8'))
 
-        # passexec_cmd must be None/null for non-owners
-        self.assertIsNone(
-            data.get('passexec_cmd'),
-            'passexec_cmd should be suppressed for non-owners.'
-            ' Got: {0}'.format(data.get('passexec_cmd'))
-        )
+        # The free-text command is never returned in server mode, and
+        # the owner's expiration must not reach a non-owner (they see
+        # only their own SharedServer value, None until they set one).
+        self.assertNotIn(
+            'passexec_cmd', data,
+            'passexec_cmd should not be returned in server mode.')
         self.assertIsNone(
             data.get('passexec_expiration'),
-            'passexec_expiration should be suppressed for '
-            'non-owners.'
-        )
+            'The owner passexec_expiration should not be exposed to '
+            'non-owners.')
+        # With no choice of their own the non-owner inherits; they are
+        # not told which command the owner uses.
+        self.assertEqual(data.get('passexec_name'), '__inherit__')
         # post_connection_sql must be None/null for non-owners
         self.assertIsNone(
             data.get('post_connection_sql'),

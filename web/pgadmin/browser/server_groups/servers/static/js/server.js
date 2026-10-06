@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeListById } from '../../../../static/js/node_ajax';
-import ServerSchema from './server.ui';
+import ServerSchema, { passexecForServerCopy } from './server.ui';
 import { showServerPassword, showChangeServerPassword, showNamedRestorePoint } from '../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../static/js/api_instance';
@@ -64,6 +64,7 @@ define('pgadmin.node.server', [
           d.shared = false;
           d.server_owner = null;
           d.shared_username = null;
+          passexecForServerCopy(d);
         }
         return d;
       },
