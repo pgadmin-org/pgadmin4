@@ -623,6 +623,93 @@ class TestViewSaveRejectsVanishedRow(_ViewSaveTestMixin, BaseTestGenerator):
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 
 
+class TestViewSaveRejectsReplacedView(
+        _ViewSaveTestMixin, BaseTestGenerator):
+    """ If another session replaces the view with one of the same shape
+    over a different table after the grid loaded, a save must be refused
+    rather than applying the loaded rows' keys to the new table. """
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_repl_base1_' + suffix
+        self.base2 = 'test_editview_repl_base2_' + suffix
+        self.view = 'test_editview_repl_v_' + suffix
+
+    def runTest(self):
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50)
+            );
+            CREATE TABLE {base2} (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+            INSERT INTO {base2} (id, name) VALUES (1, 'bar');
+            CREATE VIEW {view} AS SELECT id, name FROM {base1};
+        """.format(base1=self.base1, base2=self.base2, view=self.view)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            trans_id = self._initialize_view_data(obj_id)
+
+            start_data, _ = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+
+            # Another session repoints the view at a different table.
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "CREATE OR REPLACE VIEW {view} AS "
+                "SELECT id, name FROM {base2};".format(
+                    view=self.view, base2=self.base2))
+
+            save_payload = {
+                "updated": {
+                    "1": {
+                        "err": False,
+                        "data": {"name": "CHANGED"},
+                        "primary_keys": {"id": 1}
+                    }
+                },
+                "added": {},
+                "deleted": {},
+            }
+            response_data = self._save(trans_id, save_payload)
+
+            self.assertEqual(response_data['data']['status'], False)
+            self.assertIn('view has changed',
+                          response_data['data']['result'])
+
+            pg_cursor = self.connection.cursor()
+            pg_cursor.execute(
+                "SELECT name FROM {0} WHERE id = 1".format(self.base2))
+            self.assertEqual(pg_cursor.fetchone()[0], 'bar')
+            self.connection.commit()
+
+            self._close_query_tool(trans_id)
+        finally:
+            self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1}; "
+                "DROP TABLE IF EXISTS {base2};".format(
+                    view=self.view, base1=self.base1, base2=self.base2))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
 class TestViewEditabilityRecheckedOnReload(
         _ViewSaveTestMixin, BaseTestGenerator):
     """ The command object, and with it can_edit()'s cached result, is
