@@ -6,6 +6,7 @@
 # This software is released under the PostgreSQL License
 #
 ##########################################################################
+import os
 from unittest.mock import patch, MagicMock
 
 from pgadmin.utils.route import BaseTestGenerator
@@ -57,6 +58,23 @@ class TestServerPassexecCommandsNotADict(BaseTestGenerator):
             logger = MagicMock()
             check_server_passexec_config(logger)
             self.assertEqual(logger.error.call_count, 1)
+
+
+class TestPassthroughNotAList(BaseTestGenerator):
+    """A passthrough setting that is not a list of names is logged."""
+
+    def runTest(self):
+        for value in ('VAULT_ADDR', ['VAULT_ADDR', 1]):
+            logger = MagicMock()
+            with patch.object(passexec.config, 'SERVER_PASSEXEC_COMMANDS',
+                              {}, create=True), \
+                    patch.object(passexec.config,
+                                 'SERVER_PASSEXEC_ENV_PASSTHROUGH', value,
+                                 create=True):
+                check_server_passexec_config(logger)
+            logger.error.assert_called_once()
+            self.assertIn('SERVER_PASSEXEC_ENV_PASSTHROUGH',
+                          logger.error.call_args[0][0])
 
 
 class TestDeprecatedFlagWarning(BaseTestGenerator):
@@ -197,6 +215,9 @@ class TestServerPasswordExecReducedEnv(BaseTestGenerator):
             'LC_ALL': 'C.UTF-8',
             'PGADMIN_PASSEXEC_HOST': 'spoofed.example.com',
         }
+        if os.name == 'nt':
+            # A Windows Python child may fail to start without SYSTEMROOT.
+            fake_env['SYSTEMROOT'] = os.environ.get('SYSTEMROOT', '')
         argv = [sys.executable, '-c',
                 'import json, os; print(json.dumps(dict(os.environ)))']
         with self.app.app_context(), \

@@ -82,6 +82,12 @@ def check_server_passexec_config(logger):
         if reason is not None:
             logger.error('Ignoring SERVER_PASSEXEC_COMMANDS entry %r: %s',
                          name, reason)
+    extra = getattr(config, 'SERVER_PASSEXEC_ENV_PASSTHROUGH', None) or []
+    if not isinstance(extra, (list, tuple)) or \
+            not all(isinstance(n, str) for n in extra):
+        logger.error('SERVER_PASSEXEC_ENV_PASSTHROUGH must be a list of '
+                     'environment variable names; ignoring any entry that '
+                     'is not a string.')
     if getattr(config, 'ENABLE_SERVER_PASS_EXEC_CMD', False):
         logger.warning(
             'ENABLE_SERVER_PASS_EXEC_CMD is deprecated and no longer has '
