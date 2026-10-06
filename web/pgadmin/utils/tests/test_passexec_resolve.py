@@ -93,19 +93,23 @@ class TestBuildPassexec(BaseTestGenerator):
          dict(test_method='test_desktop')),
         ('Unauthenticated user gets None',
          dict(test_method='test_unauthenticated')),
+        ('No configured commands returns None without a query',
+         dict(test_method='test_no_commands')),
     ]
 
     def runTest(self):
         getattr(self, self.test_method)()
 
-    def _build(self, server, user=OTHER, row=None, server_mode=True):
+    def _build(self, server, user=OTHER, row=None, server_mode=True,
+               cmds=CMDS):
         with self.app.test_request_context(), \
                 patch('pgadmin.utils.passexec.config.SERVER_MODE',
                       server_mode), \
                 patch('pgadmin.utils.passexec.config.'
-                      'SERVER_PASSEXEC_COMMANDS', CMDS, create=True), \
+                      'SERVER_PASSEXEC_COMMANDS', cmds, create=True), \
                 patch('pgadmin.utils.passexec.current_user', user), \
                 patch('pgadmin.model.SharedServer') as ss:
+            self.shared_server = ss
             ss.query.filter_by.return_value.first.return_value = row
             return build_passexec(server)
 
@@ -150,3 +154,11 @@ class TestBuildPassexec(BaseTestGenerator):
     def test_unauthenticated(self):
         anon = MagicMock(is_authenticated=False)
         self.assertIsNone(self._build(_server(), user=anon))
+
+    def test_no_commands(self):
+        res = self._build(
+            _server(),
+            row=MagicMock(passexec_name='vault', username='jane_db'),
+            cmds={})
+        self.assertIsNone(res)
+        self.shared_server.query.filter_by.assert_not_called()
