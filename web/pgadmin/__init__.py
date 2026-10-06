@@ -544,8 +544,10 @@ def create_app(app_name=None):
             delete_adhoc_servers()
 
         if config.SERVER_MODE:
-            from pgadmin.utils.passexec import check_server_passexec_config
+            from pgadmin.utils.passexec import \
+                check_server_passexec_config, convert_legacy_server_passexec
             check_server_passexec_config(app.logger)
+            convert_legacy_server_passexec(app.logger)
 
     Mail(app)
 

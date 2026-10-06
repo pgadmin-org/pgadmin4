@@ -34,7 +34,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 52
+SCHEMA_VERSION = 53
 
 ##########################################################################
 #
@@ -319,6 +319,7 @@ class Server(db.Model, UserScopedMixin):
     db_res_type = db.Column(db.String(32), default='databases')
     passexec_cmd = db.Column(db.Text(), nullable=True)
     passexec_expiration = db.Column(db.Integer(), nullable=True)
+    passexec_name = db.Column(db.Text(), nullable=True)
     bgcolor = db.Column(db.String(10), nullable=True)
     fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
@@ -601,6 +602,7 @@ class SharedServer(db.Model, UserScopedMixin):
     prepare_threshold = db.Column(db.Integer(), nullable=True)
     passexec_cmd = db.Column(db.Text(), nullable=True)
     passexec_expiration = db.Column(db.Integer(), nullable=True)
+    passexec_name = db.Column(db.Text(), nullable=True)
     kerberos_conn = db.Column(
         db.Boolean(), nullable=False, default=False
     )
