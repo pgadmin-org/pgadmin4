@@ -229,9 +229,39 @@ class ServerPasswordExec(PasswordExec):
         })
 
     def get(self):
-        return self._get_cached(lambda: subprocess.run(
-            self.argv, shell=False, env=self.env, timeout=self.timeout,
-            capture_output=True, text=True, check=True))
+        return self._get_cached(self._run)
+
+    def _run(self):
+        """Run the command, replacing any failure with an exception that
+        names only the command. The subprocess exceptions include the
+        full argument list in their text, and that may contain secrets,
+        so it must reach neither the user nor the log."""
+        logger = self.create_logger()
+        try:
+            return subprocess.run(
+                self.argv, shell=False, env=self.env, timeout=self.timeout,
+                capture_output=True, text=True, check=True)
+        except subprocess.CalledProcessError as e:
+            logger.error('Password exec command %r exited with status %s.',
+                         self.name, e.returncode)
+            self._log_stderr(logger, e.stderr)
+        except subprocess.TimeoutExpired as e:
+            logger.error('Password exec command %r timed out after %s '
+                         'seconds.', self.name, self.timeout)
+            self._log_stderr(logger, e.stderr)
+        except OSError as e:
+            logger.error('Password exec command %r could not be run '
+                         '(errno %s: %s).', self.name, e.errno, e.strerror)
+        raise Exception(
+            "Password exec command '{0}' failed.".format(self.name)) \
+            from None
+
+    def _log_stderr(self, logger, stderr):
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode('utf-8', 'replace')
+        if stderr:
+            logger.error('Password exec command %r stderr: %s',
+                         self.name, stderr)
 
 
 def resolve_server_passexec(server, user):
