@@ -163,10 +163,11 @@ def server_passexec_startup(app, cli_mode):
 
 class PasswordExec:
 
-    lock = Lock()
-
     def __init__(self, cmd, host, port, username, expiration_seconds=None,
                  timeout=60):
+        # One lock per instance, so a slow command only delays callers
+        # waiting for the same cached password, not every user.
+        self.lock = Lock()
         self.host = host
         self.port = port
         self.username = username
