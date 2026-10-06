@@ -3,7 +3,7 @@
 {# which is filtered by pg_has_role() on the base table's owner and so misses #}
 {# roles that only have direct GRANTs on the view/table, not ownership). #}
 WITH base_tables AS (
-    SELECT DISTINCT cl.relname, nsp.nspname
+    SELECT DISTINCT cl.oid, cl.relname, nsp.nspname
     FROM pg_catalog.pg_depend dep
     JOIN pg_catalog.pg_rewrite rw ON rw.oid = dep.objid
     JOIN pg_catalog.pg_class cl ON cl.oid = dep.refobjid
@@ -12,7 +12,7 @@ WITH base_tables AS (
         AND dep.deptype != 'i'
         AND cl.relkind IN ('r', 'p')
 )
-SELECT nspname, relname
+SELECT oid, nspname, relname
 FROM base_tables
 WHERE (SELECT count(*) FROM base_tables) = 1
     AND EXISTS (

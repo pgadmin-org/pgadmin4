@@ -676,10 +676,12 @@ class ViewCommand(GridCommand):
         session, so this lives for as long as the grid does; get_sql()
         clears it so that every data load (initial, refresh, filter or
         sort) re-checks the view's current definition, and the save path
-        then uses what that load resolved. None means "not yet
-        determined".
+        then uses what that load resolved, refusing the save if the
+        view's base table or keys no longer match it. None means "not
+        yet determined".
         """
         self._can_edit = None
+        self._base_oid = None
         self._pk_names = ''
         self._primary_keys = OrderedDict()
 
@@ -748,78 +750,20 @@ class ViewCommand(GridCommand):
             else:
                 conn = default_conn
 
-            if not conn.connected():
+            resolved, info = self._resolve_edit_info(conn)
+            if not resolved:
                 return False
 
-            # Resolve the base table backing this view (if any).
-            query = render_template(
-                "/".join([self.sql_path, 'view_base_table.sql']),
-                obj_id=self.obj_id,
-                nsp_name=self.nsp_name,
-                object_name=self.object_name,
-                conn=conn,
-            )
-            status, result = conn.execute_dict(query)
-            if not status:
-                return False
-
-            if len(result['rows']) == 0:
+            if info is None:
                 # Not a simple auto-updatable view (join, trigger-backed,
-                # not updatable at all, etc). This is a stable catalog
-                # fact for this view, so cache it.
+                # not updatable at all, PK not exposed, etc). Cache it
+                # until the next data load re-checks.
                 self._can_edit = False
                 return self._can_edit
 
-            base_nspname = result['rows'][0]['nspname']
-            base_relname = result['rows'][0]['relname']
-
-            # The base table's real primary key columns.
-            pk_query = render_template(
-                "/".join([self.sql_path, 'primary_keys.sql']),
-                table_name=base_relname,
-                table_nspname=base_nspname,
-                conn=conn,
-            )
-            status, pk_result = conn.execute_dict(pk_query)
-            if not status:
-                return False
-
-            # The view's own output column names.
-            cols_query = render_template(
-                "/".join([self.sql_path, 'get_columns.sql']),
-                obj_id=self.obj_id,
-                conn=conn,
-            )
-            status, cols_result = conn.execute_dict(cols_query)
-            if not status:
-                return False
-
-            view_column_names = {
-                row['attname'] for row in cols_result['rows']
-            }
-
-            # Keep only the primary-key columns that are also present,
-            # under their original name, in the view's own output. There
-            # is no reliable way to map a renamed/omitted PK column back
-            # to the base table through aliasing, so such views are
-            # deliberately left non-editable.
-            primary_keys = OrderedDict()
-            pk_names = ''
-            for row in pk_result['rows']:
-                if row['attname'] in view_column_names:
-                    pk_names += driver.qtIdent(conn, row['attname']) + ','
-                    primary_keys[row['attname']] = row['typname']
-
-            if len(primary_keys) == 0:
-                self._can_edit = False
-                return self._can_edit
-
-            if pk_names != '':
-                # Remove last character from the string
-                pk_names = pk_names[:-1]
-
-            self._pk_names = pk_names
-            self._primary_keys = primary_keys
+            self._base_oid = info['base_oid']
+            self._pk_names = info['pk_names']
+            self._primary_keys = info['primary_keys']
             self._can_edit = True
         except Exception:
             # Fail closed - never let can_edit() raise, but keep the
@@ -830,6 +774,90 @@ class ViewCommand(GridCommand):
             return False
 
         return self._can_edit
+
+    def _resolve_edit_info(self, conn):
+        """
+        Look up, from the view's current definition, the base table it
+        updates and the primary key columns it exposes under their
+        original names.
+
+        Returns (resolved, info): resolved is False if the lookup itself
+        could not be completed (no connection, a failed query), in which
+        case nothing should be cached. Otherwise info is None for a view
+        that is not editable, or a dict with base_oid, pk_names and
+        primary_keys.
+        """
+        driver = get_driver(PG_DEFAULT_DRIVER)
+
+        if not conn.connected():
+            return False, None
+
+        # Resolve the base table backing this view (if any).
+        query = render_template(
+            "/".join([self.sql_path, 'view_base_table.sql']),
+            obj_id=self.obj_id,
+            nsp_name=self.nsp_name,
+            object_name=self.object_name,
+            conn=conn,
+        )
+        status, result = conn.execute_dict(query)
+        if not status:
+            return False, None
+
+        if len(result['rows']) == 0:
+            return True, None
+
+        base_oid = result['rows'][0]['oid']
+        base_nspname = result['rows'][0]['nspname']
+        base_relname = result['rows'][0]['relname']
+
+        # The base table's real primary key columns.
+        pk_query = render_template(
+            "/".join([self.sql_path, 'primary_keys.sql']),
+            table_name=base_relname,
+            table_nspname=base_nspname,
+            conn=conn,
+        )
+        status, pk_result = conn.execute_dict(pk_query)
+        if not status:
+            return False, None
+
+        # The view's own output column names.
+        cols_query = render_template(
+            "/".join([self.sql_path, 'get_columns.sql']),
+            obj_id=self.obj_id,
+            conn=conn,
+        )
+        status, cols_result = conn.execute_dict(cols_query)
+        if not status:
+            return False, None
+
+        view_column_names = {
+            row['attname'] for row in cols_result['rows']
+        }
+
+        # Keep only the primary-key columns that are also present,
+        # under their original name, in the view's own output. There
+        # is no reliable way to map a renamed/omitted PK column back
+        # to the base table through aliasing, so such views are
+        # deliberately left non-editable.
+        primary_keys = OrderedDict()
+        for row in pk_result['rows']:
+            if row['attname'] in view_column_names:
+                primary_keys[row['attname']] = row['typname']
+
+        if len(primary_keys) == 0:
+            return True, None
+
+        pk_names = ','.join(
+            driver.qtIdent(conn, col) for col in primary_keys
+        )
+
+        return True, {
+            'base_oid': base_oid,
+            'pk_names': pk_names,
+            'primary_keys': primary_keys,
+        }
 
     def get_primary_keys(self, default_conn=None):
         """
@@ -898,6 +926,26 @@ class ViewCommand(GridCommand):
             conn = manager.connection(did=self.did, conn_id=self.conn_id)
         else:
             conn = default_conn
+
+        # The grid's rows, and the keys identifying them, were resolved
+        # when the data was loaded. If the view has since been replaced
+        # (e.g. CREATE OR REPLACE VIEW over a different table, or a
+        # changed primary key), the same keys could now match unrelated
+        # rows, so refuse rather than write through the new definition.
+        resolved, info = self._resolve_edit_info(conn)
+        if not resolved or info is None or \
+                info['base_oid'] != getattr(self, '_base_oid', None) or \
+                info['primary_keys'] != self._primary_keys:
+            return (
+                False,
+                gettext(
+                    'Data cannot be saved because the view has changed '
+                    'since the data was loaded; refresh the data and try '
+                    'again.'
+                ),
+                [],
+                None
+            )
 
         return save_changed_data(changed_data=changed_data,
                                  columns_info=columns_info,
