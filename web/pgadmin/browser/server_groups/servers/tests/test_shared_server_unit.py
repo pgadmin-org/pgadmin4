@@ -102,7 +102,7 @@ class TestGetSharedServerProperties(BaseTestGenerator):
     using mock objects."""
 
     scenarios = [
-        ('Merge overlays passexec_cmd from SharedServer',
+        ('Merge keeps the owner passexec fields',
          dict(test_method='test_overlays_passexec')),
         ('Merge overlays post_connection_sql from SharedServer',
          dict(test_method='test_overlays_post_sql')),
@@ -138,17 +138,15 @@ class TestGetSharedServerProperties(BaseTestGenerator):
             server, ss)
 
     def test_overlays_passexec(self):
-        # SharedServer defaults have None - overlay copies that.
-        result = self._merge()
-        self.assertIsNone(result.passexec_cmd)
-        self.assertIsNone(result.passexec_expiration)
-        # If SharedServer has a value, it should appear.
+        # The overlay must not copy the SharedServer's passexec fields;
+        # resolve_server_passexec() reads them from the SharedServer row.
         ss = _make_shared_server(
             passexec_cmd='/usr/bin/get-pw',
             passexec_expiration=120)
         result = self._merge(ss=ss)
-        self.assertEqual(result.passexec_cmd, '/usr/bin/get-pw')
-        self.assertEqual(result.passexec_expiration, 120)
+        self.assertEqual(result.passexec_cmd,
+                         '/usr/bin/vault-get-secret')
+        self.assertEqual(result.passexec_expiration, 300)
 
     def test_overlays_post_sql(self):
         # SharedServer defaults have None - overlay copies that.
@@ -339,8 +337,9 @@ class TestMergeExpungesServer(BaseTestGenerator):
             # Should not crash
             result = ServerModule.get_shared_server_properties(
                 server, ss)
-        # SharedServer defaults passexec_cmd to None
-        self.assertIsNone(result.passexec_cmd)
+        # The owner's passexec fields are left alone by the overlay
+        self.assertEqual(result.passexec_cmd,
+                         '/usr/bin/vault-get-secret')
 
 
 class TestUpdateConnectionParameter(BaseTestGenerator):

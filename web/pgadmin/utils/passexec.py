@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 from threading import Lock
 
 from flask import current_app
+from flask_security import current_user
 
 import config
 from pgadmin.utils.driver import get_driver
@@ -189,3 +190,55 @@ class ServerPasswordExec(PasswordExec):
         return self._get_cached(lambda: subprocess.run(
             self.argv, shell=False, env=self.env, timeout=self.timeout,
             capture_output=True, text=True, check=True))
+
+
+def resolve_server_passexec(server, user):
+    """Work out which named command applies to this server for this
+    pgAdmin user. Returns (name, expiration, db_username) or None.
+
+    A non-owner of a shared server inherits the owner's command unless
+    their SharedServer row says otherwise (NULL inherits, '' is none,
+    anything else is their own choice). The owner's values are read from
+    the Server row's passexec fields, which get_shared_server_properties
+    deliberately leaves alone."""
+    from pgadmin.model import SharedServer
+    if server.shared and server.user_id != user.id:
+        ss = SharedServer.query.filter_by(osid=server.id,
+                                          user_id=user.id).first()
+        db_user = ss.username if ss else server.shared_username
+        own = ss.passexec_name if ss else None
+        if own == '':
+            return None
+        if own is not None:
+            return own, ss.passexec_expiration, db_user
+        if not server.passexec_name:
+            return None
+        return server.passexec_name, server.passexec_expiration, db_user
+    if not server.passexec_name:
+        return None
+    return server.passexec_name, server.passexec_expiration, server.username
+
+
+def build_passexec(server):
+    """Build the password exec object for a ServerManager, or None."""
+    if not config.SERVER_MODE:
+        if not server.passexec_cmd:
+            return None
+        return PasswordExec(server.passexec_cmd, server.host, server.port,
+                            server.username, server.passexec_expiration)
+    if not current_user or not current_user.is_authenticated:
+        return None
+    resolved = resolve_server_passexec(server, current_user)
+    if resolved is None:
+        return None
+    name, expiration, db_user = resolved
+    argv = get_server_passexec_commands().get(name)
+    if argv is None:
+        current_app.logger.warning(
+            'Server %s uses password exec command %r, which is not in '
+            'SERVER_PASSEXEC_COMMANDS; ignoring it.', server.id, name)
+        return None
+    return ServerPasswordExec(
+        name, argv, server.host, server.port, db_user,
+        server.maintenance_db, current_user.username,
+        getattr(current_user, 'auth_source', None), expiration)
