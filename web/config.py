@@ -1081,6 +1081,19 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 SERVER_PASSEXEC_COMMANDS = {}
 
 #############################################################################
+# SERVER_PASSEXEC_ENV_PASSTHROUGH lists the names of additional environment
+# variables to pass from pgAdmin's environment to the commands defined in
+# SERVER_PASSEXEC_COMMANDS, for example ['VAULT_ADDR']. The commands do not
+# receive pgAdmin's full environment; they get only PATH, HOME, LANG,
+# LANGUAGE, TZ, TMPDIR, TMP, TEMP, USER, LOGNAME, any LC_* variable (and on
+# Windows, SYSTEMROOT, SYSTEMDRIVE, PATHEXT, COMSPEC and WINDIR), the
+# variables named here, and the PGADMIN_PASSEXEC_* variables, which always
+# take precedence. Do not list variables that hold secrets the commands do
+# not need. This setting is applicable only for server mode.
+#############################################################################
+SERVER_PASSEXEC_ENV_PASSTHROUGH = []
+
+#############################################################################
 # DEPRECATED and ignored: free-text password exec commands are never run in
 # server mode. Use SERVER_PASSEXEC_COMMANDS instead.
 #############################################################################

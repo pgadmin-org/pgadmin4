@@ -230,8 +230,15 @@ Use the fields in the *Advanced* tab to configure a connection:
   command is later removed from the configuration, the server is treated as
   having no command and a warning is logged.
 
-  The command is run directly, without a shell, and receives the environment of
-  the pgAdmin process plus the following variables describing the connection:
+  The command is run directly, without a shell, and does not receive the full
+  environment of the pgAdmin process. Only ``PATH``, ``HOME``, ``LANG``,
+  ``LANGUAGE``, ``TZ``, ``TMPDIR``, ``TMP``, ``TEMP``, ``USER``, ``LOGNAME``
+  and any ``LC_*`` variable are passed through (and, on Windows,
+  ``SYSTEMROOT``, ``SYSTEMDRIVE``, ``PATHEXT``, ``COMSPEC`` and ``WINDIR``),
+  together with any variables the administrator has named in the
+  ``SERVER_PASSEXEC_ENV_PASSTHROUGH`` setting. The command also receives the
+  following variables describing the connection, which take precedence over
+  any variable of the same name:
   ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT``,
   ``PGADMIN_PASSEXEC_USERNAME`` (the username that connection uses, so a
   non-owner's own username on a shared server), ``PGADMIN_PASSEXEC_DATABASE``
