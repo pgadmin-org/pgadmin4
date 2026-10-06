@@ -193,6 +193,7 @@ export default class ServerSchema extends BaseUISchema {
       db_res: undefined,
       db_res_type: 'databases',
       passexec: undefined,
+      passexec_name: pgAdmin.server_mode == 'True' ? '__none__' : undefined,
       passexec_expiration: undefined,
       service: undefined,
       shared_username: '',
@@ -565,14 +566,38 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
         group: gettext('Advanced'), controlProps: {maxLength: null},
         mode: ['properties', 'edit', 'create'],
-        disabled: pgAdmin.server_mode == 'True' && pgAdmin.enable_server_passexec_cmd == 'False',
+        visible: () => pgAdmin.server_mode != 'True',
         helpMessage: gettext('The server hostname, port, and username can be passed as variables by using the placeholders %HOSTNAME%, %PORT%, and %USERNAME%, which will be replaced with the corresponding server connection information.')
+      },
+      {
+        id: 'passexec_name', label: gettext('Password exec command'),
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
+        controlProps: {allowClear: false},
+        visible: () => pgAdmin.server_mode == 'True' &&
+          (pgAdmin.server_passexec_commands || []).length > 0,
+        type: (state) => {
+          let options = [{label: gettext('None'), value: '__none__'}];
+          // Only a non-owner of a shared server can inherit the owner's command.
+          if (obj.isShared(state)) {
+            options.unshift({label: gettext('Inherit from owner'), value: '__inherit__'});
+          }
+          (pgAdmin.server_passexec_commands || []).forEach((name) => {
+            options.push({label: name, value: name});
+          });
+          return {type: 'select', options: options};
+        },
+        helpMessage: gettext('The command is chosen from those configured by the administrator. The server hostname, port, username and maintenance database, and your pgAdmin username and authentication source, are passed to it in the PGADMIN_PASSEXEC_* environment variables.')
       },
       {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
         disabled: function(state) {
+          if (pgAdmin.server_mode == 'True') {
+            return !state.passexec_name ||
+              ['__none__', '__inherit__'].includes(state.passexec_name);
+          }
           return isEmptyString(state.passexec_cmd);
         },
       },
