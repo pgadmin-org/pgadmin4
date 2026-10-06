@@ -11,7 +11,7 @@
 import _ from 'lodash';
 import pgAdmin from 'sources/pgadmin';
 import current_user from 'pgadmin.user_management.current_user';
-import ServerSchema from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
+import ServerSchema, { passexecForServerCopy } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('ServerSchema', ()=>{
@@ -170,6 +170,20 @@ describe('ServerSchema', ()=>{
     it('defaults to None in server mode', ()=>{
       expect(setup('True', ['vault']).defaults.passexec_name).toBe('__none__');
       expect(setup('False', []).defaults.passexec_name).toBeUndefined();
+    });
+
+    it('turns an inherited command into none when copying a shared server', ()=>{
+      let d = {name: 'x', passexec_name: '__inherit__', passexec_cmd: 'echo x'};
+      expect(passexecForServerCopy(d)).toBe(d);
+      expect(d.passexec_name).toBe('__none__');
+      expect(d).not.toHaveProperty('passexec_cmd');
+    });
+
+    it('keeps a named or none command when copying a shared server', ()=>{
+      expect(passexecForServerCopy({passexec_name: 'vault'}).passexec_name)
+        .toBe('vault');
+      expect(passexecForServerCopy({passexec_name: '__none__'}).passexec_name)
+        .toBe('__none__');
     });
   });
 });

@@ -47,6 +47,17 @@ class TagsSchema extends BaseUISchema {
   }
 }
 
+// A copy of another user's shared server becomes the current user's own
+// server, which cannot inherit a password exec command, so an inherited
+// command becomes none. Free-text commands never apply in server mode.
+export function passexecForServerCopy(d) {
+  if (d.passexec_name === '__inherit__') {
+    d.passexec_name = '__none__';
+  }
+  delete d.passexec_cmd;
+  return d;
+}
+
 export function getConnectionParameters() {
   let conParams = [{
     'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
