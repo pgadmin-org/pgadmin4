@@ -327,13 +327,16 @@ def build_passexec(server):
             return None
         return PasswordExec(server.passexec_cmd, server.host, server.port,
                             server.username, server.passexec_expiration)
+    commands = get_server_passexec_commands()
+    if not commands:
+        return None
     if not current_user or not current_user.is_authenticated:
         return None
     resolved = resolve_server_passexec(server, current_user)
     if resolved is None:
         return None
     name, expiration, db_user = resolved
-    argv = get_server_passexec_commands().get(name)
+    argv = commands.get(name)
     if argv is None:
         current_app.logger.warning(
             'Server %s uses password exec command %r, which is not in '
