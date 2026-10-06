@@ -268,8 +268,13 @@ Use the fields in the *Advanced* tab to configure a connection:
     mode, and when pgAdmin is upgraded, an existing free-text command is kept
     only if it exactly matches a configured command (its arguments joined by
     single spaces), in which case it is converted to that command's name; all
-    others are cleared and a warning is logged. The ``ENABLE_SERVER_PASS_EXEC_CMD``
-    setting is deprecated and ignored.
+    others are cleared and a warning is logged. Placeholders such as
+    ``%HOSTNAME%``, ``%PORT%`` and ``%USERNAME%`` are not substituted in
+    server mode, so a command containing them is converted only if the
+    configured arguments contain the same literal text. On a shared server, a
+    user who does not own the server and whose own command is cleared will
+    then inherit the owner's command, if the owner has one. The
+    ``ENABLE_SERVER_PASS_EXEC_CMD`` setting is deprecated and ignored.
 
 .. warning:: In server mode, only ``PGADMIN_PASSEXEC_PGADMIN_USER`` and
     ``PGADMIN_PASSEXEC_AUTH_SOURCE`` identify the pgAdmin user on whose behalf
