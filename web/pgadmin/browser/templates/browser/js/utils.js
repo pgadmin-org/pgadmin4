@@ -69,8 +69,7 @@ define('pgadmin.browser.utils',
   /* Minimum password length */
   pgAdmin['password_length_min'] = '{{password_length_min}}';
 
-  /* Enable server password exec command */
-  pgAdmin['enable_server_passexec_cmd'] = '{{enable_server_passexec_cmd}}';
+  /* Named server-mode password exec commands */
   pgAdmin['server_passexec_commands'] = {{ server_passexec_commands|tojson }};
 
   /* LLM/AI features enabled */

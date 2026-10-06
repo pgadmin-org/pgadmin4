@@ -564,7 +564,6 @@ def utils():
             shared_storage_list=shared_storage_list,
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
-            enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
             server_passexec_commands=sorted(get_server_passexec_commands())
             if config.SERVER_MODE else [],
             max_server_tags_allowed=config.MAX_SERVER_TAGS_ALLOWED,
