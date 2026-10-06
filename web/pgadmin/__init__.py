@@ -543,11 +543,8 @@ def create_app(app_name=None):
         if not cli_mode:
             delete_adhoc_servers()
 
-        if config.SERVER_MODE:
-            from pgadmin.utils.passexec import \
-                check_server_passexec_config, convert_legacy_server_passexec
-            check_server_passexec_config(app.logger)
-            convert_legacy_server_passexec(app.logger)
+        from pgadmin.utils.passexec import server_passexec_startup
+        server_passexec_startup(app, cli_mode)
 
     Mail(app)
 
