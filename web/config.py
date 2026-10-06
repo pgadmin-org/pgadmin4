@@ -1074,7 +1074,10 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 # is applied to the arguments. Connection details are passed in these
 # environment variables: PGADMIN_PASSEXEC_HOST, PGADMIN_PASSEXEC_PORT,
 # PGADMIN_PASSEXEC_USERNAME, PGADMIN_PASSEXEC_DATABASE,
-# PGADMIN_PASSEXEC_PGADMIN_USER and PGADMIN_PASSEXEC_AUTH_SOURCE.
+# PGADMIN_PASSEXEC_PGADMIN_USER and PGADMIN_PASSEXEC_AUTH_SOURCE. Only the
+# last two identify the pgAdmin user; the host, port, username and database
+# are set by whoever edits the server, so commands must authorise on the
+# pgAdmin identity and treat the other four as untrusted input.
 # Names may not start with "__". An empty dictionary (the default) turns the
 # feature off. This setting is applicable only for server mode.
 #############################################################################

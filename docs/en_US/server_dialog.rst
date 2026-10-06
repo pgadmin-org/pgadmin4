@@ -271,6 +271,15 @@ Use the fields in the *Advanced* tab to configure a connection:
     others are cleared and a warning is logged. The ``ENABLE_SERVER_PASS_EXEC_CMD``
     setting is deprecated and ignored.
 
+.. warning:: In server mode, only ``PGADMIN_PASSEXEC_PGADMIN_USER`` and
+    ``PGADMIN_PASSEXEC_AUTH_SOURCE`` identify the pgAdmin user on whose behalf
+    the command is run. ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT``,
+    ``PGADMIN_PASSEXEC_USERNAME`` and ``PGADMIN_PASSEXEC_DATABASE`` are set by
+    whoever edits the server definition; on a shared server, a user who does
+    not own the server sets their own username. Commands should therefore
+    decide whether to issue a password based on the pgAdmin identity, and
+    treat the other four variables as untrusted input.
+
 Click the *Post Connection SQL* tab to continue.
 
 .. image:: images/server_post_connection_sql.png
