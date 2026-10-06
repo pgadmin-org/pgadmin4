@@ -211,7 +211,7 @@ Use the fields in the *Advanced* tab to configure a connection:
   that will be used against the pg_database table to limit the databases that you see.
   For example, you might enter: *live_db test_db* so that only live_db and test_db
   are shown in the pgAdmin object explorer.
-* Use the *Password exec command* field to specify a shell command to be executed
+* In desktop mode, use the *Password exec command* field to specify a shell command to be executed
   to retrieve a password to be used for SQL authentication. The ``stdout`` of the
   command will be used as the SQL password. This may be useful when the password
   should be generated as a transient authorization token instead of providing a
@@ -219,8 +219,29 @@ Use the fields in the *Advanced* tab to configure a connection:
   You can pass server hostname, port and DB username to the password exec command as variable by providing placeholders
   like ``%HOSTNAME%``, ``%PORT%`` and ``%USERNAME%`` which will be replace with the server connection information.
   Example: ``/path/to/script --hostname %HOSTNAME% --port %PORT% --username %USERNAME%``
+* In server mode, use the *Password exec command* drop-down list to select one
+  of the commands that the administrator has defined in the
+  ``SERVER_PASSEXEC_COMMANDS`` setting (see :ref:`config_py`). Users cannot
+  enter their own command. The list offers *None* and each configured command
+  name, and is hidden if no commands have been configured. On a shared server,
+  users who do not own the server also see *Inherit from owner*, which is the
+  default for them and uses whatever command the owner has selected; selecting
+  *None* or a named command overrides it for that user only. If a selected
+  command is later removed from the configuration, the server is treated as
+  having no command and a warning is logged.
+
+  The command is run directly, without a shell, and receives the environment of
+  the pgAdmin process plus the following variables describing the connection:
+  ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT``,
+  ``PGADMIN_PASSEXEC_USERNAME`` (the username that connection uses, so a
+  non-owner's own username on a shared server), ``PGADMIN_PASSEXEC_DATABASE``
+  (the maintenance database), ``PGADMIN_PASSEXEC_PGADMIN_USER`` (the pgAdmin
+  user making the connection) and ``PGADMIN_PASSEXEC_AUTH_SOURCE`` (how that
+  user authenticated to pgAdmin). The ``stdout`` of the command is used as the
+  SQL password.
 * Use the *Password exec expiration* field to specify a maximum age, in seconds,
-  of the password generated with a *Password exec command*. If not specified,
+  of the password generated with a *Password exec command*. In server mode, this field is
+  enabled only when a named command is selected. If not specified,
   the password will not expire until your pgAdmin session does.
   Zero means the command will be executed for each new connection or reconnection that is made.
   If the generated password is not valid indefinitely, set this value to slightly before it will expire.
@@ -234,7 +255,14 @@ Use the fields in the *Advanced* tab to configure a connection:
 .. note:: The password file option is only supported when pgAdmin is using libpq
     v10.0 or later to connect to the server.
 
-.. note:: The Password exec option is only supported when pgAdmin is run in desktop mode.
+.. note:: In server mode, the *Password exec command* setting is available
+    only when the administrator has defined at least one command in
+    ``SERVER_PASSEXEC_COMMANDS``. Free-text commands are never run in server
+    mode, and when pgAdmin is upgraded, an existing free-text command is kept
+    only if it exactly matches a configured command (its arguments joined by
+    single spaces), in which case it is converted to that command's name; all
+    others are cleared and a warning is logged. The ``ENABLE_SERVER_PASS_EXEC_CMD``
+    setting is deprecated and ignored.
 
 Click the *Post Connection SQL* tab to continue.
 

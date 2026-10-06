@@ -555,12 +555,16 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "PostConnectionSQL",
                       server.post_connection_sql)
 
-            # if desktop mode or server mode with
-            # ENABLE_SERVER_PASS_EXEC_CMD flag is True
-            if not current_app.config['SERVER_MODE'] or \
-                    current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
+            if not current_app.config['SERVER_MODE']:
                 add_value(attr_dict, "PasswordExecCommand",
                           server.passexec_cmd)
+                add_value(attr_dict, "PasswordExecExpiration",
+                          server.passexec_expiration)
+            elif server.passexec_name:
+                # Server mode never exports free-text commands, only
+                # the name of an entry in SERVER_PASSEXEC_COMMANDS.
+                add_value(attr_dict, "PasswordExecCommand",
+                          server.passexec_name)
                 add_value(attr_dict, "PasswordExecExpiration",
                           server.passexec_expiration)
 
@@ -678,6 +682,27 @@ def validate_json_data(data, is_admin):
     for server in skip_servers:
         del data["Servers"][server]
     return None
+
+
+def _load_server_passexec(new_server, obj):
+    """Apply PasswordExecCommand from an import file in server mode,
+    where it must be the name of a configured command. Anything else
+    is ignored with a warning that names the server only, as the text
+    could be a secret."""
+    from pgadmin.utils.passexec import get_server_passexec_commands
+
+    name = obj.get("PasswordExecCommand", None)
+    if not name:
+        return
+
+    if isinstance(name, str) and name in get_server_passexec_commands():
+        new_server.passexec_name = name
+        new_server.passexec_expiration = obj.get(
+            "PasswordExecExpiration", None)
+    else:
+        print("Ignoring the password exec command for server '%s' as it "
+              "is not the name of a command in SERVER_PASSEXEC_COMMANDS." %
+              obj.get("Name"))
 
 
 def load_database_servers(input_file, selected_servers,
@@ -834,13 +859,12 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.post_connection_sql = obj.get("PostConnectionSQL", None)
 
-            # if desktop mode or server mode with
-            # ENABLE_SERVER_PASS_EXEC_CMD flag is True
-            if not current_app.config['SERVER_MODE'] or \
-                    current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
+            if not current_app.config['SERVER_MODE']:
                 new_server.passexec_cmd = obj.get("PasswordExecCommand", None)
                 new_server.passexec_expiration = obj.get(
                     "PasswordExecExpiration", None)
+            else:
+                _load_server_passexec(new_server, obj)
 
             db.session.add(new_server)
 
