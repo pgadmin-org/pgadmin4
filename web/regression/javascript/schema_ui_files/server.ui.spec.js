@@ -146,12 +146,19 @@ describe('ServerSchema', ()=>{
       let schema = setup('True', []);
       expect(field(schema, 'passexec_name').visible({})).toBe(false);
       expect(field(schema, 'passexec_cmd').visible({})).toBe(false);
+      expect(field(schema, 'passexec_expiration').visible({})).toBe(false);
+    });
+
+    it('shows the expiration in server mode when commands are configured', ()=>{
+      let schema = setup('True', ['vault']);
+      expect(field(schema, 'passexec_expiration').visible({})).toBe(true);
     });
 
     it('shows the free text command only in desktop mode', ()=>{
       let schema = setup('False', []);
       expect(field(schema, 'passexec_cmd').visible({})).toBe(true);
       expect(field(schema, 'passexec_name').visible({})).toBe(false);
+      expect(field(schema, 'passexec_expiration').visible({})).toBe(true);
     });
 
     it('disables the expiration according to the mode', ()=>{

@@ -604,6 +604,8 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
+        visible: () => pgAdmin.server_mode != 'True' ||
+          (pgAdmin.server_passexec_commands || []).length > 0,
         disabled: function(state) {
           if (pgAdmin.server_mode == 'True') {
             return !state.passexec_name ||
