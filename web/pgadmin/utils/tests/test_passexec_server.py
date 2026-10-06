@@ -105,9 +105,12 @@ class TestServerPasswordExecRealProcess(BaseTestGenerator):
 
     def runTest(self):
         import os
+        import shutil
         import sys
         import tempfile
-        marker = os.path.join(tempfile.mkdtemp(), 'pwned')
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        marker = os.path.join(d, 'pwned')
         user = '$(touch {0})`touch {0}`;touch {0}'.format(marker)
         argv = [sys.executable, '-c',
                 'import os;print(os.environ["PGADMIN_PASSEXEC_USERNAME"])']
