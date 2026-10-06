@@ -243,8 +243,6 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.server_owner = sharedserver.server_owner
         server.password = sharedserver.password
         server.prepare_threshold = sharedserver.prepare_threshold
-        server.passexec_cmd = sharedserver.passexec_cmd
-        server.passexec_expiration = sharedserver.passexec_expiration
         server.kerberos_conn = sharedserver.kerberos_conn
         server.tags = sharedserver.tags
         server.post_connection_sql = sharedserver.post_connection_sql
@@ -978,10 +976,6 @@ class ServerNode(PGChildNodeView):
         # which will affect the connections.
         if not conn.connected():
             manager.update(server)
-            # Suppress passexec for non-owners so the manager
-            # never holds the owner's password-exec command.
-            if _is_non_owner(server):
-                manager.passexec = None
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -1649,12 +1643,6 @@ class ServerNode(PGChildNodeView):
         # the API call is not made from SQL Editor or View/Edit Data tool
         if not manager.connection().connected() and not is_qt:
             manager.update(server)
-            # Re-suppress passexec after update() which rebuilds
-            # from the (overlaid) server object.  Belt-and-suspenders:
-            # the overlay already defaults passexec to None, but this
-            # guards against direct DB edits.
-            if _is_non_owner(server):
-                manager.passexec = None
         conn = manager.connection()
 
         # Get enc key
@@ -1696,7 +1684,7 @@ class ServerNode(PGChildNodeView):
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and not server.save_password and \
                     passfile_param is None and \
-                    server.passexec_cmd is None and \
+                    manager.passexec is None and \
                     server.service is None:
                 prompt_password = True
             elif passfile_param and passfile_param != '' and \

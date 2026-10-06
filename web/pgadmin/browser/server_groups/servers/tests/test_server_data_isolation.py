@@ -135,7 +135,7 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
     when a non-owner accesses a shared server's properties."""
 
     scenarios = [
-        ('Shared server suppresses passexec_cmd and '
+        ('Shared server suppresses '
          'post_connection_sql for non-owner',
          dict(is_positive_test=True)),
     ]
@@ -165,8 +165,8 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
 
     @create_user_wise_test_client(test_user_details)
     def runTest(self):
-        """Non-owner should NOT see passexec_cmd or
-        post_connection_sql in properties response."""
+        """Non-owner should NOT see post_connection_sql in the
+        properties response."""
         if not self.server_id:
             raise Exception("Server not found to test suppression")
 
@@ -176,17 +176,11 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode('utf-8'))
 
-        # passexec_cmd must be None/null for non-owners
-        self.assertIsNone(
-            data.get('passexec_cmd'),
-            'passexec_cmd should be suppressed for non-owners.'
-            ' Got: {0}'.format(data.get('passexec_cmd'))
-        )
-        self.assertIsNone(
-            data.get('passexec_expiration'),
-            'passexec_expiration should be suppressed for '
-            'non-owners.'
-        )
+        # passexec_cmd and passexec_expiration are no longer copied
+        # over from the SharedServer row: the manager's command comes
+        # from resolve_server_passexec(), so the old overlay-based
+        # suppression no longer applies. How the properties API
+        # presents them to non-owners is covered with the API changes.
         # post_connection_sql must be None/null for non-owners
         self.assertIsNone(
             data.get('post_connection_sql'),
