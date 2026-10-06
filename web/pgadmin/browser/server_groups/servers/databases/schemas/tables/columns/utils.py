@@ -330,6 +330,8 @@ def get_formatted_columns(conn, tid, data, other_columns,
             if col['name'] == other_col['name']:
                 col['inheritedfrom' + table_or_type] = \
                     other_col['inheritedfrom']
+                if col.get('inheritedid') is None:
+                    col['inheritedid'] = other_col['inheritedid']
 
         if with_serial:
             reproject_serial_column(col)
