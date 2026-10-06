@@ -328,9 +328,7 @@ def get_formatted_columns(conn, tid, data, other_columns,
         edit_types[col['atttypid']] = []
         for other_col in other_columns:
             if col['name'] == other_col['name']:
-                col['inheritedfrom' + table_or_type] = \
-                    other_col['inheritedfrom']
-                col['inheritedid'] = other_col['inheritedid']
+                col['inheritedfrom' + table_or_type] = other_col['inheritedfrom']
 
         if with_serial:
             reproject_serial_column(col)

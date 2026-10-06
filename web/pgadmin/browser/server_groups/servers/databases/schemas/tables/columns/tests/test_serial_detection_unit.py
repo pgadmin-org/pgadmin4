@@ -104,11 +104,11 @@ class TestSerialColumnDetection(BaseTestGenerator):
         self.assertEqual(result['defval'], '')
 
     def test_inherited_column_preserves_parent_oid(self):
-        col = _make_column()
+        col = _make_column(inheritedid=140391)
         other_col = {
             'name': 'id',
             'inheritedfrom': 'public.parent',
-            'inheritedid': 140391,
+            'inheritedid': 987654,
         }
 
         result = self._run(col, [other_col])
