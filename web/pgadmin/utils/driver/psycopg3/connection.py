@@ -1242,6 +1242,10 @@ WHERE db.datname = current_database()""")
         if not status:
             return False, str(cur)
 
+        # A throwaway cursor this call creates and must close itself, as
+        # opposed to one whose ownership passes to self.__async_cursor.
+        throwaway = None
+
         if isinstance(cur, AsyncDictServerCursor):
             # A named/server-side cursor's execute() always runs the query
             # as `DECLARE ... CURSOR FOR <query>`, which cannot express a
@@ -1270,9 +1274,16 @@ WHERE db.datname = current_database()""")
                 # issued by cancel_transaction() has no business detaching
                 # the cursor a result set is still being paged or
                 # downloaded from.
+                #
+                # Ownership of the throwaway passes to the async cursor
+                # here, so it must not be closed below: the following
+                # poll() reads from it, and release_async_cursor() or the
+                # next query replaces it.
                 self.__async_cursor = cur
                 self.column_info = None
                 self.row_count = 0
+            else:
+                throwaway = cur
 
         query_id = str(secrets.choice(range(1, 9999999)))
 
@@ -1319,6 +1330,9 @@ WHERE db.datname = current_database()""")
                 )
             )
             return False, errmsg
+
+        if throwaway is not None:
+            throwaway.close_cursor()
 
         return True, None
 

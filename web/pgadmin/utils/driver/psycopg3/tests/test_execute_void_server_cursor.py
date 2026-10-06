@@ -119,6 +119,10 @@ class ExecuteVoidServerCursorTest(BaseTestGenerator):
         plain_cursor.execute.assert_called_once()
         server_cursor.execute.assert_not_called()
 
+        # Ownership of the throwaway has passed to the async cursor, so it
+        # is left open for the poll() that follows.
+        plain_cursor.close_cursor.assert_not_called()
+
         # Stale result-set state from the prior SELECT must not leak
         # into whatever poll() call comes next.
         self.assertIsNone(conn.column_info)
@@ -205,6 +209,10 @@ class ExecuteVoidNonTransactionServerCursorTest(BaseTestGenerator):
         self.assertIs(conn._Connection__async_cursor, server_cursor)
         self.assertEqual(conn.column_info, [{'name': 'x'}])
         self.assertEqual(conn.row_count, 1)
+
+        # Nothing else holds the throwaway, so it is closed once the
+        # statement has run rather than left for garbage collection.
+        plain_cursor.close_cursor.assert_called_once()
 
 
 class IsTransactionControlTest(BaseTestGenerator):
