@@ -9,10 +9,12 @@
 
 """Tests for named password exec commands in the servers API.
 
-The test runner runs pgAdmin in server mode with a second, non-admin
-user available. The owner API tests patch config.SERVER_MODE where a case
-needs the desktop rules; non-owner behaviour is tested end to end through
-the second user, and the view helpers are also tested with mocks."""
+The server-mode API cases run only when the suite itself runs in server
+mode (with a second, non-admin user for the non-owner cases), because
+patching config.SERVER_MODE on a desktop-mode app also switches the login
+checks in before_request and fails every request. The desktop cases patch
+SERVER_MODE off, which works in either mode, and the view helpers are
+tested with mocks in both modes."""
 
 import json
 import sqlite3
@@ -169,13 +171,15 @@ class PassexecPayloadHelpersTestCase(BaseTestGenerator):
 
 
 class PassexecServerApiTestCase(BaseTestGenerator):
-    """Owner create/update/properties through the real views, with the
-    server-mode rules switched on by patching config.SERVER_MODE."""
+    """Owner create/update/properties through the real views in server
+    mode."""
 
     scenarios = [('api', dict())]
 
     def setUp(self):
         self.created = []
+        if not config.SERVER_MODE:
+            self.skipTest('Server-mode rules need a server-mode run.')
         self.url = '/browser/server/obj/{0}/'.format(utils.SERVER_GROUP)
 
     def tearDown(self):
@@ -246,6 +250,18 @@ class PassexecServerApiTestCase(BaseTestGenerator):
             self.assertEqual(
                 self._props(sid)['passexec_name'], PASSEXEC_NONE)
 
+
+class PassexecDesktopApiTestCase(PassexecServerApiTestCase):
+    """Desktop rules through the real views: the free-text command is
+    stored and a name is ignored."""
+
+    scenarios = [('desktop api', dict())]
+
+    def setUp(self):
+        self.created = []
+        self.url = '/browser/server/obj/{0}/'.format(utils.SERVER_GROUP)
+
+    def runTest(self):
         with patch.object(config, 'SERVER_MODE', False):
             # 3b. desktop mode stores the command; 8. ignores the name.
             r = self._post(passexec_cmd='echo x', passexec_name='vault')
