@@ -144,3 +144,56 @@ class TestFreeTextRefusedInServerMode(BaseTestGenerator):
             with self.assertRaises(NotImplementedError):
                 pexec.get()
         mock_run.assert_not_called()
+
+
+class TestServerPasswordExecFailureHidesArgv(BaseTestGenerator):
+    """Failures name the command but never reveal its arguments, in
+    either the raised message or the log."""
+
+    scenarios = [
+        ('Non-zero exit', dict(kind='exit')),
+        ('Missing executable', dict(kind='missing')),
+        ('Timeout', dict(kind='timeout')),
+    ]
+
+    def runTest(self):
+        import os
+        import shutil
+        import sys
+        import tempfile
+        secret = 'S3CRET-ARG'
+        timeout = 60
+        if self.kind == 'exit':
+            argv = [sys.executable, '-c',
+                    'import sys; sys.stderr.write("boom"); sys.exit(3)',
+                    secret]
+            expect_log = 'status 3'
+        elif self.kind == 'missing':
+            d = tempfile.mkdtemp()
+            self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+            argv = [os.path.join(d, 'no-such-command'), secret]
+            expect_log = 'could not be run'
+        else:
+            argv = [sys.executable, '-c', 'import time; time.sleep(30)',
+                    secret]
+            timeout = 1
+            expect_log = 'timed out'
+        pexec = ServerPasswordExec('vault-test', argv, 'h', 5432, 'u',
+                                   'postgres', 'jane.doe@example.com',
+                                   'internal', timeout=timeout)
+        with self.app.app_context(), \
+                patch('pgadmin.utils.passexec.config.SERVER_MODE', True), \
+                self.assertLogs('passexec', level='INFO') as logs:
+            with self.assertRaises(Exception) as ctx:
+                pexec.get()
+        exc = ctx.exception
+        self.assertIs(type(exc), Exception)
+        self.assertEqual(str(exc),
+                         "Password exec command 'vault-test' failed.")
+        self.assertTrue(exc.__suppress_context__)
+        output = '\n'.join(logs.output)
+        self.assertIn('vault-test', output)
+        self.assertIn(expect_log, output)
+        self.assertNotIn(secret, output)
+        if self.kind == 'exit':
+            self.assertIn('boom', output)
