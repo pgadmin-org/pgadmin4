@@ -59,6 +59,37 @@ def check_server_passexec_config(logger):
             'SERVER_PASSEXEC_COMMANDS instead.')
 
 
+def convert_legacy_server_passexec(logger):
+    """Server mode only: convert free-text passexec_cmd values that
+    exactly match a configured command into its name, and clear every
+    passexec_cmd, since free-text commands no longer run in server mode.
+    Command text is never logged because it may contain secrets.
+    Returns the number of rows changed."""
+    from pgadmin.model import db, Server, SharedServer
+    by_cmd = {' '.join(argv): name
+              for name, argv in get_server_passexec_commands().items()}
+    changed = 0
+    for model in (Server, SharedServer):
+        # Normalise empty strings quietly; they carry no command.
+        model.query.filter(model.passexec_cmd == '').update(
+            {model.passexec_cmd: None}, synchronize_session=False)
+        rows = model.query.filter(model.passexec_cmd.isnot(None)).all()
+        for row in rows:
+            name = by_cmd.get(row.passexec_cmd.strip())
+            if name is not None:
+                row.passexec_name = name
+            else:
+                logger.warning(
+                    'Cleared the password exec command on %s %s (user %s): '
+                    'free-text commands are not run in server mode and it '
+                    'does not match any SERVER_PASSEXEC_COMMANDS entry.',
+                    model.__tablename__, row.id, row.user_id)
+            row.passexec_cmd = None
+            changed += 1
+    db.session.commit()
+    return changed
+
+
 class PasswordExec:
 
     lock = Lock()
