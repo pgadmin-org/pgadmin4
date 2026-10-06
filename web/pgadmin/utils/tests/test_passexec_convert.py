@@ -84,8 +84,16 @@ class TestConvertLegacyServerPassexec(BaseTestGenerator):
             self.assertEqual((s.passexec_name, s.passexec_cmd),
                              ('vault', None))
 
-            # One warning for b (none for the empty-string row).
-            self.assertEqual(logger.warning.call_count, 1)
+            # Other rows in the shared test DB may also be warned about,
+            # so look only at warnings naming this test's rows: one for b,
+            # none for the converted, empty or NULL rows.
+            warned = [(c[0][1], c[0][2])
+                      for c in logger.warning.call_args_list]
+            ours = [w for w in warned
+                    if w in {(Server.__tablename__, i) for i in
+                             (self.a, self.b, self.c, self.d)} or
+                    w == (SharedServer.__tablename__, self.shared)]
+            self.assertEqual(ours, [(Server.__tablename__, self.b)])
             for call in logger.method_calls:
                 self.assertNotIn('SECRET-TOKEN-123', repr(call))
                 self.assertNotIn('get-pass', repr(call))
