@@ -168,8 +168,9 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         conn = sqlite3.connect(config.TEST_SQLITE_PATH)
         try:
             conn.execute(
-                'UPDATE server SET passexec_cmd=? WHERE id=?',
-                ('/usr/bin/get-secret', self.server_id))
+                'UPDATE server SET passexec_cmd=?, passexec_name=? '
+                'WHERE id=?',
+                ('/usr/bin/get-secret', 'vault', self.server_id))
             conn.commit()
         finally:
             conn.close()
@@ -193,10 +194,13 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         self.assertNotIn(
             'passexec_cmd', data,
             'passexec_cmd should not be returned in server mode.')
-        self.assertNotEqual(
-            data.get('passexec_expiration'), 100,
+        self.assertIsNone(
+            data.get('passexec_expiration'),
             'The owner passexec_expiration should not be exposed to '
             'non-owners.')
+        # With no choice of their own the non-owner inherits; they are
+        # not told which command the owner uses.
+        self.assertEqual(data.get('passexec_name'), '__inherit__')
         # post_connection_sql must be None/null for non-owners
         self.assertIsNone(
             data.get('post_connection_sql'),

@@ -31,7 +31,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User, SharedServer
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.passexec import normalise_passexec_name, \
-    passexec_name_for_api
+    passexec_name_for_api, PASSEXEC_INHERIT
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -86,12 +86,17 @@ def prepare_passexec_data(data, is_non_owner):
             'administrator.')
     data.pop('passexec_cmd', None)
     if 'passexec_name' in data:
+        if data['passexec_name'] == PASSEXEC_INHERIT and not is_non_owner:
+            return data, gettext(
+                'Only a user of a shared server can inherit the password '
+                'exec command from its owner.')
         try:
             data['passexec_name'] = normalise_passexec_name(
                 data['passexec_name'], is_non_owner)
-        except ValueError as e:
+        except ValueError:
             return data, gettext(
-                'Invalid password exec command: {0}').format(str(e))
+                'The password exec command is not one of those configured '
+                'by the administrator.')
     return data, None
 
 
@@ -792,9 +797,7 @@ class ServerNode(PGChildNodeView):
                 ).format(sid)
             )
 
-        shared_server = None
-        non_owner = bool(_is_non_owner(server))
-        if non_owner:
+        if _is_non_owner(server):
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
