@@ -7,6 +7,7 @@
 #
 ##########################################################################
 import logging
+import os
 import subprocess
 from datetime import datetime, timedelta, timezone
 from threading import Lock
@@ -15,6 +16,47 @@ from flask import current_app
 
 import config
 from pgadmin.utils.driver import get_driver
+
+PASSEXEC_INHERIT = '__inherit__'
+PASSEXEC_NONE = '__none__'
+
+
+def _iter_server_passexec_entries():
+    """Yield (name, argv_or_None, reason) for each configured entry."""
+    cmds = getattr(config, 'SERVER_PASSEXEC_COMMANDS', None) or {}
+    if not isinstance(cmds, dict):
+        yield None, None, 'SERVER_PASSEXEC_COMMANDS must be a dict'
+        return
+    for name, argv in cmds.items():
+        if not isinstance(name, str) or not name.strip():
+            yield name, None, 'name must be a non-empty string'
+        elif name.startswith('__'):
+            yield name, None, 'names starting with "__" are reserved'
+        elif not isinstance(argv, (list, tuple)) or not argv or \
+                not all(isinstance(a, str) for a in argv):
+            yield name, None, 'value must be a non-empty list of strings'
+        else:
+            yield name, list(argv), None
+
+
+def get_server_passexec_commands():
+    """Return the valid entries of SERVER_PASSEXEC_COMMANDS as
+    {name: argv}, with fresh lists so callers cannot alter config."""
+    return {name: argv for name, argv, reason
+            in _iter_server_passexec_entries() if reason is None}
+
+
+def check_server_passexec_config(logger):
+    """Log configuration problems once, at startup."""
+    for name, _argv, reason in _iter_server_passexec_entries():
+        if reason is not None:
+            logger.error('Ignoring SERVER_PASSEXEC_COMMANDS entry %r: %s',
+                         name, reason)
+    if getattr(config, 'ENABLE_SERVER_PASS_EXEC_CMD', False):
+        logger.warning(
+            'ENABLE_SERVER_PASS_EXEC_CMD is deprecated and no longer has '
+            'any effect; define the permitted commands in '
+            'SERVER_PASSEXEC_COMMANDS instead.')
 
 
 class PasswordExec:
@@ -34,7 +76,7 @@ class PasswordExec:
         self.last_result = None
 
     def get(self):
-        if config.SERVER_MODE and not config.ENABLE_SERVER_PASS_EXEC_CMD:
+        if config.SERVER_MODE:
             # Arbitrary shell execution on server is a security risk
             raise NotImplementedError('Passexec not available in server mode')
         driver = get_driver(config.PG_DEFAULT_DRIVER)
@@ -45,21 +87,27 @@ class PasswordExec:
         self.cmd = self.cmd.replace(
             '%USERNAME%',
             driver.qtIdent(None, self.username) if self.username else '')
+        return self._get_cached(lambda: subprocess.run(
+            self.cmd,
+            shell=True,
+            timeout=self.timeout,
+            capture_output=True,
+            text=True,
+            check=True,
+        ), skip=not self.cmd)
+
+    def _get_cached(self, run, skip=False):
+        """Return the cached password, calling run() when it is missing
+        or expired. If skip is true and a run would be needed, return
+        None instead."""
         with self.lock:
             if not self.password or self.is_expired():
-                if not self.cmd:
+                if skip:
                     return None
                 current_app.logger.info('Calling passexec')
                 now = datetime.now(timezone.utc)
                 try:
-                    p = subprocess.run(
-                        self.cmd,
-                        shell=True,
-                        timeout=self.timeout,
-                        capture_output=True,
-                        text=True,
-                        check=True,
-                    )
+                    p = run()
                 except subprocess.CalledProcessError as e:
                     if e.stderr:
                         self.create_logger().error(e.stderr)
@@ -82,3 +130,31 @@ class PasswordExec:
         for h in current_app.logger.handlers:
             logger.addHandler(h)
         return logger
+
+
+class ServerPasswordExec(PasswordExec):
+    """Runs an administrator-defined command without a shell, passing
+    connection details in environment variables so that no value can be
+    interpreted as part of the command."""
+
+    def __init__(self, name, argv, host, port, username, database,
+                 pgadmin_user, auth_source, expiration_seconds=None,
+                 timeout=60):
+        super().__init__(None, host, port, username, expiration_seconds,
+                         timeout)
+        self.name = name
+        self.argv = list(argv)
+        self.env = dict(os.environ)
+        self.env.update({
+            'PGADMIN_PASSEXEC_HOST': host or '',
+            'PGADMIN_PASSEXEC_PORT': str(port) if port is not None else '',
+            'PGADMIN_PASSEXEC_USERNAME': username or '',
+            'PGADMIN_PASSEXEC_DATABASE': database or '',
+            'PGADMIN_PASSEXEC_PGADMIN_USER': pgadmin_user or '',
+            'PGADMIN_PASSEXEC_AUTH_SOURCE': auth_source or '',
+        })
+
+    def get(self):
+        return self._get_cached(lambda: subprocess.run(
+            self.argv, shell=False, env=self.env, timeout=self.timeout,
+            capture_output=True, text=True, check=True))

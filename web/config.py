@@ -1061,10 +1061,28 @@ AUTO_DISCOVER_SERVERS = True
 SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 
 #############################################################################
-# ENABLE_SERVER_PASS_EXEC_CMD is used to enable/disable Password exec command
-# field in server properties. This is used to specify a shell command to be
-# executed to retrieve a password to be used for server authentication.
-# This setting is applicable only for server mode.
+# SERVER_PASSEXEC_COMMANDS is an allowlist of named commands that may be used
+# to retrieve a password for server authentication. Users pick a command by
+# name in the server properties; they cannot supply their own. Each value is
+# a list holding the executable followed by its arguments, for example:
+#
+#   SERVER_PASSEXEC_COMMANDS = {
+#       'vault': ['/usr/local/bin/get-pg-pass', '--ttl', '300']
+#   }
+#
+# Commands are run directly, without a shell, so no quoting or substitution
+# is applied to the arguments. Connection details are passed in these
+# environment variables: PGADMIN_PASSEXEC_HOST, PGADMIN_PASSEXEC_PORT,
+# PGADMIN_PASSEXEC_USERNAME, PGADMIN_PASSEXEC_DATABASE,
+# PGADMIN_PASSEXEC_PGADMIN_USER and PGADMIN_PASSEXEC_AUTH_SOURCE.
+# Names may not start with "__". An empty dictionary (the default) turns the
+# feature off. This setting is applicable only for server mode.
+#############################################################################
+SERVER_PASSEXEC_COMMANDS = {}
+
+#############################################################################
+# DEPRECATED and ignored: free-text password exec commands are never run in
+# server mode. Use SERVER_PASSEXEC_COMMANDS instead.
 #############################################################################
 ENABLE_SERVER_PASS_EXEC_CMD = False
 
