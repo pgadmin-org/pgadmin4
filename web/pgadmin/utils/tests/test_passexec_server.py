@@ -146,6 +146,38 @@ class TestFreeTextRefusedInServerMode(BaseTestGenerator):
         mock_run.assert_not_called()
 
 
+class TestPasswordExecLockPerInstance(BaseTestGenerator):
+    """A command running for one instance does not block another."""
+
+    def runTest(self):
+        a = ServerPasswordExec('a', ['/bin/a'], 'h', 5432, 'u', 'postgres',
+                               'jane.doe@example.com', 'internal')
+        b = ServerPasswordExec('b', ['/bin/b'], 'h', 5432, 'u', 'postgres',
+                               'john.doe@example.com', 'internal')
+        c = PasswordExec('echo x', 'h', 5432, 'u')
+        d = PasswordExec('echo y', 'h', 5432, 'u')
+        self.assertIsNot(a.lock, b.lock)
+        self.assertIsNot(c.lock, d.lock)
+        import threading
+        result = []
+        app = self.app
+
+        def fetch():
+            with app.app_context():
+                result.append(b.get())
+
+        with patch('pgadmin.utils.passexec.subprocess.run',
+                   return_value=MagicMock(stdout='p')):
+            # Holding a's lock, as a running command would, must not stop
+            # b fetching its password in another thread.
+            with a.lock:
+                t = threading.Thread(target=fetch, daemon=True)
+                t.start()
+                t.join(timeout=10)
+        self.assertFalse(t.is_alive())
+        self.assertEqual(result, ['p'])
+
+
 class TestServerPasswordExecReducedEnv(BaseTestGenerator):
     """The child gets a reduced environment: secrets in pgAdmin's
     environment stay out, PATH and configured passthrough names get in,
