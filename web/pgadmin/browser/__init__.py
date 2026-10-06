@@ -68,6 +68,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE, \
     VW_EDT_DEFAULT_PLACEHOLDER, NO_CACHE_CONTROL
 from pgadmin.authenticate import AuthSourceManager
 from pgadmin.utils.exception import CryptKeyMissing
+from pgadmin.utils.passexec import get_server_passexec_commands
 
 from pgadmin.user_login_check import pga_login_required
 
@@ -564,6 +565,8 @@ def utils():
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
             enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
+            server_passexec_commands=sorted(get_server_passexec_commands())
+            if config.SERVER_MODE else [],
             max_server_tags_allowed=config.MAX_SERVER_TAGS_ALLOWED,
             llm_enabled=is_llm_enabled(),
         ), 200)

@@ -30,6 +30,8 @@ import config
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User, SharedServer
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.passexec import normalise_passexec_name, \
+    passexec_name_for_api
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -63,6 +65,54 @@ def _is_non_owner(server):
     """True if the server is shared and the current user is not
     the owner.  Centralises the check used in 15+ places."""
     return server.shared and server.user_id != current_user.id
+
+
+def prepare_passexec_data(data, is_non_owner):
+    """Validate and normalise the password exec fields of a create or
+    update payload. Returns (data, errormsg); data is a plain dict copy,
+    since request.form is immutable.
+
+    Server mode: a free-text passexec_cmd is refused (an empty one is
+    dropped), and passexec_name is converted to its stored value.
+    Desktop mode: passexec_name is dropped; the command is untouched."""
+    data = dict(data)
+    if not config.SERVER_MODE:
+        data.pop('passexec_name', None)
+        return data, None
+    if data.get('passexec_cmd'):
+        return data, gettext(
+            'Free-text password exec commands are not allowed in server '
+            'mode; choose one of the commands configured by the '
+            'administrator.')
+    data.pop('passexec_cmd', None)
+    if 'passexec_name' in data:
+        try:
+            data['passexec_name'] = normalise_passexec_name(
+                data['passexec_name'], is_non_owner)
+        except ValueError as e:
+            return data, gettext(
+                'Invalid password exec command: {0}').format(str(e))
+    return data, None
+
+
+def passexec_api_fields(server, shared_server, is_non_owner):
+    """The password exec fields for the properties response. In server
+    mode the free-text command is never returned, and a non-owner sees
+    only their own SharedServer values (the overlaid server object
+    carries the owner's)."""
+    if not config.SERVER_MODE:
+        return {'passexec_cmd': server.passexec_cmd,
+                'passexec_expiration': server.passexec_expiration}
+    source = shared_server if is_non_owner else server
+    if source is None:
+        stored, expiration = None, None
+    else:
+        stored, expiration = source.passexec_name, \
+            source.passexec_expiration
+    return {
+        'passexec_name': passexec_name_for_api(stored, is_non_owner),
+        'passexec_expiration': expiration,
+    }
 
 
 def is_using_passfile(server, manager):
@@ -497,6 +547,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 connection_params=safe_conn_params,
                 prepare_threshold=data.prepare_threshold,
                 passexec_cmd=None,
+                passexec_name=None,
                 passexec_expiration=None,
                 kerberos_conn=False,
                 tags=None,
@@ -741,7 +792,9 @@ class ServerNode(PGChildNodeView):
                 ).format(sid)
             )
 
-        if _is_non_owner(server):
+        shared_server = None
+        non_owner = bool(_is_non_owner(server))
+        if non_owner:
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
@@ -888,6 +941,7 @@ class ServerNode(PGChildNodeView):
             'db_res': 'db_res',
             'db_res_type': 'db_res_type',
             'passexec_cmd': 'passexec_cmd',
+            'passexec_name': 'passexec_name',
             'passexec_expiration': 'passexec_expiration',
             'bgcolor': 'bgcolor',
             'fgcolor': 'fgcolor',
@@ -921,6 +975,12 @@ class ServerNode(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data
         )
+
+        data, passexec_err = prepare_passexec_data(
+            data, _is_non_owner(server))
+        if passexec_err:
+            return make_json_response(
+                success=0, status=400, errormsg=passexec_err)
 
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
@@ -1004,7 +1064,10 @@ class ServerNode(PGChildNodeView):
     @staticmethod
     def _update_server_details(server, sharedserver,
                                config_param_map, arg, value):
-        if value == '':
+        # '' is meaningful for a non-owner's passexec_name: it means
+        # explicitly no command, as opposed to NULL, which inherits.
+        if value == '' and not (arg == 'passexec_name' and
+                                _is_non_owner(server)):
             value = None
 
         if _is_non_owner(server):
@@ -1025,7 +1088,7 @@ class ServerNode(PGChildNodeView):
         # SharedServer — they enable command/SQL execution
         # or are owner-level concepts not on SharedServer.
         _owner_only_fields = frozenset({
-            'passexec_cmd', 'passexec_expiration',
+            'passexec_cmd',
             'db_res', 'db_res_type',
         })
 
@@ -1143,7 +1206,9 @@ class ServerNode(PGChildNodeView):
         # port and user when server is connected
         display_connection_str = self.update_connection_string(manager, server)
 
-        if _is_non_owner(server):
+        shared_server = None
+        non_owner = bool(_is_non_owner(server))
+        if non_owner:
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
@@ -1195,8 +1260,7 @@ class ServerNode(PGChildNodeView):
             'fgcolor': server.fgcolor,
             'db_res': get_db_restriction(server.db_res_type, server.db_res),
             'db_res_type': server.db_res_type,
-            'passexec_cmd': server.passexec_cmd,
-            'passexec_expiration': server.passexec_expiration,
+            **passexec_api_fields(server, shared_server, non_owner),
             'service': server.service if server.service else None,
             'use_ssh_tunnel': use_ssh_tunnel,
             'tunnel_host': tunnel_host,
@@ -1255,9 +1319,15 @@ class ServerNode(PGChildNodeView):
         # Loop through data and if found any value is blank string then
         # convert it to None as after porting into React, from frontend
         # '' blank string is coming as a value instead of null.
+        data = dict(data)
         for item in data:
             if data[item] == '':
                 data[item] = None
+
+        data, passexec_err = prepare_passexec_data(data, False)
+        if passexec_err:
+            return make_json_response(
+                success=0, status=400, errormsg=passexec_err)
 
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
@@ -1347,6 +1417,7 @@ class ServerNode(PGChildNodeView):
                 shared=data.get('shared', None),
                 shared_username=data.get('shared_username', None),
                 passexec_cmd=data.get('passexec_cmd', None),
+                passexec_name=data.get('passexec_name', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
                 connection_params=connection_params,

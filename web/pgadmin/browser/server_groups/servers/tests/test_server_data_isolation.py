@@ -10,6 +10,7 @@
 """Tests for server data isolation between users in server mode."""
 
 import json
+import sqlite3
 import config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -149,7 +150,6 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
 
         # Create a shared server with sensitive owner-only fields
         self.server['shared'] = True
-        self.server['passexec_cmd'] = '/usr/bin/get-secret'
         self.server['passexec_expiration'] = 100
         self.server['post_connection_sql'] = 'SET role admin;'
         url = "/browser/server/obj/{0}/".format(utils.SERVER_GROUP)
@@ -162,6 +162,17 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         response_data = json.loads(response.data.decode('utf-8'))
         self.assertIn('node', response_data)
         self.server_id = response_data['node']['_id']
+
+        # The API no longer accepts a free-text command in server mode,
+        # so plant one as a row left over from an older release would be.
+        conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+        try:
+            conn.execute(
+                'UPDATE server SET passexec_cmd=? WHERE id=?',
+                ('/usr/bin/get-secret', self.server_id))
+            conn.commit()
+        finally:
+            conn.close()
 
     @create_user_wise_test_client(test_user_details)
     def runTest(self):
@@ -176,11 +187,16 @@ class SharedServerFieldSuppressionTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode('utf-8'))
 
-        # passexec_cmd and passexec_expiration are no longer copied
-        # over from the SharedServer row: the manager's command comes
-        # from resolve_server_passexec(), so the old overlay-based
-        # suppression no longer applies. How the properties API
-        # presents them to non-owners is covered with the API changes.
+        # The free-text command is never returned in server mode, and
+        # the owner's expiration must not reach a non-owner (they see
+        # only their own SharedServer value, None until they set one).
+        self.assertNotIn(
+            'passexec_cmd', data,
+            'passexec_cmd should not be returned in server mode.')
+        self.assertNotEqual(
+            data.get('passexec_expiration'), 100,
+            'The owner passexec_expiration should not be exposed to '
+            'non-owners.')
         # post_connection_sql must be None/null for non-owners
         self.assertIsNone(
             data.get('post_connection_sql'),

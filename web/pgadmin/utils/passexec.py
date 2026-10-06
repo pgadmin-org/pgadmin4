@@ -47,6 +47,35 @@ def get_server_passexec_commands():
             in _iter_server_passexec_entries() if reason is None}
 
 
+def normalise_passexec_name(value, is_non_owner):
+    """Map the name sent by the API to the value stored in the database.
+
+    Owner (Server row): None, '' and '__none__' store None (no command);
+    a configured name stores itself. '__inherit__' is meaningless for an
+    owner. Non-owner (SharedServer row): '__inherit__' stores None,
+    None, '' and '__none__' store '' (explicitly no command), and a
+    configured name stores itself. Anything else raises ValueError."""
+    if value is None or value == '' or value == PASSEXEC_NONE:
+        return '' if is_non_owner else None
+    if value == PASSEXEC_INHERIT:
+        if is_non_owner:
+            return None
+        raise ValueError('Inheriting is only available for shared servers.')
+    if not isinstance(value, str) or \
+            value not in get_server_passexec_commands():
+        raise ValueError('Unknown password exec command.')
+    return value
+
+
+def passexec_name_for_api(stored, is_non_owner):
+    """The inverse of normalise_passexec_name, for the properties API."""
+    if is_non_owner:
+        if stored is None:
+            return PASSEXEC_INHERIT
+        return stored or PASSEXEC_NONE
+    return stored or PASSEXEC_NONE
+
+
 def check_server_passexec_config(logger):
     """Log configuration problems once, at startup."""
     for name, _argv, reason in _iter_server_passexec_entries():
