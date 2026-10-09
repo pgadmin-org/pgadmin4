@@ -5,8 +5,7 @@
 ************************************************
 
 To deploy a PostgreSQL database on pgEdge Starfleet, follow the steps below.
-You can create either a *Managed* database, which Starfleet hosts for you, or
-register a database on an existing *BYOC* (bring your own cloud) cluster.
+pgAdmin creates a *Managed* database, which Starfleet hosts for you.
 
 .. image:: images/cloud_provider_for_postgresql.png
     :alt: Cloud Deployment Provider
@@ -35,10 +34,6 @@ API client. pgAdmin checks them with Starfleet when you click *Next*.
 Use the fields from the Instance Specification step to specify the database
 details.
 
-* Use the *Deployment type* field to choose *Managed* or *BYOC (bring your own
-  cloud)*. The BYOC option is only offered if your Starfleet account has BYOC
-  enabled.
-
 * Use the *Database name* field to name the database. The name may contain
   lowercase letters and digits only, must start with a letter, and can be up
   to 50 characters long.
@@ -46,13 +41,11 @@ details.
 * Use the *Display name* field to optionally set a friendlier name, up to 25
   characters long.
 
-* Use the *PostgreSQL version* field to select the PostgreSQL version.
-
-For a Managed deployment, also set the following fields.
-
 * Select the location to deploy the database to from the *Region* field.
 
 * Use the *Size* field to select the size of the database.
+
+* Use the *PostgreSQL version* field to select the PostgreSQL version.
 
 * Use the *Allowed IP addresses* field to list the IPv4 addresses or CIDR
   ranges that may connect to the database, separated by commas. The field is
@@ -63,12 +56,6 @@ For a Managed deployment, also set the following fields.
 * Use the *Connect as* field to choose whether pgAdmin connects as *admin*
   (the database administrator, which is not a superuser) or *app* (an
   application user).
-
-For a BYOC deployment, use the *Cluster* field to select an existing cluster
-to add the database to; BYOC cannot create a cluster. Only clusters that are
-available and have public nodes can be selected, because pgAdmin cannot reach
-private nodes. Access is controlled by the cluster's firewall rules, which
-pgAdmin does not change.
 
 .. image:: images/cloud_starfleet_database.png
     :alt: pgEdge Starfleet database details

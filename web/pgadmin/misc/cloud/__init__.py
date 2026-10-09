@@ -209,8 +209,7 @@ def update_server(data):
             'host': server.host,
             'username': server.username,
             'starfleet_password': fetch_password(
-                instance.get('Kind'), instance.get('Id'),
-                instance.get('Role'), pid),
+                instance.get('Id'), instance.get('Role'), pid),
             'allow_save_password': allow_save_password(),
         })
     clear_starfleet_job(pid)

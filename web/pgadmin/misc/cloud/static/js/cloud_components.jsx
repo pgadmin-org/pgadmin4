@@ -56,7 +56,7 @@ export function FinalSummary(props) {
     summaryHeader = ['Cloud Details', 'Version and Instance Details', 'Storage Details', 'Database Details'];
 
   if(props.cloudProvider == 'starfleet') {
-    summaryHeader = props.instanceData.kind == 'byoc' ? ['Cloud Details', 'Cluster'] : ['Cloud Details', 'Network Connectivity'];
+    summaryHeader = ['Cloud Details', 'Network Connectivity'];
     summary = getStarfleetSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }else if(props.cloudProvider == 'azure') {
     summaryHeader.push('Network Connectivity','Availability');

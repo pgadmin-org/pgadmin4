@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {isValidStarfleetName, parseAllowlist, isUsableCluster, clusterOptions,
+import {isValidStarfleetName, parseAllowlist,
   StarfleetInstanceSchema} from '../../../../pgadmin/misc/cloud/static/js/starfleet_schema.ui';
 import {validateStarfleetStep1, validateStarfleetStep2,
   validateStarfleetStep3, StarfleetInstanceDetails, getStarfleetSummary} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
@@ -45,40 +45,16 @@ describe('Starfleet cloud provider', ()=>{
     expect(parseAllowlist(many).error).not.toBeNull();
   });
 
-  it('accepts only available public clusters', ()=>{
-    expect(isUsableCluster({status: 'available', node_location: 'public'})).toBe(true);
-    expect(isUsableCluster({status: 'creating', node_location: 'public'})).toBe(false);
-    expect(isUsableCluster({status: 'available', node_location: 'private'})).toBe(false);
-  });
-
-  it('lists clusters, disabling unusable ones and explaining an empty list', ()=>{
-    const opts = clusterOptions([
-      {label: 'c1', value: 'id1', status: 'available', node_location: 'public'},
-      {label: 'c2', value: 'id2', status: 'creating', node_location: 'public'},
-      {label: 'c3', value: 'id3', status: 'available', node_location: 'private'},
-    ]);
-    expect(opts.map((o)=>[o.label, o.isDisabled])).toEqual([
-      ['c1', false], ['c2 (creating)', true], ['c3 (private nodes)', true]]);
-    for (const empty of [[], null]) {
-      const [only, ...rest] = clusterOptions(empty);
-      expect(rest).toEqual([]);
-      expect(only.label).toMatch(/No BYOC clusters found/);
-      expect([only.value, only.isDisabled]).toEqual(['', true]);
-    }
-  });
-
   it('validates steps', ()=>{
     expect(validateStarfleetStep1({client_id: 'a', client_secret: 'b'})).toBe(false);
     expect(validateStarfleetStep1({client_id: 'a'})).toBe(true);
-    const managed = {kind: 'managed', name: 'mydb', region: 'us-east-2',
+    const managed = {name: 'mydb', region: 'us-east-2',
       size: 'small', pg_version: '18', ip_allowlist: '198.51.100.7', role: 'admin'};
     expect(validateStarfleetStep2(managed)).toBe(false);
     expect(validateStarfleetStep2({...managed, ip_allowlist: ''})).toBe(true);
     expect(validateStarfleetStep2({...managed, display_name: 'x'.repeat(26)})).toBe(true);
     expect(validateStarfleetStep2({...managed, size: ''})).toBe(true);
-    const byoc = {kind: 'byoc', name: 'mydb', cluster_id: 'c1', pg_version: '17'};
-    expect(validateStarfleetStep2(byoc)).toBe(false);
-    expect(validateStarfleetStep2({...byoc, cluster_id: ''})).toBe(true);
+    expect(validateStarfleetStep2({...managed, pg_version: ''})).toBe(true);
     const nodeInfo = {server_group: {_id: 3}};
     const dbDetails = {};
     expect(validateStarfleetStep3(dbDetails, nodeInfo)).toBe(false);
@@ -86,7 +62,7 @@ describe('Starfleet cloud provider', ()=>{
   });
 
   it('shows the size label in the summary, falling back to its id', ()=>{
-    const inst = {kind: 'managed', name: 'mydb', pg_version: '18',
+    const inst = {name: 'mydb', pg_version: '18',
       region: 'us-east-2', size: 'small', ip_allowlist: '198.51.100.7',
       role: 'admin'};
     const sizeRow = (i)=>getStarfleetSummary('starfleet', i)[0]
@@ -96,22 +72,12 @@ describe('Starfleet cloud provider', ()=>{
   });
 
   describe('instance schema', ()=>{
-    it('clears the PostgreSQL version when the deployment type changes', ()=>{
-      const schema = new StarfleetInstanceSchema({}, {byoc: true});
-      const field = schema.baseFields.find((f)=>f.id == 'pg_version');
-      expect(field.depChange({kind: 'byoc', pg_version: '18'}, ['kind']))
-        .toEqual({pg_version: ''});
-      expect(field.depChange({kind: 'byoc', pg_version: '18'}, ['cluster_id']))
-        .toBeUndefined();
-    });
-
     beforeEach(()=>{ genericBeforeEach(); });
     it('renders in create mode', async ()=>{
       const schema = new StarfleetInstanceSchema({
         regions: ()=>Promise.resolve([]), sizes: ()=>Promise.resolve([]),
-        pgVersions: ()=>Promise.resolve([]), clusters: ()=>Promise.resolve([]),
-        byocPgVersions: ()=>Promise.resolve([]),
-      }, {byoc: true, ip_allowlist: '198.51.100.7'});
+        pgVersions: ()=>Promise.resolve([]),
+      }, {ip_allowlist: '198.51.100.7'});
       await getCreateView(schema);
     });
   });
@@ -125,12 +91,12 @@ describe('Starfleet cloud provider', ()=>{
     });
     afterEach(()=>{ networkMock.restore(); });
 
-    it('defaults to a managed deployment once the client IP has loaded', async ()=>{
+    it('renders once the client IP has loaded', async ()=>{
       const Details = withBrowser(StarfleetInstanceDetails);
       const setData = jest.fn();
       await act(async ()=>{
         render(<Details cloudProvider='starfleet' nodeInfo={{}} nodeData={{}}
-          byoc={false} starfleetInstanceData={{}} setStarfleetInstanceData={setData}/>);
+          starfleetInstanceData={{}} setStarfleetInstanceData={setData}/>);
       });
       expect(await screen.findByText('Region')).toBeInTheDocument();
       expect(screen.getByText('Size')).toBeInTheDocument();

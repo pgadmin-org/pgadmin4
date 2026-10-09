@@ -83,7 +83,7 @@ def _run(prov, args, client):
     return code, out.getvalue(), err.getvalue()
 
 
-MANAGED_ARGS = ['create-instance', '--kind', 'managed', '--name', 'mydb',
+MANAGED_ARGS = ['create-instance', '--name', 'mydb',
                 '--display-name', 'My DB', '--pg-version', '18',
                 '--region', 'us-east-2', '--size', 'small',
                 '--allowlist', '198.51.100.7, 203.0.113.0/24',
@@ -96,7 +96,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
     def runTest(self):
         starfleet = _load_provider()
         self._test_managed_success(starfleet)
-        self._test_byoc_success(starfleet)
+        self._test_domain_fallback(starfleet)
         self._test_failed_status(starfleet)
         self._test_timeout(starfleet)
         self._test_available_without_connection(starfleet)
@@ -121,27 +121,21 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
                           {'user_type': 'admin'}))
         last = json.loads(out.strip().splitlines()[-1])
         self.assertEqual(last, {'instance': {
-            'Provider': 'starfleet', 'Kind': 'managed', 'Id': 'db-1',
+            'Provider': 'starfleet', 'Id': 'db-1',
             'Role': 'admin', 'Hostname': 'db.example.com', 'Port': 5432,
             'Database': 'appdb', 'Username': 'admin'}})
         self.assertNotIn(SECRET_PW, out + err)
 
-    def _test_byoc_success(self, starfleet):
-        prov, args = _parse(starfleet, [
-            'create-instance', '--kind', 'byoc', '--name', 'mydb',
-            '--pg-version', '17', '--cluster-id', 'cl-1'])
+    def _test_domain_fallback(self, starfleet):
+        prov, args = _parse(starfleet, MANAGED_ARGS)
         client = FakeClient(['available'], connection={
             'port': 5432, 'database': 'mydb', 'username': 'admin',
             'password': SECRET_PW})
         code, out, err = _run(prov, args, client)
         self.assertEqual(code, 0)
-        self.assertEqual(client.posts[0], ('/byoc/v1/databases', {
-            'name': 'mydb', 'pg_version': '17', 'cluster_id': 'cl-1'}))
-        self.assertEqual(client.gets[0], ('/byoc/v1/databases/db-1', None))
         last = json.loads(out.strip().splitlines()[-1])
         # No connection.host, so fall back to the database domain.
         self.assertEqual(last['instance']['Hostname'], 'dom.example.com')
-        self.assertEqual(last['instance']['Role'], 'admin')
         self.assertNotIn(SECRET_PW, out + err)
 
     def _test_failed_status(self, starfleet):

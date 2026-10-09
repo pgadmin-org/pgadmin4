@@ -35,28 +35,6 @@ export function parseAllowlist(text) {
   return {cidrs, error: null};
 }
 
-export function isUsableCluster(cluster) {
-  return cluster?.status == 'available' && cluster?.node_location != 'private';
-}
-
-/* Cluster select options: unusable clusters are listed but disabled, and an
- * empty list gets a disabled entry saying why rather than 'No options'. */
-export function clusterOptions(clusters) {
-  if (!clusters?.length) {
-    const label = gettext('No BYOC clusters found; create one in pgEdge Starfleet first.');
-    return [{label, value: '', disabled: true, isDisabled: true}];
-  }
-  return clusters.map((c)=>{
-    const usable = isUsableCluster(c);
-    return {
-      ...c,
-      label: usable ? c.label : `${c.label} (${c.node_location == 'private' ? gettext('private nodes') : c.status})`,
-      disabled: !usable,
-      isDisabled: !usable,
-    };
-  });
-}
-
 export class StarfleetCredSchema extends BaseUISchema {
   constructor(initValues = {}) {
     super({client_id: '', client_secret: '', ...initValues});
@@ -81,25 +59,15 @@ export class StarfleetCredSchema extends BaseUISchema {
 export class StarfleetInstanceSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues = {}) {
     super({
-      kind: 'managed', name: '', display_name: '', region: '', size: '',
-      pg_version: '', ip_allowlist: '', role: 'admin', cluster_id: '',
+      name: '', display_name: '', region: '', size: '',
+      pg_version: '', ip_allowlist: '', role: 'admin',
       ...initValues,
     });
     this.fieldOptions = {...fieldOptions};
-    this.byoc = Boolean(initValues.byoc);
   }
 
   get baseFields() {
-    const managed = (state)=>state.kind == 'managed';
-    const byoc = (state)=>state.kind == 'byoc';
-    const kindOptions = [{label: gettext('Managed'), value: 'managed'}];
-    if (this.byoc) kindOptions.push({label: gettext('BYOC (bring your own cloud)'), value: 'byoc'});
     return [
-      {
-        id: 'kind', label: gettext('Deployment type'), type: 'select',
-        mode: ['create'], noEmpty: true, options: kindOptions,
-        controlProps: { allowClear: false },
-      },
       {
         id: 'name', label: gettext('Database name'), type: 'text',
         mode: ['create'], noEmpty: true,
@@ -110,48 +78,32 @@ export class StarfleetInstanceSchema extends BaseUISchema {
         mode: ['create'], helpMessage: gettext('Optional; up to 25 characters.'),
       },
       {
-        id: 'region', label: gettext('Region'), deps: ['kind'], mode: ['create'],
-        visible: managed, type: 'select', options: this.fieldOptions.regions,
+        id: 'region', label: gettext('Region'), mode: ['create'],
+        type: 'select', options: this.fieldOptions.regions,
         controlProps: { allowClear: false },
       },
       {
-        id: 'size', label: gettext('Size'), deps: ['kind'], mode: ['create'],
-        visible: managed, type: 'select', options: this.fieldOptions.sizes,
+        id: 'size', label: gettext('Size'), mode: ['create'],
+        type: 'select', options: this.fieldOptions.sizes,
         controlProps: { allowClear: false },
       },
       {
-        id: 'pg_version', label: gettext('PostgreSQL version'), deps: ['kind', 'cluster_id'],
-        mode: ['create'],
-        // Managed and BYOC offer different versions, so drop one picked from
-        // the other list.
-        depChange: (state, source)=>{
-          if (source[0] == 'kind') return {pg_version: ''};
-        },
-        type: (state)=>({
-          type: 'select',
-          options: byoc(state) ? this.fieldOptions.byocPgVersions : this.fieldOptions.pgVersions,
-          optionsReloadBasis: state.kind,
-          controlProps: { allowClear: false },
-        }),
+        id: 'pg_version', label: gettext('PostgreSQL version'), mode: ['create'],
+        type: 'select', options: this.fieldOptions.pgVersions,
+        controlProps: { allowClear: false },
       },
       {
         id: 'ip_allowlist', label: gettext('Allowed IP addresses'), type: 'text',
-        deps: ['kind'], mode: ['create'], visible: managed,
+        mode: ['create'],
         helpMessage: gettext('IPv4 addresses or CIDR ranges allowed to connect, separated by commas. Prefilled with your public IP address.'),
       },
       {
-        id: 'role', label: gettext('Connect as'), type: 'select', deps: ['kind'],
-        mode: ['create'], visible: managed, controlProps: { allowClear: false },
+        id: 'role', label: gettext('Connect as'), type: 'select',
+        mode: ['create'], controlProps: { allowClear: false },
         options: [
           {label: gettext('admin (database administrator, not a superuser)'), value: 'admin'},
           {label: gettext('app (application user)'), value: 'app'},
         ],
-      },
-      {
-        id: 'cluster_id', label: gettext('Cluster'), deps: ['kind'], mode: ['create'],
-        visible: byoc, type: 'select', options: this.fieldOptions.clusters,
-        controlProps: { allowClear: false },
-        helpMessage: gettext('Access is controlled by the cluster firewall rules, which pgAdmin does not change. Clusters with private nodes cannot be reached from pgAdmin.'),
       },
     ];
   }
@@ -165,12 +117,10 @@ export class StarfleetInstanceSchema extends BaseUISchema {
       setError('display_name', gettext('The display name can be at most 25 characters.'));
       return true;
     }
-    if (state.kind == 'managed') {
-      const {error} = parseAllowlist(state.ip_allowlist);
-      if (error) {
-        setError('ip_allowlist', error);
-        return true;
-      }
+    const {error} = parseAllowlist(state.ip_allowlist);
+    if (error) {
+      setError('ip_allowlist', error);
+      return true;
     }
     return false;
   }

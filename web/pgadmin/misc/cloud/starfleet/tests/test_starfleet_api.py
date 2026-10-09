@@ -86,7 +86,7 @@ class TestStarfleetClient(_SkipServerSetUpMixin, BaseTestGenerator):
             FakeResponse(400, {'code': 400,
                                'message': 'plan does not allow x'})])
         with self.assertRaises(StarfleetError) as ctx:
-            client.get('/byoc/v1/cloud-accounts')
+            client.get('/managed/v1/databases')
         self.assertEqual(ctx.exception.status, 400)
         self.assertEqual(str(ctx.exception), 'plan does not allow x')
 

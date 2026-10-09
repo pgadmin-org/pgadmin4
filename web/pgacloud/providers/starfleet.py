@@ -19,9 +19,10 @@ from utils.starfleet_api import StarfleetClient, StarfleetError, \
 
 POLL_INTERVAL = 5
 POLL_TIMEOUT = 1800
+DATABASES = '/managed/v1/databases'
 READY = 'available'
 FAILED = ('failed', 'degraded')
-# pgAdmin's role names mapped to the Managed API's user_type values.
+# pgAdmin's role names mapped to the API's user_type values.
 USER_TYPES = {'admin': 'admin', 'app': 'application'}
 
 
@@ -42,18 +43,15 @@ class StarfleetProvider(AbsProvider):
                                              dest='command')
         p = parsers.add_parser('create-instance',
                                help='create a new database')
-        p.add_argument('--kind', choices=['managed', 'byoc'],
-                       required=True, help='Managed or BYOC')
         p.add_argument('--name', required=True, help='database name')
         p.add_argument('--display-name', help='display name')
         p.add_argument('--pg-version', help='PostgreSQL major version')
-        p.add_argument('--region', help='region (Managed)')
-        p.add_argument('--size', help='size (Managed)')
+        p.add_argument('--region', required=True, help='region')
+        p.add_argument('--size', required=True, help='size')
         p.add_argument('--allowlist', default='',
-                       help='comma-separated IPv4 addresses/CIDRs (Managed)')
+                       help='comma-separated IPv4 addresses/CIDRs')
         p.add_argument('--role', choices=list(USER_TYPES), default='admin',
-                       help='role to connect as (Managed)')
-        p.add_argument('--cluster-id', help='cluster ID (BYOC)')
+                       help='role to connect as')
 
     def _client(self):
         return StarfleetClient(self._api_url, self._client_id,
@@ -66,15 +64,11 @@ class StarfleetProvider(AbsProvider):
             body['display_name'] = args.display_name
         if args.pg_version:
             body['pg_version'] = args.pg_version
-        if args.kind == 'managed':
-            body['region'] = args.region
-            body['size'] = args.size
-            cidrs = [c.strip() for c in args.allowlist.split(',')
-                     if c.strip()]
-            body['ip_allowlist'] = {'rules': [
-                {'cidr': c, 'label': 'pgAdmin'} for c in cidrs]}
-        else:
-            body['cluster_id'] = args.cluster_id
+        body['region'] = args.region
+        body['size'] = args.size
+        cidrs = [c.strip() for c in args.allowlist.split(',') if c.strip()]
+        body['ip_allowlist'] = {'rules': [
+            {'cidr': c, 'label': 'pgAdmin'} for c in cidrs]}
         return body
 
     @staticmethod
@@ -105,25 +99,21 @@ class StarfleetProvider(AbsProvider):
 
     def cmd_create_instance(self, args):
         """ Create a database and wait for it to become available """
-        prefix = '/{}/v1/databases'.format(args.kind)
-        params = {'user_type': USER_TYPES[args.role]} \
-            if args.kind == 'managed' else None
-        role = args.role if args.kind == 'managed' else 'admin'
+        params = {'user_type': USER_TYPES[args.role]}
 
         try:
             client = self._client()
             debug('Creating pgEdge Starfleet database {}...'.format(
                 args.name))
-            created = client.post(prefix, self._create_body(args))
-            db = self._wait(client, '{}/{}'.format(prefix, created['id']),
+            created = client.post(DATABASES, self._create_body(args))
+            db = self._wait(client, '{}/{}'.format(DATABASES, created['id']),
                             params)
             conn = db.get('connection') or {}
             # Never output conn['password']: stdout is persisted to disk.
             instance = {
                 'Provider': 'starfleet',
-                'Kind': args.kind,
                 'Id': db['id'],
-                'Role': role,
+                'Role': args.role,
                 'Hostname': conn.get('host') or db.get('domain'),
                 'Port': conn.get('port'),
                 'Database': conn.get('database'),

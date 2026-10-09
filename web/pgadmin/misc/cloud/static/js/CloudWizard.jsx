@@ -56,7 +56,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   const [starfleetCredData, setStarfleetCredData] = React.useState({});
   const [starfleetInstanceData, setStarfleetInstanceData] = React.useState({});
   const [starfleetDatabaseData, setStarfleetDatabaseData] = React.useState({});
-  const [starfleetByoc, setStarfleetByoc] = React.useState(false);
 
   const axiosApi = getApiInstance();
 
@@ -272,11 +271,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               setErrMsg([MESSAGE_TYPE.ERROR, msg]);
               reject(new Error(msg));
             } else {
-              const byoc = Boolean(res.data.data?.byoc);
-              setStarfleetByoc(byoc);
-              if (!byoc && starfleetInstanceData.kind == 'byoc') {
-                setStarfleetInstanceData({...starfleetInstanceData, kind: 'managed'});
-              }
               setErrMsg(['', '']);
               resolve();
             }
@@ -391,7 +385,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             nodeData={nodeData}
             setStarfleetInstanceData={setStarfleetInstanceData}
             starfleetInstanceData={starfleetInstanceData}
-            byoc={starfleetByoc}
             hostIP={hostIP}
           /> }
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />

@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""Deploy databases on pgEdge Starfleet (Managed and BYOC)."""
+"""Deploy databases on pgEdge Starfleet."""
 
 import time
 
@@ -31,7 +31,7 @@ from pgadmin.utils.text_sanitize import sanitize_external_text
 
 MODULE_NAME = 'starfleet'
 TENANTS = '/account/v1/tenants'
-BYOC_PROBE = '/byoc/v1/cloud-accounts'
+DATABASES = '/managed/v1/databases'
 SESSION_KEY = 'starfleet'
 # Tokens kept per deployment job, since closing the wizard clears
 # SESSION_KEY long before the job finishes and the password is fetched.
@@ -50,8 +50,6 @@ class StarfleetModule(PgAdminModule):
                 'starfleet.pg_versions',
                 'starfleet.sizes',
                 'starfleet.client_ip',
-                'starfleet.clusters',
-                'starfleet.byoc_pg_versions',
                 'starfleet.save_password']
 
 
@@ -132,7 +130,7 @@ def index():
                  endpoint='verify_credentials')
 @pga_login_required
 def verify_credentials():
-    """Check the API client credentials and probe BYOC capability."""
+    """Check the API client credentials."""
     clear_starfleet_session()
     data = request.get_json(silent=True)
     secret = data.get('secret') if isinstance(data, dict) else None
@@ -144,14 +142,6 @@ def verify_credentials():
         client.get_token()
         tenants = client.get(TENANTS) or []
         tenant_name = tenants[0].get('name') if tenants else None
-        try:
-            client.get(BYOC_PROBE)
-            byoc = True
-        except StarfleetError as e:
-            # A plan without BYOC answers 400 "plan does not allow ...".
-            if e.status != 400:
-                raise
-            byoc = False
     except StarfleetError as e:
         return _error(e)
     except MALFORMED as e:
@@ -163,7 +153,7 @@ def verify_credentials():
     session[SESSION_KEY] = {'access_token': client.token,
                             'expires_at': client.expires_at}
     return make_json_response(success=1, data={
-        'tenant_name': tenant_name, 'byoc': byoc})
+        'tenant_name': tenant_name})
 
 
 def _cpu(limit):
@@ -208,47 +198,20 @@ def get_client_ip():
         lambda c: c.get('/managed/v1/client-ip')['ip_address'])
 
 
-@blueprint.route('/clusters/', methods=['GET'], endpoint='clusters')
-@pga_login_required
-def get_clusters():
-    return _with_client(lambda c: [
-        {'label': cl['name'], 'value': cl['id'],
-         'status': cl.get('status'),
-         'node_location': cl.get('node_location')}
-        for cl in c.get('/byoc/v1/clusters')])
-
-
-@blueprint.route('/byoc_pg_versions/', methods=['GET'],
-                 endpoint='byoc_pg_versions')
-@pga_login_required
-def get_byoc_pg_versions():
-    def versions(c):
-        configs = c.get('/byoc/v1/config-versions') or []
-        supported = configs[0].get('supported_pg_versions', []) \
-            if configs else []
-        return [{'label': 'PostgreSQL {}'.format(v), 'value': v}
-                for v in sorted(supported, key=int, reverse=True)]
-    return _with_client(versions)
-
-
 def deploy_on_starfleet(data):
     """Create the pgAdmin server and start the deployment job."""
     inst = data['instance_details']
-    kind = inst['kind']
     _cmd = 'python'
     _cmd_script = '{0}/pgacloud/pgacloud.py'.format(root)
     args = [_cmd_script, 'starfleet', 'create-instance',
-            '--kind', kind, '--name', inst['name']]
+            '--name', inst['name'],
+            '--region', inst['region'], '--size', inst['size'],
+            '--allowlist', inst.get('ip_allowlist') or '',
+            '--role', inst.get('role') or 'admin']
     if inst.get('display_name'):
         args += ['--display-name', inst['display_name']]
     if inst.get('pg_version'):
         args += ['--pg-version', str(inst['pg_version'])]
-    if kind == 'managed':
-        args += ['--region', inst['region'], '--size', inst['size'],
-                 '--allowlist', inst.get('ip_allowlist') or '',
-                 '--role', inst.get('role') or 'admin']
-    else:
-        args += ['--cluster-id', inst['cluster_id']]
 
     _cmd_msg = '{0} {1}'.format(_cmd, ' '.join(args))
     try:
@@ -285,16 +248,14 @@ def allow_save_password():
                 session.get('allow_save_password', None))
 
 
-def fetch_password(kind, db_id, role, pid):
+def fetch_password(db_id, role, pid):
     """Read the generated password once; never stored or logged."""
     client = get_session_client(pid)
     if client is None:
         return None
-    params = {'user_type': USER_TYPES.get(role, 'admin')} \
-        if kind == 'managed' else None
+    params = {'user_type': USER_TYPES.get(role, 'admin')}
     try:
-        db_info = client.get('/{}/v1/databases/{}'.format(kind, db_id),
-                             params)
+        db_info = client.get('{}/{}'.format(DATABASES, db_id), params)
         return (db_info.get('connection') or {}).get('password')
     except StarfleetError as e:
         current_app.logger.warning(

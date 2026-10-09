@@ -63,9 +63,8 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self.app = Flask(__name__)
         self.app.secret_key = 'test'
         Babel(self.app)  # gettext needs it in a bare app
-        self._test_verify_byoc_capable()
-        self._test_verify_managed_only()
-        self._test_verify_other_byoc_error_is_error()
+        self._test_verify()
+        self._test_verify_api_error()
         self._test_verify_bad_credentials_escaped()
         self._test_choices()
         self._test_requires_session()
@@ -87,33 +86,21 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
                 resp = sf.verify_credentials.__wrapped__()
             return resp, dict(session.get('starfleet') or {}), fake
 
-    def _test_verify_byoc_capable(self):
-        from pgadmin.misc.cloud.starfleet import BYOC_PROBE, TENANTS
+    def _test_verify(self):
+        from pgadmin.misc.cloud.starfleet import TENANTS
         resp, sess, fake = self._verify({
-            TENANTS: [{'name': 'acme', 'plan': 'enterprise'}],
-            BYOC_PROBE: []})
+            TENANTS: [{'name': 'acme', 'plan': 'managed'}]})
         body = json.loads(resp.data)
-        self.assertEqual(body['data'], {'tenant_name': 'acme',
-                                        'byoc': True})
+        self.assertEqual(body['data'], {'tenant_name': 'acme'})
         self.assertEqual(sess, {'access_token': 'tok-1',
                                 'expires_at': 5000.0})
         self.assertNotIn('test-secret', json.dumps(sess))
 
-    def _test_verify_managed_only(self):
+    def _test_verify_api_error(self):
         from pgacloud.utils.starfleet_api import StarfleetError
-        from pgadmin.misc.cloud.starfleet import BYOC_PROBE, TENANTS
-        resp, _, _ = self._verify({
-            TENANTS: [{'name': 'acme', 'plan': 'managed'}],
-            BYOC_PROBE: StarfleetError(
-                'plan does not allow creating cloud account read', 400)})
-        self.assertFalse(json.loads(resp.data)['data']['byoc'])
-
-    def _test_verify_other_byoc_error_is_error(self):
-        from pgacloud.utils.starfleet_api import StarfleetError
-        from pgadmin.misc.cloud.starfleet import BYOC_PROBE, TENANTS
+        from pgadmin.misc.cloud.starfleet import TENANTS
         resp, sess, _ = self._verify({
-            TENANTS: [{'name': 'acme'}],
-            BYOC_PROBE: StarfleetError('internal error', 500)})
+            TENANTS: StarfleetError('internal error', 500)})
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(sess, {})
 
@@ -162,21 +149,6 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
                      '20 connections)',
             'value': 'small'}])
 
-        _, body, _ = self._get('get_clusters', {'/byoc/v1/clusters': [
-            {'id': 'c1', 'name': 'east', 'status': 'available',
-             'node_location': 'public'}]})
-        self.assertEqual(body['data'], [{
-            'label': 'east', 'value': 'c1', 'status': 'available',
-            'node_location': 'public'}])
-
-        _, body, _ = self._get('get_byoc_pg_versions', {
-            '/byoc/v1/config-versions': [
-                {'name': '15.7.0', 'supported_pg_versions': ['16', '17',
-                                                             '18']},
-                {'name': '14.1.8', 'supported_pg_versions': ['16']}]})
-        self.assertEqual([v['value'] for v in body['data']],
-                         ['18', '17', '16'])
-
     def _test_malformed_response(self):
         # A 2xx without the expected shape is an error, not a 500.
         resp, body, _ = self._get('get_client_ip', {
@@ -200,9 +172,9 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
 
     def _test_verify_malformed(self):
         from pgadmin.misc.cloud import starfleet as sf
-        from pgadmin.misc.cloud.starfleet import BYOC_PROBE, TENANTS
+        from pgadmin.misc.cloud.starfleet import TENANTS
         # A tenant list of the wrong shape is a 400, not a 500.
-        resp, sess, _ = self._verify({TENANTS: ['acme'], BYOC_PROBE: []})
+        resp, sess, _ = self._verify({TENANTS: ['acme']})
         self.assertEqual(resp.status_code, 400)
         self.assertIn('Unexpected response',
                       json.loads(resp.data)['errormsg'])
@@ -232,10 +204,9 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
             'secret': {'client_id': 'test-client-id',
                        'client_secret': 'test-secret'},
             'instance_details': {
-                'kind': 'managed', 'name': 'mydb', 'display_name': 'My DB',
+                'name': 'mydb', 'display_name': 'My DB',
                 'pg_version': '18', 'region': 'us-east-2', 'size': 'small',
-                'ip_allowlist': '198.51.100.7', 'role': 'admin',
-                'cluster_id': None},
+                'ip_allowlist': '198.51.100.7', 'role': 'admin'},
             'db_details': {'gid': 1}}
         process = MagicMock()
         process.id = 'job-1'
@@ -251,8 +222,8 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
             'sslmode': 'require', 'gssencmode': 'disable',
             'connect_timeout': 30})
         args = bp.call_args.kwargs['args']
-        self.assertEqual(args[1:4], ['starfleet', 'create-instance',
-                                     '--kind'])
+        self.assertEqual(args[1:5], ['starfleet', 'create-instance',
+                                     '--name', 'mydb'])
         self.assertIn('--allowlist', args)
         self.assertNotIn('test-secret', ' '.join(args))
         env = process.set_env_variables.call_args.kwargs['env']

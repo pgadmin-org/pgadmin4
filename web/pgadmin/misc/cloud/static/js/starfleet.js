@@ -17,7 +17,7 @@ import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
 import {
   StarfleetCredSchema, StarfleetInstanceSchema, StarfleetDatabaseSchema,
-  isValidStarfleetName, parseAllowlist, clusterOptions,
+  isValidStarfleetName, parseAllowlist,
 } from './starfleet_schema.ui';
 
 function loadOptions(props, name, endpoint) {
@@ -54,7 +54,6 @@ StarfleetCredentials.propTypes = {
 
 export function StarfleetInstanceDetails(props) {
   const [instanceSchema, setInstanceSchema] = React.useState();
-  const clusterLabels = React.useRef({});
   const sizeLabels = React.useRef({});
 
   React.useEffect(() => {
@@ -72,15 +71,8 @@ export function StarfleetInstanceDetails(props) {
             return sizes;
           }),
         pgVersions: ()=>loadOptions(props, 'get_pg_versions', 'starfleet.pg_versions'),
-        byocPgVersions: ()=>loadOptions(props, 'get_byoc_pg_versions', 'starfleet.byoc_pg_versions'),
-        clusters: ()=>loadOptions(props, 'get_clusters', 'starfleet.clusters')
-          .then((clusters)=>{
-            (clusters || []).forEach((c)=>{ clusterLabels.current[c.value] = c.label; });
-            return clusterOptions(clusters);
-          }),
       }, {
         ...existing,
-        byoc: props.byoc,
         ip_allowlist: isEmptyString(existing.ip_allowlist) ? ip : existing.ip_allowlist,
       }));
     };
@@ -93,7 +85,7 @@ export function StarfleetInstanceDetails(props) {
         .catch(()=>build(hostIP));
     }
     return ()=>{ cancelled = true; };
-  }, [props.cloudProvider, props.byoc]);
+  }, [props.cloudProvider]);
 
   // SchemaView takes its initial data from the first schema it is given, so
   // wait for the client IP lookup rather than mounting it without one.
@@ -109,7 +101,6 @@ export function StarfleetInstanceDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setStarfleetInstanceData({
         ...changedData,
-        cluster_label: clusterLabels.current[changedData.cluster_id],
         size_label: sizeLabels.current[changedData.size],
       });
     }}
@@ -121,7 +112,6 @@ StarfleetInstanceDetails.propTypes = {
   cloudProvider: PropTypes.string,
   setStarfleetInstanceData: PropTypes.func,
   starfleetInstanceData: PropTypes.object,
-  byoc: PropTypes.bool,
   hostIP: PropTypes.string,
 };
 
@@ -163,7 +153,6 @@ export function validateStarfleetStep1(cred) {
 export function validateStarfleetStep2(inst) {
   if (!isValidStarfleetName(inst.name) || (inst.display_name || '').length > 25
       || isEmptyString(inst.pg_version)) return true;
-  if (inst.kind == 'byoc') return isEmptyString(inst.cluster_id);
   return isEmptyString(inst.region) || isEmptyString(inst.size)
     || isEmptyString(inst.role) || parseAllowlist(inst.ip_allowlist).error != null;
 }
@@ -176,18 +165,15 @@ export function validateStarfleetStep3(db, nodeInfo) {
 // Summary section
 export function getStarfleetSummary(cloud, inst) {
   const row = (name, value)=>({name, value});
-  const details = [
-    row(gettext('Cloud'), gettext('pgEdge Starfleet')),
-    row(gettext('Deployment type'), inst.kind == 'byoc' ? gettext('BYOC') : gettext('Managed')),
-    row(gettext('Database name'), inst.name),
-    row(gettext('Display name'), inst.display_name || ''),
-    row(gettext('PostgreSQL version'), inst.pg_version),
-  ];
-  if (inst.kind == 'byoc') {
-    return [details, [row(gettext('Cluster'), inst.cluster_label || inst.cluster_id)]];
-  }
   return [
-    [...details, row(gettext('Region'), inst.region), row(gettext('Size'), inst.size_label || inst.size)],
+    [
+      row(gettext('Cloud'), gettext('pgEdge Starfleet')),
+      row(gettext('Database name'), inst.name),
+      row(gettext('Display name'), inst.display_name || ''),
+      row(gettext('PostgreSQL version'), inst.pg_version),
+      row(gettext('Region'), inst.region),
+      row(gettext('Size'), inst.size_label || inst.size),
+    ],
     [row(gettext('Allowed IP addresses'), parseAllowlist(inst.ip_allowlist).cidrs.join(', ')),
       row(gettext('Connect as'), inst.role)],
   ];

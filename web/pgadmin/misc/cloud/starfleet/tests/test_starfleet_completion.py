@@ -53,29 +53,24 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
                 {'connection': {'password': 'pw-1'}})
             with patch.object(sf, 'get_session_client',
                               return_value=client):
-                self.assertEqual(sf.fetch_password('managed', 'db-1',
-                                                   'app', 'job-1'), 'pw-1')
+                self.assertEqual(sf.fetch_password('db-1', 'app', 'job-1'),
+                                 'pw-1')
                 client.get.assert_called_with(
                     '/managed/v1/databases/db-1',
                     {'user_type': 'application'})
-                sf.fetch_password('byoc', 'db-1', 'admin', 'job-1')
-                client.get.assert_called_with('/byoc/v1/databases/db-1',
-                                              None)
             with patch.object(sf, 'get_session_client', return_value=None):
-                self.assertIsNone(sf.fetch_password('managed', 'x',
-                                                    'admin', 'job-1'))
+                self.assertIsNone(sf.fetch_password('x', 'admin', 'job-1'))
             with patch.object(sf, 'get_session_client',
                               return_value=self._session_client(
                                   error=StarfleetError('gone', 404))):
-                self.assertIsNone(sf.fetch_password('managed', 'x',
-                                                    'admin', 'job-1'))
+                self.assertIsNone(sf.fetch_password('x', 'admin', 'job-1'))
             # Malformed upstream data must not raise.
             for payload in (None, [], 'text', {'connection': 'oops'}):
                 with patch.object(sf, 'get_session_client',
                                   return_value=self._session_client(
                                       payload)):
                     self.assertIsNone(sf.fetch_password(
-                        'managed', 'x', 'admin', 'job-1'))
+                        'x', 'admin', 'job-1'))
 
     def _test_job_token_survives_wizard_close(self):
         import pgadmin.misc.cloud as cloud
@@ -107,7 +102,7 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
         query = MagicMock()
         query.filter_by.return_value.first.return_value = server
         instance = {'instance': {
-            'Provider': 'starfleet', 'Kind': 'managed', 'Id': 'db-1',
+            'Provider': 'starfleet', 'Id': 'db-1',
             'Role': 'admin', 'Hostname': 'db.example.com', 'Port': 5432,
             'Database': 'appdb', 'Username': 'admin_user', 'sid': 7,
             'status': True, 'pid': 'job-1'}}
