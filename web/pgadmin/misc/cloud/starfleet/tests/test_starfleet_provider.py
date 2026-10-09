@@ -101,6 +101,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_timeout(starfleet)
         self._test_available_without_connection(starfleet)
         self._test_api_error(starfleet)
+        self._test_poll_errors(starfleet)
         self._test_malformed_create(starfleet)
 
     def _test_managed_success(self, starfleet):
@@ -196,6 +197,50 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         code, out, err = _run(prov, args, Boom([]))
         self.assertEqual(code, 1)
         self.assertIn('name already in use', err)
+
+    def _test_poll_errors(self, starfleet):
+        from utils.starfleet_api import StarfleetError
+
+        class Flaky(FakeClient):
+            def __init__(self, statuses, errors):
+                super().__init__(statuses)
+                self.errors = list(errors)
+
+            def get(self, path, params=None):
+                if self.errors:
+                    self.gets.append((path, params))
+                    raise self.errors.pop(0)
+                return super().get(path, params)
+
+        # Network errors, rate limiting and server errors are retried.
+        prov, args = _parse(starfleet, MANAGED_ARGS)
+        client = Flaky(['creating', 'available'], [
+            StarfleetError('connection reset'),
+            StarfleetError('slow down', 429),
+            StarfleetError('bad gateway', 502)])
+        code, out, err = _run(prov, args, client)
+        self.assertEqual(code, 0)
+        self.assertEqual(len(client.gets), 5)
+        last = json.loads(out.strip().splitlines()[-1])
+        self.assertEqual(last['instance']['Hostname'], 'db.example.com')
+
+        # Other client errors fail at once.
+        prov, args = _parse(starfleet, MANAGED_ARGS)
+        client = Flaky(['available'], [StarfleetError('not found', 404)])
+        code, out, err = _run(prov, args, client)
+        self.assertEqual(code, 1)
+        self.assertIn('not found', err)
+        self.assertEqual(len(client.gets), 1)
+
+        # A transient error past the deadline is reported.
+        prov, args = _parse(starfleet, MANAGED_ARGS)
+        ticks = iter([0, 0, starfleet.POLL_TIMEOUT + 1])
+        client = Flaky([], [StarfleetError('bad gateway', 502)] * 2)
+        with patch('time.monotonic', side_effect=lambda: next(ticks)):
+            code, out, err = _run(prov, args, client)
+        self.assertEqual(code, 1)
+        self.assertIn('bad gateway', err)
+        self.assertNotIn('"instance"', out)
 
     def _test_malformed_create(self, starfleet):
         for created in (None, [], {'status': 'creating'}):

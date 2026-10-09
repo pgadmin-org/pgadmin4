@@ -80,7 +80,21 @@ class StarfleetProvider(AbsProvider):
     def _wait(self, client, path, params):
         deadline = time.monotonic() + POLL_TIMEOUT
         while True:
-            db = client.get(path, params)
+            try:
+                db = client.get(path, params)
+            except StarfleetError as e:
+                # A client error other than rate limiting will not go away
+                # by retrying; anything else may be transient, and giving
+                # up would orphan a database that is still being created.
+                if e.status is not None and 400 <= e.status < 500 and \
+                        e.status != 429:
+                    raise
+                if time.monotonic() > deadline:
+                    raise
+                debug('Error polling pgEdge Starfleet, retrying: '
+                      '{}'.format(e))
+                time.sleep(POLL_INTERVAL)
+                continue
             status = db.get('status')
             if status == READY and self._has_connection(db):
                 return db

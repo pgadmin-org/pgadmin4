@@ -81,7 +81,10 @@ class TestStarfleetCompletion(_SkipServerSetUpMixin, BaseTestGenerator):
                                     'expires_at': 9999999999}
             session['starfleet_jobs'] = {
                 'old-job': {'access_token': 'old', 'expires_at': 1}}
+            session.force_write = False
             sf._keep_token_for_job('job-1')
+            # Written through, since another worker may serve the polls.
+            self.assertTrue(session.force_write)
             # The wizard closes as soon as the deployment starts.
             cloud.clear_cloud_session()
             self.assertNotIn('starfleet', session)

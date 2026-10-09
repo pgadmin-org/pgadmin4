@@ -86,6 +86,10 @@ def _keep_token_for_job(pid):
             if (v.get('expires_at') or 0) > now}
     jobs[pid] = state
     session[JOBS_KEY] = jobs
+    # The job's status is polled by requests that may be served by another
+    # worker, so write this through rather than letting the session manager
+    # defer it.
+    session.force_write = True
 
 
 def clear_starfleet_job(pid):
