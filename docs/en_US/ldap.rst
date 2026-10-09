@@ -135,3 +135,32 @@ credentials is the responsibility of:
 
 See :ref:`Avoiding a bruteforce attack <login>` for the equivalent note
 on the login page.
+
+Internal accounts
+*****************
+
+pgAdmin treats accounts from different authentication sources as separate
+accounts, even when they share a username. An LDAP user is only ever logged
+in to the LDAP account with that username, and never to an ``INTERNAL``
+account with the same name, so each account keeps its own role and
+settings.
+
+The administrator account created when pgAdmin is first set up always uses
+the ``INTERNAL`` authentication source. It remains in the pgAdmin database
+when *AUTHENTICATION_SOURCES* is set to *['ldap']*, although it can then no
+longer be used to log in. If you use LDAP authentication only, create an
+LDAP administrator account, for example:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap --admin
+
+and then deactivate the initial ``INTERNAL`` administrator account so that
+it cannot be used if internal authentication is enabled again later:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py update-user admin@example.com --inactive
+
+See :ref:`User Management <user_management>` for more information on the
+``setup.py`` user management commands.
