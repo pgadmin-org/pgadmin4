@@ -111,19 +111,21 @@ def update_cloud_details(pid):
         process = BatchProcess(id=pid)
         status, server = process.update_cloud_details()
         if status and len(server) > 0:
-            return make_json_response(
-                success=1,
-                data={'node': {
-                    'sid': server['id'],
-                    'gid': server['servergroup_id'],
-                    '_type': 'server',
-                    'icon': 'icon-server-not-connected',
-                    'id': 'server_{}'.format(server['id']),
-                    'label': server['name'],
-                    'status': server['status'],
-                    'cloud_status': server['cloud_status']
-                }}
-            )
+            node = {
+                'sid': server['id'],
+                'gid': server['servergroup_id'],
+                '_type': 'server',
+                'icon': 'icon-server-not-connected',
+                'id': 'server_{}'.format(server['id']),
+                'label': server['name'],
+                'status': server['status'],
+                'cloud_status': server['cloud_status']
+            }
+            for key in ('starfleet', 'host', 'username',
+                        'starfleet_password', 'allow_save_password'):
+                if key in server:
+                    node[key] = server[key]
+            return make_json_response(success=1, data={'node': node})
         elif status and len(server) == 0:
             return success_return()
         else:

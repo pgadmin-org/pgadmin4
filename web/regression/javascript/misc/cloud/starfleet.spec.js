@@ -1,0 +1,105 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
+import {isValidStarfleetName, parseAllowlist,
+  StarfleetInstanceSchema} from '../../../../pgadmin/misc/cloud/static/js/starfleet_schema.ui';
+import {validateStarfleetStep1, validateStarfleetStep2,
+  validateStarfleetStep3, StarfleetInstanceDetails, getStarfleetSummary} from '../../../../pgadmin/misc/cloud/static/js/starfleet';
+import {genericBeforeEach, getCreateView, withBrowser} from '../../genericFunctions';
+import {act, render, screen} from '@testing-library/react';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
+import url_for from 'sources/url_for';
+
+jest.mock('pgbrowser/node_ajax', ()=>({
+  getNodeAjaxOptions: jest.fn(()=>Promise.resolve([])),
+  getNodeListById: jest.fn(()=>[]),
+}));
+
+describe('Starfleet cloud provider', ()=>{
+  it('validates database names', ()=>{
+    expect(isValidStarfleetName('mydb1')).toBe(true);
+    expect(isValidStarfleetName('a'.repeat(50))).toBe(true);
+    expect(isValidStarfleetName('a'.repeat(51))).toBe(false);
+    expect(isValidStarfleetName('1db')).toBe(false);
+    expect(isValidStarfleetName('my_db')).toBe(false);
+    expect(isValidStarfleetName('MyDb')).toBe(false);
+    expect(isValidStarfleetName('')).toBe(false);
+  });
+
+  it('parses allowlists', ()=>{
+    expect(parseAllowlist('198.51.100.7, 203.0.113.0/24,')).toEqual(
+      {cidrs: ['198.51.100.7', '203.0.113.0/24'], error: null});
+    expect(parseAllowlist('').error).not.toBeNull();
+    expect(parseAllowlist('10.0.0.0/33').error).not.toBeNull();
+    expect(parseAllowlist('2001:db8::1').error).not.toBeNull();
+    expect(parseAllowlist('256.1.1.1').error).not.toBeNull();
+    expect(parseAllowlist('0.0.0.0/0').error).toBeNull();
+    const many = Array.from({length: 51}, (_, i)=>`10.0.0.${i}`).join(',');
+    expect(parseAllowlist(many).error).not.toBeNull();
+  });
+
+  it('validates steps', ()=>{
+    expect(validateStarfleetStep1({client_id: 'a', client_secret: 'b'})).toBe(false);
+    expect(validateStarfleetStep1({client_id: 'a'})).toBe(true);
+    const managed = {name: 'mydb', region: 'us-east-2',
+      size: 'small', pg_version: '18', ip_allowlist: '198.51.100.7', role: 'admin'};
+    expect(validateStarfleetStep2(managed)).toBe(false);
+    expect(validateStarfleetStep2({...managed, ip_allowlist: ''})).toBe(true);
+    expect(validateStarfleetStep2({...managed, display_name: 'x'.repeat(26)})).toBe(true);
+    expect(validateStarfleetStep2({...managed, size: ''})).toBe(true);
+    expect(validateStarfleetStep2({...managed, pg_version: ''})).toBe(true);
+    const nodeInfo = {server_group: {_id: 3}};
+    const dbDetails = {};
+    expect(validateStarfleetStep3(dbDetails, nodeInfo)).toBe(false);
+    expect(dbDetails.gid).toBe(3);
+  });
+
+  it('shows the size label in the summary, falling back to its id', ()=>{
+    const inst = {name: 'mydb', pg_version: '18',
+      region: 'us-east-2', size: 'small', ip_allowlist: '198.51.100.7',
+      role: 'admin'};
+    const sizeRow = (i)=>getStarfleetSummary('starfleet', i)[0]
+      .find((r)=>r.name == 'Size');
+    expect(sizeRow(inst).value).toBe('small');
+    expect(sizeRow({...inst, size_label: 'Small (1 vCPU)'}).value).toBe('Small (1 vCPU)');
+  });
+
+  describe('instance schema', ()=>{
+    beforeEach(()=>{ genericBeforeEach(); });
+    it('renders in create mode', async ()=>{
+      const schema = new StarfleetInstanceSchema({
+        regions: ()=>Promise.resolve([]), sizes: ()=>Promise.resolve([]),
+        pgVersions: ()=>Promise.resolve([]),
+      }, {ip_allowlist: '198.51.100.7'});
+      await getCreateView(schema);
+    });
+  });
+
+  describe('instance details', ()=>{
+    let networkMock;
+    beforeEach(()=>{
+      genericBeforeEach();
+      networkMock = new MockAdapter(axios);
+      networkMock.onGet(url_for('starfleet.client_ip')).reply(200, {data: '198.51.100.7'});
+    });
+    afterEach(()=>{ networkMock.restore(); });
+
+    it('renders once the client IP has loaded', async ()=>{
+      const Details = withBrowser(StarfleetInstanceDetails);
+      const setData = jest.fn();
+      await act(async ()=>{
+        render(<Details cloudProvider='starfleet' nodeInfo={{}} nodeData={{}}
+          starfleetInstanceData={{}} setStarfleetInstanceData={setData}/>);
+      });
+      expect(await screen.findByText('Region')).toBeInTheDocument();
+      expect(screen.getByText('Size')).toBeInTheDocument();
+    });
+  });
+});
