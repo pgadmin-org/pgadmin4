@@ -329,6 +329,15 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_extension='.csv')
         ),
         (
+            # The explicit-endian codecs do not self-emit a BOM, so this is
+            # the path where the exporter writes one itself, in the
+            # codec's own byte order.
+            'Download CSV as utf-16-le has exactly one BOM',
+            dict(data_format='csv', add_bom=True, encoding='utf-16-le',
+                 expected_content_type='text/csv',
+                 expected_extension='.csv')
+        ),
+        (
             # The encoding is free text, and codecs.lookup() accepts aliases
             # and stray whitespace, so the BOM decision must be made on the
             # codec's real name: 'u8' is utf-8 and still gets its BOM...
@@ -675,7 +684,11 @@ class TestDownloadResultFormats(BaseTestGenerator):
                 'utf-8': codecs.BOM_UTF8,
                 'utf-8-sig': codecs.BOM_UTF8,
                 'utf-16': codecs.BOM_UTF16,
+                'utf-16-le': codecs.BOM_UTF16_LE,
+                'utf-16-be': codecs.BOM_UTF16_BE,
                 'utf-32': codecs.BOM_UTF32,
+                'utf-32-le': codecs.BOM_UTF32_LE,
+                'utf-32-be': codecs.BOM_UTF32_BE,
             }[canonical]
             self.assertTrue(raw.startswith(bom))
             # No second, redundant BOM immediately after the first.
