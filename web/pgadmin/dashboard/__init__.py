@@ -14,7 +14,11 @@ import re
 from flask import render_template, Response, g, request
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
+import codecs
 import json
+
+import psycopg
+
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
     internal_server_error, make_json_response, precondition_required
@@ -512,6 +516,40 @@ def log_formats(sid=None):
     )
 
 
+def decode_log_chunk(data, server_encoding):
+    """Decode a raw log chunk read with pg_read_binary_file.
+
+    The logs are read in fixed-size byte ranges, so a range boundary can
+    split a multi-byte character.  Reading the raw bytes and decoding
+    them here avoids the 'invalid byte sequence' error (SQLSTATE 22021)
+    raised by pg_read_file in that case; any partial character at the
+    chunk boundaries is trimmed before decoding with the database
+    encoding.
+    """
+    if not data:
+        return ''
+
+    raw = codecs.escape_decode(data.encode('ascii'))[0]
+    python_encoding = psycopg._encodings.py_codecs.get(
+        server_encoding.upper().encode(), 'utf-8')
+
+    for _ in range(4):
+        try:
+            return raw.decode(python_encoding)
+        except UnicodeDecodeError as e:
+            if e.start < 4:
+                # Partial multi-byte character at the start of the chunk.
+                raw = raw[e.start + 1:]
+            elif e.start >= len(raw) - 4:
+                # Partial multi-byte character at the end of the chunk.
+                raw = raw[:e.start]
+            else:
+                # Invalid data within the log file itself.
+                return raw.decode(python_encoding, errors='replace')
+
+    return raw.decode(python_encoding, errors='replace')
+
+
 @blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>', endpoint='logs')
 @blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>/<int:page>',
                  endpoint='get_logs_by_server_id')
@@ -565,6 +603,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
 
     _start = 0
     _end = ON_DEMAND_LOG_COUNT
+    log_text = ''
     page = int(page)
     final_cols = []
     if page > 0:
@@ -582,7 +621,10 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
         if not status:
             return internal_server_error(errormsg=res)
 
-        final_res = res['rows'][0]['pg_read_file'].split('\n')
+        log_row = res['rows'][0]
+        log_text = decode_log_chunk(log_row['log_data'],
+                                    log_row['encoding'])
+        final_res = log_text.split('\n')
         # Json format
         if log_format == 'jsonlog':
             for f in final_res:
@@ -624,7 +666,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
                         "message": _tmp[1] if len(_tmp) > 1 else ''})
 
     if disp_format == 'plain':
-        final_response = res['rows']
+        final_response = [{'pg_read_file': log_text}]
     else:
         final_response = final_cols
 
