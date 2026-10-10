@@ -553,25 +553,28 @@ def decode_log_chunk(data, server_encoding, keep_bytes=None):
     python_encoding = psycopg._encodings.py_codecs.get(
         server_encoding.upper().encode(), 'utf-8')
 
-    # A chunk can start inside a multi-byte character that the previous
-    # chunk shows in full; drop the leftover bytes here.  Bytes that
-    # cannot be part of such a character are kept, so they are shown as
-    # replacement characters instead of disappearing.
+    # A paged chunk can start inside a multi-byte character that the
+    # previous chunk shows in full; drop the leftover bytes here.  Bytes
+    # that cannot be part of such a character are kept, so they are shown
+    # as replacement characters instead of disappearing.  A whole-file
+    # read starts at the beginning of the file, so its leading bytes are
+    # kept and replaced by the decoder below if they are malformed.
     dropped_lead = 0
-    for _ in range(3):
-        if not raw:
-            return ''
-        try:
-            raw.decode(python_encoding)
-            break
-        except UnicodeDecodeError as e:
-            if e.start:
+    if keep_bytes is not None:
+        for _ in range(3):
+            if not raw:
+                return ''
+            try:
+                raw.decode(python_encoding)
                 break
-            if (python_encoding == 'utf-8' and
-                    not 0x80 <= raw[0] <= 0xBF):
-                break
-            raw = raw[1:]
-            dropped_lead += 1
+            except UnicodeDecodeError as e:
+                if e.start:
+                    break
+                if (python_encoding == 'utf-8' and
+                        not 0x80 <= raw[0] <= 0xBF):
+                    break
+                raw = raw[1:]
+                dropped_lead += 1
 
     if keep_bytes is None:
         return _decode_log_bytes(raw, python_encoding)
