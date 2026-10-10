@@ -399,6 +399,51 @@ export class LayoutDocker {
     return siblingIds.find(id => id !== tabId && currentIds.includes(id));
   }
 
+  findDefaultDockPosition(tabId, flatDefault, flatCurrent) {
+    // 1. Try finding a sibling tab in the same panel group
+    const siblingId = this.findSiblingTab(tabId, flatDefault, flatCurrent);
+    if (siblingId) {
+      return { refTabId: siblingId, direction: 'middle' };
+    }
+
+    const currentIds = flatCurrent.map(t => t.id);
+
+    // 2. Try finding an adjacent panel in the same parent box (e.g. Scratch Pad next to Query Editor)
+    const findAdjacentInBox = (box) => {
+      if (!box?.children) return null;
+      for (let i = 0; i < box.children.length; i++) {
+        const child = box.children[i];
+        if (child.tabs && child.tabs.some(t => t.id === tabId)) {
+          // Look for adjacent sibling child in parent box
+          const adjIndices = [i - 1, i + 1].filter(idx => idx >= 0 && idx < box.children.length);
+          for (const adjIdx of adjIndices) {
+            const adjChild = box.children[adjIdx];
+            const adjTabIds = [];
+            const collectIds = (b) => {
+              if (b.tabs) adjTabIds.push(...b.tabs.map(t => t.id));
+              if (b.children) b.children.forEach(collectIds);
+            };
+            collectIds(adjChild);
+            const openAdjTabId = adjTabIds.find(id => currentIds.includes(id));
+            if (openAdjTabId) {
+              const isAfter = i > adjIdx;
+              const direction = box.mode === 'vertical'
+                ? (isAfter ? 'bottom' : 'top')
+                : (isAfter ? 'right' : 'left');
+              return { refTabId: openAdjTabId, direction };
+            }
+          }
+        } else if (child.children) {
+          const res = findAdjacentInBox(child);
+          if (res) return res;
+        }
+      }
+      return null;
+    };
+
+    return findAdjacentInBox(this.defaultLayout?.dockbox);
+  }
+
   saveLayout(l) {
     let api = getApiInstance();
     if(!this.layoutId || !this.layoutObj) {
@@ -576,12 +621,12 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const prefStore = usePreferences();
   const dynamicTabsStyleRef = useRef();
   const saveAppStateRef = useRef(prefStore?.getPreferencesForModule('misc')?.save_app_state);
-  const { deleteToolData } = useApplicationState();
+  const { deleteToolData } = useApplicationState() || {};
 
   useEffect(()=>{
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (panelId)=>{
       layoutDockerObj.close(panelId);
-      deleteToolData(panelId);
+      deleteToolData?.(panelId);
     });
 
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.CONTEXT, (e, id, extraMenus)=>{
@@ -612,6 +657,22 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     saveAppStateRef.current = saveAppState;
 
   }, [prefStore]);
+
+  const flatDefaultLayout = useMemo(()=>{
+    const flat = [];
+    const flattenLayout = (box)=>{
+      box.children.forEach((child)=>{
+        if(child.children) {
+          flattenLayout(child);
+        }
+        else {
+          flat.push(...(child.tabs ?? []));
+        }
+      });
+    };
+    flattenLayout(props.defaultLayout.dockbox);
+    return flat;
+  }, [props.defaultLayout]);
 
   const getTabMenuItems = (panelId)=>{
     const ret = [];
@@ -651,6 +712,47 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
           }
         });
       }
+
+      // Check for closed default closable tabs that can be re-opened
+      const missingClosableTabs = flatDefaultLayout.filter(
+        (t) => t.internal?.closable && !layoutDockerObj.isTabOpen(t.id)
+      );
+      if (missingClosableTabs.length > 0) {
+        ret.push({
+          type: 'separator',
+        }, {
+          label: gettext('Add Panel'),
+          getMenuItems: () => missingClosableTabs.map((tab) => ({
+            label: tab.internal?.title || (typeof tab.title === 'string' ? tab.title : tab.id),
+            callback: () => {
+              const flatCurrent = [];
+              const flatten = (box) => {
+                box.children.forEach((child) => {
+                  if (child.children) flatten(child);
+                  else flatCurrent.push(...(child.tabs ?? []));
+                });
+              };
+              const currentDockbox = layoutDockerObj.layoutObj?.getLayout()?.dockbox;
+              if (currentDockbox) {
+                flatten(currentDockbox);
+              }
+              const dockPos = layoutDockerObj.findDefaultDockPosition(tab.id, flatDefaultLayout, flatCurrent);
+              const targetTabId = dockPos?.refTabId || panelId || layoutDockerObj.resetToTabPanel;
+              const targetData = layoutDockerObj.find(targetTabId);
+              const fallbackDirection = targetData?.tabs ? 'middle' : 'after-tab';
+              const direction = dockPos?.direction || fallbackDirection;
+
+              layoutDockerObj.openTab({
+                id: tab.id,
+                content: tab.content,
+                ...tab.internal,
+              }, targetTabId, direction);
+              layoutDockerObj.focus(tab.id);
+              layoutDockerObj.saveLayout();
+            }
+          }))
+        });
+      }
     }
     return ret;
   };
@@ -675,22 +777,6 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     }
     return savedTab;
   };
-
-  const flatDefaultLayout = useMemo(()=>{
-    const flat = [];
-    const flattenLayout = (box)=>{
-      box.children.forEach((child)=>{
-        if(child.children) {
-          flattenLayout(child);
-        }
-        else {
-          flat.push(...(child.tabs ?? []));
-        }
-      });
-    };
-    flattenLayout(props.defaultLayout.dockbox);
-    return flat;
-  }, [props.defaultLayout]);
 
   const loadTab = (tab)=>{
     const tabData = flatDefaultLayout.find((t)=>t.id == tab.id);
