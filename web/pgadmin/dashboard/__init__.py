@@ -516,15 +516,32 @@ def log_formats(sid=None):
     )
 
 
-def decode_log_chunk(data, server_encoding):
+def _decode_log_bytes(raw, python_encoding):
+    """Decode raw log bytes, trimming an incomplete character at the end
+    and replacing any invalid bytes inside the log file itself."""
+    for _ in range(4):
+        try:
+            return raw.decode(python_encoding)
+        except UnicodeDecodeError as e:
+            if e.start >= len(raw) - 4:
+                raw = raw[:e.start]
+            else:
+                return raw.decode(python_encoding, errors='replace')
+
+    return raw.decode(python_encoding, errors='replace')
+
+
+def decode_log_chunk(data, server_encoding, keep_bytes=None):
     """Decode a raw log chunk read with pg_read_binary_file.
 
     The logs are read in fixed-size byte ranges, so a range boundary can
     split a multi-byte character.  Reading the raw bytes and decoding
     them here avoids the 'invalid byte sequence' error (SQLSTATE 22021)
-    raised by pg_read_file in that case; any partial character at the
-    chunk boundaries is trimmed before decoding with the database
-    encoding.
+    raised by pg_read_file in that case.  When keep_bytes is set, only
+    characters starting within that many bytes are shown; the caller
+    reads a few bytes of overlap so a character split at the end of the
+    range is still shown whole, and a character split at the start is
+    left to the previous chunk.
     """
     if not data:
         return ''
@@ -533,21 +550,44 @@ def decode_log_chunk(data, server_encoding):
     python_encoding = psycopg._encodings.py_codecs.get(
         server_encoding.upper().encode(), 'utf-8')
 
-    for _ in range(4):
+    # A chunk can start inside a multi-byte character that the previous
+    # chunk shows in full; drop the leftover bytes here.
+    dropped_lead = 0
+    for _ in range(3):
+        if not raw:
+            return ''
         try:
-            return raw.decode(python_encoding)
+            raw.decode(python_encoding)
+            break
         except UnicodeDecodeError as e:
-            if e.start < 4:
-                # Partial multi-byte character at the start of the chunk.
-                raw = raw[e.start + 1:]
-            elif e.start >= len(raw) - 4:
-                # Partial multi-byte character at the end of the chunk.
-                raw = raw[:e.start]
-            else:
-                # Invalid data within the log file itself.
-                return raw.decode(python_encoding, errors='replace')
+            if e.start:
+                break
+            raw = raw[1:]
+            dropped_lead += 1
 
-    return raw.decode(python_encoding, errors='replace')
+    if keep_bytes is None:
+        return _decode_log_bytes(raw, python_encoding)
+
+    keep = max(keep_bytes - dropped_lead, 0)
+    head = raw[:keep]
+    try:
+        head.decode(python_encoding)
+    except UnicodeDecodeError as e:
+        if e.start < len(head) - 4:
+            # Invalid data within the log file itself.
+            return head.decode(python_encoding, errors='replace')
+        # A character is split at the end of the range; the overlap bytes
+        # may complete it.  Stop at the first extension that decodes, so
+        # nothing beyond the split character is included.
+        for overlap in range(1, 5):
+            try:
+                return raw[:keep + overlap].decode(python_encoding)
+            except UnicodeDecodeError as e2:
+                if e2.start < keep - 4:
+                    break
+        return head[:e.start].decode(python_encoding, errors='replace')
+
+    return head.decode(python_encoding)
 
 
 @blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>', endpoint='logs')
@@ -604,6 +644,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
     _start = 0
     _end = ON_DEMAND_LOG_COUNT
     log_text = ''
+    keep_bytes = None
     page = int(page)
     final_cols = []
     if page > 0:
@@ -613,6 +654,12 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
     if _start < file_stat:
         if disp_format == 'plain':
             _end = file_stat
+            keep_bytes = None
+        else:
+            # Read a few bytes past the chunk so a multi-byte character
+            # split at the end of the chunk can be shown whole.
+            keep_bytes = _end - _start
+            _end += 4
         sql = render_template(
             "/".join([g.template_path, 'logs.sql']), st=_start, ed=_end,
             log_format=log_format, conn=g.conn
@@ -623,7 +670,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
 
         log_row = res['rows'][0]
         log_text = decode_log_chunk(log_row['log_data'],
-                                    log_row['encoding'])
+                                    log_row['encoding'], keep_bytes)
         final_res = log_text.split('\n')
         # Json format
         if log_format == 'jsonlog':
