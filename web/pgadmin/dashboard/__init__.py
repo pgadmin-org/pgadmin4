@@ -523,7 +523,10 @@ def _decode_log_bytes(raw, python_encoding):
         try:
             return raw.decode(python_encoding)
         except UnicodeDecodeError as e:
-            if e.start >= len(raw) - 4:
+            if (e.start >= len(raw) - 4 and
+                    e.reason == 'unexpected end of data'):
+                # The read may have ended mid-character, e.g. while the
+                # server was writing to the file.
                 raw = raw[:e.start]
             else:
                 return raw.decode(python_encoding, errors='replace')
@@ -551,7 +554,9 @@ def decode_log_chunk(data, server_encoding, keep_bytes=None):
         server_encoding.upper().encode(), 'utf-8')
 
     # A chunk can start inside a multi-byte character that the previous
-    # chunk shows in full; drop the leftover bytes here.
+    # chunk shows in full; drop the leftover bytes here.  Bytes that
+    # cannot be part of such a character are kept, so they are shown as
+    # replacement characters instead of disappearing.
     dropped_lead = 0
     for _ in range(3):
         if not raw:
@@ -561,6 +566,9 @@ def decode_log_chunk(data, server_encoding, keep_bytes=None):
             break
         except UnicodeDecodeError as e:
             if e.start:
+                break
+            if (python_encoding == 'utf-8' and
+                    not 0x80 <= raw[0] <= 0xBF):
                 break
             raw = raw[1:]
             dropped_lead += 1
@@ -585,6 +593,10 @@ def decode_log_chunk(data, server_encoding, keep_bytes=None):
             except UnicodeDecodeError as e2:
                 if e2.start < keep - 4:
                     break
+        if len(raw) >= keep + 4:
+            # The full overlap was read, so the bytes are malformed
+            # rather than an incomplete character; keep the valid text.
+            return head.decode(python_encoding, errors='replace')
         return head[:e.start].decode(python_encoding, errors='replace')
 
     return head.decode(python_encoding)
@@ -659,7 +671,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
             # Read a few bytes past the chunk so a multi-byte character
             # split at the end of the chunk can be shown whole.
             keep_bytes = _end - _start
-            _end += 4
+            _end = keep_bytes + 4
         sql = render_template(
             "/".join([g.template_path, 'logs.sql']), st=_start, ed=_end,
             log_format=log_format, conn=g.conn
