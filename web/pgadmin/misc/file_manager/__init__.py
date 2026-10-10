@@ -129,45 +129,53 @@ def is_folder_hidden(filepath):
 
 def read_file_generator(file, enc):
     """
-    This will read the content of the file selected by user
+    This will read the content of the file selected by user.
+
+    Args:
+        file: Path to the file to be read.
+        enc: Initial encoding to attempt for reading the file.
 
     Returns:
-        Content of file
+        Generator yielding 4MB chunks of the file content.
     """
-    try:
-        with codecs.open(file, 'r', encoding=enc) as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
-    except UnicodeDecodeError:
-        # This is the closest equivalent Python 3 offers to the permissive
-        # Python 2 text handling model. The latin-1 encoding in Python
-        # implements ISO_8859-1:1987 which maps all possible byte values
-        # to the first 256 Unicode code points, and thus ensures decoding
-        # errors will never occur regardless of the configured error and
-        # handles most of the Windows encodings
-        # handler.
-        # Ref: https://tinyurl.com/yvj4u7fw
-        with codecs.open(file, 'r', encoding='latin-1') as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
-    except Exception:
-        # As a last resort we will use the provided encoding and then
-        # ignore the decoding errors
-        with codecs.open(file, 'r', encoding=enc, errors='ignore') as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
+    encoding = enc
+    errors = None
+    if enc != 'latin-1':
+        try:
+            with open(file, 'r', encoding=enc, newline='') as fileObj:
+                while True:
+                    data = fileObj.read(4194304)
+                    if not data:
+                        break
+        except UnicodeDecodeError:
+            # This is the closest equivalent Python 3 offers to the permissive
+            # Python 2 text handling model. The latin-1 encoding in Python
+            # implements ISO_8859-1:1987 which maps all possible byte values
+            # to the first 256 Unicode code points, and thus ensures decoding
+            # errors will never occur regardless of the configured error and
+            # handles most of the Windows encodings
+            # handler.
+            # Ref: https://tinyurl.com/yvj4u7fw
+            encoding = 'latin-1'
+        except Exception as e:
+            if isinstance(e, OSError):
+                raise
+            # As a last resort we will use the provided encoding and then
+            # ignore the decoding errors
+            encoding = enc
+            errors = 'ignore'
+
+    open_kwargs = {'encoding': encoding, 'newline': ''}
+    if errors is not None:
+        open_kwargs['errors'] = errors
+
+    with open(file, 'r', **open_kwargs) as fileObj:
+        while True:
+            # 4MB chunk (4 * 1024 * 1024 Bytes)
+            data = fileObj.read(4194304)
+            if not data:
+                break
+            yield data
 
 
 class FileManagerModule(PgAdminModule):
