@@ -14,6 +14,7 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import * as BgProcessNotify from './BgProcessNotify';
 import pgAdmin from 'sources/pgadmin';
 import { processesPanelData } from '../../../../static/js/BrowserComponent';
+import { showStarfleetPassword } from '../../../cloud/static/js/StarfleetPasswordDialog';
 import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
 
 const WORKER_INTERVAL = 1000;
@@ -34,6 +35,8 @@ export default class BgProcessManager {
     this._procList = [];
     this._workerId = null;
     this._pendingJobId = [];
+    this._starfleetShown = new Set();
+    this._failureShown = new Set();
     this._eventManager = new EventBus();
   }
 
@@ -187,6 +190,21 @@ export default class BgProcessManager {
             _tree.remove(_item.domNode);
             _tree.refresh(_item.domNode.parent);
           }
+        }
+
+        /* The job may complete more than once (recheck racing the poll);
+         * report each result at most once per job. */
+        if (!_server.status && !this._failureShown.has(jobId)) {
+          /* Kept until dismissed: the job may finish long after the wizard
+           * closed, and this is the only place the reason is shown. */
+          this._failureShown.add(jobId);
+          pgAdmin.Browser.notifier.errorText(_server.errmsg ?
+            gettext('Cloud deployment failed: %s', _server.errmsg) :
+            gettext('Cloud deployment failed.'), null);
+        }
+        if (_server.starfleet && !this._starfleetShown.has(jobId)) {
+          this._starfleetShown.add(jobId);
+          showStarfleetPassword(_server);
         }
       })
       .catch((err)=>{

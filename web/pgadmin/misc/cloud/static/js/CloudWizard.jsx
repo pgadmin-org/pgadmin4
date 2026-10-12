@@ -19,9 +19,10 @@ import PropTypes from 'prop-types';
 import pgAdmin from 'sources/pgadmin';
 import {ToggleButtons, FinalSummary} from './cloud_components';
 import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudStep1, validateCloudStep2, validateCloudStep3} from './aws';
-import { AWSIcon, AzureIcon, GoogleCloudIcon } from '../../../../static/js/components/ExternalIcon';
+import { AWSIcon, AzureIcon, GoogleCloudIcon, StarfleetIcon } from '../../../../static/js/components/ExternalIcon';
 import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClusternameAvailbility, validateAzureStep2, validateAzureStep3} from './azure';
 import { GoogleCredentials, GoogleInstanceDetails, GoogleDatabaseDetails, validateGoogleStep2, validateGoogleStep3 } from './google';
+import { StarfleetCredentials, StarfleetInstanceDetails, StarfleetDatabaseDetails, validateStarfleetStep1, validateStarfleetStep2, validateStarfleetStep3 } from './starfleet';
 import EventBus from '../../../../static/js/helpers/EventBus';
 import { CLOUD_PROVIDERS, CLOUD_PROVIDERS_LABELS } from './cloud_constants';
 import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
@@ -51,6 +52,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   const [googleCredData, setGoogleCredData] = React.useState({});
   const [googleInstanceData, setGoogleInstanceData] = React.useState({});
   const [googleDatabaseData, setGoogleDatabaseData] = React.useState({});
+
+  const [starfleetCredData, setStarfleetCredData] = React.useState({});
+  const [starfleetInstanceData, setStarfleetInstanceData] = React.useState({});
+  const [starfleetDatabaseData, setStarfleetDatabaseData] = React.useState({});
 
   const axiosApi = getApiInstance();
 
@@ -118,6 +123,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         cloud: cloudProvider,
         instance_details:googleInstanceData,
         db_details: googleDatabaseData
+      };
+    }else if(cloudProvider == CLOUD_PROVIDERS.STARFLEET){
+      post_data = {
+        gid: nodeInfo.server_group._id,
+        cloud: cloudProvider,
+        secret: starfleetCredData,
+        instance_details: starfleetInstanceData,
+        db_details: starfleetDatabaseData
       };
     }
 
@@ -189,13 +202,31 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
       default:
         break;
       }
+      break;
+    case CLOUD_PROVIDERS.STARFLEET:
+      switch (currentStep) {
+      case 0:
+        setCloudSelection(CLOUD_PROVIDERS.STARFLEET);
+        break;
+      case 1:
+        isError = validateStarfleetStep1(starfleetCredData);
+        break;
+      case 2:
+        isError = validateStarfleetStep2(starfleetInstanceData);
+        break;
+      case 3:
+        isError = validateStarfleetStep3(starfleetDatabaseData, nodeInfo);
+        break;
+      default:
+        break;
+      }
     }
     return isError;
   };
 
   const onBeforeBack = (activeStep) => {
     return new Promise((resolve)=>{
-      if(activeStep == 1 && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
+      if(activeStep == 1 && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE || cloudProvider == CLOUD_PROVIDERS.STARFLEET)) {
         setVerificationIntiated(false);
       }
       setErrMsg(['', '']);
@@ -225,6 +256,29 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           .catch(() => {
             setErrMsg([MESSAGE_TYPE.ERROR, gettext('Error while checking cloud credentials')]);
             reject(new Error(gettext('Error while checking cloud credentials')));
+          });
+      } else if(activeStep == 1 && cloudProvider == CLOUD_PROVIDERS.STARFLEET) {
+        setErrMsg([MESSAGE_TYPE.INFO, gettext('Validating credentials...')]);
+        let _url = url_for('starfleet.verify_credentials');
+        const post_data = {
+          cloud: cloudSelection,
+          secret: starfleetCredData,
+        };
+        axiosApi.post(_url, post_data)
+          .then((res) => {
+            if(!res.data.success) {
+              const msg = res.data.errormsg || res.data.info;
+              setErrMsg([MESSAGE_TYPE.ERROR, msg]);
+              reject(new Error(msg));
+            } else {
+              setErrMsg(['', '']);
+              resolve();
+            }
+          })
+          .catch((error) => {
+            const msg = error.response?.data?.errormsg || gettext('Error while checking cloud credentials');
+            setErrMsg([MESSAGE_TYPE.ERROR, msg]);
+            reject(new Error(msg));
           });
       } else if (cloudProvider == CLOUD_PROVIDERS.AZURE
                  && activeStep == 2) {
@@ -261,7 +315,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   let cloud_providers = [
     {label: gettext(CLOUD_PROVIDERS_LABELS.AWS), value: CLOUD_PROVIDERS.AWS, icon: <AWSIcon  />},
     {label: gettext(CLOUD_PROVIDERS_LABELS.AZURE), value: CLOUD_PROVIDERS.AZURE, icon: <AzureIcon  /> },
-    {label: gettext(CLOUD_PROVIDERS_LABELS.GOOGLE), value: CLOUD_PROVIDERS.GOOGLE, icon: <GoogleCloudIcon  /> }];
+    {label: gettext(CLOUD_PROVIDERS_LABELS.GOOGLE), value: CLOUD_PROVIDERS.GOOGLE, icon: <GoogleCloudIcon  /> },
+    {label: gettext(CLOUD_PROVIDERS_LABELS.STARFLEET), value: CLOUD_PROVIDERS.STARFLEET, icon: <StarfleetIcon  /> }];
 
   return (
     <CloudWizardEventsContext.Provider value={eventBus.current}>
@@ -291,9 +346,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             <Box flexGrow={1}>
               <AzureCredentials cloudProvider={cloudProvider} setAzureCredData={setAzureCredData}/>
             </Box>}
-          <Box flexGrow={1}>
-            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
-          </Box>
+          { cloudProvider == CLOUD_PROVIDERS.GOOGLE &&
+            <Box flexGrow={1}>
+              <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>
+            </Box>}
+          { cloudProvider == CLOUD_PROVIDERS.STARFLEET &&
+            <Box flexGrow={1}>
+              <StarfleetCredentials cloudProvider={cloudProvider} setStarfleetCredData={setStarfleetCredData}/>
+            </Box>}
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={2} >
@@ -319,6 +379,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             hostIP={hostIP}
             googleInstanceData = {googleInstanceData}
           /> }
+          {cloudProvider == CLOUD_PROVIDERS.STARFLEET && callRDSAPI == 2 && <StarfleetInstanceDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setStarfleetInstanceData={setStarfleetInstanceData}
+            starfleetInstanceData={starfleetInstanceData}
+            hostIP={hostIP}
+          /> }
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} plainText />
         </WizardStep>
         <WizardStep stepId={3} >
@@ -343,6 +411,13 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             setGoogleDatabaseData={setGoogleDatabaseData}
           />
           }
+          {cloudProvider == CLOUD_PROVIDERS.STARFLEET && <StarfleetDatabaseDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setStarfleetDatabaseData={setStarfleetDatabaseData}
+          />
+          }
         </WizardStep>
         <WizardStep stepId={4} >
           <Box sx={{ paddingBottom: '5px'}}>{gettext('Please review the details before creating the cloud instance.')}</Box>
@@ -363,6 +438,12 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               cloudProvider={cloudProvider}
               instanceData={googleInstanceData}
               databaseData={googleDatabaseData}
+            />
+            }
+            {cloudProvider == CLOUD_PROVIDERS.STARFLEET && callRDSAPI == 4 && <FinalSummary
+              cloudProvider={cloudProvider}
+              instanceData={starfleetInstanceData}
+              databaseData={starfleetDatabaseData}
             />
             }
           </Paper>
