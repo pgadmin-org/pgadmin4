@@ -31,10 +31,10 @@
           "image-name" : "Lines.svg",
           "name" : "Lines",
           "position" : {
-            "scale" : 1.4,
+            "scale" : 1.85,
             "translation-in-points" : [
               0,
-              0
+              30
             ]
           }
         },
@@ -43,10 +43,10 @@
           "image-name" : "Body.svg",
           "name" : "Body",
           "position" : {
-            "scale" : 1.4,
+            "scale" : 1.85,
             "translation-in-points" : [
               0,
-              0
+              30
             ]
           }
         }
@@ -54,8 +54,8 @@
       "lighting" : "individual",
       "name" : "Slonik",
       "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+        "kind" : "layer-color",
+        "opacity" : 0.25
       },
       "specular" : true,
       "translucency" : {
