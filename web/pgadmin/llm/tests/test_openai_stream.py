@@ -165,6 +165,60 @@ class OpenAIResponsesStreamToolCallTestCase(BaseTestGenerator):
                 ('call_2', 'get_database_schema', {}),
             ],
         )),
+        ('Parallel tool calls without item ids are keyed on '
+         'output_index', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call',
+                           'call_id': 'call_1', 'name': 'run_query'
+                       }}),
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 1, 'item': {
+                           'type': 'function_call',
+                           'call_id': 'call_2',
+                           'name': 'get_database_schema'
+                       }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'output_index': 0,
+                       'delta': '{"sql": "SELECT 1"}'}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'output_index': 1, 'delta': '{}'}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_1', 'run_query', {'sql': 'SELECT 1'}),
+                 ('call_2', 'get_database_schema', {}),
+             ],
+         )),
+        ('output_item.done supplies the final name, call_id and '
+         'arguments', dict(
+             stream=[
+                 # A delta with no matching output_item.added seeds an
+                 # entry with an empty name and call_id, and partial
+                 # arguments; the done event must complete it.
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'output_index': 0,
+                       'delta': '{"table":'}),
+                 _sse({'type': 'response.output_item.done',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call', 'id': 'item_1',
+                           'call_id': 'call_abc',
+                           'name': 'get_database_schema',
+                           'arguments': '{"table": "users"}',
+                           'status': 'completed'
+                       }}),
+                 _sse({'type': 'response.output_item.done',
+                       'output_index': 1, 'item': {
+                           'type': 'message', 'id': 'msg_1',
+                           'content': []
+                       }}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'get_database_schema', {'table': 'users'}),
+             ],
+         )),
     ]
 
     def runTest(self):

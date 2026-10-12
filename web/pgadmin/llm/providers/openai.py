@@ -847,7 +847,9 @@ class OpenAIClient(LLMClient):
         # tool_calls_data: {item_id: {call_id, name, arguments}}
         # Keyed by item_id because response.function_call_arguments.delta
         # events carry item_id (matching item.id from output_item.added),
-        # not call_id.
+        # not call_id. item.id is optional in the API schema, so servers
+        # that omit it are keyed on output_index instead, which every
+        # output_item and function_call_arguments event carries.
         tool_calls_data = {}
         model_name = self._model
         usage = Usage()
@@ -887,15 +889,29 @@ class OpenAIClient(LLMClient):
             elif event_type == 'response.output_item.added':
                 item = data.get('item', {})
                 if item.get('type') == 'function_call':
-                    item_id = item.get('id', '')
+                    item_id = item.get('id') or data.get('output_index', '')
                     tool_calls_data[item_id] = {
                         'call_id': item.get('call_id', ''),
                         'name': item.get('name', ''),
                         'arguments': ''
                     }
 
+            elif event_type == 'response.output_item.done':
+                # The finished item carries the complete name, call_id
+                # and arguments, so treat those as authoritative rather
+                # than relying on every delta having been matched.
+                item = data.get('item', {})
+                if item.get('type') == 'function_call':
+                    item_id = item.get('id') or data.get('output_index', '')
+                    tc = tool_calls_data.setdefault(item_id, {
+                        'call_id': '', 'name': '', 'arguments': ''
+                    })
+                    for key in ('call_id', 'name', 'arguments'):
+                        if item.get(key):
+                            tc[key] = item[key]
+
             elif event_type == 'response.function_call_arguments.delta':
-                item_id = data.get('item_id', '')
+                item_id = data.get('item_id') or data.get('output_index', '')
                 if item_id not in tool_calls_data:
                     tool_calls_data[item_id] = {
                         'call_id': '', 'name': '', 'arguments': ''
