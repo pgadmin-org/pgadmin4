@@ -937,6 +937,11 @@ rolmembership:{
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
             self.datistemplate)
+        # Tell the dialog whether the connecting user may manage this role's
+        # membership (ADMIN OPTION, held directly or through another role).
+        # The same permission.sql drives the update guard, so the UI and the
+        # backend cannot disagree about who qualifies.
+        res['rows'][0]['has_admin_option'] = self._has_admin_option(rid)
         res = {**res['rows'][0], 'variables': variables['rows']}
         return ajax_response(
             response=res,
