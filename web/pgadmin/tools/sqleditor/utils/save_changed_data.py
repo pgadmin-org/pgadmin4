@@ -8,6 +8,7 @@
 ##########################################################################
 
 from flask import render_template
+from flask_babel import gettext
 from collections import OrderedDict
 
 from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE
@@ -28,6 +29,18 @@ def _writable_columns(data, columns_info):
         columns_info[k].get('is_editable', True) and
         not columns_info[k].get('is_generated', False)
     }
+
+
+def _is_view_command(command_obj):
+    """
+    True for a ViewCommand/MViewCommand target, matched by object_type
+    rather than isinstance() to avoid a circular import with
+    pgadmin.tools.sqleditor.command (which imports this module at load
+    time). A table's own real PRIMARY KEY constraint already guarantees
+    the safety nets below can't trigger for it, so they're scoped to
+    views only.
+    """
+    return getattr(command_obj, 'object_type', None) in ('view', 'mview')
 
 
 def save_changed_data(changed_data, columns_info, conn, command_obj,
@@ -51,6 +64,22 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
     operations = ('added', 'updated', 'deleted')
     list_of_sql = {}
     _rowid = None
+
+    # Row insertion through a view is not supported. The grid disables
+    # "Add row" and "Paste" when the backend reports can_insert as false
+    # (ViewCommand.can_insert()), but a request can still be crafted by
+    # hand, so reject the whole save here rather than silently dropping
+    # just the added rows.
+    if _is_view_command(command_obj) and changed_data.get('added'):
+        return (
+            False,
+            gettext(
+                'Inserting new rows into a view is not currently '
+                'supported.'
+            ),
+            [],
+            None
+        )
 
     pgadmin_alias = {
         col_name: col_info['pgadmin_alias']
@@ -245,7 +274,10 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     'data': data,
                     'client_row': each_row,
                     'returning_cols': bool(returning_cols),
-                    'row_id': data.get(client_primary_key)
+                    'row_id': data.get(client_primary_key),
+                    # A single UPDATE statement is rendered per row here,
+                    # so exactly one base row should ever be affected.
+                    'expected_rows': 1
                 })
 
         # For deleted rows
@@ -279,16 +311,31 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     r for _, r in changed_data[of_type].items()
                 ]
 
-            sql = render_template(
-                "/".join([command_obj.sql_path, 'delete.sql']),
-                data=rows_to_delete,
-                primary_key_labels=keys,
-                no_of_keys=no_of_keys,
-                object_name=command_obj.object_name,
-                nsp_name=command_obj.nsp_name,
-                conn=conn
-            )
-            list_of_sql[of_type].append({'sql': sql, 'data': {}})
+            # A table gets a single DELETE covering every row in
+            # rows_to_delete. A view gets one DELETE per row, each
+            # expected to affect exactly one base row (as with UPDATE):
+            # a batched count can still match when one selected row has
+            # vanished and an unselected row shares another's key, which
+            # would delete the wrong row without any error.
+            if _is_view_command(command_obj):
+                delete_batches = [[r] for r in rows_to_delete]
+            else:
+                delete_batches = [rows_to_delete]
+
+            for batch in delete_batches:
+                sql = render_template(
+                    "/".join([command_obj.sql_path, 'delete.sql']),
+                    data=batch,
+                    primary_key_labels=keys,
+                    no_of_keys=no_of_keys,
+                    object_name=command_obj.object_name,
+                    nsp_name=command_obj.nsp_name,
+                    conn=conn
+                )
+                list_of_sql[of_type].append({
+                    'sql': sql, 'data': {},
+                    'expected_rows': len(batch)
+                })
 
     def failure_handle(res, row_id):
         mogrified_sql = conn.mogrify(item['sql'], item['data'])
@@ -339,9 +386,23 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     item.get('returning_cols', False)
                 )
 
+                # execute_void() never updates the connection's tracked
+                # row count (see Connection.execute_void/row_count), so
+                # the rows-affected safety net below - which needs the
+                # true count for this exact UPDATE/DELETE - has to go
+                # through execute_dict() instead for a view's save. It's
+                # otherwise equivalent for a statement with no RETURNING
+                # clause: no columns come back, so no fetchall() is
+                # attempted, only cur.rowcount is captured.
+                needs_rows_affected = (
+                    _is_view_command(command_obj) and
+                    opr in ('updated', 'deleted')
+                )
+
                 try:
-                    # Fetch oids/primary keys or complete row
-                    if needs_result:
+                    # Fetch oids/primary keys or complete row, or the
+                    # true rows-affected count for a view's UPDATE/DELETE
+                    if needs_result or needs_rows_affected:
                         status, res = conn.execute_dict(
                             item['sql'], item['data'])
                     else:
@@ -376,6 +437,57 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                             item['client_row']: res['rows'][0]}
 
                 rows_affected = conn.rows_affected()
+
+                # Safety net for views only (tables are already protected
+                # by a real PRIMARY KEY constraint, so this can never
+                # trigger for them): a view's apparent primary key is
+                # only as reliable as its column names, and a renamed/
+                # aliased column that happens to share a name with the
+                # base table's real PK (e.g. `SELECT legacy AS id, id AS
+                # realid FROM t`) can pass can_edit()'s name-only check
+                # while not actually identifying a single base row. Refuse
+                # to let such a change stand rather than silently
+                # rewriting more rows than intended.
+                expected_rows = item.get('expected_rows', 1)
+                if needs_rows_affected and rows_affected != expected_rows:
+                    if rows_affected > expected_rows:
+                        msg = gettext(
+                            'This change was not applied: it would have '
+                            'affected %(actual)s row(s) in the '
+                            'underlying table instead of the %(expected)s '
+                            'expected. The view\'s apparent primary key '
+                            'does not uniquely identify the affected '
+                            'row(s).'
+                        )
+                    else:
+                        # Fewer rows than expected: the target row(s)
+                        # have gone, changed key, or are no longer
+                        # visible through the view (its WHERE clause,
+                        # row-level security, or another session).
+                        msg = gettext(
+                            'This change was not applied: it would have '
+                            'affected %(actual)s row(s) in the '
+                            'underlying table instead of the %(expected)s '
+                            'expected. The row(s) may have been changed '
+                            'or deleted by another session, or may no '
+                            'longer be visible through the view; refresh '
+                            'the data and try again.'
+                        )
+                    return failure_handle(
+                        msg % {
+                            'actual': rows_affected,
+                            'expected': expected_rows
+                        },
+                        item.get('row_id', 0)
+                    )
+
+                if needs_rows_affected:
+                    # execute_dict() was only used here to get an accurate
+                    # rows_affected; restore the plain execute_void()-style
+                    # result shape (None) so downstream reporting of a
+                    # successful update/delete is unchanged.
+                    res = None
+
                 mogrified_sql = conn.mogrify(item['sql'], item['data'])
                 mogrified_sql = mogrified_sql if mogrified_sql is not None \
                     else item['sql']

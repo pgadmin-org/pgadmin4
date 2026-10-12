@@ -267,7 +267,7 @@ PaginationInputs.propTypes = {
   clearSelection: PropTypes.func,
   serverCursor: PropTypes.bool,
 };
-export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, allRowsSelect}) {
+export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagination, allRowsSelect}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const [dataOutputQueryBtn,setDataOutputQueryBtn] = useState(false);
@@ -379,13 +379,13 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
     {
       shortcut: queryToolPref.btn_add_row,
       options: {
-        callback: ()=>{canEdit && addRow();}
+        callback: ()=>{canInsert && addRow();}
       }
     },
     {
       shortcut: queryToolPref.btn_paste_row,
       options: {
-        callback: ()=>{canEdit && pasteRows();}
+        callback: ()=>{canInsert && pasteRows();}
       }
     },
     {
@@ -423,13 +423,13 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
         <Box display="flex" alignItems="center" gap="4px">
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
-              shortcut={queryToolPref.btn_add_row} disabled={!canEdit} onClick={addRow} />
+              shortcut={queryToolPref.btn_add_row} disabled={!canInsert} onClick={addRow} />
             <PgIconButton title={gettext('Copy')} icon={<FileCopyRoundedIcon />}
               shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']||allRowsSelect=='ALL'} onClick={copyData} />
             <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
             <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}
-              shortcut={queryToolPref.btn_paste_row} disabled={!canEdit} onClick={pasteRows} />
+              shortcut={queryToolPref.btn_paste_row} disabled={!canInsert} onClick={pasteRows} />
             <PgIconButton title={gettext('Paste options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-pasteoptions" ref={pasetMenuRef} onClick={openMenu} />
             <PgIconButton title={gettext('Delete')} icon={<DeleteRoundedIcon />}
@@ -519,6 +519,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
 ResultSetToolbar.propTypes = {
   query: PropTypes.string,
   canEdit: PropTypes.bool,
+  canInsert: PropTypes.bool,
   totalRowCount: PropTypes.number,
   allRowsSelect: PropTypes.string,
   pagination: PropTypes.object,
