@@ -92,12 +92,16 @@ class GetLocaleTestCase(BaseTestGenerator):
             session['PGADMIN_LANGUAGE'] = 'xx'
             self.assertEqual(self._get_locale(), 'en')
 
-        # Go through a real request so flask-babel's Locale.parse() is
-        # actually exercised: an unknown language in the login form, and a
-        # planted cookie, must not produce a server error.
-        client = self.app.test_client()
-        response = client.post('/login', data={'language': 'xx'})
-        self.assertLess(response.status_code, 500)
-        client.set_cookie('PGADMIN_LANGUAGE', 'xx')
-        response = client.get('/login')
-        self.assertLess(response.status_code, 500)
+        # Go through flask-babel's own get_locale(), which passes whatever
+        # the selector returns to Locale.parse(): an unknown language in the
+        # form, and a planted cookie, must not raise. This is deliberately
+        # not a request to a real page, since the app may have been created
+        # in desktop mode (as CI does) and page templates then differ from
+        # the server mode this test switches on.
+        from flask_babel import get_locale as babel_get_locale
+        with self.app.test_request_context(
+                '/', method='POST', data={'language': 'xx'}):
+            self.assertEqual(str(babel_get_locale()), 'en')
+        with self.app.test_request_context(
+                '/', headers={'Cookie': 'PGADMIN_LANGUAGE=xx'}):
+            self.assertEqual(str(babel_get_locale()), 'en')
