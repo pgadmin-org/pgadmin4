@@ -468,9 +468,9 @@ def create_restore_job(sid):
         return errmsg
 
     # A target database is mandatory. Reject an empty/missing value up front:
-    # otherwise the empty name would make libpq fall back to the service file
-    # or to a database named after the login role, silently
-    # restoring into the wrong database instead of failing safely.
+    # otherwise the empty name would make libpq fall back to a database named
+    # after the login role, silently restoring into the wrong database
+    # instead of failing safely.
     if not data.get('database'):
         return bad_request(
             errormsg=_("Database parameter is required."))

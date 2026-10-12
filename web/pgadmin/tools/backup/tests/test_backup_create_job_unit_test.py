@@ -1603,3 +1603,56 @@ class BackupCreateJobTest(BaseTestGenerator):
             self.assertIn('--dbname', args)
             self.assertEqual(args[args.index('--dbname') + 1],
                              self.expected_dbname)
+
+
+class BackupCreateJobDatabaseRequiredTest(BaseTestGenerator):
+    """An object backup without a target database must be rejected up front,
+    before any job is created, rather than letting libpq pick a database."""
+
+    scenarios = [
+        ('When backup object with an empty database name',
+         dict(
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 schemas=[],
+                 tables=[],
+                 database=''
+             ),
+             url=BACKUP_OBJECT_URL
+         )),
+        ('When backup object with a null database name',
+         dict(
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 schemas=[],
+                 tables=[],
+                 database=None
+             ),
+             url=BACKUP_OBJECT_URL
+         )),
+        ('When backup object without a database name',
+         dict(
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 schemas=[],
+                 tables=[]
+             ),
+             url=BACKUP_OBJECT_URL
+         )),
+    ]
+
+    @patch('pgadmin.tools.backup.BatchProcess')
+    def runTest(self, batch_process_mock):
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
+        url = self.url.format(self.server_id)
+
+        response = self.tester.post(url,
+                                    data=json.dumps(self.params),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.data)['errormsg'],
+                         'Database parameter is required.')
+        self.assertFalse(batch_process_mock.called)

@@ -386,6 +386,14 @@ def create_import_export_job(sid):
     else:
         data = json.loads(request.data)
 
+    # A target database is mandatory. Reject an empty/missing value up front:
+    # otherwise the empty name would make libpq fall back to a database named
+    # after the login role, silently copying data to or from the wrong
+    # database instead of failing safely.
+    if not data.get('database'):
+        return bad_request(
+            errormsg=_("Database parameter is required."))
+
     # Fetch the server details like hostname, port, roles etc
     server = get_server(sid)
 

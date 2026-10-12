@@ -452,6 +452,16 @@ def create_backup_objects_job(sid):
     data = json.loads(request.data)
     backup_obj_type = data.get('type', 'objects')
 
+    # A target database is mandatory for an object backup. Reject an
+    # empty/missing value up front: otherwise the empty name would make libpq
+    # fall back to a database named after the login role, silently backing
+    # up the wrong database instead of failing safely. Server and globals
+    # backups connect to the maintenance database instead, so they need no
+    # database here.
+    if backup_obj_type == 'objects' and not data.get('database'):
+        return bad_request(
+            errormsg=gettext("Database parameter is required."))
+
     try:
         backup_file = filename_with_file_manager_path(
             data['file'], (data.get('format', '') != 'directory'))
