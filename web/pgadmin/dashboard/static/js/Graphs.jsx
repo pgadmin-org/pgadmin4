@@ -65,9 +65,9 @@ export function statsReducer(state, action) {
   }
 
   /* When the counter represents a rate (e.g. transactions per second),
-   * the raw delta between two polls must be normalised by the number of
-   * seconds elapsed between them, otherwise it only reads correctly when
-   * the refresh interval happens to be 1 second.
+   * the raw delta between two polls is divided by the number of seconds
+   * between the samples when the caller supplies it (action.elapsed),
+   * otherwise by 1.
    */
   let elapsed = action.elapsed > 0 ? action.elapsed : 1;
 
