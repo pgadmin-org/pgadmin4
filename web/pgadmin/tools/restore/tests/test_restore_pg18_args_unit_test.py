@@ -83,7 +83,7 @@ class RestorePG18ArgsTestCase(BaseTestGenerator):
     def _args(self):
         manager = MagicMock(version=self.version, use_ssh_tunnel=0)
         server = MagicMock(host='localhost', port=5432, username='postgres')
-        data = dict(format='custom', **self.data)
+        data = dict(format='custom', database='postgres', **self.data)
 
         return get_restore_util_args(data, manager, server, MagicMock(),
                                      MagicMock(), 'test_restore_file')
