@@ -1369,10 +1369,17 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             if seq_name:
                 data['serial_seq_create'] = {
                     'name': seq_name,
-                    # A bare CREATE SEQUENCE is always bigint, whereas the
-                    # sequence a SERIAL/SMALLSERIAL owns matches the
-                    # column's own integer type.
-                    'data_type': data['cltype'],
+                    # A bare CREATE SEQUENCE is always bigint, so give it
+                    # the source sequence's own type, which its MINVALUE
+                    # and MAXVALUE below are bounded by. That is usually
+                    # the column's own integer type, as PostgreSQL gives
+                    # a SERIAL/SMALLSERIAL, but not always: an integer
+                    # column can own a bigint sequence (e.g. one restored
+                    # from before PostgreSQL 10), and a widened SERIAL can
+                    # keep its integer one. Fall back to the column's type
+                    # when the source sequence's is unknown (e.g. the
+                    # table dialog, which never sends it).
+                    'data_type': data.get('seqtypname') or data['cltype'],
                     'increment': data.get('seqincrement'),
                     'start': data.get('seqstart'),
                     'minimum': data.get('seqmin'),
@@ -1393,7 +1400,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # sequence, but ALTER COLUMN only accepts them for identity
         # columns; the sequence itself is compared as a separate object.
         for key in ('seqincrement', 'seqstart', 'seqmin', 'seqmax',
-                    'seqcache', 'seqcycle'):
+                    'seqcache', 'seqcycle', 'seqtypname'):
             data.pop(key, None)
 
     def _check_for_column_update(self, columns, data, column_sql, tid):

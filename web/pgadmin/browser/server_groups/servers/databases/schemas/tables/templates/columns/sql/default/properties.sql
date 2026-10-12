@@ -45,7 +45,8 @@ SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, a
 	   AND dsd.objid=def.oid AND dsd.deptype='n'
 	 ORDER BY dsd.refobjid
 	 LIMIT 1) AS defseqrelid,
-	seq.*
+	seq.*,
+	pg_catalog.format_type(seq.seqtypid, NULL) AS seqtypname
 FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
   LEFT OUTER JOIN pg_catalog.pg_attrdef def ON adrelid=att.attrelid AND adnum=att.attnum

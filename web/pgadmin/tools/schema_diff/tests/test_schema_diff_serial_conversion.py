@@ -47,6 +47,18 @@ CREATE TABLE {0}.int_to_smallserial (
     id smallserial NOT NULL,
     val text
 );
+
+-- An integer column owning a bigint sequence, as a database restored from
+-- before PostgreSQL 10 (when sequences had no type) can have; Schema Diff
+-- still treats it as SERIAL.
+CREATE TABLE {0}.int_to_bigseq (
+    id integer NOT NULL,
+    val text
+);
+CREATE SEQUENCE {0}.int_to_bigseq_id_seq AS bigint
+    OWNED BY {0}.int_to_bigseq.id;
+ALTER TABLE {0}.int_to_bigseq
+    ALTER COLUMN id SET DEFAULT nextval('{0}.int_to_bigseq_id_seq');
 """
 
 TAR_DDL = """
@@ -64,6 +76,11 @@ CREATE TABLE {0}.serial_to_int (
 
 CREATE TABLE {0}.int_to_smallserial (
     id smallint NOT NULL,
+    val text
+);
+
+CREATE TABLE {0}.int_to_bigseq (
+    id integer NOT NULL,
     val text
 );
 """
@@ -117,6 +134,24 @@ BEGIN
                    '{0}.int_to_smallserial', 'id')::regclass)
        IS DISTINCT FROM 'smallint' THEN
         RAISE EXCEPTION 'SMALLSERIAL sequence is not smallint';
+    END IF;
+END
+$$;
+"""
+
+# Fails the batch unless the sequence created for an integer column that
+# owned a bigint sequence in the source is itself bigint, as in the source,
+# rather than taking the column's integer type (which its bigint MAXVALUE
+# would not even fit).
+CHECK_BIGSEQ_SEQ_TYPE = """
+DO $$
+BEGIN
+    IF (SELECT s.seqtypid::regtype::text
+          FROM pg_catalog.pg_sequence s
+         WHERE s.seqrelid = pg_catalog.pg_get_serial_sequence(
+                   '{0}.int_to_bigseq', 'id')::regclass)
+       IS DISTINCT FROM 'bigint' THEN
+        RAISE EXCEPTION 'int_to_bigseq sequence is not bigint';
     END IF;
 END
 $$;
@@ -297,6 +332,17 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
         self.assertIn('AS smallint', small_ddl)
         self.assertIn('SET DEFAULT nextval(', small_ddl)
 
+        # An integer column owning a bigint sequence: the new sequence
+        # must take the source sequence's bigint type, not the column's
+        # integer one, or its bigint MAXVALUE is rejected.
+        int_to_bigseq = self.find_object(response_data, 'table',
+                                         'int_to_bigseq')
+        self.assertEqual(int_to_bigseq['status'], 'Different')
+        bigseq_ddl = int_to_bigseq['diff_ddl']
+        self.assertIn('AS bigint', bigseq_ddl)
+        self.assertNotIn('AS integer', bigseq_ddl)
+        self.assertIn('SET DEFAULT nextval(', bigseq_ddl)
+
         # Reverse: target's BIGSERIAL column must become plain integer,
         # which means the ALTER script must drop the column's DEFAULT
         # before it drops the now-unused sequence (PostgreSQL refuses to
@@ -318,13 +364,17 @@ class SchemaDiffSerialConversionTestCase(BaseSocketTestGenerator):
                          self.generate_full_script(response_data))
         self.execute_sql(self.tar_database,
                          CHECK_SMALLSERIAL_SEQ_TYPE.format(SCHEMA_NAME))
+        self.execute_sql(self.tar_database,
+                         CHECK_BIGSEQ_SEQ_TYPE.format(SCHEMA_NAME))
 
         response_data = self.compare()
         for node_type, title in (
                 ('table', 'int_to_serial'), ('table', 'serial_to_int'),
                 ('table', 'int_to_smallserial'),
+                ('table', 'int_to_bigseq'),
                 ('sequence', 'int_to_serial_id_seq'),
-                ('sequence', 'int_to_smallserial_id_seq')):
+                ('sequence', 'int_to_smallserial_id_seq'),
+                ('sequence', 'int_to_bigseq_id_seq')):
             self.assertEqual(
                 self.find_object(response_data, node_type, title)['status'],
                 'Identical')

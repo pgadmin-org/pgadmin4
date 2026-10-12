@@ -25,6 +25,9 @@ class TestNormaliseSerialColumn(BaseTestGenerator):
         ('Converting a plain column to SERIAL creates the sequence and '
          'restores the default',
          dict(test_method='test_becoming_serial')),
+        ('Converting a plain column to SERIAL gives the new sequence the '
+         'source sequence\'s own type',
+         dict(test_method='test_becoming_serial_keeps_sequence_type')),
         ('Converting a SERIAL column to plain queues the sequence for '
          'dropping',
          dict(test_method='test_leaving_serial')),
@@ -68,6 +71,31 @@ class TestNormaliseSerialColumn(BaseTestGenerator):
         self.assertEqual(data['serial_seq_create']['data_type'], 'bigint')
         self.assertNotIn('serial_defval', data)
         self.assertNotIn('seqincrement', data)
+
+    def test_becoming_serial_keeps_sequence_type(self):
+        # The source's integer column owns a bigint sequence, so it is
+        # reprojected as SERIAL whilst its sequence's bounds are bigint.
+        data = {
+            'cltype': 'serial', 'typname': 'serial',
+            'serial_defval': "nextval('public.t_id_seq'::regclass)",
+            'seqincrement': 1, 'seqstart': 1, 'seqmin': 1,
+            'seqmax': 9223372036854775807, 'seqcache': 1, 'seqcycle': False,
+            'seqtypname': 'bigint',
+        }
+        old_col_data = {
+            'cltype': 'integer', 'typname': 'integer', 'defval': None,
+            'seqrelid': None, 'defseqrelid': None, 'attidentity': '',
+        }
+
+        BaseTableView._normalise_serial_column(data, old_col_data)
+
+        # The column stays integer, but its new sequence must be bigint
+        # for MAXVALUE 9223372036854775807 to be accepted.
+        self.assertEqual(data['cltype'], 'integer')
+        self.assertEqual(data['serial_seq_create']['data_type'], 'bigint')
+        self.assertEqual(data['serial_seq_create']['maximum'],
+                         9223372036854775807)
+        self.assertNotIn('seqtypname', data)
 
     def test_leaving_serial(self):
         # Schema Diff's source column: a plain integer, never reprojected.
