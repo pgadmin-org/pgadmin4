@@ -191,6 +191,51 @@ class OpenAIResponsesStreamToolCallTestCase(BaseTestGenerator):
                  ('call_2', 'get_database_schema', {}),
              ],
          )),
+        ('An added event without an item id is matched to deltas that '
+         'carry item_id', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call',
+                           'call_id': 'call_abc',
+                           'name': 'get_database_schema'
+                       }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'output_index': 0,
+                       'delta': '{"table":'}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'output_index': 0,
+                       'delta': '"users"}'}),
+                 _sse({'type': 'response.output_item.done',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call', 'id': 'item_1',
+                           'call_id': 'call_abc',
+                           'name': 'get_database_schema',
+                           'arguments': '{"table": "users"}'
+                       }}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'get_database_schema', {'table': 'users'}),
+             ],
+         )),
+        ('Deltas that omit output_index are matched to the added event '
+         'by item id', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call', 'id': 'item_1',
+                           'call_id': 'call_abc', 'name': 'run_query'
+                       }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1',
+                       'delta': '{"sql": "SELECT 1"}'}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'run_query', {'sql': 'SELECT 1'}),
+             ],
+         )),
         ('output_item.done supplies the final name, call_id and '
          'arguments', dict(
              stream=[
