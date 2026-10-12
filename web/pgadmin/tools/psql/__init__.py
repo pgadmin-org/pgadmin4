@@ -231,16 +231,25 @@ def read_terminal_data(parent, data_ready, max_read_bytes, sid):
 
 
 def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
-    (data_ready, _, _) = select.select([process.fd], [], [], 0)
-    if process.fd in data_ready:
-        output = process.read(max_read_bytes)
-        if win_emit_output:
-            sio.emit('pty-output',
-                     {'result': output,
-                      'error': False},
-                     namespace='/pty', room=sid)
+    """
+    Forward any output that is ready, returning False once pywinpty's reader
+    thread has closed its socket (which can happen before isalive() reports
+    that psql has exited).
+    """
+    try:
+        (data_ready, _, _) = select.select([process.fd], [], [], 0)
+        if process.fd in data_ready:
+            output = process.read(max_read_bytes)
+            if win_emit_output:
+                sio.emit('pty-output',
+                         {'result': output,
+                          'error': False},
+                         namespace='/pty', room=sid)
+    except (EOFError, OSError):
+        return False
 
     sio.sleep(0.01)
+    return True
 
 
 def drain_stdout(process, sid, max_read_bytes, idle_timeout=1,
@@ -274,33 +283,74 @@ def drain_stdout(process, sid, max_read_bytes, idle_timeout=1,
                      namespace='/pty', room=sid)
 
 
+def close_pty_process(process):
+    """
+    Release the sockets pywinpty uses to deliver the terminal's output.
+
+    PtyProcess.close() does nothing once isalive() has seen the process
+    exit, because (from pywinpty 2.0.10) isalive() marks the process as
+    closed, so close the two sockets directly as well.
+    """
+    try:
+        process.close()
+    except Exception:
+        pass
+    for sock in (getattr(process, 'fileobj', None),
+                 getattr(process, '_server', None)):
+        if sock is not None:
+            try:
+                sock.close()
+            except Exception:
+                pass
+
+
 def windows_platform(connection_data, sid, max_read_bytes, server_id):
     # Spawn psql directly rather than typing its command line into cmd.exe,
     # so that the user is not left at a shell prompt when psql exits, and
     # the connection string is never parsed by cmd.exe.
-    process = PtyProcess.spawn(connection_data, env=get_user_env())
+    try:
+        process = PtyProcess.spawn(connection_data, env=get_user_env())
+    except Exception as e:
+        # start_process has already registered this socket against the
+        # server, so forget it again and show the error in the terminal.
+        soids = app.config.get('sid_soid_mapping', {}).get(str(server_id))
+        if soids and request.sid in soids:
+            soids.remove(request.sid)
+        error_msg = gettext('Error while running psql command: {0}').format(e)
+        sio.emit('pty-output',
+                 {'result': error_msg,
+                  'error': True},
+                 namespace='/pty', room=sid)
+        return
 
-    app.config['sessions'][request.sid] = process
-    pdata[request.sid] = process
-    cdata[request.sid] = process.fd
-    open_psql_connections[request.sid] = server_id
-    set_term_size(process, 50, 50)
+    try:
+        app.config['sessions'][request.sid] = process
+        pdata[request.sid] = process
+        cdata[request.sid] = process.fd
+        open_psql_connections[request.sid] = server_id
+        set_term_size(process, 50, 50)
 
-    while process.isalive():
-        read_stdout(process, sid, max_read_bytes,
-                    win_emit_output=True)
+        while process.isalive():
+            if not read_stdout(process, sid, max_read_bytes,
+                               win_emit_output=True):
+                break
 
-    drain_stdout(process, sid, max_read_bytes)
+        drain_stdout(process, sid, max_read_bytes)
 
-    # psql has exited, so forget the session now. The \q handler has
-    # already removed it from the sessions map, which would otherwise stop
-    # the disconnect handler from ever cleaning up the other maps.
-    # Compare with the process, so that an older process cannot clear the
-    # state of a newer one registered against the same socket.
-    if app.config['sessions'].get(request.sid) is process:
-        del app.config['sessions'][request.sid]
-    if pdata.get(request.sid) is process:
-        cleanup_globals()
+        # psql has exited, so forget the session now. The \q handler has
+        # already removed it from the sessions map, which would otherwise
+        # stop the disconnect handler from ever cleaning up the other maps.
+        # Compare with the process, so that an older process cannot clear
+        # the state of a newer one registered against the same socket.
+        if app.config['sessions'].get(request.sid) is process:
+            del app.config['sessions'][request.sid]
+        if pdata.get(request.sid) is process:
+            cleanup_globals()
+    finally:
+        # This also covers a socket disconnect: disconnect_socket()
+        # terminates psql, which ends the loop above, so the sockets are
+        # closed here rather than whilst the loop may still be reading them.
+        close_pty_process(process)
 
 
 def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):

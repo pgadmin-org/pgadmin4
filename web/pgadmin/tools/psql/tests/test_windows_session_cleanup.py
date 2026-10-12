@@ -74,6 +74,10 @@ class PSQLWindowsSessionCleanup(BaseTestGenerator):
                                       1024, 7)
 
                 drain_stdout.assert_called_once_with(process, sid, 1024)
+                # The pty's sockets are released however the session ends.
+                process.close.assert_called_once_with()
+                process.fileobj.close.assert_called_once_with()
+                process._server.close.assert_called_once_with()
                 if self.replaced:
                     self.assertIs(self.app.config['sessions'][sid], newer)
                     self.assertIs(psql.pdata[sid], newer)
