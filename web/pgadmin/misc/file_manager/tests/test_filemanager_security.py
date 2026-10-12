@@ -506,12 +506,8 @@ class _SaveFileMixin:
         self.tmpdir = tempfile.mkdtemp(prefix="pga_filemgr_savefile_")
         self.storage_dir = os.path.join(self.tmpdir, "storage")
         os.makedirs(self.storage_dir)
-        # The leaf-symlink hardening only applies in server mode.
-        self._prev_server_mode = config.SERVER_MODE
-        config.SERVER_MODE = True
 
     def tearDown(self):
-        config.SERVER_MODE = self._prev_server_mode
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
     def _save_file(self, file_name, file_content, check_side_effect=None):
@@ -550,6 +546,12 @@ class TestSaveFileRejectsLeafSymlink(_SaveFileMixin, BaseTestGenerator):
     scenarios = [('default', dict())]
 
     def runTest(self):
+        # SERVER_MODE can't be flipped for an endpoint test: it also
+        # changes the authentication path the request takes, which the
+        # harness's session was not set up for.
+        if not config.SERVER_MODE:
+            self.skipTest("Leaf-symlink hardening only applies in server "
+                          "mode")
         outside_target = os.path.join(self.tmpdir, "outside.txt")
         with open(outside_target, "wb") as f:
             f.write(b"VICTIM")
@@ -598,6 +600,7 @@ class TestSaveFileWritesRegularFile(_SaveFileMixin, BaseTestGenerator):
         target = os.path.join(self.storage_dir, "ok.sql")
         with open(target, "rb") as f:
             self.assertEqual(f.read(), b"SELECT 1;")
-        # The helper opens with mode 0o600; pin it so the documented
-        # behavioral change cannot regress silently.
-        self.assertEqual(os.stat(target).st_mode & 0o777, 0o600)
+        # In server mode the helper opens with mode 0o600; pin it so the
+        # documented behavioral change cannot regress silently.
+        if config.SERVER_MODE:
+            self.assertEqual(os.stat(target).st_mode & 0o777, 0o600)
