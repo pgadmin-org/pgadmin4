@@ -1304,30 +1304,103 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         The pseudo-type is shorthand for a declaration rather than a type
         ALTER COLUMN can be given, so compare and alter the underlying
-        integer type instead, drop the default the reprojection emptied,
-        and leave the owned sequence to be compared as the object it is in
-        its own right.
+        integer type instead. Three cases follow, distinguished by whether
+        each side is genuinely SERIAL (owns the sequence its own nextval()
+        default points at):
+
+        * Both sides are SERIAL: the only differences are things like a
+          comment or NOT NULL, so drop the default the reprojection
+          emptied (it is not a request to drop the real one) and leave the
+          owned sequence to be compared as the object it is in its own
+          right.
+        * The column is becoming SERIAL: the sequence behind it does not
+          exist on the other side yet, so it must be created, and its
+          owner column given back its real ``nextval()`` default, before
+          `ALTER COLUMN ... SET DEFAULT` can reference it at all.
+        * The column is leaving SERIAL: PostgreSQL refuses to drop a
+          sequence that a column's default still references, so the
+          now-unused sequence must be dropped only once that default is
+          gone (#10292).
 
         :param data: The changed column, modified in place
         :param old_col_data: Properties of the column as it stands now
         """
         cltype = data.get('cltype')
-        if cltype not in column_utils.UNDERLYING_SERIAL_TYPES:
+        becomes_serial = cltype in column_utils.UNDERLYING_SERIAL_TYPES
+        was_serial = column_utils.is_serial_column(old_col_data)
+
+        # A column can only be "leaving SERIAL" when this update actually
+        # says something about its type at all. This function also runs
+        # for the ordinary (non-diff) column PUT, where a partial update
+        # that never mentions cltype (e.g. changing only a comment or a
+        # privilege on an already-SERIAL column) carries no 'cltype' key
+        # whatsoever, and is not a request to change the type, however
+        # SERIAL the column already is; unlike Schema Diff's columns,
+        # which always carry the full properties and so always have one.
+        # Nor is a change of type alone (e.g. widening integer to bigint
+        # in the table dialog, which sends no 'defval'): the column only
+        # stops being SERIAL once its nextval() default is replaced or
+        # dropped, and until then PostgreSQL would refuse to drop the
+        # sequence that default still references.
+        leaving_serial = was_serial and not becomes_serial \
+            and 'cltype' in data and 'defval' in data \
+            and data['defval'] != old_col_data.get('defval')
+
+        if not becomes_serial and not leaving_serial:
             return
 
-        data['cltype'] = column_utils.UNDERLYING_SERIAL_TYPES[cltype]
-        if data.get('typname') == cltype:
-            data['typname'] = data['cltype']
+        serial_defval = None
+        if becomes_serial:
+            data['cltype'] = column_utils.UNDERLYING_SERIAL_TYPES[cltype]
+            if data.get('typname') == cltype:
+                data['typname'] = data['cltype']
+            serial_defval = data.pop('serial_defval', None)
 
-        # The reprojection emptied the nextval() default; that is not a
-        # request to drop it.
-        data.pop('defval', None)
+        if becomes_serial and was_serial:
+            # The reprojection emptied the nextval() default on both
+            # sides; that is not a request to drop it.
+            data.pop('defval', None)
+        elif becomes_serial and not was_serial:
+            # Genuinely becoming SERIAL: recreate the sequence the
+            # reprojection's own default was emptied from, and restore
+            # that default so it can be set once the sequence exists.
+            data['defval'] = serial_defval or ''
+            seq_name = column_utils.parse_nextval_sequence(serial_defval)
+            if seq_name:
+                data['serial_seq_create'] = {
+                    'name': seq_name,
+                    # A bare CREATE SEQUENCE is always bigint, so give it
+                    # the source sequence's own type, which its MINVALUE
+                    # and MAXVALUE below are bounded by. That is usually
+                    # the column's own integer type, as PostgreSQL gives
+                    # a SERIAL/SMALLSERIAL, but not always: an integer
+                    # column can own a bigint sequence (e.g. one restored
+                    # from before PostgreSQL 10), and a widened SERIAL can
+                    # keep its integer one. Fall back to the column's type
+                    # when the source sequence's is unknown (e.g. the
+                    # table dialog, which never sends it).
+                    'data_type': data.get('seqtypname') or data['cltype'],
+                    'increment': data.get('seqincrement'),
+                    'start': data.get('seqstart'),
+                    'minimum': data.get('seqmin'),
+                    'maximum': data.get('seqmax'),
+                    'cache': data.get('seqcache'),
+                    'cycled': data.get('seqcycle'),
+                }
+        elif leaving_serial:
+            # Genuinely leaving SERIAL: the generic default handling
+            # below already drops the (empty, non-serial) default, so
+            # queue the now-unused sequence to be dropped afterwards.
+            seq_name = column_utils.parse_nextval_sequence(
+                old_col_data.get('defval'))
+            if seq_name:
+                data['serial_seq_drop'] = seq_name
 
         # Sequence options ride along with a column because it owns a
         # sequence, but ALTER COLUMN only accepts them for identity
         # columns; the sequence itself is compared as a separate object.
         for key in ('seqincrement', 'seqstart', 'seqmin', 'seqmax',
-                    'seqcache', 'seqcycle'):
+                    'seqcache', 'seqcycle', 'seqtypname'):
             data.pop(key, None)
 
     def _check_for_column_update(self, columns, data, column_sql, tid):
