@@ -16,6 +16,20 @@ from pgadmin.utils.exception import ExecuteError
 ignore_type_cast_list = ['character', 'character[]', 'bit', 'bit[]']
 
 
+def _writable_columns(data, columns_info):
+    """
+    Return only the entries of data that can be written by an INSERT or
+    UPDATE: columns known to the result set that are editable and are not
+    generated.
+    """
+    return {
+        k: v for k, v in data.items()
+        if k in columns_info and
+        columns_info[k].get('is_editable', True) and
+        not columns_info[k].get('is_generated', False)
+    }
+
+
 def save_changed_data(changed_data, columns_info, conn, command_obj,
                       client_primary_key, auto_commit=True):
     """
@@ -126,12 +140,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 # column and Postgres rejects the row. Issue #9939.
                 # Also remove generated columns (GENERATED ALWAYS AS) as they
                 # cannot be inserted - PostgreSQL auto-computes their values.
-                data = {
-                    k: v for k, v in data.items()
-                    if k in columns_info and
-                    columns_info[k].get('is_editable', True) and
-                    not columns_info[k].get('is_generated', False)
-                }
+                data = _writable_columns(data, columns_info)
 
                 # Update columns value with columns having
                 # not_null=False and has no default value
@@ -194,14 +203,21 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 row_primary_keys = changed_data[of_type][each_row][
                     'primary_keys']
 
-                # Remove generated columns (GENERATED ALWAYS AS) as they
-                # cannot be updated - PostgreSQL auto-computes their values.
-                data = {k: v for k, v in data.items()
-                        if not columns_info.get(k, {}).get('is_generated',
-                                                           False)}
+                # Drop any column the client included that isn't a real
+                # editable column of the underlying table (e.g.
+                # `first_name || ' ' || last_name as the_name`), matching
+                # the insert path above. The frontend already marks such
+                # columns as non-editable (shown with a lock icon), but
+                # still includes them in the changed data. Without this
+                # guard the rendered UPDATE references a non-existent
+                # column and Postgres rejects it. Issue #10103.
+                # Also remove generated columns (GENERATED ALWAYS AS) as
+                # they cannot be updated - PostgreSQL auto-computes their
+                # values.
+                data = _writable_columns(data, columns_info)
 
-                # Nothing left to update if only generated columns were
-                # changed.
+                # Nothing left to update if only generated or non-editable
+                # columns were changed.
                 if not data:
                     continue
 
