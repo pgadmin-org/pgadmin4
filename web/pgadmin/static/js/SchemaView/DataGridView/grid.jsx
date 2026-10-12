@@ -151,9 +151,10 @@ export default function DataGridView({
     count: rows.length,
     getScrollElement: () => tableEleRef.current,
     estimateSize: () => 50,
+    // Measuring only happens through the row `ref` below, which is left out
+    // in static mode; that, not this option, is what turns it off there.
     measureElement:
-      shouldVirtualise &&
-        typeof window !== 'undefined' &&
+      typeof window !== 'undefined' &&
         navigator.userAgent.indexOf('Firefox') === -1
         ? element => element?.getBoundingClientRect().height
         : undefined,
