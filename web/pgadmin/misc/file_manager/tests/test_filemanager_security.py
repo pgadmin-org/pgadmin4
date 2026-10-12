@@ -604,3 +604,55 @@ class TestSaveFileWritesRegularFile(_SaveFileMixin, BaseTestGenerator):
         # documented behavioral change cannot regress silently.
         if config.SERVER_MODE:
             self.assertEqual(os.stat(target).st_mode & 0o777, 0o600)
+
+
+class _SaveFileEloopMixin(_SaveFileMixin):
+    """Drive save_file() into an ELOOP from the open, with the symlink
+    refusal switched on or off, independently of the harness's SERVER_MODE.
+
+    `_refuses_leaf_symlinks()` is the single condition that both sets
+    O_NOFOLLOW and selects the symlink-specific error message, so patching
+    it is enough to exercise either side of the branch.
+    """
+
+    refuses = None
+
+    def _save_with_eloop(self):
+        eloop = OSError(errno.ELOOP, os.strerror(errno.ELOOP))
+        with patch('pgadmin.misc.file_manager._open_upload_target',
+                   side_effect=eloop), \
+                patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+                      return_value=self.refuses):
+            return self._save_file("/looped.sql", "SELECT 1;")
+
+
+class TestSaveFileEloopReportsSymlinkRefusal(
+        _SaveFileEloopMixin, BaseTestGenerator):
+    """With O_NOFOLLOW in play, ELOOP means the refusal was deliberate."""
+
+    scenarios = [('default', dict())]
+    refuses = True
+
+    def runTest(self):
+        response = self._save_with_eloop()
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("symbolic link", response.json['errormsg'])
+
+
+class TestSaveFileEloopReportsRawErrorWithoutNofollow(
+        _SaveFileEloopMixin, BaseTestGenerator):
+    """Without O_NOFOLLOW (desktop mode), ELOOP is a real filesystem error
+    and must be reported as such, not as a refusal pgAdmin never made."""
+
+    scenarios = [('default', dict())]
+    refuses = False
+
+    def runTest(self):
+        response = self._save_with_eloop()
+
+        self.assertEqual(response.status_code, 500)
+        # The raw strerror ("Too many levels of symbolic links") shares a
+        # substring with the refusal message, so assert on whole messages.
+        self.assertEqual(response.json['errormsg'],
+                         "Error: %s" % os.strerror(errno.ELOOP))

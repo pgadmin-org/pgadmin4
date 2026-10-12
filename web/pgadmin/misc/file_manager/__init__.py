@@ -74,11 +74,24 @@ def _open_upload_target(path):
     """
     flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
     mode = 0o666
+    if _refuses_leaf_symlinks():
+        flags |= os.O_NOFOLLOW
     if config.SERVER_MODE:
-        flags |= getattr(os, 'O_NOFOLLOW', 0)
         mode = 0o600
     fd = os.open(path, flags, mode)
     return os.fdopen(fd, 'wb')
+
+
+def _refuses_leaf_symlinks():
+    """True when `_open_upload_target()` opens with O_NOFOLLOW.
+
+    Callers that translate ELOOP/EMLINK into a "refusing to write through
+    a symbolic link" message must use this same condition, so that the
+    message cannot drift from the behaviour: in desktop mode (or on
+    Windows, where O_NOFOLLOW does not exist) those errnos mean a genuine
+    filesystem problem, not a deliberate refusal.
+    """
+    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW')
 
 
 MODULE_NAME = 'file_manager'
@@ -496,8 +509,11 @@ def save_file():
         # O_NOFOLLOW makes the kernel refuse a leaf symlink with ELOOP
         # (EMLINK on some BSDs). Report that specifically: the raw strerror
         # ("Too many levels of symbolic links") tells the user nothing
-        # about why their save was rejected.
-        if e.errno in (errno.ELOOP, errno.EMLINK):
+        # about why their save was rejected. Only when O_NOFOLLOW was
+        # actually set, though: otherwise the errno is a real filesystem
+        # error (a symlink loop, say) and the raw strerror is the truth.
+        if _refuses_leaf_symlinks() and \
+                e.errno in (errno.ELOOP, errno.EMLINK):
             return internal_server_error(errormsg=gettext(
                 "Refusing to write through a symbolic link."))
         err_msg = error_str.format(e.strerror)
