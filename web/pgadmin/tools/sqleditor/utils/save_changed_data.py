@@ -51,10 +51,11 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
     list_of_sql = {}
     _rowid = None
 
-    # Row insertion through a view was never designed for or tested (the
-    # frontend's "Add row" is gated only on can_edit, shared with tables,
-    # so this has to be enforced here). Reject the whole save rather than
-    # silently dropping just the added rows.
+    # Row insertion through a view is not supported. The grid disables
+    # "Add row" and "Paste" when the backend reports can_insert as false
+    # (ViewCommand.can_insert()), but a request can still be crafted by
+    # hand, so reject the whole save here rather than silently dropping
+    # just the added rows.
     if _is_view_command(command_obj) and changed_data.get('added'):
         return (
             False,

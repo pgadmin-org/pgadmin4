@@ -988,6 +988,7 @@ def start_view_data(trans_id):
 
         can_edit = trans_obj.can_edit()
         can_filter = trans_obj.can_filter()
+        can_insert = can_edit and trans_obj.can_insert()
 
         # Store the primary keys to the session object
         session_obj['primary_keys'] = primary_keys
@@ -1012,6 +1013,7 @@ def start_view_data(trans_id):
         filter_applied = False
         can_edit = False
         can_filter = False
+        can_insert = False
         sql = None
 
     return make_json_response(
@@ -1019,7 +1021,8 @@ def start_view_data(trans_id):
             'status': status, 'result': result,
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
-            'can_filter': can_filter, 'sql': sql,
+            'can_filter': can_filter, 'can_insert': can_insert,
+            'sql': sql,
         }
     )
 

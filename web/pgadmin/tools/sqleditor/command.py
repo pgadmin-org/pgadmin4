@@ -124,6 +124,13 @@ class BaseCommand(metaclass=ObjectRegistry):
     def can_filter(self):
         pass
 
+    def can_insert(self):
+        """
+        Whether new rows may be added through the grid, assuming
+        can_edit() is True. Only views refuse this for now.
+        """
+        return True
+
 
 class SQLFilter():
     """
@@ -969,6 +976,12 @@ class ViewCommand(GridCommand):
 
     def can_filter(self):
         return True
+
+    def can_insert(self):
+        # Inserting rows through a view is not supported. The client
+        # uses this to disable "Add row" and "Paste", and
+        # save_changed_data() refuses any added rows regardless.
+        return False
 
 
 class MViewCommand(ViewCommand):

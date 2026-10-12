@@ -766,6 +766,10 @@ export class ResultSetUtils {
       };
       data.primary_keys = (_.isEmpty(data.primary_keys) && data.has_oids) ? data.oids : data.primary_keys;
       data.can_edit = !_.isEmpty(data.primary_keys);
+      /* View Data on a view reports can_insert false: rows can be edited
+       and deleted through it, but not added. The Query Tool doesn't send
+       the flag, so it follows can_edit. */
+      data.can_insert = data.can_edit && data.can_insert !== false;
       let procColumns = this.processColumns(data);
       onResultsAvailable(data, procColumns, this.processRows(result, procColumns));
       this.setStartData(null);
@@ -1477,6 +1481,9 @@ export function ResultSet() {
 
   useEffect(()=>{
     const triggerAddRows = (_rows, options)=>{
+      if(!queryData?.can_insert) {
+        return;
+      }
       let insPosn = 0;
       if(selectedRows.size > 0) {
         let selectedRowsSorted = Array.from(selectedRows);
@@ -1512,7 +1519,7 @@ export function ResultSet() {
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
-  }, [columns, selectedRows.size]);
+  }, [columns, selectedRows.size, queryData?.can_insert]);
 
   const gvColumnsSignature = React.useMemo(() => columns.map(c => c.key).join(','), [columns]);
 
@@ -1695,7 +1702,7 @@ export function ResultSet() {
       }
       {queryData && <>
         <ResultSetToolbar containerRef={containerRef} query={dataOutputQuery}
-          canEdit={queryData.can_edit} totalRowCount={queryData?.rows_affected}
+          canEdit={queryData.can_edit} canInsert={queryData.can_insert} totalRowCount={queryData?.rows_affected}
           pagination={queryData?.pagination ?? {}} allRowsSelect={allRowsSelect}
         />
         <Box flexGrow="1" minHeight="0">

@@ -364,6 +364,8 @@ class TestViewCommandEditable(_ViewSaveTestMixin, BaseTestGenerator):
             start_data, poll_data = self._start_and_poll(self.trans_id)
             self.assertEqual(
                 start_data['data']['can_edit'], self.expected_can_edit)
+            # Rows can never be added through a view, editable or not.
+            self.assertFalse(start_data['data']['can_insert'])
 
             if self.expected_can_edit:
                 self.assertEqual(
@@ -541,13 +543,11 @@ class TestViewSaveRejectsAmbiguousPrimaryKey(
 
 
 class TestViewSaveRejectsInsertedRow(_ViewSaveTestMixin, BaseTestGenerator):
-    """ Regression test: the frontend's "Add row" is gated only on the
-    backend's can_edit flag (shared, unchanged behaviour also used for
-    tables), so once can_edit() can return True for a view, a user can
-    reach the INSERT path through the existing UI even though row
-    insertion into a view was never designed for or tested (out of
-    scope per the design spec). save() must reject any row marked as
-    newly-inserted when the target is a view. """
+    """ Row insertion through a view is not supported. The backend
+    reports can_insert as false for an editable view (and true for its
+    base table) so the grid disables "Add row" and "Paste", and save()
+    must still reject any row marked as newly-inserted when the target
+    is a view, since a request can be sent without the grid. """
 
     scenarios = [('default', dict())]
 
@@ -574,6 +574,15 @@ class TestViewSaveRejectsInsertedRow(_ViewSaveTestMixin, BaseTestGenerator):
 
             start_data, _ = self._start_and_poll(trans_id)
             self.assertTrue(start_data['data']['can_edit'])
+            self.assertFalse(start_data['data']['can_insert'])
+
+            # The base table itself still allows inserts.
+            table_trans_id = self._initialize_view_data(
+                self._get_relation_oid(self.base1, 'r'), 'table')
+            table_start, _ = self._start_and_poll(table_trans_id)
+            self._close_query_tool(table_trans_id)
+            self.assertTrue(table_start['data']['can_edit'])
+            self.assertTrue(table_start['data']['can_insert'])
 
             save_payload = {
                 "updated": {},
