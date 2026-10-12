@@ -310,6 +310,21 @@ def get_complete_file_path(file, validate=True):
         return file
 
 
+def connection_param_bool_to_int(value):
+    """
+    Convert a boolean connection parameter to the 0 or 1 that libpq expects.
+
+    The server dialog stores these as booleans, but a servers.json import
+    or a direct API call stores whatever it is given, so the strings
+    "false", "0" and the like must not be treated as true merely for being
+    non-empty strings.
+    """
+    if isinstance(value, str):
+        return 0 if value.strip().lower() in \
+            ('', '0', 'false', 'f', 'no', 'n', 'off') else 1
+    return 1 if value else 0
+
+
 def connection_params_to_env(connection_params):
     """
     Translate the connection parameters configured against a server into the
@@ -348,7 +363,7 @@ def connection_params_to_env(connection_params):
             value = get_complete_file_path(value)
             value = '' if value is None else value
         elif param in CONNECTION_PARAM_BOOLEANS:
-            value = 1 if value else 0
+            value = connection_param_bool_to_int(value)
 
         env[env_var] = str(value)
 

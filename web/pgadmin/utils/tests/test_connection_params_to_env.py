@@ -67,6 +67,20 @@ class TestConnectionParamsToEnv(BaseTestGenerator):
              expected_env={'PGSSLCOMPRESSION': '1', 'PGSSLSNI': '0',
                            'PGGSSDELEGATION': '1'}
          )),
+        ('Booleans stored as strings, as a servers.json import may '
+         'leave them, are converted by value',
+         dict(
+             connection_params={'sslcompression': 'false', 'sslsni': '0',
+                                'gssdelegation': 'True'},
+             expected_env={'PGSSLCOMPRESSION': '0', 'PGSSLSNI': '0',
+                           'PGGSSDELEGATION': '1'}
+         )),
+        ('Booleans stored as integers by the old sslcompression column '
+         'are converted by value',
+         dict(
+             connection_params={'sslcompression': 0, 'sslsni': 1},
+             expected_env={'PGSSLCOMPRESSION': '0', 'PGSSLSNI': '1'}
+         )),
         ('Parameters libpq has no environment variable for are dropped',
          dict(
              connection_params={'keepalives': 1, 'keepalives_idle': 30,
