@@ -14,7 +14,6 @@ import re
 from flask import render_template, Response, g, request
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
-import codecs
 import json
 
 import psycopg
@@ -549,16 +548,25 @@ def decode_log_chunk(data, server_encoding, keep_bytes=None):
     if not data:
         return ''
 
-    raw = codecs.escape_decode(data.encode('ascii'))[0]
+    raw = bytes.fromhex(data)
     python_encoding = psycopg._encodings.py_codecs.get(
         server_encoding.upper().encode(), 'utf-8')
 
     # A paged chunk can start inside a multi-byte character that the
     # previous chunk shows in full; drop the leftover bytes here.  Bytes
     # that cannot be part of such a character are kept, so they are shown
-    # as replacement characters instead of disappearing.  A whole-file
-    # read starts at the beginning of the file, so its leading bytes are
-    # kept and replaced by the decoder below if they are malformed.
+    # as replacement characters instead of disappearing.
+    #
+    # Recognising a split character by its trail bytes is exact only for
+    # UTF-8 (trail bytes are 0x80-0xBF).  For the EUC family and
+    # GBK/GB18030, lead and trail bytes share the same ranges, so a
+    # character split at a page boundary can still produce one garbled
+    # character.  That is a known limitation, accepted in exchange for
+    # avoiding the 22021 error dialog those servers used to get.
+    #
+    # A whole-file read starts at the beginning of the file, so its
+    # leading bytes are kept and replaced by the decoder below if they
+    # are malformed.
     dropped_lead = 0
     if keep_bytes is not None:
         for _ in range(3):
