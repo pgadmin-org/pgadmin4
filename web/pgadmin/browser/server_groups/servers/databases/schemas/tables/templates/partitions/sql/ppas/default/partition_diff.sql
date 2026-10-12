@@ -16,7 +16,8 @@ SELECT {% if data.columns and data.columns|length > 0 %}{% for c in data.columns
 -- still empty. If any rows were routed into it (i.e. rows that don't
 -- fall within the bounds of any other partition), it is left in place
 -- so that data is not lost; it becomes the default partition of the
--- rebuilt table.
+-- rebuilt table, but keeps its temporary name, so you may want to
+-- rename it, or move its rows into a suitable partition and drop it.
 DO $$
 BEGIN
     IF NOT EXISTS (

@@ -516,10 +516,18 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         # when the source has no default partition, to prevent the
         # row-copy INSERT from failing on rows that don't match any of the
         # real partitions.
+        #
+        # Hash-partitioned tables cannot have a default partition at all,
+        # so none is scaffolded for them. With the full set of remainders
+        # every row hashes to some partition anyway. If the source leaves
+        # remainders uncovered, the row-copy INSERT fails before anything
+        # has been dropped, and as the generated script runs in a single
+        # transaction the whole rebuild is rolled back, so no data is lost.
         source_has_default_partition = any(
             partition.get('is_default') for partition in source_partitions)
         target_data['create_scaffolding_default_partition'] = \
-            not source_has_default_partition
+            not source_has_default_partition and \
+            source_data.get('partition_type') != 'hash'
 
         # For PG/EPAS 11 and above when we copy the data from original
         # table to temporary table for schema diff, we will have to create

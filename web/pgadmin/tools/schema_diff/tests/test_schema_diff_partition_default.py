@@ -26,6 +26,9 @@ done:
   the rebuilt partitions' bounds (so they land in the scaffolding DEFAULT
   partition during the copy), those rows must not be silently discarded
   when the scaffolding partition would otherwise be dropped.
+* Hash-partitioned tables cannot have a DEFAULT partition at all, so no
+  scaffolding one may be created for them, and the rows must still be
+  copied into the rebuilt table.
 """
 
 import json
@@ -65,6 +68,16 @@ CREATE TABLE {0}.part_stray_rows (
 
 CREATE TABLE {0}.part_stray_rows_p1 PARTITION OF {0}.part_stray_rows
     FOR VALUES FROM (1) TO (10);
+
+CREATE TABLE {0}.part_hash (
+    col1 integer NOT NULL,
+    col2 text
+) PARTITION BY HASH (col1);
+
+CREATE TABLE {0}.part_hash_p0 PARTITION OF {0}.part_hash
+    FOR VALUES WITH (MODULUS 2, REMAINDER 0);
+CREATE TABLE {0}.part_hash_p1 PARTITION OF {0}.part_hash
+    FOR VALUES WITH (MODULUS 2, REMAINDER 1);
 """
 
 # The target starts out with different partition bounds so that Schema Diff
@@ -114,6 +127,21 @@ CREATE TABLE {0}.part_stray_rows_def PARTITION OF {0}.part_stray_rows
 -- rebuild if the scaffolding DEFAULT partition is kept instead of being
 -- unconditionally dropped once it holds data.
 INSERT INTO {0}.part_stray_rows VALUES (2), (500);
+
+-- The source adds col2, which makes Schema Diff rebuild the table. Hash
+-- partitions cannot have a DEFAULT sibling, so the rebuild must not try
+-- to scaffold one, and the rows spread across both partitions must be
+-- copied into the rebuilt table.
+CREATE TABLE {0}.part_hash (
+    col1 integer NOT NULL
+) PARTITION BY HASH (col1);
+
+CREATE TABLE {0}.part_hash_p0 PARTITION OF {0}.part_hash
+    FOR VALUES WITH (MODULUS 2, REMAINDER 0);
+CREATE TABLE {0}.part_hash_p1 PARTITION OF {0}.part_hash
+    FOR VALUES WITH (MODULUS 2, REMAINDER 1);
+
+INSERT INTO {0}.part_hash SELECT generate_series(1, 10);
 """
 
 
@@ -361,8 +389,25 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.assertEqual(
             self.count_partitions(self.tar_database, 'part_stray_rows'), 2)
 
-        # Re-comparing must now report both bounds-only tables as
-        # identical.
+        # --- Hash-partitioned table whose source adds a column. ---
+        part_hash = self.find_object(response_data, 'table', 'part_hash')
+        self.assertEqual(part_hash['status'], 'Different')
+        diff_ddl = part_hash['diff_ddl']
+        self.assertNotIn(
+            ' DEFAULT;', diff_ddl,
+            'Schema Diff tried to create a scaffolding default partition '
+            'on a hash-partitioned table: {0}'.format(diff_ddl))
+
+        self.execute_sql(self.tar_database, diff_ddl)
+        self.assertEqual(
+            self.count_partitions(self.tar_database, 'part_hash'), 2)
+        self.assertEqual(
+            self.count_rows(self.tar_database, 'part_hash'), 10,
+            'Schema Diff lost rows while rebuilding a hash-partitioned '
+            'table: {0}'.format(diff_ddl))
+
+        # Re-comparing must now report the bounds-only tables and the
+        # hash-partitioned table as identical.
         response_data = self.compare()
         self.assertEqual(
             self.find_object(response_data, 'table',
@@ -370,6 +415,9 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.assertEqual(
             self.find_object(response_data, 'table',
                              'part_with_default')['status'], 'Identical')
+        self.assertEqual(
+            self.find_object(response_data, 'table',
+                             'part_hash')['status'], 'Identical')
         # part_stray_rows legitimately still differs from its source: the
         # target kept a default partition (holding the recovered
         # out-of-bounds row) that the source doesn't have. Preserving the
