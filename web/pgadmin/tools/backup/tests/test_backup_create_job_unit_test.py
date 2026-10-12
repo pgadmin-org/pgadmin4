@@ -1302,8 +1302,8 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
-        ('When backup an object the database is passed via the PGDATABASE '
-         'environment variable and never appears in argv',
+        ('When backup an object the database is passed as a quoted '
+         'connection string via --dbname',
          dict(
              class_params=dict(
                  sid=1,
@@ -1324,14 +1324,13 @@ class BackupCreateJobTest(BaseTestGenerator):
              ),
              url=BACKUP_OBJECT_URL,
              expected_cmd_opts=[],
-             # The dbname must not leak onto the command line at all.
+             # The bare name must never be an argument of its own.
              not_expected_cmd_opts=['targetdb'],
-             # It must be carried by the PGDATABASE env var instead.
-             expected_env={'PGDATABASE': 'targetdb'},
+             expected_dbname="dbname=targetdb",
              expected_exit_code=[0, None]
          )),
         ('When backup an object a connection-string value in the database '
-         'field is confined to PGDATABASE and cannot reach argv',
+         'field is quoted as a literal database name',
          dict(
              class_params=dict(
                  sid=1,
@@ -1348,9 +1347,9 @@ class BackupCreateJobTest(BaseTestGenerator):
                  verbose=True,
                  schemas=[],
                  tables=[],
-                 # If this reached argv as a positional dbname, libpq would
-                 # expand it into a connection string and redirect the
-                 # connection (and PGPASSWORD) to an attacker-chosen server.
+                 # If this reached --dbname unquoted, libpq would expand it
+                 # into a connection string and redirect the connection (and
+                 # PGPASSWORD) to an attacker-chosen server.
                  database='host=127.0.0.1 port=5433 dbname=postgres'
              ),
              url=BACKUP_OBJECT_URL,
@@ -1358,9 +1357,9 @@ class BackupCreateJobTest(BaseTestGenerator):
              expected_cmd_opts=['--file'],
              not_expected_cmd_opts=[
                  'host=127.0.0.1 port=5433 dbname=postgres', '--'],
-             # Carried literally in PGDATABASE, where libpq does not expand it.
-             expected_env={
-                 'PGDATABASE': 'host=127.0.0.1 port=5433 dbname=postgres'},
+             # Quoted as the dbname value, which libpq never expands.
+             expected_dbname="dbname='host=127.0.0.1 port=5433 "
+                             "dbname=postgres'",
              expected_exit_code=[0, None]
          )),
         ('When backup the object with option - Do not save Row security '
@@ -1596,13 +1595,64 @@ class BackupCreateJobTest(BaseTestGenerator):
                     opt,
                     batch_process_mock.call_args_list[0][1]['args']
                 )
-        # For object backups the target database must be passed via the
-        # PGDATABASE environment variable, never in argv -- a positional
-        # dbname containing "=" is expanded by libpq into a connection string.
-        # not_expected_cmd_opts (above) guards its absence from argv; this
-        # confirms it is carried in the environment instead.
-        if getattr(self, 'expected_env', None):
-            call = batch_process_mock.return_value.set_env_variables.call_args
-            actual_env = (call.kwargs.get('env') or {}) if call else {}
-            for _key, _val in self.expected_env.items():
-                self.assertEqual(actual_env.get(_key), _val)
+        # For object backups the target database must be passed to --dbname
+        # as a quoted connection string, so that libpq neither expands it nor
+        # lets a service file's dbname override it.
+        if getattr(self, 'expected_dbname', None):
+            args = batch_process_mock.call_args_list[0][1]['args']
+            self.assertIn('--dbname', args)
+            self.assertEqual(args[args.index('--dbname') + 1],
+                             self.expected_dbname)
+
+
+class BackupCreateJobDatabaseRequiredTest(BaseTestGenerator):
+    """An object backup without a target database must be rejected up front,
+    before any job is created, rather than letting libpq pick a database."""
+
+    scenarios = [
+        ('When backup object with an empty database name',
+         dict(
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 schemas=[],
+                 tables=[],
+                 database=''
+             ),
+             url=BACKUP_OBJECT_URL
+         )),
+        ('When backup object with a null database name',
+         dict(
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 schemas=[],
+                 tables=[],
+                 database=None
+             ),
+             url=BACKUP_OBJECT_URL
+         )),
+        ('When backup object without a database name',
+         dict(
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 schemas=[],
+                 tables=[]
+             ),
+             url=BACKUP_OBJECT_URL
+         )),
+    ]
+
+    @patch('pgadmin.tools.backup.BatchProcess')
+    def runTest(self, batch_process_mock):
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
+        url = self.url.format(self.server_id)
+
+        response = self.tester.post(url,
+                                    data=json.dumps(self.params),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.data)['errormsg'],
+                         'Database parameter is required.')
+        self.assertFalse(batch_process_mock.called)

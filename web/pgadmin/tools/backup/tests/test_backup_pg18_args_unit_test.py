@@ -121,7 +121,8 @@ class BackupPG18ArgsTestCase(BaseTestGenerator):
                             use_ssh_tunnel=0)
         server = MagicMock(host='localhost', port=5432,
                            maintenance_db='postgres')
-        data = dict(format='custom', schemas=[], tables=[], **self.data)
+        data = dict(format='custom', schemas=[], tables=[],
+                    database='postgres', **self.data)
 
         with patch('pgadmin.utils.driver.get_driver',
                    return_value=MagicMock()):

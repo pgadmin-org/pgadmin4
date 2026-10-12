@@ -18,7 +18,7 @@ from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, does_utility_exist, get_server, \
-    filename_with_file_manager_path
+    filename_with_file_manager_path, database_conninfo
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -259,6 +259,10 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     if backup_obj_type != 'objects':
         args.append('--database')
         args.append(server.maintenance_db)
+    else:
+        # Never pass the user-supplied database name directly: see
+        # database_conninfo() for why it is wrapped in a connection string.
+        args.extend(['--dbname', database_conninfo(data['database'])])
 
     if backup_obj_type == 'globals':
         args.append('--globals-only')
@@ -448,6 +452,16 @@ def create_backup_objects_job(sid):
     data = json.loads(request.data)
     backup_obj_type = data.get('type', 'objects')
 
+    # A target database is mandatory for an object backup. Reject an
+    # empty/missing value up front: otherwise the empty name would make libpq
+    # fall back to a database named after the login role, silently backing
+    # up the wrong database instead of failing safely. Server and globals
+    # backups connect to the maintenance database instead, so they need no
+    # database here.
+    if backup_obj_type == 'objects' and not data.get('database'):
+        return bad_request(
+            errormsg=gettext("Database parameter is required."))
+
     try:
         backup_file = filename_with_file_manager_path(
             data['file'], (data.get('format', '') != 'directory'))
@@ -497,16 +511,7 @@ def create_backup_objects_job(sid):
     try:
         bfile = data['file'].encode('utf-8') \
             if hasattr(data['file'], 'encode') else data['file']
-        # Pass the target database via the PGDATABASE environment variable
-        # instead of as a command-line argument. A positional dbname is unsafe
-        # even with a "--" end-of-options marker: pg_dump/libpq expand a value
-        # containing "=" (e.g. "host=evil port=5433 dbname=postgres") into a
-        # connection string, letting a user redirect the connection -- and the
-        # exported PGPASSWORD credential -- to an arbitrary server. PGDATABASE
-        # is used as a literal database name and is not expanded.
-        env = {}
         if backup_obj_type == 'objects':
-            env['PGDATABASE'] = data['database']
             p = BatchProcess(
                 desc=BackupMessage(
                     BACKUP.OBJECT, server.id, bfile,
@@ -526,7 +531,7 @@ def create_backup_objects_job(sid):
                 cmd=utility, args=escaped_args, manager_obj=manager
             )
 
-        p.set_env_variables(server, env=env)
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:
