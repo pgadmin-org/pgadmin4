@@ -51,22 +51,33 @@ if _platform == "win32":
 
 
 def _open_upload_target(path):
-    """Open a file for writing with leaf-symlink protection.
+    """Open a file for writing, with leaf-symlink protection in server mode.
 
     Used by both the file upload endpoint and `save_file()` (Query Tool /
-    ERD save). Returns a binary write-mode file object. The kernel will
-    refuse to follow a symbolic link at the leaf (CWE-61), closing the
-    TOCTOU gap between `check_access_permission` and the actual file
-    write. Mode is intentionally 0o600 (owner-only); see release notes
-    for the behavioral change from the previous umask-default 0o644.
+    ERD save). Returns a binary write-mode file object.
+
+    In server mode the kernel will refuse to follow a symbolic link at the
+    leaf (CWE-61), closing the TOCTOU gap between `check_access_permission`
+    and the actual file write, and new files are created owner-only
+    (0o600).
+
+    In desktop mode there is no storage sandbox to escape, as
+    `check_access_permission` is a no-op and the user may write anywhere
+    they can, so neither restriction applies: symlinks are followed and new
+    files get the umask default. O_NOFOLLOW must not be used there, as some
+    filesystems (e.g. the xdg-document-portal FUSE mount used by Flatpak)
+    return ELOOP for it even on regular files.
 
     On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
     residual leaf-component TOCTOU is mitigated by the absence of any
     in-pgAdmin primitive that creates symlinks.
     """
-    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC \
-        | getattr(os, 'O_NOFOLLOW', 0)
-    fd = os.open(path, flags, 0o600)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+    mode = 0o666
+    if config.SERVER_MODE:
+        flags |= getattr(os, 'O_NOFOLLOW', 0)
+        mode = 0o600
+    fd = os.open(path, flags, mode)
     return os.fdopen(fd, 'wb')
 
 

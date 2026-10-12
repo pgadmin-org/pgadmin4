@@ -280,13 +280,23 @@ class TestAddfolderTargetSymlinkRejected(
 # ---------------------------------------------------------------------------
 
 class _OpenUploadTargetMixin:
-    """Mixin for upload-syscall hardening tests."""
+    """Mixin for upload-syscall hardening tests.
+
+    The hardening only applies in server mode, so pin SERVER_MODE rather
+    than inheriting whatever the harness was started with. Desktop-mode
+    subclasses override `server_mode`.
+    """
+
+    server_mode = True
 
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.tmpdir = tempfile.mkdtemp(prefix="pga_filemgr_open_")
+        self._prev_server_mode = config.SERVER_MODE
+        config.SERVER_MODE = self.server_mode
 
     def tearDown(self):
+        config.SERVER_MODE = self._prev_server_mode
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
 
@@ -414,6 +424,58 @@ class TestOpenUploadTargetRejectsLeafSymlinkPointingToNonexistent(
         self.assertFalse(os.path.exists(outside_path))
 
 
+class TestOpenUploadTargetDesktopFollowsLeafSymlink(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """Desktop mode: a leaf symlink is followed, not refused.
+
+    There is no storage sandbox in desktop mode, so O_NOFOLLOW protects
+    nothing there, and it breaks saves on filesystems that return ELOOP
+    for it on regular files (Flatpak's document portal, issue #10482).
+    """
+
+    scenarios = [('default', dict())]
+    server_mode = False
+
+    def runTest(self):
+        from pgadmin.misc.file_manager import _open_upload_target
+        real_target = os.path.join(self.tmpdir, "real.sql")
+        with open(real_target, "wb") as f:
+            f.write(b"OLD")
+        link_path = os.path.join(self.tmpdir, "link.sql")
+        try:
+            os.symlink(real_target, link_path)
+        except (OSError, NotImplementedError):
+            self.skipTest("Cannot create symlinks on this platform")
+
+        with _open_upload_target(link_path) as f:
+            f.write(b"NEW")
+
+        self.assertTrue(os.path.islink(link_path))
+        with open(real_target, "rb") as f:
+            self.assertEqual(f.read(), b"NEW")
+
+
+class TestOpenUploadTargetDesktopUsesUmask(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """Desktop mode: new files get the umask default, not 0o600."""
+
+    scenarios = [('default', dict())]
+    server_mode = False
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("POSIX mode bits not meaningful on Windows")
+        from pgadmin.misc.file_manager import _open_upload_target
+        umask = os.umask(0o022)
+        try:
+            target = os.path.join(self.tmpdir, "desktop.sql")
+            with _open_upload_target(target) as f:
+                f.write(b"x")
+        finally:
+            os.umask(umask)
+        self.assertEqual(os.stat(target).st_mode & 0o777, 0o644)
+
+
 # ---------------------------------------------------------------------------
 # save_file() must use the same O_NOFOLLOW-protected open as uploads.
 #
@@ -444,8 +506,12 @@ class _SaveFileMixin:
         self.tmpdir = tempfile.mkdtemp(prefix="pga_filemgr_savefile_")
         self.storage_dir = os.path.join(self.tmpdir, "storage")
         os.makedirs(self.storage_dir)
+        # The leaf-symlink hardening only applies in server mode.
+        self._prev_server_mode = config.SERVER_MODE
+        config.SERVER_MODE = True
 
     def tearDown(self):
+        config.SERVER_MODE = self._prev_server_mode
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
     def _save_file(self, file_name, file_content, check_side_effect=None):
