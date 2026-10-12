@@ -844,8 +844,39 @@ class OpenAIClient(LLMClient):
         response.completed for the final response.
         """
         content_parts = []
-        # tool_calls_data: {call_id: {name, arguments}}
+        # tool_calls_data: {key: {call_id, name, arguments}}
+        # Function-call events are correlated on output_index and the
+        # item id, never on call_id, which the
+        # response.function_call_arguments.delta events do not carry.
+        # output_index is required on every output_item and
+        # function_call_arguments event, but item.id is optional, so an
+        # added event may lack the id that a later delta supplies as
+        # item_id. Both identifiers are therefore recorded as aliases of
+        # one entry, so a call is never split across two keys whichever
+        # of them a given (possibly OpenAI-compatible) server sends.
         tool_calls_data = {}
+        tool_call_keys = {}
+
+        def tool_call_entry(output_index, item_id):
+            aliases = []
+            if output_index is not None and output_index != '':
+                aliases.append(('index', output_index))
+            if item_id:
+                aliases.append(('id', item_id))
+            if not aliases:
+                # Nothing to correlate on; keep such events together.
+                aliases.append(('none', None))
+            key = next((tool_call_keys[a] for a in aliases
+                        if a in tool_call_keys), None)
+            if key is None:
+                key = len(tool_calls_data)
+                tool_calls_data[key] = {
+                    'call_id': '', 'name': '', 'arguments': ''
+                }
+            for alias in aliases:
+                tool_call_keys.setdefault(alias, key)
+            return tool_calls_data[key]
+
         model_name = self._model
         usage = Usage()
         resp_status = ''
@@ -884,21 +915,28 @@ class OpenAIClient(LLMClient):
             elif event_type == 'response.output_item.added':
                 item = data.get('item', {})
                 if item.get('type') == 'function_call':
-                    call_id = item.get('call_id', '')
-                    tool_calls_data[call_id] = {
-                        'name': item.get('name', ''),
-                        'arguments': ''
-                    }
+                    tc = tool_call_entry(
+                        data.get('output_index'), item.get('id'))
+                    for key in ('call_id', 'name'):
+                        if item.get(key):
+                            tc[key] = item[key]
+
+            elif event_type == 'response.output_item.done':
+                # The finished item carries the complete name, call_id
+                # and arguments, so treat those as authoritative rather
+                # than relying on every delta having been matched.
+                item = data.get('item', {})
+                if item.get('type') == 'function_call':
+                    tc = tool_call_entry(
+                        data.get('output_index'), item.get('id'))
+                    for key in ('call_id', 'name', 'arguments'):
+                        if item.get(key):
+                            tc[key] = item[key]
 
             elif event_type == 'response.function_call_arguments.delta':
-                call_id = data.get('call_id', '')
-                if call_id not in tool_calls_data:
-                    tool_calls_data[call_id] = {
-                        'name': '', 'arguments': ''
-                    }
-                tool_calls_data[call_id]['arguments'] += data.get(
-                    'delta', ''
-                )
+                tc = tool_call_entry(
+                    data.get('output_index'), data.get('item_id'))
+                tc['arguments'] += data.get('delta', '')
 
             elif event_type == 'response.completed':
                 resp = data.get('response', {})
@@ -915,14 +953,14 @@ class OpenAIClient(LLMClient):
         # Build final response
         content = ''.join(content_parts)
         tool_calls = []
-        for call_id, tc in tool_calls_data.items():
+        for tc in tool_calls_data.values():
             try:
                 arguments = json.loads(tc['arguments']) \
                     if tc['arguments'] else {}
             except json.JSONDecodeError:
                 arguments = {}
             tool_calls.append(ToolCall(
-                id=call_id or str(uuid.uuid4()),
+                id=tc['call_id'] or str(uuid.uuid4()),
                 name=tc['name'],
                 arguments=arguments
             ))

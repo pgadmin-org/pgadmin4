@@ -118,3 +118,163 @@ class OpenAIStreamToolCallTestCase(BaseTestGenerator):
         # The real provider id must survive a null id in a later delta,
         # rather than being clobbered (and replaced by a random uuid).
         self.assertEqual(tc.id, self.expected_id)
+
+
+class OpenAIResponsesStreamToolCallTestCase(BaseTestGenerator):
+    """Responses API function-call deltas must be correlated on item_id,
+    not call_id (issue #10348): response.function_call_arguments.delta
+    events carry item_id, not call_id.
+    """
+
+    scenarios = [
+        ('A single streamed tool call keeps its name and arguments '
+         'together', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added', 'item': {
+                     'type': 'function_call', 'id': 'item_1',
+                     'call_id': 'call_abc', 'name': 'get_database_schema'
+                 }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'delta': '{"table":'}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'delta': '"users"}'}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'get_database_schema', {'table': 'users'}),
+             ],
+         )),
+        ('Two parallel tool calls are not merged into one', dict(
+            stream=[
+                _sse({'type': 'response.output_item.added', 'item': {
+                    'type': 'function_call', 'id': 'item_1',
+                    'call_id': 'call_1', 'name': 'run_query'
+                }}),
+                _sse({'type': 'response.output_item.added', 'item': {
+                    'type': 'function_call', 'id': 'item_2',
+                    'call_id': 'call_2', 'name': 'get_database_schema'
+                }}),
+                _sse({'type': 'response.function_call_arguments.delta',
+                      'item_id': 'item_1', 'delta': '{"sql": "SELECT 1"}'}),
+                _sse({'type': 'response.function_call_arguments.delta',
+                      'item_id': 'item_2', 'delta': '{}'}),
+                _sse({'type': 'response.completed', 'response': {}}),
+            ],
+            expected=[
+                ('call_1', 'run_query', {'sql': 'SELECT 1'}),
+                ('call_2', 'get_database_schema', {}),
+            ],
+        )),
+        ('Parallel tool calls without item ids are keyed on '
+         'output_index', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call',
+                           'call_id': 'call_1', 'name': 'run_query'
+                       }}),
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 1, 'item': {
+                           'type': 'function_call',
+                           'call_id': 'call_2',
+                           'name': 'get_database_schema'
+                       }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'output_index': 0,
+                       'delta': '{"sql": "SELECT 1"}'}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'output_index': 1, 'delta': '{}'}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_1', 'run_query', {'sql': 'SELECT 1'}),
+                 ('call_2', 'get_database_schema', {}),
+             ],
+         )),
+        ('An added event without an item id is matched to deltas that '
+         'carry item_id', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call',
+                           'call_id': 'call_abc',
+                           'name': 'get_database_schema'
+                       }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'output_index': 0,
+                       'delta': '{"table":'}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'output_index': 0,
+                       'delta': '"users"}'}),
+                 _sse({'type': 'response.output_item.done',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call', 'id': 'item_1',
+                           'call_id': 'call_abc',
+                           'name': 'get_database_schema',
+                           'arguments': '{"table": "users"}'
+                       }}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'get_database_schema', {'table': 'users'}),
+             ],
+         )),
+        ('Deltas that omit output_index are matched to the added event '
+         'by item id', dict(
+             stream=[
+                 _sse({'type': 'response.output_item.added',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call', 'id': 'item_1',
+                           'call_id': 'call_abc', 'name': 'run_query'
+                       }}),
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1',
+                       'delta': '{"sql": "SELECT 1"}'}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'run_query', {'sql': 'SELECT 1'}),
+             ],
+         )),
+        ('output_item.done supplies the final name, call_id and '
+         'arguments', dict(
+             stream=[
+                 # A delta with no matching output_item.added seeds an
+                 # entry with an empty name and call_id, and partial
+                 # arguments; the done event must complete it.
+                 _sse({'type': 'response.function_call_arguments.delta',
+                       'item_id': 'item_1', 'output_index': 0,
+                       'delta': '{"table":'}),
+                 _sse({'type': 'response.output_item.done',
+                       'output_index': 0, 'item': {
+                           'type': 'function_call', 'id': 'item_1',
+                           'call_id': 'call_abc',
+                           'name': 'get_database_schema',
+                           'arguments': '{"table": "users"}',
+                           'status': 'completed'
+                       }}),
+                 _sse({'type': 'response.output_item.done',
+                       'output_index': 1, 'item': {
+                           'type': 'message', 'id': 'msg_1',
+                           'content': []
+                       }}),
+                 _sse({'type': 'response.completed', 'response': {}}),
+             ],
+             expected=[
+                 ('call_abc', 'get_database_schema', {'table': 'users'}),
+             ],
+         )),
+    ]
+
+    def runTest(self):
+        client = OpenAIClient(api_key='test-key', model='gpt-5')
+        result = None
+        for item in client._read_responses_stream(_FakeStream(self.stream)):
+            if isinstance(item, LLMResponse):
+                result = item
+
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result.tool_calls), len(self.expected))
+        actual = [(tc.id, tc.name, tc.arguments)
+                  for tc in result.tool_calls]
+        self.assertEqual(actual, self.expected)
