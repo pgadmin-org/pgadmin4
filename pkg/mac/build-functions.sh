@@ -317,8 +317,11 @@ _complete_bundle() {
     # PkgInfo
     echo APPLPGA4 > "${BUNDLE_DIR}/Contents/PkgInfo"
 
-    # Icon
+    # Icon. Assets.car is compiled from pgAdmin4.icon (see README.md) and
+    # gives macOS 26+ the dark, clear and tinted variants; older releases
+    # fall back to app.icns.
     cp pgAdmin4.icns "${BUNDLE_DIR}/Contents/Resources/app.icns"
+    cp Assets.car "${BUNDLE_DIR}/Contents/Resources/Assets.car"
 
     # Rename the executable
     mv "${BUNDLE_DIR}/Contents/MacOS/Electron" "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"
