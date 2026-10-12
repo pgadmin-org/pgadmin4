@@ -279,9 +279,11 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         # Override per-user connection_params keys.  Use the
         # SharedServer value whenever it is present, regardless of
-        # whether the owner's Server has the same key.
-        s_conn = getattr(server, 'connection_params', None) \
-            or {}
+        # whether the owner's Server has the same key. Work on a copy:
+        # the dict may be a MutableDict still attached to the owner's
+        # session-bound row, and mutating it in place would mark that
+        # row dirty for the next commit.
+        s_conn = dict(getattr(server, 'connection_params', None) or {})
         ss_conn = getattr(sharedserver, 'connection_params',
                           None) or {}
         for key in SENSITIVE_CONN_KEYS:
