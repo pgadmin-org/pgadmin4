@@ -66,3 +66,38 @@ class GetLocaleTestCase(BaseTestGenerator):
         with self.app.test_request_context(
                 '/', headers={'Cookie': 'PGADMIN_LANGUAGE=it'}):
             self.assertEqual(self._get_locale(), 'it')
+
+        # Values that aren't a key of config.LANGUAGES must fall back to the
+        # default and must never be stored in the session, since flask-babel
+        # raises on unknown locales and a stored bad value would then break
+        # every later request.
+        with self.app.test_request_context(
+                '/', headers={'Cookie': 'PGADMIN_LANGUAGE=xx'}):
+            self.assertEqual(self._get_locale(), 'en')
+            self.assertNotIn('PGADMIN_LANGUAGE', session)
+
+        with self.app.test_request_context(
+                '/', method='POST', data={'language': 'xx'}):
+            self.assertEqual(self._get_locale(), 'en')
+            self.assertEqual(session.get('PGADMIN_LANGUAGE'), 'en')
+
+        with self.app.test_request_context(
+                '/', method='POST', data={'language': '<script>'}):
+            self.assertEqual(self._get_locale(), 'en')
+            self.assertEqual(session.get('PGADMIN_LANGUAGE'), 'en')
+
+        # A session that already holds a bad value (for example one written
+        # before this validation existed) must not be trusted either.
+        with self.app.test_request_context('/'):
+            session['PGADMIN_LANGUAGE'] = 'xx'
+            self.assertEqual(self._get_locale(), 'en')
+
+        # Go through a real request so flask-babel's Locale.parse() is
+        # actually exercised: an unknown language in the login form, and a
+        # planted cookie, must not produce a server error.
+        client = self.app.test_client()
+        response = client.post('/login', data={'language': 'xx'})
+        self.assertLess(response.status_code, 500)
+        client.set_cookie('PGADMIN_LANGUAGE', 'xx')
+        response = client.get('/login')
+        self.assertLess(response.status_code, 500)
