@@ -268,7 +268,13 @@ Use the fields in the *Advanced* tab to configure a connection:
     mode, and when pgAdmin is upgraded, an existing free-text command is kept
     only if it exactly matches a configured command (its arguments joined by
     single spaces), in which case it is converted to that command's name; all
-    others are cleared and a warning is logged. Placeholders such as
+    others are cleared and a warning is logged. This conversion cannot be
+    undone, so ``SERVER_PASSEXEC_COMMANDS`` must be configured before the
+    first start after upgrading. If it is still empty at that point, the
+    conversion is postponed: existing commands are left in the configuration
+    database unused, a warning giving the number of affected servers is
+    logged at each start, and they are converted or cleared on the first
+    start at which at least one command is configured. Placeholders such as
     ``%HOSTNAME%``, ``%PORT%`` and ``%USERNAME%`` are not substituted in
     server mode, so a command containing them is converted only if the
     configured arguments contain the same literal text. On a shared server, a

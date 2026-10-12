@@ -18,7 +18,14 @@ SECRET_CMD = 'echo SECRET-TOKEN-123'
 
 class TestConvertLegacyServerPassexec(BaseTestGenerator):
     """Free-text commands become names where they match the allowlist
-    and are cleared otherwise, without logging command text."""
+    and are cleared otherwise, without logging command text. With no
+    commands configured nothing is touched, and a warning counts the
+    rows still waiting to be converted."""
+
+    scenarios = [
+        ('Commands configured', dict(configured=True)),
+        ('No commands configured', dict(configured=False)),
+    ]
 
     def setUp(self):
         self.ctx = self.app.app_context()
@@ -57,6 +64,41 @@ class TestConvertLegacyServerPassexec(BaseTestGenerator):
         db.session.commit()
 
     def runTest(self):
+        if self.configured:
+            self.check_converted()
+        else:
+            self.check_postponed()
+
+    def check_postponed(self):
+        from pgadmin.model import db, Server, SharedServer
+        logger = MagicMock()
+        with patch.object(passexec.config, 'SERVER_PASSEXEC_COMMANDS',
+                          {}, create=True):
+            self.assertEqual(convert_legacy_server_passexec(logger), 0)
+            db.session.expire_all()
+
+            for sid, cmd in ((self.a, VAULT_CMD), (self.b, SECRET_CMD),
+                             (self.c, None), (self.d, '')):
+                row = db.session.get(Server, sid)
+                self.assertEqual((row.passexec_name, row.passexec_cmd),
+                                 (None, cmd))
+            s = db.session.get(SharedServer, self.shared)
+            self.assertEqual((s.passexec_name, s.passexec_cmd),
+                             (None, VAULT_CMD))
+
+            # One warning per table with pending rows, counting at least
+            # this test's rows (the shared test DB may hold others), and
+            # never the command text.
+            warned = {c[0][2]: c[0][1]
+                      for c in logger.warning.call_args_list}
+            self.assertGreaterEqual(warned.get(Server.__tablename__, 0), 2)
+            self.assertGreaterEqual(
+                warned.get(SharedServer.__tablename__, 0), 1)
+            for call in logger.method_calls:
+                self.assertNotIn('SECRET-TOKEN-123', repr(call))
+                self.assertNotIn('get-pass', repr(call))
+
+    def check_converted(self):
         from pgadmin.model import db, Server, SharedServer
         logger = MagicMock()
         with patch.object(passexec.config, 'SERVER_PASSEXEC_COMMANDS',

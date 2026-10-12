@@ -1086,6 +1086,16 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 # pgAdmin identity and treat the other four as untrusted input.
 # Names may not start with "__". An empty dictionary (the default) turns the
 # feature off. This setting is applicable only for server mode.
+#
+# Upgrading from a release that allowed free-text commands in server mode:
+# configure this BEFORE the first start after upgrading. On that start, an
+# existing free-text command is converted to the name of the entry whose
+# arguments, joined by single spaces, match it exactly, and every other
+# command is cleared; the clearing cannot be undone. If the dictionary is
+# empty at that start, the conversion is postponed: existing commands stay
+# in the configuration database unused, a warning is logged at each start,
+# and they are converted or cleared on the first start with at least one
+# entry configured.
 #############################################################################
 SERVER_PASSEXEC_COMMANDS = {}
 

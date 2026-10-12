@@ -100,10 +100,34 @@ def convert_legacy_server_passexec(logger):
     exactly match a configured command into its name, and clear every
     passexec_cmd, since free-text commands no longer run in server mode.
     Command text is never logged because it may contain secrets.
-    Returns the number of rows changed."""
+    Returns the number of rows changed.
+
+    The conversion is irreversible, so it does not run until at least
+    one command is configured: with an empty SERVER_PASSEXEC_COMMANDS
+    nothing could match and every command would be cleared. Until then
+    the legacy values stay in the database, where nothing in server
+    mode reads, runs, returns or exports them, and a warning is logged
+    at each start so the administrator knows to configure the setting
+    before they are converted."""
     from pgadmin.model import db, Server, SharedServer
     by_cmd = {' '.join(argv): name
               for name, argv in get_server_passexec_commands().items()}
+    if not by_cmd:
+        for model in (Server, SharedServer):
+            pending = model.query.filter(
+                model.passexec_cmd.isnot(None),
+                model.passexec_cmd != '').count()
+            if pending:
+                logger.warning(
+                    'SERVER_PASSEXEC_COMMANDS is not configured, but %s '
+                    'row(s) in the %s table still hold a password exec '
+                    'command from before the upgrade. They are not run in '
+                    'server mode. Configure SERVER_PASSEXEC_COMMANDS '
+                    'before the next start: commands that match a '
+                    'configured entry are then converted to its name, '
+                    'and the rest are cleared.',
+                    pending, model.__tablename__)
+        return 0
     changed = 0
     for model in (Server, SharedServer):
         # Normalise empty strings quietly; they carry no command.
