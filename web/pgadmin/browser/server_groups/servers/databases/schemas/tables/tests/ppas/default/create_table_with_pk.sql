@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
 (
     "col1_$%{}[]()&*^!@\""'`\\/#" integer NOT NULL,
     "col2_$%{}[]()&*^!@\""'`\\/#" json NOT NULL,
-    CONSTRAINT "simple_table_with_pk$%{}[]()&*^!@""'`\/#_pkey" PRIMARY KEY ("col1_$%{}[]()&*^!@\""""'`\\/#")
+    CONSTRAINT "simple_table_with_pk$%{}[]()&*^!@""'`\/#_pkey" PRIMARY KEY ("col1_$%{}[]()&*^!@\""'`\\/#")
 )
 
 TABLESPACE pg_default;
