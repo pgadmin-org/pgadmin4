@@ -294,22 +294,31 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     r for _, r in changed_data[of_type].items()
                 ]
 
-            sql = render_template(
-                "/".join([command_obj.sql_path, 'delete.sql']),
-                data=rows_to_delete,
-                primary_key_labels=keys,
-                no_of_keys=no_of_keys,
-                object_name=command_obj.object_name,
-                nsp_name=command_obj.nsp_name,
-                conn=conn
-            )
-            # A single DELETE statement is rendered covering every row in
-            # rows_to_delete, so that many base rows (no more, no fewer)
-            # should ever be affected.
-            list_of_sql[of_type].append({
-                'sql': sql, 'data': {},
-                'expected_rows': len(rows_to_delete)
-            })
+            # A table gets a single DELETE covering every row in
+            # rows_to_delete. A view gets one DELETE per row, each
+            # expected to affect exactly one base row (as with UPDATE):
+            # a batched count can still match when one selected row has
+            # vanished and an unselected row shares another's key, which
+            # would delete the wrong row without any error.
+            if _is_view_command(command_obj):
+                delete_batches = [[r] for r in rows_to_delete]
+            else:
+                delete_batches = [rows_to_delete]
+
+            for batch in delete_batches:
+                sql = render_template(
+                    "/".join([command_obj.sql_path, 'delete.sql']),
+                    data=batch,
+                    primary_key_labels=keys,
+                    no_of_keys=no_of_keys,
+                    object_name=command_obj.object_name,
+                    nsp_name=command_obj.nsp_name,
+                    conn=conn
+                )
+                list_of_sql[of_type].append({
+                    'sql': sql, 'data': {},
+                    'expected_rows': len(batch)
+                })
 
     def failure_handle(res, row_id):
         mogrified_sql = conn.mogrify(item['sql'], item['data'])

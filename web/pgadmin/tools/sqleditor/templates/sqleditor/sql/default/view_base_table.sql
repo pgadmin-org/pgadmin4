@@ -24,4 +24,12 @@ WHERE (SELECT count(*) FROM base_tables) = 1
             AND v.is_trigger_updatable = 'NO'
             AND v.is_trigger_deletable = 'NO'
             AND v.is_trigger_insertable_into = 'NO'
+    )
+{# A view with rewrite rules beyond its own _RETURN rule (e.g. DO INSTEAD) #}
+{# saves through user-defined rule logic, not simple auto-updating. #}
+    AND NOT EXISTS (
+        SELECT 1
+        FROM pg_catalog.pg_rewrite r
+        WHERE r.ev_class = {{obj_id}}::oid
+            AND r.rulename <> '_RETURN'
     );

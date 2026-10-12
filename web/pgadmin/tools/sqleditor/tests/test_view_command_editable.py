@@ -257,6 +257,77 @@ class TestViewCommandEditable(_ViewSaveTestMixin, BaseTestGenerator):
             expected_primary_keys=None,
             do_save=False,
         )),
+        ('View exposing the whole composite primary key is editable', dict(
+            setup_sql="""
+                CREATE TABLE {base1} (
+                    a INTEGER,
+                    b INTEGER,
+                    name VARCHAR(50),
+                    PRIMARY KEY (a, b)
+                );
+                INSERT INTO {base1} (a, b, name) VALUES (1, 1, 'foo');
+                CREATE VIEW {view} AS SELECT a, b, name FROM {base1};
+            """,
+            teardown_sql="""
+                DROP VIEW IF EXISTS {view};
+                DROP TABLE IF EXISTS {base1};
+            """,
+            view_key='view',
+            obj_type='view',
+            expected_can_edit=True,
+            expected_primary_keys={'a': 'int4', 'b': 'int4'},
+            do_save=False,
+        )),
+        # A partial key does not identify a single base row, so a save
+        # could silently change a different row sharing it.
+        ('View exposing part of a composite primary key is not editable',
+         dict(
+             setup_sql="""
+                CREATE TABLE {base1} (
+                    a INTEGER,
+                    b INTEGER,
+                    name VARCHAR(50),
+                    PRIMARY KEY (a, b)
+                );
+                INSERT INTO {base1} (a, b, name) VALUES (1, 1, 'foo');
+                CREATE VIEW {view} AS SELECT a, name FROM {base1};
+            """,
+             teardown_sql="""
+                DROP VIEW IF EXISTS {view};
+                DROP TABLE IF EXISTS {base1};
+            """,
+             view_key='view',
+             obj_type='view',
+             expected_can_edit=False,
+             expected_primary_keys=None,
+             do_save=False,
+         )),
+        # information_schema.views.is_updatable still reports 'YES' for a
+        # view with a DO INSTEAD rule, and the is_trigger_* columns ignore
+        # rules, so the view's pg_rewrite entries must be checked directly.
+        ('View with a DO INSTEAD rule is not editable', dict(
+            setup_sql="""
+                CREATE TABLE {base1} (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(50),
+                    deleted BOOLEAN DEFAULT false
+                );
+                INSERT INTO {base1} (id, name) VALUES (1, 'foo');
+                CREATE VIEW {view} AS SELECT id, name FROM {base1};
+                CREATE RULE soft_delete AS ON DELETE TO {view}
+                    DO INSTEAD UPDATE {base1} SET deleted = true
+                    WHERE id = OLD.id;
+            """,
+            teardown_sql="""
+                DROP VIEW IF EXISTS {view};
+                DROP TABLE IF EXISTS {base1};
+            """,
+            view_key='view',
+            obj_type='view',
+            expected_can_edit=False,
+            expected_primary_keys=None,
+            do_save=False,
+        )),
         ('Materialized view is not editable', dict(
             setup_sql="""
                 CREATE TABLE {base1} (
@@ -608,6 +679,104 @@ class TestViewSaveRejectsVanishedRow(_ViewSaveTestMixin, BaseTestGenerator):
             self._close_query_tool(trans_id)
         finally:
             self._drop_test_objects()
+
+    def _drop_test_objects(self):
+        try:
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DROP VIEW IF EXISTS {view}; "
+                "DROP TABLE IF EXISTS {base1};".format(
+                    view=self.view, base1=self.base1))
+        except Exception:
+            pass
+
+    def tearDown(self):
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestViewDeleteRunsPerRow(_ViewSaveTestMixin, BaseTestGenerator):
+    """ A DELETE through a view runs one statement per row, each expected
+    to affect exactly one base row.
+
+    With `CREATE VIEW v AS SELECT legacy AS id, name FROM t` the view's
+    apparent key `id` is really `t.legacy`. If, after the grid loads rows
+    with id 10 and 20, another session deletes the first and inserts a
+    second row with legacy 20, a single batched
+    `DELETE ... WHERE id IN (10, 20)` still affects the expected two rows
+    but deletes a row the user never selected. Per-row statements catch
+    the vanished row and roll the whole save back. """
+
+    scenarios = [('default', dict())]
+
+    def setUp(self):
+        self._connect()
+        suffix = str(secrets.choice(range(100000, 999999)))
+        self.base1 = 'test_editview_del_base_' + suffix
+        self.view = 'test_editview_del_v_' + suffix
+
+    def runTest(self):
+        setup_sql = """
+            CREATE TABLE {base1} (
+                id SERIAL PRIMARY KEY,
+                legacy INTEGER,
+                name VARCHAR(50)
+            );
+            INSERT INTO {base1} (id, legacy, name) VALUES
+                (1, 10, 'foo'),
+                (2, 20, 'bar');
+            CREATE VIEW {view} AS SELECT legacy AS id, name FROM {base1};
+        """.format(base1=self.base1, view=self.view)
+        utils.create_table_with_query(self.server, self.db_name, setup_sql)
+
+        try:
+            obj_id = self._get_relation_oid(self.view)
+            delete_payload = {
+                "updated": {},
+                "added": {},
+                "deleted": {"1": {"id": 10}, "2": {"id": 20}},
+            }
+
+            # The stale delete is refused and nothing is removed.
+            trans_id = self._initialize_view_data(obj_id)
+            start_data, _ = self._start_and_poll(trans_id)
+            self.assertTrue(start_data['data']['can_edit'])
+
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "DELETE FROM {0} WHERE id = 1; "
+                "INSERT INTO {0} (id, legacy, name) "
+                "VALUES (3, 20, 'baz');".format(self.base1))
+
+            response_data = self._save(trans_id, delete_payload)
+            self.assertEqual(response_data['data']['status'], False)
+            self.assertIn('no longer be visible',
+                          response_data['data']['result'])
+            self._close_query_tool(trans_id)
+
+            self.assertEqual(self._base_ids(), [2, 3])
+
+            # A delete matching one row per key goes through.
+            utils.create_table_with_query(
+                self.server, self.db_name,
+                "UPDATE {0} SET legacy = 10 WHERE id = 3;".format(
+                    self.base1))
+            trans_id = self._initialize_view_data(obj_id)
+            self._start_and_poll(trans_id)
+            response_data = self._save(trans_id, delete_payload)
+            self.assertEqual(response_data['data']['status'], True)
+            self._close_query_tool(trans_id)
+
+            self.assertEqual(self._base_ids(), [])
+        finally:
+            self._drop_test_objects()
+
+    def _base_ids(self):
+        pg_cursor = self.connection.cursor()
+        pg_cursor.execute(
+            "SELECT id FROM {0} ORDER BY id".format(self.base1))
+        result = pg_cursor.fetchall()
+        self.connection.commit()
+        return [r[0] for r in result]
 
     def _drop_test_objects(self):
         try:

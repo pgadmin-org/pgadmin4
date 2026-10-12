@@ -836,17 +836,20 @@ class ViewCommand(GridCommand):
             row['attname'] for row in cols_result['rows']
         }
 
-        # Keep only the primary-key columns that are also present,
-        # under their original name, in the view's own output. There
-        # is no reliable way to map a renamed/omitted PK column back
-        # to the base table through aliasing, so such views are
-        # deliberately left non-editable.
+        # Every primary-key column must also be present, under its
+        # original name, in the view's own output. There is no reliable
+        # way to map a renamed/omitted PK column back to the base table
+        # through aliasing, so such views are deliberately left
+        # non-editable. A view exposing only part of a composite key is
+        # refused too: the partial key does not identify a single base
+        # row, so a save could silently change a different row that
+        # shares it.
         primary_keys = OrderedDict()
         for row in pk_result['rows']:
             if row['attname'] in view_column_names:
                 primary_keys[row['attname']] = row['typname']
 
-        if len(primary_keys) == 0:
+        if not primary_keys or len(primary_keys) != len(pk_result['rows']):
             return True, None
 
         pk_names = ','.join(
