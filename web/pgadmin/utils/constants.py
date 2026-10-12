@@ -201,8 +201,9 @@ CONNECTION_PARAM_BOOLEANS = ['sslcompression', 'sslsni', 'gssdelegation']
 # to the variable that carries them.  Taken from PQconninfoOptions in
 # src/interfaces/libpq/fe-connect.c; parameters that libpq offers no
 # environment variable for (keepalives and friends, sslpassword,
-# fallback_application_name, replication) are absent, and cannot be passed
-# to a utility this way.
+# sslkeylogfile, fallback_application_name, replication) are absent, and
+# cannot be passed to a utility this way.  The service name is not stored
+# in the connection parameters, and is set separately.
 CONNECTION_PARAM_ENV_VARS = {
     'application_name': 'PGAPPNAME',
     'channel_binding': 'PGCHANNELBINDING',
@@ -220,7 +221,6 @@ CONNECTION_PARAM_ENV_VARS = {
     'passfile': 'PGPASSFILE',
     'require_auth': 'PGREQUIREAUTH',
     'requirepeer': 'PGREQUIREPEER',
-    'service': 'PGSERVICE',
     'ssl_max_protocol_version': 'PGSSLMAXPROTOCOLVERSION',
     'ssl_min_protocol_version': 'PGSSLMINPROTOCOLVERSION',
     'sslcert': 'PGSSLCERT',

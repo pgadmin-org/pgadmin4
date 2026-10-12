@@ -861,9 +861,15 @@ class BatchProcess:
 
         self.env.update(conn_env)
 
-        if server and server.service:
-            # Set service name related ENV variable
-            self.env['PGSERVICE'] = server.service
+        # Take the service name from the manager too: for a shared server
+        # it carries the current user's value, whereas the server row the
+        # tools pass is the owner's.  For any other server the two match.
+        if self.manager_obj:
+            service = self.manager_obj.service
+        else:
+            service = server.service if server else None
+        if service:
+            self.env['PGSERVICE'] = service
 
         if self.manager_obj:
             # export password environment
