@@ -5,7 +5,7 @@ WITH INH_TABLES AS
     FROM
         pg_catalog.pg_attribute at
     JOIN
-        pg_catalog.pg_inherits ph ON ph.inhparent = at.attrelid AND ph.inhrelid = 33896::oid
+        pg_catalog.pg_inherits ph ON ph.inhparent = at.attrelid AND ph.inhrelid = {{tid}}::oid
     JOIN
         pg_catalog.pg_class parent ON ph.inhparent  = parent.oid
     JOIN
