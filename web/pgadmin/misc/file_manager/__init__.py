@@ -51,23 +51,47 @@ if _platform == "win32":
 
 
 def _open_upload_target(path):
-    """Open a file for writing with leaf-symlink protection.
+    """Open a file for writing, with leaf-symlink protection in server mode.
 
     Used by both the file upload endpoint and `save_file()` (Query Tool /
-    ERD save). Returns a binary write-mode file object. The kernel will
-    refuse to follow a symbolic link at the leaf (CWE-61), closing the
-    TOCTOU gap between `check_access_permission` and the actual file
-    write. Mode is intentionally 0o600 (owner-only); see release notes
-    for the behavioral change from the previous umask-default 0o644.
+    ERD save). Returns a binary write-mode file object.
+
+    In server mode the kernel will refuse to follow a symbolic link at the
+    leaf (CWE-61), closing the TOCTOU gap between `check_access_permission`
+    and the actual file write, and new files are created owner-only
+    (0o600).
+
+    In desktop mode there is no storage sandbox to escape, as
+    `check_access_permission` is a no-op and the user may write anywhere
+    they can, so neither restriction applies: symlinks are followed and new
+    files get the umask default. O_NOFOLLOW must not be used there, as some
+    filesystems (e.g. the xdg-document-portal FUSE mount used by Flatpak)
+    return ELOOP for it even on regular files.
 
     On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
     residual leaf-component TOCTOU is mitigated by the absence of any
     in-pgAdmin primitive that creates symlinks.
     """
-    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC \
-        | getattr(os, 'O_NOFOLLOW', 0)
-    fd = os.open(path, flags, 0o600)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+    mode = 0o666
+    if _refuses_leaf_symlinks():
+        flags |= os.O_NOFOLLOW
+    if config.SERVER_MODE:
+        mode = 0o600
+    fd = os.open(path, flags, mode)
     return os.fdopen(fd, 'wb')
+
+
+def _refuses_leaf_symlinks():
+    """True when `_open_upload_target()` opens with O_NOFOLLOW.
+
+    Callers that translate ELOOP/EMLINK into a "refusing to write through
+    a symbolic link" message must use this same condition, so that the
+    message cannot drift from the behaviour: in desktop mode (or on
+    Windows, where O_NOFOLLOW does not exist) those errnos mean a genuine
+    filesystem problem, not a deliberate refusal.
+    """
+    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW')
 
 
 MODULE_NAME = 'file_manager'
@@ -485,8 +509,11 @@ def save_file():
         # O_NOFOLLOW makes the kernel refuse a leaf symlink with ELOOP
         # (EMLINK on some BSDs). Report that specifically: the raw strerror
         # ("Too many levels of symbolic links") tells the user nothing
-        # about why their save was rejected.
-        if e.errno in (errno.ELOOP, errno.EMLINK):
+        # about why their save was rejected. Only when O_NOFOLLOW was
+        # actually set, though: otherwise the errno is a real filesystem
+        # error (a symlink loop, say) and the raw strerror is the truth.
+        if _refuses_leaf_symlinks() and \
+                e.errno in (errno.ELOOP, errno.EMLINK):
             return internal_server_error(errormsg=gettext(
                 "Refusing to write through a symbolic link."))
         err_msg = error_str.format(e.strerror)
