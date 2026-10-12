@@ -684,6 +684,21 @@ rolmembership:{
 
         return False, ''
 
+    def _has_admin_option(self, rid):
+        """Return True if the connecting user may GRANT/REVOKE membership
+        in the role 'rid', as determined by permission.sql. Any failure to
+        look it up counts as False, so the dialog fails closed."""
+        status, res = self.conn.execute_dict(
+            render_template(
+                self.sql_path + 'permission.sql',
+                rid=rid,
+                conn=self.conn
+            )
+        )
+        if not status or len(res['rows']) == 0:
+            return False
+        return bool(res['rows'][0].get('has_admin_option', False))
+
     def check_precondition(action=None):
         """
         This function will behave as a decorator which will checks the status
@@ -1053,8 +1068,11 @@ rolmembership:{
         # The properties dialog always sends the role's 'oid' alongside the
         # changed fields, so it is allowed here as well; the role being
         # updated is identified by 'rid' from the URL, not by that value.
+        # request_keys is set by validate_request; if that has not run the
+        # guard must fail closed rather than let the request through.
         if getattr(self, 'membership_only_update', False) and \
-                not self.request_keys <= {'rolmembers', 'oid'}:
+                not getattr(self, 'request_keys', set()) <= \
+                {'rolmembers', 'oid'}:
             return forbidden(
                 _("The current user does not have permission to update "
                   "the role. Users with ADMIN OPTION on this role may "
