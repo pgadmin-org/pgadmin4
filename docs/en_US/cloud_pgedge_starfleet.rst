@@ -74,6 +74,12 @@ other cloud providers, and the new server is added to the *Object Explorer*
 when the database is available. pgAdmin connects with *sslmode* set to
 *require* and *gssencmode* set to *disable*.
 
+If the deployment fails after the database has been created, for example
+because pgEdge Starfleet reports it as failed or it does not become available
+within 30 minutes, pgAdmin removes the server from the *Object Explorer* but
+does not delete the database. Check the pgEdge Starfleet console, and delete
+the database there if it is not needed.
+
 .. image:: images/cloud_starfleet_password.png
     :alt: pgEdge Starfleet database password
     :align: center

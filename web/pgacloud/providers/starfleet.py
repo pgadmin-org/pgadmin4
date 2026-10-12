@@ -22,6 +22,9 @@ POLL_TIMEOUT = 1800
 DATABASES = '/managed/v1/databases'
 READY = 'available'
 FAILED = ('failed', 'degraded')
+# Once created, the database exists (and is billed) even if we give up on it.
+MAY_EXIST = ('The database may still exist in pgEdge Starfleet; check the '
+             'pgEdge Starfleet console and delete it if it is not needed.')
 # pgAdmin's role names mapped to the API's user_type values.
 USER_TYPES = {'admin': 'admin', 'app': 'application'}
 
@@ -100,14 +103,15 @@ class StarfleetProvider(AbsProvider):
                 return db
             if status in FAILED:
                 error('pgEdge Starfleet reported the database as '
-                      '"{}".'.format(status))
+                      '"{}". {}'.format(status, MAY_EXIST))
             if time.monotonic() > deadline:
                 if status == READY:
                     error('The database is available, but pgEdge '
                           'Starfleet did not report its host and port '
-                          'in time.')
+                          'in time. {}'.format(MAY_EXIST))
                 error('Timed out waiting for the database to become '
-                      'available (last status: "{}").'.format(status))
+                      'available (last status: "{}"). {}'.format(
+                          status, MAY_EXIST))
             debug('Database status: {}...'.format(status))
             time.sleep(POLL_INTERVAL)
 
@@ -120,8 +124,11 @@ class StarfleetProvider(AbsProvider):
             debug('Creating pgEdge Starfleet database {}...'.format(
                 args.name))
             created = client.post(DATABASES, self._create_body(args))
-            db = self._wait(client, '{}/{}'.format(DATABASES, created['id']),
-                            params)
+            path = '{}/{}'.format(DATABASES, created['id'])
+            try:
+                db = self._wait(client, path, params)
+            except StarfleetError as e:
+                error('{} {}'.format(e, MAY_EXIST))
             conn = db.get('connection') or {}
             # Never output conn['password']: stdout is persisted to disk.
             instance = {

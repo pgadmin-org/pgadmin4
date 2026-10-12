@@ -82,8 +82,10 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         with self.app.test_request_context(
                 '/starfleet/verify_credentials/', method='POST',
                 data=json.dumps(body), content_type='application/json'):
+            session.force_write = False
             with patch.object(sf, 'StarfleetClient', fake):
                 resp = sf.verify_credentials.__wrapped__()
+            self.forced = session.force_write
             return resp, dict(session.get('starfleet') or {}), fake
 
     def _test_verify(self):
@@ -95,6 +97,7 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self.assertEqual(sess, {'access_token': 'tok-1',
                                 'expires_at': 5000.0})
         self.assertNotIn('test-secret', json.dumps(sess))
+        self.assertTrue(self.forced)
 
     def _test_verify_api_error(self):
         from pgacloud.utils.starfleet_api import StarfleetError

@@ -156,6 +156,8 @@ def verify_credentials():
 
     session[SESSION_KEY] = {'access_token': client.token,
                             'expires_at': client.expires_at}
+    # The wizard's next request may be served by another worker.
+    session.force_write = True
     return make_json_response(success=1, data={
         'tenant_name': tenant_name})
 

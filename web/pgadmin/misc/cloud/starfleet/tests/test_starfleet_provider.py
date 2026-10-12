@@ -146,6 +146,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
                                   FakeClient(['creating', status]))
             self.assertEqual(code, 1)
             self.assertIn(status, err)
+            self.assertIn(starfleet.MAY_EXIST, err)
 
     def _test_timeout(self, starfleet):
         prov, args = _parse(starfleet, MANAGED_ARGS)
@@ -155,6 +156,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
                                   FakeClient(['creating', 'creating']))
         self.assertEqual(code, 1)
         self.assertIn('Timed out', err)
+        self.assertIn(starfleet.MAY_EXIST, err)
 
     def _test_available_without_connection(self, starfleet):
         class Late(FakeClient):
@@ -184,6 +186,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
             code, out, err = _run(prov, args, client)
         self.assertEqual(code, 1)
         self.assertIn('did not report its host and port', err)
+        self.assertIn(starfleet.MAY_EXIST, err)
         self.assertNotIn('"instance"', out)
 
     def _test_api_error(self, starfleet):
@@ -197,6 +200,8 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         code, out, err = _run(prov, args, Boom([]))
         self.assertEqual(code, 1)
         self.assertIn('name already in use', err)
+        # Creation failed, so there is no database to warn about.
+        self.assertNotIn(starfleet.MAY_EXIST, err)
 
     def _test_poll_errors(self, starfleet):
         from utils.starfleet_api import StarfleetError
@@ -230,6 +235,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         code, out, err = _run(prov, args, client)
         self.assertEqual(code, 1)
         self.assertIn('not found', err)
+        self.assertIn(starfleet.MAY_EXIST, err)
         self.assertEqual(len(client.gets), 1)
 
         # A transient error past the deadline is reported.
@@ -240,6 +246,7 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
             code, out, err = _run(prov, args, client)
         self.assertEqual(code, 1)
         self.assertIn('bad gateway', err)
+        self.assertIn(starfleet.MAY_EXIST, err)
         self.assertNotIn('"instance"', out)
 
     def _test_malformed_create(self, starfleet):
