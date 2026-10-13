@@ -9,13 +9,13 @@
 
 """Tests for server data isolation between users in server mode."""
 
-import copy
 import json
 import sqlite3
 import config
 from pgadmin.model import db, SharedServer, User
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
+from .utils import restore_server_fixture_on_cleanup
 from regression.test_setup import config_data
 from regression.python_test_utils.test_utils import \
     create_user_wise_test_client
@@ -24,25 +24,6 @@ test_user_details = None
 if config.SERVER_MODE:
     test_user_details = \
         config_data['pgAdmin4_test_non_admin_credentials']
-
-
-def restore_server_fixture_on_cleanup(test):
-    """Restore the shared server fixture once the test finishes.
-
-    The runner passes the same server dict from get_config_data() to
-    every test, so keys these tests add (such as shared and
-    shared_username) or change in place would otherwise leak into
-    later tests. The dict is restored in place, which removes any keys
-    that were absent originally, and the restore is registered as a
-    cleanup so that it also runs when setUp fails part-way.
-    """
-    original = copy.deepcopy(test.server)
-
-    def restore():
-        test.server.clear()
-        test.server.update(original)
-
-    test.addCleanup(restore)
 
 
 class ServerDataIsolationGetTestCase(BaseTestGenerator):

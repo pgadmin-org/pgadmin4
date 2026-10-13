@@ -27,6 +27,7 @@ class AllServersGetTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the GET API"""
+        servers_utils.restore_server_fixture_on_cleanup(self)
 
         server_details = servers_utils.get_server_data(self.server)
         server_details['password'] = self.server['db_password']

@@ -12,6 +12,8 @@
 import json
 import config
 from pgadmin.utils.route import BaseTestGenerator
+from pgadmin.browser.server_groups.servers.tests.utils import \
+    restore_server_fixture_on_cleanup
 from regression.test_setup import config_data
 from regression.python_test_utils.test_utils import \
     create_user_wise_test_client
@@ -257,6 +259,7 @@ class SharedGroupPermissionsTestCase(BaseTestGenerator):
         self.assertIn('node', response_data)
         self.sg_id = response_data['node']['_id']
 
+        restore_server_fixture_on_cleanup(self)
         self.server['shared'] = True
         url = '/browser/server/obj/{0}/'.format(self.sg_id)
         response = self.tester.post(
