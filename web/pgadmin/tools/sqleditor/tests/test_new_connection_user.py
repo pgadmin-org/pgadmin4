@@ -12,6 +12,8 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.test_setup import config_data
 from regression.python_test_utils import test_utils as utils
+from pgadmin.browser.server_groups.servers.tests.utils import \
+    restore_server_fixture_on_cleanup
 
 
 class TestNewConnectionUser(BaseTestGenerator):
@@ -57,6 +59,7 @@ class TestNewConnectionUser(BaseTestGenerator):
     ]
 
     def setUp(self):
+        restore_server_fixture_on_cleanup(self)
         self.content_type = 'html/json'
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.sgid = config_data['server_group']
