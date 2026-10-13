@@ -11,45 +11,68 @@
 
 import codecs
 import encodings.raw_unicode_escape
+import re
 
 import psycopg
 from flask import current_app
 
-# Python codec used for SQL_ASCII databases. It behaves exactly like
-# raw_unicode_escape, except that a backslash sequence which is not a valid
-# \uXXXX or \UXXXXXXXX escape (for example the '\U' in a column named
-# 'C:\User') is kept as the literal bytes rather than raising
-# UnicodeDecodeError. psycopg decodes column names and query text with the
-# connection codec, so a strict decode there breaks View/Edit Data.
+# Python codec used for SQL_ASCII databases. Each byte decodes to the code
+# point of the same value (as latin-1), except that a \uXXXX or \UXXXXXXXX
+# escape for a code point from U+0100 to U+10FFFF is unescaped. Encoding is
+# raw_unicode_escape, which writes code points below U+0100 as single bytes
+# and anything higher as such an escape, so this reads back what pgAdmin
+# writes. Escapes below U+0100 (which pgAdmin never writes) and invalid
+# sequences, such as the '\U' in a column named 'C:\User', are kept as their
+# literal bytes so that they are neither rewritten on save nor raise
+# UnicodeDecodeError.
+#
+# As with raw_unicode_escape, a 'u' or 'U' is only an escape when preceded
+# by an odd number of backslashes.
 SQL_ASCII_CODEC = 'pgadmin_sql_ascii'
-_SQL_ASCII_ERRORS = 'pgadmin_sql_ascii_literal'
+
+# Both patterns only start matching at the beginning of a run of
+# backslashes, so a long run is not rescanned from every backslash in it.
+_ESCAPE = re.compile(
+    r'(?<!\\)(\\+)(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8}))')
+
+# A trailing run of backslashes, perhaps followed by an incomplete escape,
+# that the next chunk of input could still turn into (part of) an escape.
+_PARTIAL_ESCAPE = re.compile(r'(?<!\\)(\\+)(?:[uU][0-9A-Fa-f]{0,7})?\Z')
 
 
-def _keep_invalid_escape(exc):
-    if not isinstance(exc, UnicodeDecodeError):
-        raise exc
-    # Every byte maps to the same code point in latin-1, which is also what
-    # raw_unicode_escape produces for the bytes it does not unescape.
-    return exc.object[exc.start:exc.end].decode('latin-1'), exc.end
+def _unescape(match):
+    backslashes, short_hex, long_hex = match.groups()
+    code_point = int(short_hex or long_hex, 16)
+    if len(backslashes) % 2 and 0x100 <= code_point <= 0x10FFFF:
+        return backslashes[:-1] + chr(code_point)
+    return match.group(0)
 
 
-def _sql_ascii_errors(errors):
-    # psycopg decodes server error messages with errors='replace', so keep
-    # invalid escapes literally there too, rather than showing U+FFFD in
-    # place of part of the object name.
-    if errors in ('strict', 'replace'):
-        return _SQL_ASCII_ERRORS
-    return errors
+def _sql_ascii_decode_text(data, final=True):
+    # latin-1 maps every byte to the code point of the same value, so the
+    # escapes can be found in the decoded text.
+    text = bytes(data).decode('latin-1')
+    end = len(text)
+    if not final:
+        partial = _PARTIAL_ESCAPE.search(text)
+        if partial:
+            # Pairs of backslashes never start an escape, so only hold
+            # back the last backslash of an odd run. This keeps a long run
+            # from being buffered and rescanned on every call.
+            backslashes = len(partial.group(1))
+            if backslashes % 2:
+                end = partial.start() + backslashes - 1
+    return _ESCAPE.sub(_unescape, text[:end]), end
 
 
 def _sql_ascii_decode(data, errors='strict'):
-    return codecs.raw_unicode_escape_decode(data, _sql_ascii_errors(errors))
+    # Every byte sequence is valid, so errors never applies.
+    return _sql_ascii_decode_text(data)
 
 
-class _SQLAsciiIncrementalDecoder(
-        encodings.raw_unicode_escape.IncrementalDecoder):
+class _SQLAsciiIncrementalDecoder(codecs.BufferedIncrementalDecoder):
     def _buffer_decode(self, data, errors, final):
-        return super()._buffer_decode(data, _sql_ascii_errors(errors), final)
+        return _sql_ascii_decode_text(data, final)
 
 
 def _sql_ascii_search(name):
@@ -64,7 +87,6 @@ def _sql_ascii_search(name):
     )
 
 
-codecs.register_error(_SQL_ASCII_ERRORS, _keep_invalid_escape)
 codecs.register(_sql_ascii_search)
 
 encode_dict = {
