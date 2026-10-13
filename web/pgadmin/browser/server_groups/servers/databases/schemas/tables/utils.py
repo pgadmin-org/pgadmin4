@@ -679,6 +679,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     c['cltype'], c['hasSqrBracket'] = \
                         column_utils.type_formatter(c['cltype'])
 
+    @staticmethod
+    def _unlogged_unsupported(data, server_version):
+        """
+        PostgreSQL 18 and later reject UNLOGGED on a partitioned table,
+        both in CREATE TABLE and in ALTER TABLE ... SET UNLOGGED/LOGGED,
+        whereas a leaf partition may still be unlogged.
+        """
+        return server_version >= 180000 and \
+            bool(data.get('is_partitioned', False))
+
     def _get_resql_for_table(self, did, scid, tid, data, json_resp, main_sql,
                              add_not_exists_clause=False):
         """
@@ -717,6 +727,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     data['revoke_all'].append(
                         driver.qtIdent(None, acl['grantee'])
                         if acl['grantee'] != 'PUBLIC' else 'PUBLIC')
+
+        if self._unlogged_unsupported(data, self.manager.version):
+            data['relpersistence'] = False
 
         # if table is partitions then
         if 'relispartition' in data and data['relispartition']:
@@ -929,6 +942,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 part_data['name'] = row['name']
                 part_data['partition_value'] = row['partition_value']
                 part_data['is_partitioned'] = row['is_partitioned']
+                part_data['relpersistence'] = \
+                    row['relpersistence'] and not self._unlogged_unsupported(
+                        row, self.manager.version)
                 part_data['partition_scheme'] = row['partition_scheme']
                 part_data['description'] = row['description']
                 part_data['relowner'] = row['relowner']
@@ -1554,6 +1570,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         partitions_sql = ''
         if 'is_partitioned' in data and data['is_partitioned']:
             data['relkind'] = 'p'
+            if self._unlogged_unsupported(data, self.manager.version):
+                data['relpersistence'] = False
             # create partition scheme
             data['partition_scheme'] = self.get_partition_scheme(data)
             partitions_sql = self.get_partitions_sql(data)
@@ -1615,6 +1633,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             self.update_vacuum_settings('vacuum_table', old_data, data)
             # Update the vacuum toast table settings.
             self.update_vacuum_settings('vacuum_toast', old_data, data)
+
+            if self._unlogged_unsupported(old_data, self.manager.version):
+                data.pop('relpersistence', None)
 
             sql = render_template(
                 "/".join([self.table_template_path, self._UPDATE_SQL]),
