@@ -1774,8 +1774,8 @@ WHERE db.datname = current_database()""")
         pg_conn = None
         manager = self.manager
 
-        is_return, return_value, password = self._decrypt_password(manager)
-        if is_return:
+        decrypted, return_value, password = self._decrypt_password(manager)
+        if not decrypted:
             return False, return_value
 
         try:
@@ -1801,7 +1801,7 @@ WHERE db.datname = current_database()""")
                     """
 Failed to reset the connection to the server due to following error:
 {0}"""
-                ).Format(msg)
+                ).format(msg)
             )
             return False, msg
 
