@@ -16,6 +16,4 @@ ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
 COMMENT ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     IS 'Some comment';
 
-GRANT ALL ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
-
-GRANT ALL ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#" TO enterprisedb;
+GRANT ALL ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#" TO PUBLIC, enterprisedb;
