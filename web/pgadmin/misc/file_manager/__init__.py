@@ -181,6 +181,9 @@ def read_file_generator(file, enc):
             # handler.
             # Ref: https://tinyurl.com/yvj4u7fw
             encoding = 'latin-1'
+            # Record the fallback so that saving the file writes it back
+            # in the encoding it was actually read with.
+            Filemanager.remember_file_encoding(file, encoding)
         except Exception as e:
             if isinstance(e, OSError):
                 raise
@@ -488,17 +491,17 @@ def save_file():
             file_path.lstrip('/').lstrip('\\')
         )
 
-    # Get value for encoding if file is already loaded to SQL editor
-    def get_file_encoding_of_loaded_file(file_name):
-        encoding = 'utf-8'
-        for ele in Filemanager.loaded_file_encoding_list:
-            if file_name in ele:
-                encoding = ele[file_name]
-        return encoding
-
-    enc = get_file_encoding_of_loaded_file(os.path.basename(file_path))
-
-    file_content = file_data['file_content'].encode(enc)
+    # Save in the encoding the file was loaded with, if it was loaded.
+    enc = Filemanager.get_file_encoding(file_path)
+    try:
+        file_content = file_data['file_content'].encode(enc)
+    except UnicodeEncodeError:
+        # The edited content has characters the original encoding (in
+        # practice latin-1) cannot represent, so fall back to UTF-8 rather
+        # than refusing the save or losing them.
+        enc = 'utf-8'
+        file_content = file_data['file_content'].encode(enc)
+        Filemanager.remember_file_encoding(file_path, enc)
     error_str = gettext("Error: {0}")
 
     # write to file
@@ -532,8 +535,9 @@ def save_file():
 class Filemanager():
     """FileManager Class."""
 
-    # Stores list of dict for filename & its encoding
-    loaded_file_encoding_list = []
+    # Maps the real path of each file loaded into the Query Tool to the
+    # encoding it was read with, so that saving it writes the same encoding.
+    loaded_file_encodings = {}
 
     ERROR_NOT_ALLOWED = {
         'Error': gettext('Not allowed'),
@@ -1224,6 +1228,17 @@ class Filemanager():
                 new_name = "{}_{}".format(name, count)
 
     @staticmethod
+    def remember_file_encoding(filename, enc):
+        """Record the encoding a file was read with."""
+        Filemanager.loaded_file_encodings[os.path.realpath(filename)] = enc
+
+    @staticmethod
+    def get_file_encoding(filename, default='utf-8'):
+        """Return the encoding a file was read with, or the default."""
+        return Filemanager.loaded_file_encodings.get(
+            os.path.realpath(filename), default)
+
+    @staticmethod
     def check_file_for_bom_and_binary(filename, enc="utf-8"):
         """
         This utility function will check if file is Binary file
@@ -1275,8 +1290,7 @@ class Filemanager():
                 is_binary = is_binary_string(file_data)
 
             # Store encoding for future use
-            Filemanager.loaded_file_encoding_list.\
-                append({os.path.basename(filename): enc})
+            Filemanager.remember_file_encoding(filename, enc)
 
         except IOError as ex:
             # we don't want to expose real path of file
