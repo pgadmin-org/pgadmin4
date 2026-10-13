@@ -24,15 +24,19 @@ from . import utils as columns_utils
 
 class ColumnGetInheritedTestCase(BaseTestGenerator):
     """
-    Fetch the properties of the columns of a table that inherits from a
-    parent table, and check that the inherited columns report the parent
-    they come from whilst the child's own column does not. Issue #10534.
+    Fetch the properties of the columns of a table that inherits from one
+    or more parent tables, and check that the inherited columns report the
+    parent they come from whilst the child's own column does not. Where a
+    column is merged from several parents, the first parent in inheritance
+    order must be reported. Issues #10534 and #10554.
     """
     url = '/browser/column/obj/'
 
     scenarios = [
         ('Get details: For columns of a table inheriting from a parent',
-         dict())
+         dict(parent_count=1)),
+        ('Get details: For columns merged from two parents',
+         dict(parent_count=2))
     ]
 
     def setUp(self):
@@ -56,19 +60,31 @@ class ColumnGetInheritedTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
 
-        # Parent table, with the default columns: id, name, location
-        self.parent_name = "table_column_parent_%s" % \
-                           (str(uuid.uuid4())[1:8])
-        self.parent_id = tables_utils.create_table(self.server, self.db_name,
-                                                   self.schema_name,
-                                                   self.parent_name)
+        # Parent tables, each with the columns id, name and location. There
+        # are no column defaults, as the parents' defaults would conflict.
+        # They are created in reverse so that the first parent in
+        # inheritance order has the highest OID, rather than happening to
+        # sort first by OID as well.
+        self.parent_names = ["table_column_parent_%s" %
+                             (str(uuid.uuid4())[1:8])
+                             for _ in range(self.parent_count)]
+        self.parent_ids = {}
+        for parent_name in reversed(self.parent_names):
+            self.parent_ids[parent_name] = tables_utils.create_table(
+                self.server, self.db_name, self.schema_name, parent_name,
+                '"CREATE TABLE %s.%s (id int NOT NULL, name text, '
+                'location text)" % (schema_name, table_name)')
+        self.parent_name = self.parent_names[0]
+        self.parent_id = self.parent_ids[self.parent_name]
 
-        # Child table inheriting from the parent, plus one column of its own
+        # Child table inheriting from the parents, plus a column of its own
         self.table_name = "table_column_child_%s" % (str(uuid.uuid4())[1:8])
+        parents = ', '.join('%s.%s' % (self.schema_name, parent_name)
+                            for parent_name in self.parent_names)
         self.table_id = tables_utils.create_table(
             self.server, self.db_name, self.schema_name, self.table_name,
-            '"CREATE TABLE %s.%s (child_col int) INHERITS (%s.{0})" % '
-            '(schema_name, table_name, schema_name)'.format(self.parent_name)
+            '"CREATE TABLE %s.%s (child_col int) INHERITS ({0})" % '
+            '(schema_name, table_name)'.format(parents)
         )
 
     def runTest(self):

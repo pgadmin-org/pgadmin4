@@ -67,4 +67,4 @@ WHERE att.attrelid = {{tid}}::oid
     AND att.attnum > 0
 {% endif %}
     AND att.attisdropped IS FALSE
-    ORDER BY att.attnum;
+    ORDER BY att.attnum, INH.inhseqno;
