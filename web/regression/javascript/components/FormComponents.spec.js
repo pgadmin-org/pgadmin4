@@ -13,7 +13,7 @@ import { withTheme } from '../fake_theme';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 
-import {FormInput, FormInputText, FormInputFileSelect, FormInputSQL,
+import {FormInput, FormInputText, FormInputFileSelect, FormInputSQL, InputSQL,
   FormInputSwitch, FormInputCheckbox, FormInputToggle, FormInputSelect,
   FormInputColor,
   FormFooterMessage,
@@ -196,6 +196,67 @@ describe('FormComponents', ()=>{
       expect(screen.getByLabelText('First')).toBeInTheDocument();
       expect(screen.getByText('thevalue')).toBeInTheDocument();
       expect(screen.getByText('some help message')).toBeInTheDocument();
+    });
+  });
+
+  describe('InputSQL with a lagging value', ()=>{
+    let ThemedInputSQL = withTheme(InputSQL), ctrl, editor;
+    const renderSQL = (value)=>{
+      const elem = (
+        <ThemedInputSQL
+          value={value}
+          onChange={()=>{/* parent passes the value back later */}}
+          inputRef={(obj)=>{editor = obj;}}
+        />
+      );
+      if(ctrl) {
+        ctrl.rerender(elem);
+      } else {
+        ctrl = render(elem);
+      }
+    };
+    const typeAt = (pos, text)=>{
+      act(()=>{
+        editor.dispatch({
+          changes: {from: pos, insert: text},
+          selection: {anchor: pos + text.length},
+          userEvent: 'input.type',
+        });
+      });
+    };
+
+    beforeEach(()=>{
+      ctrl = null;
+      renderSQL('BEGIN END;');
+    });
+
+    it('keeps the cursor when an older value is passed back', ()=>{
+      // Two keys pressed together: the editor reports both changes before
+      // the parent has passed either of them back.
+      typeAt(6, 'x');
+      typeAt(7, 'y');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+
+      // The parent passes back the value from the first key, then the second.
+      renderSQL('BEGIN xEND;');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+      expect(editor.state.selection.main.head).toBe(8);
+
+      renderSQL('BEGIN xyEND;');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+      expect(editor.state.selection.main.head).toBe(8);
+    });
+
+    it('applies a value the editor did not produce', ()=>{
+      typeAt(6, 'x');
+      renderSQL('BEGIN xEND;');
+
+      renderSQL('SELECT 1;');
+      expect(editor.getValue()).toBe('SELECT 1;');
+
+      // Once replaced, earlier editor values are no longer treated as stale.
+      renderSQL('BEGIN xEND;');
+      expect(editor.getValue()).toBe('BEGIN xEND;');
     });
   });
 
