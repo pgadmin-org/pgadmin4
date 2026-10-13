@@ -41,6 +41,17 @@ Use the fields in the *General* tab to identify the server:
     * Rename the group server
     * Change of host, port, and maintenance database
 
+  Each user of a shared server has their own copy of some of its settings.
+  Tags, colours, the role and the service name are copied from the owner
+  the first time a user opens the server, and each user can then change
+  their copy. The host, port, maintenance database and the general
+  connection parameters (such as *connect_timeout* or *sslmode*) always
+  come from the owner's server definition, so a change the owner makes
+  to them is seen by every user. The owner's password, SSH tunnel
+  credentials, SSL certificate, key and CRL paths, and password file
+  (*passfile*) are never shared: each user must supply their own in the
+  server dialog if they need them.
+
   Please note that once the server is shared, it's icon is changed in the
   object explorer.
 
