@@ -993,7 +993,8 @@ class ServerNode(PGChildNodeView):
             'db': gettext('Maintenance database'),
             'username': gettext('Username'),
             'comment': gettext('Comments'),
-            'role': gettext('Role')
+            'role': gettext('Role'),
+            'service': gettext('Service')
         }
 
         data = request.form if request.form else json.loads(
@@ -1031,8 +1032,10 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
         connected = conn.connected()
 
-        self._server_modify_disallowed_when_connected(
+        disallowed = self._server_modify_disallowed_when_connected(
             connected, data, disp_lbl)
+        if disallowed:
+            return disallowed
 
         idx = self._set_valid_attr_value(gid, data, config_param_map, server,
                                          sharedserver)
