@@ -38,11 +38,17 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
                              'indkey', 'seqtypid', 'defseqrelid']
 
+    # 'conkey' and 'confkey' are attribute numbers, which differ between
+    # databases whenever a column has been dropped from one of the tables,
+    # even though the columns they name are the same. The columns are
+    # compared by name through each constraint's 'columns' list instead
+    # (#10446), and a foreign key whose columns differ is recreated (see
+    # table_constraint_comp()).
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
                                  'references', 'refnsp', 'remote_schema',
-                                 'conkey', 'indkey', 'references_table_name',
-                                 'refnspoid']
+                                 'conkey', 'confkey', 'indkey',
+                                 'references_table_name', 'refnspoid']
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tgqual',
                               'tgconstraint']
@@ -215,6 +221,15 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             added.append(source)
 
     @staticmethod
+    def _fk_column_pairs(foreign_key):
+        """
+        Return the (local column, referenced column) name pairs of a
+        foreign key, in order.
+        """
+        return [(col.get('local_column'), col.get('referenced'))
+                for col in foreign_key.get('columns', [])]
+
+    @staticmethod
     def table_constraint_comp(source_table, target_table):
         """
         Table Constraint DDL comparison
@@ -277,6 +292,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     deleted.append(tmp_updated)
                                     tmp_updated = None
                                     break
+                            # A foreign key's columns cannot be altered, so
+                            # it must be recreated if they differ. Only the
+                            # column names are compared, as 'references'
+                            # holds the referenced table's OID.
+                            pairs = SchemaDiffTableCompare._fk_column_pairs
+                            if tmp_updated and constraint == 'foreign_key' \
+                                    and pairs(tmp_updated) != pairs(tmp_tar):
+                                added.append(source)
+                                deleted.append(tmp_updated)
+                                tmp_updated = None
                             if tmp_updated:
                                 if 'oid' in tmp:
                                     tmp_updated['oid'] = tmp['oid']
