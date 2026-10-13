@@ -219,7 +219,7 @@ export default function SchemaDialogView({
       <SchemaStateContext.Provider value={schemaState}>
         <Box className='Dialog-form'>
           <FormLoader/>
-          <FormView
+          <FormView key={resetKey}
             viewHelperProps={viewHelperProps}
             schema={schema} accessPath={[]}
             dataDispatch={dataDispatch}
