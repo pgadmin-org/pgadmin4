@@ -70,6 +70,11 @@ class ParsePrivToDbTestCase(BaseTestGenerator):
             'allowed': ['U'],
             'expected': [('role1, role2', 'old1, role2', [], ['USAGE'])]
         }),
+        ('A grantee changed from PUBLIC keeps PUBLIC as the old one', {
+            'acls': [_acl('role1', [('U', False)], old_grantee='PUBLIC')],
+            'allowed': ['U'],
+            'expected': [('role1', 'PUBLIC', [], ['USAGE'])]
+        }),
     ]
 
     def runTest(self):

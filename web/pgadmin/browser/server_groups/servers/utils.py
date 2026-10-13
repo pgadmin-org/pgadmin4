@@ -150,9 +150,15 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
         grantee = driver.qtIdent(None, priv['grantee']) \
             if priv['grantee'] != 'PUBLIC' else 'PUBLIC'
 
-        old_grantee = driver.qtIdent(None, priv['old_grantee']) \
-            if 'old_grantee' in priv and priv['old_grantee'] != 'PUBLIC' \
-            else grantee
+        # PUBLIC is a keyword, not a role name, so it must not be quoted;
+        # it still has to be carried over as the old grantee, or a change
+        # of grantee away from PUBLIC would never revoke its privileges.
+        if 'old_grantee' not in priv:
+            old_grantee = grantee
+        elif priv['old_grantee'] == 'PUBLIC':
+            old_grantee = 'PUBLIC'
+        else:
+            old_grantee = driver.qtIdent(None, priv['old_grantee'])
 
         acltype = priv['acltype'] if 'acltype' in priv else 'defaultacls'
 
