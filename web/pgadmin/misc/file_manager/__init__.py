@@ -501,7 +501,6 @@ def save_file():
         # than refusing the save or losing them.
         enc = 'utf-8'
         file_content = file_data['file_content'].encode(enc)
-        Filemanager.remember_file_encoding(file_path, enc)
     error_str = gettext("Error: {0}")
 
     # write to file
@@ -524,6 +523,9 @@ def save_file():
     except Exception as e:
         err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
+
+    # Record the encoding only once the file has actually been written in it.
+    Filemanager.remember_file_encoding(file_path, enc)
 
     return make_json_response(
         data={
