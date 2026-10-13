@@ -16,6 +16,16 @@ from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.tools import psql
 
 
+def emits_for(emit, room):
+    """
+    Return the calls on a patched sio.emit that were sent to room. The patch
+    is global, so psql sessions started by other tests that are still running
+    can emit into the same mock, and those calls must be ignored.
+    """
+    return [call for call in emit.call_args_list
+            if call.kwargs.get('room', call.kwargs.get('to')) == room]
+
+
 class PSQLWindowsReadStdout(BaseTestGenerator):
     """
     read_stdout() must report the end of the pty's output, rather than
@@ -50,11 +60,13 @@ class PSQLWindowsReadStdout(BaseTestGenerator):
 
             with patch.object(psql.sio, 'emit') as emit, \
                     patch.object(psql.sio, 'sleep'):
-                result = psql.read_stdout(process, 'room', 1024)
+                result = psql.read_stdout(
+                    process, 'test-windows-read-stdout', 1024)
 
             self.assertIs(result, self.expected_result)
             forwarded = ''.join(
-                call.args[1]['result'] for call in emit.call_args_list)
+                call.args[1]['result']
+                for call in emits_for(emit, 'test-windows-read-stdout'))
             self.assertEqual(forwarded, self.expected)
         finally:
             reader.close()
@@ -143,12 +155,11 @@ class PSQLWindowsSpawnFailure(BaseTestGenerator):
                 psql.windows_platform(['psql', 'dbname=postgres'], sid,
                                       1024, 7)
 
-                emit.assert_called_once()
-                self.assertEqual(emit.call_args.args[0], 'pty-output')
-                self.assertTrue(emit.call_args.args[1]['error'])
-                self.assertIn(str(self.error),
-                              emit.call_args.args[1]['result'])
-                self.assertEqual(emit.call_args.kwargs['room'], sid)
+                calls = emits_for(emit, sid)
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(calls[0].args[0], 'pty-output')
+                self.assertTrue(calls[0].args[1]['error'])
+                self.assertIn(str(self.error), calls[0].args[1]['result'])
                 self.assertEqual(soid_mapping['7'], ['other'])
                 self.assertNotIn(sid, self.app.config['sessions'])
                 self.assertNotIn(sid, psql.pdata)
