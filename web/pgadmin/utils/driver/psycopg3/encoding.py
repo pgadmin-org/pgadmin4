@@ -30,11 +30,14 @@ from flask import current_app
 # by an odd number of backslashes.
 SQL_ASCII_CODEC = 'pgadmin_sql_ascii'
 
-_ESCAPE = re.compile(r'(\\+)(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8}))')
+# Both patterns only start matching at the beginning of a run of
+# backslashes, so a long run is not rescanned from every backslash in it.
+_ESCAPE = re.compile(
+    r'(?<!\\)(\\+)(?:u([0-9A-Fa-f]{4})|U([0-9A-Fa-f]{8}))')
 
 # A trailing run of backslashes, perhaps followed by an incomplete escape,
 # that the next chunk of input could still turn into (part of) an escape.
-_PARTIAL_ESCAPE = re.compile(r'\\+(?:[uU][0-9A-Fa-f]{0,7})?\Z')
+_PARTIAL_ESCAPE = re.compile(r'(?<!\\)(\\+)(?:[uU][0-9A-Fa-f]{0,7})?\Z')
 
 
 def _unescape(match):
@@ -53,7 +56,12 @@ def _sql_ascii_decode_text(data, final=True):
     if not final:
         partial = _PARTIAL_ESCAPE.search(text)
         if partial:
-            end = partial.start()
+            # Pairs of backslashes never start an escape, so only hold
+            # back the last backslash of an odd run. This keeps a long run
+            # from being buffered and rescanned on every call.
+            backslashes = len(partial.group(1))
+            if backslashes % 2:
+                end = partial.start() + backslashes - 1
     return _ESCAPE.sub(_unescape, text[:end]), end
 
 
