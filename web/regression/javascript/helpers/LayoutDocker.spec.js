@@ -43,6 +43,7 @@ describe('LayoutDocker.resetLayout', () => {
     id: 'id-query-tool_1',
     content: 'iframe content',
     metaData: metaData,
+    group: 'playground',
     internal: {title: 'postgres/postgres@PostgreSQL 18', closable: true},
   };
 
@@ -68,7 +69,7 @@ describe('LayoutDocker.resetLayout', () => {
     jest.spyOn(docker, 'focus').mockImplementation(() => {});
   });
 
-  it('keeps the metaData of re-opened tabs so they can be restored', () => {
+  it('keeps the metaData and group of re-opened tabs so they can be restored', () => {
     docker.resetLayout();
 
     expect(docker.layoutObj.loadLayout).toHaveBeenCalledWith(defaultLayout);
@@ -78,6 +79,7 @@ describe('LayoutDocker.resetLayout', () => {
     expect(panel.id).toBe('id-query-tool_1');
     expect(panel.content).toBe('iframe content');
     expect(panel.metaData).toEqual(metaData);
+    expect(panel.group).toBe('playground');
     expect(direction).toBe('middle');
     expect(docker.saveLayout).toHaveBeenCalled();
   });
