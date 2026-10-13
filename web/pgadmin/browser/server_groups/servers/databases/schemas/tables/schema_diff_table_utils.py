@@ -35,11 +35,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     # therefore their whole table) as different, and generates an invalid
     # `ALTER COLUMN ... TYPE bigserial` statement despite both sides having
     # the exact same reprojected cltype.
-    # 'seqiscalled' and 'seqlastvalue' are the identity sequence's current
-    # position, which is data rather than definition (#10550).
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
-                             'indkey', 'seqtypid', 'defseqrelid',
-                             'seqiscalled', 'seqlastvalue']
+                             'indkey', 'seqtypid', 'defseqrelid']
 
     # 'conkey' and 'confkey' are attribute numbers, which differ between
     # databases whenever a column has been dropped from one of the tables,

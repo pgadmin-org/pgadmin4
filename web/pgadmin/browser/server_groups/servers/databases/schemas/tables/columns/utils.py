@@ -325,6 +325,39 @@ def parse_nextval_sequence(defval):
 
 
 @get_template_path
+def add_identity_sequence_state(conn, data, o_data, template_path=None):
+    """
+    Add the position of an identity column's sequence (its last_value and
+    is_called) to the column's old data, so that update.sql only RESTARTs
+    the sequence when a new START needs it (#10550). Both are left as None
+    when the START is not being set, or the sequence cannot be read.
+
+    :param conn: Connection Object
+    :param data: The column's new data
+    :param o_data: The column's old data, from properties.sql
+    :param template_path: Optional template path
+    """
+    o_data['seqlastvalue'] = None
+    o_data['seqiscalled'] = None
+
+    if data.get('seqstart') in (None, '') or not o_data.get('seqrelid'):
+        return
+
+    sql_path = "/".join([template_path, 'sequence_state.sql'])
+    status, res = conn.execute_dict(
+        render_template(sql_path, seqrelid=o_data['seqrelid'], conn=conn))
+    if not status or not res['rows']:
+        return
+
+    status, res = conn.execute_dict(
+        render_template(sql_path, nspname=res['rows'][0]['nspname'],
+                        seqname=res['rows'][0]['relname'], conn=conn))
+    if status and res['rows']:
+        o_data['seqlastvalue'] = res['rows'][0]['seqlastvalue']
+        o_data['seqiscalled'] = res['rows'][0]['seqiscalled']
+
+
+@get_template_path
 def get_formatted_columns(conn, tid, data, other_columns,
                           table_or_type, template_path=None,
                           with_serial=True):

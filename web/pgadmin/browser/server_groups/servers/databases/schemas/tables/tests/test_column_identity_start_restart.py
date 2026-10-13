@@ -9,9 +9,9 @@
 
 """Changing an identity column's START must not RESTART its sequence
 and rewind it below rows already generated. RESTART is only emitted
-when the sequence has never been used, or when its current value would
-fall outside a new MINVALUE/MAXVALUE, which PostgreSQL refuses without
-it (#10550).
+when the sequence is still at its old START with nothing generated
+since, or when its position would fall outside a new MINVALUE/MAXVALUE,
+which PostgreSQL refuses without it (#10550).
 """
 
 import json
@@ -47,6 +47,10 @@ class ColumnIdentityStartRestartTestCase(BaseTestGenerator):
          dict(rows=3, changes=dict(seqstart=2, seqmin=2),
               expected=['SET START 2', 'SET MINVALUE 2'],
               unexpected=['RESTART'], last_value=3)),
+        ('A sequence already restarted elsewhere keeps its position',
+         dict(rows=3, restart_with=100, changes=dict(seqstart=2),
+              expected=['SET START 2'], unexpected=['RESTART'],
+              last_value=None, next_value=100)),
     ]
 
     def setUp(self):
@@ -74,6 +78,10 @@ class ColumnIdentityStartRestartTestCase(BaseTestGenerator):
         for _ in range(self.rows):
             self._query("INSERT INTO {0}.{1} DEFAULT VALUES".format(
                 self.schema_name, self.table_name))
+        if getattr(self, 'restart_with', None) is not None:
+            self._query(
+                "ALTER TABLE {0}.{1} ALTER COLUMN id RESTART WITH {2}".format(
+                    self.schema_name, self.table_name, self.restart_with))
         self.table_id = self._query(
             "SELECT '{0}.{1}'::regclass::oid".format(
                 self.schema_name, self.table_name), fetch=True)[0]

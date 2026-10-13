@@ -46,12 +46,7 @@ SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, a
 	 ORDER BY dsd.refobjid
 	 LIMIT 1) AS defseqrelid,
 	seq.*,
-	pg_catalog.format_type(seq.seqtypid, NULL) AS seqtypname,
-	{### The identity sequence's position, so update.sql only emits RESTART when it cannot rewind past rows already generated (#10550); NULL when it cannot be read ###}
-	(CASE WHEN NOT pg_catalog.pg_is_other_temp_schema(cs.relnamespace) AND pg_catalog.has_sequence_privilege(seq.seqrelid, 'SELECT,USAGE')
-	 THEN pg_catalog.pg_sequence_last_value(seq.seqrelid) IS NOT NULL END) AS seqiscalled,
-	(CASE WHEN NOT pg_catalog.pg_is_other_temp_schema(cs.relnamespace) AND pg_catalog.has_sequence_privilege(seq.seqrelid, 'SELECT,USAGE')
-	 THEN pg_catalog.pg_sequence_last_value(seq.seqrelid) END) AS seqlastvalue
+	pg_catalog.format_type(seq.seqtypid, NULL) AS seqtypname
 FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
   LEFT OUTER JOIN pg_catalog.pg_attrdef def ON adrelid=att.attrelid AND adnum=att.attnum
