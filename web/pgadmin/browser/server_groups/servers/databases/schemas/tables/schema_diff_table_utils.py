@@ -38,11 +38,15 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
                              'indkey', 'seqtypid', 'defseqrelid']
 
+    # 'conkey' and 'confkey' are attribute numbers, which differ between
+    # databases whenever a column has been dropped from one of the tables,
+    # even though the columns they name are the same. The columns are
+    # compared by name through each constraint's 'columns' list (#10446).
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
                                  'references', 'refnsp', 'remote_schema',
-                                 'conkey', 'indkey', 'references_table_name',
-                                 'refnspoid']
+                                 'conkey', 'confkey', 'indkey',
+                                 'references_table_name', 'refnspoid']
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tgqual',
                               'tgconstraint']
