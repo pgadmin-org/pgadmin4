@@ -1454,6 +1454,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                         old_col_data['cltype'])
 
                 self._normalise_serial_column(c, old_col_data)
+                column_utils.add_identity_sequence_state(
+                    self.conn, c, old_col_data,
+                    template_path=self.column_template_path)
 
                 # Sql for alter column
                 if c.get('inheritedfrom', None) is None and \

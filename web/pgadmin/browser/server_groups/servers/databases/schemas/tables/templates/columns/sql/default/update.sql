@@ -108,7 +108,12 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %}{% endif %}
 {% if seqcycle_changed %}{% if data.seqcycle %} SET CYCLE{% else %} SET NO CYCLE{% endif %}{% endif %}
 {% if seqincrement_changed %} SET INCREMENT {{data.seqincrement|int}}{% endif %}
-{% if seqstart_changed %} RESTART SET START {{data.seqstart|int}}{% endif %}
+{###  A new START only RESTARTs the sequence when it is still at its old START with nothing generated since, or when its position would fall outside the new MINVALUE/MAXVALUE; otherwise RESTART would rewind it below rows already generated. seqlastvalue is the pending value when seqiscalled is false (#10550) ###}
+{% set new_seqmin = data.seqmin if seqmin_changed else o_data.seqmin %}
+{% set new_seqmax = data.seqmax if seqmax_changed else o_data.seqmax %}
+{% set seqlastvalue_out_of_range = o_data.seqlastvalue is not none and ((new_seqmin is not none and o_data.seqlastvalue|int < new_seqmin|int) or (new_seqmax is not none and o_data.seqlastvalue|int > new_seqmax|int)) %}
+{% set seq_at_start = o_data.seqiscalled == False and o_data.seqlastvalue is not none and o_data.seqlastvalue|int == o_data.seqstart|int %}
+{% if seqstart_changed %} {% if seq_at_start or seqlastvalue_out_of_range %}RESTART {% endif %}SET START {{data.seqstart|int}}{% endif %}
 {% if seqmin_changed %} SET MINVALUE {{data.seqmin|int}}{% endif %}
 {% if seqmax_changed %} SET MAXVALUE {{data.seqmax|int}}{% endif %}
 {% if seqcache_changed %} SET CACHE {{data.seqcache|int}}{% endif %}{% if attidentity_params %};{% endif %}
