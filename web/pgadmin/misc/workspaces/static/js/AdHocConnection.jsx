@@ -356,12 +356,7 @@ export default function AdHocConnection({mode}) {
     try {
       let {data: respData} = await api({
         method: 'POST',
-        url: url_for('sqleditor.connect_server', {
-          'sid': sid,
-          ...(user ? {
-            'usr': user,
-          }:{}),
-        }),
+        url: url_for('sqleditor.connect_server', {'sid': sid}),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: formData
       });

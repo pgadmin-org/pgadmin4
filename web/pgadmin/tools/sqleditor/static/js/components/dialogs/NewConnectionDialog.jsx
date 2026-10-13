@@ -229,12 +229,7 @@ export default function NewConnectionDialog({onClose, onSave}) {
     try {
       let {data: respData} = await queryToolCtx.api({
         method: 'POST',
-        url: url_for('sqleditor.connect_server', {
-          'sid': sid,
-          ...(user ? {
-            'usr': user,
-          }:{}),
-        }),
+        url: url_for('sqleditor.connect_server', {'sid': sid}),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: formData
       });
