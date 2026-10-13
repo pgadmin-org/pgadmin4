@@ -10,6 +10,7 @@
 #  Get Postgres and Python encoding
 
 import codecs
+import encodings.raw_unicode_escape
 
 import psycopg
 from flask import current_app
@@ -32,10 +33,23 @@ def _keep_invalid_escape(exc):
     return exc.object[exc.start:exc.end].decode('latin-1'), exc.end
 
 
+def _sql_ascii_errors(errors):
+    # psycopg decodes server error messages with errors='replace', so keep
+    # invalid escapes literally there too, rather than showing U+FFFD in
+    # place of part of the object name.
+    if errors in ('strict', 'replace'):
+        return _SQL_ASCII_ERRORS
+    return errors
+
+
 def _sql_ascii_decode(data, errors='strict'):
-    if errors == 'strict':
-        errors = _SQL_ASCII_ERRORS
-    return codecs.raw_unicode_escape_decode(data, errors)
+    return codecs.raw_unicode_escape_decode(data, _sql_ascii_errors(errors))
+
+
+class _SQLAsciiIncrementalDecoder(
+        encodings.raw_unicode_escape.IncrementalDecoder):
+    def _buffer_decode(self, data, errors, final):
+        return super()._buffer_decode(data, _sql_ascii_errors(errors), final)
 
 
 def _sql_ascii_search(name):
@@ -45,6 +59,8 @@ def _sql_ascii_search(name):
         name=SQL_ASCII_CODEC,
         encode=codecs.raw_unicode_escape_encode,
         decode=_sql_ascii_decode,
+        incrementalencoder=encodings.raw_unicode_escape.IncrementalEncoder,
+        incrementaldecoder=_SQLAsciiIncrementalDecoder,
     )
 
 

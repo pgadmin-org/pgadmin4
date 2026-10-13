@@ -16,6 +16,8 @@ raw_unicode_escape raise "truncated \\UXXXXXXXX escape" whilst psycopg
 decoded the column names, breaking View/Edit Data.
 """
 
+import codecs
+
 from pgadmin.utils.driver.psycopg3.encoding import SQL_ASCII_CODEC
 from pgadmin.utils.route import BaseTestGenerator
 
@@ -62,7 +64,19 @@ class TestSQLAsciiCodec(BaseTestGenerator):
         if self.round_trip:
             self.assertEqual(decoded.encode(SQL_ASCII_CODEC), self.data)
 
-        # Explicitly requested error handlers still behave as usual.
+        # psycopg decodes server error messages with errors='replace',
+        # which must keep invalid escapes literally as well.
+        self.assertEqual(self.data.decode(SQL_ASCII_CODEC, 'replace'),
+                         self.expected)
+
+        # Decoding a byte at a time, as a stream reader would, gives the
+        # same result as decoding the whole value at once.
+        decoder = codecs.getincrementaldecoder(SQL_ASCII_CODEC)()
         self.assertEqual(
-            self.data.decode(SQL_ASCII_CODEC, 'replace'),
-            self.data.decode('raw_unicode_escape', 'replace'))
+            ''.join(decoder.decode(self.data[i:i + 1])
+                    for i in range(len(self.data))) +
+            decoder.decode(b'', final=True),
+            self.expected)
+        self.assertEqual(
+            codecs.getincrementalencoder(SQL_ASCII_CODEC)().encode(decoded),
+            decoded.encode(SQL_ASCII_CODEC))
