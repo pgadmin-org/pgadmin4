@@ -19,7 +19,8 @@ from flask_security import current_user
 from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, \
+    connection_param_bool_to_int
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import process_masterpass_disabled
 from .connection import Connection
@@ -706,7 +707,7 @@ WHERE db.oid = {0}""".format(did))
                 # Convert boolean connection parameters to integer for
                 # libpq compatibility
                 if key in ('sslcompression', 'sslsni'):
-                    value = 1 if value else 0
+                    value = connection_param_bool_to_int(value)
 
                 dsn_args[key] = value
                 display_dsn_args[key] = orig_value if with_complete_path else \
