@@ -213,6 +213,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     acl_dict['changed'] = source['attacl'].copy()
                     source['attacl'] = acl_dict
 
+            # A column with no comment in the source has a description of
+            # None, which the column update template skips, so a comment
+            # present only in the target would never be removed. Send an
+            # empty string instead, as the column dialog does when a
+            # comment is cleared, so that COMMENT ON COLUMN ... IS '' is
+            # generated (#10549).
+            if source.get('description') is None and \
+                    tmp.get('description') is not None:
+                source['description'] = ''
+
             updated.append(source)
             target_cols.remove(tmp)
         elif tmp and source == tmp:
