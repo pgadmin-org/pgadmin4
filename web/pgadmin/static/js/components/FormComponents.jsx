@@ -202,17 +202,25 @@ export function InputSQL({ value, options={}, onChange, className, controlProps,
   // almost together it can pass back the value from the first key whilst the
   // editor already holds the second. Applying that older value replaces the
   // whole document and moves the cursor to the start (#10357), so a value
-  // matching an earlier entry in this list is treated as stale, and the
-  // editor's latest content is kept instead.
+  // matching an entry in this list is treated as stale, and the editor's
+  // latest content is kept instead.
+  //
+  // Values come back in the order the editor reported them, although some
+  // may be skipped when several changes are handled in one render. The
+  // earliest match is used because an edit and its undo can report the same
+  // text twice (#10551): with [A, B, A] pending, matching the last A would
+  // drop B as well, and B coming back next would then replace the document.
+  // If values were skipped, matching early only leaves entries in the list
+  // that later changes clear, whilst the editor still shows its own content.
   const pendingValues = useRef([]);
   const currValue = value || '';
-  const pendingIdx = pendingValues.current.lastIndexOf(currValue);
+  const pendingIdx = pendingValues.current.indexOf(currValue);
   const editorValue = pendingIdx >= 0 ?
     pendingValues.current[pendingValues.current.length - 1] : currValue;
 
   useEffect(() => {
     const pending = pendingValues.current;
-    const idx = pending.lastIndexOf(currValue);
+    const idx = pending.indexOf(currValue);
     if (idx >= 0) {
       // Everything up to this value has now come back from the parent.
       pending.splice(0, idx + 1);
