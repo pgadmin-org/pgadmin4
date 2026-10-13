@@ -76,9 +76,14 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} {% if data.attnotnull %}SET{% else %}DROP{% endif %} NOT NULL;
 
 {% endif %}
-{% if data.seqincrement or (data.seqcycle or (data.seqcycle == False and data.seqcycle != o_data.seqcycle)) or data.seqincrement or data.seqstart or data.seqmin or data.seqmax or data.seqcache %}
-{% set attidentity_params = true %}{% else %}
-{% set attidentity_params = false %}{% endif %}
+{###  Only options that differ from the column as it stands: Schema Diff passes every option of a changed column, and a needless RESTART would rewind the identity sequence (#10422) ###}
+{% set seqcycle_changed = (data.seqcycle and not o_data.seqcycle) or (data.seqcycle == False and o_data.seqcycle) %}
+{% set seqincrement_changed = data.seqincrement is defined and data.seqincrement|int(-1) > -1 and data.seqincrement|int != o_data.seqincrement|int(-1) %}
+{% set seqstart_changed = data.seqstart is defined and data.seqstart|int(-1) > -1 and data.seqstart|int != o_data.seqstart|int(-1) %}
+{% set seqmin_changed = data.seqmin is defined and data.seqmin|int(-1) > -1 and data.seqmin|int != o_data.seqmin|int(-1) %}
+{% set seqmax_changed = data.seqmax is defined and data.seqmax|int(-1) > -1 and data.seqmax|int != o_data.seqmax|int(-1) %}
+{% set seqcache_changed = data.seqcache is defined and data.seqcache|int(-1) > -1 and data.seqcache|int != o_data.seqcache|int(-1) %}
+{% set attidentity_params = seqcycle_changed or seqincrement_changed or seqstart_changed or seqmin_changed or seqmax_changed or seqcache_changed %}
 {###  Alter column - add identity ###}
 {% if data.colconstype == 'i' and 'attidentity' in data and o_data.attidentity == '' and data.attidentity != o_data.attidentity %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
@@ -97,16 +102,16 @@ CACHE {{data.seqcache|int}} {% endif %}
 {% elif 'attidentity' in data or attidentity_params %}
 {% if 'attidentity' in data and data.attidentity != '' and o_data.attidentity != '' and data.attidentity != o_data.attidentity %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET GENERATED {% if data.attidentity == 'a' %}ALWAYS{% else%}BY DEFAULT{% endif %}{% if attidentity_params == false %};{% endif %}
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET GENERATED {% if data.attidentity == 'a' %}ALWAYS{% else%}BY DEFAULT{% endif %}{% if not attidentity_params %};{% endif %}
 {% elif attidentity_params %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %}{% endif %}
-{% if data.seqcycle %} SET CYCLE{% elif (data.seqcycle == False and o_data.seqcycle and data.seqcycle != o_data.seqcycle) %} SET NO CYCLE{% endif %}
-{% if data.seqincrement is defined and data.seqincrement|int(-1) > -1 %} SET INCREMENT {{data.seqincrement|int}}{% endif %}
-{% if data.seqstart is defined and data.seqstart|int(-1) > -1%} RESTART SET START {{data.seqstart|int}}{% endif %}
-{% if data.seqmin is defined and data.seqmin|int(-1) > -1%} SET MINVALUE {{data.seqmin|int}}{% endif %}
-{% if data.seqmax is defined and data.seqmax|int(-1) > -1%} SET MAXVALUE {{data.seqmax|int}}{% endif %}
-{% if data.seqcache is defined and data.seqcache|int(-1) > -1%} SET CACHE {{data.seqcache|int}}{% endif %}{% if attidentity_params == true %};{% endif %}
+{% if seqcycle_changed %}{% if data.seqcycle %} SET CYCLE{% else %} SET NO CYCLE{% endif %}{% endif %}
+{% if seqincrement_changed %} SET INCREMENT {{data.seqincrement|int}}{% endif %}
+{% if seqstart_changed %} RESTART SET START {{data.seqstart|int}}{% endif %}
+{% if seqmin_changed %} SET MINVALUE {{data.seqmin|int}}{% endif %}
+{% if seqmax_changed %} SET MAXVALUE {{data.seqmax|int}}{% endif %}
+{% if seqcache_changed %} SET CACHE {{data.seqcache|int}}{% endif %}{% if attidentity_params %};{% endif %}
 
 
 {% endif %}
@@ -137,7 +142,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET COMPRESSION {{data.attcompression}};
 
 {% endif %}
-{% if data.description is defined and data.description != None %}
+{% if data.description is defined and data.description != None and data.description != o_data.description %}
 {% if data.name %}
 COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.table, data.name)}}
 {% else %}
