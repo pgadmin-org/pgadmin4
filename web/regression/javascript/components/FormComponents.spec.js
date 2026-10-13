@@ -200,12 +200,12 @@ describe('FormComponents', ()=>{
   });
 
   describe('InputSQL with a lagging value', ()=>{
-    let ThemedInputSQL = withTheme(InputSQL), ctrl, editor;
+    let ThemedInputSQL = withTheme(InputSQL), ctrl, editor, onChange;
     const renderSQL = (value)=>{
       const elem = (
         <ThemedInputSQL
           value={value}
-          onChange={()=>{/* parent passes the value back later */}}
+          onChange={onChange}
           inputRef={(obj)=>{editor = obj;}}
         />
       );
@@ -224,10 +224,23 @@ describe('FormComponents', ()=>{
         });
       });
     };
+    const deleteBefore = (pos)=>{
+      act(()=>{
+        editor.dispatch({
+          changes: {from: pos - 1, to: pos},
+          selection: {anchor: pos - 1},
+          userEvent: 'delete.backward',
+        });
+      });
+    };
 
     beforeEach(()=>{
       ctrl = null;
+      // The parent passes the value back later, by calling renderSQL.
+      onChange = jest.fn();
       renderSQL('BEGIN END;');
+      // Ignore the change the editor reports when it loads the first value.
+      onChange.mockClear();
     });
 
     it('keeps the cursor when an older value is passed back', ()=>{
@@ -245,6 +258,47 @@ describe('FormComponents', ()=>{
       renderSQL('BEGIN xyEND;');
       expect(editor.getValue()).toBe('BEGIN xyEND;');
       expect(editor.state.selection.main.head).toBe(8);
+    });
+
+    it('keeps the cursor when an edit and its undo are passed back', ()=>{
+      // Type, delete and retype a key before the parent passes any of the
+      // values back, so the editor reports the same text twice.
+      typeAt(6, 'x');
+      deleteBefore(7);
+      typeAt(6, 'x');
+      expect(editor.getValue()).toBe('BEGIN xEND;');
+      expect(onChange).toHaveBeenCalledTimes(3);
+
+      // The parent passes back each value in turn.
+      for (const passedBack of ['BEGIN xEND;', 'BEGIN END;', 'BEGIN xEND;']) {
+        renderSQL(passedBack);
+        expect(editor.getValue()).toBe('BEGIN xEND;');
+        expect(editor.state.selection.main.head).toBe(7);
+      }
+      expect(onChange).toHaveBeenCalledTimes(3);
+    });
+
+    it('keeps the editor content when values are skipped', ()=>{
+      typeAt(6, 'x');
+      deleteBefore(7);
+      typeAt(6, 'x');
+
+      // The parent handles all three changes in one render, so only the
+      // final value comes back.
+      renderSQL('BEGIN xEND;');
+      expect(editor.getValue()).toBe('BEGIN xEND;');
+      expect(editor.state.selection.main.head).toBe(7);
+
+      // A later edit still comes back cleanly.
+      typeAt(7, 'y');
+      renderSQL('BEGIN xyEND;');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+      expect(editor.state.selection.main.head).toBe(8);
+      expect(onChange).toHaveBeenCalledTimes(4);
+
+      // And a value the editor did not produce is still applied.
+      renderSQL('SELECT 1;');
+      expect(editor.getValue()).toBe('SELECT 1;');
     });
 
     it('applies a value the editor did not produce', ()=>{
