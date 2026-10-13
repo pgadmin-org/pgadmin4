@@ -34,7 +34,9 @@ CREATE TABLE {0}.parent_tbl (
     id integer NOT NULL,
     legacy integer,
     code text NOT NULL,
-    CONSTRAINT parent_tbl_pkey PRIMARY KEY (id, code)
+    alt_id integer NOT NULL,
+    CONSTRAINT parent_tbl_pkey PRIMARY KEY (id, code),
+    CONSTRAINT parent_tbl_alt_key UNIQUE (alt_id, code)
 );
 
 {1}
@@ -52,6 +54,13 @@ CREATE TABLE {0}.child_changed (
     CONSTRAINT child_changed_fk FOREIGN KEY (parent_id, parent_code)
         REFERENCES {0}.parent_tbl (id, code) ON DELETE {2}
 );
+
+CREATE TABLE {0}.child_refcols (
+    parent_id integer NOT NULL,
+    parent_code text NOT NULL,
+    CONSTRAINT child_refcols_fk FOREIGN KEY (parent_id, parent_code)
+        REFERENCES {0}.parent_tbl ({3}, code)
+);
 """
 
 # Only the source drops the column, leaving 'code' as attribute 3 there
@@ -59,9 +68,9 @@ CREATE TABLE {0}.child_changed (
 SOURCE_DDL = DDL.format(
     SCHEMA_NAME,
     'ALTER TABLE {0}.parent_tbl DROP COLUMN legacy;'.format(SCHEMA_NAME),
-    'CASCADE')
+    'CASCADE', 'alt_id')
 TARGET_DDL = DDL.replace('    legacy integer,\n', '').format(
-    SCHEMA_NAME, '', 'NO ACTION')
+    SCHEMA_NAME, '', 'NO ACTION', 'id')
 
 
 class SchemaDiffForeignKeyConfkeyTestCase(BaseSocketTestGenerator):
@@ -184,10 +193,19 @@ class SchemaDiffForeignKeyConfkeyTestCase(BaseSocketTestGenerator):
         # Applying it must succeed, and must settle the difference.
         self.execute_sql(self.tar_database, changed['diff_ddl'])
 
+        # A foreign key that references different columns cannot be
+        # altered, so it must be dropped and recreated.
+        refcols = self.find_object(response_data, 'table', 'child_refcols')
+        self.assertEqual(refcols['status'], 'Different')
+        self.assertIn('DROP CONSTRAINT', refcols['diff_ddl'])
+        self.assertIn('(alt_id, code)', refcols['diff_ddl'])
+        self.execute_sql(self.tar_database, refcols['diff_ddl'])
+
         response_data = self.compare()
-        self.assertEqual(
-            self.find_object(response_data, 'table',
-                             'child_changed')['status'], 'Identical')
+        for title in ('child_changed', 'child_refcols'):
+            self.assertEqual(
+                self.find_object(response_data, 'table', title)['status'],
+                'Identical', title)
 
     def tearDown(self):
         """This function drops the added databases"""
