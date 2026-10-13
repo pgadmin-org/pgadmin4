@@ -102,6 +102,16 @@ _create_python_virtualenv() {
     # file inside the venv's own site-packages (which we do own), added
     # once pip/wheel are installed below.
     "${SYSTEM_PYTHON_PATH}" -m venv venv
+
+    # Python 3.14's venv module adds a novelty "𝜋thon" alias (U+1D70B, see
+    # CPython gh-119535) alongside python/python3/python3.X. Nothing uses it,
+    # and the "sed -i" hash bang fixup below turns the symlink into a full
+    # copy of the interpreter which, unlike the python* links, is never put
+    # back. dpkg on Ubuntu 26.04 then fails to unpack it with EPERM (#10414),
+    # so remove it. The name is given as raw UTF-8 bytes so that it matches
+    # whatever the build shell's locale is.
+    rm -f "venv/bin/"$'\360\235\234\213'"thon"
+
     # shellcheck disable=SC1091
     . venv/bin/activate
 
