@@ -436,10 +436,12 @@ export class LayoutDocker {
     this.layoutObj.loadLayout(this.defaultLayout);
     const focusOn = this.find(this.resetToTabPanel)?.activeId;
 
-    // restor the tabs opened
+    // Restore the tabs that were open. The metaData must be carried over,
+    // as saveTab() needs it to persist the tab for the application state
+    // restore on the next load.
     saveNonDefaultTabs.forEach((t)=>{
       this.openTab({
-        id: t.id, content: t.content, ...t.internal
+        id: t.id, content: t.content, metaData: t.metaData, ...t.internal
       }, this.resetToTabPanel, 'middle');
     });
 
