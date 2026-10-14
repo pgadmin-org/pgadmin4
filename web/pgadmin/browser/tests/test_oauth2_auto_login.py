@@ -79,9 +79,16 @@ class Oauth2AutoLoginTestCase(BaseTestGenerator):
         )),
     ]
 
+    SAVED_SETTINGS = ('AUTHENTICATION_SOURCES', 'OAUTH2_CONFIG',
+                      'OAUTH2_AUTO_CREATE_USER', 'OAUTH2_AUTO_LOGIN')
+
     @classmethod
     def setUpClass(cls):
         """Logout the test client as we are testing OAuth2 login."""
+        cls.saved_settings = {
+            name: getattr(app_config, name)
+            for name in cls.SAVED_SETTINGS if hasattr(app_config, name)
+        }
         cls.tester.logout()
 
     def setUp(self):
@@ -201,8 +208,11 @@ class Oauth2AutoLoginTestCase(BaseTestGenerator):
     def tearDownClass(cls):
         """Log the test client back in now that the scenarios are done."""
         cls.tester.logout()
-        app_config.OAUTH2_AUTO_LOGIN = False
-        app_config.AUTHENTICATION_SOURCES = [INTERNAL]
+        for name in cls.SAVED_SETTINGS:
+            if name in cls.saved_settings:
+                setattr(app_config, name, cls.saved_settings[name])
+            elif hasattr(app_config, name):
+                delattr(app_config, name)
         app_config.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
         app.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
         utils.login_tester_account(cls.tester)
