@@ -388,7 +388,8 @@ def _google_sdk():
 
 class Google:
     def __init__(self, client_config=None):
-        # Google cloud sql api versions
+        # Google cloud sql api versions. Only the discovery documents for
+        # these are shipped in the packages; see pkg/prune_site_packages.py.
         self._cloud_resource_manager_api_version = 'v1'
         self._sqladmin_api_version = 'v1'
         self._compute_api_version = 'v1'

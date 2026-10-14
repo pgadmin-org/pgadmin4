@@ -216,6 +216,9 @@ REM Main build sequence Ends
     CALL python -m pip install --upgrade pip || EXIT /B 1
     CALL pip install --only-binary=cryptography -r "%WD%\requirements.txt" || EXIT /B 1
 
+    ECHO Removing unused data files from the installed packages...
+    CALL python "%WD%\pkg\prune_site_packages.py" "%TMPDIR%\venv\Lib\site-packages" || EXIT /B 1
+
     CD %WD%
     EXIT /B 0
 

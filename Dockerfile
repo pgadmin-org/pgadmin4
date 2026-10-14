@@ -72,9 +72,10 @@ RUN apk add --no-cache \
         zlib-dev \
         libjpeg-turbo-dev \
         libpng-dev
-COPY requirements.txt /
+COPY requirements.txt pkg/prune_site_packages.py /
 RUN python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
+    /venv/bin/python3 /prune_site_packages.py /venv && \
     apk del --no-cache build-deps
 
 #########################################################################

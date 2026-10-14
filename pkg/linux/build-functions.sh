@@ -147,6 +147,9 @@ _create_python_virtualenv() {
             --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
     fi
 
+    # Remove data files from the installed packages that we never use
+    python3 "${SOURCEDIR}/pkg/prune_site_packages.py" venv || exit 1
+
     # Fixup the paths in the venv activation scripts
     sed -i 's/VIRTUAL_ENV=.*/VIRTUAL_ENV="\/usr\/pgadmin4\/venv"/g' venv/bin/activate
     sed -i 's/setenv VIRTUAL_ENV .*/setenv VIRTUAL_ENV "\/usr\/pgadmin4\/venv"/g' venv/bin/activate.csh
