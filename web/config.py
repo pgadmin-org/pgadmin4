@@ -967,6 +967,13 @@ OAUTH2_CONFIG = [
 
 OAUTH2_AUTO_CREATE_USER = True
 
+# If set to True, and OAuth2 is the only authentication source with exactly
+# one provider in OAUTH2_CONFIG, users are sent straight to that provider
+# instead of seeing the pgAdmin login page. After logging out, the login
+# page is shown so the provider does not log the user straight back in.
+# Add ?no_auto_login to the login page URL to display it regardless.
+OAUTH2_AUTO_LOGIN = False
+
 ##########################################################################
 # Webserver Configuration
 ##########################################################################
