@@ -20,6 +20,7 @@ kept cannot be found, rather than shipping a package that cannot work.
 import ast
 import fnmatch
 import os
+import re
 import shutil
 import sys
 
@@ -53,13 +54,15 @@ PRUNE = {
     # Google API (600 or so files, over 100MB), and discovery.build() reads
     # them from there rather than fetching them. pgAdmin only builds the
     # services below; see the *_api_version attributes in
-    # web/pgadmin/misc/cloud/google/__init__.py, which must be kept in step
+    # web/pgadmin/misc/cloud/google/__init__.py and the discovery.build()
+    # calls in web/pgacloud/providers/google.py, which must be kept in step
     # with this list.
     os.path.join('googleapiclient', 'discovery_cache', 'documents'): (
         '*.json', [
             'cloudresourcemanager.v1.json',
             'compute.v1.json',
             'sqladmin.v1.json',
+            'sqladmin.v1beta4.json',
         ]),
 
     # Babel carries CLDR data for over 1,000 locales (about 29MB), and only
@@ -75,6 +78,32 @@ PRUNE = {
 # Packaging tools that are needed to build the environment but not to run
 # pgAdmin. Each is removed from any site-packages directory it is found in.
 DISTRIBUTIONS = ['pip', 'setuptools', 'wheel']
+
+# A module-level import of pkg_resources, which setuptools provides. Imports
+# inside a function or a try block are indented, and are either lazy or
+# guarded against it being missing.
+PKG_RESOURCES_IMPORT = re.compile(r'^(?:import|from)[ \t]+pkg_resources\b',
+                                  re.MULTILINE)
+
+
+def pkg_resources_users(site_packages):
+    """Return the modules in site_packages, other than the packaging tools'
+    own and tests, that import pkg_resources when they are loaded. On Python
+    3.9, passlib 1.7.4 does, so setuptools must be kept there (#9829)."""
+    own = {'pip', 'setuptools', 'pkg_resources', '_distutils_hack', 'wheel'}
+    users = []
+
+    for dirpath, dirnames, filenames in os.walk(site_packages):
+        if dirpath == site_packages:
+            dirnames[:] = [d for d in dirnames if d not in own]
+        dirnames[:] = [d for d in dirnames if d not in ('test', 'tests')]
+        for filename in fnmatch.filter(filenames, '*.py'):
+            path = os.path.join(dirpath, filename)
+            with open(path, encoding='utf-8', errors='replace') as f:
+                if PKG_RESOURCES_IMPORT.search(f.read()):
+                    users.append(os.path.relpath(path, site_packages))
+
+    return sorted(users)
 
 
 def prune_dir(dirpath, removable, keep):
@@ -114,21 +143,25 @@ def uninstall(site_packages, dist_info, root):
     saved = 0
     packages = set()
 
+    # Read the whole of RECORD first, as it lists itself, and Windows cannot
+    # remove a file that is still open.
     with open(os.path.join(site_packages, dist_info, 'RECORD'),
               encoding='utf-8') as f:
-        for line in f:
-            relpath = line.rsplit(',', 2)[0]
-            if not relpath:
-                continue
-            path = os.path.abspath(os.path.join(site_packages, relpath))
-            if os.path.commonpath([root, path]) != root:
-                continue
-            if os.sep in os.path.normpath(relpath) and \
-                    not relpath.startswith('..'):
-                packages.add(os.path.normpath(relpath).split(os.sep)[0])
-            if os.path.isfile(path) or os.path.islink(path):
-                saved += os.path.getsize(path)
-                os.remove(path)
+        lines = f.readlines()
+
+    for line in lines:
+        relpath = line.rsplit(',', 2)[0]
+        if not relpath:
+            continue
+        path = os.path.abspath(os.path.join(site_packages, relpath))
+        if os.path.commonpath([root, path]) != root:
+            continue
+        if os.sep in os.path.normpath(relpath) and \
+                not relpath.startswith('..'):
+            packages.add(os.path.normpath(relpath).split(os.sep)[0])
+        if os.path.isfile(path) or os.path.islink(path):
+            saved += os.path.getsize(path)
+            os.remove(path)
 
     # Remove the package directories too, including any bytecode compiled
     # after installation, which RECORD does not list.
@@ -153,7 +186,12 @@ def prune(root):
                 saved += prune_dir(dirpath, removable, keep)
 
         if os.path.basename(dirpath) == 'site-packages':
+            users = pkg_resources_users(dirpath)
             for name in DISTRIBUTIONS:
+                if name == 'setuptools' and users:
+                    print('Keeping setuptools, as pkg_resources is imported '
+                          'by {}'.format(', '.join(users)))
+                    continue
                 for dist_info in fnmatch.filter(dirnames,
                                                 name + '-*.dist-info'):
                     saved += uninstall(dirpath, dist_info, root)

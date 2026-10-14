@@ -145,6 +145,8 @@ class GoogleProvider(AbsProvider):
 
     def _create_google_postgresql_instance(self, args):
         credentials = self._get_credentials(self._scopes)
+        # Only the discovery documents for the services pgAdmin builds are
+        # shipped in the packages; see pkg/prune_site_packages.py.
         service = discovery.build('sqladmin', 'v1beta4',
                                   credentials=credentials)
 

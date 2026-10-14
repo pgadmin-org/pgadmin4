@@ -14,6 +14,7 @@ affected directory, point the library at it, and check that everything
 pgAdmin needs from it still works.
 """
 
+import ast
 import importlib.util
 import os
 import shutil
@@ -28,6 +29,22 @@ from pgadmin.utils.route import BaseTestGenerator
 PRUNE_SCRIPT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), *(['..'] * 4), 'pkg',
     'prune_site_packages.py'))
+PGACLOUD_GOOGLE = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), *(['..'] * 3), 'pgacloud', 'providers',
+    'google.py'))
+
+
+def _pgacloud_services():
+    """Return the (service, version) pairs that pgacloud's Google provider
+    passes to discovery.build()."""
+    with open(PGACLOUD_GOOGLE, encoding='utf-8') as f:
+        tree = ast.parse(f.read(), PGACLOUD_GOOGLE)
+    return {tuple(arg.value for arg in node.args[:2])
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call) and
+            isinstance(node.func, ast.Attribute) and
+            node.func.attr == 'build' and len(node.args) >= 2 and
+            all(isinstance(arg, ast.Constant) for arg in node.args[:2])}
 
 
 class _SkipServerSetUpMixin:
@@ -76,18 +93,22 @@ class TestPruneSitePackages(_SkipServerSetUpMixin, BaseTestGenerator):
 
         google = Google()
         services = {
-            'cloudresourcemanager':
-                google._cloud_resource_manager_api_version,
-            'compute': google._compute_api_version,
-            'sqladmin': google._sqladmin_api_version,
+            ('cloudresourcemanager',
+             google._cloud_resource_manager_api_version),
+            ('compute', google._compute_api_version),
+            ('sqladmin', google._sqladmin_api_version),
         }
+        pgacloud_services = _pgacloud_services()
+        self.assertTrue(pgacloud_services)
+        services |= pgacloud_services
 
         discovery = _google_sdk().discovery
         with mock.patch.object(discovery_cache, 'DISCOVERY_DOC_DIR', docs):
-            for service, version in services.items():
-                # Builds offline from the bundled document.
-                discovery.build(service, version, developerKey='test',
-                                static_discovery=True)
+            for service, version in sorted(services):
+                with self.subTest(service=service, version=version):
+                    # Builds offline from the bundled document.
+                    discovery.build(service, version, developerKey='test',
+                                    static_discovery=True)
 
     def _check_babel(self):
         from babel import Locale, localedata
@@ -135,3 +156,29 @@ class TestPruneSitePackages(_SkipServerSetUpMixin, BaseTestGenerator):
         self.assertEqual(sorted(os.listdir(site_packages)), ['keep'])
         self.assertTrue(os.path.exists(os.path.join(tmp, 'lib', 'bin',
                                                     'pip')))
+
+        # setuptools is kept if anything imports pkg_resources when it is
+        # loaded, as passlib 1.7.4 does on Python 3.9 (#9829), but not for
+        # lazy or guarded imports, or tests.
+        modules = {
+            os.path.join('keep', '__init__.py'): None,
+            os.path.join('lazy', '__init__.py'):
+                'def f():\n    import pkg_resources\n',
+            os.path.join('keep', 'tests', 'test_x.py'):
+                'import pkg_resources\n',
+            os.path.join('pkg_resources', '__init__.py'):
+                'from pkg_resources.extern import x\n',
+        }
+        for path, content in modules.items():
+            path = os.path.join(site_packages, path)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'w') as f:
+                f.write(content or '')
+        self.assertEqual(self.prune.pkg_resources_users(site_packages), [])
+
+        path = os.path.join(site_packages, 'passlib', 'pwd.py')
+        os.makedirs(os.path.dirname(path))
+        with open(path, 'w') as f:
+            f.write('import os\nimport pkg_resources\n')
+        self.assertEqual(self.prune.pkg_resources_users(site_packages),
+                         [os.path.join('passlib', 'pwd.py')])
