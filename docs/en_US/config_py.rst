@@ -1,8 +1,8 @@
 .. _config_py:
 
-***************************
-`The config.py File`:index:
-***************************
+*****************************
+`Configuration Files`:index:
+*****************************
 
 There are multiple configuration files that are read at startup by pgAdmin. These
 files are used for configuration options that:
