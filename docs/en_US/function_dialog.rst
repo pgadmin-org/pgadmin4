@@ -39,6 +39,8 @@ Use the fields in the *Definition* tab to define the function:
 * Use the drop-down listbox next to *Return type* to select the data type
   returned by the function, if any. If *Custom return type?* is enabled this field
   will change to an input text field.
+* Move the *Returns a set?* switch to indicate if the function returns a set
+  that includes multiple rows. The default is *No*.
 * Use the drop-down listbox next to *Language* to select the implementation
   language. The default is *sql*.
 * Use the drop-down listbox next to *Depends on extensions* to select the extension that this function
@@ -88,8 +90,6 @@ function:
     * *IMMUTABLE* indicates that the function cannot modify the database and
       always returns the same result when given the same argument values.
 
-* Move the *Returns a Set?* switch to indicate if the function returns a set
-  that includes multiple rows. The default is *No*.
 * Move the *Strict?* switch to indicate if the function always returns NULL
   whenever any of its arguments are NULL. If *Yes*, the function is not executed
   when there are NULL arguments; instead a NULL result is assumed
