@@ -11,7 +11,10 @@ const mockPost = jest.fn();
 
 jest.mock('../../../pgadmin/static/js/api_instance', () => ({
   __esModule: true,
-  default: () => ({post: mockPost, delete: jest.fn()}),
+  default: () => ({
+    post: mockPost, get: jest.fn(() => Promise.resolve({data: {}})),
+    delete: jest.fn(),
+  }),
   parseApiError: (e) => e,
 }));
 jest.mock('../../../pgadmin/static/js/Dialogs/index', () => ({
@@ -27,17 +30,26 @@ const pgBrowser = {
   Collection: {extend: (props) => props},
   Events: {trigger: jest.fn(), on: jest.fn()},
   enable_disable_menus: jest.fn(),
+  notifier: {success: jest.fn(), info: jest.fn(), warning: jest.fn()},
+  stdW: {md: 650},
 };
+const pgAdmin = {Browser: pgBrowser};
 
-// database.js registers itself through an AMD style define(); load it with a
-// stub that hands the factory our fake browser.
+// The node modules register themselves through an AMD style define(); load
+// them with a stub that hands each factory our fake browser.
 global.define = (_name, _deps, factory) => {
-  factory((s) => s, () => '', {
-    Browser: {notifier: {success: jest.fn(), info: jest.fn()}},
-  }, pgBrowser, {});
+  factory((s) => s, () => '', pgAdmin, pgBrowser, {id: 1}, {});
 };
 require('../../../pgadmin/browser/server_groups/servers/databases/static/js/database');
+require('../../../pgadmin/browser/server_groups/servers/static/js/server');
 delete global.define;
+
+// Let the mocked API calls resolve and the success handlers run.
+const flushPromises = async () => {
+  for (let i = 0; i < 5; i++) {
+    await Promise.resolve();
+  }
+};
 
 describe('database node connection', () => {
   let tree, serverItem, dbItem, dbData;
@@ -70,10 +82,7 @@ describe('database node connection', () => {
   const connectByExpanding = async () => {
     const node = pgBrowser.Nodes['database'];
     expect(node.callbacks.beforeopen.call(node, dbItem, dbData)).toBe(false);
-    // Let the mocked API call resolve and the success handler run.
-    await Promise.resolve();
-    await Promise.resolve();
-    await Promise.resolve();
+    await flushPromises();
   };
 
   it('keeps the menus on the selected server when a database is connected by expanding it', async () => {
@@ -94,5 +103,46 @@ describe('database node connection', () => {
 
     expect(dbData.connected).toBe(true);
     expect(pgBrowser.Node.callbacks.selected).toHaveBeenCalledWith(dbItem, dbData);
+  });
+});
+
+describe('server node connection', () => {
+  let tree, otherItem, serverItem, serverData;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    otherItem = {id: 'other'};
+    serverItem = {id: 'server'};
+    serverData = {_type: 'server', _id: 1, connected: false, icon: 'x'};
+    tree = {
+      selected: jest.fn(() => otherItem),
+      addIcon: jest.fn(),
+      removeIcon: jest.fn(),
+      setLeaf: jest.fn(),
+      setInode: jest.fn(),
+      select: jest.fn(),
+      open: jest.fn(),
+    };
+    pgBrowser.tree = tree;
+    pgBrowser.enable_disable_menus.mockClear();
+    mockPost.mockReset();
+    mockPost.mockResolvedValue({data: {
+      success: 1, info: 'Connected',
+      data: {connected: true, icon: 'y', version: 180000},
+    }});
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('keeps the menus on the selected node when a server is connected by expanding it', async () => {
+    const node = pgBrowser.Nodes['server'];
+    expect(node.callbacks.beforeopen.call(node, serverItem, serverData)).toBe(false);
+    await flushPromises();
+
+    expect(serverData.connected).toBe(true);
+    expect(pgBrowser.enable_disable_menus).toHaveBeenCalledWith();
+    expect(pgBrowser.enable_disable_menus).not.toHaveBeenCalledWith(serverItem);
   });
 });
