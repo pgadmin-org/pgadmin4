@@ -34,7 +34,59 @@ OAUTH2_AUTHORIZE = 'oauth2.authorize'
 # OAuth2 settings that legitimately live at the top level of the
 # configuration. Every other OAUTH2_* setting belongs *inside* an entry
 # of the OAUTH2_CONFIG list and is ignored if set at the top level.
-_TOP_LEVEL_OAUTH2_SETTINGS = {'OAUTH2_CONFIG', 'OAUTH2_AUTO_CREATE_USER'}
+_TOP_LEVEL_OAUTH2_SETTINGS = {'OAUTH2_CONFIG', 'OAUTH2_AUTO_CREATE_USER',
+                              'OAUTH2_AUTO_LOGIN'}
+
+
+def get_auto_login_provider():
+    """
+    Return the name of the OAuth2 provider that users should be sent to
+    without seeing the login page, or None if auto-login does not apply.
+
+    Auto-login only applies when OAUTH2_AUTO_LOGIN is enabled, OAuth2 is the
+    only authentication source, and exactly one provider is configured, as
+    otherwise the user has a choice to make on the login page.
+    """
+    if not getattr(config, 'OAUTH2_AUTO_LOGIN', False):
+        return None
+    if config.AUTHENTICATION_SOURCES != [OAUTH2]:
+        return None
+    if len(config.OAUTH2_CONFIG) != 1:
+        return None
+    return config.OAUTH2_CONFIG[0].get('OAUTH2_NAME')
+
+
+def auto_login_redirect():
+    """
+    Return a redirect to the OAuth2 provider's authorisation endpoint if the
+    login page should be skipped for this request, or None to show it.
+
+    The login page is still shown when there are flashed messages waiting
+    to be displayed (for example a failed login or a logout, which would
+    otherwise loop straight back to the provider), and when the request has
+    a no_auto_login query parameter, so an administrator can always reach it.
+    """
+    provider = get_auto_login_provider()
+    if provider is None or request.method != 'GET' or \
+            session.get('_flashes') or 'no_auto_login' in request.args:
+        return None
+
+    from pgadmin.authenticate import get_auth_sources
+    client = get_auth_sources(OAUTH2).oauth2_clients.get(provider)
+    if client is None:
+        return None
+
+    try:
+        response = client.authorize_redirect(
+            url_for(OAUTH2_AUTHORIZE, _external=True))
+    except Exception as e:
+        current_app.logger.exception(
+            'OAuth2 auto-login to provider "%s" failed: %s', provider, e)
+        return None
+
+    # The /authorize callback reads the provider from the session.
+    session['oauth2_current_client'] = provider
+    return response
 
 
 def warn_on_misplaced_oauth2_config(app):
@@ -159,6 +211,12 @@ def init_app(app):
         logout_user()
         for key in list(session.keys()):
             session.pop(key)
+
+        # With auto-login on, the login page would otherwise send the user
+        # straight back to the provider. A pending message stops that, so
+        # they see that they have logged out and can choose to log in again.
+        if get_auto_login_provider() is not None:
+            flash(gettext('You have been logged out.'), MessageType.INFO)
 
         if logout_url:
             return redirect(logout_url.format(

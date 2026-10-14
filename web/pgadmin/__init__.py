@@ -914,6 +914,15 @@ def create_app(app_name=None):
                 request.endpoint in ('redirects.index', 'security.login') and \
                 app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
             return authenticate.login()
+        elif config.SERVER_MODE and not current_user.is_authenticated and \
+                request.endpoint in ('redirects.index', 'security.login') and \
+                app.PGADMIN_EXTERNAL_AUTH_SOURCE == OAUTH2:
+            # Send the user straight to the OAuth2 provider if
+            # OAUTH2_AUTO_LOGIN allows it; otherwise show the login page.
+            from pgadmin.authenticate.oauth2 import auto_login_redirect
+            response = auto_login_redirect()
+            if response is not None:
+                return response
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login
