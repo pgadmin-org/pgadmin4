@@ -271,7 +271,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               setErrMsg([MESSAGE_TYPE.ERROR, msg]);
               reject(new Error(msg));
             } else {
-              setErrMsg(['', '']);
+              const warning = res.data.data?.libpq_warning;
+              setErrMsg(warning ? [MESSAGE_TYPE.WARNING, warning] : ['', '']);
               resolve();
             }
           })

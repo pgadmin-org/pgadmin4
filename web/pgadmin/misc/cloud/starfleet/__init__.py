@@ -11,6 +11,7 @@
 
 import time
 
+from psycopg import pq
 from flask import session, current_app, request
 from flask_babel import gettext as _
 from flask_security import current_user
@@ -39,6 +40,9 @@ JOBS_KEY = 'starfleet_jobs'
 USER_TYPES = {'admin': 'admin', 'app': 'application'}
 CONNECTION_PARAMS = {'sslmode': 'require', 'gssencmode': 'disable',
                      'connect_timeout': 30}
+# Starfleet endpoints drop any SSL connection that arrives without SNI,
+# which libpq only sends from version 14.
+MIN_LIBPQ_VERSION = 140000
 
 
 class StarfleetModule(PgAdminModule):
@@ -158,8 +162,23 @@ def verify_credentials():
                             'expires_at': client.expires_at}
     # The wizard's next request may be served by another worker.
     session.force_write = True
-    return make_json_response(success=1, data={
-        'tenant_name': tenant_name})
+    data = {'tenant_name': tenant_name}
+    warning = _libpq_warning()
+    if warning:
+        data['libpq_warning'] = warning
+    return make_json_response(success=1, data=data)
+
+
+def _libpq_warning():
+    """Explain why connections will fail if libpq is too old for SNI."""
+    version = pq.version()
+    if version >= MIN_LIBPQ_VERSION:
+        return None
+    return _('pgAdmin is using libpq {0}, which cannot connect to pgEdge '
+             'Starfleet because it does not send the server name (SNI) '
+             'during the SSL handshake. The database can be deployed, but '
+             'pgAdmin will not be able to connect to it until it uses '
+             'libpq 14 or later.').format(pq.version_pretty(version))
 
 
 def _cpu(limit):
