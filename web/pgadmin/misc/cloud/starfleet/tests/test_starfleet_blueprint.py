@@ -64,6 +64,7 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self.app.secret_key = 'test'
         Babel(self.app)  # gettext needs it in a bare app
         self._test_verify()
+        self._test_verify_old_libpq()
         self._test_verify_api_error()
         self._test_verify_bad_credentials_escaped()
         self._test_choices()
@@ -98,6 +99,16 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
                                 'expires_at': 5000.0})
         self.assertNotIn('test-secret', json.dumps(sess))
         self.assertTrue(self.forced)
+
+    def _test_verify_old_libpq(self):
+        from pgadmin.misc.cloud import starfleet as sf
+        for version, warned in ((130020, True), (140000, False)):
+            with patch.object(sf.pq, 'version', return_value=version):
+                resp, _, _ = self._verify({sf.TENANTS: []})
+            data = json.loads(resp.data)['data']
+            self.assertEqual('libpq_warning' in data, warned)
+            if warned:
+                self.assertIn('libpq 13.20', data['libpq_warning'])
 
     def _test_verify_api_error(self):
         from pgacloud.utils.starfleet_api import StarfleetError
