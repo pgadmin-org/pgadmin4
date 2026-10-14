@@ -825,6 +825,66 @@
       }
     },
     {
+      "name": "update a connected server's comment",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "server_connected": true,
+      "test_data": {
+        "id": "PLACE_HOLDER",
+        "comment": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a connected server's maintenance database",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "server_connected": true,
+      "test_data": {
+        "id": "PLACE_HOLDER",
+        "db": "template1"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 403
+      }
+    },
+    {
+      "name": "update a connected server's role",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "server_connected": true,
+      "test_data": {
+        "id": "PLACE_HOLDER",
+        "role": "pg_monitor"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 403
+      }
+    },
+    {
+      "name": "update a connected server's service",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "server_connected": true,
+      "test_data": {
+        "id": "PLACE_HOLDER",
+        "service": "no_such_service"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 403
+      }
+    },
+    {
       "name": "update a server details without data",
       "url": "/browser/server/obj/",
       "is_positive_test": true,
