@@ -216,9 +216,6 @@ REM Main build sequence Ends
     CALL python -m pip install --upgrade pip || EXIT /B 1
     CALL pip install --only-binary=cryptography -r "%WD%\requirements.txt" || EXIT /B 1
 
-    ECHO Removing unused data files from the installed packages...
-    CALL python "%WD%\pkg\prune_site_packages.py" "%TMPDIR%\venv\Lib\site-packages" || EXIT /B 1
-
     CD %WD%
     EXIT /B 0
 
@@ -239,6 +236,11 @@ REM Main build sequence Ends
 
     ECHO Copying site-packages...
     XCOPY /S /I /E /H /Y "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1
+
+    REM This is done to the copy rather than the venv, which still needs pip to
+    REM install Sphinx for the docs in :CREATE_RUNTIME_ENV.
+    ECHO Removing unused files from the installed packages...
+    "%TMPDIR%\venv\Scripts\python.exe" "%WD%\pkg\prune_site_packages.py" "%BUILDROOT%\python\Lib\site-packages" || EXIT /B 1
 
     REM NOTE: There is intentionally no space after "site" in the line below, to prevent Python barfing if there's one in the file
     ECHO import site>> "%BUILDROOT%\python\python%PYTHON_MAJOR%%PYTHON_MINOR%._pth"

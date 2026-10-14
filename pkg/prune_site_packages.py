@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""Remove data files that pgAdmin never uses from an installed Python
+"""Remove files that pgAdmin never uses from an installed Python
 environment, to reduce the size of the packages.
 
 Usage: python3 prune_site_packages.py <directory>
@@ -17,14 +17,33 @@ framework or a site-packages directory. The build fails if a file that is
 kept cannot be found, rather than shipping a package that cannot work.
 """
 
+import ast
 import fnmatch
 import os
+import shutil
 import sys
 
-# The languages pgAdmin has translations for, from LANGUAGES in
-# web/config.py, which must be kept in step with this list.
-LANGUAGES = ['cs', 'de', 'en', 'es', 'fr', 'id', 'it', 'ja', 'ko', 'pl', 'pt',
-             'ru', 'sv', 'zh']
+CONFIG_PY = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
+                         'web', 'config.py')
+
+
+def languages():
+    """Return the language codes of the translations pgAdmin has, from the
+    keys of LANGUAGES in web/config.py, without the territory or script
+    (e.g. 'zh' for 'zh_Hans_CN'). The file is parsed rather than imported,
+    as importing it needs pgAdmin's own modules."""
+    with open(CONFIG_PY, encoding='utf-8') as f:
+        tree = ast.parse(f.read(), CONFIG_PY)
+
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and \
+                any(isinstance(t, ast.Name) and t.id == 'LANGUAGES'
+                    for t in node.targets):
+            return sorted({code.split('_')[0]
+                           for code in ast.literal_eval(node.value)})
+
+    sys.exit('ERROR: LANGUAGES was not found in {}'.format(CONFIG_PY))
+
 
 # Each entry maps a directory to the files in it that may be removed, and
 # the patterns for the ones to keep. Every keep pattern must match at least
@@ -50,8 +69,12 @@ PRUNE = {
         '*.dat',
         ['root.dat'] +
         ['{}{}.dat'.format(lang, suffix)
-         for lang in LANGUAGES for suffix in ('', '_*')]),
+         for lang in languages() for suffix in ('', '_*')]),
 }
+
+# Packaging tools that are needed to build the environment but not to run
+# pgAdmin. Each is removed from any site-packages directory it is found in.
+DISTRIBUTIONS = ['pip', 'setuptools', 'wheel']
 
 
 def prune_dir(dirpath, removable, keep):
@@ -76,19 +99,73 @@ def prune_dir(dirpath, removable, keep):
     return saved
 
 
+def _tree_size(path):
+    return sum(os.path.getsize(os.path.join(dirpath, filename))
+               for dirpath, _, filenames in os.walk(path)
+               for filename in filenames)
+
+
+def uninstall(site_packages, dist_info, root):
+    """Remove the files listed in a distribution's RECORD, as pip uninstall
+    would, and return the number of bytes freed. Files outside root, such as
+    the scripts in a Windows venv when only site-packages is being pruned,
+    are left alone."""
+    root = os.path.abspath(root)
+    saved = 0
+    packages = set()
+
+    with open(os.path.join(site_packages, dist_info, 'RECORD'),
+              encoding='utf-8') as f:
+        for line in f:
+            relpath = line.rsplit(',', 2)[0]
+            if not relpath:
+                continue
+            path = os.path.abspath(os.path.join(site_packages, relpath))
+            if os.path.commonpath([root, path]) != root:
+                continue
+            if os.sep in os.path.normpath(relpath) and \
+                    not relpath.startswith('..'):
+                packages.add(os.path.normpath(relpath).split(os.sep)[0])
+            if os.path.isfile(path) or os.path.islink(path):
+                saved += os.path.getsize(path)
+                os.remove(path)
+
+    # Remove the package directories too, including any bytecode compiled
+    # after installation, which RECORD does not list.
+    for package in packages:
+        path = os.path.join(site_packages, package)
+        if os.path.isdir(path):
+            saved += _tree_size(path)
+            shutil.rmtree(path)
+
+    return saved
+
+
 def prune(root):
     found = set()
     saved = 0
+    removed = []
 
-    for dirpath, _, _ in os.walk(root):
+    for dirpath, dirnames, _ in os.walk(root):
         for subdir, (removable, keep) in PRUNE.items():
             if dirpath.endswith(os.sep + subdir):
                 found.add(subdir)
                 saved += prune_dir(dirpath, removable, keep)
 
+        if os.path.basename(dirpath) == 'site-packages':
+            for name in DISTRIBUTIONS:
+                for dist_info in fnmatch.filter(dirnames,
+                                                name + '-*.dist-info'):
+                    saved += uninstall(dirpath, dist_info, root)
+                    removed.append(dist_info[:-len('.dist-info')])
+            dirnames[:] = [d for d in dirnames
+                           if os.path.isdir(os.path.join(dirpath, d))]
+
     for subdir in set(PRUNE) - found:
         sys.exit('ERROR: {} was not found under {}'.format(subdir, root))
 
+    if removed:
+        print('Removed {}'.format(', '.join(sorted(removed))))
     print('Pruned {:.1f}MB of unused files from {}'.format(
         saved / 1024 / 1024, root))
 

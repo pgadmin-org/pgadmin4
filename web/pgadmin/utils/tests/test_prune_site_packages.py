@@ -8,7 +8,7 @@
 ##########################################################################
 
 """
-The packages run pkg/prune_site_packages.py to remove data files from the
+The packages run pkg/prune_site_packages.py to remove files from the
 installed Python packages that pgAdmin never uses. Prune a copy of each
 affected directory, point the library at it, and check that everything
 pgAdmin needs from it still works.
@@ -43,6 +43,7 @@ class TestPruneSitePackages(_SkipServerSetUpMixin, BaseTestGenerator):
     scenarios = (
         ('Google discovery documents', dict(check='google')),
         ('Babel locale data', dict(check='babel')),
+        ('Packaging tools', dict(check='packaging')),
     )
 
     def runTest(self):
@@ -105,3 +106,32 @@ class TestPruneSitePackages(_SkipServerSetUpMixin, BaseTestGenerator):
                     self.assertTrue(locale.display_name)
                     self.assertTrue(format_datetime(datetime(2026, 1, 2),
                                                     locale=locale))
+
+    def _check_packaging(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        site_packages = os.path.join(tmp, 'lib', 'site-packages')
+        files = {
+            os.path.join('pip', '__init__.py'): 'pip/__init__.py',
+            os.path.join('pip', '__pycache__', 'x.pyc'): None,
+            os.path.join('pip-1.0.dist-info', 'RECORD'):
+                'pip-1.0.dist-info/RECORD',
+            os.path.join('..', 'bin', 'pip'): '../bin/pip',
+            os.path.join('keep', '__init__.py'): None,
+        }
+        for path, record in files.items():
+            path = os.path.join(site_packages, path)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'w') as f:
+                f.write('x')
+        with open(os.path.join(site_packages, 'pip-1.0.dist-info',
+                               'RECORD'), 'w') as f:
+            f.write(''.join('{},,\n'.format(record)
+                            for record in files.values() if record))
+
+        # Pruning only site-packages leaves the scripts outside it alone.
+        self.prune.uninstall(site_packages, 'pip-1.0.dist-info',
+                             site_packages)
+        self.assertEqual(sorted(os.listdir(site_packages)), ['keep'])
+        self.assertTrue(os.path.exists(os.path.join(tmp, 'lib', 'bin',
+                                                    'pip')))

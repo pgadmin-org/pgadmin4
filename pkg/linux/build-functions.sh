@@ -147,7 +147,9 @@ _create_python_virtualenv() {
             --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
     fi
 
-    # Remove data files from the installed packages that we never use
+    # Remove the files in the installed packages that we never use, and the
+    # packaging tools (pip, setuptools and wheel) that are only needed to
+    # build the environment
     python3 "${SOURCEDIR}/pkg/prune_site_packages.py" venv || exit 1
 
     # Fixup the paths in the venv activation scripts
