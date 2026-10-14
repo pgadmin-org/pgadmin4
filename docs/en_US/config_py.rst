@@ -32,6 +32,12 @@ The configuration files are as follows:
   and may be created by users in the same directory as ``config.py`` if
   needed.
 
+  .. note:: On macOS, ``config.py`` is located inside the application bundle
+     (``pgAdmin 4.app/Contents/Resources/web/``), which is replaced in its
+     entirety when pgAdmin is upgraded, so a ``config_local.py`` file created
+     there will be lost. Use ``config_system.py`` instead, which is stored
+     outside the application bundle.
+
 * ``config_system.py``: This file is read after ``config_local.py`` and is
   intended for system administrators to include settings that are configured
   system-wide from a secure location that users cannot normally modify and that
