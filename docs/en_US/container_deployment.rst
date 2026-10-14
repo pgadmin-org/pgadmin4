@@ -294,8 +294,8 @@ instances.
     range of subordinate IDs on the host, so changing the ownership of a host
     directory to 5050 as shown above does not make it writeable by the
     container. Instead, either add the *U* option to the volume, which has
-    Podman change the ownership of the directory to match the container's
-    user, for example:
+    Podman recursively change the ownership of the directory and everything
+    in it to match the container's user, for example:
 
     .. code-block:: bash
 
@@ -309,6 +309,10 @@ instances.
     .. code-block:: bash
 
         --user root
+
+    Neither option changes SELinux labels, so on a host with SELinux enforcing,
+    the volume also needs the *z* (shared) or *Z* (private) option to relabel
+    it, for example ``-v /path/to/pgadmin-data:/var/lib/pgadmin:Z,U``.
 
     On some filesystems that do not support extended attributes, it may not be
     possible to run pgAdmin without specifying a value for *PGADMIN_LISTEN_PORT*
