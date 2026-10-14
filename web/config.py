@@ -44,6 +44,9 @@ from branding import APP_NAME, APP_ICON, APP_COPYRIGHT, APP_PATH, \
 HELP_PATH = '../../../docs/en_US/_build/html/'
 
 # Languages we support in the UI
+# Babel's locale data for other languages is removed from the packages by
+# pkg/prune_site_packages.py, which parses this assignment, so it must stay a
+# plain dict literal.
 LANGUAGES = {
     'en': 'English',
     'zh_Hans_CN': 'Chinese (Simplified)',
