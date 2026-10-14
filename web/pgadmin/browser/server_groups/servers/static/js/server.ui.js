@@ -191,6 +191,26 @@ export function getConnectionParameters() {
   return conParams;
 };
 
+// pgEdge Starfleet endpoints never answer a connection without SSL, so with
+// sslmode=prefer any failed SSL attempt (a wrong password, say) is retried
+// without SSL and reported only as a timeout, hiding the real error.
+const STARFLEET_HOST = /\.pgedge\.cloud\.?$/i;
+
+export function starfleetConnectionParams(host, params) {
+  if(!STARFLEET_HOST.test((host || '').trim())) {
+    return;
+  }
+  params = params || [];
+  const sslmode = _.find(params, (p)=>p.name == 'sslmode');
+  if(sslmode && sslmode.value != 'prefer') {
+    return;
+  }
+  const require = {'name': 'sslmode', 'value': 'require', 'keyword': 'sslmode'};
+  return sslmode ?
+    params.map((p)=>(p.name == 'sslmode' ? {...p, value: 'require'} : p)) :
+    [require, ...params];
+}
+
 export default class ServerSchema extends BaseUISchema {
   constructor(serverGroupOptions=[], userId=0, initValues={}) {
     super({
@@ -359,6 +379,13 @@ export default class ServerSchema extends BaseUISchema {
             );
           } else {
             obj.informText = undefined;
+          }
+          if(obj.isNew(state)) {
+            const params = starfleetConnectionParams(
+              state.host, state.connection_params);
+            if(params) {
+              return {connection_params: params};
+            }
           }
         }
       },

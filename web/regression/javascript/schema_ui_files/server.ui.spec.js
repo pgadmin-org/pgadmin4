@@ -11,7 +11,7 @@
 import _ from 'lodash';
 import pgAdmin from 'sources/pgadmin';
 import current_user from 'pgadmin.user_management.current_user';
-import ServerSchema, { passexecForServerCopy } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
+import ServerSchema, { passexecForServerCopy, starfleetConnectionParams } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('ServerSchema', ()=>{
@@ -191,6 +191,50 @@ describe('ServerSchema', ()=>{
         .toBe('vault');
       expect(passexecForServerCopy({passexec_name: '__none__'}).passexec_name)
         .toBe('__none__');
+    });
+  });
+
+  describe('pgEdge Starfleet hosts', ()=>{
+    const defaults = [
+      {'name': 'sslmode', 'value': 'prefer', 'keyword': 'sslmode'},
+      {'name': 'connect_timeout', 'value': 10, 'keyword': 'connect_timeout'}];
+    const hostField = (schema)=>_.find(schema.fields, (f)=>f.id=='host');
+
+    it('requires SSL in place of the default prefer', ()=>{
+      expect(starfleetConnectionParams('db-1.use2.pgedge.cloud', defaults))
+        .toEqual([
+          {'name': 'sslmode', 'value': 'require', 'keyword': 'sslmode'},
+          defaults[1]]);
+    });
+
+    it('adds sslmode when it has been removed', ()=>{
+      expect(starfleetConnectionParams('DB-1.USE2.PGEDGE.CLOUD.', [defaults[1]]))
+        .toEqual([
+          {'name': 'sslmode', 'value': 'require', 'keyword': 'sslmode'},
+          defaults[1]]);
+    });
+
+    it('keeps an sslmode the user chose', ()=>{
+      expect(starfleetConnectionParams('db-1.use2.pgedge.cloud', [
+        {'name': 'sslmode', 'value': 'verify-full', 'keyword': 'sslmode'},
+      ])).toBeUndefined();
+    });
+
+    it('leaves other hosts alone', ()=>{
+      expect(starfleetConnectionParams('db.example.com', defaults)).toBeUndefined();
+      expect(starfleetConnectionParams('pgedge.cloud.example.com', defaults)).toBeUndefined();
+      expect(starfleetConnectionParams('', defaults)).toBeUndefined();
+    });
+
+    it('applies only to a new server', ()=>{
+      let schema = createSchemaObject();
+      let f = hostField(schema);
+      expect(f.depChange({host: 'db-1.use2.pgedge.cloud', connection_params: defaults}))
+        .toEqual({connection_params: [
+          {'name': 'sslmode', 'value': 'require', 'keyword': 'sslmode'},
+          defaults[1]]});
+      expect(f.depChange({id: 1, host: 'db-1.use2.pgedge.cloud', connection_params: defaults}))
+        .toBeUndefined();
     });
   });
 });
