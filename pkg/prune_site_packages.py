@@ -17,42 +17,74 @@ framework or a site-packages directory. The build fails if a file that is
 kept cannot be found, rather than shipping a package that cannot work.
 """
 
+import fnmatch
 import os
 import sys
 
-# google-api-python-client bundles the discovery document of every Google
-# API (600 or so files, over 100MB), and discovery.build() reads them from
-# there rather than fetching them. pgAdmin only builds the services below;
-# see the *_api_version attributes in web/pgadmin/misc/cloud/google/
-# __init__.py, which must be kept in step with this list.
+# The languages pgAdmin has translations for, from LANGUAGES in
+# web/config.py, which must be kept in step with this list.
+LANGUAGES = ['cs', 'de', 'en', 'es', 'fr', 'id', 'it', 'ja', 'ko', 'pl', 'pt',
+             'ru', 'sv', 'zh']
+
+# Each entry maps a directory to the files in it that may be removed, and
+# the patterns for the ones to keep. Every keep pattern must match at least
+# one file.
 PRUNE = {
-    os.path.join('googleapiclient', 'discovery_cache', 'documents'): {
-        'cloudresourcemanager.v1.json',
-        'compute.v1.json',
-        'sqladmin.v1.json',
-    },
+    # google-api-python-client bundles the discovery document of every
+    # Google API (600 or so files, over 100MB), and discovery.build() reads
+    # them from there rather than fetching them. pgAdmin only builds the
+    # services below; see the *_api_version attributes in
+    # web/pgadmin/misc/cloud/google/__init__.py, which must be kept in step
+    # with this list.
+    os.path.join('googleapiclient', 'discovery_cache', 'documents'): (
+        '*.json', [
+            'cloudresourcemanager.v1.json',
+            'compute.v1.json',
+            'sqladmin.v1.json',
+        ]),
+
+    # Babel carries CLDR data for over 1,000 locales (about 29MB), and only
+    # loads the user's locale and its parents, down to root. Keeping every
+    # territory and script variant of each language covers the parents.
+    os.path.join('babel', 'locale-data'): (
+        '*.dat',
+        ['root.dat'] +
+        ['{}{}.dat'.format(lang, suffix)
+         for lang in LANGUAGES for suffix in ('', '_*')]),
 }
+
+
+def prune_dir(dirpath, removable, keep):
+    """Remove the files in dirpath matching removable but none of the keep
+    patterns, and return the number of bytes freed."""
+    filenames = os.listdir(dirpath)
+
+    missing = [pattern for pattern in keep
+               if not fnmatch.filter(filenames, pattern)]
+    if missing:
+        sys.exit('ERROR: {} is missing from {}'.format(
+            ', '.join(missing), dirpath))
+
+    saved = 0
+    for filename in fnmatch.filter(filenames, removable):
+        if any(fnmatch.fnmatch(filename, pattern) for pattern in keep):
+            continue
+        path = os.path.join(dirpath, filename)
+        saved += os.path.getsize(path)
+        os.remove(path)
+
+    return saved
 
 
 def prune(root):
     found = set()
     saved = 0
 
-    for dirpath, _, filenames in os.walk(root):
-        for subdir, keep in PRUNE.items():
-            if not dirpath.endswith(os.sep + subdir):
-                continue
-
-            missing = keep - set(filenames)
-            if missing:
-                sys.exit('ERROR: {} is missing from {}'.format(
-                    ', '.join(sorted(missing)), dirpath))
-
-            found.add(subdir)
-            for filename in set(filenames) - keep:
-                path = os.path.join(dirpath, filename)
-                saved += os.path.getsize(path)
-                os.remove(path)
+    for dirpath, _, _ in os.walk(root):
+        for subdir, (removable, keep) in PRUNE.items():
+            if dirpath.endswith(os.sep + subdir):
+                found.add(subdir)
+                saved += prune_dir(dirpath, removable, keep)
 
     for subdir in set(PRUNE) - found:
         sys.exit('ERROR: {} was not found under {}'.format(subdir, root))
