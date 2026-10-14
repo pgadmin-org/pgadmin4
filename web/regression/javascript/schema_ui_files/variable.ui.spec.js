@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
+import { screen, waitFor } from '@testing-library/react';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
@@ -64,6 +65,16 @@ describe('VariableSchema', ()=>{
     expect(schemaObj.getValueFieldProps({vartype: 'enum', enumvals: []})).toEqual(expect.objectContaining({
       cell: 'select',
     }));
+    expect(schemaObj.getValueFieldProps({
+      value: 'sslnegotiation', vartype: 'enum', enumvals: ['postgres', 'direct'],
+    })).toEqual(expect.objectContaining({
+      cell: 'select',
+      optionsReloadBasis: 'sslnegotiation',
+      options: [
+        {label: 'postgres', value: 'postgres'},
+        {label: 'direct', value: 'direct'},
+      ],
+    }));
     expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toEqual(expect.objectContaining({
       cell: 'int',
     }));
@@ -77,6 +88,40 @@ describe('VariableSchema', ()=>{
       cell: 'file',
     }));
     expect(schemaObj.getValueFieldProps({})).toBe('');
+  });
+
+  it('value options follow a change of enum variable name', async ()=>{
+    const varOptions = [{
+      value: 'sslmode', label: 'sslmode', vartype: 'enum',
+      enumvals: ['prefer', 'require'],
+    }, {
+      value: 'sslnegotiation', label: 'sslnegotiation', vartype: 'enum',
+      enumvals: ['postgres', 'direct'],
+    }];
+    let varCollObj = new MockSchema(
+      ()=>new VariableSchema(varOptions, null, null, ['name', 'value'])
+    );
+    const {ctrl, user} = await getCreateView(varCollObj);
+    await user.click(ctrl.container.querySelector('[data-test="add-row"]'));
+
+    const rowSelects = ()=>ctrl.container.querySelectorAll(
+      '[data-test="data-table-row"] input[role="combobox"]'
+    );
+    const pickOption = async (input, label)=>{
+      await user.click(input);
+      await user.click(await screen.findByText(label));
+    };
+
+    await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0));
+    await pickOption(rowSelects()[0], 'sslmode');
+    await user.click(rowSelects()[1]);
+    expect(await screen.findByText('require')).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+
+    await pickOption(rowSelects()[0], 'sslnegotiation');
+    await user.click(rowSelects()[1]);
+    expect(await screen.findByText('direct')).toBeInTheDocument();
+    expect(screen.queryByText('require')).not.toBeInTheDocument();
   });
 
   it('variable collection', async ()=>{
