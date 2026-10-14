@@ -48,6 +48,12 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.pg_oauth2 import (
+    install_oauth_hook,
+    get_postgres_oauth_token,
+    oauth_token_context,
+    OAuthTokenError,
+)
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -489,6 +495,31 @@ class Connection(BaseConnection):
                     ).format(str(e)), password
         return False, '', password
 
+    def _oauth_context(self):
+        """
+        Prepare OAuth credentials and scope them to a connection attempt.
+
+        Disabled mode temporarily clears any inherited OAuth token.
+        """
+        connection_params = self.manager.connection_params or {}
+        mode = connection_params.get("oauth_pgadmin_token_mode", "disabled")
+
+        token = None
+
+        if mode != "disabled":
+            try:
+                install_oauth_hook()
+            except RuntimeError as exc:
+                raise OAuthTokenError(str(exc)) from None
+
+            token = get_postgres_oauth_token(
+                mode,
+                connection_params.get("oauth_client_id"),
+                connection_params.get("oauth_scope"),
+            )
+
+        return oauth_token_context(token)
+
     def connect(self, **kwargs):
         if self.conn:
             if self.conn.closed:
@@ -585,25 +616,39 @@ class Connection(BaseConnection):
                 connection_string = manager.create_connection_string(
                     database, user, password)
 
-                if self.async_:
-                    autocommit = True
-                    if 'auto_commit' in kwargs:
-                        autocommit = kwargs['auto_commit']
+                try:
+                    with self._oauth_context():
+                        if self.async_:
+                            autocommit = True
+                            if 'auto_commit' in kwargs:
+                                autocommit = kwargs['auto_commit']
 
-                    async def connectdbserver():
-                        return await psycopg.AsyncConnection.connect(
-                            connection_string,
-                            cursor_factory=AsyncDictCursor,
-                            autocommit=autocommit,
-                            prepare_threshold=manager.prepare_threshold
-                        )
-                    pg_conn = asyncio.run(connectdbserver())
-                    pg_conn.server_cursor_factory = AsyncDictServerCursor
-                else:
-                    pg_conn = psycopg.Connection.connect(
-                        connection_string,
-                        cursor_factory=DictCursor,
-                        prepare_threshold=manager.prepare_threshold)
+                            async def connectdbserver():
+                                return await psycopg.AsyncConnection.connect(
+                                    connection_string,
+                                    cursor_factory=AsyncDictCursor,
+                                    autocommit=autocommit,
+                                    prepare_threshold=manager.prepare_threshold
+                                )
+
+                            pg_conn = asyncio.run(connectdbserver())
+                            pg_conn.server_cursor_factory = (
+                                AsyncDictServerCursor
+                            )
+                        else:
+                            pg_conn = psycopg.Connection.connect(
+                                connection_string,
+                                cursor_factory=DictCursor,
+                                prepare_threshold=manager.prepare_threshold,
+                            )
+                except OAuthTokenError as exc:
+                    current_app.logger.warning(
+                        "PostgreSQL OAuth authentication "
+                        "failed for server %s: %s",
+                        manager.sid,
+                        exc,
+                    )
+                    return False, str(exc)
 
         except psycopg.Error as e:
             manager.stop_ssh_tunnel()
@@ -1784,8 +1829,19 @@ WHERE db.datname = current_database()""")
                 connection_string = manager.create_connection_string(
                     self.db, manager.user, password)
 
-                pg_conn = psycopg.connect(connection_string,
-                                          cursor_factory=DictCursor)
+                with self._oauth_context():
+                    pg_conn = psycopg.connect(
+                        connection_string,
+                        cursor_factory=DictCursor,
+                    )
+        except OAuthTokenError as exc:
+            current_app.logger.warning(
+                "PostgreSQL OAuth authentication failed "
+                "while resetting the connection for server %s: %s",
+                manager.sid,
+                exc,
+            )
+            return False, str(exc)
         except psycopg.Error as e:
             if hasattr(e, 'pgerror'):
                 msg = e.pgerror
@@ -2010,8 +2066,11 @@ Failed to reset the connection to the server due to following error:
                     connection_string = self.manager.create_connection_string(
                         self.db, self.manager.user, password)
 
-                    pg_conn = psycopg.connect(connection_string,
-                                              cursor_factory=DictCursor)
+                    with self._oauth_context():
+                        pg_conn = psycopg.connect(
+                            connection_string,
+                            cursor_factory=DictCursor,
+                        )
 
                 # Get the cursor and run the query
                 cur = pg_conn.cursor()
@@ -2019,7 +2078,9 @@ Failed to reset the connection to the server due to following error:
 
                 # Close the connection
                 pg_conn.close()
-
+            except OAuthTokenError as exc:
+                status = False
+                msg = str(exc)
             except psycopg.Error as e:
                 status = False
                 if hasattr(e, 'pgerror'):

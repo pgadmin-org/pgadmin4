@@ -156,6 +156,64 @@ icon that is located to the right of each of the following fields.
     means that administrators of the server may be able to access those files;
     appropriate caution should be taken before choosing to use this feature.
 
+Use the *OAuth pgAdmin token mode* parameter
+(``oauth_pgadmin_token_mode``) to choose how pgAdmin supplies an OAuth access
+token when PostgreSQL requests OAuth authentication. This option is available
+for PostgreSQL 18 and later.
+
+.. list-table:: OAuth pgAdmin token modes
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Value
+     - Behaviour
+   * - ``disabled``
+     - Do not supply a token from the pgAdmin login session. Other connection
+       and authentication settings continue to apply. This is the default.
+   * - ``direct``
+     - Supply the OAuth access token obtained when the user signed in to
+       pgAdmin directly to PostgreSQL.
+   * - ``exchange``
+     - Exchange the user's pgAdmin login access token at the OIDC provider's
+       token endpoint and supply the returned token to PostgreSQL. Use this
+       mode when the OIDC provider is configured to issue a token restricted
+       to the target database.
+
+For both ``direct`` and ``exchange``, also add the following parameters:
+
+* ``oauth_issuer``: the expected OAuth issuer for the PostgreSQL connection.
+  Use the issuer configured for the database and the corresponding pgAdmin
+  login OIDC provider.
+* ``oauth_client_id``: the OAuth client identifier configured for the database
+  connection. In ``exchange`` mode, pgAdmin also sends this value as the
+  ``client_id`` in the token exchange request. The OIDC provider must support
+  and authorize that use.
+
+For ``exchange`` mode, optionally set ``oauth_scope`` to a space-separated
+list of scopes to request. If unset or blank, the OIDC provider determines
+the scopes. The exchange occurs before connecting to PostgreSQL and cannot
+use scopes advertised by the database server.
+
+The user must sign in to pgAdmin using the configured OIDC provider.
+The PostgreSQL server must be configured to validate the token and authorize
+the requested database role. These parameters do not configure OAuth
+authentication on the PostgreSQL server.
+
+.. warning::
+
+   ``direct`` mode sends the access token obtained during pgAdmin login to
+   the PostgreSQL server. The server operator may be able to reuse that token
+   at other services that accept it. Use this mode only with trusted database
+   servers and a deliberately compatible token audience and scope policy.
+   Prefer ``exchange`` with a database-specific token where supported.
+
+.. note::
+
+   This integration requires the libpq loaded by pgAdmin to be version 18.x,
+   independently of the PostgreSQL server version. Supported Psycopg
+   implementations, OIDC provider requirements, TLS settings and reconnect
+   limitations are described in :ref:`oauth2_postgresql`.
+
 Click the *SSH Tunnel* tab to continue.
 
 .. image:: images/server_ssh_tunnel.png
