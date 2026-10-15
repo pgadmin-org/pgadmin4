@@ -9,6 +9,7 @@
 
 import errno
 import os
+import stat
 import sys
 import json
 import subprocess
@@ -371,6 +372,122 @@ def connection_params_to_env(connection_params):
     return env
 
 
+def _fd_above_stdio(fd):
+    """Move `fd` to 3 or above, so it cannot collide with a child's stdio."""
+    if fd >= 3:
+        return fd
+    import fcntl
+    # On failure the caller still owns, and closes, the original.
+    new_fd = fcntl.fcntl(fd, fcntl.F_DUPFD_CLOEXEC, 3)
+    os.close(fd)
+    return new_fd
+
+
+def _dev_fd_reopens():
+    """True where opening /dev/fd/N gives a new open file description for
+    the same file (Linux), rather than a dup() of descriptor N that shares
+    its file offset (macOS and the BSDs)."""
+    return sys.platform.startswith('linux')
+
+
+def open_utility_file(path, for_write, is_directory=False, root=None):
+    """Open a user's file for an external utility (pg_dump, pg_restore,
+    psql) without following a symbolic link below the storage directory.
+
+    The path has already been checked against the user's storage directory
+    `root` (by default the one the file manager is using), but the utility
+    would open it by name later, so a symbolic link swapped in at the leaf
+    or a parent directory in between would redirect it outside. In server
+    mode, pgAdmin therefore opens the file itself, walking down from the
+    storage directory without following symbolic links (see
+    `_open_beneath()`), and the utility is given /dev/fd/N, inherited
+    through the background process (see BatchProcess.start()). Only a
+    regular file is accepted: the open is non-blocking so a FIFO cannot hang
+    the request.
+
+    A directory (directory-format backup/restore) cannot be handed over that
+    way, as the utility creates and opens the files inside it by name. It is
+    only checked here, in the same way, not to be or lie below a symbolic
+    link (and created 0o700 for a backup, as pg_dump would). Someone who can
+    write to the storage directory as pgAdmin's own OS user can still plant
+    symbolic links inside it.
+
+    Returns (path for the utility, descriptor or None). The caller must
+    close the descriptor once the process has been started. In desktop mode,
+    or where O_NOFOLLOW is unavailable, returns (path, None) unchanged; off
+    Linux, the file is checked as above but (path, None) is still returned.
+    """
+    from pgadmin.misc.file_manager import _refuses_leaf_symlinks, \
+        _open_beneath, _open_parent_beneath, _openat_nofollow
+    if not _refuses_leaf_symlinks():
+        return path, None
+    if root is None:
+        root = get_file_manager_storage_dir()
+
+    if is_directory:
+        dir_fd, name = _open_parent_beneath(root, path)
+        try:
+            if for_write:
+                try:
+                    os.mkdir(name, 0o700, dir_fd=dir_fd)
+                except FileExistsError:
+                    pass
+            os.close(_openat_nofollow(
+                dir_fd, name, os.O_RDONLY | os.O_DIRECTORY, 0, path))
+        finally:
+            os.close(dir_fd)
+        return path, None
+
+    flags = os.O_NONBLOCK
+    if for_write:
+        flags |= os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+    else:
+        flags |= os.O_RDONLY
+    fd = _open_beneath(root, path, flags, 0o600)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise OSError(errno.EINVAL,
+                          gettext("Not a regular file"), path)
+        if not _dev_fd_reopens():
+            # Elsewhere, opening /dev/fd/N dup()s the descriptor, so the
+            # utility would share its file offset, which pg_restore cannot
+            # cope with (custom and tar archives are opened more than once
+            # and seeked, and parallel workers reopen them). The open above
+            # still refuses a symbolic link already present and creates or
+            # truncates the file safely, but the utility then reopens it by
+            # name, so a symbolic link swapped in afterwards is followed.
+            os.close(fd)
+            return path, None
+        os.set_blocking(fd, True)
+        fd = _fd_above_stdio(fd)
+    except BaseException:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        raise
+    return '/dev/fd/{0}'.format(fd), fd
+
+
+def open_utility_file_or_error(path, for_write, is_directory=False):
+    """Call open_utility_file(), turning a failure into a bad request.
+
+    Returns (path for the utility, descriptor or None, error response or
+    None). The error never includes the file name, as that would reveal the
+    absolute path of the user's storage directory on the server.
+    """
+    from pgadmin.utils.ajax import bad_request
+    try:
+        utility_file, fd = open_utility_file(
+            path, for_write, is_directory=is_directory)
+    except OSError as e:
+        if _is_refused_leaf_symlink(e):
+            return None, None, bad_request(errormsg=gettext(
+                "Refusing to use a symbolic link."))
+        return None, None, bad_request(errormsg=e.strerror or str(e))
+    return utility_file, fd, None
+
+
 def get_file_manager_storage_dir():
     """
     Returns:
@@ -444,7 +561,17 @@ def filename_with_file_manager_path(_file, create_file=False,
         return short_path
 
     if create_file:
-        # Touch the file to get the short path of the file on windows.
+        # Touch the file to get the short path of the file on windows. In
+        # server mode, don't follow a symbolic link below the storage
+        # directory: that would create the file wherever it points.
+        from pgadmin.misc.file_manager import _refuses_leaf_symlinks, \
+            _open_beneath
+        if _refuses_leaf_symlinks():
+            os.close(_open_beneath(
+                storage_dir, _file,
+                os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NONBLOCK,
+                0o600))
+            return short_filepath()
         with open(_file, 'a'):
             return short_filepath()
 

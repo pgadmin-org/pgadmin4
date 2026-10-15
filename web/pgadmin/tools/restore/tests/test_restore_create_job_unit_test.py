@@ -576,13 +576,17 @@ class RestoreCreateJobTest(BaseTestGenerator):
         if ret_val is not None:
             self.skipTest(ret_val)
 
+    # These scenarios use made-up file names, so run without the server
+    # mode symbolic link protection (covered in test_restore_symlink_race).
+    @patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+           return_value=False)
     @patch('pgadmin.tools.restore.RestoreMessage')
     @patch('pgadmin.tools.restore.filename_with_file_manager_path')
     @patch('pgadmin.tools.restore.BatchProcess')
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, restore_message_mock):
+                filename_mock, restore_message_mock, gate_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username):
                 self.name = name

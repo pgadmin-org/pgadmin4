@@ -10,6 +10,7 @@
 """Implements Restore Utility"""
 
 import json
+import os
 import secrets
 
 from flask import render_template, request, current_app, Response
@@ -20,7 +21,8 @@ from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \
-    get_server, filename_with_file_manager_path, database_conninfo
+    get_server, filename_with_file_manager_path, database_conninfo, \
+    open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
@@ -493,6 +495,27 @@ def create_restore_job(sid):
             errormsg=error_msg
         )
 
+    # In server mode, open the source ourselves without following a leaf
+    # symbolic link and hand the utility /dev/fd/N, so it cannot be tricked
+    # into reading elsewhere between the path check and its own open. A
+    # directory (directory format) cannot be handed over that way; only the
+    # directory itself is checked, and pg_restore opens the files inside it
+    # by name, so a symbolic link planted inside it by someone who can write
+    # to the storage directory is still followed.
+    utility_file, fd, error = open_utility_file_or_error(
+        filepath, for_write=False,
+        is_directory=data['format'] == 'directory')
+    if error:
+        return error
+
+    # The file is the value of psql's --file option, or pg_restore's final
+    # positional argument.
+    launch_args = list(args)
+    if fd is not None:
+        idx = args.index('--file') + 1 \
+            if data['format'] == 'plain' else len(args) - 1
+        launch_args[idx] = utility_file
+
     try:
         p = BatchProcess(
             desc=RestoreMessage(
@@ -506,7 +529,8 @@ def create_restore_job(sid):
             cmd=utility, args=args, manager_obj=manager
         )
         p.set_env_variables(server)
-        p.start()
+        p.start(args=launch_args,
+                pass_fds=(fd,) if fd is not None else ())
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)
@@ -515,6 +539,9 @@ def create_restore_job(sid):
             success=0,
             errormsg=str(e)
         )
+    finally:
+        if fd is not None:
+            os.close(fd)
     # Return response
     return make_json_response(
         data={'job_id': jid, 'desc': p.desc.message, 'Success': 1}

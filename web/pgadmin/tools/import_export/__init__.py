@@ -11,6 +11,7 @@
 
 import json
 import copy
+import os
 
 from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
@@ -19,7 +20,7 @@ from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
     does_utility_exist, get_server, filename_with_file_manager_path, \
-    database_conninfo
+    database_conninfo, open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -532,6 +533,27 @@ def create_import_export_job(sid):
     args = ['--dbname', database_conninfo(data['database']),
             '--command', query]
 
+    # In server mode, open the file ourselves without following a leaf
+    # symbolic link and hand psql /dev/fd/N in the \copy command, so it
+    # cannot be tricked into using another file between the path check and
+    # its own open. The stored arguments and description keep the real name.
+    utility_file, fd, error = open_utility_file_or_error(
+        data['filename'], for_write=not data['is_import'])
+    if error:
+        return error
+
+    launch_args = args
+    if fd is not None:
+        try:
+            launch_query = render_template(
+                temp_path, conn=conn, data=dict(data, filename=utility_file),
+                columns=cols, not_null_columns=not_null_cols,
+                null_columns=null_cols, force_quote_columns=quote_cols)
+        except Exception:
+            os.close(fd)
+            raise
+        launch_args = ['--dbname', args[1], '--command', launch_query]
+
     try:
         io_params = {
             'sid': sid,
@@ -566,11 +588,15 @@ def create_import_export_job(sid):
                 del env[key]
 
         p.set_env_variables(server, env=env)
-        p.start()
+        p.start(args=launch_args,
+                pass_fds=(fd,) if fd is not None else ())
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)
         return bad_request(errormsg=str(e))
+    finally:
+        if fd is not None:
+            os.close(fd)
 
     # Return response
     return make_json_response(

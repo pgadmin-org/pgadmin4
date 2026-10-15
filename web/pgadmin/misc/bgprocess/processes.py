@@ -293,7 +293,14 @@ class BatchProcess:
 
         return interpreter if interpreter else 'python'
 
-    def start(self, cb=None):
+    def start(self, cb=None, args=None, pass_fds=()):
+        """Start the process.
+
+        `args`, when given, replaces the stored arguments for this launch
+        only: the stored ones are what the process details show, so a
+        caller passing a file as /dev/fd/N keeps the real path there.
+        `pass_fds` are descriptors the utility inherits (POSIX only).
+        """
         self.check_start_end_time()
 
         executor = file_quote(os.path.join(
@@ -303,7 +310,7 @@ class BatchProcess:
         interpreter = self._get_python_interpreter()
 
         cmd = [interpreter, executor, self.cmd]
-        cmd.extend(self.args)
+        cmd.extend(self.args if args is None else args)
 
         current_app.logger.info(
             "Executing the process executor with the arguments: %s",
@@ -336,6 +343,9 @@ class BatchProcess:
         if cb is not None:
             cb(env)
         if os.name == 'nt':
+            if pass_fds:
+                raise ValueError('pass_fds is not supported on Windows')
+
             DETACHED_PROCESS = 0x00000008
             from subprocess import CREATE_NEW_PROCESS_GROUP
 
@@ -361,11 +371,12 @@ class BatchProcess:
             # if in debug mode, wait for process to complete and
             # get the stdout and stderr of popen.
             if config.CONSOLE_LOG_LEVEL <= logging.DEBUG:
-                p = self.get_process_output(cmd, env)
+                p = self.get_process_output(cmd, env, pass_fds)
             else:
                 p = Popen(
                     cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
-                    start_new_session=True, env=env
+                    start_new_session=True, env=env,
+                    pass_fds=tuple(pass_fds)
                 )
 
         self.ecode = p.poll()
@@ -389,7 +400,7 @@ class BatchProcess:
             p.process_state = PROCESS_STARTED
             db.session.commit()
 
-    def get_process_output(self, cmd, env):
+    def get_process_output(self, cmd, env, pass_fds=()):
         """
         :param cmd:
         :param env:
@@ -397,7 +408,7 @@ class BatchProcess:
         """
         p = Popen(
             cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
-            start_new_session=True, env=env
+            start_new_session=True, env=env, pass_fds=tuple(pass_fds)
         )
 
         output, errors = p.communicate()

@@ -1524,6 +1524,10 @@ class BackupCreateJobTest(BaseTestGenerator):
         if ret_val is not None:
             self.skipTest(ret_val)
 
+    # These scenarios use made-up file names, so run without the server
+    # mode symbolic link protection (covered in test_backup_symlink_race).
+    @patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+           return_value=False)
     @patch('pgadmin.tools.backup.Server')
     @patch('pgadmin.tools.backup.BackupMessage')
     @patch('pgadmin.tools.backup.filename_with_file_manager_path')
@@ -1531,7 +1535,8 @@ class BackupCreateJobTest(BaseTestGenerator):
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, backup_message_mock, server_mock):
+                filename_mock, backup_message_mock, server_mock,
+                gate_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username,
                          maintenance_db):

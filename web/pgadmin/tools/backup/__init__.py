@@ -8,6 +8,7 @@
 ##########################################################################
 """Implements Backup Utility"""
 
+import os
 import json
 import copy
 import functools
@@ -18,7 +19,8 @@ from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, does_utility_exist, get_server, \
-    filename_with_file_manager_path, database_conninfo
+    filename_with_file_manager_path, database_conninfo, \
+    open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -508,6 +510,23 @@ def create_backup_objects_job(sid):
     escaped_args = [
         escape_dquotes_process_arg(arg) for arg in args
     ]
+
+    # In server mode, open the target ourselves without following a leaf
+    # symbolic link and hand the utility /dev/fd/N, so it cannot be tricked
+    # into writing elsewhere between the path check and its own open. A
+    # directory (directory format) cannot be handed over that way; only the
+    # directory itself is checked, so a symbolic link planted inside it by
+    # someone who can write to the storage directory is still followed.
+    utility_file, fd, error = open_utility_file_or_error(
+        backup_file, for_write=True,
+        is_directory=data.get('format', '') == 'directory')
+    if error:
+        return error
+
+    # The file is the value of the --file option.
+    launch_args = list(escaped_args)
+    if fd is not None:
+        launch_args[escaped_args.index('--file') + 1] = utility_file
     try:
         bfile = data['file'].encode('utf-8') \
             if hasattr(data['file'], 'encode') else data['file']
@@ -532,7 +551,8 @@ def create_backup_objects_job(sid):
             )
 
         p.set_env_variables(server)
-        p.start()
+        p.start(args=launch_args,
+                pass_fds=(fd,) if fd is not None else ())
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)
@@ -541,6 +561,9 @@ def create_backup_objects_job(sid):
             success=0,
             errormsg=str(e)
         )
+    finally:
+        if fd is not None:
+            os.close(fd)
 
     # Return response
     return make_json_response(
