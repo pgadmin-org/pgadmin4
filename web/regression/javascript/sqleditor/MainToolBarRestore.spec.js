@@ -158,6 +158,25 @@ describe('MainToolBar toolbar options restore', () => {
     expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.server_cursor/1234', 'true');
   });
 
+  it('reverts and saves a restored execute option the server rejects', async () => {
+    queryToolCtx.api.post = jest.fn(() => Promise.reject(new Error('failed')));
+    const fireEvent = jest.spyOn(eventBus, 'fireEvent');
+    renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false});
+    });
+
+    await waitFor(() => {
+      expect(fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+    });
+    await waitFor(() => {
+      expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(true);
+    });
+    fireEvent.mockRestore();
+  });
+
   it('does not restore execute options for View/Edit Data', async () => {
     renderToolBar(true, false);
     await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());

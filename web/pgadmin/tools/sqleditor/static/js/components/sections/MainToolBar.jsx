@@ -231,6 +231,10 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           if(option === 'server_cursor') {
             queryToolCtx.updateServerCursor({server_cursor: !value});
           }
+          // Save the reverted value so it is not restored again next time.
+          if(isSaveToolDataEnabled?.('sqleditor')) {
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+          }
           eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
             checkTransaction: true,
           });
