@@ -74,6 +74,7 @@ def _send_code_to_email(_email: str = None) -> (bool, int, str):
 
     try:
         session["mfa_email_code"] = __generate_otp()
+        session.pop(_EMAIL_CODE_ATTEMPTS, None)
         subject = getattr(config, 'MFA_EMAIL_SUBJECT', None)
 
         if subject is None:
@@ -91,12 +92,23 @@ def _send_code_to_email(_email: str = None) -> (bool, int, str):
         return False, 503, _("Failed to send the code to email.") + \
             "\n" + str(ose)
 
-    message = _(
+    return True, 200, _code_sent_message(_email)
+
+
+def _code_sent_message(_email: str) -> str:
+    """
+    Message telling the user where the verification code was sent.
+
+    Args:
+        _email (str): Email address the code was sent to
+
+    Returns:
+        str: Message for the user, with the email address masked
+    """
+    return _(
         "A verification code was sent to {}. Check your email and enter "
         "the code."
     ).format(_mask_email(_email))
-
-    return True, 200, message
 
 
 def _mask_email(_email: str) -> str:
@@ -177,6 +189,12 @@ def javascript() -> Response:
 
 EMAIL_AUTH_METHOD = 'email'
 
+# Session keys used to let the user retry an emailed code after a typo,
+# without allowing unlimited guesses against the same code.
+_EMAIL_CODE_ATTEMPTS = 'mfa_email_code_attempts'
+_EMAIL_CODE_RETRY = 'mfa_email_code_retry'
+MAX_EMAIL_CODE_ATTEMPTS = 5
+
 
 def email_authentication_label():
     return _('Email Authentication')
@@ -197,16 +215,47 @@ class EmailAuthentication(BaseMFAuth):
         email_otp = session.get("mfa_email_code", None)
         if code is not None and email_otp is not None and code == email_otp:
             session.pop("mfa_email_code")
+            session.pop(_EMAIL_CODE_ATTEMPTS, None)
             return
-        raise ValidationException("Invalid code")
+
+        if email_otp is None:
+            raise ValidationException(_("Invalid code"))
+
+        # Keep the code that was sent, so that the user can correct a
+        # mistyped code, but discard it once too many attempts have failed.
+        attempts = session.get(_EMAIL_CODE_ATTEMPTS, 0) + 1
+        if attempts >= MAX_EMAIL_CODE_ATTEMPTS:
+            session.pop("mfa_email_code", None)
+            session.pop(_EMAIL_CODE_ATTEMPTS, None)
+            raise ValidationException(_(
+                "Invalid code. Too many failed attempts; please request "
+                "a new code."
+            ))
+
+        session[_EMAIL_CODE_ATTEMPTS] = attempts
+        session[_EMAIL_CODE_RETRY] = True
+        raise ValidationException(_("Invalid code"))
 
     def validation_view(self):
-        session.pop("mfa_email_code", None)
-        return dict(
+        view = dict(
             description=_("Verify with Email Authentication"),
             button_label=_("Send Code"),
-            button_label_sending=_("Sending Code...")
+            button_label_sending=_("Sending Code..."),
+            otp_placeholder=_("Enter code here"),
         )
+
+        # After a failed attempt, the code already sent remains valid, so
+        # let the user enter it again rather than forcing a new one.
+        if session.pop(_EMAIL_CODE_RETRY, False) is True and \
+                session.get("mfa_email_code", None) is not None:
+            options, found = fetch_auth_option(EMAIL_AUTH_METHOD)
+            if found is True and options:
+                view['sent_message'] = _code_sent_message(options)
+                return view
+
+        session.pop("mfa_email_code", None)
+        session.pop(_EMAIL_CODE_ATTEMPTS, None)
+        return view
 
     def _registration_view(self):
         email = getattr(current_user, 'email', '')
