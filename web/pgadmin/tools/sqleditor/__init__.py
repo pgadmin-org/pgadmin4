@@ -268,7 +268,9 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
                         "username": user or server.username,
                         "errmsg": msg,
                         "prompt_password": True,
-                        "save_password": bool(server.save_password),
+                        "save_password": bool(
+                            _get_save_password_target(
+                                server).save_password),
                         "allow_save_password": True
                         if ALLOW_SAVE_PASSWORD and
                         session.get('allow_save_password', None)
@@ -594,7 +596,9 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                             "username": user or server.username,
                             "errmsg": msg,
                             "prompt_password": True,
-                            "save_password": bool(server.save_password),
+                            "save_password": bool(
+                                _get_save_password_target(
+                                    server).save_password),
                             "allow_save_password": True
                             if ALLOW_SAVE_PASSWORD and
                             session.get('allow_save_password', None)

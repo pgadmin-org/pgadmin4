@@ -122,10 +122,14 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
             }
             if(data.prompt_password) {
               postFormData.append('password', formData.password);
-              // Always send the checkbox state (rather than only when
-              // checked) so the backend can tell "explicitly unchecked"
-              // apart from "field not sent".
-              postFormData.append('save_password', formData.save_password);
+              // Send the checkbox state when the server told us the
+              // current setting (so an explicit uncheck is distinguishable
+              // from "field not sent"), or when the user ticked it. A
+              // prompt that doesn't report save_password must never send
+              // false, as that would clear an existing saved password.
+              if(data.save_password !== undefined || formData.save_password) {
+                postFormData.append('save_password', formData.save_password);
+              }
             }
             onOK?.(postFormData);
             closeModal();
