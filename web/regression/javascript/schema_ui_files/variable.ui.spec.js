@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
@@ -64,6 +65,16 @@ describe('VariableSchema', ()=>{
     expect(schemaObj.getValueFieldProps({vartype: 'enum', enumvals: []})).toEqual(expect.objectContaining({
       cell: 'select',
     }));
+    expect(schemaObj.getValueFieldProps({
+      value: 'sslnegotiation', vartype: 'enum', enumvals: ['postgres', 'direct'],
+    })).toEqual(expect.objectContaining({
+      cell: 'select',
+      optionsReloadBasis: 'sslnegotiation',
+      options: [
+        {label: 'postgres', value: 'postgres'},
+        {label: 'direct', value: 'direct'},
+      ],
+    }));
     expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toEqual(expect.objectContaining({
       cell: 'int',
     }));
@@ -78,6 +89,71 @@ describe('VariableSchema', ()=>{
     }));
     expect(schemaObj.getValueFieldProps({})).toBe('');
   });
+
+  it('value options follow a change of enum variable name', async ()=>{
+    const varOptions = [{
+      value: 'sslmode', label: 'sslmode', vartype: 'enum',
+      enumvals: ['prefer', 'require'],
+    }, {
+      value: 'sslnegotiation', label: 'sslnegotiation', vartype: 'enum',
+      enumvals: ['postgres', 'direct'],
+    }];
+    let varCollObj = new MockSchema(
+      ()=>new VariableSchema(varOptions, null, null, ['name', 'value'])
+    );
+    const {ctrl, user} = await getCreateView(varCollObj);
+    await user.click(ctrl.container.querySelector('[data-test="add-row"]'));
+
+    const rowSelects = ()=>ctrl.container.querySelectorAll(
+      '[data-test="data-table-row"] input[role="combobox"]'
+    );
+    const hiddenVal = (name)=>ctrl.container.querySelector(
+      `[data-test="data-table-row"] input[type="hidden"][name="${name}"]`
+    )?.value;
+    /* Allow for slow CI runners re-rendering the grid row. */
+    const waitOpts = {timeout: 10000};
+    /* Open the select from the keyboard and wait for an option to show. A
+    freshly mounted select can drop the first open request on slow runners,
+    so it is re-sent, a bounded number of times, whilst no menu is shown. */
+    const findOption = async (selectIdx, label)=>{
+      for(let attempt = 0; attempt < 5; attempt++) {
+        if(screen.queryAllByRole('option').length == 0) {
+          const input = rowSelects()[selectIdx];
+          fireEvent.focus(input);
+          fireEvent.keyDown(input, {key: 'ArrowDown', keyCode: 40});
+        }
+        try {
+          return await screen.findByRole('option', {name: label}, {timeout: 2000});
+        } catch {
+          /* Not shown yet; retry. */
+        }
+      }
+      throw new Error(`Option '${label}' not shown; options: ${
+        screen.queryAllByRole('option').map((o)=>o.textContent).join(', ')
+      }`);
+    };
+    const closeMenu = ()=>{
+      fireEvent.keyDown(rowSelects()[1], {key: 'Escape', keyCode: 27});
+    };
+    const pickName = async (label)=>{
+      await user.click(await findOption(0, label));
+      await waitFor(()=>{
+        expect(hiddenVal('name')).toBe(label);
+        expect(hiddenVal('value')).toBe('');
+        expect(rowSelects().length).toBe(2);
+      }, waitOpts);
+    };
+
+    await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0), waitOpts);
+    await pickName('sslmode');
+    expect(await findOption(1, 'require')).toBeInTheDocument();
+    closeMenu();
+    await waitFor(()=>expect(screen.queryAllByRole('option')).toHaveLength(0), waitOpts);
+
+    await pickName('sslnegotiation');
+    expect(await findOption(1, 'direct')).toBeInTheDocument();
+    expect(screen.queryByRole('option', {name: 'require'})).not.toBeInTheDocument();
+  }, 30000);
 
   it('variable collection', async ()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);

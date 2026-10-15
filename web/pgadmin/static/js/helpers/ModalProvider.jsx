@@ -129,8 +129,63 @@ function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = 
   );
 }
 
+// Tools such as the Query Tool run in same-origin iframes, and when one of
+// them calls focus() (e.g. a restored Query Tool loading in the background)
+// keyboard focus moves into the iframe. The browser fires no focusin event in
+// this document when that happens, so MUI's focus trap never notices and an
+// open modal (e.g. the master password prompt) silently loses focus, with
+// keystrokes going to the tool behind it. Whilst a modal is open, take focus
+// back whenever it lands in an iframe outside the dialog. #9784
+export function useKeepFocusInModal(isModalOpen) {
+  React.useEffect(()=>{
+    if(!isModalOpen) {
+      return;
+    }
+    const isOutsideIframe = (el)=>(
+      el?.tagName === 'IFRAME' && !el.closest('.MuiDialog-root')
+    );
+    let lastFocused = isOutsideIframe(document.activeElement) ?
+      null : document.activeElement;
+    let timer = null;
+
+    const onFocusIn = (e)=>{
+      if(!isOutsideIframe(e.target)) {
+        lastFocused = e.target;
+      }
+    };
+    const onWindowBlur = ()=>{
+      clearTimeout(timer);
+      timer = setTimeout(()=>{
+        if(!isOutsideIframe(document.activeElement)) {
+          return;
+        }
+        if(lastFocused?.isConnected && lastFocused !== document.body) {
+          lastFocused.focus();
+        }
+        // Fall back to the top-most dialog, which MUI makes focusable, if
+        // there was nothing to return to or it can no longer take focus
+        // (e.g. it has since been disabled).
+        if(isOutsideIframe(document.activeElement)) {
+          const dialogs = document.querySelectorAll(
+            '.MuiDialog-root [role="dialog"]');
+          dialogs[dialogs.length - 1]?.focus();
+        }
+      }, 0);
+    };
+
+    document.addEventListener('focusin', onFocusIn);
+    window.addEventListener('blur', onWindowBlur);
+    return ()=>{
+      clearTimeout(timer);
+      document.removeEventListener('focusin', onFocusIn);
+      window.removeEventListener('blur', onWindowBlur);
+    };
+  }, [isModalOpen]);
+}
+
 export default function ModalProvider({ children }) {
   const [modals, setModals] = React.useState([]);
+  useKeepFocusInModal(modals.length > 0);
   const showModal = (title, content, modalOptions) => {
     let id = getEpoch().toString() + crypto.getRandomValues(new Uint8Array(4));
     if(modalOptions?.id){
