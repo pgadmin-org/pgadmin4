@@ -43,6 +43,7 @@ class ServersConnectTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the GET API"""
+        servers_utils.restore_server_fixture_on_cleanup(self)
 
         self.server_id = utils.create_server(self.server)
         server_dict = {"server_id": self.server_id}

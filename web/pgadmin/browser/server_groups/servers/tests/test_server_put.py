@@ -22,6 +22,7 @@ class ServerUpdateTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the PUT API"""
+        servers_utils.restore_server_fixture_on_cleanup(self)
         if hasattr(self, 'clear_save_password'):
             self.server['save_password'] = 1
         create_server_url = "/browser/server/obj/{0}/".format(

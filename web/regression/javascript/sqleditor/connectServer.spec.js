@@ -19,6 +19,7 @@ jest.mock('../../../pgadmin/static/js/Dialogs/ConnectServerContent', () => ({
   default: () => null,
 }));
 
+import url_for from 'sources/url_for';
 import { connectServer } from '../../../pgadmin/tools/sqleditor/static/js/components/connectServer';
 
 /* Captures the props of each password prompt raised, so that a test can drive
@@ -48,6 +49,21 @@ describe('connectServer', ()=>{
     expect(connectCallback).toHaveBeenCalledWith({connected: true});
     expect(modal.prompts).toHaveLength(0);
     expect(promptCallback).not.toHaveBeenCalled();
+  });
+
+  it('builds the connect URL from the server id alone', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {connected: true}}});
+    url_for.mockClear();
+
+    await connectServer(api, createFakeModal(), 1, 'postgres', passwordFormData);
+
+    /* The client-side url_for() drops any key that is not a placeholder in
+     * the route, so a user name passed here would never reach the backend
+     * (issue #10418). */
+    expect(url_for).toHaveBeenCalledWith('sqleditor.connect_server', {'sid': 1});
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      url: '/mock/sqleditor.connect_server',
+    }));
   });
 
   it('pauses and resumes the loading state around a password retry', async ()=>{

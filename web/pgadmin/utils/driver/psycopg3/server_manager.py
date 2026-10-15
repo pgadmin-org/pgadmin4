@@ -19,7 +19,8 @@ from flask_security import current_user
 from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, \
+    connection_param_bool_to_int
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import process_masterpass_disabled
 from .connection import Connection
@@ -28,7 +29,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
-from pgadmin.utils.passexec import PasswordExec
+from pgadmin.utils.passexec import build_passexec
 from psycopg.conninfo import make_conninfo
 
 if config.SUPPORT_SSH_TUNNEL:
@@ -54,6 +55,9 @@ class ServerManager(object):
         self.tunnel_object = None
         self.tunnel_created = False
         self.display_connection_string = ''
+        # fs_uniquifier of the pgAdmin user this manager was built for;
+        # set by the driver, see Driver._current_pga_user.
+        self.pga_user = None
 
         self.update(server)
 
@@ -83,10 +87,7 @@ class ServerManager(object):
         self.db_res = server.db_res
         self.db_res_type = server.db_res_type
         self.name = server.name
-        self.passexec = \
-            PasswordExec(server.passexec_cmd, server.host, server.port,
-                         server.username, server.passexec_expiration) \
-            if server.passexec_cmd else None
+        self.passexec = build_passexec(server)
         self.service = server.service
 
         if config.SUPPORT_SSH_TUNNEL:
@@ -153,6 +154,19 @@ class ServerManager(object):
         res['sid'] = self.sid
         res['ver'] = self.ver
         res['sversion'] = self.sversion
+
+        # Persisted alongside the connection state so a later restore
+        # (e.g. after a worker restart) can tell whether this blob still
+        # belongs to the Server row for this id, or whether the id was
+        # reused by an unrelated row after the configuration database
+        # was reset/restored - see Driver._manager_is_stale.
+        res['host'] = self.host
+        res['port'] = self.port
+        res['db'] = self.db
+        res['user'] = self.user
+        res['service'] = self.service
+        res['tunnel_host'] = self.tunnel_host
+        res['pga_user'] = self.pga_user
 
         self._set_password(res)
 
@@ -587,12 +601,23 @@ WHERE db.oid = {0}""".format(did))
                 ssh_logger.setLevel(logging.DEBUG)
                 for h in current_app.logger.handlers:
                     ssh_logger.addHandler(h)
+            # Keep sshtunnel away from the agent whenever the user has
+            # configured a credential of their own (#9814). The identity file
+            # check uses the configured path, not the resolved one, so a
+            # missing key file is reported as a failure rather than silently
+            # authenticating with some other key from the agent. With no
+            # identity file or password configured the agent stays enabled,
+            # preserving the previous behaviour for anyone relying on
+            # "Prompt for Password?" or on the agent itself.
             if self.tunnel_authentication == 1:
+                tunnel_identity_file = get_complete_file_path(
+                    self.tunnel_identity_file)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
-                    ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
+                    ssh_pkey=tunnel_identity_file,
                     ssh_private_key_password=tunnel_password,
+                    allow_agent=not self.tunnel_identity_file,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)
@@ -602,6 +627,7 @@ WHERE db.oid = {0}""".format(did))
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
+                    allow_agent=not tunnel_password,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
                     set_keepalive=int(self.tunnel_keep_alive)
@@ -610,7 +636,11 @@ WHERE db.oid = {0}""".format(did))
             self.tunnel_object.daemon_forward_servers = True
             self.tunnel_object.start()
             self.tunnel_created = True
-        except BaseSSHTunnelForwarderError as e:
+        except (BaseSSHTunnelForwarderError, ValueError) as e:
+            # sshtunnel raises a bare ValueError rather than one of its own
+            # exceptions when it finds no credential to authenticate with, so
+            # catch that too and report it the same way instead of letting it
+            # escape as an unhandled exception.
             current_app.logger.exception(e)
             return False, gettext(
                 "Failed to create the SSH tunnel. Possible causes:\n"
@@ -693,7 +723,7 @@ WHERE db.oid = {0}""".format(did))
                 # Convert boolean connection parameters to integer for
                 # libpq compatibility
                 if key in ('sslcompression', 'sslsni'):
-                    value = 1 if value else 0
+                    value = connection_param_bool_to_int(value)
 
                 dsn_args[key] = value
                 display_dsn_args[key] = orig_value if with_complete_path else \

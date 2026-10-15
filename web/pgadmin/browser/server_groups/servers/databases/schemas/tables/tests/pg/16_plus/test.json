@@ -1678,6 +1678,168 @@
     },
     {
       "type": "create",
+      "name": "Create Table with list partition and Unlogged set (PG18+ ignores it)",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "unlogged_partitioned_tbl",
+        "relowner": "<OWNER>",
+        "relacl": [],
+        "description": "unlogged partitioned table",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [
+          {
+            "is_attach": false,
+            "partition_name": "unlogged_partitioned_tbl_p1",
+            "values_in": "'ACTIVE'",
+            "is_sub_partitioned": false,
+            "sub_partition_type": "range",
+            "sub_partition_keys": []
+          }
+        ],
+        "partition_type": "list",
+        "is_partitioned": true,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "status",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "status"
+          }
+        ],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false,
+        "autovacuum_custom": false,
+        "relpersistence": true
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_unlogged_partitioned_table.sql",
+      "expected_msql_file": "create_unlogged_partitioned_table_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter partitioned Table to set Unlogged (PG18+ ignores it) with an unlogged partition",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "pre_scenario_sql": "ALTER TABLE public.unlogged_partitioned_tbl_p1 SET UNLOGGED;",
+      "data": {
+        "relpersistence": true,
+        "description": "unlogged partitioned table updated"
+      },
+      "expected_sql_file": "alter_unlogged_partitioned_table.sql",
+      "expected_msql_file": "alter_unlogged_partitioned_table_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with list partition and Unlogged set",
+      "endpoint": "NODE-table.obj_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "unlogged_partitioned_tbl"
+      }
+    },
+    {
+      "type": "create",
       "name": "Create Table with range partition",
       "endpoint": "NODE-table.obj",
       "sql_endpoint": "NODE-table.sql_id",

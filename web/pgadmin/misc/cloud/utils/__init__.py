@@ -9,6 +9,7 @@
 
 import urllib3
 import ipaddress
+from flask import session
 from flask_security import current_user
 from pgadmin.misc.bgprocess.processes import IProcessDesc
 from pgadmin.model import db, Server
@@ -41,6 +42,21 @@ def get_my_ip():
     return IP_ADDRESS_STRING.format(external_ip, 32)
 
 
+def write_session_through():
+    """
+    Mark the session as modified and force it to be written to the session
+    store at the end of the request.
+
+    The cloud providers keep their state in nested dicts within the session
+    (e.g. session['aws']['secret']), and changes to those are not noticed by
+    the session itself. The session manager also skips writing to disk if
+    the session was written recently. Without this, the next wizard request
+    may be handled by another worker that cannot see the change.
+    """
+    session.modified = True
+    session.force_write = True
+
+
 def _create_server(data):
     """Create Server"""
     server = Server(
@@ -50,7 +66,8 @@ def _create_server(data):
         maintenance_db=data.get('db'),
         username=data.get('username'),
         cloud_status=data.get('cloud_status'),
-        connection_params={'sslmode': 'prefer', 'connect_timeout': 30}
+        connection_params=data.get(
+            'connection_params', {'sslmode': 'prefer', 'connect_timeout': 30})
     )
 
     db.session.add(server)
@@ -73,6 +90,8 @@ class CloudProcessDesc(IProcessDesc):
             self.provider = 'Azure Database'
         elif _provider == 'google':
             self.provider = 'Google Cloud SQL'
+        elif _provider == 'starfleet':
+            self.provider = 'pgEdge Starfleet'
 
     @property
     def message(self):

@@ -14,9 +14,7 @@ $BODY$;
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     OWNER TO enterprisedb;
 
-GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;
-
-GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO enterprisedb;
+GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC, enterprisedb;
 
 COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     IS 'some comment';

@@ -335,6 +335,16 @@ def create_app(app_name=None):
     # Initialise i18n
     babel = Babel(app)
 
+    def _known_language(language):
+        """Return the language if it is one pgAdmin ships translations for,
+        otherwise None. flask-babel passes whatever get_locale() returns to
+        Locale.parse(), which raises on unknown values, so a bad value from
+        a form field or cookie must never reach it.
+        """
+        if isinstance(language, str) and language in config.LANGUAGES:
+            return language
+        return None
+
     def get_locale():
         """Get the language for the user."""
         language = 'en'
@@ -350,21 +360,22 @@ def create_app(app_name=None):
             user_language = Preferences.raw_value(
                 'misc', 'user_language', 'user_interface', user_id
             )
-            if user_language is not None:
-                language = user_language
+            language = _known_language(user_language) or language
         else:
-            # If language is available in get request then return the same
-            # otherwise check the session or cookie
+            # If language is available in the request then use that and
+            # remember it in the session, otherwise check the session or
+            # cookie. Only known languages are accepted; anything else
+            # falls back to the default and is never stored.
             data = request.form
             if 'language' in data:
-                language = data['language'] or language
-                setattr(session, 'PGADMIN_LANGUAGE', language)
-            elif hasattr(session, 'PGADMIN_LANGUAGE'):
-                language = getattr(session, 'PGADMIN_LANGUAGE', language)
-            elif hasattr(request.cookies, 'PGADMIN_LANGUAGE'):
-                language = getattr(
-                    request.cookies, 'PGADMIN_LANGUAGE', language
-                )
+                language = _known_language(data['language']) or language
+                session['PGADMIN_LANGUAGE'] = language
+            elif 'PGADMIN_LANGUAGE' in session:
+                language = _known_language(
+                    session['PGADMIN_LANGUAGE']) or language
+            elif 'PGADMIN_LANGUAGE' in request.cookies:
+                language = _known_language(
+                    request.cookies['PGADMIN_LANGUAGE']) or language
 
         return language
 
@@ -542,6 +553,9 @@ def create_app(app_name=None):
         # initialised at this point in create_app.
         if not cli_mode:
             delete_adhoc_servers()
+
+        from pgadmin.utils.passexec import server_passexec_startup
+        server_passexec_startup(app, cli_mode)
 
     Mail(app)
 
@@ -900,6 +914,15 @@ def create_app(app_name=None):
                 request.endpoint in ('redirects.index', 'security.login') and \
                 app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
             return authenticate.login()
+        elif config.SERVER_MODE and not current_user.is_authenticated and \
+                request.endpoint in ('redirects.index', 'security.login') and \
+                app.PGADMIN_EXTERNAL_AUTH_SOURCE == OAUTH2:
+            # Send the user straight to the OAuth2 provider if
+            # OAUTH2_AUTO_LOGIN allows it; otherwise show the login page.
+            from pgadmin.authenticate.oauth2 import auto_login_redirect
+            response = auto_login_redirect()
+            if response is not None:
+                return response
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login

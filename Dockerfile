@@ -77,6 +77,13 @@ RUN python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
     apk del --no-cache build-deps
 
+# Remove the files pgAdmin never uses. The script reads the language list from
+# web/config.py, so it is copied in separately to avoid a change to it
+# reinstalling the requirements above.
+COPY pkg/prune_site_packages.py /prune/pkg/
+COPY web/config.py /prune/web/
+RUN /venv/bin/python3 /prune/pkg/prune_site_packages.py /venv
+
 #########################################################################
 # Now, create a documentation build container for the Sphinx docs
 #########################################################################

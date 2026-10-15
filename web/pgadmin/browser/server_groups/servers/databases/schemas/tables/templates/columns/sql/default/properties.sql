@@ -5,7 +5,7 @@ WITH INH_TABLES AS
     FROM
         pg_catalog.pg_attribute at
     JOIN
-        pg_catalog.pg_inherits ph ON ph.inhparent = at.attrelid AND ph.inhrelid = 33896::oid
+        pg_catalog.pg_inherits ph ON ph.inhparent = at.attrelid AND ph.inhrelid = {{tid}}::oid
     JOIN
         pg_catalog.pg_class parent ON ph.inhparent  = parent.oid
     JOIN
@@ -45,7 +45,8 @@ SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, a
 	   AND dsd.objid=def.oid AND dsd.deptype='n'
 	 ORDER BY dsd.refobjid
 	 LIMIT 1) AS defseqrelid,
-	seq.*
+	seq.*,
+	pg_catalog.format_type(seq.seqtypid, NULL) AS seqtypname
 FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
   LEFT OUTER JOIN pg_catalog.pg_attrdef def ON adrelid=att.attrelid AND adnum=att.attnum
@@ -66,4 +67,4 @@ WHERE att.attrelid = {{tid}}::oid
     AND att.attnum > 0
 {% endif %}
     AND att.attisdropped IS FALSE
-    ORDER BY att.attnum;
+    ORDER BY att.attnum, INH.inhseqno;

@@ -12,22 +12,17 @@ import {
 } from 'react';
 
 import Box from '@mui/material/Box';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-} from '@tanstack/react-table';
+import { useTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
-import {HTML5Backend} from 'react-dnd-html5-backend';
 
+import { getDndManager } from 'sources/dnd_manager';
 import { usePgAdmin } from 'sources/PgAdminProvider';
 import {
   PgReactTable, PgReactTableBody, PgReactTableHeader,
-  PgReactTableRow, 
+  PgReactTableRow, pgTableFeatures,
 } from 'sources/components/PgReactTableStyled';
 import CustomPropTypes from 'sources/custom_prop_types';
 
@@ -44,6 +39,20 @@ import { DataGridHeader } from './header';
 import { DataGridRow } from './row';
 import { FeatureSet } from './features';
 import { createGridColumns, GRID_STATE } from './utils';
+
+
+// The row count above which a grid is worth virtualising. It scales with
+// the visible column count rather than being a flat row count, since
+// render cost tracks total cells (rows * cols), not rows alone: formula
+// and bounds from VIBVEL47's PR #10146. A grid reporting no columns yet
+// gets a middling default rather than the 25 row floor, so that a grid
+// still settling its columns is not virtualised on the strength of a
+// momentary zero.
+export function getVirtualiseThreshold(visibleColCount) {
+  if(!visibleColCount) return 100;
+
+  return Math.min(400, Math.max(25, Math.round(700 / visibleColCount)));
+}
 
 
 export default function DataGridView({
@@ -96,17 +105,19 @@ export default function DataGridView({
 
   }, [options]);
 
-  const table = useReactTable({
+  const table = useTable({
+    features: pgTableFeatures,
     columns: columns|| [],
     data: value || [],
     autoResetAll: false,
     state: {
       columnVisibility: columnVisibility || {},
+      ...features.current?.tableState({options}),
     },
     columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    // Rows expand into detail/form panels rather than sub-rows; v9 only
+    // lets rows with sub-rows expand unless told otherwise.
+    getRowCanExpand: () => true,
   });
 
   const classList = [].concat(containerClassName);
@@ -122,10 +133,26 @@ export default function DataGridView({
     )
   ).includes(true);
 
+  // Virtualising a small grid buys nothing (there's no offscreen window to
+  // skip rendering) but still pays for measureElement's per-row
+  // getBoundingClientRect on every mount/remeasure. That remeasure is
+  // exactly what fires when a dialog tab holding the grid is hidden via
+  // `display: none` and then shown again, since the scroll viewport
+  // momentarily measures 0 and the virtualizer's ResizeObserver treats
+  // that as a real resize. Below the threshold we skip virtualisation
+  // entirely and render every row in normal document flow, so showing a
+  // hidden tab is a pure CSS toggle again.
+  const visibleColCount = table.getVisibleLeafColumns().length;
+  const virtualiseThreshold = viewHelperProps.virtualiseThreshold ??
+    getVirtualiseThreshold(visibleColCount);
+  const shouldVirtualise = rows.length > virtualiseThreshold;
+
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => tableEleRef.current,
     estimateSize: () => 50,
+    // Measuring only happens through the row `ref` below, which is left out
+    // in static mode; that, not this option, is what turns it off there.
     measureElement:
       typeof window !== 'undefined' &&
         navigator.userAgent.indexOf('Firefox') === -1
@@ -147,27 +174,34 @@ export default function DataGridView({
       <StyleDataGridBox className={classList.join(' ')}>
         <Box className='DataGridView-grid'>
           <GridHeader tableEleRef={tableEleRef} rows={rows} />
-          <DndProvider backend={HTML5Backend}>
+          <DndProvider manager={getDndManager()}>
             <PgReactTable
               ref={tableEleRef} table={table} data-test="data-grid-view"
               tableClassName='DataGridView-table'>
               <PgReactTableHeader table={table} />
-              <PgReactTableBody style={{
-                height: virtualizer.getTotalSize() + 'px'
-              }}>
+              <PgReactTableBody style={
+                shouldVirtualise ? {height: virtualizer.getTotalSize() + 'px'} : undefined
+              }>
                 {
-                  virtualizer.getVirtualItems().map((virtualRow) => {
+                  (
+                    shouldVirtualise
+                      ? virtualizer.getVirtualItems()
+                      : rows.map((_row, index) => ({index, start: 0}))
+                  ).map((virtualRow) => {
                     const row = rows[virtualRow.index];
                     return (
                       <PgReactTableRow
                         key={row.id}
                         data-index={virtualRow.index}
-                        ref={node => virtualizer.measureElement(node)}
-                        style={{
-                          // This should always be a `style` as it changes on
-                          // scroll.
-                          transform: `translateY(${virtualRow.start}px)`,
-                        }}
+                        ref={shouldVirtualise ? node => virtualizer.measureElement(node) : undefined}
+                        className={shouldVirtualise ? undefined : 'pgrt-row--static'}
+                        style={
+                          shouldVirtualise ? {
+                            // This should always be a `style` as it changes
+                            // on scroll.
+                            transform: `translateY(${virtualRow.start}px)`,
+                          } : undefined
+                        }
                       >
                         <GridRow
                           rowId={virtualRow.index} isResizing={isResizing}

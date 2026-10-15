@@ -18,7 +18,5 @@ $BODY$;
 ALTER FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"()
     OWNER TO enterprisedb;
 
-GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO enterprisedb;
+GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO PUBLIC, enterprisedb;
 

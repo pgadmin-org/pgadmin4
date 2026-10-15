@@ -266,6 +266,10 @@ export default class FunctionSchema extends BaseUISchema {
       type: 'text', group: gettext('Definition'),
       mode: ['properties', 'edit'], readonly: obj.isReadonly, visible: obj.isVisible,
     },{
+      id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
+      disabled: ()=>{return !obj.isNew();}, group: gettext('Definition'),
+      visible: obj.isVisible, readonly: obj.isReadonly,
+    },{
       id: 'lanname', label: gettext('Language'), cell: 'string', noEmpty: true,
       options: this.fieldOptions.getLanguage, type: 'select', group: gettext('Definition'),
       disabled: function() {
@@ -332,10 +336,6 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'IMMUTABLE', 'value': 'i'},
       ], disabled: (this.type !== 'procedure') ? obj.inCatalog() : obj.isLessThan95ORNonSPL,
       controlProps: {allowClear: false},
-    },{
-      id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
-      disabled: ()=>{return !obj.isNew();}, group: gettext('Options'),
-      visible: obj.isVisible, readonly: obj.isReadonly,
     },{
       id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
       group: gettext('Options'),

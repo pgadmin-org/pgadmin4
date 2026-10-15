@@ -6,10 +6,10 @@ CREATE TABLE IF NOT EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'
 (
     "col1_$%{}[]()&*^!@\""'`\\/#" time(5) with time zone NOT NULL,
     col2 character(12) COLLATE pg_catalog."default",
-    CONSTRAINT custom_pk PRIMARY KEY ("col1_$%{}[]()&*^!@\""""'`\\/#")
+    CONSTRAINT custom_pk PRIMARY KEY ("col1_$%{}[]()&*^!@\""'`\\/#")
         WITH (FILLFACTOR=11)
         DEFERRABLE INITIALLY DEFERRED,
-    CONSTRAINT "unique" UNIQUE ("col1_$%{}[]()&*^!@\""""'`\\/#")
+    CONSTRAINT "unique" UNIQUE ("col1_$%{}[]()&*^!@\""'`\\/#")
         WITH (FILLFACTOR=13),
     CONSTRAINT chk_const CHECK (col2 <> NULL::bpchar)
 )

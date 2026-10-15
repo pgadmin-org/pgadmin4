@@ -51,23 +51,47 @@ if _platform == "win32":
 
 
 def _open_upload_target(path):
-    """Open a file for writing with leaf-symlink protection.
+    """Open a file for writing, with leaf-symlink protection in server mode.
 
     Used by both the file upload endpoint and `save_file()` (Query Tool /
-    ERD save). Returns a binary write-mode file object. The kernel will
-    refuse to follow a symbolic link at the leaf (CWE-61), closing the
-    TOCTOU gap between `check_access_permission` and the actual file
-    write. Mode is intentionally 0o600 (owner-only); see release notes
-    for the behavioral change from the previous umask-default 0o644.
+    ERD save). Returns a binary write-mode file object.
+
+    In server mode the kernel will refuse to follow a symbolic link at the
+    leaf (CWE-61), closing the TOCTOU gap between `check_access_permission`
+    and the actual file write, and new files are created owner-only
+    (0o600).
+
+    In desktop mode there is no storage sandbox to escape, as
+    `check_access_permission` is a no-op and the user may write anywhere
+    they can, so neither restriction applies: symlinks are followed and new
+    files get the umask default. O_NOFOLLOW must not be used there, as some
+    filesystems (e.g. the xdg-document-portal FUSE mount used by Flatpak)
+    return ELOOP for it even on regular files.
 
     On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
     residual leaf-component TOCTOU is mitigated by the absence of any
     in-pgAdmin primitive that creates symlinks.
     """
-    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC \
-        | getattr(os, 'O_NOFOLLOW', 0)
-    fd = os.open(path, flags, 0o600)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+    mode = 0o666
+    if _refuses_leaf_symlinks():
+        flags |= os.O_NOFOLLOW
+    if config.SERVER_MODE:
+        mode = 0o600
+    fd = os.open(path, flags, mode)
     return os.fdopen(fd, 'wb')
+
+
+def _refuses_leaf_symlinks():
+    """True when `_open_upload_target()` opens with O_NOFOLLOW.
+
+    Callers that translate ELOOP/EMLINK into a "refusing to write through
+    a symbolic link" message must use this same condition, so that the
+    message cannot drift from the behaviour: in desktop mode (or on
+    Windows, where O_NOFOLLOW does not exist) those errnos mean a genuine
+    filesystem problem, not a deliberate refusal.
+    """
+    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW')
 
 
 MODULE_NAME = 'file_manager'
@@ -129,45 +153,56 @@ def is_folder_hidden(filepath):
 
 def read_file_generator(file, enc):
     """
-    This will read the content of the file selected by user
+    This will read the content of the file selected by user.
+
+    Args:
+        file: Path to the file to be read.
+        enc: Initial encoding to attempt for reading the file.
 
     Returns:
-        Content of file
+        Generator yielding 4MB chunks of the file content.
     """
-    try:
-        with codecs.open(file, 'r', encoding=enc) as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
-    except UnicodeDecodeError:
-        # This is the closest equivalent Python 3 offers to the permissive
-        # Python 2 text handling model. The latin-1 encoding in Python
-        # implements ISO_8859-1:1987 which maps all possible byte values
-        # to the first 256 Unicode code points, and thus ensures decoding
-        # errors will never occur regardless of the configured error and
-        # handles most of the Windows encodings
-        # handler.
-        # Ref: https://tinyurl.com/yvj4u7fw
-        with codecs.open(file, 'r', encoding='latin-1') as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
-    except Exception:
-        # As a last resort we will use the provided encoding and then
-        # ignore the decoding errors
-        with codecs.open(file, 'r', encoding=enc, errors='ignore') as fileObj:
-            while True:
-                # 4MB chunk (4 * 1024 * 1024 Bytes)
-                data = fileObj.read(4194304)
-                if not data:
-                    break
-                yield data
+    encoding = enc
+    errors = None
+    if enc != 'latin-1':
+        try:
+            with open(file, 'r', encoding=enc, newline='') as fileObj:
+                while True:
+                    data = fileObj.read(4194304)
+                    if not data:
+                        break
+        except UnicodeDecodeError:
+            # This is the closest equivalent Python 3 offers to the permissive
+            # Python 2 text handling model. The latin-1 encoding in Python
+            # implements ISO_8859-1:1987 which maps all possible byte values
+            # to the first 256 Unicode code points, and thus ensures decoding
+            # errors will never occur regardless of the configured error and
+            # handles most of the Windows encodings
+            # handler.
+            # Ref: https://tinyurl.com/yvj4u7fw
+            encoding = 'latin-1'
+            # Record the fallback so that saving the file writes it back
+            # in the encoding it was actually read with.
+            Filemanager.remember_file_encoding(file, encoding)
+        except Exception as e:
+            if isinstance(e, OSError):
+                raise
+            # As a last resort we will use the provided encoding and then
+            # ignore the decoding errors
+            encoding = enc
+            errors = 'ignore'
+
+    open_kwargs = {'encoding': encoding, 'newline': ''}
+    if errors is not None:
+        open_kwargs['errors'] = errors
+
+    with open(file, 'r', **open_kwargs) as fileObj:
+        while True:
+            # 4MB chunk (4 * 1024 * 1024 Bytes)
+            data = fileObj.read(4194304)
+            if not data:
+                break
+            yield data
 
 
 class FileManagerModule(PgAdminModule):
@@ -456,17 +491,16 @@ def save_file():
             file_path.lstrip('/').lstrip('\\')
         )
 
-    # Get value for encoding if file is already loaded to SQL editor
-    def get_file_encoding_of_loaded_file(file_name):
-        encoding = 'utf-8'
-        for ele in Filemanager.loaded_file_encoding_list:
-            if file_name in ele:
-                encoding = ele[file_name]
-        return encoding
-
-    enc = get_file_encoding_of_loaded_file(os.path.basename(file_path))
-
-    file_content = file_data['file_content'].encode(enc)
+    # Save in the encoding the file was loaded with, if it was loaded.
+    enc = Filemanager.get_file_encoding(file_path)
+    try:
+        file_content = file_data['file_content'].encode(enc)
+    except UnicodeEncodeError:
+        # The edited content has characters the original encoding (in
+        # practice latin-1) cannot represent, so fall back to UTF-8 rather
+        # than refusing the save or losing them.
+        enc = 'utf-8'
+        file_content = file_data['file_content'].encode(enc)
     error_str = gettext("Error: {0}")
 
     # write to file
@@ -477,8 +511,11 @@ def save_file():
         # O_NOFOLLOW makes the kernel refuse a leaf symlink with ELOOP
         # (EMLINK on some BSDs). Report that specifically: the raw strerror
         # ("Too many levels of symbolic links") tells the user nothing
-        # about why their save was rejected.
-        if e.errno in (errno.ELOOP, errno.EMLINK):
+        # about why their save was rejected. Only when O_NOFOLLOW was
+        # actually set, though: otherwise the errno is a real filesystem
+        # error (a symlink loop, say) and the raw strerror is the truth.
+        if _refuses_leaf_symlinks() and \
+                e.errno in (errno.ELOOP, errno.EMLINK):
             return internal_server_error(errormsg=gettext(
                 "Refusing to write through a symbolic link."))
         err_msg = error_str.format(e.strerror)
@@ -486,6 +523,9 @@ def save_file():
     except Exception as e:
         err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
+
+    # Record the encoding only once the file has actually been written in it.
+    Filemanager.remember_file_encoding(file_path, enc)
 
     return make_json_response(
         data={
@@ -497,8 +537,9 @@ def save_file():
 class Filemanager():
     """FileManager Class."""
 
-    # Stores list of dict for filename & its encoding
-    loaded_file_encoding_list = []
+    # Maps the real path of each file loaded into the Query Tool to the
+    # encoding it was read with, so that saving it writes the same encoding.
+    loaded_file_encodings = {}
 
     ERROR_NOT_ALLOWED = {
         'Error': gettext('Not allowed'),
@@ -1189,6 +1230,17 @@ class Filemanager():
                 new_name = "{}_{}".format(name, count)
 
     @staticmethod
+    def remember_file_encoding(filename, enc):
+        """Record the encoding a file was read with."""
+        Filemanager.loaded_file_encodings[os.path.realpath(filename)] = enc
+
+    @staticmethod
+    def get_file_encoding(filename, default='utf-8'):
+        """Return the encoding a file was read with, or the default."""
+        return Filemanager.loaded_file_encodings.get(
+            os.path.realpath(filename), default)
+
+    @staticmethod
     def check_file_for_bom_and_binary(filename, enc="utf-8"):
         """
         This utility function will check if file is Binary file
@@ -1240,8 +1292,7 @@ class Filemanager():
                 is_binary = is_binary_string(file_data)
 
             # Store encoding for future use
-            Filemanager.loaded_file_encoding_list.\
-                append({os.path.basename(filename): enc})
+            Filemanager.remember_file_encoding(filename, enc)
 
         except IOError as ex:
             # we don't want to expose real path of file

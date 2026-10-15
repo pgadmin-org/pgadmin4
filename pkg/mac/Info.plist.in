@@ -12,6 +12,8 @@
 	<string>%APPNAME%</string>
 	<key>CFBundleIconFile</key>
 	<string>app.icns</string>
+	<key>CFBundleIconName</key>
+	<string>pgAdmin4</string>
 	<key>CFBundleIdentifier</key>
 	<string>%APPID%</string>
 	<key>CFBundleInfoDictionaryVersion</key>

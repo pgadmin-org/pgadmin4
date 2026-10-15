@@ -21,7 +21,7 @@ class AddServerTest(BaseTestGenerator):
                                          servers_utils.test_cases)
 
     def setUp(self):
-        pass
+        servers_utils.restore_server_fixture_on_cleanup(self)
 
     def create_server(self, url):
         return self.tester.post(

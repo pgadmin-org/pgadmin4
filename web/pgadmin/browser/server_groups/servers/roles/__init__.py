@@ -567,6 +567,18 @@ rolmembership:{
                     except ValueError:
                         data[k] = v
 
+            if not isinstance(data, dict):
+                return precondition_required(
+                    _("Request data must be a JSON object.")
+                )
+
+            # Capture the client-supplied keys before the validators below
+            # mutate 'data' (e.g. _validate_rolemembers adds derived keys
+            # such as 'rol_members_list'), so callers that need to know what
+            # the client actually sent (e.g. the membership-only update
+            # check) can rely on this instead of the mutated dict.
+            self.request_keys = set(data)
+
             invalid_msg_arr = [
                 self._validate_rolname(kwargs.get('rid', -1), data),
                 self._validate_rolvaliduntil(data),
@@ -619,6 +631,7 @@ rolmembership:{
         return fetch_name, check_permission, forbidden_msg
 
     def _check_permission(self, check_permission, action, kwargs):
+        self.membership_only_update = False
         if check_permission:
             user = self.manager.user_info
 
@@ -627,6 +640,15 @@ rolmembership:{
                 (action != 'update' or 'rid' in kwargs) and \
                 kwargs['rid'] != -1 and \
                     user['id'] != kwargs['rid']:
+                # A role that only has ADMIN OPTION on this specific role
+                # (rather than being a superuser or having CREATEROLE) may
+                # still manage that role's membership, so don't forbid the
+                # request outright; the update handler restricts what such
+                # a request is allowed to change to membership only.
+                if action == 'update' and getattr(
+                        self, 'has_admin_option', False):
+                    self.membership_only_update = True
+                    return False
                 return True
         return False
 
@@ -658,8 +680,24 @@ rolmembership:{
             self.role = row['rolname']
             self.rolCanLogin = row['rolcanlogin']
             self.rolSuper = row['rolsuper']
+            self.has_admin_option = row.get('has_admin_option', False)
 
         return False, ''
+
+    def _has_admin_option(self, rid):
+        """Return True if the connecting user may GRANT/REVOKE membership
+        in the role 'rid', as determined by permission.sql. Any failure to
+        look it up counts as False, so the dialog fails closed."""
+        status, res = self.conn.execute_dict(
+            render_template(
+                self.sql_path + 'permission.sql',
+                rid=rid,
+                conn=self.conn
+            )
+        )
+        if not status or len(res['rows']) == 0:
+            return False
+        return bool(res['rows'][0].get('has_admin_option', False))
 
     def check_precondition(action=None):
         """
@@ -713,15 +751,19 @@ rolmembership:{
                 fetch_name, check_permission, \
                     forbidden_msg = RoleView._check_action(action, kwargs)
 
-                is_permission_error = self._check_permission(check_permission,
-                                                             action, kwargs)
-                if is_permission_error:
-                    return forbidden(forbidden_msg)
-
+                # Fetched first: the permission check needs to know
+                # whether the current user holds ADMIN OPTION on this
+                # role before it can decide whether to forbid the
+                # request.
                 is_error, errmsg = self._check_and_fetch_name(fetch_name,
                                                               kwargs)
                 if is_error:
                     return errmsg
+
+                is_permission_error = self._check_permission(check_permission,
+                                                             action, kwargs)
+                if is_permission_error:
+                    return forbidden(forbidden_msg)
 
                 return f(self, **kwargs)
 
@@ -895,6 +937,11 @@ rolmembership:{
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
             self.datistemplate)
+        # Tell the dialog whether the connecting user may manage this role's
+        # membership (ADMIN OPTION, held directly or through another role).
+        # The same permission.sql drives the update guard, so the UI and the
+        # backend cannot disagree about who qualifies.
+        res['rows'][0]['has_admin_option'] = self._has_admin_option(rid)
         res = {**res['rows'][0], 'variables': variables['rows']}
         return ajax_response(
             response=res,
@@ -1023,6 +1070,19 @@ rolmembership:{
     @check_precondition(action='update')
     @validate_request
     def update(self, gid, sid, rid):
+        # The properties dialog always sends the role's 'oid' alongside the
+        # changed fields, so it is allowed here as well; the role being
+        # updated is identified by 'rid' from the URL, not by that value.
+        # request_keys is set by validate_request; if that has not run the
+        # guard must fail closed rather than let the request through.
+        if getattr(self, 'membership_only_update', False) and \
+                not getattr(self, 'request_keys', set()) <= \
+                {'rolmembers', 'oid'}:
+            return forbidden(
+                _("The current user does not have permission to update "
+                  "the role. Users with ADMIN OPTION on this role may "
+                  "only manage its membership.")
+            )
 
         sql = render_template(
             self.sql_path + self._UPDATE_SQL,

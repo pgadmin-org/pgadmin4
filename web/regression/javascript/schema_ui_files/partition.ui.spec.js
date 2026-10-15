@@ -84,6 +84,32 @@ describe('PartitionTableSchema', ()=>{
       });
   });
 
+  it('relpersistence on a partitioned partition', () => {
+    const field = _.find(schemaObj.fields, (f)=>f.id=='relpersistence');
+    const verSpy = jest.spyOn(schemaObj, 'getServerVersion');
+    const newSpy = jest.spyOn(schemaObj, 'isNew').mockReturnValue(true);
+
+    // PostgreSQL 18 and later reject UNLOGGED on a partitioned table.
+    verSpy.mockReturnValue(180000);
+    expect(field.disabled({is_partitioned: true})).toBe(true);
+    expect(field.depChange({is_partitioned: true, relpersistence: true})).toEqual({
+      relpersistence: false,
+    });
+    expect(field.disabled({is_partitioned: false})).toBe(false);
+    expect(field.depChange({is_partitioned: false, relpersistence: true})).toBeUndefined();
+
+    // Older servers still accept it.
+    verSpy.mockReturnValue(170000);
+    expect(field.disabled({is_partitioned: true})).toBe(false);
+    expect(field.depChange({is_partitioned: true, relpersistence: true})).toBeUndefined();
+
+    // An existing partition stays read-only, as before.
+    newSpy.mockReturnValue(false);
+    expect(field.disabled({is_partitioned: false})).toBe(true);
+    verSpy.mockRestore();
+    newSpy.mockRestore();
+  });
+
   it('validate', ()=>{
     let state = {is_partitioned: true};
     let setError = jest.fn();

@@ -102,6 +102,16 @@ _create_python_virtualenv() {
     # file inside the venv's own site-packages (which we do own), added
     # once pip/wheel are installed below.
     "${SYSTEM_PYTHON_PATH}" -m venv venv
+
+    # Python 3.14's venv module adds a novelty "𝜋thon" alias (U+1D70B, see
+    # CPython gh-119535) alongside python/python3/python3.X. Nothing uses it,
+    # and the "sed -i" hash bang fixup below turns the symlink into a full
+    # copy of the interpreter which, unlike the python* links, is never put
+    # back. dpkg on Ubuntu 26.04 then fails to unpack it with EPERM (#10414),
+    # so remove it. The name is given as raw UTF-8 bytes so that it matches
+    # whatever the build shell's locale is.
+    rm -f "venv/bin/"$'\360\235\234\213'"thon"
+
     # shellcheck disable=SC1091
     . venv/bin/activate
 
@@ -136,6 +146,11 @@ _create_python_virtualenv() {
         pip3 install --force-reinstall --no-cache-dir \
             --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
     fi
+
+    # Remove the files in the installed packages that we never use, and the
+    # packaging tools (pip, setuptools and wheel) that are only needed to
+    # build the environment
+    python3 "${SOURCEDIR}/pkg/prune_site_packages.py" venv || exit 1
 
     # Fixup the paths in the venv activation scripts
     sed -i 's/VIRTUAL_ENV=.*/VIRTUAL_ENV="\/usr\/pgadmin4\/venv"/g' venv/bin/activate

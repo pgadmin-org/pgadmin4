@@ -24,7 +24,8 @@ import json
 import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
-    get_complete_file_path, get_storage_directory, IS_WIN
+    get_complete_file_path, get_storage_directory, IS_WIN, \
+    connection_params_to_env
 from pgadmin.utils.constants import (KERBEROS, UTILITIES_ARRAY,
                                      BG_PROCESS_ERROR_MSGS)
 from pgadmin.utils.locker import ConnectionLocker
@@ -327,7 +328,10 @@ class BatchProcess:
         if self.env:
             env.update(self.env)
 
-        current_app.logger.debug(self.env)
+        # Log only the names: the values can include secrets.
+        current_app.logger.debug(
+            'Extra process environment variables: %s',
+            sorted((self.env or {}).keys()))
 
         if cb is not None:
             cb(env)
@@ -521,6 +525,18 @@ class BatchProcess:
 
         return pos, completed
 
+    @staticmethod
+    def _cloud_error(stdout):
+        """The error pgacloud printed before exiting, if any."""
+        for value in reversed(stdout):
+            try:
+                data = json.loads(value[1])
+            except ValueError:
+                continue
+            if isinstance(data, dict) and data.get('error'):
+                return str(data['error'])[:500]
+        return None
+
     def update_cloud_details(self):
         """
         Parse the output to get the cloud instance details
@@ -570,6 +586,7 @@ class BatchProcess:
             cloud_instance['instance']['sid'] = _process.server_id
             cloud_instance['instance']['status'] = False
             cloud_instance['instance']['pid'] = _pid
+            cloud_instance['instance']['error'] = self._cloud_error(stdout)
             return update_server(cloud_instance)
         else:
             clear_cloud_session(_pid)
@@ -822,51 +839,39 @@ class BatchProcess:
 
     def set_env_variables(self, server, **kwargs):
         """Set environment variables"""
-        if server:
-            # Set SSL related ENV variables
-            if hasattr(server, 'connection_params') and \
-                server.connection_params and \
-                'sslcert' in server.connection_params and \
-                'sslkey' in server.connection_params and \
-                    'sslrootcert' in server.connection_params:
-                # SSL environment variables
-                sslcert = get_complete_file_path(
-                    server.connection_params['sslcert'])
-                sslkey = get_complete_file_path(
-                    server.connection_params['sslkey'])
-                sslrootcert = get_complete_file_path(
-                    server.connection_params['sslrootcert'])
+        # The connection parameters configured against the server are what
+        # the utility must connect with, so pass every one of them that
+        # libpq reads from the environment.  Anything hardcoded here instead
+        # would drift from the server dialog: gssencmode, for one, went
+        # unpassed for years, leaving pg_dump and friends unable to connect
+        # to a server that the object explorer was perfectly happy with.
+        # Prefer the manager's copy, which reflects the live connection.
+        connection_params = None
+        if self.manager_obj and self.manager_obj.connection_params:
+            connection_params = self.manager_obj.connection_params
+        elif server and getattr(server, 'connection_params', None):
+            connection_params = server.connection_params
 
-                self.env['PGSSLMODE'] = server.connection_params['sslmode'] \
-                    if hasattr(server, 'connection_params') and \
-                    'sslmode' in server.connection_params else 'prefer'
-                self.env['PGSSLCERT'] = '' if sslcert is None else sslcert
-                self.env['PGSSLKEY'] = '' if sslkey is None else sslkey
-                self.env['PGSSLROOTCERT'] = \
-                    '' if sslrootcert is None else sslrootcert
+        conn_env = connection_params_to_env(connection_params)
 
-            # Set service name related ENV variable
-            if server.service:
-                self.env['PGSERVICE'] = server.service
+        # The utility is pointed at the local end of the tunnel by the
+        # caller, so the server's own address must not override it.
+        if self.manager_obj and self.manager_obj.use_ssh_tunnel:
+            conn_env.pop('PGHOSTADDR', None)
+
+        self.env.update(conn_env)
+
+        # Take the service name from the manager too: for a shared server
+        # it carries the current user's value, whereas the server row the
+        # tools pass is the owner's.  For any other server the two match.
+        if self.manager_obj:
+            service = self.manager_obj.service
+        else:
+            service = server.service if server else None
+        if service:
+            self.env['PGSERVICE'] = service
 
         if self.manager_obj:
-            # Set the PGPASSFILE environment variable
-            if self.manager_obj.connection_params and \
-                isinstance(self.manager_obj.connection_params, dict) and \
-                'passfile' in self.manager_obj.connection_params and \
-                    self.manager_obj.connection_params['passfile']:
-                pgpasspath = get_complete_file_path(
-                    self.manager_obj.connection_params['passfile'])
-                if pgpasspath is not None:
-                    self.env['PGPASSFILE'] = pgpasspath
-
-            # Check for connection timeout and if it is greater than 0 then
-            # set the environment variable PGCONNECT_TIMEOUT.
-            timeout = self.manager_obj.get_connection_param_value(
-                'connect_timeout')
-            if timeout and int(timeout) > 0:
-                self.env['PGCONNECT_TIMEOUT'] = str(timeout)
-
             # export password environment
             self.manager_obj.export_password_env(self.id)
 

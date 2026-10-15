@@ -88,11 +88,20 @@ and secure.
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Oauth2 user.
     Please note that password is not stored in the pgAdmin database."
+    "OAUTH2_AUTO_LOGIN", "Set the value to *True* to send users straight to the OAuth2 provider
+    instead of showing the pgAdmin login page. This only takes effect when *oauth2* is the only
+    value in AUTHENTICATION_SOURCES and exactly one provider is configured. The default is *False*.
+    See :ref:`oauth2_auto_login` below."
     "OAUTH2_ADDITIONAL_CLAIMS", "If a dictionary is provided, pgAdmin will check for a matching key and value on the **ID token first** (for OIDC providers), then fall back to the userinfo endpoint response. In case there is no match with the provided config, the user will receive an authorization error. Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
+    "OAUTH2_SERVER_GROUP_CLAIM", "The name of a claim listing the server groups whose shared servers the user may access. If set, shared servers owned by other users are only visible and accessible if the name of their server group is in the claim. See :ref:`oauth2_server_group_claims` below."
+    "OAUTH2_SERVER_GROUP_CLAIM_MAPPING", "An optional dictionary mapping values of the OAUTH2_SERVER_GROUP_CLAIM claim to a server group name or a list of server group names. Values without a mapping are used as server group names unchanged."
     "OAUTH2_SSL_CERT_VERIFICATION", "Set this variable to False to disable SSL certificate verification for OAuth2 provider.
     This may need to set False, in case of self-signed certificates."
     "OAUTH2_CHALLENGE_METHOD", "Enable PKCE workflow. PKCE method name, only *S256* is supported"
     "OAUTH2_RESPONSE_TYPE", "Enable PKCE workflow. Mandatory with OAUTH2_CHALLENGE_METHOD, must be set to *code*"
+    "OAUTH2_LOGOUT_URL", "The provider's logout endpoint, used to end the user's session with the provider
+    when they log out of pgAdmin. *{redirect_uri}* and *{id_token}* in the value are replaced with the pgAdmin
+    URL and the user's ID token. Ex: *https://example.com/realms/master/protocol/openid-connect/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}* (for Keycloak)"
 
 Redirect URL
 ============
@@ -118,6 +127,21 @@ After configuration, on restart, you can see the login page with the Oauth2 logi
 .. image:: images/oauth2_login.png
     :alt: Oauth2 login
     :align: center
+
+.. _oauth2_auto_login:
+
+Skipping the Login Page
+-----------------------
+
+If OAuth2 is the only authentication source and a single provider is configured, set
+OAUTH2_AUTO_LOGIN to *True* to send users straight to the provider rather than showing them the
+login page with a single button. Note that any LOGIN_BANNER will not be seen in this case.
+
+The login page is still shown after a login fails, so that the error can be read, and after the
+user logs out, so that they are not logged straight back in by the provider. Setting
+OAUTH2_LOGOUT_URL for the provider is recommended, so that logging out of pgAdmin also ends the
+user's session with the provider. To show the login page at any other time, add *?no_auto_login*
+to its URL, for example *https://pgadmin.example.com/login?no_auto_login*.
 
 PKCE Workflow
 =============
@@ -340,6 +364,49 @@ Example:
         },
         # pgAdmin will check these claims in ID token first,
         # then userinfo endpoint if not found
+    }]
+
+.. _oauth2_server_group_claims:
+
+Restricting Shared Servers with a Claim
+---------------------------------------
+
+**OAUTH2_SERVER_GROUP_CLAIM** limits which shared servers an OAuth2 user can
+see, based on a claim from the identity provider such as a list of roles or
+groups. When it is set:
+
+* A shared server owned by another user is only visible, and can only be
+  connected to, if the name of the server group it is in appears in the claim.
+* If the claim is missing for a user, they see no shared servers owned by
+  other users.
+* Servers and server groups that the user owns themselves are not affected.
+* Users who log in by other methods are not affected.
+
+The claim is read from the ID token first, then from the userinfo endpoint
+response. Its value may be a string or a list of strings; values of any other
+type (for example, group objects returned by some providers) are ignored.
+Server group names are matched exactly, with no trimming or case folding.
+
+**OAUTH2_SERVER_GROUP_CLAIM_MAPPING** can be used to translate claim values
+into server group names. A value may map to a single name or a list of names,
+and values with no mapping are used as server group names unchanged.
+
+The claim is only read when the user logs in, so changes made at the identity
+provider take effect at the user's next login.
+
+Example:
+
+.. code-block:: python
+
+    OAUTH2_CONFIG = [{
+        # ... other config ...
+        'OAUTH2_SERVER_GROUP_CLAIM': 'roles',
+        'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': {
+            'dba': ['Production', 'Staging'],
+            'developer': 'Staging'
+        },
+        # A user with the roles ['developer', 'Reporting'] can see shared
+        # servers in the 'Staging' and 'Reporting' server groups.
     }]
 
 Legacy OAuth2 Configuration (Without OIDC)

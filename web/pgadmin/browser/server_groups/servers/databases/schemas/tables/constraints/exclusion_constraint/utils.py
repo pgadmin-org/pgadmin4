@@ -11,6 +11,7 @@
 
 from flask import render_template
 from flask_babel import gettext as _
+from pgadmin.utils import unquote_ident
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -74,7 +75,7 @@ def _get_columns(res):
             order = True
             nulls_order = True if (row['options'] & 2) else False
 
-        columns.append({"column": row['coldef'].strip('"'),
+        columns.append({"column": unquote_ident(row['coldef']),
                         "oper_class": row['opcname'],
                         "order": order,
                         "nulls_order": nulls_order,

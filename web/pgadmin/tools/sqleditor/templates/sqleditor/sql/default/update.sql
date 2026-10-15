@@ -4,4 +4,6 @@ UPDATE {{ conn|qtIdent(nsp_name, object_name) | replace("%", "%%") }} SET
 {% if not loop.first %}, {% endif %}{{ conn|qtIdent(col) | replace("%", "%%") }} = %({{ pgadmin_alias[col] }})s{% if type_cast_required[col] %}::{{ data_type[col] }}{% endif %}{% endfor %}
  WHERE
 {% for pk in primary_keys %}
-{% if not loop.first %} AND {% endif %}{{ conn|qtIdent(pk) | replace("%", "%%") }} = {{ primary_keys[pk]|qtLiteral(conn) }}{% endfor %};
+{% if not loop.first %} AND {% endif %}{{ conn|qtIdent(pk) | replace("%", "%%") }} = {{ primary_keys[pk]|qtLiteral(conn) }}{% endfor %}
+{# Return the recalculated values of any generated columns #}
+{% if returning_cols %} RETURNING {% for col in returning_cols %}{% if not loop.first %}, {% endif %}{{ conn|qtIdent(col) | replace("%", "%%") }}{% endfor %}{% endif %};

@@ -47,6 +47,17 @@ class TagsSchema extends BaseUISchema {
   }
 }
 
+// A copy of another user's shared server becomes the current user's own
+// server, which cannot inherit a password exec command, so an inherited
+// command becomes none. Free-text commands never apply in server mode.
+export function passexecForServerCopy(d) {
+  if (d.passexec_name === '__inherit__') {
+    d.passexec_name = '__none__';
+  }
+  delete d.passexec_cmd;
+  return d;
+}
+
 export function getConnectionParameters() {
   let conParams = [{
     'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
@@ -174,6 +185,26 @@ export function getConnectionParameters() {
   return conParams;
 };
 
+// pgEdge Starfleet endpoints never answer a connection without SSL, so with
+// sslmode=prefer any failed SSL attempt (a wrong password, say) is retried
+// without SSL and reported only as a timeout, hiding the real error.
+const STARFLEET_HOST = /\.pgedge\.cloud\.?$/i;
+
+export function starfleetConnectionParams(host, params) {
+  if(!STARFLEET_HOST.test((host || '').trim())) {
+    return;
+  }
+  params = params || [];
+  const sslmode = _.find(params, (p)=>p.name == 'sslmode');
+  if(sslmode && sslmode.value != 'prefer') {
+    return;
+  }
+  const require = {'name': 'sslmode', 'value': 'require', 'keyword': 'sslmode'};
+  return sslmode ?
+    params.map((p)=>(p.name == 'sslmode' ? {...p, value: 'require'} : p)) :
+    [require, ...params];
+}
+
 export default class ServerSchema extends BaseUISchema {
   constructor(serverGroupOptions=[], userId=0, initValues={}) {
     super({
@@ -193,6 +224,7 @@ export default class ServerSchema extends BaseUISchema {
       db_res: undefined,
       db_res_type: 'databases',
       passexec: undefined,
+      passexec_name: pgAdmin.server_mode == 'True' ? '__none__' : undefined,
       passexec_expiration: undefined,
       service: undefined,
       shared_username: '',
@@ -341,6 +373,13 @@ export default class ServerSchema extends BaseUISchema {
             );
           } else {
             obj.informText = undefined;
+          }
+          if(obj.isNew(state)) {
+            const params = starfleetConnectionParams(
+              state.host, state.connection_params);
+            if(params) {
+              return {connection_params: params};
+            }
           }
         }
       },
@@ -565,14 +604,40 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
         group: gettext('Advanced'), controlProps: {maxLength: null},
         mode: ['properties', 'edit', 'create'],
-        disabled: pgAdmin.server_mode == 'True' && pgAdmin.enable_server_passexec_cmd == 'False',
+        visible: () => pgAdmin.server_mode != 'True',
         helpMessage: gettext('The server hostname, port, and username can be passed as variables by using the placeholders %HOSTNAME%, %PORT%, and %USERNAME%, which will be replaced with the corresponding server connection information.')
+      },
+      {
+        id: 'passexec_name', label: gettext('Password exec command'),
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
+        controlProps: {allowClear: false},
+        visible: () => pgAdmin.server_mode == 'True' &&
+          (pgAdmin.server_passexec_commands || []).length > 0,
+        type: (state) => {
+          let options = [{label: gettext('None'), value: '__none__'}];
+          // Only a non-owner of a shared server can inherit the owner's command.
+          if (obj.isShared(state)) {
+            options.unshift({label: gettext('Inherit from owner'), value: '__inherit__'});
+          }
+          (pgAdmin.server_passexec_commands || []).forEach((name) => {
+            options.push({label: name, value: name});
+          });
+          return {type: 'select', options: options};
+        },
+        helpMessage: gettext('The command is chosen from those configured by the administrator. The server hostname, port, username and maintenance database, and your pgAdmin username and authentication source, are passed to it in the PGADMIN_PASSEXEC_* environment variables.')
       },
       {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
+        visible: () => pgAdmin.server_mode != 'True' ||
+          (pgAdmin.server_passexec_commands || []).length > 0,
         disabled: function(state) {
+          if (pgAdmin.server_mode == 'True') {
+            return !state.passexec_name ||
+              ['__none__', '__inherit__'].includes(state.passexec_name);
+          }
           return isEmptyString(state.passexec_cmd);
         },
       },

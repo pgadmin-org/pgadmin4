@@ -24,6 +24,7 @@ from pgadmin.model import db, Setting, ApplicationState
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from .utils import get_dialog_type, get_file_type_setting
 from cryptography.fernet import Fernet
+import base64
 import hashlib
 
 MODULE_NAME = 'settings'
@@ -294,6 +295,25 @@ def get_file_format_setting():
                               info=get_file_type_setting(list(data.values())))
 
 
+def get_application_state_fernet():
+    """
+    Return the Fernet instance used to encrypt the stored application state.
+
+    SECRET_KEY is normally auto-generated as a valid Fernet key, but
+    installations that set SECRET_KEY in their configuration before it moved
+    into the configuration database have that arbitrary string stored
+    verbatim, which Fernet rejects. In that case, derive a valid key from it;
+    no state can have been stored with such a key, so nothing existing
+    becomes unreadable.
+    """
+    secret = current_app.config['SECRET_KEY']
+    key = secret.encode() if isinstance(secret, str) else secret
+    try:
+        return Fernet(key)
+    except ValueError:
+        return Fernet(base64.urlsafe_b64encode(hashlib.sha256(key).digest()))
+
+
 @blueprint.route(
     '/save_application_state',
     methods=["POST"], endpoint='save_application_state'
@@ -306,7 +326,7 @@ def save_application_state():
     """
     data = json.loads(request.data)
     trans_id = data['trans_id']
-    fernet = Fernet(current_app.config['SECRET_KEY'].encode())
+    fernet = get_application_state_fernet()
     tool_data = fernet.encrypt(json.dumps(data['tool_data']).encode())
     connection_info = data['connection_info'] \
         if 'connection_info' in data else None
@@ -363,7 +383,7 @@ def get_application_state():
     """
     Returns application state if any stored.
     """
-    fernet = Fernet(current_app.config['SECRET_KEY'].encode())
+    fernet = get_application_state_fernet()
     result = db.session \
         .query(ApplicationState) \
         .filter(ApplicationState.uid == current_user.id) \
@@ -404,7 +424,7 @@ def get_application_state():
     methods=["GET"], endpoint='get_tool_data')
 @pga_login_required
 def get_tool_data(trans_id):
-    fernet = Fernet(current_app.config['SECRET_KEY'].encode())
+    fernet = get_application_state_fernet()
     result = db.session \
         .query(ApplicationState) \
         .filter(ApplicationState.uid == current_user.id,

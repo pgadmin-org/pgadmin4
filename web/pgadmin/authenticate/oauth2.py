@@ -34,7 +34,59 @@ OAUTH2_AUTHORIZE = 'oauth2.authorize'
 # OAuth2 settings that legitimately live at the top level of the
 # configuration. Every other OAUTH2_* setting belongs *inside* an entry
 # of the OAUTH2_CONFIG list and is ignored if set at the top level.
-_TOP_LEVEL_OAUTH2_SETTINGS = {'OAUTH2_CONFIG', 'OAUTH2_AUTO_CREATE_USER'}
+_TOP_LEVEL_OAUTH2_SETTINGS = {'OAUTH2_CONFIG', 'OAUTH2_AUTO_CREATE_USER',
+                              'OAUTH2_AUTO_LOGIN'}
+
+
+def get_auto_login_provider():
+    """
+    Return the name of the OAuth2 provider that users should be sent to
+    without seeing the login page, or None if auto-login does not apply.
+
+    Auto-login only applies when OAUTH2_AUTO_LOGIN is enabled, OAuth2 is the
+    only authentication source, and exactly one provider is configured, as
+    otherwise the user has a choice to make on the login page.
+    """
+    if not getattr(config, 'OAUTH2_AUTO_LOGIN', False):
+        return None
+    if config.AUTHENTICATION_SOURCES != [OAUTH2]:
+        return None
+    if len(config.OAUTH2_CONFIG) != 1:
+        return None
+    return config.OAUTH2_CONFIG[0].get('OAUTH2_NAME')
+
+
+def auto_login_redirect():
+    """
+    Return a redirect to the OAuth2 provider's authorisation endpoint if the
+    login page should be skipped for this request, or None to show it.
+
+    The login page is still shown when there are flashed messages waiting
+    to be displayed (for example a failed login or a logout, which would
+    otherwise loop straight back to the provider), and when the request has
+    a no_auto_login query parameter, so an administrator can always reach it.
+    """
+    provider = get_auto_login_provider()
+    if provider is None or request.method != 'GET' or \
+            session.get('_flashes') or 'no_auto_login' in request.args:
+        return None
+
+    from pgadmin.authenticate import get_auth_sources
+    client = get_auth_sources(OAUTH2).oauth2_clients.get(provider)
+    if client is None:
+        return None
+
+    try:
+        response = client.authorize_redirect(
+            url_for(OAUTH2_AUTHORIZE, _external=True))
+    except Exception as e:
+        current_app.logger.exception(
+            'OAuth2 auto-login to provider "%s" failed: %s', provider, e)
+        return None
+
+    # The /authorize callback reads the provider from the session.
+    session['oauth2_current_client'] = provider
+    return response
 
 
 def warn_on_misplaced_oauth2_config(app):
@@ -135,6 +187,9 @@ def init_app(app):
             session.pop('oauth2_current_client', None)
             return redirect(get_safe_post_login_redirect())
         session.pop('oauth2_current_client', None)
+        # get_user_profile() may already have stored the provider's logout
+        # URL before the login failed; don't leave it for a later logout.
+        session.pop('oauth2_logout_url', None)
         logout_user()
         flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
@@ -156,6 +211,12 @@ def init_app(app):
         logout_user()
         for key in list(session.keys()):
             session.pop(key)
+
+        # With auto-login on, the login page would otherwise send the user
+        # straight back to the provider. A pending message stops that, so
+        # they see that they have logged out and can choose to log in again.
+        if get_auto_login_provider() is not None:
+            flash(gettext('You have been logged out.'), MessageType.INFO)
 
         if logout_url:
             return redirect(logout_url.format(
@@ -537,11 +598,68 @@ class OAuth2Authentication(BaseAuthentication):
 
         return None, None
 
+    def _extract_server_group_claims(self, profile_dict, id_token_claims):
+        """
+        Resolve allowed server groups from provider claim configuration.
+
+        Config keys (per provider):
+        - OAUTH2_SERVER_GROUP_CLAIM: claim name to read
+        - OAUTH2_SERVER_GROUP_CLAIM_MAPPING: optional dict mapping
+          claim-value -> server group name or list of names
+
+        Claim values and group names are matched exactly (no trimming or
+        case folding). Values that aren't strings (e.g. group objects
+        emitted by some providers) are ignored.
+
+        Returns:
+            list[str] | None
+            - list of allowed server group names if configured
+            - None when claim-based server group filtering is not configured
+        """
+        provider = self.oauth2_config.get(self.oauth2_current_client) or {}
+        claim_name = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
+        if not claim_name:
+            return None
+
+        claim_values = id_token_claims.get(claim_name)
+        if claim_values is None:
+            claim_values = profile_dict.get(claim_name)
+        if claim_values is None:
+            return []
+
+        if not isinstance(claim_values, list):
+            claim_values = [claim_values]
+
+        mapping = provider.get('OAUTH2_SERVER_GROUP_CLAIM_MAPPING') or {}
+        server_groups = []
+        for value in claim_values:
+            if not isinstance(value, str):
+                current_app.logger.warning(
+                    f'Ignoring non-string value in server group claim '
+                    f'"{claim_name}".')
+                continue
+
+            mapped_groups = mapping.get(value)
+            if mapped_groups is None:
+                server_groups.append(value)
+            elif isinstance(mapped_groups, str):
+                server_groups.append(mapped_groups)
+            elif isinstance(mapped_groups, list):
+                server_groups.extend(
+                    g for g in mapped_groups if isinstance(g, str))
+
+        # Remove duplicates, preserving order
+        return list(dict.fromkeys(server_groups))
+
     def login(self, form):
         if not self.oauth2_current_client:
             error_msg = gettext('No OAuth2 provider available.')
             current_app.logger.error(error_msg)
             return False, error_msg
+
+        # Don't let a previous login's server group claims outlive it; they
+        # are set again below once this login has been authorised.
+        session.pop('oauth2_server_group_claims', None)
 
         profile = self.get_user_profile()
         profile_dict = self.get_profile_dict(profile)
@@ -600,13 +718,10 @@ class OAuth2Authentication(BaseAuthentication):
             current_app.logger.error(error_msg)
             return False, error_msg
 
-        additional_claims = None
-        if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
-                self.oauth2_current_client]:
-
-            additional_claims = self.oauth2_config[
-                self.oauth2_current_client
-            ]['OAUTH2_ADDITIONAL_CLAIMS']
+        # config.py ships the key with a value of None, so test whether it
+        # is set rather than whether it is present.
+        additional_claims = self.oauth2_config.get(
+            self.oauth2_current_client, {}).get('OAUTH2_ADDITIONAL_CLAIMS')
 
         # For OIDC providers, check ID token claims first, then userinfo
         # For non-OIDC providers, check userinfo only
@@ -668,6 +783,16 @@ class OAuth2Authentication(BaseAuthentication):
             current_app.logger.warning(audit_msg)
             return False, return_msg
 
+        # Server groups granted by the identity provider. This is read by
+        # pgadmin.utils.server_access to decide which shared servers the
+        # user can see; claims are only resolved at login.
+        oauth2_server_group_claims = self._extract_server_group_claims(
+            profile_dict, id_token_claims
+        )
+        if oauth2_server_group_claims is not None:
+            session['oauth2_server_group_claims'] = \
+                oauth2_server_group_claims
+
         user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
@@ -689,10 +814,16 @@ class OAuth2Authentication(BaseAuthentication):
 
         session['pass_enc_key'] = session['oauth2_token']['access_token']
 
-        if 'OAUTH2_LOGOUT_URL' in self.oauth2_config[
-                self.oauth2_current_client]:
-            session['oauth2_logout_url'] = self.oauth2_config[
-                self.oauth2_current_client]['OAUTH2_LOGOUT_URL']
+        # As above, the shipped config.py sets this to None, so only stash
+        # it in the session when it actually holds a URL, and otherwise drop
+        # any left over from an earlier login so that logout cannot redirect
+        # to a different provider's URL.
+        logout_url = self.oauth2_config.get(
+            self.oauth2_current_client, {}).get('OAUTH2_LOGOUT_URL')
+        if logout_url:
+            session['oauth2_logout_url'] = logout_url
+        else:
+            session.pop('oauth2_logout_url', None)
 
         # For OIDC providers, parse the ID token JWT to extract claims.
         # We can skip the userinfo endpoint call if the ID token has
@@ -716,10 +847,12 @@ class OAuth2Authentication(BaseAuthentication):
                 )
                 username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
                 additional_claims = provider.get('OAUTH2_ADDITIONAL_CLAIMS')
+                server_group_claim = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
 
-                # If custom username claim or additional authorization
-                #  claims are configured, they may exist only in userinfo;
-                # don't skip userinfo unless ID token has them.
+                # If custom username claim, additional authorization
+                # claims, or server-group claims are configured, they may
+                # exist only in userinfo; don't skip userinfo unless ID
+                # token has them.
                 needs_userinfo = False
                 if username_claim and username_claim not in id_token_claims:
                     needs_userinfo = True
@@ -730,6 +863,9 @@ class OAuth2Authentication(BaseAuthentication):
                     ]
                     if missing_authz_keys:
                         needs_userinfo = True
+                if (server_group_claim and
+                        server_group_claim not in id_token_claims):
+                    needs_userinfo = True
 
             if has_sufficient_claims and not needs_userinfo:
                 current_app.logger.debug(
@@ -744,8 +880,9 @@ class OAuth2Authentication(BaseAuthentication):
 
         # For non-OIDC providers or when ID token is insufficient,
         # call the userinfo endpoint
-        if 'OAUTH2_USERINFO_ENDPOINT' not in self.oauth2_config[
-                self.oauth2_current_client]:
+        userinfo_endpoint = self.oauth2_config.get(
+            self.oauth2_current_client, {}).get('OAUTH2_USERINFO_ENDPOINT')
+        if not userinfo_endpoint:
             if self._is_oidc_provider():
                 # OIDC provider should have provided claims in ID token
                 current_app.logger.warning(
@@ -758,8 +895,7 @@ class OAuth2Authentication(BaseAuthentication):
             return {}
 
         resp = self.oauth2_clients[self.oauth2_current_client].get(
-            self.oauth2_config[
-                self.oauth2_current_client]['OAUTH2_USERINFO_ENDPOINT'],
+            userinfo_endpoint,
             token=session['oauth2_token']
         )
         resp.raise_for_status()
