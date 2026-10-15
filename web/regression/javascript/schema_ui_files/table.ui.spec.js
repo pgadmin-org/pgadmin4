@@ -304,6 +304,26 @@ describe('TableSchema', () => {
     });
   });
 
+  it('relpersistence on a partitioned table', () => {
+    const field = _.find(schemaObj.fields, (f)=>f.id=='relpersistence');
+    const spy = jest.spyOn(schemaObj, 'getServerVersion');
+
+    // PostgreSQL 18 and later reject UNLOGGED on a partitioned table.
+    spy.mockReturnValue(180000);
+    expect(field.disabled({is_partitioned: true})).toBe(true);
+    expect(field.depChange({is_partitioned: true, relpersistence: true})).toEqual({
+      relpersistence: false,
+    });
+    expect(field.disabled({is_partitioned: false})).toBe(false);
+    expect(field.depChange({is_partitioned: false, relpersistence: true})).toBeUndefined();
+
+    // Older servers still accept it.
+    spy.mockReturnValue(170000);
+    expect(field.disabled({is_partitioned: true})).toBe(false);
+    expect(field.depChange({is_partitioned: true, relpersistence: true})).toBeUndefined();
+    spy.mockRestore();
+  });
+
   it('depChange column rename propagation', () => {
     jest.spyOn(schemaObj, 'getServerVersion').mockReturnValue(110000);
     schemaObj.constraintsObj.top = schemaObj;

@@ -280,13 +280,23 @@ class TestAddfolderTargetSymlinkRejected(
 # ---------------------------------------------------------------------------
 
 class _OpenUploadTargetMixin:
-    """Mixin for upload-syscall hardening tests."""
+    """Mixin for upload-syscall hardening tests.
+
+    The hardening only applies in server mode, so pin SERVER_MODE rather
+    than inheriting whatever the harness was started with. Desktop-mode
+    subclasses override `server_mode`.
+    """
+
+    server_mode = True
 
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.tmpdir = tempfile.mkdtemp(prefix="pga_filemgr_open_")
+        self._prev_server_mode = config.SERVER_MODE
+        config.SERVER_MODE = self.server_mode
 
     def tearDown(self):
+        config.SERVER_MODE = self._prev_server_mode
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
 
@@ -414,6 +424,58 @@ class TestOpenUploadTargetRejectsLeafSymlinkPointingToNonexistent(
         self.assertFalse(os.path.exists(outside_path))
 
 
+class TestOpenUploadTargetDesktopFollowsLeafSymlink(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """Desktop mode: a leaf symlink is followed, not refused.
+
+    There is no storage sandbox in desktop mode, so O_NOFOLLOW protects
+    nothing there, and it breaks saves on filesystems that return ELOOP
+    for it on regular files (Flatpak's document portal, issue #10482).
+    """
+
+    scenarios = [('default', dict())]
+    server_mode = False
+
+    def runTest(self):
+        from pgadmin.misc.file_manager import _open_upload_target
+        real_target = os.path.join(self.tmpdir, "real.sql")
+        with open(real_target, "wb") as f:
+            f.write(b"OLD")
+        link_path = os.path.join(self.tmpdir, "link.sql")
+        try:
+            os.symlink(real_target, link_path)
+        except (OSError, NotImplementedError):
+            self.skipTest("Cannot create symlinks on this platform")
+
+        with _open_upload_target(link_path) as f:
+            f.write(b"NEW")
+
+        self.assertTrue(os.path.islink(link_path))
+        with open(real_target, "rb") as f:
+            self.assertEqual(f.read(), b"NEW")
+
+
+class TestOpenUploadTargetDesktopUsesUmask(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """Desktop mode: new files get the umask default, not 0o600."""
+
+    scenarios = [('default', dict())]
+    server_mode = False
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("POSIX mode bits not meaningful on Windows")
+        from pgadmin.misc.file_manager import _open_upload_target
+        umask = os.umask(0o022)
+        try:
+            target = os.path.join(self.tmpdir, "desktop.sql")
+            with _open_upload_target(target) as f:
+                f.write(b"x")
+        finally:
+            os.umask(umask)
+        self.assertEqual(os.stat(target).st_mode & 0o777, 0o644)
+
+
 # ---------------------------------------------------------------------------
 # save_file() must use the same O_NOFOLLOW-protected open as uploads.
 #
@@ -484,6 +546,12 @@ class TestSaveFileRejectsLeafSymlink(_SaveFileMixin, BaseTestGenerator):
     scenarios = [('default', dict())]
 
     def runTest(self):
+        # SERVER_MODE can't be flipped for an endpoint test: it also
+        # changes the authentication path the request takes, which the
+        # harness's session was not set up for.
+        if not config.SERVER_MODE:
+            self.skipTest("Leaf-symlink hardening only applies in server "
+                          "mode")
         outside_target = os.path.join(self.tmpdir, "outside.txt")
         with open(outside_target, "wb") as f:
             f.write(b"VICTIM")
@@ -532,6 +600,59 @@ class TestSaveFileWritesRegularFile(_SaveFileMixin, BaseTestGenerator):
         target = os.path.join(self.storage_dir, "ok.sql")
         with open(target, "rb") as f:
             self.assertEqual(f.read(), b"SELECT 1;")
-        # The helper opens with mode 0o600; pin it so the documented
-        # behavioral change cannot regress silently.
-        self.assertEqual(os.stat(target).st_mode & 0o777, 0o600)
+        # In server mode the helper opens with mode 0o600; pin it so the
+        # documented behavioral change cannot regress silently.
+        if config.SERVER_MODE:
+            self.assertEqual(os.stat(target).st_mode & 0o777, 0o600)
+
+
+class _SaveFileEloopMixin(_SaveFileMixin):
+    """Drive save_file() into an ELOOP from the open, with the symlink
+    refusal switched on or off, independently of the harness's SERVER_MODE.
+
+    `_refuses_leaf_symlinks()` is the single condition that both sets
+    O_NOFOLLOW and selects the symlink-specific error message, so patching
+    it is enough to exercise either side of the branch.
+    """
+
+    refuses = None
+
+    def _save_with_eloop(self):
+        eloop = OSError(errno.ELOOP, os.strerror(errno.ELOOP))
+        with patch('pgadmin.misc.file_manager._open_upload_target',
+                   side_effect=eloop), \
+                patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+                      return_value=self.refuses):
+            return self._save_file("/looped.sql", "SELECT 1;")
+
+
+class TestSaveFileEloopReportsSymlinkRefusal(
+        _SaveFileEloopMixin, BaseTestGenerator):
+    """With O_NOFOLLOW in play, ELOOP means the refusal was deliberate."""
+
+    scenarios = [('default', dict())]
+    refuses = True
+
+    def runTest(self):
+        response = self._save_with_eloop()
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("symbolic link", response.json['errormsg'])
+
+
+class TestSaveFileEloopReportsRawErrorWithoutNofollow(
+        _SaveFileEloopMixin, BaseTestGenerator):
+    """Without O_NOFOLLOW (desktop mode), ELOOP is a real filesystem error
+    and must be reported as such, not as a refusal pgAdmin never made."""
+
+    scenarios = [('default', dict())]
+    refuses = False
+
+    def runTest(self):
+        response = self._save_with_eloop()
+
+        self.assertEqual(response.status_code, 500)
+        # The raw strerror ("Too many levels of symbolic links") shares a
+        # substring with the refusal message, so assert on whole messages.
+        self.assertEqual(response.json['errormsg'],
+                         "Error: %s" % os.strerror(errno.ELOOP))

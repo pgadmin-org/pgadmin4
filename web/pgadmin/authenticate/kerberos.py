@@ -197,7 +197,8 @@ class KerberosAuthentication(BaseAuthentication):
                         retval = self.__auto_create_user(
                             str(negotiate.initiator_name))
                     elif isinstance(negotiate, Exception):
-                        flash(gettext(negotiate), MessageType.ERROR)
+                        flash(gettext("Kerberos authentication failed."),
+                              MessageType.ERROR)
                         retval = [status,
                                   Response(render_template(
                                       "security/login_user.html",
@@ -275,12 +276,16 @@ class KerberosAuthentication(BaseAuthentication):
                               "from auth source KERBEROS.")
                 current_app.logger.info(create_msg.format(username,
                                                           username))
-                return create_user({
+                status, msg = create_user({
                     'username': username,
                     'email': username,
                     'role': 2,
                     'active': True,
                     'auth_source': KERBEROS
                 })
+                if not status:
+                    return status, msg
 
+        # The caller needs the username to log the user in, including
+        # when the user has just been created.
         return True, {'username': username}

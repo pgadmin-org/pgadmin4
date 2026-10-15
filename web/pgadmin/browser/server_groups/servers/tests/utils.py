@@ -1,3 +1,4 @@
+import copy
 import os
 import json
 import sqlite3
@@ -8,6 +9,26 @@ from regression.python_test_utils import test_utils as utils
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 with open(CURRENT_PATH + "/servers_test_data.json") as data_file:
     test_cases = json.load(data_file)
+
+
+def restore_server_fixture_on_cleanup(test):
+    """Restore the shared server fixture once the test finishes.
+
+    The runner passes the same server dict from get_config_data() to
+    every test, so keys a test adds (such as shared, service or the SSH
+    tunnel settings) or changes in place would otherwise leak into
+    later tests. The dict is restored in place, which removes any keys
+    that were absent originally, and the restore is registered as a
+    cleanup so that it also runs when setUp fails part-way. Call it at
+    the start of setUp, before the fixture is changed.
+    """
+    original = copy.deepcopy(test.server)
+
+    def restore():
+        test.server.clear()
+        test.server.update(original)
+
+    test.addCleanup(restore)
 
 
 def create_server(server, SERVER_GROUP):

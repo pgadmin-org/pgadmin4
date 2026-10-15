@@ -49,8 +49,10 @@ let webpackShimConfig = {
     // imports to require(), so webpack picks the UMD file and then treats it
     // as ESM (because of "type": "module") — and module.exports never runs,
     // leaving the default export undefined. Point directly at the ESM bundle
-    // to bypass the broken main entry.
-    'react-checkbox-tree$': path.join(__dirname, 'node_modules/react-checkbox-tree/lib/index.esm.js'),
+    // to bypass the broken main entry. From 2.1.1 the ESM build is
+    // lib/index.js; lib/index.esm.js is a stale 2.0.2 build still shipped in
+    // the package, and bundling it leaves the whole app blank.
+    'react-checkbox-tree$': path.join(__dirname, 'node_modules/react-checkbox-tree/lib/index.js'),
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
 
@@ -131,6 +133,7 @@ let webpackShimConfig = {
     'pgadmin.node.schema': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema'),
     'pgadmin.node.schema.dir': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/static/js/'),
     'pgadmin.node.sequence': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence'),
+    'pgadmin.node.statistics': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/statistics/static/js/statistics'),
     'pgadmin.node.server': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/server'),
     'pgadmin.node.server_group': path.join(__dirname, './pgadmin/browser/server_groups/static/js/server_group'),
     'pgadmin.node.synonym': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym'),

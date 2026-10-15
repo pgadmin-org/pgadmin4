@@ -813,11 +813,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         # Parse privilege data
         if 'acl' in resp_data:
-            resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
-
-            # Check Revoke all for public
+            # Check Revoke all for public. This must look at the individual
+            # grantees, before parse_priv_to_db() merges them.
             resp_data['revoke_all'] = self._set_revoke_all(
                 resp_data['acl'])
+
+            resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
     def _get_schema_name_from_oid(self, resp_data):
         """

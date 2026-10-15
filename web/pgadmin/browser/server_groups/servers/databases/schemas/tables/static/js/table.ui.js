@@ -525,6 +525,10 @@ export default class TableSchema extends BaseUISchema {
     return this.inCatalog();
   }
 
+  isUnloggedUnsupported(state) {
+    return Boolean(state.is_partitioned) && this.getServerVersion() >= 180000;
+  }
+
   changeColumnOptions(columns) {
     let colOptions = (columns||[]).map(
       (c) => ({label: c.name, value: c.name, image:'icon-column'})
@@ -917,6 +921,15 @@ export default class TableSchema extends BaseUISchema {
       id: 'relpersistence', label: gettext('Unlogged?'), cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
       readonly: obj.inSchemaWithModelCheck,
+      deps: ['is_partitioned'],
+      // PostgreSQL 18 and later do not allow a partitioned table to be
+      // unlogged (its partitions still can be).
+      disabled: (state) => obj.isUnloggedUnsupported(state),
+      depChange: (state) => {
+        if (obj.isUnloggedUnsupported(state) && state.relpersistence) {
+          return {relpersistence: false};
+        }
+      },
       group: 'advanced',
     },{
       id: 'conname', label: gettext('Primary key'), cell: 'text',

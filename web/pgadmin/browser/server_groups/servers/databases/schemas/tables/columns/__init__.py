@@ -738,6 +738,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
             self._check_type(data, old_data)
             self._parse_acl_to_db_parsing(data, old_data)
+            column_utils.add_identity_sequence_state(
+                self.conn, data, old_data, template_path=self.template_path)
 
             sql = render_template(
                 "/".join([template_path, self._UPDATE_SQL]),

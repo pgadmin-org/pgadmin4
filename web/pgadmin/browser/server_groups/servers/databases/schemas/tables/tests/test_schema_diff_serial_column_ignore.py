@@ -9,7 +9,8 @@
 
 """Unit tests for SchemaDiffTableCompare's column comparison, verifying
 that a SERIAL/BIGSERIAL column's raw sequence OID ('defseqrelid') does not
-cause Schema Diff to report a false-positive difference (#10236).
+cause Schema Diff to report a false-positive difference (#10236), and
+that a comment present only on the target column is removed (#10549).
 """
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
@@ -39,6 +40,10 @@ class TestSchemaDiffSerialColumnIgnore(BaseTestGenerator):
          dict(test_method='test_differing_defseqrelid_not_flagged')),
         ('A genuinely different column is still flagged as different',
          dict(test_method='test_genuine_difference_still_flagged')),
+        ('A comment present only on the target column is removed',
+         dict(test_method='test_target_only_comment_is_removed')),
+        ('Columns with no comment on either side are not flagged',
+         dict(test_method='test_no_comment_on_either_side_not_flagged')),
     ]
 
     def runTest(self):
@@ -81,3 +86,36 @@ class TestSchemaDiffSerialColumnIgnore(BaseTestGenerator):
         self.assertEqual(len(updated), 1)
         self.assertEqual(updated[0]['name'], 'adl_id')
         self.assertEqual(added, [])
+
+    def test_target_only_comment_is_removed(self):
+        # A comment present only on the target column must be sent as an
+        # empty string rather than None, otherwise the column update
+        # template skips COMMENT ON COLUMN and the comment is never
+        # removed (#10549).
+        source = _make_bigserial_column(defseqrelid=1, description=None)
+        target_cols = [
+            _make_bigserial_column(defseqrelid=1, description='old comment')
+        ]
+
+        added = []
+        updated = []
+        SchemaDiffTableCompare.compare_target_cols(
+            source, target_cols, added, updated)
+
+        self.assertEqual(len(updated), 1)
+        self.assertEqual(updated[0]['description'], '')
+
+    def test_no_comment_on_either_side_not_flagged(self):
+        # With no comment on either side the column must not be reported
+        # as different.
+        source = _make_bigserial_column(defseqrelid=1, description=None)
+        target_cols = [_make_bigserial_column(defseqrelid=1,
+                                              description=None)]
+
+        added = []
+        updated = []
+        SchemaDiffTableCompare.compare_target_cols(
+            source, target_cols, added, updated)
+
+        self.assertEqual(updated, [])
+        self.assertEqual(target_cols, [])

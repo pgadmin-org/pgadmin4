@@ -1,3 +1,1 @@
-REVOKE ALL ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() FROM PUBLIC;
-
-REVOKE ALL ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() FROM enterprisedb;
+REVOKE ALL ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() FROM PUBLIC, enterprisedb;

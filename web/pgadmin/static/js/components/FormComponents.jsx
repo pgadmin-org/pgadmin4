@@ -186,10 +186,57 @@ FormInput.propTypes = {
   errorMessage: PropTypes.string
 };
 
+// Upper bound on the editor values remembered whilst waiting for them to come
+// back through the 'value' prop, so the list cannot grow without limit if the
+// parent does not pass them back.
+const MAX_PENDING_SQL_VALUES = 50;
+
 export function InputSQL({ value, options={}, onChange, className, controlProps, inputRef, ...props }) {
 
   const editor = useRef();
   const { autocompleteProvider, autocompleteOnKeyPress } = options;
+
+  // Values the editor has reported through onChange that the parent has not
+  // yet passed back as 'value'. SchemaView updates the value it hands to a
+  // field a render or two after the change, so when two keys are pressed
+  // almost together it can pass back the value from the first key whilst the
+  // editor already holds the second. Applying that older value replaces the
+  // whole document and moves the cursor to the start (#10357), so a value
+  // matching an entry in this list is treated as stale, and the editor's
+  // latest content is kept instead.
+  //
+  // Values come back in the order the editor reported them, although some
+  // may be skipped when several changes are handled in one render. The
+  // earliest match is used because an edit and its undo can report the same
+  // text twice (#10551): with [A, B, A] pending, matching the last A would
+  // drop B as well, and B coming back next would then replace the document.
+  // If values were skipped, matching early only leaves entries in the list
+  // that later changes clear, whilst the editor still shows its own content.
+  const pendingValues = useRef([]);
+  const currValue = value || '';
+  const pendingIdx = pendingValues.current.indexOf(currValue);
+  const editorValue = pendingIdx >= 0 ?
+    pendingValues.current[pendingValues.current.length - 1] : currValue;
+
+  useEffect(() => {
+    const pending = pendingValues.current;
+    const idx = pending.indexOf(currValue);
+    if (idx >= 0) {
+      // Everything up to this value has now come back from the parent.
+      pending.splice(0, idx + 1);
+    } else {
+      // A value the editor never produced (a reset, for example) replaces
+      // the editor content, so nothing is pending any more.
+      pending.length = 0;
+    }
+  }, [currValue]);
+
+  const onEditorChange = useCallback((changedValue, ...args) => {
+    const pending = pendingValues.current;
+    pending.push(changedValue);
+    if (pending.length > MAX_PENDING_SQL_VALUES) pending.shift();
+    onChange?.(changedValue, ...args);
+  }, [onChange]);
 
   return (
     <Root style={{height: '100%'}}>
@@ -201,12 +248,12 @@ export function InputSQL({ value, options={}, onChange, className, controlProps,
             editor.current.registerAutocomplete(autocompleteProvider);
           }
         }}
-        value={value || ''}
+        value={editorValue}
         options={{
           ..._.omit(options, ['autocompleteProvider', 'autocompleteOnKeyPress']),
         }}
         className={'Form-sql ' + className}
-        onChange={onChange}
+        onChange={onEditorChange}
         autocomplete={true}
         autocompleteOnKeyPress={autocompleteOnKeyPress}
         {...controlProps}

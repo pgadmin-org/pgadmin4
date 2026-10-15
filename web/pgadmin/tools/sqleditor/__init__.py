@@ -8,11 +8,12 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
+import codecs
 import os
 import pickle
 import re
 import secrets
-from urllib.parse import unquote
+from urllib.parse import quote as url_quote, unquote
 from threading import Lock
 from io import BytesIO
 import threading
@@ -989,6 +990,7 @@ def start_view_data(trans_id):
 
         can_edit = trans_obj.can_edit()
         can_filter = trans_obj.can_filter()
+        can_insert = can_edit and trans_obj.can_insert()
 
         # Store the primary keys to the session object
         session_obj['primary_keys'] = primary_keys
@@ -1013,6 +1015,7 @@ def start_view_data(trans_id):
         filter_applied = False
         can_edit = False
         can_filter = False
+        can_insert = False
         sql = None
 
     return make_json_response(
@@ -1020,7 +1023,8 @@ def start_view_data(trans_id):
             'status': status, 'result': result,
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
-            'can_filter': can_filter, 'sql': sql,
+            'can_filter': can_filter, 'can_insert': can_insert,
+            'sql': sql,
         }
     )
 
@@ -1152,7 +1156,8 @@ def poll(trans_id):
                 'transaction_status': transaction_status,
                 'explain_query_length':
                 get_explain_query_length(conn._Connection__async_cursor._query)
-                if conn._Connection__async_cursor else 0
+                if conn._Connection__async_cursor and
+                conn._Connection__async_cursor._query else 0
             }
             return internal_server_error(result, query_len_data)
         elif status == ASYNC_OK:
@@ -2181,35 +2186,121 @@ def start_query_download_tool(trans_id):
                 }
             )
 
+        # Output format: csv (default), json or xml.
+        data_format = (data.get('format') or 'csv').lower()
+        if data_format not in ('csv', 'json', 'xml'):
+            data_format = 'csv'
+
+        # Encoding and BOM apply to the CSV/text output only; the structured
+        # formats are always emitted as UTF-8.
+        if data_format == 'csv':
+            output_encoding = blueprint.csv_output_encoding.get() or 'utf-8'
+            add_bom = blueprint.csv_add_bom.get()
+        else:
+            output_encoding = 'utf-8'
+            add_bom = False
+        # Validate the (free-text, user-configurable) encoding up front so
+        # an invalid codec returns a clean 400 here, rather than raising a
+        # LookupError mid-stream after the 200 Response has been returned.
+        # Carry on with the codec's canonical name rather than the raw text:
+        # lookup() accepts aliases ('u8'), case and stray whitespace, and
+        # the BOM decisions and the charset header below need the real name.
+        try:
+            output_encoding = codecs.lookup(output_encoding).name
+        except LookupError:
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=gettext(
+                    "Unknown output encoding '{0}'."
+                ).format(output_encoding)
+            )
+
+        is_utf = output_encoding.startswith('utf')
+        # The 'utf-16' and 'utf-32' codecs (without an explicit endianness
+        # suffix) and 'utf-8-sig' emit their own BOM, so we must not
+        # hand-prepend one too; doing so would produce two BOMs and corrupt
+        # the output. The explicit-endian forms (utf-16-le/-be,
+        # utf-32-le/-be) and utf-8 do not self-emit a BOM, so for those we
+        # keep writing it ourselves.
+        codec_self_emits_bom = output_encoding in (
+            'utf-16', 'utf-32', 'utf-8-sig')
+
+        str_gen = gen(conn_obj,
+                      trans_obj,
+                      quote=blueprint.csv_quoting.get(),
+                      quote_char=blueprint.csv_quote_char.get(),
+                      field_separator=blueprint.csv_field_separator.get(),
+                      replace_nulls_with=blueprint.replace_nulls_with.get(),
+                      data_format=data_format)
+
+        # Encode incrementally rather than a chunk at a time. The codecs
+        # that emit their own BOM do so on every encode() call, so encoding
+        # each chunk on its own would put a BOM at the head of every chunk
+        # rather than once at the head of the file; an incremental encoder
+        # emits it once and then keeps going.
+        encoder = codecs.getincrementalencoder(output_encoding)(
+            errors='replace')
+
+        def encoded_gen(text_gen):
+            is_first_chunk = True
+            for chunk in text_gen:
+                if is_first_chunk:
+                    is_first_chunk = False
+                    # Only hand-prepend a BOM when the codec does not emit
+                    # one itself, otherwise we'd end up with two BOMs.
+                    if add_bom and is_utf and not codec_self_emits_bom:
+                        chunk = '\ufeff' + chunk
+                yield encoder.encode(chunk)
+
+            trailing = encoder.encode('', True)
+            if trailing:
+                yield trailing
+
+        if data_format == 'json':
+            base_mimetype = 'application/json'
+        elif data_format == 'xml':
+            base_mimetype = 'application/xml'
+        elif blueprint.csv_field_separator.get() == ',':
+            base_mimetype = 'text/csv'
+        else:
+            base_mimetype = 'text/plain'
+
         r = Response(
-            gen(conn_obj,
-                trans_obj,
-                quote=blueprint.csv_quoting.get(),
-                quote_char=blueprint.csv_quote_char.get(),
-                field_separator=blueprint.csv_field_separator.get(),
-                replace_nulls_with=blueprint.replace_nulls_with.get()),
-            mimetype='text/csv' if
-            blueprint.csv_field_separator.get() == ','
-            else 'text/plain'
+            encoded_gen(str_gen),
+            mimetype='{0}; charset={1}'.format(base_mimetype, output_encoding)
         )
 
         import time
-        extn = 'csv' if blueprint.csv_field_separator.get() == ',' else 'txt'
+        if data_format == 'csv':
+            extn = 'csv' if blueprint.csv_field_separator.get() == ',' \
+                else 'txt'
+        else:
+            extn = data_format
         filename = data['filename'] if data.get('filename', '') != "" else \
             '{0}.{1}'.format(int(time.time()), extn)
 
-        # We will try to encode report file name with latin-1
-        # If it fails then we will fallback to default ascii file name
-        # werkzeug only supports latin-1 encoding supported values
+        # Werkzeug will only put latin-1 in a header, so a name it cannot
+        # encode needs an ASCII stand-in. RFC 6266 lets us send the real name
+        # alongside it as filename*, so rather than losing the name entirely
+        # we offer both and let the client prefer the latter. The fallback
+        # follows the chosen format rather than always claiming to be a CSV.
+        ascii_filename = filename
         try:
-            tmp_file_name = filename
-            tmp_file_name.encode('latin-1', 'strict')
+            filename.encode('latin-1', 'strict')
         except UnicodeEncodeError:
-            filename = "download.csv"
+            ascii_filename = 'download.{0}'.format(extn)
 
-        r.headers[
-            "Content-Disposition"
-        ] = "attachment;filename={0}".format(filename)
+        # RFC 6266 requires the quoted form for anything with a space or a
+        # separator character in it, which a user supplied name can easily
+        # have.
+        disposition = 'attachment; filename="{0}"'.format(
+            ascii_filename.replace('\\', '\\\\').replace('"', '\\"'))
+        if ascii_filename != filename:
+            disposition += "; filename*=UTF-8''{0}".format(
+                url_quote(filename, safe=''))
+
+        r.headers["Content-Disposition"] = disposition
 
         return r
     except (ConnectionLost, SSHTunnelConnectionLost):

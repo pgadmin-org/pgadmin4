@@ -41,7 +41,6 @@ export default class RoleSchema extends BaseUISchema {
 
     this.isReadOnly = null;
     this.nodeInfo = this.fieldOptions.nodeInfo;
-    this.user = this.nodeInfo.server.user;
   }
 
   get idAttribute() {
@@ -53,6 +52,19 @@ export default class RoleSchema extends BaseUISchema {
     this.oid = state.oid;
     this.isReadOnly = !(user.is_superuser || user.can_create_role);
     return (!(user.is_superuser || user.can_create_role) && user.id != state.oid);
+  }
+
+  // A role that isn't a superuser or CREATEROLE holder can still manage
+  // this role's membership if they hold ADMIN OPTION on it, directly or
+  // through another role. The backend works that out (has_admin_option in
+  // the properties response) with the same query that gates the update,
+  // so it is not re-derived from the member list here.
+  isMemberAdmin(state) {
+    return Boolean(state?.has_admin_option);
+  }
+
+  membersReadOnly(state) {
+    return this.readOnly(state) && !this.isMemberAdmin(state);
   }
 
   memberDataFormatter(rawData) {
@@ -194,8 +206,8 @@ export default class RoleSchema extends BaseUISchema {
         mode: ['edit', 'create'], cell: 'text',
         type: 'collection',
         schema: obj.membershipSchema,
-        disabled: obj.readOnly,
-        canDelete: (state) => !obj.readOnly(state),
+        disabled: (state) => obj.membersReadOnly(state),
+        canDelete: (state) => !obj.membersReadOnly(state),
         canDeleteRow: true,
         helpMessage: obj.isReadOnly ? gettext('Select the checkbox for roles to include WITH ADMIN OPTION.') : gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.'),
       },

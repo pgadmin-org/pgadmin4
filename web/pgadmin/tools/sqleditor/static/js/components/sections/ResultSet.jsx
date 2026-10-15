@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState }  from 'react';
 import QueryToolDataGrid, { GRID_ROW_SELECT_KEY } from '../QueryToolDataGrid';
-import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS} from '../QueryToolConstants';
+import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS, DEFAULT_RESULT_DOWNLOAD_FORMAT} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -476,7 +476,8 @@ export class ResultSetUtils {
       });
   }
 
-  async saveResultsToFile(fileName, onProgress) {
+  async saveResultsToFile(fileName, onProgress, dataFormat=DEFAULT_RESULT_DOWNLOAD_FORMAT) {
+    const mimeTypes = {csv: 'text/csv', json: 'application/json', xml: 'application/xml'};
     try {
       await DownloadUtils.downloadFileStream({
         url: url_for('sqleditor.query_tool_download', {
@@ -484,8 +485,8 @@ export class ResultSetUtils {
         }),
         options: {
           method: 'POST',
-          body: JSON.stringify({filename: fileName, query_commited: this.hasQueryCommitted})
-        }}, fileName, 'text/csv', onProgress);
+          body: JSON.stringify({filename: fileName, query_commited: this.hasQueryCommitted, format: dataFormat})
+        }}, fileName, mimeTypes[dataFormat] ?? 'text/csv', onProgress);
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
     } catch (error) {
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
@@ -625,7 +626,8 @@ export class ResultSetUtils {
       'column_type_internal': columnTypeInternal,
       'pos': c.pos,
       'cell': cellType,
-      'can_edit': (c.name == 'oid') ? false : isEditable,
+      // Generated columns are computed by the server and can't be written.
+      'can_edit': (c.name == 'oid' || c.is_generated) ? false : isEditable,
       'not_null': c.not_null,
       'has_default_val': c.has_default_val,
       'is_array': arrayBracketIdx > -1 && arrayBracketIdx + 2 == columnTypeInternal.length,
@@ -764,6 +766,10 @@ export class ResultSetUtils {
       };
       data.primary_keys = (_.isEmpty(data.primary_keys) && data.has_oids) ? data.oids : data.primary_keys;
       data.can_edit = !_.isEmpty(data.primary_keys);
+      /* View Data on a view reports can_insert false: rows can be edited
+       and deleted through it, but not added. The Query Tool doesn't send
+       the flag, so it follows can_edit. */
+      data.can_insert = data.can_edit && data.can_insert !== false;
       let procColumns = this.processColumns(data);
       onResultsAvailable(data, procColumns, this.processRows(result, procColumns));
       this.setStartData(null);
@@ -1052,8 +1058,9 @@ export function ResultSet() {
       setLoaderText(null);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async ()=>{
-      let extension = queryToolCtx.preferences?.sqleditor?.csv_field_separator === ',' ? '.csv': '.txt';
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async (dataFormat=DEFAULT_RESULT_DOWNLOAD_FORMAT)=>{
+      const csvExtension = queryToolCtx.preferences?.sqleditor?.csv_field_separator === ',' ? '.csv': '.txt';
+      let extension = {csv: csvExtension, json: '.json', xml: '.xml'}[dataFormat] ?? csvExtension;
       let fileName = 'data-' + new Date().getTime() + extension;
       if(!queryToolCtx.params.is_query_tool) {
         fileName = queryToolCtx.params.node_name + extension;
@@ -1061,7 +1068,7 @@ export function ResultSet() {
       setLoaderText(gettext('Downloading results...'));
       await rsu.current.saveResultsToFile(fileName, (p)=>{
         setLoaderText(gettext('Downloading results(%s)...', p));
-      });
+      }, dataFormat);
       setLoaderText('');
     });
 
@@ -1309,13 +1316,19 @@ export function ResultSet() {
       }
 
       pageDataOutOfSync.current = true;
-      if(_.size(dataChangeStore.added)) {
-        // Update the rows in a grid after addition
+      // Update the rows in a grid after addition/update.
+      // row_added holds the refetched row for an INSERT, and for an UPDATE
+      // the recalculated values of any generated columns (it is null for
+      // an UPDATE of a table without generated columns).
+      if(_.size(dataChangeStore.added) || _.size(dataChangeStore.updated)) {
         respData.data.query_results.forEach((qr)=>{
           if(!_.isNull(qr.row_added)) {
             let rowClientPK = Object.keys(qr.row_added)[0];
             setRows((prevRows)=>{
               let rowIdx = prevRows.findIndex((r)=>rowKeyGetter(r)==rowClientPK);
+              if(rowIdx < 0) {
+                return prevRows;
+              }
               return [
                 ...prevRows.slice(0, rowIdx),
                 {
@@ -1468,6 +1481,9 @@ export function ResultSet() {
 
   useEffect(()=>{
     const triggerAddRows = (_rows, options)=>{
+      if(!queryData?.can_insert) {
+        return;
+      }
       let insPosn = 0;
       if(selectedRows.size > 0) {
         let selectedRowsSorted = Array.from(selectedRows);
@@ -1503,7 +1519,7 @@ export function ResultSet() {
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
-  }, [columns, selectedRows.size]);
+  }, [columns, selectedRows.size, queryData?.can_insert]);
 
   const gvColumnsSignature = React.useMemo(() => columns.map(c => c.key).join(','), [columns]);
 
@@ -1686,7 +1702,7 @@ export function ResultSet() {
       }
       {queryData && <>
         <ResultSetToolbar containerRef={containerRef} query={dataOutputQuery}
-          canEdit={queryData.can_edit} totalRowCount={queryData?.rows_affected}
+          canEdit={queryData.can_edit} canInsert={queryData.can_insert} totalRowCount={queryData?.rows_affected}
           pagination={queryData?.pagination ?? {}} allRowsSelect={allRowsSelect}
         />
         <Box flexGrow="1" minHeight="0">

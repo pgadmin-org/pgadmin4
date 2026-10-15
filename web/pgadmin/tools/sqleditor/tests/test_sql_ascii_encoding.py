@@ -52,6 +52,14 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
                 test_str='////4///3//2/1'
             )),
         (
+            'Test SQL_ASCII data with an escape below U+0100',
+            dict(
+                table_name='test_sql_ascii',
+                db_encoding='SQL_ASCII',
+                lc_collate='C',
+                test_str=r'\u0041 caf\u00e9'
+            )),
+        (
             'Test SQL_ASCII data with blob string',
             dict(
                 table_name='test_sql_ascii',
