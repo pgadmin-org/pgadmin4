@@ -195,7 +195,6 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode.bind(obj));
-      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */
@@ -1262,21 +1261,6 @@ define('pgadmin.browser', [
       await this.tree.refresh(nodeItem);
       this.tree.toggleItemLoader(nodeItem, false);
       opts?.success?.();
-    },
-
-    onLoadFailNode: function(_nodeData) {
-      let self = this,
-        isSelected = self.tree.isSelected(_nodeData);
-
-      /** Check if master password set **/
-      self.check_master_password((is_set)=>{
-        if(!is_set) {
-          self.set_master_password('', ()=>{
-            if(isSelected) { self.tree.select(_nodeData); }
-            self.tree.open(_nodeData);
-          });
-        }
-      });
     },
 
     removeChildTreeNodesById: function(_parentNode, _collType, _childIds) {
