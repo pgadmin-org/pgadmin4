@@ -202,11 +202,13 @@ describe('MainToolBar toolbar options restore', () => {
     act(() => {
       eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false, auto_rollback: true});
     });
-    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(1));
     await waitFor(() => expectGated(true));
 
-    // Still disabled until every option has reached the server.
+    // Still disabled until every option has reached the server, and the
+    // options are sent one at a time.
     await act(async () => { resolvers[0]({data: {}}); });
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(2));
     expectGated(true);
 
     await act(async () => { resolvers[1]({data: {}}); });
@@ -325,5 +327,117 @@ describe('MainToolBar toolbar options restore', () => {
       }));
     });
     expect(queryToolCtx.api.post).not.toHaveBeenCalled();
+  });
+});
+
+describe('MainToolBar execute options menu', () => {
+  let eventBus, queryToolCtx;
+  const ThemedMainToolBar = withTheme(MainToolBar);
+
+  const renderToolBar = () => {
+    const containerRef = React.createRef();
+    return render(
+      <QueryToolContext.Provider value={queryToolCtx}>
+        <QueryToolConnectionContext.Provider value={{connected: true, obtainingConn: false, connectionStatus: null}}>
+          <QueryToolEventsContext.Provider value={eventBus}>
+            <div ref={containerRef}>
+              <ThemedMainToolBar containerRef={containerRef} onFilterClick={()=>{/* noop */}}
+                onManageMacros={()=>{/* noop */}} onAddToMacros={()=>{/* noop */}} />
+            </div>
+          </QueryToolEventsContext.Provider>
+        </QueryToolConnectionContext.Provider>
+      </QueryToolContext.Provider>
+    );
+  };
+
+  const menuItem = (label) => document.querySelector(`li[data-label="${label}"]`);
+
+  const openMenuAndClick = async (label) => {
+    if(!menuItem(label)) {
+      await act(async () => {
+        fireDomEvent.click(document.querySelector('button[data-label="Execute options"]'));
+      });
+      await waitFor(() => expect(menuItem(label)).not.toBeNull());
+    }
+    await act(async () => { fireDomEvent.click(menuItem(label)); });
+  };
+
+  beforeEach(() => {
+    eventBus = new EventBus();
+    queryToolCtx = {
+      params: {trans_id: 1234, is_query_tool: true, macros: []},
+      preferences: {sqleditor: {...sqleditorPrefs}, editor: {}},
+      api: {post: jest.fn(() => Promise.resolve({data: {data: {status: true}}}))},
+      modal: {},
+      toolbarOptionsRef: {current: null},
+      updateServerCursor: jest.fn(),
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('sends a changed execute option to the server', async () => {
+    renderToolBar();
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    await openMenuAndClick('Use server cursor?');
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.server_cursor/1234', 'true'));
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current.server_cursor).toBe(true));
+    expect(queryToolCtx.updateServerCursor).toHaveBeenLastCalledWith({server_cursor: true});
+  });
+
+  it('reverts an execute option when the request fails', async () => {
+    queryToolCtx.api.post = jest.fn(() => Promise.reject(new Error('failed')));
+    const fireEvent = jest.spyOn(eventBus, 'fireEvent');
+    renderToolBar();
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    await openMenuAndClick('Use server cursor?');
+    await waitFor(() => {
+      expect(fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, expect.any(Error), {checkTransaction: true});
+    });
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current.server_cursor).toBe(false));
+    expect(queryToolCtx.updateServerCursor).toHaveBeenLastCalledWith({server_cursor: false});
+    expect(menuItem('Use server cursor?')).toHaveAttribute('data-checked', 'false');
+    fireEvent.mockRestore();
+  });
+
+  it('reverts an execute option when the server returns status false', async () => {
+    queryToolCtx.api.post = jest.fn(() => Promise.resolve({data: {data: {status: false, result: 'Not connected'}}}));
+    const fireEvent = jest.spyOn(eventBus, 'fireEvent');
+    renderToolBar();
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    await openMenuAndClick('Auto commit?');
+    await waitFor(() => {
+      expect(fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.HANDLE_API_ERROR,
+        expect.objectContaining({message: 'Not connected'}), {checkTransaction: true});
+    });
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(true));
+    fireEvent.mockRestore();
+  });
+
+  it('disables the execute options whilst a change is being sent', async () => {
+    let resolvePost;
+    queryToolCtx.api.post = jest.fn(() => new Promise((resolve) => { resolvePost = resolve; }));
+    renderToolBar();
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    await openMenuAndClick('Auto commit?');
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(1));
+    ['Auto commit?', 'Auto rollback on error?', 'Use server cursor?'].forEach((label) => {
+      expect(menuItem(label)).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    // A click whilst the request is in flight is ignored.
+    await act(async () => { fireDomEvent.click(menuItem('Auto rollback on error?')); });
+    expect(queryToolCtx.api.post).toHaveBeenCalledTimes(1);
+
+    await act(async () => { resolvePost({data: {data: {status: true}}}); });
+    await waitFor(() => expect(menuItem('Auto rollback on error?')).not.toHaveAttribute('aria-disabled', 'true'));
+    expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(false);
+    expect(queryToolCtx.toolbarOptionsRef.current.auto_rollback).toBe(false);
   });
 });
