@@ -523,6 +523,21 @@ def _connect(conn, **kwargs):
     return status, msg, is_ask_password, user, role, password
 
 
+def _has_custom_credentials(manager, **kwargs):
+    """
+    Check whether the connection is being made with credentials that differ
+    from the server's own user, role and stored password.
+    :param manager: Server connection manager.
+    :param kwargs: user, role and password data from user.
+    :return: True if custom credentials were supplied.
+    """
+    user = kwargs.get('user')
+    role = kwargs.get('role')
+    return bool(kwargs.get('password') or
+                (user and user != manager.user) or
+                (role and role != manager.role))
+
+
 def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     # Create asynchronous connection using random connection id.
     conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else str(
@@ -603,7 +618,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                     return True, internal_server_error(
                         errormsg=str(msg)), '', ''
 
-            if pref.preference('autocomplete_on_key_press').get():
+            # The autocomplete connection is normally opened lazily on the
+            # first request, but that can only use the server's own user,
+            # role and stored password. If the user supplied different
+            # credentials, open it now whilst they are still available,
+            # otherwise autocomplete would run as the wrong user, or fail.
+            if pref.preference('autocomplete_on_key_press').get() or \
+                    _has_custom_credentials(manager, **kwargs):
                 conn_ac = manager.connection(conn_id=conn_id_ac,
                                              auto_reconnect=False,
                                              use_binary_placeholder=True,
@@ -633,6 +654,11 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
 
     # Set the value of database name, that will be used later
     command_obj.dbname = dbname if dbname else None
+    # Remember the login (never the password) chosen for this connection, so
+    # a lost autocomplete connection is reopened as the same user and role
+    # rather than the server's defaults.
+    command_obj.conn_user = kwargs.get('user')
+    command_obj.conn_role = kwargs.get('role')
     # Use pickle to store the command object which will be used
     # later by the sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -893,7 +919,12 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        conn.connect()
+        if auto_comp and getattr(trans_obj, 'conn_user', None):
+            conn.connect(user=trans_obj.conn_user,
+                         role=getattr(trans_obj, 'conn_role', None),
+                         password=None)
+        else:
+            conn.connect()
 
     return True, None, conn, trans_obj, session_obj
 
