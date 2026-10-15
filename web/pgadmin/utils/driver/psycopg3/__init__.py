@@ -457,6 +457,7 @@ class Driver(BaseDriver):
                                                                ServerManager)
                 ]:
                     mgr.release()
+                self.run_session_gc_callbacks(sess)
 
     def gc_own(self):
         """

@@ -47,6 +47,7 @@ from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, service_unavailable, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.driver.abstract import BaseDriver
 from pgadmin.utils.crypto import encrypt
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
@@ -98,6 +99,20 @@ def _auto_complete_key(trans_id):
     connection_manager() in the driver), so the cache is scoped the same way.
     """
     return session.sid, int(trans_id)
+
+
+def _release_session_auto_complete(session_id):
+    """
+    Drop every SQLAutoComplete object belonging to the given session. Called
+    by the driver when it releases the connections of a session that has
+    expired without logging out, as their connections are no longer usable.
+    """
+    for key in [k for k in list(auto_complete_objects)
+                if k[0] == session_id]:
+        auto_complete_objects.pop(key, None)
+
+
+BaseDriver.register_session_gc_callback(_release_session_auto_complete)
 
 
 class SqlEditorModule(PgAdminModule):
