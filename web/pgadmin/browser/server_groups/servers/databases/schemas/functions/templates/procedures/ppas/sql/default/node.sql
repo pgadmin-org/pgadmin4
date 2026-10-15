@@ -1,41 +1,9 @@
-{% if schema_diff %}
-{#
- # PostgreSQL identifies a procedure by its name and its input (IN, INOUT
- # and VARIADIC) argument types only, so Schema Diff must leave any OUT
- # arguments (allowed from PostgreSQL 14) out of the name it uses to match
- # source and target procedures. Otherwise a procedure whose OUT arguments
- # differ is reported as an unrelated Source Only/Target Only pair, rather
- # than as one changed procedure that has to be dropped and recreated.
- #}
-{% set identity_args %}CASE WHEN 'o' = ANY(pr.proargmodes) THEN COALESCE((
-        SELECT pg_catalog.string_agg(
-            CASE arg.mode
-                WHEN 'i' THEN 'IN '
-                WHEN 'b' THEN 'INOUT '
-                WHEN 'v' THEN 'VARIADIC '
-                ELSE ''
-            END ||
-            CASE WHEN COALESCE(arg.name, '') <> ''
-                THEN pg_catalog.quote_ident(arg.name) || ' '
-                ELSE ''
-            END ||
-            pg_catalog.format_type(arg.type, NULL), ', ' ORDER BY arg.ord)
-        FROM ROWS FROM (
-            pg_catalog.unnest(pr.proallargtypes),
-            pg_catalog.unnest(pr.proargmodes),
-            pg_catalog.unnest(pr.proargnames)
-        ) WITH ORDINALITY AS arg(type, mode, name, ord)
-        WHERE arg.mode NOT IN ('o', 't')
-    ), '') ELSE pg_catalog.pg_get_function_identity_arguments(pr.oid) END{% endset %}
-{% else %}
-{% set identity_args = 'pg_catalog.pg_get_function_identity_arguments(pr.oid)' %}
-{% endif %}
 SELECT
     pr.oid,
     CASE WHEN
-        {{ identity_args }} <> ''
+        ia.args <> ''
     THEN
-        pr.proname || '(' || {{ identity_args }} || ')'
+        pr.proname || '(' || ia.args || ')'
     ELSE
         pr.proname::text
     END AS name,
@@ -46,6 +14,42 @@ JOIN
     pg_catalog.pg_type typ ON typ.oid=prorettype
 JOIN
     pg_catalog.pg_language lng ON lng.oid=prolang
+CROSS JOIN LATERAL (
+    SELECT
+{% if schema_diff %}
+{#
+ # PostgreSQL identifies a procedure by its name and its input (IN, INOUT
+ # and VARIADIC) argument types only, so Schema Diff must leave any OUT
+ # arguments (allowed from PostgreSQL 14) out of the name it uses to match
+ # source and target procedures. Otherwise a procedure whose OUT arguments
+ # differ is reported as an unrelated Source Only/Target Only pair, rather
+ # than as one changed procedure that has to be dropped and recreated.
+ #}
+        CASE WHEN 'o' = ANY(pr.proargmodes) THEN COALESCE((
+            SELECT pg_catalog.string_agg(
+                CASE arg.mode
+                    WHEN 'i' THEN 'IN '
+                    WHEN 'b' THEN 'INOUT '
+                    WHEN 'v' THEN 'VARIADIC '
+                    ELSE ''
+                END ||
+                CASE WHEN COALESCE(arg.name, '') <> ''
+                    THEN pg_catalog.quote_ident(arg.name) || ' '
+                    ELSE ''
+                END ||
+                pg_catalog.format_type(arg.type, NULL), ', ' ORDER BY arg.ord)
+            FROM ROWS FROM (
+                pg_catalog.unnest(pr.proallargtypes),
+                pg_catalog.unnest(pr.proargmodes),
+                pg_catalog.unnest(pr.proargnames)
+            ) WITH ORDINALITY AS arg(type, mode, name, ord)
+            WHERE arg.mode NOT IN ('o', 't')
+        ), '') ELSE pg_catalog.pg_get_function_identity_arguments(pr.oid) END
+{% else %}
+        pg_catalog.pg_get_function_identity_arguments(pr.oid)
+{% endif %}
+        AS args
+) ia
 LEFT OUTER JOIN
     pg_catalog.pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass)
 WHERE
