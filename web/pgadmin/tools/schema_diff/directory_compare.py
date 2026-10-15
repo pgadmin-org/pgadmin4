@@ -383,8 +383,12 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     view_object.conn, source_object_id, where=None,
                     show_system_objects=None, is_schema_diff=True)
                 target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
+                # The source object's parameters let a node that cannot
+                # alter the target in place (e.g. a function whose return
+                # type differs) drop it and recreate it from the source.
                 temp_tgt_params.update(
-                    {'data': diff_dict, 'target_schema': target_schema})
+                    {'data': diff_dict, 'target_schema': target_schema,
+                     'source_params': temp_src_params})
                 diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
 
             title = key

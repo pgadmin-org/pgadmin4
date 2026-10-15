@@ -1686,6 +1686,18 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
+            source_params = kwargs.get('source_params', None)
+            if source_params and self._diff_needs_recreate(data):
+                # CREATE OR REPLACE cannot change the return type or
+                # the OUT arguments of an existing function, so drop the
+                # target function and create it afresh from the source.
+                drop_fun_sql = self.delete(gid=gid, sid=sid, did=did,
+                                           scid=scid, fnid=oid, only_sql=True)
+                create_params = dict(source_params)
+                create_params['target_schema'] = target_schema
+                create_sql = self.get_sql_from_diff(**create_params)
+                return drop_fun_sql + '\n' + create_sql
+
             if target_schema:
                 data['schema'] = target_schema
             _, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
@@ -1719,6 +1731,32 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)
         return sql
+
+    @staticmethod
+    def _diff_needs_recreate(data):
+        """
+        Check whether a Schema Diff difference can only be applied by
+        dropping and recreating the function, i.e. whether its return type
+        or OUT arguments differ. Schema Diff matches functions on their
+        input arguments, so any argument added or deleted, or any changed
+        argument that is an OUT argument in the source, is a change to the
+        OUT arguments.
+
+        :param data: Difference between the source and target function
+        :return: True if the function must be dropped and recreated
+        """
+        if 'prorettypename' in data:
+            return True
+
+        arguments = data.get('arguments')
+        if not isinstance(arguments, dict):
+            return False
+
+        if arguments.get('added') or arguments.get('deleted'):
+            return True
+
+        return any(arg.get('argmode') == 'OUT'
+                   for arg in arguments.get('changed', []))
 
     def reformat_prosrc_code(self, data):
         """
