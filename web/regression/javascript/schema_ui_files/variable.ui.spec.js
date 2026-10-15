@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import { screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
@@ -112,8 +112,16 @@ describe('VariableSchema', ()=>{
     )?.value;
     /* Allow for slow CI runners re-rendering the grid row. */
     const waitOpts = {timeout: 5000};
+    /* Open a react-select from the keyboard; a mouse click relies on
+    focus timing that is unreliable on slow runners. */
+    const openSelect = async (input)=>{
+      await act(async ()=>{
+        fireEvent.focus(input);
+        fireEvent.keyDown(input, {key: 'ArrowDown', keyCode: 40});
+      });
+    };
     const pickName = async (label)=>{
-      await user.click(rowSelects()[0]);
+      await openSelect(rowSelects()[0]);
       await user.click(await screen.findByText(label, {}, waitOpts));
       await waitFor(()=>{
         expect(hiddenVal('name')).toBe(label);
@@ -124,12 +132,14 @@ describe('VariableSchema', ()=>{
 
     await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0), waitOpts);
     await pickName('sslmode');
-    await user.click(rowSelects()[1]);
+    await openSelect(rowSelects()[1]);
     expect(await screen.findByText('require', {}, waitOpts)).toBeInTheDocument();
-    await user.keyboard('{Escape}');
+    await act(async ()=>{
+      fireEvent.keyDown(rowSelects()[1], {key: 'Escape', keyCode: 27});
+    });
 
     await pickName('sslnegotiation');
-    await user.click(rowSelects()[1]);
+    await openSelect(rowSelects()[1]);
     expect(await screen.findByText('direct', {}, waitOpts)).toBeInTheDocument();
     expect(screen.queryByText('require')).not.toBeInTheDocument();
   }, 30000);
