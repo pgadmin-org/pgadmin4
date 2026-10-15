@@ -84,7 +84,20 @@ MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
 sqleditor_close_session_lock = Lock()
+# SQLAutoComplete objects, keyed by _auto_complete_key(). Each one holds a
+# live connection belonging to the session that created it, so the key must
+# include the session as well as the client-chosen transaction id; otherwise
+# another session using the same id would be given someone else's connection.
 auto_complete_objects = dict()
+
+
+def _auto_complete_key(trans_id):
+    """
+    Return the key for the current session's SQLAutoComplete object for the
+    given transaction id. Connection managers are held per session (see
+    connection_manager() in the driver), so the cache is scoped the same way.
+    """
+    return session.sid, int(trans_id)
 
 
 class SqlEditorModule(PgAdminModule):
@@ -760,9 +773,8 @@ def close(trans_id):
         trans_id: unique transaction id
     """
     with sqleditor_close_session_lock:
-        # delete the SQLAutoComplete object
-        if trans_id in auto_complete_objects:
-            del auto_complete_objects[trans_id]
+        # delete this session's SQLAutoComplete object
+        auto_complete_objects.pop(_auto_complete_key(trans_id), None)
 
         if 'gridData' not in session:
             return make_json_response(data={'status': True})
@@ -829,6 +841,10 @@ def close_sqleditor_session(trans_id):
     :param trans_id: Transaction id
     :return:
     """
+    # Drop this session's autocomplete object, which holds the autocomplete
+    # connection about to be released.
+    auto_complete_objects.pop(_auto_complete_key(trans_id), None)
+
     if 'gridData' in session and str(trans_id) in session['gridData']:
         cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
         # Use pickle.loads function to get the command object
@@ -2137,14 +2153,18 @@ def auto_complete(trans_id):
             trans_obj is not None and session_obj is not None:
 
         with sqleditor_close_session_lock:
-            if trans_id not in auto_complete_objects:
+            ac_key = _auto_complete_key(trans_id)
+            auto_complete_obj = auto_complete_objects.get(ac_key)
+            # Only reuse the cached object if it was built on the very
+            # connection that this session's transaction uses now.
+            if auto_complete_obj is None or auto_complete_obj.conn is not conn:
                 # Create object of SQLAutoComplete class and pass
                 # connection object
-                auto_complete_objects[trans_id] = \
+                auto_complete_obj = \
                     SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
                                     conn=conn)
+                auto_complete_objects[ac_key] = auto_complete_obj
 
-            auto_complete_obj = auto_complete_objects[trans_id]
             # # Get the auto completion suggestions.
             res = auto_complete_obj.get_completions(full_sql,
                                                     text_before_cursor)
