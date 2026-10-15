@@ -405,8 +405,11 @@ function setupWindowGuards(win) {
   // could open or navigate to other sites with the preload attached.
   contents.on('did-create-window', (childWindow, {url, frameName})=>{
     const openDocsInBrowser = configStore.get('openDocsInBrowser', true);
-    if (classifyWindowOpen({url, frameName}, baseUrl, openDocsInBrowser) === 'app') {
+    const target = classifyWindowOpen({url, frameName}, baseUrl, openDocsInBrowser);
+    if (target === 'app') {
       setupWindowGuards(childWindow);
+    } else if (target === 'isolated') {
+      setupIsolatedWindowGuards(childWindow);
     }
   });
 
@@ -427,6 +430,22 @@ function setupWindowGuards(win) {
   };
   contents.on('will-frame-navigate', guardNavigation);
   contents.on('will-redirect', guardNavigation);
+}
+
+// Windows showing third party pages in-app (the Google sign-in flow, or the
+// online documentation) must not open further in-app windows; links that try
+// to are sent to the default browser instead. Navigation within the window is
+// left alone, as the Google sign-in flow moves between Google's own hosts
+// before finally redirecting back to the local pgAdmin server.
+function setupIsolatedWindowGuards(win) {
+  win.webContents.setWindowOpenHandler(({url})=>{
+    if (isExternalUrl(url)) {
+      shell.openExternal(url);
+    } else {
+      misc.writeServerLog(`Refused to open a window for ${url}`);
+    }
+    return { action: 'deny' };
+  });
 }
 
 // This function is used to hide the splash screen and create/launch

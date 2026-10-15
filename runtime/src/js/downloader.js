@@ -91,9 +91,12 @@ async function fileDownloadPath(callerWindow, options, prompt=true) {
     return filePath ?? undefined;
   }
 
+  // The page only gets to suggest a file name; the dialog always starts in
+  // the downloads directory.
   const result = await dialog.showSaveDialog(callerWindow, {
     title: 'Save File',
     ...options,
+    defaultPath: defaultDownloadPath(app.getPath('downloads'), options?.defaultPath) ?? undefined,
   });
 
   if (result.canceled) {
