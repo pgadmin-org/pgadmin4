@@ -559,10 +559,12 @@ define('pgadmin.node.database', [
               } catch (e) {
                 console.warn(e.stack || e);
               }
+              t.setLabel(i, {label});
               t.unload(i);
             }
           }).catch(function(error) {
             pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+            t.setLabel(i, {label});
             t.unload(i);
           });
         };
