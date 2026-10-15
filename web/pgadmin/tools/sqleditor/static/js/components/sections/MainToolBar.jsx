@@ -124,9 +124,13 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   }, []);
   /* Kept separate from buttonsDisabled, which the execution events set
      directly, so that nothing else can enable these buttons early and the
-     gate always lifts once the requests have settled. */
+     gate always lifts once the requests have settled. Pending options count
+     only once connected, as they are sent in the effect after that render;
+     before then Execute is what re-makes a failed connection. */
+  const execOptionsGated = applyingExecOptions > 0
+    || (!_.isEmpty(pendingExecOptions) && Boolean(queryToolConnCtx.connected));
   const isButtonDisabled = (name)=>(buttonsDisabled[name]
-    || (applyingExecOptions > 0 && BUTTONS_GATED_BY_EXEC_OPTIONS.includes(name)));
+    || (execOptionsGated && BUTTONS_GATED_BY_EXEC_OPTIONS.includes(name)));
 
   const executeCursor = useCallback(()=>{
     if(!queryToolCtx.preferences.sqleditor.underline_query_cursor && queryToolCtx.preferences.sqleditor.underlined_query_execute_warning){
@@ -412,6 +416,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'ROLLBACK;', {external: true});
   };
   const executeMacro = (m)=>{
+    /* Macros run through the same transaction, so they must wait for the
+       restored execute options too. */
+    if(execOptionsGated) return;
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, null, m.sql);
   };
   const onLimitChange=(e)=>{
@@ -686,7 +693,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Macros')} icon={
             <><FormatListNumberedRoundedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
-          disabled={!queryToolCtx.params.is_query_tool} name="menu-macros" ref={macrosMenuRef} onClick={toggleMenu} />
+          disabled={!queryToolCtx.params.is_query_tool || execOptionsGated} name="menu-macros" ref={macrosMenuRef} onClick={toggleMenu} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />

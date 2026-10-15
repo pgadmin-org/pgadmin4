@@ -151,6 +151,8 @@ describe('MainToolBar toolbar options restore', () => {
     expect(queryToolCtx.updateServerCursor).toHaveBeenCalledWith({server_cursor: true});
     // Nothing can be sent to the server until the transaction exists.
     expect(queryToolCtx.api.post).not.toHaveBeenCalled();
+    // Execution must stay possible, as it is what re-makes a failed connection.
+    expectGated(false);
 
     setConnected(true);
     await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(2));
@@ -234,6 +236,36 @@ describe('MainToolBar toolbar options restore', () => {
     await waitFor(() => expectGated(false));
     await act(async () => { fireDomEvent.keyDown(container.firstChild, {keyCode: 116}); });
     await waitFor(() => expect(triggered).toHaveBeenCalledTimes(1));
+  });
+
+  it('ignores macros until restored execute options are applied', async () => {
+    let resolvePost;
+    queryToolCtx.api.post = jest.fn(() => new Promise((resolve) => { resolvePost = resolve; }));
+    // F6
+    queryToolCtx.params.macros = [{
+      id: 1, name: 'Test macro', sql: 'SELECT 1;',
+      alt: false, shift: false, control: false, key: 'F6', key_code: 117,
+    }];
+    const triggered = jest.fn();
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, triggered);
+    const {container} = renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+    const macrosButton = () => document.querySelector('button[data-label="Macros"]');
+    expect(macrosButton()).toBeEnabled();
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false});
+    });
+    await waitFor(() => expectGated(true));
+    expect(macrosButton()).toBeDisabled();
+    await act(async () => { fireDomEvent.keyDown(container.firstChild, {keyCode: 117}); });
+    expect(triggered).not.toHaveBeenCalled();
+
+    await act(async () => { resolvePost({data: {}}); });
+    await waitFor(() => expectGated(false));
+    expect(macrosButton()).toBeEnabled();
+    await act(async () => { fireDomEvent.keyDown(container.firstChild, {keyCode: 117}); });
+    await waitFor(() => expect(triggered).toHaveBeenCalledWith(null, 'SELECT 1;'));
   });
 
   it('enables execution again when a restored execute option fails', async () => {
