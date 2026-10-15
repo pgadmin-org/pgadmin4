@@ -20,8 +20,9 @@ from unittest.mock import patch, MagicMock
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils import str_to_bool
+import pgadmin.tools.sqleditor as sqleditor
 from pgadmin.tools.sqleditor import _persist_saved_password, \
-    _password_is_valid
+    _password_is_valid, _clear_saved_password
 
 
 class _NoServerSetupMixin:
@@ -120,3 +121,86 @@ class TestStrToBool(_NoServerSetupMixin, BaseTestGenerator):
             self.assertTrue(str_to_bool(truthy), msg=repr(truthy))
         for falsy in (False, 0, '0', 'false', 'False', '', None):
             self.assertFalse(str_to_bool(falsy), msg=repr(falsy))
+
+
+class TestClearSavedPasswordOwner(_NoServerSetupMixin, BaseTestGenerator):
+    """An explicit opt-out clears the owned Server row's saved password."""
+
+    def runTest(self):
+        server = MagicMock(shared=False, user_id=1, save_password=1,
+                           password=b'old')
+
+        with patch('pgadmin.model.db') as mock_db, \
+                patch('pgadmin.browser.server_groups.servers.ServerModule'):
+            _clear_saved_password(server)
+
+            self.assertEqual(server.save_password, 0)
+            self.assertIsNone(server.password)
+            mock_db.session.commit.assert_called_once()
+
+
+class TestClearSavedPasswordSharedNonOwner(
+        _NoServerSetupMixin, BaseTestGenerator):
+    """A non-owner's opt-out clears their SharedServer row and leaves the
+    owner's Server row untouched."""
+
+    def runTest(self):
+        owner_server = MagicMock(shared=True, user_id=1, servergroup_id=7,
+                                 save_password=1, password=b'owner-enc')
+        shared_server = MagicMock(save_password=1, password=b'shared-enc')
+        servers_mod = 'pgadmin.browser.server_groups.servers'
+
+        with patch('pgadmin.model.db') as mock_db:
+            with patch(f'{servers_mod}.ServerModule') as mock_mod:
+                with patch(f'{servers_mod}.current_user') as mock_user:
+                    mock_user.id = 2
+                    mock_mod.get_shared_server.return_value = shared_server
+
+                    _clear_saved_password(owner_server)
+
+                    self.assertEqual(shared_server.save_password, 0)
+                    self.assertIsNone(shared_server.password)
+                    self.assertEqual(owner_server.save_password, 1)
+                    self.assertEqual(owner_server.password, b'owner-enc')
+                    mock_db.session.commit.assert_called_once()
+
+
+class TestCachePasswordSaveFlagHandling(
+        _NoServerSetupMixin, BaseTestGenerator):
+    """save_password=false clears a saved password, save_password=true
+    persists the new one, and a request that omits the field must leave a
+    saved password alone."""
+
+    scenarios = [
+        ('Explicit false clears the saved password', dict(
+            form={'password': 'pw', 'save_password': 'false'},
+            expect_persist=False, expect_clear=True)),
+        ('Explicit true persists the password', dict(
+            form={'password': 'pw', 'save_password': 'true'},
+            expect_persist=True, expect_clear=False)),
+        ('Missing field leaves the saved password alone', dict(
+            form={'password': 'pw'},
+            expect_persist=False, expect_clear=False)),
+    ]
+
+    def runTest(self):
+        manager = MagicMock()
+        server = MagicMock()
+        mock_request = MagicMock()
+        mock_request.form = self.form
+
+        with patch.object(sqleditor, 'request', mock_request), \
+                patch.object(sqleditor, 'current_app', MagicMock()), \
+                patch.object(sqleditor, 'ALLOW_SAVE_PASSWORD', True), \
+                patch.object(sqleditor, 'get_crypt_key',
+                             return_value=(True, 'key')), \
+                patch.object(sqleditor, '_password_is_valid',
+                             return_value=True), \
+                patch.object(sqleditor,
+                             '_persist_saved_password') as persist, \
+                patch.object(sqleditor,
+                             '_clear_saved_password') as clear:
+            sqleditor._cache_manager_password_from_request(manager, server)
+
+        self.assertEqual(persist.called, self.expect_persist)
+        self.assertEqual(clear.called, self.expect_clear)
