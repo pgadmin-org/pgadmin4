@@ -68,13 +68,22 @@ class ViewsGetMsqlTestCase(BaseTestGenerator):
         schema node."""
 
         if self.is_positive_test:
-            url_encode_data = {"oid": self.view_id,
-                               "comment": self.data['comment']}
+            url_encode_data = {"oid": self.view_id}
+            for key in ('comment', 'definition'):
+                if key in self.data:
+                    url_encode_data[key] = self.data[key]
 
             response = views_utils.api_get_msql(self, url_encode_data)
 
             # Assert response
             utils.assert_status_code(self, response)
+
+            result = self.expected_data.get('test_result_data', {})
+            sql = json.loads(response.data.decode('utf-8'))['data']
+            if 'sql_contains' in result:
+                self.assertIn(result['sql_contains'], sql)
+            if 'sql_not_contains' in result:
+                self.assertNotIn(result['sql_not_contains'], sql)
         else:
             if 'view_id' in self.data:
                 # Non-existing view id

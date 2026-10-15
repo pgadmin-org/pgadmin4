@@ -14,6 +14,22 @@ import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 import { getPrivilegesForTableAndLikeObjects } from '../../../tables/static/js/table.ui';
 
+/*
+ * Normalise a view definition so that only changes that can affect the
+ * view's columns are noticed. Whitespace is removed, and everything outside
+ * quoted identifiers and string literals is lower-cased, because SQL keywords,
+ * function names, type names and unquoted identifiers are case-insensitive;
+ * this stops a pure reformat (for example with the SQL formatter, which can
+ * change keyword, function and data type case) from looking like a change to
+ * the column list.
+ */
+export function normaliseViewDefinition(definition) {
+  return (definition ?? '').split(
+    /("(?:[^"]|"")*"|'(?:[^']|'')*')/
+  ).map(
+    (part, i) => (i % 2 == 0 ? part.toLowerCase() : part)
+  ).join('').replace(/\s/g, '');
+}
 
 export default class ViewSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues={}) {
@@ -147,15 +163,13 @@ export default class ViewSchema extends BaseUISchema {
           return false;
         }
 
-        let old_def = obj.origData.definition?.replace(
-            /\s/gi, ''
-          ).split('FROM'),
+        let old_def = normaliseViewDefinition(
+            obj.origData.definition
+          ).split('from'),
           new_def = [];
 
         if (!_.isUndefined(state.definition)) {
-          new_def = state.definition.replace(
-            /\s/gi, ''
-          ).split('FROM');
+          new_def = normaliseViewDefinition(state.definition).split('from');
         }
 
         if ((old_def.length != new_def.length) || (
