@@ -161,8 +161,11 @@ export function useKeepFocusInModal(isModalOpen) {
         }
         if(lastFocused?.isConnected && lastFocused !== document.body) {
           lastFocused.focus();
-        } else {
-          // Fall back to the top-most dialog, which MUI makes focusable.
+        }
+        // Fall back to the top-most dialog, which MUI makes focusable, if
+        // there was nothing to return to or it can no longer take focus
+        // (e.g. it has since been disabled).
+        if(isOutsideIframe(document.activeElement)) {
           const dialogs = document.querySelectorAll(
             '.MuiDialog-root [role="dialog"]');
           dialogs[dialogs.length - 1]?.focus();

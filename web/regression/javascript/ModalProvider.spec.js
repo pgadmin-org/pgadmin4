@@ -125,6 +125,24 @@ describe('ModalProvider keeps focus in an open modal (#9784)', () => {
       expect(document.activeElement).toBe(input);
     });
 
+  it('falls back to the dialog when the last focused element is disabled',
+    async () => {
+      await renderProvider(<input data-testid="pw" />);
+      const input = screen.getByTestId('pw');
+      await act(async () => { input.focus(); });
+
+      // Disabling the focused input moves focus away from it, which, as
+      // with the iframe, a browser does without firing focusin.
+      const swallow = (e) => e.stopImmediatePropagation();
+      window.addEventListener('focusin', swallow, true);
+      input.disabled = true;
+      window.removeEventListener('focusin', swallow, true);
+
+      await stealFocus(iframe);
+      expect(document.activeElement).toBe(
+        document.querySelector('[role="dialog"]'));
+    });
+
   it('leaves focus alone when no modal is open', async () => {
     await renderProvider(null);
     await stealFocus(iframe);
