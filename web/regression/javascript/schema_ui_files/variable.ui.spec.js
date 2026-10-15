@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
@@ -111,18 +111,32 @@ describe('VariableSchema', ()=>{
       `[data-test="data-table-row"] input[type="hidden"][name="${name}"]`
     )?.value;
     /* Allow for slow CI runners re-rendering the grid row. */
-    const waitOpts = {timeout: 5000};
-    /* Open a react-select from the keyboard; a mouse click relies on
-    focus timing that is unreliable on slow runners. */
-    const openSelect = async (input)=>{
-      await act(async ()=>{
-        fireEvent.focus(input);
-        fireEvent.keyDown(input, {key: 'ArrowDown', keyCode: 40});
-      });
+    const waitOpts = {timeout: 10000};
+    /* Open the select from the keyboard and wait for an option to show. A
+    freshly mounted select can drop the first open request on slow runners,
+    so it is re-sent, a bounded number of times, whilst no menu is shown. */
+    const findOption = async (selectIdx, label)=>{
+      for(let attempt = 0; attempt < 5; attempt++) {
+        if(screen.queryAllByRole('option').length == 0) {
+          const input = rowSelects()[selectIdx];
+          fireEvent.focus(input);
+          fireEvent.keyDown(input, {key: 'ArrowDown', keyCode: 40});
+        }
+        try {
+          return await screen.findByRole('option', {name: label}, {timeout: 2000});
+        } catch {
+          /* Not shown yet; retry. */
+        }
+      }
+      throw new Error(`Option '${label}' not shown; options: ${
+        screen.queryAllByRole('option').map((o)=>o.textContent).join(', ')
+      }`);
+    };
+    const closeMenu = ()=>{
+      fireEvent.keyDown(rowSelects()[1], {key: 'Escape', keyCode: 27});
     };
     const pickName = async (label)=>{
-      await openSelect(rowSelects()[0]);
-      await user.click(await screen.findByText(label, {}, waitOpts));
+      await user.click(await findOption(0, label));
       await waitFor(()=>{
         expect(hiddenVal('name')).toBe(label);
         expect(hiddenVal('value')).toBe('');
@@ -132,16 +146,13 @@ describe('VariableSchema', ()=>{
 
     await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0), waitOpts);
     await pickName('sslmode');
-    await openSelect(rowSelects()[1]);
-    expect(await screen.findByText('require', {}, waitOpts)).toBeInTheDocument();
-    await act(async ()=>{
-      fireEvent.keyDown(rowSelects()[1], {key: 'Escape', keyCode: 27});
-    });
+    expect(await findOption(1, 'require')).toBeInTheDocument();
+    closeMenu();
+    await waitFor(()=>expect(screen.queryAllByRole('option')).toHaveLength(0), waitOpts);
 
     await pickName('sslnegotiation');
-    await openSelect(rowSelects()[1]);
-    expect(await screen.findByText('direct', {}, waitOpts)).toBeInTheDocument();
-    expect(screen.queryByText('require')).not.toBeInTheDocument();
+    expect(await findOption(1, 'direct')).toBeInTheDocument();
+    expect(screen.queryByRole('option', {name: 'require'})).not.toBeInTheDocument();
   }, 30000);
 
   it('variable collection', async ()=>{
