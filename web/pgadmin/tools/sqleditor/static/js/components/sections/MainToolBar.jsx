@@ -57,6 +57,10 @@ function changeQueryExecutionSettings(type, api, transId, value) {
 // they must be sent to the server when changed.
 const EXECUTION_OPTIONS = ['auto_commit', 'auto_rollback', 'server_cursor'];
 
+// Buttons kept disabled whilst restored execute options are being sent to the
+// server, so that nothing runs with the preference values instead.
+const BUTTONS_GATED_BY_EXEC_OPTIONS = ['execute', 'execute-options', 'explain', 'explain_analyse'];
+
 // Check menu options that are saved and restored with the tab's state.
 export const RESTORABLE_TOOLBAR_OPTIONS = [
   ...EXECUTION_OPTIONS,
@@ -101,6 +105,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const checkedMenuItemsRef = React.useRef(checkedMenuItems);
   // Restored execute options waiting for the connection to be established.
   const [pendingExecOptions, setPendingExecOptions] = useState(null);
+  // The number of restored execute options still being sent to the server.
+  const [applyingExecOptions, setApplyingExecOptions] = useState(0);
   const {isSaveToolDataEnabled} = useApplicationState() ?? {};
   /* Menu button refs */
   const saveAsMenuRef = React.useRef(null);
@@ -116,6 +122,11 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const setDisableButton = useCallback((name, disable=true)=>{
     setButtonsDisabled((prev)=>({...prev, [name]: disable}));
   }, []);
+  /* Kept separate from buttonsDisabled, which the execution events set
+     directly, so that nothing else can enable these buttons early and the
+     gate always lifts once the requests have settled. */
+  const isButtonDisabled = (name)=>(buttonsDisabled[name]
+    || (applyingExecOptions > 0 && BUTTONS_GATED_BY_EXEC_OPTIONS.includes(name)));
 
   const executeCursor = useCallback(()=>{
     if(!queryToolCtx.preferences.sqleditor.underline_query_cursor && queryToolCtx.preferences.sqleditor.underlined_query_execute_warning){
@@ -224,8 +235,12 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
       return;
     }
     setPendingExecOptions(null);
-    Object.entries(pendingExecOptions).forEach(([option, value])=>{
-      changeQueryExecutionSettings(option, queryToolCtx.api, queryToolCtx.params.trans_id, value)
+    const options = Object.entries(pendingExecOptions);
+    setApplyingExecOptions((prev)=>prev + options.length);
+    options.forEach(([option, value])=>{
+      // Start from a promise so that a synchronous failure is handled too.
+      Promise.resolve()
+        .then(()=>changeQueryExecutionSettings(option, queryToolCtx.api, queryToolCtx.params.trans_id, value))
         .catch((error)=>{
           setCheckedMenuItems((prev)=>({...prev, [option]: !value}));
           if(option === 'server_cursor') {
@@ -238,6 +253,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
             checkTransaction: true,
           });
+        })
+        .finally(()=>{
+          setApplyingExecOptions((prev)=>prev - 1);
         });
     });
   }, [pendingExecOptions, queryToolConnCtx.connected]);
@@ -500,7 +518,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     {
       shortcut: queryToolPref.btn_execute_options,
       options: {
-        callback: ()=>{!buttonsDisabled['execute-options']&&toggleMenu({
+        callback: ()=>{!isButtonDisabled('execute-options')&&toggleMenu({
           currentTarget: {name: 'menu-autocommit'}
         });}
       }
@@ -508,25 +526,25 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     {
       shortcut: queryToolPref.execute_script,
       options: {
-        callback: ()=>{!buttonsDisabled['execute']&&executeScript();}
+        callback: ()=>{!isButtonDisabled('execute')&&executeScript();}
       }
     },
     {
       shortcut: queryToolPref.execute_cursor,
       options: {
-        callback: ()=>{!buttonsDisabled['execute']&&executeCursor();}
+        callback: ()=>{!isButtonDisabled('execute')&&executeCursor();}
       }
     },
     {
       shortcut: queryToolPref.explain_query,
       options: {
-        callback: (e)=>{e.preventDefault(); !buttonsDisabled['explain']&&explain();}
+        callback: (e)=>{e.preventDefault(); !isButtonDisabled('explain')&&explain();}
       }
     },
     {
       shortcut: queryToolPref.explain_analyze_query,
       options: {
-        callback: ()=>{!buttonsDisabled['explain_analyse']&&explainAnalyse();}
+        callback: ()=>{!isButtonDisabled('explain_analyse')&&explainAnalyse();}
       }
     },
     {
@@ -643,18 +661,18 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           <PgIconButton title={gettext('Cancel query')} icon={<StopRoundedIcon style={{height: 'unset'}} />}
             onClick={cancelQuery} disabled={buttonsDisabled['cancel']} shortcut={queryToolPref.btn_cancel_query} />
           <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
-            onClick={executeScript} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_script}/>
+            onClick={executeScript} disabled={isButtonDisabled('execute')} shortcut={queryToolPref.execute_script}/>
           <PgIconButton title={gettext('Execute query')} icon={<ExecuteQueryIcon style={{padding: '2px 5px'}} />}
-            onClick={executeCursor} disabled={buttonsDisabled['execute'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.execute_cursor}/>
+            onClick={executeCursor} disabled={isButtonDisabled('execute') || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.execute_cursor}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-autocommit" ref={autoCommitMenuRef} shortcut={queryToolPref.btn_execute_options}
-            onClick={toggleMenu} disabled={buttonsDisabled['execute-options']}/>
+            onClick={toggleMenu} disabled={isButtonDisabled('execute-options')}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Explain')} icon={<ExplicitRoundedIcon />}
-            onClick={()=>{explain();}} disabled={buttonsDisabled['explain'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_query}/>
+            onClick={()=>{explain();}} disabled={isButtonDisabled('explain') || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_query}/>
           <PgIconButton title={gettext('Explain Analyze')} icon={<AssessmentRoundedIcon />}
-            onClick={()=>{explainAnalyse();}} disabled={buttonsDisabled['explain_analyse'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_analyze_query}/>
+            onClick={()=>{explainAnalyse();}} disabled={isButtonDisabled('explain_analyse') || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_analyze_query}/>
           <PgIconButton title={gettext('Explain Settings')} icon={<KeyboardArrowDownIcon />} splitButton
             disabled={!queryToolCtx.params.is_query_tool}
             name="menu-explain" ref={explainMenuRef} onClick={toggleMenu} />

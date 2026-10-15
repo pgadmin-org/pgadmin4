@@ -28,7 +28,7 @@ jest.mock('../../../pgadmin/settings/static/ApplicationStateProvider', () => ({
 }));
 
 import React from 'react';
-import { render, act, waitFor } from '@testing-library/react';
+import { render, act, waitFor, fireEvent as fireDomEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { withTheme } from '../fake_theme';
 import EventBus from '../../../pgadmin/static/js/helpers/EventBus';
@@ -175,6 +175,106 @@ describe('MainToolBar toolbar options restore', () => {
       expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(true);
     });
     fireEvent.mockRestore();
+  });
+
+  // A disabled button loses its accessible name to a wrapping span.
+  const gatedButtons = () => ['Execute script', 'Execute query', 'Execute options', 'Explain', 'Explain Analyze']
+    .map((label) => document.querySelector(`button[data-label="${label}"]`));
+  const expectGated = (disabled) => {
+    gatedButtons().forEach((btn) => {
+      if(disabled) {
+        expect(btn).toBeDisabled();
+      } else {
+        expect(btn).toBeEnabled();
+      }
+    });
+  };
+
+  it('keeps execution disabled until restored execute options are applied', async () => {
+    const resolvers = [];
+    queryToolCtx.api.post = jest.fn(() => new Promise((resolve) => { resolvers.push(resolve); }));
+    renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+    expectGated(false);
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false, auto_rollback: true});
+    });
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(2));
+    await waitFor(() => expectGated(true));
+
+    // Still disabled until every option has reached the server.
+    await act(async () => { resolvers[0]({data: {}}); });
+    expectGated(true);
+
+    await act(async () => { resolvers[1]({data: {}}); });
+    await waitFor(() => expectGated(false));
+  });
+
+  it('ignores the execute shortcut until restored execute options are applied', async () => {
+    let resolvePost;
+    queryToolCtx.api.post = jest.fn(() => new Promise((resolve) => { resolvePost = resolve; }));
+    // F5
+    queryToolCtx.preferences.sqleditor.execute_script = {
+      alt: false, shift: false, control: false, key: {key_code: 116},
+    };
+    const triggered = jest.fn();
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, triggered);
+    const {container} = renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false});
+    });
+    await waitFor(() => expectGated(true));
+    await act(async () => { fireDomEvent.keyDown(container.firstChild, {keyCode: 116}); });
+    expect(triggered).not.toHaveBeenCalled();
+
+    await act(async () => { resolvePost({data: {}}); });
+    await waitFor(() => expectGated(false));
+    await act(async () => { fireDomEvent.keyDown(container.firstChild, {keyCode: 116}); });
+    await waitFor(() => expect(triggered).toHaveBeenCalledTimes(1));
+  });
+
+  it('enables execution again when a restored execute option fails', async () => {
+    let rejectPost;
+    queryToolCtx.api.post = jest.fn(() => new Promise((_resolve, reject) => { rejectPost = reject; }));
+    renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false});
+    });
+    await waitFor(() => expectGated(true));
+
+    await act(async () => { rejectPost(new Error('failed')); });
+    await waitFor(() => expectGated(false));
+    expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(true);
+  });
+
+  it('enables execution again if sending a restored execute option throws', async () => {
+    queryToolCtx.api.post = jest.fn(() => { throw new Error('failed'); });
+    renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false});
+    });
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalled());
+    await waitFor(() => expectGated(false));
+    expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(true);
+  });
+
+  it('does not disable execution when no execute options need restoring', async () => {
+    renderToolBar(true);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: true, explain_costs: true});
+    });
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current.explain_costs).toBe(true));
+    expectGated(false);
+    expect(queryToolCtx.api.post).not.toHaveBeenCalled();
   });
 
   it('does not restore execute options for View/Edit Data', async () => {
