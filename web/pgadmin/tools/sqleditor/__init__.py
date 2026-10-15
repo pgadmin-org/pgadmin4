@@ -654,6 +654,11 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
 
     # Set the value of database name, that will be used later
     command_obj.dbname = dbname if dbname else None
+    # Remember the login (never the password) chosen for this connection, so
+    # a lost autocomplete connection is reopened as the same user and role
+    # rather than the server's defaults.
+    command_obj.conn_user = kwargs.get('user')
+    command_obj.conn_role = kwargs.get('role')
     # Use pickle to store the command object which will be used
     # later by the sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -914,7 +919,12 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        conn.connect()
+        if auto_comp and getattr(trans_obj, 'conn_user', None):
+            conn.connect(user=trans_obj.conn_user,
+                         role=getattr(trans_obj, 'conn_role', None),
+                         password=None)
+        else:
+            conn.connect()
 
     return True, None, conn, trans_obj, session_obj
 
