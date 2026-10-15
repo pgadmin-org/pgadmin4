@@ -452,6 +452,11 @@ def panel(trans_id):
             params=json.dumps(params))
 
 
+# Execute options that can be changed from the Query Tool toolbar, and which
+# are kept on the transaction object.
+EXECUTE_OPTIONS = ('auto_commit', 'auto_rollback', 'server_cursor')
+
+
 @blueprint.route(
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
     '<did>',
@@ -496,6 +501,13 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
         'role': data['role'] if 'role' in data else None,
         'password': data['password'] if 'password' in data else None
     }
+    # The execute options currently chosen on the toolbar, sent when the
+    # transaction is re-created, so they are kept rather than reset to the
+    # preferences. Anything other than a boolean falls back to the
+    # preference in _init_sqleditor.
+    for option in EXECUTE_OPTIONS:
+        if isinstance(data.get(option), bool):
+            kwargs[option] = data[option]
 
     is_error, errmsg, conn_id, version = _init_sqleditor(
         trans_id, connect, sgid, sid, did, data['dbname'], **kwargs)
@@ -723,6 +735,7 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
             'password': data['password'] if 'password' in data else None,
             'auto_commit': getattr(trans_obj, 'auto_commit', None),
             'auto_rollback': getattr(trans_obj, 'auto_rollback', None),
+            'server_cursor': getattr(trans_obj, 'server_cursor', None),
         }
 
         is_error, errmsg, conn_id, version = _init_sqleditor(

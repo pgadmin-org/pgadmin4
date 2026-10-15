@@ -115,6 +115,21 @@ const FIXED_PREF = {
   },
 };
 
+// The body of the request that initialises the transaction. A Query Tool
+// sends the execute options currently chosen on the toolbar, so that they
+// are kept rather than reset to the preferences when the transaction is
+// re-created; only boolean values are sent, and the server uses the
+// preference for any that are missing.
+export function getInitialiseRequestData(params, connParams, toolbarOptions) {
+  if(params.is_query_tool) {
+    return {
+      ..._.pickBy(_.pick(toolbarOptions ?? {}, ['auto_commit', 'auto_rollback', 'server_cursor']), _.isBoolean),
+      ...connParams,
+    };
+  }
+  return {sql_filter: params.sql_filter, server_cursor: params.server_cursor, ...connParams};
+}
+
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
   const preferencesStore = usePreferences();
@@ -397,9 +412,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       password: password,
       dbname: selectedConn.database_name
     };
-    api.post(baseUrl, qtState.params.is_query_tool ?
-      {...requestParams} :
-      {sql_filter: qtState.params.sql_filter, server_cursor: qtState.params.server_cursor, ...requestParams})
+    api.post(baseUrl, getInitialiseRequestData(qtState.params, requestParams, toolbarOptionsRef.current))
       .then(()=>{
         setQtStatePartial({
           connected: true,
