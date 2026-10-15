@@ -7,6 +7,16 @@ SELECT
     ELSE
         pr.proname::text
     END AS name,
+{% if schema_diff %}
+{#
+ # Schema Diff matches source and target procedures on this key rather than
+ # on the name above, which includes argument names and is only used for
+ # display. PostgreSQL identifies a procedure by its name and input
+ # argument types alone, so a procedure whose argument names differ is
+ # still the same procedure, to be dropped and recreated.
+ #}
+    pr.proname || '(' || pg_catalog.oidvectortypes(pr.proargtypes) || ')' AS diff_key,
+{% endif %}
     lanname, pg_catalog.pg_get_userbyid(proowner) AS funcowner, description
 FROM
     pg_catalog.pg_proc pr
@@ -18,12 +28,10 @@ CROSS JOIN LATERAL (
     SELECT
 {% if schema_diff %}
 {#
- # PostgreSQL identifies a procedure by its name and its input (IN, INOUT
- # and VARIADIC) argument types only, so Schema Diff must leave any OUT
- # arguments (allowed from PostgreSQL 14) out of the name it uses to match
- # source and target procedures. Otherwise a procedure whose OUT arguments
- # differ is reported as an unrelated Source Only/Target Only pair, rather
- # than as one changed procedure that has to be dropped and recreated.
+ # Schema Diff shows this name as the procedure's title. It lists the
+ # input (IN, INOUT and VARIADIC) arguments only, which are what identify
+ # the procedure, and leaves out any OUT arguments (allowed from
+ # PostgreSQL 14).
  #}
         CASE WHEN 'o' = ANY(pr.proargmodes) THEN COALESCE((
             SELECT pg_catalog.string_agg(

@@ -7,8 +7,9 @@
 #
 ##########################################################################
 
-"""Schema Diff tests for functions and procedures whose OUT arguments or
-return type differ between source and target (#6652).
+"""Schema Diff tests for functions and procedures whose OUT arguments,
+return type or input argument names differ between source and target
+(#6652, #10597).
 
 PostgreSQL identifies a function by its name and its input (IN, INOUT and
 VARIADIC) argument types only, so two functions that differ solely in their
@@ -18,6 +19,10 @@ unrelated "Source Only" and "Target Only" pair, and because CREATE OR
 REPLACE cannot change a function's return type, the generated script must
 drop the target function before recreating it. Procedures, which may
 have OUT arguments from PostgreSQL 14, are matched in the same way.
+
+Likewise, CREATE OR REPLACE cannot rename an input argument, so a function
+or procedure whose input argument names differ must be matched as one
+"Different" object, shown under its source name, and dropped and recreated.
 """
 
 import json
@@ -57,6 +62,20 @@ CREATE FUNCTION {0}.rettype_changed(a bigint, b bigint)
 CREATE FUNCTION {0}.body_changed(iid bigint, OUT result integer)
     LANGUAGE plpgsql
     AS $$BEGIN result := 1; END;$$;
+
+CREATE FUNCTION {0}.arg_renamed(new_id bigint, label text)
+    RETURNS bigint
+    LANGUAGE sql
+    AS $$SELECT new_id$$;
+
+CREATE FUNCTION {0}.inout_renamed(iid bigint, INOUT new_state text)
+    LANGUAGE plpgsql
+    AS $$BEGIN END;$$;
+
+CREATE FUNCTION {0}.arg_named(iid bigint)
+    RETURNS bigint
+    LANGUAGE sql
+    AS $$SELECT iid$$;
 """
 
 TARGET_DDL = """
@@ -84,6 +103,20 @@ CREATE FUNCTION {0}.rettype_changed(a bigint, b bigint)
 CREATE FUNCTION {0}.body_changed(iid bigint, OUT result integer)
     LANGUAGE plpgsql
     AS $$BEGIN result := 0; END;$$;
+
+CREATE FUNCTION {0}.arg_renamed(old_id bigint, label text)
+    RETURNS bigint
+    LANGUAGE sql
+    AS $$SELECT old_id$$;
+
+CREATE FUNCTION {0}.inout_renamed(iid bigint, INOUT old_state text)
+    LANGUAGE plpgsql
+    AS $$BEGIN END;$$;
+
+CREATE FUNCTION {0}.arg_named(bigint)
+    RETURNS bigint
+    LANGUAGE sql
+    AS $$SELECT $1$$;
 """
 
 # Procedures can only have OUT arguments from PostgreSQL 14.
@@ -95,6 +128,10 @@ CREATE PROCEDURE {0}.proc_out_added(iid bigint, OUT result integer)
 CREATE PROCEDURE {0}.proc_out_changed(iid bigint, OUT result integer)
     LANGUAGE plpgsql
     AS $$BEGIN result := 0; END;$$;
+
+CREATE PROCEDURE {0}.proc_arg_renamed(new_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN END;$$;
 """
 
 TARGET_PROC_DDL = """
@@ -105,6 +142,10 @@ CREATE PROCEDURE {0}.proc_out_added(iid bigint)
 CREATE PROCEDURE {0}.proc_out_changed(iid bigint, OUT result text)
     LANGUAGE plpgsql
     AS $$BEGIN result := ''; END;$$;
+
+CREATE PROCEDURE {0}.proc_arg_renamed(old_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN END;$$;
 """
 
 # Objects whose difference can only be applied by dropping and recreating
@@ -114,12 +155,26 @@ RECREATED = [
     ('function', 'out_added', 'DROP FUNCTION'),
     ('function', 'out_changed', 'DROP FUNCTION'),
     ('function', 'rettype_changed', 'DROP FUNCTION'),
+    ('function', 'arg_renamed', 'DROP FUNCTION'),
+    ('function', 'inout_renamed', 'DROP FUNCTION'),
+    ('function', 'arg_named', 'DROP FUNCTION'),
 ]
 
 RECREATED_PROCS = [
     ('procedure', 'proc_out_added', 'DROP PROCEDURE'),
     ('procedure', 'proc_out_changed', 'DROP PROCEDURE'),
+    ('procedure', 'proc_arg_renamed', 'DROP PROCEDURE'),
 ]
+
+# Objects whose input argument names differ, with the title (the source's
+# name and input arguments) that Schema Diff must show them under.
+TITLES = {
+    ('function', 'arg_renamed'): 'arg_renamed(new_id bigint, label text)',
+    ('function', 'inout_renamed'):
+        'inout_renamed(iid bigint, INOUT new_state text)',
+    ('function', 'arg_named'): 'arg_named(iid bigint)',
+    ('procedure', 'proc_arg_renamed'): 'proc_arg_renamed(IN new_id bigint)',
+}
 
 # Objects that have OUT arguments, but whose difference (the body only) can
 # be applied in place with CREATE OR REPLACE.
@@ -127,9 +182,10 @@ REPLACED = [('function', 'body_changed')]
 
 
 class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
-    """ This class will test Schema Diff for function OUT arguments. """
+    """ Test Schema Diff for function signatures and argument names. """
     scenarios = [
-        ('Schema diff comparison of function OUT arguments and return type',
+        ('Schema diff comparison of function OUT arguments, return type '
+         'and input argument names',
          dict())
     ]
     SOCKET_NAMESPACE = '/schema_diff'
@@ -219,7 +275,7 @@ class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
                 diff.get('title', '').startswith(name + '(')]
 
     def runTest(self):
-        """ Test Schema Diff for function OUT arguments/return type. """
+        """ Test Schema Diff for function signatures and argument names. """
         self.trans_id = str(secrets.choice(range(1, 99999)))
         response = self.tester.get(
             'schema_diff/initialize/{}'.format(self.trans_id))
@@ -290,6 +346,8 @@ class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
             '{0} {1} was not compared as a single Different object: '
             '{2}'.format(obj_type, name,
                          [(d['title'], d['status']) for d in diffs]))
+        if (obj_type, name) in TITLES:
+            self.assertEqual(diffs[0]['title'], TITLES[(obj_type, name)])
         return diffs[0]['diff_ddl']
 
     def tearDown(self):

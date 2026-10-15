@@ -27,6 +27,8 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.tools.schema_diff.directory_compare import \
+    TITLE_KEY as SCHEMA_DIFF_TITLE_KEY
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -223,6 +225,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                       'proisagg', 'pronamespace', 'proargdefaults',
                       'prorettype', 'proallargtypes', 'proacl', 'oid-2',
                       'prolang']
+
+    # Schema Diff property holding a function's input argument names.
+    _INPUT_ARG_NAMES = 'input_arg_names'
 
     @property
     def required_args(self):
@@ -1726,20 +1731,20 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                json_resp=False)
         return sql
 
-    @staticmethod
-    def _diff_needs_recreate(data):
+    @classmethod
+    def _diff_needs_recreate(cls, data):
         """
         Check whether a Schema Diff difference can only be applied by
-        dropping and recreating the function, i.e. whether its return type
-        or OUT arguments differ. Schema Diff matches functions on their
-        input arguments, so any argument added or deleted, or any changed
-        argument that is an OUT argument in the source, is a change to the
-        OUT arguments.
+        dropping and recreating the function, i.e. whether its return type,
+        its OUT arguments or the names of its input arguments differ.
+        Schema Diff matches functions on their input argument types, so any
+        argument added or deleted, or any changed argument that is an OUT
+        argument in the source, is a change to the OUT arguments.
 
         :param data: Difference between the source and target function
         :return: True if the function must be dropped and recreated
         """
-        if 'prorettypename' in data:
+        if 'prorettypename' in data or cls._INPUT_ARG_NAMES in data:
             return True
 
         arguments = data.get('arguments')
@@ -1805,7 +1810,17 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             for row in rset['rows']:
                 data = self._fetch_properties(0, sid, did, scid, row['oid'])
                 if isinstance(data, dict):
-                    res[row['name']] = data
+                    # Match functions on their name and input argument
+                    # types, as PostgreSQL does, but show them under their
+                    # name with argument names.
+                    data[SCHEMA_DIFF_TITLE_KEY] = row['name']
+                    # CREATE OR REPLACE cannot rename an input argument, so
+                    # keep the input argument names as a single value that
+                    # Schema Diff reports as changed only if they differ.
+                    data[self._INPUT_ARG_NAMES] = json.dumps(
+                        [arg['argname'] for arg in data.get('arguments', [])
+                         if arg['argmode'] != 'OUT'])
+                    res[row.get('diff_key') or row['name']] = data
         else:
             data = self._fetch_properties(0, sid, did, scid, oid)
             res = data
