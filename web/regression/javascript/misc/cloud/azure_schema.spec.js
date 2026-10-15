@@ -97,6 +97,41 @@ describe('AzureCredSchema', ()=>{
     expect(screen.queryByText('TESTCODE1')).not.toBeInTheDocument();
   });
 
+  it('locks the credentials whilst authentication is pending', async ()=>{
+    let settle;
+    const authenticateAzure = jest.fn(()=>new Promise((resolve)=>{
+      settle = resolve;
+    }));
+    const getAuthCode = jest.fn(()=>new Promise(()=>{}));
+    const schemaObj = new AzureCredSchema(eventBus, {
+      authenticateAzure, getAuthCode,
+    }, {});
+
+    const {ctrl, user} = await renderSchema(schemaObj);
+    const tenantInput = ctrl.container.querySelector(
+      '[name="azure_tenant_id"]');
+    await user.type(tenantInput, 'tenant-1');
+    await clickAuthButton(user);
+
+    // The pending attempt is for tenant-1, so neither the tenant nor the
+    // authentication type may change until it settles; otherwise its late
+    // success would be taken as authentication for the new values.
+    // The authentication type toggle is disabled through aria-disabled.
+    const authTypeButton = (name)=>screen.getByRole('button', {name});
+    expect(tenantInput).toBeDisabled();
+    expect(authTypeButton('Interactive Browser'))
+      .toHaveAttribute('aria-disabled', 'true');
+    expect(authTypeButton('Azure CLI'))
+      .toHaveAttribute('aria-disabled', 'true');
+
+    await act(async ()=>{
+      settle(false);
+    });
+    expect(tenantInput).toBeEnabled();
+    expect(authTypeButton('Azure CLI'))
+      .not.toHaveAttribute('aria-disabled', 'true');
+  });
+
   it('requires authentication again when the tenant id changes', async ()=>{
     const authenticateAzure = jest.fn(()=>Promise.resolve(true));
     const getAuthCode = jest.fn(()=>new Promise(()=>{}));

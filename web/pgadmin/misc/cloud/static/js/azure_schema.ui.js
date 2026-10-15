@@ -67,7 +67,14 @@ class AzureCredSchema extends BaseUISchema {
             value: 'azure_cli_credential',
           },
         ],
-        disabled: pgAdmin.server_mode == 'True',
+        // Neither credential may change whilst an attempt is pending, as
+        // the server would still complete it for the old values and its
+        // late success would then be taken as authentication for the new
+        // ones. The server cannot cancel an attempt that is waiting for the
+        // user, so locking the fields is simpler than ignoring its result.
+        disabled: (state) => {
+          return pgAdmin.server_mode == 'True' || state.is_authenticating;
+        },
         helpMessage: gettext(
           'Azure CLI will use the currently logged in identity through the Azure CLI on the local machine. Interactive Browser will open a browser window to authenticate a user interactively.'
         ),
@@ -82,7 +89,8 @@ class AzureCredSchema extends BaseUISchema {
           'Enter the Azure tenant ID against which the user is authenticated.'
         ),
         disabled: (state) => {
-          return state.auth_type !== 'interactive_browser_credential';
+          return state.auth_type !== 'interactive_browser_credential' ||
+            state.is_authenticating;
         },
         depChange: (state) => {
           if (state.auth_type == 'azure_cli_credential') {
