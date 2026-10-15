@@ -991,13 +991,15 @@ define('pgadmin.browser', [
               _.extend(this.d, this.new);
               this.t.update(ctx.i, this.d);
               this.t.setLabel(ctx.i, {label: this.new.label});
+              // Re-sort the renamed node amongst its siblings.
+              let moved = this.t.resortItem(ctx.i, _.escape(this.new._label));
               this.t.addIcon(ctx.i, {icon: this.new.icon});
               this.t.setId(ctx.i, {id: this.new.id});
               this.t.openPath(this.i);
               this.t.deselect(this.i);
 
-              // select tree item
-              self.t.select(self.i);
+              // select tree item, scrolling to it if it has moved
+              self.t.select(self.i, moved);
             }
           }
           let success = this.o?.success;
