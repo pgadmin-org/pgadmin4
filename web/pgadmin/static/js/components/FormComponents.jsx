@@ -354,7 +354,7 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, e
     format: format.replace('xxx', timeZoneString),
     label: '',
     variant: 'inline',
-    ampm: controlProps.ampm ? controlProps.ampm : undefined,
+    ampm: controlProps.ampm,
     disablePast: controlProps.disablePast || false,
     onChange: handleChange,
     slotProps: {textField: {placeholder:placeholder, error: error}}
