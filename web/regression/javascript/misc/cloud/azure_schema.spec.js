@@ -9,7 +9,7 @@
 
 import {AzureCredSchema} from '../../../../pgadmin/misc/cloud/static/js/azure_schema.ui';
 import {genericBeforeEach, getCreateView} from '../../genericFunctions';
-import {act, screen} from '@testing-library/react';
+import {act, screen, waitFor} from '@testing-library/react';
 
 describe('AzureCredSchema', ()=>{
   const eventBus = {fireEvent: jest.fn()};
@@ -21,6 +21,19 @@ describe('AzureCredSchema', ()=>{
 
   const getAuthButton = ()=>screen.getByRole('button', {
     name: 'Click here to authenticate yourself to Microsoft Azure'});
+
+  const renderSchema = async (schemaObj)=>{
+    const view = await getCreateView(schemaObj);
+    // The dialog moves the focus to its first input (the authentication type
+    // toggle) 200ms after it opens. Wait for that to happen, otherwise on a
+    // slow machine the focus moves part way through typing the tenant id and
+    // the remaining keystrokes go to the toggle instead.
+    await waitFor(()=>{
+      expect(screen.getByRole('button', {name: 'Interactive Browser'}))
+        .toHaveFocus();
+    });
+    return view;
+  };
 
   const clickAuthButton = async (user)=>{
     await user.click(getAuthButton());
@@ -40,10 +53,11 @@ describe('AzureCredSchema', ()=>{
       authenticateAzure, getAuthCode,
     }, {});
 
-    const {ctrl, user} = await getCreateView(schemaObj);
-    await user.type(
-      ctrl.container.querySelector('[name="azure_tenant_id"]'),
-      'tenant-1');
+    const {ctrl, user} = await renderSchema(schemaObj);
+    const tenantInput = ctrl.container.querySelector(
+      '[name="azure_tenant_id"]');
+    await user.type(tenantInput, 'tenant-1');
+    expect(tenantInput).toHaveValue('tenant-1');
     await clickAuthButton(user);
 
     expect(authenticateAzure).toHaveBeenCalledWith(
@@ -64,7 +78,7 @@ describe('AzureCredSchema', ()=>{
       authenticateAzure, getAuthCode,
     }, {});
 
-    const {ctrl, user} = await getCreateView(schemaObj);
+    const {ctrl, user} = await renderSchema(schemaObj);
     await user.type(
       ctrl.container.querySelector('[name="azure_tenant_id"]'),
       'tenant-1');
@@ -90,7 +104,7 @@ describe('AzureCredSchema', ()=>{
       authenticateAzure, getAuthCode,
     }, {});
 
-    const {ctrl, user} = await getCreateView(schemaObj);
+    const {ctrl, user} = await renderSchema(schemaObj);
     const tenantInput = ctrl.container.querySelector(
       '[name="azure_tenant_id"]');
     await user.type(tenantInput, 'tenant-1');
@@ -110,7 +124,7 @@ describe('AzureCredSchema', ()=>{
       authenticateAzure, getAuthCode,
     }, {});
 
-    const {user} = await getCreateView(schemaObj);
+    const {user} = await renderSchema(schemaObj);
     await user.click(screen.getByRole('button', {name: 'Azure CLI'}));
     await clickAuthButton(user);
 
