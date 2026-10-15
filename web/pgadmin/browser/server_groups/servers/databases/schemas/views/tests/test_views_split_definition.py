@@ -48,6 +48,34 @@ class ViewsSplitDefinitionTestCase(BaseTestGenerator):
             old="SELECT 'x FROM y' AS a, b FROM t1",
             new="SELECT 'x FROM y' AS a FROM t1",
             same=False)),
+        ('FROM inside a block comment does not split', dict(
+            old='SELECT a /* from */, b FROM t1',
+            new='SELECT a /* from */ FROM t1',
+            same=False)),
+        ('FROM inside a nested block comment does not split', dict(
+            old='SELECT a /* x /* y */ from */, b FROM t1',
+            new='SELECT a /* x /* y */ from */ FROM t1',
+            same=False)),
+        ('FROM inside a line comment does not split', dict(
+            old='SELECT a -- from\n, b FROM t1',
+            new='SELECT a -- from\nFROM t1',
+            same=False)),
+        ('Adding or removing a comment is ignored', dict(
+            old='SELECT a, /* note */ b -- the end\nFROM t1',
+            new='SELECT a, b FROM t1',
+            same=True)),
+        ('FROM inside a dollar-quoted string does not split', dict(
+            old='SELECT $q$ from $$ \' $q$ AS a, b FROM t1',
+            new='SELECT $q$ from $$ \' $q$ AS a FROM t1',
+            same=False)),
+        ('FROM inside an E string with escapes does not split', dict(
+            old="SELECT E'it\\'s from' AS a, b FROM t1",
+            new="SELECT E'it\\'s from' AS a FROM t1",
+            same=False)),
+        ('A $ inside an identifier does not start a dollar quote', dict(
+            old='SELECT a$q$, b FROM t1',
+            new='SELECT a$q$ FROM t1',
+            same=False)),
     ]
 
     def runTest(self):

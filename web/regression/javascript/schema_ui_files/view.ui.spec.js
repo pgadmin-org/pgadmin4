@@ -157,5 +157,32 @@ FROM t1 t WHERE (id > 1);`)).not.toBeNull();
         splitViewDefinition('SELECT "ab" FROM t'));
       expect(splitViewDefinition(undefined)).toEqual(['']);
     });
+
+    it('does not split at FROM inside comments or quoted strings', ()=>{
+      [
+        ['SELECT a /* from */, b FROM t1', 'SELECT a /* from */ FROM t1'],
+        ['SELECT a /* x /* y */ from */, b FROM t1',
+          'SELECT a /* x /* y */ from */ FROM t1'],
+        ['SELECT a -- from\n, b FROM t1', 'SELECT a -- from\nFROM t1'],
+        ['SELECT $q$ from $$ \' $q$ AS a, b FROM t1',
+          'SELECT $q$ from $$ \' $q$ AS a FROM t1'],
+        ['SELECT E\'it\\\'s from\' AS a, b FROM t1',
+          'SELECT E\'it\\\'s from\' AS a FROM t1'],
+        ['SELECT a$q$, b FROM t1', 'SELECT a$q$ FROM t1'],
+      ].forEach(([oldDef, newDef])=>{
+        expect(splitViewDefinition(oldDef)).toHaveLength(2);
+        initializeSchemaWithData(schemaObj, {oid: 1, definition: oldDef});
+        schemaObj.validate({definition: newDef}, jest.fn());
+        expect(schemaObj.warningText).not.toBeNull();
+      });
+    });
+
+    it('does not warn when only a comment is added or removed', ()=>{
+      initializeSchemaWithData(schemaObj, {
+        oid: 1, definition: 'SELECT a, /* note */ b -- the end\nFROM t1;',
+      });
+      schemaObj.validate({definition: 'SELECT a, b FROM t1;'}, jest.fn());
+      expect(schemaObj.warningText).toBeNull();
+    });
   });
 });
