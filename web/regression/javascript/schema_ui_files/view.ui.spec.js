@@ -9,7 +9,7 @@
 
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import ViewSchema, { normaliseViewDefinition } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui';
+import ViewSchema, { splitViewDefinition } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 import { initializeSchemaWithData } from './utils';
 
@@ -119,11 +119,43 @@ FROM t1 t WHERE (id > 1);`)).not.toBeNull();
   (d)::text AS ds FROM t1 t WHERE (id > 1);`)).not.toBeNull();
     });
 
-    it('preserves quoted identifiers and literals when normalising', ()=>{
-      expect(normaliseViewDefinition(
-        'SELECT "MixedCase", \'It\'\'s A Value\' AS X FROM T'
-      )).toBe('select"MixedCase",\'It\'\'sAValue\'asxfromt');
-      expect(normaliseViewDefinition(undefined)).toBe('');
+    it('warns when punctuation inside a quoted identifier changes', ()=>{
+      expect(validateWith(`SELECT id, "Na me", concat(a, ' x ', b) AS ab,
+  (d)::text AS ds FROM t1 t WHERE (id > 1);`)).not.toBeNull();
+    });
+
+    it('warns when a column is removed after one named like FROM', ()=>{
+      initializeSchemaWithData(schemaObj, {
+        oid: 1, definition: 'SELECT a AS fromage, b FROM t1;',
+      });
+      schemaObj.validate({definition: 'SELECT a AS fromage FROM t1;'},
+        jest.fn());
+      expect(schemaObj.warningText).not.toBeNull();
+    });
+
+    it('warns when a column is removed after valid_from', ()=>{
+      initializeSchemaWithData(schemaObj, {
+        oid: 1, definition: 'SELECT id, valid_from, name FROM t1;',
+      });
+      schemaObj.validate({definition: 'SELECT id, valid_from FROM t1;'},
+        jest.fn());
+      expect(schemaObj.warningText).not.toBeNull();
+    });
+
+    it('does not warn when an identifier is merely quoted', ()=>{
+      expect(validateWith(`SELECT "id", "Name", concat(a, ' x ', b) AS "ab",
+  (d)::text AS ds FROM t1 t WHERE (id > 1);`)).toBeNull();
+    });
+
+    it('splits and normalises definitions', ()=>{
+      expect(splitViewDefinition(
+        'SELECT "Mixed Case", \'It\'\'s A FROM Value\' AS X, fromage FROM T'
+      )).toEqual([
+        'selectMixed Case,\'It\'\'s A FROM Value\'asx,fromage', 't'
+      ]);
+      expect(splitViewDefinition('SELECT "a-b" FROM t')).not.toEqual(
+        splitViewDefinition('SELECT "ab" FROM t'));
+      expect(splitViewDefinition(undefined)).toEqual(['']);
     });
   });
 });

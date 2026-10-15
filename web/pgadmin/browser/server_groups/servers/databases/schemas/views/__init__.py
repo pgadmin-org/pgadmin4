@@ -913,20 +913,32 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         return False, '', sql
 
     @staticmethod
-    def _normalise_definition(definition):
+    def _split_definition(definition):
         """
-        Normalise a view definition so that only changes that can affect the
-        view's columns are noticed. Everything outside quoted identifiers and
-        string literals is lower-cased (keywords, function names, type names
-        and unquoted identifiers are case-insensitive), so a pure reformat,
-        such as one from the SQL formatter, is not mistaken for a change to
-        the column list. Non-word characters are then removed.
+        Split a view definition at each FROM keyword and normalise the parts
+        so that only changes that can affect the view's columns are noticed.
+        The contents of quoted identifiers and string literals are kept
+        exactly as written, although the double quotes around an identifier
+        are dropped so that "name" still matches name. Everything else is
+        lower-cased (keywords, function names, type names and unquoted
+        identifiers are case-insensitive) and has its non-word characters
+        removed, so a pure reformat, such as one from the SQL formatter, is
+        not mistaken for a change to the column list. FROM is only matched as
+        a whole word outside quotes, so identifiers such as valid_from do not
+        end the select list early.
         """
+        segments = ['']
         parts = re.split(r'("(?:[^"]|"")*"|\'(?:[^\']|\'\')*\')',
                          definition or '')
-        return re.sub(r"\W", "", ''.join(
-            part if i % 2 else part.lower() for i, part in enumerate(parts)
-        ))
+        for i, part in enumerate(parts):
+            if i % 2:
+                segments[-1] += part[1:-1] if part[0] == '"' else part
+                continue
+            pieces = [re.sub(r"\W", "", piece)
+                      for piece in re.split(r'\bfrom\b', part.lower())]
+            segments[-1] += pieces[0]
+            segments.extend(pieces[1:])
+        return segments
 
     def _get_definition_data(self, vid, data, old_data, res, acls):
         """
@@ -941,10 +953,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         if not retun False with error msg empty('')
         """
         if 'definition' in data and self.manager.server_type == 'pg':
-            new_def = ViewNode._normalise_definition(
-                data['definition']).split('from')
-            old_def = ViewNode._normalise_definition(
-                res['rows'][0]['definition']).split('from')
+            new_def = ViewNode._split_definition(data['definition'])
+            old_def = ViewNode._split_definition(
+                res['rows'][0]['definition'])
             if 'definition' in data and (
                 len(old_def) > 1 or len(new_def) > 1
             ) and (

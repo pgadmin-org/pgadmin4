@@ -15,20 +15,35 @@ import { isEmptyString } from 'sources/validators';
 import { getPrivilegesForTableAndLikeObjects } from '../../../tables/static/js/table.ui';
 
 /*
- * Normalise a view definition so that only changes that can affect the
- * view's columns are noticed. Whitespace is removed, and everything outside
- * quoted identifiers and string literals is lower-cased, because SQL keywords,
- * function names, type names and unquoted identifiers are case-insensitive;
- * this stops a pure reformat (for example with the SQL formatter, which can
- * change keyword, function and data type case) from looking like a change to
- * the column list.
+ * Split a view definition at each FROM keyword and normalise the parts so
+ * that only changes that can affect the view's columns are noticed. The
+ * contents of quoted identifiers and string literals are kept exactly as
+ * written, although the double quotes around an identifier are dropped so
+ * that "name" still matches name. Everything else is lower-cased (SQL
+ * keywords, function names, type names and unquoted identifiers are
+ * case-insensitive) and has its whitespace removed, so a pure reformat (for
+ * example with the SQL formatter, which can change keyword, function and data
+ * type case) does not look like a change to the column list. FROM is only
+ * matched as a whole word outside quotes, so identifiers such as valid_from
+ * do not end the select list early.
  */
-export function normaliseViewDefinition(definition) {
-  return (definition ?? '').split(
+export function splitViewDefinition(definition) {
+  let segments = [''];
+  (definition ?? '').split(
     /("(?:[^"]|"")*"|'(?:[^']|'')*')/
-  ).map(
-    (part, i) => (i % 2 == 0 ? part.toLowerCase() : part)
-  ).join('').replace(/\s/g, '');
+  ).forEach((part, i) => {
+    if (i % 2 == 1) {
+      segments[segments.length - 1] += part.startsWith('"') ?
+        part.slice(1, -1) : part;
+      return;
+    }
+    let pieces = part.toLowerCase().split(/\bfrom\b/).map(
+      (piece) => piece.replace(/\s/g, '')
+    );
+    segments[segments.length - 1] += pieces[0];
+    segments.push(...pieces.slice(1));
+  });
+  return segments;
 }
 
 export default class ViewSchema extends BaseUISchema {
@@ -163,13 +178,11 @@ export default class ViewSchema extends BaseUISchema {
           return false;
         }
 
-        let old_def = normaliseViewDefinition(
-            obj.origData.definition
-          ).split('from'),
+        let old_def = splitViewDefinition(obj.origData.definition),
           new_def = [];
 
         if (!_.isUndefined(state.definition)) {
-          new_def = normaliseViewDefinition(state.definition).split('from');
+          new_def = splitViewDefinition(state.definition);
         }
 
         if ((old_def.length != new_def.length) || (
