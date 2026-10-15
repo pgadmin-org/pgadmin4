@@ -13,6 +13,8 @@
 // to initializeQueryTool(password, explainObject, macroSQL, executeCursor,
 // executeServerCursor, reexecute). reexecute must be true, or the Query Tool
 // does not re-run the query, and executeServerCursor must be false. #10603
+// The re-run rebuilds the query from the editor or macroSQL, so an external
+// query with no macro (the toolbar's COMMIT or ROLLBACK) is not re-run.
 
 jest.mock('sources/url_for', () => ({
   __esModule: true,
@@ -119,6 +121,42 @@ describe('ResultSetUtils.startExecution reconnection', () => {
     api.post.mockRejectedValue({response: {status: 500, data: {info: 'CRYPTKEY_MISSING'}}});
 
     await rsu.startExecution('SELECT 1', explainObject, macroSQL, jest.fn(), flags);
+
+    await expectRerun();
+  });
+
+  // The toolbar's COMMIT and ROLLBACK run external queries with no macro, and
+  // a re-run would rebuild the query from the editor rather than run them.
+  const externalFlags = {...flags, external: true, executeCursor: false};
+
+  const expectNoRerun = async () => {
+    await flushPromises();
+    const calls = reinitCalls();
+    expect(calls).toHaveLength(1);
+    expect(reinitArgs(calls[0]).reexecute).toBe(false);
+  };
+
+  it('does not re-run an external query without a macro after the server password prompt', async () => {
+    api.post.mockRejectedValue({response: {status: 428, data: {result: {}}}});
+
+    await rsu.startExecution('COMMIT;', null, undefined, jest.fn(), externalFlags);
+
+    await expectNoRerun();
+  });
+
+  it('does not re-run an external query without a macro after the master password prompt', async () => {
+    window.pgAdmin = {Browser: {set_master_password: jest.fn((_p, cb) => cb({password: 'secret'}))}};
+    api.post.mockRejectedValue({response: {status: 500, data: {info: 'CRYPTKEY_MISSING'}}});
+
+    await rsu.startExecution('ROLLBACK;', null, undefined, jest.fn(), externalFlags);
+
+    await expectNoRerun();
+  });
+
+  it('re-runs an external macro query, which rebuilds from macroSQL', async () => {
+    api.post.mockRejectedValue({response: {status: 428, data: {result: {}}}});
+
+    await rsu.startExecution('SELECT 1', explainObject, macroSQL, jest.fn(), {...flags, external: true});
 
     await expectRerun();
   });
