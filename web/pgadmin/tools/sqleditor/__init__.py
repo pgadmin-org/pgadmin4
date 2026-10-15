@@ -733,10 +733,13 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
             'user': data['user'],
             'role': data['role'] if 'role' in data else None,
             'password': data['password'] if 'password' in data else None,
-            'auto_commit': getattr(trans_obj, 'auto_commit', None),
-            'auto_rollback': getattr(trans_obj, 'auto_rollback', None),
-            'server_cursor': getattr(trans_obj, 'server_cursor', None),
         }
+        # Keep the execute options from the old transaction, but only
+        # booleans, as initialize_sqleditor() does; anything else falls
+        # back to the preferences.
+        for option in EXECUTE_OPTIONS:
+            value = getattr(trans_obj, option, None)
+            kwargs[option] = value if isinstance(value, bool) else None
 
         is_error, errmsg, conn_id, version = _init_sqleditor(
             new_trans_id, connect, sgid, sid, did, data['database_name'],

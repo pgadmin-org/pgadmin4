@@ -54,7 +54,13 @@ class TestExecuteOptionsReinit(BaseTestGenerator):
             expected=PREFERENCE_OPTIONS)),
         ('Changing the connection keeps the execute options', dict(
             change_connection=True, init_options={},
-            expected=CHANGED_OPTIONS)),
+            toolbar_options=CHANGED_OPTIONS, expected=CHANGED_OPTIONS)),
+        ('Changing the connection ignores execute options that are not '
+         'booleans', dict(
+             change_connection=True, init_options={},
+             toolbar_options={'auto_commit': 'false', 'auto_rollback': 1,
+                              'server_cursor': 1},
+             expected=PREFERENCE_OPTIONS)),
     ]
 
     def setUp(self):
@@ -80,7 +86,7 @@ class TestExecuteOptionsReinit(BaseTestGenerator):
         if self.change_connection:
             # Change the options from the toolbar, then change the
             # connection, which creates a new transaction.
-            for option, value in CHANGED_OPTIONS.items():
+            for option, value in self.toolbar_options.items():
                 response = self.tester.post(
                     '/sqleditor/{0}/{1}'.format(option, self.trans_id),
                     data=json.dumps(value))
