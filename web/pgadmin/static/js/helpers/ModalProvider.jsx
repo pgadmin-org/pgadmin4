@@ -366,9 +366,11 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
     }
   };
   const [isFullScreen, setIsFullScreen] = useState(fullScreen);
+  const dialogRef = useRef(null);
 
   return (
     <StyleDialog
+      ref={dialogRef}
       open={true}
       onClose={closeModal}
       PaperComponent={PaperComponent}
@@ -380,6 +382,14 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       fullScreen={isFullScreen}
       fullWidth={isFullWidth}
       disablePortal
+      // The dialog is rendered in place (disablePortal), so it sits inside
+      // the application root rather than directly under <body>. MUI's modal
+      // manager sets aria-hidden on the children of its container, which
+      // defaults to <body>, so it would hide the application root and the
+      // dialog along with it, whilst focus is inside the dialog. Use the
+      // dialog's own parent as the container so that only its siblings, the
+      // background content, are hidden.
+      container={() => dialogRef.current?.parentElement}
       {...props}
     >
       { showTitle &&
