@@ -8,6 +8,8 @@
 ##############################################################################
 """Multi-factor Authentication implementation by sending OTP through email"""
 
+import hmac
+
 from flask import url_for, session, Response, render_template, current_app, \
     flash
 from flask_babel import gettext as _
@@ -213,9 +215,14 @@ class EmailAuthentication(BaseMFAuth):
     def validate(self, **kwargs):
         code = kwargs.get('code', None)
         email_otp = session.get("mfa_email_code", None)
-        if code is not None and email_otp is not None and code == email_otp:
+        # Compare in constant time; compare_digest() rejects non-ASCII str,
+        # so compare the UTF-8 encoded bytes instead.
+        if isinstance(code, str) and isinstance(email_otp, str) and \
+                hmac.compare_digest(code.encode('utf-8'),
+                                    email_otp.encode('utf-8')):
             session.pop("mfa_email_code")
             session.pop(_EMAIL_CODE_ATTEMPTS, None)
+            session.pop(_EMAIL_CODE_RETRY, None)
             return
 
         if email_otp is None:
