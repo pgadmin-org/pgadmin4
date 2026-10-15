@@ -936,11 +936,24 @@ def check_transaction_status(trans_id, auto_comp=False):
 
     if connect and conn and not conn.connected():
         if auto_comp and getattr(trans_obj, 'conn_user', None):
-            conn.connect(user=trans_obj.conn_user,
-                         role=getattr(trans_obj, 'conn_role', None),
-                         password=None)
+            status, msg = conn.connect(
+                user=trans_obj.conn_user,
+                role=getattr(trans_obj, 'conn_role', None),
+                password=None)
         else:
-            conn.connect()
+            status, msg = conn.connect()
+
+        if not status:
+            current_app.logger.error(msg)
+            # Autocomplete has no other reconnect, so report the failure
+            # rather than carrying on with the dead connection. Other
+            # callers that pass connect=1 (view_data_start and save) go
+            # on to query_tool_connection_check(), which reconnects again
+            # and can ask for a password (HTTP 428) that the failure here
+            # would otherwise pre-empt, so leave the failure to it.
+            if auto_comp:
+                return False, internal_server_error(errormsg=msg), \
+                    None, None, None
 
     return True, None, conn, trans_obj, session_obj
 
@@ -2143,6 +2156,9 @@ def auto_complete(trans_id):
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id, auto_comp=True)
+
+    if isinstance(error_msg, Response):
+        return error_msg
 
     if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
