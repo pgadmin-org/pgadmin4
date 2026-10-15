@@ -11,6 +11,8 @@ import json
 import secrets
 import uuid
 
+from psycopg import sql
+
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.utils.route import BaseTestGenerator
@@ -53,16 +55,17 @@ class TestAutocompleteAfterConnectionChange(BaseTestGenerator):
         connection = self._get_admin_connection()
         utils.set_isolation_level(connection, 0)
         cursor = connection.cursor()
-        cursor.execute('CREATE ROLE "%s" LOGIN PASSWORD \'%s\'' %
-                       (self.role_name, self.role_password))
+        role = sql.Identifier(self.role_name)
+        cursor.execute(sql.SQL('CREATE ROLE {} LOGIN PASSWORD {}').format(
+            role, sql.Literal(self.role_password)))
         # A table only the new role can see, so we can tell which user the
         # autocomplete connection is logged in as.
-        cursor.execute('CREATE SCHEMA "%s" AUTHORIZATION "%s"' %
-                       (self.role_name, self.role_name))
-        cursor.execute('CREATE TABLE "%s"."%s" (id int)' %
-                       (self.role_name, self.marker_table))
-        cursor.execute('ALTER TABLE "%s"."%s" OWNER TO "%s"' %
-                       (self.role_name, self.marker_table, self.role_name))
+        cursor.execute(sql.SQL('CREATE SCHEMA {} AUTHORIZATION {}').format(
+            role, role))
+        table = sql.Identifier(self.role_name, self.marker_table)
+        cursor.execute(sql.SQL('CREATE TABLE {} (id int)').format(table))
+        cursor.execute(sql.SQL('ALTER TABLE {} OWNER TO {}').format(
+            table, role))
         connection.close()
 
         self.trans_id = str(secrets.choice(range(1, 9999999)))
@@ -115,8 +118,10 @@ class TestAutocompleteAfterConnectionChange(BaseTestGenerator):
         cursor.execute(
             'SELECT pg_terminate_backend(pid) FROM pg_stat_activity '
             'WHERE usename = %s', (self.role_name,))
-        cursor.execute('DROP SCHEMA IF EXISTS "%s" CASCADE' % self.role_name)
-        cursor.execute('DROP ROLE IF EXISTS "%s"' % self.role_name)
+        role = sql.Identifier(self.role_name)
+        cursor.execute(
+            sql.SQL('DROP SCHEMA IF EXISTS {} CASCADE').format(role))
+        cursor.execute(sql.SQL('DROP ROLE IF EXISTS {}').format(role))
         connection.close()
 
     def _post_autocomplete(self):
