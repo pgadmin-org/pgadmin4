@@ -698,9 +698,11 @@ define('pgadmin.node.server', [
             // Load dashboard
             pgBrowser.Events.trigger('pgadmin-browser:tree:selected', _item, _data, node);
 
-            /* Call enable/disable menu function after database is connected.
-             To make sure all the menus for database is in the right state */
-            pgBrowser.enable_disable_menus(_item);
+            /* Refresh the menus after the server is connected, so that they
+             are in the right state. They always belong to the selected node,
+             which may not be this server if it was connected by expanding
+             it, so do not pass the server's item here. */
+            pgBrowser.enable_disable_menus();
 
             /* Below code is added to show the error message if
                connection is successful, but there is an error to
