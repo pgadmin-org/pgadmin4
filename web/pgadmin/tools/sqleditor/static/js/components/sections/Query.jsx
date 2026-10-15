@@ -411,7 +411,8 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     let connectionInfo = {
       connection_list: currentConnList,
       open_file_name: currentFile,
-      is_editor_dirty: editor.current.isDirty()
+      is_editor_dirty: editor.current.isDirty(),
+      toolbar_options: queryToolCtx.toolbarOptionsRef?.current,
     };
     saveToolData('sqleditor', connectionInfo, currentTransId, editor.current.getValue());
     setSaveQtData(false);

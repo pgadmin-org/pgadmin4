@@ -171,6 +171,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
   const isDirtyRef = useRef(false); // usefull when conn change.
   const qtStateRef = useRef(qtState);
+  // The toolbar's check menu options (execute, explain and open file
+  // options) for this tab, kept up to date by MainToolBar so that they are
+  // saved and restored with the rest of the tab's state.
+  const toolbarOptionsRef = useRef(null);
   const eventBus = useRef(eventBusObj || (new EventBus()));
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
@@ -342,6 +346,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             title: sel.title,
           },
         }));
+      }
+      const toolbarOptions = toolContent.connectionInfo?.toolbar_options;
+      if (toolbarOptions && typeof toolbarOptions === 'object') {
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, toolbarOptions);
       }
       if (toolContent?.modifiedExternally) {
         toolContent = await fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent.data, '');
@@ -1014,6 +1022,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eol: qtState.eol,
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
+    toolbarOptionsRef: toolbarOptionsRef,
     toggleQueryTool: () => {
       let panel = qtPanelDocker?.find(qtPanelId);
       if (!panel) {

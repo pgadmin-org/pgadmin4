@@ -34,6 +34,7 @@ import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -50,6 +51,30 @@ function changeQueryExecutionSettings(type, api, transId, value) {
     'trans_id': transId,
   });
   return api.post(url, JSON.stringify(value));
+}
+
+// Execute options that also live on the server side transaction object, so
+// they must be sent to the server when changed.
+const EXECUTION_OPTIONS = ['auto_commit', 'auto_rollback', 'server_cursor'];
+
+// Check menu options that are saved and restored with the tab's state.
+export const RESTORABLE_TOOLBAR_OPTIONS = [
+  ...EXECUTION_OPTIONS,
+  'open_in_new_tab',
+  'explain_verbose', 'explain_costs', 'explain_buffers', 'explain_timing',
+  'explain_summary', 'explain_settings', 'explain_wal', 'explain_generic_plan',
+  'explain_memory', 'explain_serialize_text', 'explain_serialize_binary',
+];
+
+// Keep only the known options with boolean values from saved tab state.
+export function getRestorableToolbarOptions(options) {
+  return _.pickBy(_.pick(options ?? {}, RESTORABLE_TOOLBAR_OPTIONS), _.isBoolean);
+}
+
+// The execute options whose restored value differs from the current one.
+export function getChangedExecutionOptions(restored, current) {
+  return _.pickBy(_.pick(restored, EXECUTION_OPTIONS),
+    (val, key)=>val !== Boolean(current?.[key]));
 }
 
 export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddToMacros}) {
@@ -73,6 +98,10 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   });
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
+  const checkedMenuItemsRef = React.useRef(checkedMenuItems);
+  // Restored execute options waiting for the connection to be established.
+  const [pendingExecOptions, setPendingExecOptions] = useState(null);
+  const {isSaveToolDataEnabled} = useApplicationState() ?? {};
   /* Menu button refs */
   const saveAsMenuRef = React.useRef(null);
   const openInNewTabMenuRef = React.useRef(null);
@@ -153,7 +182,61 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         ...otherVars,
       };
     });
+    if(isSaveToolDataEnabled?.('sqleditor')) {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+    }
   }, []);
+
+  useEffect(()=>{
+    checkedMenuItemsRef.current = checkedMenuItems;
+    if(queryToolCtx.toolbarOptionsRef) {
+      queryToolCtx.toolbarOptionsRef.current = checkedMenuItems;
+    }
+  }, [checkedMenuItems]);
+
+  useEffect(()=>{
+    const restoreToolbarOptions = (options)=>{
+      let restored = getRestorableToolbarOptions(options);
+      // Setting execute options on a View/Edit Data transaction would
+      // promote it to a Query Tool, so only restore them for a Query Tool.
+      if(!queryToolCtx.params.is_query_tool) {
+        restored = _.omit(restored, EXECUTION_OPTIONS);
+      }
+      const changedExecOptions = getChangedExecutionOptions(restored, checkedMenuItemsRef.current);
+      if(!_.isEmpty(changedExecOptions)) {
+        if('server_cursor' in changedExecOptions) {
+          queryToolCtx.updateServerCursor({server_cursor: changedExecOptions.server_cursor});
+        }
+        setPendingExecOptions((prev)=>({...prev, ...changedExecOptions}));
+      }
+      setCheckedMenuItems((prev)=>({...prev, ...restored}));
+    };
+    eventBus.registerListener(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, restoreToolbarOptions);
+    return ()=>{
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, restoreToolbarOptions);
+    };
+  }, []);
+
+  useEffect(()=>{
+    /* The transaction is created with the preference values, so restored
+       execute options can only be applied once it exists. */
+    if(_.isEmpty(pendingExecOptions) || !queryToolConnCtx.connected) {
+      return;
+    }
+    setPendingExecOptions(null);
+    Object.entries(pendingExecOptions).forEach(([option, value])=>{
+      changeQueryExecutionSettings(option, queryToolCtx.api, queryToolCtx.params.trans_id, value)
+        .catch((error)=>{
+          setCheckedMenuItems((prev)=>({...prev, [option]: !value}));
+          if(option === 'server_cursor') {
+            queryToolCtx.updateServerCursor({server_cursor: !value});
+          }
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+            checkTransaction: true,
+          });
+        });
+    });
+  }, [pendingExecOptions, queryToolConnCtx.connected]);
 
   const openFile = useCallback(()=>{
     confirmDiscard(()=>{
