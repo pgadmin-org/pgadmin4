@@ -1535,10 +1535,10 @@
       "url": "/browser/view/msql/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, concat(a, ' x ', b) AS ab, (d)::text AS ds FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t.id, concat(t.a, ' x ', t.b) AS ab, (t.d)::text AS ds, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
-        "definition": "SELECT\n\tid,\n\tCONCAT(a, ' x ', b) AS ab,\n\t(d)::TEXT AS ds\nFROM\n\t(VALUES (1, 'a', 'b', NOW()::DATE)) t (id, a, b, d);"
+        "definition": "SELECT\n\tt.id,\n\tCONCAT(t.a, ' x ', t.b) AS ab,\n\t(t.d)::TEXT AS ds,\n\tu.n\nFROM\n\t(VALUES (1, 'a', 'b', NOW()::DATE)) t (id, a, b, d)\n\tCROSS JOIN (VALUES (2)) u (n);"
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1555,10 +1555,10 @@
       "url": "/browser/view/msql/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, concat(a, ' x ', b) AS ab, (d)::text AS ds FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t.id, concat(t.a, ' x ', t.b) AS ab, (t.d)::text AS ds, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
-        "definition": "SELECT id, concat(a, ' x ', b) AS ab FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d)"
+        "definition": "SELECT t.id, concat(t.a, ' x ', t.b) AS ab, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n)"
       },
       "mocking_required": false,
       "mock_data": {},
