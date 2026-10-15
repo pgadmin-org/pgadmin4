@@ -67,7 +67,14 @@ class AzureCredSchema extends BaseUISchema {
             value: 'azure_cli_credential',
           },
         ],
-        disabled: pgAdmin.server_mode == 'True',
+        // Neither credential may change whilst an attempt is pending, as
+        // the server would still complete it for the old values and its
+        // late success would then be taken as authentication for the new
+        // ones. The server cannot cancel an attempt that is waiting for the
+        // user, so locking the fields is simpler than ignoring its result.
+        disabled: (state) => {
+          return pgAdmin.server_mode == 'True' || state.is_authenticating;
+        },
         helpMessage: gettext(
           'Azure CLI will use the currently logged in identity through the Azure CLI on the local machine. Interactive Browser will open a browser window to authenticate a user interactively.'
         ),
@@ -82,7 +89,8 @@ class AzureCredSchema extends BaseUISchema {
           'Enter the Azure tenant ID against which the user is authenticated.'
         ),
         disabled: (state) => {
-          return state.auth_type !== 'interactive_browser_credential';
+          return state.auth_type !== 'interactive_browser_credential' ||
+            state.is_authenticating;
         },
         depChange: (state) => {
           if (state.auth_type == 'azure_cli_credential') {
@@ -90,6 +98,10 @@ class AzureCredSchema extends BaseUISchema {
           }
           this.eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED', false);
           this.eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',['', '']);
+          // This runs when the tenant id itself changes as well as when
+          // auth_type does; changed credentials need to be authenticated
+          // again.
+          return {is_authenticated: false, auth_code: ''};
         },
       },
       {
@@ -106,8 +118,19 @@ class AzureCredSchema extends BaseUISchema {
           if (!schemaState) return;
 
           const state = schemaState.data;
+          // Go through the schema state so that the fields that depend on
+          // these values (e.g. the device code note) are re-evaluated.
           const setSchemaData = (data) => {
-            schemaState.data = {...schemaState.data, ...data};
+            Object.entries(data).forEach(([key, value]) => {
+              schemaState.setUnpreparedData([key], value);
+            });
+          };
+
+          const logError = (err) => {
+            console.error(
+              err instanceof Error ?
+                err : Error(gettext('Something went wrong'))
+            );
           };
 
           setTimeout(() => {
@@ -115,18 +138,32 @@ class AzureCredSchema extends BaseUISchema {
 
             obj.fieldOptions.authenticateAzure(
               state.auth_type, state.azure_tenant_id
-            ).then(() => {
+            ).then((authenticated) => {
+              // Leave the button enabled after a failure so the user can
+              // try again.
               setSchemaData({
-                is_authenticated: true,
+                is_authenticated: Boolean(authenticated),
                 is_authenticating: false,
                 auth_code: ''
               });
             }).catch((err) => {
-              console.error(
-                err instanceof Error ?
-                  err : Error(gettext('Something went wrong'))
-              );
+              setSchemaData({is_authenticating: false, auth_code: ''});
+              logError(err);
             });
+
+            // The interactive (device code) flow only completes once the
+            // user has entered the code from the server, so fetch it and
+            // show it whilst the request above is still waiting. The button
+            // stays disabled until that request settles (its handlers reset
+            // is_authenticating), as a second click would start a second
+            // attempt on the server whose result could be overwritten by the
+            // late settlement of the first.
+            if (state.auth_type == 'interactive_browser_credential') {
+              obj.fieldOptions.getAuthCode()
+                .then((res) => {
+                  setSchemaData({auth_code: res.data.data.user_code});
+                }).catch(logError);
+            }
           }, 0);
         },
         disabled: (state)=> {
@@ -140,25 +177,6 @@ class AzureCredSchema extends BaseUISchema {
         id: 'is_authenticating',
         visible: false,
         type: '',
-        deps:['auth_btn'],
-        deferredDepChange: (state, source)=>{
-          return new Promise((resolve, reject)=>{
-            if(source == 'auth_btn' && state.auth_type == 'interactive_browser_credential' && state.is_authenticating ) {
-              obj.fieldOptions.getAuthCode()
-                .then((res)=>{
-                  resolve(()=>{
-                    return {
-                      is_authenticating: false,
-                      auth_code: res.data.data.user_code,
-                    };
-                  });
-                })
-                .catch((err)=>{
-                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-                });
-            }
-          });
-        },
       },
       {
         id: 'auth_code',
