@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 from flask import Flask
 
-from pgadmin.tools.sqleditor import _check_and_connect
+from pgadmin.tools.sqleditor import _check_and_connect, save
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check import \
     connect_as_transaction_user, query_tool_connection_check
 from pgadmin.tools.sqleditor.utils.start_running_query import \
@@ -37,7 +37,7 @@ RECONNECT_ERROR = 'password authentication failed for user "jane"'
 def _trans_obj(conn_user, conn_role):
     trans_obj = SimpleNamespace(sgid=1, sid=1, did=2, conn_id='conn-1',
                                 dbname='postgres')
-    if conn_user is not None:
+    if conn_user is not None or conn_role is not None:
         trans_obj.conn_user = conn_user
         trans_obj.conn_role = conn_role
     return trans_obj
@@ -65,7 +65,11 @@ class TestReconnectAsChangedUser(BaseTestGenerator):
         ('Changed user, no role', dict(
             conn_user='jane', conn_role=None,
             expected_kwargs=dict(user='jane', role=None, password=None))),
-        ('No user recorded', dict(
+        ('Changed role, no user', dict(
+            conn_user=None, conn_role='reporting',
+            expected_kwargs=dict(user=None, role='reporting',
+                                 password=None))),
+        ('No user or role recorded', dict(
             conn_user=None, conn_role=None, expected_kwargs={})),
     ]
 
@@ -166,3 +170,40 @@ class TestStartRunningQueryFailedReconnect(BaseTestGenerator):
         self.assertEqual(data['result'], RECONNECT_ERROR)
         conn.execute_async.assert_not_called()
         conn.execute_void.assert_not_called()
+
+
+class TestSaveFailedReconnect(BaseTestGenerator):
+    """Saving with connect=1 reports a failed reconnect instead of carrying
+    on with no transaction object."""
+
+    scenarios = [
+        ('Save after reconnect as changed user fails', dict()),
+    ]
+
+    def setUp(self):
+        # Pure logic test with a mocked connection: skip the server setup.
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        trans_obj = _trans_obj('jane', None)
+        conn = MagicMock()
+        session_obj = {'primary_keys': {'id': 'int4'}}
+        module = 'pgadmin.tools.sqleditor'
+
+        app = Flask(__name__)
+        with app.test_request_context(
+                query_string='connect=1', method='POST',
+                data='{"updated": {"1": {"id": 1}}}'), \
+                patch(module + '.check_transaction_status',
+                      return_value=(True, None, conn, trans_obj,
+                                    session_obj)), \
+                patch(module + '.query_tool_connection_check',
+                      return_value=(False, RECONNECT_ERROR, None, None,
+                                    None, None)), \
+                patch(module + '._check_and_connect') as check_and_connect:
+            response = save.__wrapped__(1234)
+
+        data = response.get_json()['data']
+        self.assertFalse(data['status'])
+        self.assertEqual(data['result'], RECONNECT_ERROR)
+        check_and_connect.assert_not_called()

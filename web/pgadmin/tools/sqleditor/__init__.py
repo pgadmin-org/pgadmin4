@@ -1664,6 +1664,13 @@ def save(trans_id):
             # when password is not saved for the server
             if response is not None:
                 return response
+            # The reconnect failed (e.g. the user the connection was
+            # changed to cannot log in), so report it; there is no
+            # transaction object to carry on with.
+            if not status:
+                return make_json_response(
+                    data={'status': False, 'result': error_msg}
+                )
 
         is_error, _, conn = _check_and_connect(trans_obj)
         if is_error:

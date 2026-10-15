@@ -23,9 +23,10 @@ from pgadmin.utils.driver import get_driver
 def connect_as_transaction_user(conn, trans_obj):
     """
     (Re)connect a Query Tool connection as the user and role it was opened
-    with. When the connection was changed to a different user or role, a bare
-    connect() would log in as the server's own user instead, so queries would
-    silently run as someone else. The password is never stored, so the
+    with, either of which may be recorded without the other. When the
+    connection was changed to a different user or role, a bare connect()
+    would log in as the server's own user instead, so queries would silently
+    run as someone else. The password is never stored, so the
     driver falls back to the connection's or server's saved password, and
     the connection fails rather than switching user if that is not accepted.
 
@@ -34,10 +35,9 @@ def connect_as_transaction_user(conn, trans_obj):
     :return: (status, message) from Connection.connect().
     """
     user = getattr(trans_obj, 'conn_user', None)
-    if user:
-        return conn.connect(user=user,
-                            role=getattr(trans_obj, 'conn_role', None),
-                            password=None)
+    role = getattr(trans_obj, 'conn_role', None)
+    if user or role:
+        return conn.connect(user=user, role=role, password=None)
     return conn.connect()
 
 
