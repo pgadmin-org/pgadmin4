@@ -8,9 +8,9 @@
 ##############################################################################
 from unittest.mock import patch
 
+import config
 from .utils import setup_mfa_app
-from pgadmin.authenticate.mfa.email import EmailAuthentication, \
-    MAX_EMAIL_CODE_ATTEMPTS
+from pgadmin.authenticate.mfa.email import EmailAuthentication
 from pgadmin.authenticate.mfa.utils import ValidationException
 
 
@@ -63,23 +63,51 @@ def check_email_code_discarded_on_fresh_view(test):
     _run_with_email_session(test, session, _fn)
 
 
-def check_email_code_discarded_after_max_attempts(test):
-    """Retries are limited, so the code cannot be brute forced."""
+def _check_discarded_after(test, max_attempts, allowed):
+    """
+    With MFA_EMAIL_CODE_MAX_ATTEMPTS set to *max_attempts*, the code must
+    survive the first allowed - 1 wrong entries and be discarded on wrong
+    entry number *allowed*, so it cannot be brute forced.
+    """
     session = {'mfa_email_code': _CODE}
 
     def _fn(auth):
-        for _ in range(MAX_EMAIL_CODE_ATTEMPTS):
+        for _ in range(allowed - 1):
             with test.assertRaises(ValidationException):
                 auth.validate(code='000000')
-            auth.validation_view()
+            test.assertIn('sent_message', auth.validation_view())
+            test.assertEqual(session.get('mfa_email_code'), _CODE)
 
+        with test.assertRaises(ValidationException):
+            auth.validate(code='000000')
+        test.assertNotIn('sent_message', auth.validation_view())
         test.assertNotIn('mfa_email_code', session)
         test.assertNotIn('mfa_email_code_attempts', session)
 
+        # The discarded code is no longer accepted.
         with test.assertRaises(ValidationException):
             auth.validate(code=_CODE)
 
-    _run_with_email_session(test, session, _fn)
+    with patch.object(config, 'MFA_EMAIL_CODE_MAX_ATTEMPTS', max_attempts):
+        _run_with_email_session(test, session, _fn)
+
+
+def check_email_code_discarded_after_max_attempts(test):
+    """The default configured limit is applied."""
+    _check_discarded_after(
+        test, config.MFA_EMAIL_CODE_MAX_ATTEMPTS,
+        config.MFA_EMAIL_CODE_MAX_ATTEMPTS
+    )
+
+
+def check_email_code_max_attempts_non_default(test):
+    """A non-default MFA_EMAIL_CODE_MAX_ATTEMPTS is read at runtime."""
+    _check_discarded_after(test, 2, 2)
+
+
+def check_email_code_max_attempts_below_one(test):
+    """Values below 1 are treated as 1, so retries are never unlimited."""
+    _check_discarded_after(test, 0, 1)
 
 
 email_retry_scenarios = [
@@ -96,5 +124,15 @@ email_retry_scenarios = [
         "Email MFA code is discarded after too many invalid attempts",
         dict(start=setup_mfa_app,
              check=check_email_code_discarded_after_max_attempts),
+    ),
+    (
+        "Email MFA code honours a non-default MFA_EMAIL_CODE_MAX_ATTEMPTS",
+        dict(start=setup_mfa_app,
+             check=check_email_code_max_attempts_non_default),
+    ),
+    (
+        "Email MFA code limit below 1 is treated as 1",
+        dict(start=setup_mfa_app,
+             check=check_email_code_max_attempts_below_one),
     ),
 ]

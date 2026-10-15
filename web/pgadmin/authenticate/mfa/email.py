@@ -195,7 +195,26 @@ EMAIL_AUTH_METHOD = 'email'
 # without allowing unlimited guesses against the same code.
 _EMAIL_CODE_ATTEMPTS = 'mfa_email_code_attempts'
 _EMAIL_CODE_RETRY = 'mfa_email_code_retry'
-MAX_EMAIL_CODE_ATTEMPTS = 5
+_DEFAULT_EMAIL_CODE_MAX_ATTEMPTS = 5
+
+
+def _email_code_max_attempts() -> int:
+    """
+    Number of wrong entries allowed for one emailed code, as set by
+    MFA_EMAIL_CODE_MAX_ATTEMPTS. Values below 1 are treated as 1, so that
+    the number of attempts can never be unlimited.
+
+    Returns:
+        int: Maximum number of wrong entries for one emailed code
+    """
+    try:
+        max_attempts = int(getattr(
+            config, 'MFA_EMAIL_CODE_MAX_ATTEMPTS',
+            _DEFAULT_EMAIL_CODE_MAX_ATTEMPTS
+        ))
+    except (TypeError, ValueError):
+        max_attempts = _DEFAULT_EMAIL_CODE_MAX_ATTEMPTS
+    return max(1, max_attempts)
 
 
 def email_authentication_label():
@@ -231,7 +250,7 @@ class EmailAuthentication(BaseMFAuth):
         # Keep the code that was sent, so that the user can correct a
         # mistyped code, but discard it once too many attempts have failed.
         attempts = session.get(_EMAIL_CODE_ATTEMPTS, 0) + 1
-        if attempts >= MAX_EMAIL_CODE_ATTEMPTS:
+        if attempts >= _email_code_max_attempts():
             session.pop("mfa_email_code", None)
             session.pop(_EMAIL_CODE_ATTEMPTS, None)
             raise ValidationException(_(
