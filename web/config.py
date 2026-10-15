@@ -44,6 +44,9 @@ from branding import APP_NAME, APP_ICON, APP_COPYRIGHT, APP_PATH, \
 HELP_PATH = '../../../docs/en_US/_build/html/'
 
 # Languages we support in the UI
+# Babel's locale data for other languages is removed from the packages by
+# pkg/prune_site_packages.py, which parses this assignment, so it must stay a
+# plain dict literal.
 LANGUAGES = {
     'en': 'English',
     'zh_Hans_CN': 'Chinese (Simplified)',
@@ -966,6 +969,13 @@ OAUTH2_CONFIG = [
 # in this case Admin has to add the user manually in the SQLite database.
 
 OAUTH2_AUTO_CREATE_USER = True
+
+# If set to True, and OAuth2 is the only authentication source with exactly
+# one provider in OAUTH2_CONFIG, users are sent straight to that provider
+# instead of seeing the pgAdmin login page. After logging out, the login
+# page is shown so the provider does not log the user straight back in.
+# Add ?no_auto_login to the login page URL to display it regardless.
+OAUTH2_AUTO_LOGIN = False
 
 ##########################################################################
 # Webserver Configuration
