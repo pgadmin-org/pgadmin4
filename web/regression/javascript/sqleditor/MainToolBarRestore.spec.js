@@ -101,7 +101,15 @@ describe('MainToolBar toolbar options restore', () => {
     );
     queryToolCtx.params.is_query_tool = isQueryTool;
     const result = render(ui(connected));
-    return {...result, setConnected: (conn) => result.rerender(ui(conn))};
+    return {
+      ...result,
+      setConnected: (conn, ctx) => {
+        if(ctx) {
+          queryToolCtx = ctx;
+        }
+        result.rerender(ui(conn));
+      },
+    };
   };
 
   beforeEach(() => {
@@ -158,6 +166,21 @@ describe('MainToolBar toolbar options restore', () => {
     await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(2));
     expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.auto_commit/1234', 'false');
     expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.server_cursor/1234', 'true');
+  });
+
+  it('sends restored execute options to the transaction current when connected', async () => {
+    const {setConnected} = renderToolBar(false);
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, {auto_commit: false});
+    });
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current.auto_commit).toBe(false));
+
+    // The transaction is replaced before the pending option is sent.
+    setConnected(true, {...queryToolCtx, params: {...queryToolCtx.params, trans_id: 5678}});
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledTimes(1));
+    expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.auto_commit/5678', 'false');
   });
 
   it('reverts and saves a restored execute option the server rejects', async () => {
@@ -336,8 +359,8 @@ describe('MainToolBar execute options menu', () => {
 
   const renderToolBar = () => {
     const containerRef = React.createRef();
-    return render(
-      <QueryToolContext.Provider value={queryToolCtx}>
+    const ui = (ctx) => (
+      <QueryToolContext.Provider value={ctx}>
         <QueryToolConnectionContext.Provider value={{connected: true, obtainingConn: false, connectionStatus: null}}>
           <QueryToolEventsContext.Provider value={eventBus}>
             <div ref={containerRef}>
@@ -348,6 +371,8 @@ describe('MainToolBar execute options menu', () => {
         </QueryToolConnectionContext.Provider>
       </QueryToolContext.Provider>
     );
+    const result = render(ui(queryToolCtx));
+    return {...result, setContext: (ctx) => result.rerender(ui(ctx))};
   };
 
   const menuItem = (label) => document.querySelector(`li[data-label="${label}"]`);
@@ -386,6 +411,25 @@ describe('MainToolBar execute options menu', () => {
     await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.server_cursor/1234', 'true'));
     await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current.server_cursor).toBe(true));
     expect(queryToolCtx.updateServerCursor).toHaveBeenLastCalledWith({server_cursor: true});
+  });
+
+  it('sends execute options to the current transaction after a connection change', async () => {
+    const {setContext} = renderToolBar();
+    await waitFor(() => expect(queryToolCtx.toolbarOptionsRef.current).not.toBeNull());
+
+    // A connection change replaces the transaction with a new one.
+    const newCtx = {
+      ...queryToolCtx,
+      params: {...queryToolCtx.params, trans_id: 5678},
+      updateServerCursor: jest.fn(),
+    };
+    setContext(newCtx);
+
+    await openMenuAndClick('Use server cursor?');
+    await waitFor(() => expect(queryToolCtx.api.post).toHaveBeenCalledWith('/mock/sqleditor.server_cursor/5678', 'true'));
+    expect(queryToolCtx.api.post).not.toHaveBeenCalledWith('/mock/sqleditor.server_cursor/1234', expect.anything());
+    expect(newCtx.updateServerCursor).toHaveBeenLastCalledWith({server_cursor: true});
+    expect(queryToolCtx.updateServerCursor).not.toHaveBeenCalled();
   });
 
   it('reverts an execute option when the request fails', async () => {

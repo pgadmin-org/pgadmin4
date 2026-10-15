@@ -91,6 +91,10 @@ export function getChangedExecutionOptions(restored, current) {
 export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddToMacros}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
+  /* A connection change replaces the transaction, so callbacks that outlive
+     a render read the current context from here rather than capturing it. */
+  const queryToolCtxRef = React.useRef(queryToolCtx);
+  queryToolCtxRef.current = queryToolCtx;
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
@@ -184,8 +188,12 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
 
   const sendExecOption = useCallback((option, value)=>{
     // Start from the queue so that a synchronous failure is handled too.
+    // Read the context when the request is sent, as it may be queued.
     const request = execOptionsQueueRef.current
-      .then(()=>changeQueryExecutionSettings(option, queryToolCtx.api, queryToolCtx.params.trans_id, value));
+      .then(()=>{
+        const {api, params} = queryToolCtxRef.current;
+        return changeQueryExecutionSettings(option, api, params.trans_id, value);
+      });
     execOptionsQueueRef.current = request.catch(()=>{/* handled by the caller */});
     return request;
   }, []);
@@ -201,7 +209,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
       const setOption = (val)=>{
         setCheckedMenuItems((prev)=>({...prev, [option]: val}));
         if(option === 'server_cursor') {
-          queryToolCtx.updateServerCursor({server_cursor: val});
+          queryToolCtxRef.current.updateServerCursor({server_cursor: val});
         }
       };
       changingExecOptionRef.current = true;
