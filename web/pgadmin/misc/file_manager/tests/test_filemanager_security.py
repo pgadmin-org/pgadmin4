@@ -310,7 +310,7 @@ class TestOpenUploadTargetCreatesNewFile(
     def runTest(self):
         from pgadmin.misc.file_manager import _open_upload_target
         target = os.path.join(self.tmpdir, "uploaded.txt")
-        with _open_upload_target(target) as f:
+        with _open_upload_target(target, self.tmpdir) as f:
             f.write(b"hello")
         self.assertTrue(os.path.isfile(target))
         with open(target, "rb") as f:
@@ -331,7 +331,7 @@ class TestOpenUploadTargetOverwritesRegularFile(
         target = os.path.join(self.tmpdir, "existing.txt")
         with open(target, "wb") as f:
             f.write(b"OLD CONTENT" * 100)  # ensure truncate is observable
-        with _open_upload_target(target) as f:
+        with _open_upload_target(target, self.tmpdir) as f:
             f.write(b"NEW")
         with open(target, "rb") as f:
             self.assertEqual(f.read(), b"NEW")
@@ -351,7 +351,7 @@ class TestOpenUploadTargetMode0600(_OpenUploadTargetMixin, BaseTestGenerator):
             self.skipTest("POSIX mode bits not meaningful on Windows")
         from pgadmin.misc.file_manager import _open_upload_target
         target = os.path.join(self.tmpdir, "private.txt")
-        with _open_upload_target(target) as f:
+        with _open_upload_target(target, self.tmpdir) as f:
             f.write(b"x")
         mode = os.stat(target).st_mode & 0o777
         self.assertEqual(
@@ -382,7 +382,7 @@ class TestOpenUploadTargetRejectsLeafSymlink(
         os.symlink(outside_target, link_path)
 
         with self.assertRaises(OSError) as cm:
-            with _open_upload_target(link_path) as f:
+            with _open_upload_target(link_path, self.tmpdir) as f:
                 f.write(b"OWNED")
         # Linux: ELOOP. macOS: ELOOP or EMLINK. Either is acceptable.
         self.assertIn(
@@ -414,7 +414,7 @@ class TestOpenUploadTargetRejectsLeafSymlinkPointingToNonexistent(
         os.symlink(outside_path, link_path)
 
         with self.assertRaises(OSError) as cm:
-            with _open_upload_target(link_path) as f:
+            with _open_upload_target(link_path, self.tmpdir) as f:
                 f.write(b"OWNED")
         self.assertIn(
             cm.exception.errno,
@@ -422,6 +422,39 @@ class TestOpenUploadTargetRejectsLeafSymlinkPointingToNonexistent(
             "Expected ELOOP/EMLINK, got errno=%d" % cm.exception.errno)
         # No file must have been created at the symlink's target.
         self.assertFalse(os.path.exists(outside_path))
+
+
+class TestOpenUploadTargetRejectsParentSymlink(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """Negative: a parent directory swapped for a symlink to a directory
+    outside the storage root is refused, not followed.
+
+    Checking the leaf alone leaves this open: every component below the
+    root must be opened without following a symlink.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("O_NOFOLLOW unavailable on Windows")
+        from pgadmin.misc.file_manager import _open_upload_target
+        storage = os.path.join(self.tmpdir, "storage")
+        outside_dir = os.path.join(self.tmpdir, "outside")
+        os.makedirs(outside_dir)
+        os.makedirs(storage)
+        victim = os.path.join(outside_dir, "file.sql")
+        with open(victim, "wb") as f:
+            f.write(b"victim")
+        os.symlink(outside_dir, os.path.join(storage, "sub"))
+
+        with self.assertRaises(OSError) as cm:
+            with _open_upload_target(
+                    os.path.join(storage, "sub", "file.sql"), storage) as f:
+                f.write(b"OWNED")
+        self.assertIn(cm.exception.errno, (errno.ELOOP, errno.EMLINK))
+        with open(victim, "rb") as f:
+            self.assertEqual(f.read(), b"victim")
 
 
 class TestOpenUploadTargetDesktopFollowsLeafSymlink(
@@ -447,7 +480,7 @@ class TestOpenUploadTargetDesktopFollowsLeafSymlink(
         except (OSError, NotImplementedError):
             self.skipTest("Cannot create symlinks on this platform")
 
-        with _open_upload_target(link_path) as f:
+        with _open_upload_target(link_path, self.tmpdir) as f:
             f.write(b"NEW")
 
         self.assertTrue(os.path.islink(link_path))
@@ -469,7 +502,7 @@ class TestOpenUploadTargetDesktopUsesUmask(
         umask = os.umask(0o022)
         try:
             target = os.path.join(self.tmpdir, "desktop.sql")
-            with _open_upload_target(target) as f:
+            with _open_upload_target(target, self.tmpdir) as f:
                 f.write(b"x")
         finally:
             os.umask(umask)

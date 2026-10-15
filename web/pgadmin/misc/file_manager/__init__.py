@@ -13,6 +13,7 @@ import errno
 import os
 import os.path
 import secrets
+import stat
 import string
 import time
 from urllib.parse import unquote
@@ -50,16 +51,86 @@ if _platform == "win32":
     file_root = ""
 
 
-def _open_upload_target(path):
-    """Open a file for writing, with leaf-symlink protection in server mode.
+def _openat_nofollow(dir_fd, name, flags, mode, path):
+    """Open `name` relative to `dir_fd` without following a symbolic link.
+    `path` is the full path, for error messages only."""
+    try:
+        return os.open(name, flags | os.O_NOFOLLOW | os.O_CLOEXEC, mode,
+                       dir_fd=dir_fd)
+    except NotADirectoryError:
+        # With O_DIRECTORY, Linux reports a symbolic link as ENOTDIR rather
+        # than ELOOP. Say what actually happened so callers can tell the
+        # refusal from a genuine error.
+        if stat.S_ISLNK(os.stat(name, dir_fd=dir_fd,
+                                follow_symlinks=False).st_mode):
+            raise OSError(errno.ELOOP, os.strerror(errno.ELOOP), path)
+        raise
 
-    Used by both the file upload endpoint and `save_file()` (Query Tool /
-    ERD save). Returns a binary write-mode file object.
 
-    In server mode the kernel will refuse to follow a symbolic link at the
-    leaf (CWE-61), closing the TOCTOU gap between `check_access_permission`
-    and the actual file write, and new files are created owner-only
-    (0o600).
+def _open_parent_beneath(root, path):
+    """Open the directory containing `path`, which must lie inside `root`,
+    without following a symbolic link anywhere below `root`.
+
+    Validating a path with `check_access_permission()` and then opening it
+    by name leaves a window in which any component of the path, the leaf or
+    a parent directory, can be swapped for a symbolic link that points
+    outside the storage directory (CWE-367 / CWE-61). Rather than check and
+    then trust the name, this opens `root` and walks down from it one
+    component at a time with O_NOFOLLOW, each open relative to the
+    descriptor of the directory above it, so the kernel refuses a symbolic
+    link (with ELOOP, or EMLINK on some BSDs) wherever it appears.
+
+    `root` itself is trusted and may be a symbolic link, since it is the
+    storage directory configured by the administrator. `path` is taken
+    lexically, so a symbolic link inside the storage directory is refused
+    even when it points elsewhere inside it.
+
+    Returns (descriptor of the parent directory, name of the leaf); the
+    caller must close the descriptor.
+    """
+    if not root:
+        raise PermissionError(errno.EACCES, gettext("Access denied"), path)
+    rel = os.path.relpath(os.path.abspath(path), os.path.abspath(root))
+    parts = pathlib.PurePath(rel).parts
+    if not parts or parts == ('.',) or parts[0] == os.pardir:
+        raise PermissionError(errno.EACCES, gettext("Access denied"), path)
+
+    dir_fd = os.open(os.path.realpath(root),
+                     os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+    try:
+        for name in parts[:-1]:
+            next_fd = _openat_nofollow(dir_fd, name,
+                                       os.O_RDONLY | os.O_DIRECTORY, 0, path)
+            os.close(dir_fd)
+            dir_fd = next_fd
+    except BaseException:
+        os.close(dir_fd)
+        raise
+    return dir_fd, parts[-1]
+
+
+def _open_beneath(root, path, flags, mode=0o777):
+    """Open `path`, which must lie inside `root`, without following a
+    symbolic link anywhere below `root` (see `_open_parent_beneath()`).
+    Returns a raw file descriptor."""
+    dir_fd, name = _open_parent_beneath(root, path)
+    try:
+        return _openat_nofollow(dir_fd, name, flags, mode, path)
+    finally:
+        os.close(dir_fd)
+
+
+def _open_upload_target(path, root):
+    """Open a file for writing, with symlink protection in server mode.
+
+    Used by the file upload endpoint, `save_file()` (Query Tool / ERD save)
+    and Export Servers, each of which has validated `path` against the
+    storage directory `root`. Returns a binary write-mode file object.
+
+    In server mode the file is opened by `_open_beneath()`, so a symbolic
+    link swapped in at the leaf or at any parent directory since the check
+    is refused rather than followed out of the storage directory, and new
+    files are created owner-only (0o600).
 
     In desktop mode there is no storage sandbox to escape, as
     `check_access_permission` is a no-op and the user may write anywhere
@@ -68,30 +139,59 @@ def _open_upload_target(path):
     filesystems (e.g. the xdg-document-portal FUSE mount used by Flatpak)
     return ELOOP for it even on regular files.
 
-    On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
-    residual leaf-component TOCTOU is mitigated by the absence of any
-    in-pgAdmin primitive that creates symlinks.
+    On Windows, O_NOFOLLOW and descriptor-relative opens are unavailable,
+    so the file is opened by name; the residual TOCTOU is mitigated by the
+    absence of any in-pgAdmin primitive that creates symlinks.
     """
     flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
-    mode = 0o666
     if _refuses_leaf_symlinks():
-        flags |= os.O_NOFOLLOW
-    if config.SERVER_MODE:
-        mode = 0o600
-    fd = os.open(path, flags, mode)
+        fd = _open_beneath(root, path, flags, 0o600)
+    else:
+        fd = os.open(path, flags, 0o600 if config.SERVER_MODE else 0o666)
     return os.fdopen(fd, 'wb')
 
 
+def _open_read_target(path, root):
+    """Open a file for reading, with symlink protection in server mode.
+
+    The read-side counterpart of `_open_upload_target()`, for callers that
+    validate a path against the storage directory `root` and then open it,
+    so a symbolic link swapped in at the leaf or at a parent directory in
+    between cannot redirect the read outside the storage directory. Returns
+    a binary read-mode file object.
+
+    In server mode only a regular file is accepted: the open is
+    non-blocking so that a FIFO planted at the path cannot hang the request
+    waiting for a writer, and anything that is not a regular file is
+    refused with EINVAL.
+    """
+    if not _refuses_leaf_symlinks():
+        return open(path, 'rb')
+
+    fd = _open_beneath(root, path, os.O_RDONLY | os.O_NONBLOCK)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise OSError(errno.EINVAL, gettext("Not a regular file"), path)
+        os.set_blocking(fd, True)
+    except BaseException:
+        os.close(fd)
+        raise
+    return os.fdopen(fd, 'rb')
+
+
 def _refuses_leaf_symlinks():
-    """True when `_open_upload_target()` opens with O_NOFOLLOW.
+    """True when `_open_upload_target()` and `_open_read_target()` open
+    through `_open_beneath()`, refusing symbolic links.
 
     Callers that translate ELOOP/EMLINK into a "refusing to write through
     a symbolic link" message must use this same condition, so that the
     message cannot drift from the behaviour: in desktop mode (or on
-    Windows, where O_NOFOLLOW does not exist) those errnos mean a genuine
-    filesystem problem, not a deliberate refusal.
+    Windows, where O_NOFOLLOW and descriptor-relative opens do not exist)
+    those errnos mean a genuine filesystem problem, not a deliberate
+    refusal.
     """
-    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW')
+    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW') and \
+        hasattr(os, 'O_DIRECTORY') and os.open in os.supports_dir_fd
 
 
 MODULE_NAME = 'file_manager'
@@ -505,7 +605,8 @@ def save_file():
 
     # write to file
     try:
-        with _open_upload_target(file_path) as output_file:
+        with _open_upload_target(file_path,
+                                 storage_manager_path) as output_file:
             output_file.write(file_content)
     except IOError as e:
         # O_NOFOLLOW makes the kernel refuse a leaf symlink with ELOOP
@@ -1167,7 +1268,7 @@ class Filemanager():
             except ValueError:
                 return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-            with _open_upload_target(new_name) as f:
+            with _open_upload_target(new_name, the_dir) as f:
                 while True:
                     # 4MB chunk (4 * 1024 * 1024 Bytes)
                     data = file_obj.read(4194304)

@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import errno
 import os
 import sys
 import json
@@ -370,6 +371,33 @@ def connection_params_to_env(connection_params):
     return env
 
 
+def get_file_manager_storage_dir():
+    """
+    Returns:
+        The storage directory the user's file manager is currently using
+        (their own, or the shared storage last selected), or None in
+        desktop mode. Raises PermissionError for a restricted shared
+        storage the user may not use.
+    """
+    try:
+        last_storage = Preferences.module('file_manager').preference(
+            'last_storage').get()
+    except Exception:
+        last_storage = MY_STORAGE
+
+    if last_storage != MY_STORAGE:
+        sel_dir_list = [sdir for sdir in current_app.config['SHARED_STORAGE']
+                        if sdir['name'] == last_storage]
+        selected_dir = sel_dir_list[0] if len(
+            sel_dir_list) == 1 else None
+
+        if selected_dir and selected_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            raise PermissionError(ACCESS_DENIED_MESSAGE)
+        return get_storage_directory(shared_storage=last_storage)
+    return get_storage_directory()
+
+
 def filename_with_file_manager_path(_file, create_file=False,
                                     skip_permission_check=False):
     """
@@ -385,27 +413,12 @@ def filename_with_file_manager_path(_file, create_file=False,
 
     # retrieve storage directory path
     try:
-        last_storage = Preferences.module('file_manager').preference(
-            'last_storage').get()
-    except Exception:
-        last_storage = MY_STORAGE
-
-    if last_storage != MY_STORAGE:
-        sel_dir_list = [sdir for sdir in current_app.config['SHARED_STORAGE']
-                        if sdir['name'] == last_storage]
-        selected_dir = sel_dir_list[0] if len(
-            sel_dir_list) == 1 else None
-
-        if selected_dir and selected_dir['restricted_access'] and \
-                not current_user.has_role("Administrator"):
-            return make_json_response(success=0,
-                                      errormsg=ACCESS_DENIED_MESSAGE,
-                                      info='ACCESS_DENIED',
-                                      status=403)
-        storage_dir = get_storage_directory(
-            shared_storage=last_storage)
-    else:
-        storage_dir = get_storage_directory()
+        storage_dir = get_file_manager_storage_dir()
+    except PermissionError:
+        return make_json_response(success=0,
+                                  errormsg=ACCESS_DENIED_MESSAGE,
+                                  info='ACCESS_DENIED',
+                                  status=403)
 
     from pgadmin.misc.file_manager import Filemanager
     Filemanager.check_access_permission(
@@ -678,9 +691,21 @@ def dump_database_servers(output_file, selected_servers,
     file_content = json.dumps(object_dict, indent=4)
     error_str = "Error: {0}"
     try:
-        with open(file_path, 'w') as output_file:
-            output_file.write(file_content)
+        if from_setup:
+            with open(file_path, 'w') as output_file:
+                output_file.write(file_content)
+        else:
+            # The path was validated against the user's storage directory
+            # above, so open it without following a symbolic link swapped
+            # in at the leaf or a parent directory since that check.
+            from pgadmin.misc.file_manager import _open_upload_target
+            with _open_upload_target(
+                    file_path, get_file_manager_storage_dir()) as output_file:
+                output_file.write(file_content.encode('utf-8'))
     except IOError as e:
+        if not from_setup and _is_refused_leaf_symlink(e):
+            return _handle_error(gettext(
+                "Refusing to write through a symbolic link."), from_setup)
         err_msg = error_str.format(e.strerror)
         return _handle_error(err_msg, from_setup)
     except Exception as e:
@@ -688,7 +713,7 @@ def dump_database_servers(output_file, selected_servers,
         return _handle_error(err_msg, from_setup)
 
     msg = gettext("Configuration for %s servers dumped to %s" %
-                  (servers_dumped, output_file.name))
+                  (servers_dumped, file_path))
     print(msg)
 
     return True, msg
@@ -816,11 +841,25 @@ def load_database_servers(input_file, selected_servers,
         return _handle_error(str(e), from_setup)
 
     try:
-        with open(file_path) as f:
-            data = json.load(f)
+        if from_setup:
+            with open(file_path) as f:
+                data = json.load(f)
+        else:
+            # As for the export, don't follow a symbolic link swapped in
+            # since the path was validated.
+            from pgadmin.misc.file_manager import _open_read_target
+            with _open_read_target(
+                    file_path, get_file_manager_storage_dir()) as f:
+                data = json.load(f)
     except json.decoder.JSONDecodeError as e:
         return _handle_error(gettext("Error parsing input file %s: %s" %
                              (file_path, e)), from_setup)
+    except OSError as e:
+        if not from_setup and _is_refused_leaf_symlink(e):
+            return _handle_error(gettext(
+                "Refusing to read through a symbolic link."), from_setup)
+        return _handle_error(gettext("Error reading input file %s: [%d] %s" %
+                             (file_path, e.errno, e.strerror)), from_setup)
     except Exception as e:
         return _handle_error(gettext("Error reading input file %s: [%d] %s" %
                              (file_path, e.errno, e.strerror)), from_setup)
@@ -1031,6 +1070,15 @@ def _does_user_exist(user, from_setup, auth_source=INTERNAL):
             sys.exit(1)
 
     return new_user
+
+
+def _is_refused_leaf_symlink(e):
+    """True if `e` is the kernel refusing to follow a symbolic link because
+    the file was opened with O_NOFOLLOW (ELOOP, or EMLINK on some BSDs),
+    rather than a genuine filesystem error."""
+    from pgadmin.misc.file_manager import _refuses_leaf_symlinks
+    return _refuses_leaf_symlinks() and \
+        e.errno in (errno.ELOOP, errno.EMLINK)
 
 
 def _handle_error(error_msg, from_setup):
