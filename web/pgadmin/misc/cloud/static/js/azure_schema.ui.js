@@ -90,7 +90,9 @@ class AzureCredSchema extends BaseUISchema {
           }
           this.eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED', false);
           this.eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',['', '']);
-          // Changed credentials need to be authenticated again.
+          // This runs when the tenant id itself changes as well as when
+          // auth_type does; changed credentials need to be authenticated
+          // again.
           return {is_authenticated: false, auth_code: ''};
         },
       },
@@ -143,14 +145,15 @@ class AzureCredSchema extends BaseUISchema {
 
             // The interactive (device code) flow only completes once the
             // user has entered the code from the server, so fetch it and
-            // show it whilst the request above is still waiting.
+            // show it whilst the request above is still waiting. The button
+            // stays disabled until that request settles (its handlers reset
+            // is_authenticating), as a second click would start a second
+            // attempt on the server whose result could be overwritten by the
+            // late settlement of the first.
             if (state.auth_type == 'interactive_browser_credential') {
               obj.fieldOptions.getAuthCode()
                 .then((res) => {
-                  setSchemaData({
-                    is_authenticating: false,
-                    auth_code: res.data.data.user_code,
-                  });
+                  setSchemaData({auth_code: res.data.data.user_code});
                 }).catch(logError);
             }
           }, 0);
