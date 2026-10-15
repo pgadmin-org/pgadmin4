@@ -38,7 +38,7 @@ import { retrieveNodeName } from '../show_view_data';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
-import { connectServer, connectServerModal } from './connectServer';
+import { connectServer, connectServerModal, connectionCancelledError, ensureServerConnected } from './connectServer';
 import { FileManagerUtils  } from '../../../../../misc/file_manager/static/js/components/FileManager';
 
 export const QueryToolContext = React.createContext();
@@ -114,15 +114,6 @@ const FIXED_PREF = {
     },
   },
 };
-
-/* Raised when the user dismisses the password prompt rather than supplying
- * credentials. The flag lets callers tell a deliberate cancellation from a
- * genuine failure without matching on the (translated) message text. */
-function connectionCancelledError() {
-  const error = new Error(gettext('Connection cancelled'));
-  error.cancelled = true;
-  return error;
-}
 
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
@@ -773,6 +764,16 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     };
+    /* Put the previous selection back if the change does not go ahead */
+    const revertSelection = ()=>{
+      if(!isNew) {
+        selectConn(currSelectedConn, currConnected, false);
+      } else {
+        setQtStatePartial({
+          obtaining_conn: false,
+        });
+      }
+    };
     /* If not new, select it initially to show loading */
     if(!isNew) {
       selectConn(connectionData);
@@ -782,7 +783,16 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     }
 
-    return new Promise((resolve, reject)=>{
+    /* Connect the server itself first, so that the Object Explorer reflects
+     * the connection if the server had been disconnected. */
+    return ensureServerConnected(api, modal, connectionData.sid, (isConnecting)=>{
+      setQtStatePartial({
+        obtaining_conn: isConnecting,
+      });
+    }).catch((error)=>{
+      revertSelection();
+      throw error;
+    }).then(()=>new Promise((resolve, reject)=>{
       api.post(url_for('sqleditor.update_sqleditor_connection', {
         trans_id: qtState.params.trans_id,
         sgid: connectionData.sgid,
@@ -823,13 +833,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               obtaining_conn: false,
             });
             const onCancel = ()=>{
-              if(!isNew) {
-                selectConn(currSelectedConn, currConnected, false);
-              } else {
-                setQtStatePartial({
-                  obtaining_conn: false,
-                });
-              }
+              revertSelection();
               reject(connectionCancelledError());
             };
             connectServerModal(modal, error.response?.data?.result, (passwordData)=>{
@@ -844,17 +848,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               );
             }, onCancel);
           } else {
-            if(!isNew) {
-              selectConn(currSelectedConn, currConnected, false);
-            } else {
-              setQtStatePartial({
-                obtaining_conn: false,
-              });
-            }
+            revertSelection();
             reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
           }
         });
-    });
+    }));
   };
 
   const onNewConnClick = useCallback(()=>{

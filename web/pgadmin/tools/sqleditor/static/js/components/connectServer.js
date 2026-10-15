@@ -10,6 +10,15 @@ import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 
+/* Raised when the user dismisses the password prompt rather than supplying
+ * credentials. The flag lets callers tell a deliberate cancellation from a
+ * genuine failure without matching on the (translated) message text. */
+export function connectionCancelledError() {
+  const error = new Error(gettext('Connection cancelled'));
+  error.cancelled = true;
+  return error;
+}
+
 export function connectServerModal(modal, modalData, connectCallback, cancelCallback) {
   modal.showModal(gettext('Connect to server'), (closeModal)=>{
     return (
@@ -48,4 +57,18 @@ export async function connectServer(api, modal, sid, user, formData, connectCall
       cancelCallback?.();
     });
   }
+}
+
+/* Make sure the server's own connection (the one the Object Explorer shows)
+ * is established, prompting for its password if required. The Query Tool's
+ * connection is separate, so without this a server that was disconnected
+ * stays disconnected in the Object Explorer even though the Query Tool has
+ * reconnected to it. Resolves once connected, and rejects with a cancelled
+ * error if the user dismisses the prompt. */
+export function ensureServerConnected(api, modal, sid, promptCallback) {
+  return new Promise((resolve, reject)=>{
+    connectServer(api, modal, sid, null, null, resolve, ()=>{
+      reject(connectionCancelledError());
+    }, promptCallback);
+  });
 }

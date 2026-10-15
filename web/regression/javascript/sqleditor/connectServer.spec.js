@@ -20,7 +20,7 @@ jest.mock('../../../pgadmin/static/js/Dialogs/ConnectServerContent', () => ({
 }));
 
 import url_for from 'sources/url_for';
-import { connectServer } from '../../../pgadmin/tools/sqleditor/static/js/components/connectServer';
+import { connectServer, ensureServerConnected } from '../../../pgadmin/tools/sqleditor/static/js/components/connectServer';
 
 /* Captures the props of each password prompt raised, so that a test can drive
  * the prompt by calling onOK or closeModal on it. */
@@ -115,5 +115,51 @@ describe('connectServer', ()=>{
     await connectServer(api, modal, 1, 'postgres', passwordFormData);
 
     expect(()=>modal.prompts[0].closeModal()).not.toThrow();
+  });
+});
+
+describe('ensureServerConnected', ()=>{
+  it('connects the server itself and resolves without prompting', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+    url_for.mockClear();
+
+    await expect(ensureServerConnected(api, modal, 1)).resolves.toEqual({connected: true});
+
+    /* Changing the Query Tool connection must connect the server, otherwise a
+     * disconnected server stays disconnected in the Object Explorer whilst the
+     * Query Tool reconnects (issue #8144). */
+    expect(url_for).toHaveBeenCalledWith('sqleditor.connect_server', {'sid': 1});
+    expect(modal.prompts).toHaveLength(0);
+  });
+
+  it('resolves once the password prompt is answered', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {data: {result: 'need password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+    const promptCallback = jest.fn();
+
+    const result = ensureServerConnected(api, modal, 1, promptCallback);
+    await new Promise(process.nextTick);
+    expect(modal.prompts).toHaveLength(1);
+    expect(promptCallback).toHaveBeenLastCalledWith(false);
+
+    modal.prompts[0].onOK(passwordFormData);
+
+    await expect(result).resolves.toEqual({connected: true});
+    expect(promptCallback).toHaveBeenLastCalledWith(true);
+    expect(api).toHaveBeenLastCalledWith(expect.objectContaining({data: {password: 'secret'}}));
+  });
+
+  it('rejects with a cancelled error when the prompt is dismissed', async ()=>{
+    const api = jest.fn().mockRejectedValue({response: {data: {result: 'need password'}}});
+    const modal = createFakeModal();
+
+    const result = ensureServerConnected(api, modal, 1);
+    await new Promise(process.nextTick);
+    modal.prompts[0].closeModal();
+
+    await expect(result).rejects.toMatchObject({cancelled: true});
   });
 });
