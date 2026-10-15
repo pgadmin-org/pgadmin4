@@ -18,6 +18,7 @@ import { setupMenu } from './menu.js';
 import contextMenu from 'electron-context-menu';
 import { setupDownloader } from './downloader.js';
 import { setupAutoUpdater, updateConfigAndMenus } from './autoUpdaterHandler.js';
+import { classifyWindowOpen, isAppUrl, isExternalUrl } from './window_policy.js';
 
 const configStore = new Store({
   defaults: {
@@ -42,8 +43,6 @@ let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let baseUrl = `http://127.0.0.1:${serverPort}`;
-
-let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
 
 process.env['ELECTRON_ENABLE_SECURITY_WARNINGS'] = false;
 
@@ -361,6 +360,75 @@ function startDesktopMode() {
   performPing();
 }
 
+// Restrict what a window showing pgAdmin (and so carrying pgadmin_preload.js)
+// may open or navigate to. Pages that are not served by the local pgAdmin
+// server must never be loaded with the preload attached, as it gives them
+// access to privileged APIs such as writing and opening files.
+function setupWindowGuards(win) {
+  const contents = win.webContents;
+
+  contents.setWindowOpenHandler(({url, frameName})=>{
+    const openDocsInBrowser = configStore.get('openDocsInBrowser', true);
+    const target = classifyWindowOpen({url, frameName}, baseUrl, openDocsInBrowser);
+
+    if (target === 'external') {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    } else if (target === 'deny') {
+      misc.writeServerLog(`Refused to open a window for ${url}`);
+      return { action: 'deny' };
+    }
+
+    // Both remaining cases open in-app, but only pgAdmin's own pages get
+    // the preload. Electron does not pass the preload on to child windows
+    // unless it is given here.
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        'position': 'center',
+        'minWidth': 640,
+        'minHeight': 480,
+        icon: '../../assets/pgAdmin4.png',
+        ...pgAdminMainScreen.getBounds(),
+        webPreferences: target === 'app' ? {
+          preload: path.join(__dirname, 'pgadmin_preload.js'),
+        } : {
+          contextIsolation: true,
+          nodeIntegration: false,
+          sandbox: true,
+        },
+      },
+    };
+  });
+
+  // Child windows showing pgAdmin pages need the same restrictions, or they
+  // could open or navigate to other sites with the preload attached.
+  contents.on('did-create-window', (childWindow, {url, frameName})=>{
+    const openDocsInBrowser = configStore.get('openDocsInBrowser', true);
+    if (classifyWindowOpen({url, frameName}, baseUrl, openDocsInBrowser) === 'app') {
+      setupWindowGuards(childWindow);
+    }
+  });
+
+  // Keep the window, and any frames within it (the preload is also loaded
+  // into subframes of the main window), on pgAdmin's own pages. Links to
+  // other sites are sent to the default browser instead.
+  const guardNavigation = (event)=>{
+    const url = event.url;
+    if (url === 'about:blank' || url === 'about:srcdoc' || isAppUrl(url, baseUrl)) {
+      return;
+    }
+    event.preventDefault();
+    if (isExternalUrl(url)) {
+      shell.openExternal(url);
+    } else {
+      misc.writeServerLog(`Refused to navigate to ${url}`);
+    }
+  };
+  contents.on('will-frame-navigate', guardNavigation);
+  contents.on('will-redirect', guardNavigation);
+}
+
 // This function is used to hide the splash screen and create/launch
 // new window to render pgAdmin4 page.
 function launchPgAdminWindow() {
@@ -409,35 +477,7 @@ function launchPgAdminWindow() {
     forceQuitAndInstallUpdate,
   });
 
-  pgAdminMainScreen.webContents.setWindowOpenHandler(({url})=>{
-    let openDocsInBrowser = configStore.get('openDocsInBrowser', true);
-    let isDocURL = false;
-    docsURLSubStrings.forEach(function (key) {
-      if (url.indexOf(key) >= 0) {
-        isDocURL = true;
-      }
-    });
-
-    if (openDocsInBrowser && isDocURL) {
-      // Do not open the window
-      shell.openExternal(url);
-      return { action: 'deny' };
-    } else {
-      return {
-        action: 'allow',
-        overrideBrowserWindowOptions: {
-          'position': 'center',
-          'minWidth': 640,
-          'minHeight': 480,
-          icon: '../../assets/pgAdmin4.png',
-          ...pgAdminMainScreen.getBounds(),
-          webPreferences: {
-            preload: path.join(__dirname, 'pgadmin_preload.js'),
-          },
-        },
-      };
-    }
-  });
+  setupWindowGuards(pgAdminMainScreen);
 
   pgAdminMainScreen.on('closed', ()=>{
     cleanupAutoUpdateFlag();
