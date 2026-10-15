@@ -107,22 +107,32 @@ describe('VariableSchema', ()=>{
     const rowSelects = ()=>ctrl.container.querySelectorAll(
       '[data-test="data-table-row"] input[role="combobox"]'
     );
-    const pickOption = async (input, label)=>{
-      await user.click(input);
-      await user.click(await screen.findByText(label));
+    const hiddenVal = (name)=>ctrl.container.querySelector(
+      `[data-test="data-table-row"] input[type="hidden"][name="${name}"]`
+    )?.value;
+    /* Allow for slow CI runners re-rendering the grid row. */
+    const waitOpts = {timeout: 5000};
+    const pickName = async (label)=>{
+      await user.click(rowSelects()[0]);
+      await user.click(await screen.findByText(label, {}, waitOpts));
+      await waitFor(()=>{
+        expect(hiddenVal('name')).toBe(label);
+        expect(hiddenVal('value')).toBe('');
+        expect(rowSelects().length).toBe(2);
+      }, waitOpts);
     };
 
-    await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0));
-    await pickOption(rowSelects()[0], 'sslmode');
+    await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0), waitOpts);
+    await pickName('sslmode');
     await user.click(rowSelects()[1]);
-    expect(await screen.findByText('require')).toBeInTheDocument();
+    expect(await screen.findByText('require', {}, waitOpts)).toBeInTheDocument();
     await user.keyboard('{Escape}');
 
-    await pickOption(rowSelects()[0], 'sslnegotiation');
+    await pickName('sslnegotiation');
     await user.click(rowSelects()[1]);
-    expect(await screen.findByText('direct')).toBeInTheDocument();
+    expect(await screen.findByText('direct', {}, waitOpts)).toBeInTheDocument();
     expect(screen.queryByText('require')).not.toBeInTheDocument();
-  });
+  }, 30000);
 
   it('variable collection', async ()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
