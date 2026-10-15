@@ -247,12 +247,18 @@ function startDesktopMode() {
   misc.writeServerLog('pgAdmin Command: "' + command + '"');
   misc.writeServerLog('Environment: ');
   Object.keys(process.env).forEach(function (key) {
-    // Below code is included only for Mac OS as default path for azure CLI
-    // installation path is not included in PATH variable while spawning
-    // runtime environment.
+    // On macOS, apps launched from the Finder or Dock get a minimal PATH that
+    // does not include the directories Homebrew installs into (/usr/local/bin
+    // on Intel, /opt/homebrew/bin on Apple Silicon), so tools such as the
+    // Azure CLI would not be found.
     if (process.platform === 'darwin' && key === 'PATH') {
-      let updated_path = process.env[key] + ':/usr/local/bin';
-      process.env[key] = updated_path;
+      let pathDirs = process.env[key].split(':');
+      ['/usr/local/bin', '/opt/homebrew/bin'].forEach((dir) => {
+        if (!pathDirs.includes(dir)) {
+          pathDirs.push(dir);
+        }
+      });
+      process.env[key] = pathDirs.join(':');
     }
 
     if (process.platform === 'win32' && key.toUpperCase() === 'PATH') {
