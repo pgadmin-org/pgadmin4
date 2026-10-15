@@ -52,6 +52,14 @@ class TestCheckTransactionStatusReconnect(BaseTestGenerator):
         ('connect=1 reconnect succeeds', dict(
             auto_comp=False, conn_user=None, query_string='connect=1',
             connect_result=(True, None), expect_ok=True)),
+        # The main connection reconnects as the user it was changed to too,
+        # rather than the server's own user (#10613).
+        ('connect=1 reconnect as changed user fails, left to the caller',
+         dict(auto_comp=False, conn_user='jane', query_string='connect=1',
+              connect_result=(False, RECONNECT_ERROR), expect_ok=True)),
+        ('connect=1 reconnect as changed user succeeds', dict(
+            auto_comp=False, conn_user='jane', query_string='connect=1',
+            connect_result=(True, None), expect_ok=True)),
     ]
 
     def setUp(self):

@@ -30,7 +30,7 @@ from flask import Response, url_for, render_template, session, current_app, \
 from flask import request
 from flask_babel import gettext
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
-    import query_tool_connection_check
+    import query_tool_connection_check, connect_as_transaction_user
 from pgadmin.user_login_check import pga_login_required
 from flask_security import current_user, permissions_required
 from pgadmin.misc.file_manager import Filemanager
@@ -966,13 +966,7 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        if auto_comp and getattr(trans_obj, 'conn_user', None):
-            status, msg = conn.connect(
-                user=trans_obj.conn_user,
-                role=getattr(trans_obj, 'conn_role', None),
-                password=None)
-        else:
-            status, msg = conn.connect()
+        status, msg = connect_as_transaction_user(conn, trans_obj)
 
         if not status:
             current_app.logger.error(msg)
@@ -1613,7 +1607,7 @@ def _check_and_connect(trans_obj):
 
     # Connect to the Server if not connected.
     if not conn.connected():
-        status, msg = conn.connect()
+        status, msg = connect_as_transaction_user(conn, trans_obj)
         if not status:
             return True, msg, conn
     return False, '', conn
