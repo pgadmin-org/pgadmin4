@@ -9,6 +9,8 @@
 """Multi-factor Authentication implementation by sending OTP through email"""
 
 import hmac
+import threading
+import time
 
 from flask import url_for, session, Response, render_template, current_app, \
     flash
@@ -76,7 +78,7 @@ def _send_code_to_email(_email: str = None) -> (bool, int, str):
 
     try:
         session["mfa_email_code"] = __generate_otp()
-        session.pop(_EMAIL_CODE_ATTEMPTS, None)
+        _remember_email_code(session.sid, session["mfa_email_code"])
         subject = getattr(config, 'MFA_EMAIL_SUBJECT', None)
 
         if subject is None:
@@ -191,11 +193,65 @@ def javascript() -> Response:
 
 EMAIL_AUTH_METHOD = 'email'
 
-# Session keys used to let the user retry an emailed code after a typo,
-# without allowing unlimited guesses against the same code.
-_EMAIL_CODE_ATTEMPTS = 'mfa_email_code_attempts'
+# Session key used to let the user retry an emailed code after a typo.
 _EMAIL_CODE_RETRY = 'mfa_email_code_retry'
 _DEFAULT_EMAIL_CODE_MAX_ATTEMPTS = 5
+
+# The code that is currently valid for each session, with the number of
+# failed attempts against it, keyed by session id. This is kept here rather
+# than in the session because the session is only saved at the end of a
+# request, so concurrent requests with the same session cookie would each
+# see the same attempt count. The lock makes the check and update atomic
+# within the process, which is sufficient as pgAdmin runs as one process.
+# Entries are removed on success, on too many failures, when a new code is
+# sent, and once older than _EMAIL_CODE_LIFETIME seconds.
+_email_codes = {}
+_email_codes_lock = threading.Lock()
+_EMAIL_CODE_LIFETIME = 60 * 60
+
+
+def _remember_email_code(sid: str, code: str) -> None:
+    """
+    Record the code sent to the user as the only valid code for the
+    session, with no failed attempts, and discard any expired entries.
+
+    Args:
+        sid (str): Session id
+        code (str): The code sent to the user
+    """
+    now = time.time()
+    with _email_codes_lock:
+        for key in [k for k, v in _email_codes.items()
+                    if now - v['sent'] > _EMAIL_CODE_LIFETIME]:
+            del _email_codes[key]
+        _email_codes[sid] = dict(code=code, attempts=0, sent=now)
+
+
+def _forget_email_code(sid: str) -> None:
+    """
+    Discard the valid code for the session, if any.
+
+    Args:
+        sid (str): Session id
+    """
+    with _email_codes_lock:
+        _email_codes.pop(sid, None)
+
+
+def _has_email_code(sid: str) -> bool:
+    """
+    Check whether the session has a code that can still be entered.
+
+    Args:
+        sid (str): Session id
+
+    Returns:
+        bool: True if a valid code exists for the session
+    """
+    with _email_codes_lock:
+        entry = _email_codes.get(sid, None)
+        return entry is not None and \
+            time.time() - entry['sent'] <= _EMAIL_CODE_LIFETIME
 
 
 def _email_code_max_attempts() -> int:
@@ -233,32 +289,41 @@ class EmailAuthentication(BaseMFAuth):
 
     def validate(self, **kwargs):
         code = kwargs.get('code', None)
-        email_otp = session.get("mfa_email_code", None)
-        # Compare in constant time; compare_digest() rejects non-ASCII str,
-        # so compare the UTF-8 encoded bytes instead.
-        if isinstance(code, str) and isinstance(email_otp, str) and \
-                hmac.compare_digest(code.encode('utf-8'),
-                                    email_otp.encode('utf-8')):
-            session.pop("mfa_email_code")
-            session.pop(_EMAIL_CODE_ATTEMPTS, None)
-            session.pop(_EMAIL_CODE_RETRY, None)
-            return
+        sid = session.sid
 
-        if email_otp is None:
-            raise ValidationException(_("Invalid code"))
+        with _email_codes_lock:
+            entry = _email_codes.get(sid, None)
+            if entry is not None and \
+                    time.time() - entry['sent'] > _EMAIL_CODE_LIFETIME:
+                del _email_codes[sid]
+                entry = None
 
-        # Keep the code that was sent, so that the user can correct a
-        # mistyped code, but discard it once too many attempts have failed.
-        attempts = session.get(_EMAIL_CODE_ATTEMPTS, 0) + 1
-        if attempts >= _email_code_max_attempts():
-            session.pop("mfa_email_code", None)
-            session.pop(_EMAIL_CODE_ATTEMPTS, None)
-            raise ValidationException(_(
-                "Invalid code. Too many failed attempts; please request "
-                "a new code."
-            ))
+            if entry is None:
+                session.pop("mfa_email_code", None)
+                raise ValidationException(_("Invalid code"))
 
-        session[_EMAIL_CODE_ATTEMPTS] = attempts
+            # Compare in constant time; compare_digest() rejects non-ASCII
+            # str, so compare the UTF-8 encoded bytes instead.
+            if isinstance(code, str) and \
+                    hmac.compare_digest(code.encode('utf-8'),
+                                        entry['code'].encode('utf-8')):
+                del _email_codes[sid]
+                session.pop("mfa_email_code", None)
+                session.pop(_EMAIL_CODE_RETRY, None)
+                return
+
+            # Keep the code that was sent, so that the user can correct a
+            # mistyped code, but discard it once too many attempts have
+            # failed.
+            entry['attempts'] += 1
+            if entry['attempts'] >= _email_code_max_attempts():
+                del _email_codes[sid]
+                session.pop("mfa_email_code", None)
+                raise ValidationException(_(
+                    "Invalid code. Too many failed attempts; please request "
+                    "a new code."
+                ))
+
         session[_EMAIL_CODE_RETRY] = True
         raise ValidationException(_("Invalid code"))
 
@@ -273,14 +338,15 @@ class EmailAuthentication(BaseMFAuth):
         # After a failed attempt, the code already sent remains valid, so
         # let the user enter it again rather than forcing a new one.
         if session.pop(_EMAIL_CODE_RETRY, False) is True and \
-                session.get("mfa_email_code", None) is not None:
+                session.get("mfa_email_code", None) is not None and \
+                _has_email_code(session.sid):
             options, found = fetch_auth_option(EMAIL_AUTH_METHOD)
             if found is True and options:
                 view['sent_message'] = _code_sent_message(options)
                 return view
 
         session.pop("mfa_email_code", None)
-        session.pop(_EMAIL_CODE_ATTEMPTS, None)
+        _forget_email_code(session.sid)
         return view
 
     def _registration_view(self):
