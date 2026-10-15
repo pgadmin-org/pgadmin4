@@ -7,8 +7,8 @@
 #
 ##########################################################################
 
-"""Schema Diff tests for functions whose OUT arguments or return type
-differ between source and target (#6652).
+"""Schema Diff tests for functions and procedures whose OUT arguments or
+return type differ between source and target (#6652).
 
 PostgreSQL identifies a function by its name and its input (IN, INOUT and
 VARIADIC) argument types only, so two functions that differ solely in their
@@ -16,7 +16,8 @@ OUT arguments or return type are the same function. Schema Diff must
 therefore compare them as one "Different" object, rather than as an
 unrelated "Source Only" and "Target Only" pair, and because CREATE OR
 REPLACE cannot change a function's return type, the generated script must
-drop the target function before recreating it.
+drop the target function before recreating it. Procedures, which may
+have OUT arguments from PostgreSQL 14, are matched in the same way.
 """
 
 import json
@@ -52,6 +53,10 @@ CREATE FUNCTION {0}.rettype_changed(a bigint, b bigint)
     RETURNS bigint
     LANGUAGE sql
     AS $$SELECT a + b$$;
+
+CREATE FUNCTION {0}.body_changed(iid bigint, OUT result integer)
+    LANGUAGE plpgsql
+    AS $$BEGIN result := 1; END;$$;
 """
 
 TARGET_DDL = """
@@ -75,9 +80,50 @@ CREATE FUNCTION {0}.rettype_changed(a bigint, b bigint)
     RETURNS double precision
     LANGUAGE sql
     AS $$SELECT a + b$$;
+
+CREATE FUNCTION {0}.body_changed(iid bigint, OUT result integer)
+    LANGUAGE plpgsql
+    AS $$BEGIN result := 0; END;$$;
 """
 
-FUNCTIONS = ['out_removed', 'out_added', 'out_changed', 'rettype_changed']
+# Procedures can only have OUT arguments from PostgreSQL 14.
+SOURCE_PROC_DDL = """
+CREATE PROCEDURE {0}.proc_out_added(iid bigint, OUT result integer)
+    LANGUAGE plpgsql
+    AS $$BEGIN result := 0; END;$$;
+
+CREATE PROCEDURE {0}.proc_out_changed(iid bigint, OUT result integer)
+    LANGUAGE plpgsql
+    AS $$BEGIN result := 0; END;$$;
+"""
+
+TARGET_PROC_DDL = """
+CREATE PROCEDURE {0}.proc_out_added(iid bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN END;$$;
+
+CREATE PROCEDURE {0}.proc_out_changed(iid bigint, OUT result text)
+    LANGUAGE plpgsql
+    AS $$BEGIN result := ''; END;$$;
+"""
+
+# Objects whose difference can only be applied by dropping and recreating
+# them, as (type, name, DROP statement).
+RECREATED = [
+    ('function', 'out_removed', 'DROP FUNCTION'),
+    ('function', 'out_added', 'DROP FUNCTION'),
+    ('function', 'out_changed', 'DROP FUNCTION'),
+    ('function', 'rettype_changed', 'DROP FUNCTION'),
+]
+
+RECREATED_PROCS = [
+    ('procedure', 'proc_out_added', 'DROP PROCEDURE'),
+    ('procedure', 'proc_out_changed', 'DROP PROCEDURE'),
+]
+
+# Objects that have OUT arguments, but whose difference (the body only) can
+# be applied in place with CREATE OR REPLACE.
+REPLACED = [('function', 'body_changed')]
 
 
 class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
@@ -103,6 +149,14 @@ class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
 
         self.execute_sql(self.src_database, SOURCE_DDL.format(SCHEMA_NAME))
         self.execute_sql(self.tar_database, TARGET_DDL.format(SCHEMA_NAME))
+
+        self.recreated = list(RECREATED)
+        if self.server_information['server_version'] >= 140000:
+            self.execute_sql(self.src_database,
+                             SOURCE_PROC_DDL.format(SCHEMA_NAME))
+            self.execute_sql(self.tar_database,
+                             TARGET_PROC_DDL.format(SCHEMA_NAME))
+            self.recreated += RECREATED_PROCS
 
     def execute_sql(self, db_name, sql):
         """
@@ -150,17 +204,18 @@ class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
                          response_data)
         return response_data
 
-    def find_objects(self, response_data, name):
+    def find_objects(self, response_data, obj_type, name):
         """
-        Pick every compared function with the given name out of the
-        comparison result.
+        Pick every compared function or procedure with the given name out
+        of the comparison result.
 
         :param response_data: Result of compare()
+        :param obj_type: Object type, i.e. function or procedure
         :param name: Function name (without argument list)
         :return: List of compared objects
         """
         return [diff for diff in response_data
-                if diff.get('type') == 'function' and
+                if diff.get('type') == obj_type and
                 diff.get('title', '').startswith(name + '(')]
 
     def runTest(self):
@@ -184,21 +239,23 @@ class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
 
         response_data = self.compare()
 
-        # Each function must be matched across source and target as a
+        # Each object must be matched across source and target as a
         # single "Different" object, keyed on its input signature.
         diff_ddls = []
-        for name in FUNCTIONS:
-            diffs = self.find_objects(response_data, name)
-            self.assertEqual(
-                [d['status'] for d in diffs], ['Different'],
-                'function {0} was not compared as a single Different '
-                'object: {1}'.format(
-                    name, [(d['title'], d['status']) for d in diffs]))
-            diff_ddl = diffs[0]['diff_ddl']
-            self.assertIn('DROP FUNCTION', diff_ddl, diff_ddl)
+        for obj_type, name, drop in self.recreated:
+            diff_ddl = self.get_diff_ddl(response_data, obj_type, name)
+            self.assertIn(drop, diff_ddl, diff_ddl)
             self.assertIn('CREATE', diff_ddl, diff_ddl)
-            self.assertLess(diff_ddl.index('DROP FUNCTION'),
+            self.assertLess(diff_ddl.index(drop),
                             diff_ddl.index('CREATE'), diff_ddl)
+            diff_ddls.append(diff_ddl)
+
+        # A difference that CREATE OR REPLACE can apply must not drop the
+        # object, even if it has OUT arguments.
+        for obj_type, name in REPLACED:
+            diff_ddl = self.get_diff_ddl(response_data, obj_type, name)
+            self.assertIn('CREATE OR REPLACE', diff_ddl, diff_ddl)
+            self.assertNotIn('DROP', diff_ddl, diff_ddl)
             diff_ddls.append(diff_ddl)
 
         # The generated script must apply cleanly to the target, after
@@ -206,14 +263,34 @@ class SchemaDiffFunctionSignatureTestCase(BaseSocketTestGenerator):
         self.execute_sql(self.tar_database, '\n'.join(diff_ddls))
 
         response_data = self.compare()
-        for name in FUNCTIONS:
-            diffs = self.find_objects(response_data, name)
+        for obj_type, name in [(t, n) for t, n, _ in self.recreated] + \
+                REPLACED:
+            diffs = self.find_objects(response_data, obj_type, name)
             self.assertEqual(
                 [d['status'] for d in diffs], ['Identical'],
-                'function {0} does not compare as identical after applying '
-                'the generated script: {1}'.format(
-                    name, [(d['title'], d['status'], d.get('diff_ddl'))
-                           for d in diffs]))
+                '{0} {1} does not compare as identical after applying '
+                'the generated script: {2}'.format(
+                    obj_type, name,
+                    [(d['title'], d['status'], d.get('diff_ddl'))
+                     for d in diffs]))
+
+    def get_diff_ddl(self, response_data, obj_type, name):
+        """
+        Check that an object was compared as a single "Different" object,
+        and return the script that applies the difference to the target.
+
+        :param response_data: Result of compare()
+        :param obj_type: Object type, i.e. function or procedure
+        :param name: Object name (without argument list)
+        :return: Generated DDL
+        """
+        diffs = self.find_objects(response_data, obj_type, name)
+        self.assertEqual(
+            [d['status'] for d in diffs], ['Different'],
+            '{0} {1} was not compared as a single Different object: '
+            '{2}'.format(obj_type, name,
+                         [(d['title'], d['status']) for d in diffs]))
+        return diffs[0]['diff_ddl']
 
     def tearDown(self):
         """This function drops the added databases"""

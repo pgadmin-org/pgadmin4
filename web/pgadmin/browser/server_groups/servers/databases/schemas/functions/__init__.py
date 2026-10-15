@@ -1704,12 +1704,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                    data=data, fnid=oid, is_sql=False,
                                    is_schema_diff=True,
                                    allow_code_formatting=False)
-            # Check if return type is changed then we need to drop the
-            # function first and then recreate it.
-            if 'prorettypename' in data:
-                drop_fun_sql = self.delete(gid=gid, sid=sid, did=did,
-                                           scid=scid, fnid=oid, only_sql=True)
-                sql = drop_fun_sql + '\n' + sql
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
