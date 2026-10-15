@@ -195,6 +195,56 @@ describe('ensureServerConnected', ()=>{
     expect(error.cancelled).toBeUndefined();
   });
 
+  it('sends no user or role unless asked to', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {}}});
+
+    await ensureServerConnected(api, createFakeModal(), 1);
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({data: null}));
+  });
+
+  it('sends the user and role of the connection being switched to', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {}}});
+
+    await ensureServerConnected(api, createFakeModal(), 1, undefined,
+      {user: 'jane', role: 'reporting'});
+
+    /* The backend only connects the server for its own user and role, so a
+     * connection made as anyone else is not held up by a prompt for the
+     * server's own user's password (issue #8144). */
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      data: {user: 'jane', role: 'reporting'},
+    }));
+  });
+
+  it('sends an empty role when the connection has none', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {}}});
+
+    await ensureServerConnected(api, createFakeModal(), 1, undefined,
+      {user: 'postgres', role: undefined});
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      data: {user: 'postgres', role: ''},
+    }));
+  });
+
+  it('keeps sending the user and role after a password prompt', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {status: 428, data: {result: 'need password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+
+    const result = ensureServerConnected(api, modal, 1, undefined,
+      {user: 'postgres', role: ''});
+    await new Promise(process.nextTick);
+    modal.prompts[0].onOK(passwordFormData);
+
+    await expect(result).resolves.toEqual({connected: true});
+    expect(api).toHaveBeenLastCalledWith(expect.objectContaining({
+      data: {password: 'secret', user: 'postgres', role: ''},
+    }));
+  });
+
   it('passes on a failure that has no server response unchanged', async ()=>{
     const networkError = new Error('Network Error');
     const api = jest.fn().mockRejectedValue(networkError);

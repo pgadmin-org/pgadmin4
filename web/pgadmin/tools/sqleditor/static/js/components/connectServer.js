@@ -46,14 +46,16 @@ function isCredentialChallenge(error) {
 }
 
 /* errorCallback is optional: when given, any failure that is not a request
- * for credentials is passed to it instead of raising the password prompt. */
-export async function connectServer(api, modal, sid, user, formData, connectCallback, cancelCallback, promptCallback, errorCallback) {
+ * for credentials is passed to it instead of raising the password prompt.
+ * extraData is optional: when given, it is sent with every request, including
+ * those made after a password prompt. */
+export async function connectServer(api, modal, sid, user, formData, connectCallback, cancelCallback, promptCallback, errorCallback, extraData) {
   try {
     let {data: respData} = await api({
       method: 'POST',
       url: url_for('sqleditor.connect_server', {'sid': sid}),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      data: formData
+      data: extraData ? {...formData, ...extraData} : formData
     });
     connectCallback?.(respData.data);
   } catch (error) {
@@ -64,7 +66,7 @@ export async function connectServer(api, modal, sid, user, formData, connectCall
     promptCallback?.(false);
     connectServerModal(modal, error.response?.data?.result, async (data)=>{
       promptCallback?.(true);
-      connectServer(api, modal, sid, user, data, connectCallback, cancelCallback, promptCallback, errorCallback);
+      connectServer(api, modal, sid, user, data, connectCallback, cancelCallback, promptCallback, errorCallback, extraData);
     }, ()=>{
       cancelCallback?.();
     });
@@ -77,14 +79,23 @@ export async function connectServer(api, modal, sid, user, formData, connectCall
  * stays disconnected in the Object Explorer even though the Query Tool has
  * reconnected to it. Resolves once connected, rejects with a cancelled error
  * if the user dismisses the prompt, and rejects with the server's error
- * message for any other failure. */
-export function ensureServerConnected(api, modal, sid, promptCallback) {
+ * message for any other failure.
+ *
+ * connectAs is optional: when given, its user and role are those of the
+ * connection being switched to, and the server only connects if they are the
+ * server's own, so nobody is prompted for the password of a user they are
+ * not connecting as. */
+export function ensureServerConnected(api, modal, sid, promptCallback, connectAs) {
+  const extraData = connectAs ? {
+    user: connectAs.user ?? '',
+    role: connectAs.role ?? '',
+  } : undefined;
   return new Promise((resolve, reject)=>{
     connectServer(api, modal, sid, null, null, resolve, ()=>{
       reject(connectionCancelledError());
     }, promptCallback, (error)=>{
       const errmsg = error?.response?.data?.errormsg;
       reject(errmsg ? new Error(errmsg) : error);
-    });
+    }, extraData);
   });
 }

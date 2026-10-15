@@ -2821,6 +2821,18 @@ def connect_server(sid):
             status=410, success=0,
             errormsg=gettext("Could not find the required server.")
         )
+
+    # When the Query Tool switches to a connection made as a different user
+    # or role, connecting the server itself would prompt for the server's
+    # own user's password, which that user may not know, so leave the
+    # server as it is.
+    if not _connects_as_server_user(server):
+        return make_json_response(
+            success=1,
+            info=gettext("Server connection not required."),
+            data={}
+        )
+
     driver = get_driver(PG_DEFAULT_DRIVER)
     manager = driver.connection_manager(sid)
 
@@ -2846,6 +2858,39 @@ def connect_server(sid):
     return view.connect(
         server.servergroup_id, sid
     )
+
+
+def _connects_as_server_user(server):
+    """
+    Return whether the user and role supplied with the current request (if
+    any) are the ones the server itself connects with.  A request that does
+    not supply a user is treated as connecting as the server's own user, so
+    callers that do not pass one behave as they always have.
+
+    An empty role matches, since a connection opened without a role falls
+    back to the server's configured role.
+    """
+    data = request.form
+    if not data and request.data:
+        try:
+            data = json.loads(request.data)
+        except ValueError:
+            data = {}
+    if not hasattr(data, 'get') or 'user' not in data:
+        return True
+
+    if server.shared and server.user_id != current_user.id:
+        # Import here to avoid circular dependency
+        from pgadmin.browser.server_groups.servers import ServerModule
+        shared_server = ServerModule.get_shared_server(
+            server, server.servergroup_id)
+        server = ServerModule.get_shared_server_properties(
+            server, shared_server)
+
+    user = data.get('user') or None
+    role = data.get('role') or None
+    return user == (server.username or None) and \
+        role in (None, server.role or None)
 
 
 def _cache_manager_password_from_request(manager):

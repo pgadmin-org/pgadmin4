@@ -784,11 +784,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }
 
     /* Connect the server itself first, so that the Object Explorer reflects
-     * the connection if the server had been disconnected. */
+     * the connection if the server had been disconnected. The backend only
+     * does so when this connection uses the server's own user and role. */
     return ensureServerConnected(api, modal, connectionData.sid, (isConnecting)=>{
       setQtStatePartial({
         obtaining_conn: isConnecting,
       });
+    }, {
+      user: connectionData.user,
+      role: connectionData.role,
     }).catch((error)=>{
       revertSelection();
       throw error;
