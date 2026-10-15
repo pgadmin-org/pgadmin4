@@ -135,7 +135,7 @@ describe('ensureServerConnected', ()=>{
 
   it('resolves once the password prompt is answered', async ()=>{
     const api = jest.fn()
-      .mockRejectedValueOnce({response: {data: {result: 'need password'}}})
+      .mockRejectedValueOnce({response: {status: 428, data: {result: 'need password'}}})
       .mockResolvedValueOnce({data: {data: {connected: true}}});
     const modal = createFakeModal();
     const promptCallback = jest.fn();
@@ -153,7 +153,7 @@ describe('ensureServerConnected', ()=>{
   });
 
   it('rejects with a cancelled error when the prompt is dismissed', async ()=>{
-    const api = jest.fn().mockRejectedValue({response: {data: {result: 'need password'}}});
+    const api = jest.fn().mockRejectedValue({response: {status: 428, data: {result: 'need password'}}});
     const modal = createFakeModal();
 
     const result = ensureServerConnected(api, modal, 1);
@@ -161,5 +161,46 @@ describe('ensureServerConnected', ()=>{
     modal.prompts[0].closeModal();
 
     await expect(result).rejects.toMatchObject({cancelled: true});
+  });
+
+  it('prompts again when the supplied password is rejected', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {status: 428, data: {result: 'need password'}}})
+      .mockRejectedValueOnce({response: {status: 401, data: {result: 'wrong password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+
+    const result = ensureServerConnected(api, modal, 1);
+    await new Promise(process.nextTick);
+    modal.prompts[0].onOK(passwordFormData);
+    await new Promise(process.nextTick);
+
+    expect(modal.prompts).toHaveLength(2);
+    expect(modal.prompts[1].data).toBe('wrong password');
+    modal.prompts[1].onOK(passwordFormData);
+
+    await expect(result).resolves.toEqual({connected: true});
+  });
+
+  it('rejects with the server error, without prompting, for other failures', async ()=>{
+    const api = jest.fn().mockRejectedValue(
+      {response: {status: 410, data: {errormsg: 'Could not find the required server.'}}});
+    const modal = createFakeModal();
+
+    const error = await ensureServerConnected(api, modal, 1).catch((e)=>e);
+
+    expect(modal.prompts).toHaveLength(0);
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe('Could not find the required server.');
+    expect(error.cancelled).toBeUndefined();
+  });
+
+  it('passes on a failure that has no server response unchanged', async ()=>{
+    const networkError = new Error('Network Error');
+    const api = jest.fn().mockRejectedValue(networkError);
+    const modal = createFakeModal();
+
+    await expect(ensureServerConnected(api, modal, 1)).rejects.toBe(networkError);
+    expect(modal.prompts).toHaveLength(0);
   });
 });

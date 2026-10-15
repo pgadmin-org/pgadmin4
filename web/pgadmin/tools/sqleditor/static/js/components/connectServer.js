@@ -39,7 +39,15 @@ export function connectServerModal(modal, modalData, connectCallback, cancelCall
   });
 }
 
-export async function connectServer(api, modal, sid, user, formData, connectCallback, cancelCallback, promptCallback) {
+/* The connect_server endpoint answers 428 when it needs a password, and 401
+ * (with the prompt data) when the one supplied was rejected. */
+function isCredentialChallenge(error) {
+  return [401, 428].includes(error?.response?.status);
+}
+
+/* errorCallback is optional: when given, any failure that is not a request
+ * for credentials is passed to it instead of raising the password prompt. */
+export async function connectServer(api, modal, sid, user, formData, connectCallback, cancelCallback, promptCallback, errorCallback) {
   try {
     let {data: respData} = await api({
       method: 'POST',
@@ -49,10 +57,14 @@ export async function connectServer(api, modal, sid, user, formData, connectCall
     });
     connectCallback?.(respData.data);
   } catch (error) {
+    if(errorCallback && !isCredentialChallenge(error)) {
+      errorCallback(error);
+      return;
+    }
     promptCallback?.(false);
     connectServerModal(modal, error.response?.data?.result, async (data)=>{
       promptCallback?.(true);
-      connectServer(api, modal, sid, user, data, connectCallback, cancelCallback, promptCallback);
+      connectServer(api, modal, sid, user, data, connectCallback, cancelCallback, promptCallback, errorCallback);
     }, ()=>{
       cancelCallback?.();
     });
@@ -63,12 +75,16 @@ export async function connectServer(api, modal, sid, user, formData, connectCall
  * is established, prompting for its password if required. The Query Tool's
  * connection is separate, so without this a server that was disconnected
  * stays disconnected in the Object Explorer even though the Query Tool has
- * reconnected to it. Resolves once connected, and rejects with a cancelled
- * error if the user dismisses the prompt. */
+ * reconnected to it. Resolves once connected, rejects with a cancelled error
+ * if the user dismisses the prompt, and rejects with the server's error
+ * message for any other failure. */
 export function ensureServerConnected(api, modal, sid, promptCallback) {
   return new Promise((resolve, reject)=>{
     connectServer(api, modal, sid, null, null, resolve, ()=>{
       reject(connectionCancelledError());
-    }, promptCallback);
+    }, promptCallback, (error)=>{
+      const errmsg = error?.response?.data?.errormsg;
+      reject(errmsg ? new Error(errmsg) : error);
+    });
   });
 }
