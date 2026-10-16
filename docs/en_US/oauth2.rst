@@ -430,3 +430,183 @@ For providers that don't support OIDC discovery, configure all endpoints manuall
     }]
 
 In this mode, user identity is retrieved only from the userinfo endpoint.
+
+.. _oauth2_postgresql:
+
+Using a pgAdmin OAuth token with PostgreSQL
+-------------------------------------------
+
+Users signed in to pgAdmin through an OIDC provider can use
+``oauth_pgadmin_token_mode`` to supply an access token for PostgreSQL OAuth
+authentication. This uses an OAuth access token, not an OIDC ID token.
+
+Prerequisites
+~~~~~~~~~~~~~
+
+* Configure OIDC login for pgAdmin as described on this page and sign in
+  through that OIDC provider.
+* Configure PostgreSQL OAuth authentication, including a token validator,
+  the expected issuer and scopes, and authorization for the database role.
+* Use PostgreSQL 18 or later. The libpq loaded by pgAdmin must be version
+  18.x, with a supported Psycopg implementation as described below.
+
+Configure the connection
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the *Parameters* tab of the Server dialog, add *OAuth pgAdmin token mode*
+(``oauth_pgadmin_token_mode``). Select ``direct`` or ``exchange`` to enable
+this integration.
+
+.. note::
+
+   For shared servers, each user must explicitly enable
+   ``oauth_pgadmin_token_mode`` in their own server settings.
+   The owner's selection is not inherited.
+
+Both ``direct`` and ``exchange`` require ``oauth_client_id`` and
+``oauth_issuer``. The issuer must match the PostgreSQL OAuth configuration
+and the issuer used for the pgAdmin login token.
+
+For example:
+
+.. code-block:: text
+
+   oauth_pgadmin_token_mode = exchange
+   oauth_client_id = postgres-cluster-01
+   oauth_issuer = https://identity.example.com/realms/postgres
+
+Replace the example values with those configured for your deployment. Set
+the *Username* field to the database role authorized by the server's OAuth
+configuration.
+
+Use a trusted database endpoint. For TCP connections, configure certificate
+and hostname verification, for example with ``sslmode=verify-full`` and a
+trusted root certificate. Database TLS settings are separate from those for
+the OIDC provider's HTTPS endpoints.
+
+Direct mode
+~~~~~~~~~~~
+
+In ``direct`` mode, pgAdmin forwards the access token from the current user's
+login session to PostgreSQL. The database validator must accept its issuer,
+audience and scopes and authorize the requested database role. The audience
+depends on the OIDC provider's configuration; it is not necessarily the
+pgAdmin OAuth client identifier.
+
+.. warning::
+
+   The database server receives the login access token, which its operator
+   may be able to reuse wherever that token is accepted. Use direct mode
+   only with trusted servers and a policy explicitly permitting this reuse.
+   Prefer exchange mode when the OIDC provider can issue a token restricted
+   to the target database.
+
+Exchange mode
+~~~~~~~~~~~~~
+
+In ``exchange`` mode, pgAdmin exchanges the login access token and supplies
+the resulting token to PostgreSQL. If exchange fails, the connection attempt
+fails; pgAdmin does not fall back to direct mode.
+
+The token endpoint belongs to the OIDC provider used for pgAdmin login.
+``OAUTH2_TOKEN_URL`` takes precedence over the ``token_endpoint`` in the
+OIDC provider's discovery metadata. HTTPS is required and token endpoint
+redirects are not followed.
+
+.. list-table:: Token exchange request
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Parameter
+     - Value
+   * - ``grant_type``
+     - ``urn:ietf:params:oauth:grant-type:token-exchange``
+   * - ``audience``
+     - The server connection's ``oauth_client_id``.
+   * - ``subject_token``
+     - The pgAdmin login access token, refreshed when required and possible.
+   * - ``subject_token_type``
+     - ``urn:ietf:params:oauth:token-type:access_token``
+   * - ``scope``
+     - The server connection's ``oauth_scope``, when non-empty.
+       Otherwise omitted; the OIDC provider determines the scopes.
+
+Token exchange uses the scopes explicitly configured in the server
+connection's ``oauth_scope`` parameter. If it is unset or blank, pgAdmin
+omits ``scope`` from the exchange request and the OIDC provider determines
+the scopes. Exchange occurs before connecting to PostgreSQL, so it cannot
+use scopes advertised by the database server. Configure ``oauth_scope``
+when the OIDC provider's defaults do not meet the database's requirements.
+
+pgAdmin authenticates the exchange request using its registered login
+OIDC client's credentials. This integration supports
+``client_secret_basic`` and ``client_secret_post``. A client secret is
+required; unauthenticated exchange is not supported.
+
+.. important::
+
+   The OIDC provider must authorize pgAdmin's login client to exchange
+   tokens for the requested audience and issue the intended permissions.
+   The PostgreSQL validator must enforce that audience and those
+   permissions.
+
+The OIDC provider must return a non-empty ``access_token`` with a
+``token_type`` of ``Bearer``. Exchanged tokens are not cached or stored in the
+pgAdmin login session. Each connection attempt using this mode performs a
+new exchange.
+
+TLS verification for exchange
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Exchange requires TLS certificate verification for the OIDC provider. Keep
+``OAUTH2_SSL_CERT_VERIFICATION`` enabled in its ``OAUTH2_CONFIG`` entry.
+Disabled verification is rejected before any token refresh, metadata request
+or exchange is attempted as part of preparing the database connection.
+
+For a private certificate authority, configure a trusted CA bundle for the
+OAuth client. The exchange request reuses the login OAuth client's
+verification setting, including a configured CA-bundle path.
+
+Supported client implementations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These requirements apply to the libpq loaded in the pgAdmin process:
+
+.. list-table:: Psycopg implementation requirements
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Implementation
+     - Requirements
+   * - ``python``
+     - Reuses Psycopg's libpq handle. Requires a discoverable libpq 18.x
+       installation compatible with pgAdmin's Python runtime.
+   * - ``c``
+     - Linux only. Requires libpq 18.x and an unambiguous loaded libpq
+       candidate. Missing or ambiguous candidates are rejected.
+   * - ``binary``
+     - Not supported by this integration, even with bundled libpq 18.x.
+
+To select the Python implementation, set ``PSYCOPG_IMPL=python`` in the
+pgAdmin process environment and restart the backend. This affects all
+connections in that process. It is not a connection parameter or a
+``PGADMIN_CONFIG_`` setting and does not install or upgrade libpq.
+
+Windows and macOS require the Python implementation and a compatible,
+discoverable libpq 18.x installation. The installed pgAdmin package must
+support that configuration. In containers, configure the environment and
+libraries inside the container.
+
+Token refresh and reconnects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When expiration information is available, pgAdmin attempts to refresh the
+login access token if it has expired or will expire within 30 seconds. A
+successful refresh updates the login session. If the refresh token is
+unavailable or refreshing fails, sign in again before retrying the connection.
+
+Token retrieval, refresh and exchange require an authenticated pgAdmin
+request. Reconnects made through such requests are supported. Independent
+background connection attempts without the user's request context are not;
+initiate reconnection through pgAdmin. Existing database connections do not
+require a new token exchange for each query.
