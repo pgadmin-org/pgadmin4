@@ -94,7 +94,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   /* A connection change replaces the transaction, so callbacks that outlive
      a render read the current context from here rather than capturing it. */
   const queryToolCtxRef = React.useRef(queryToolCtx);
-  queryToolCtxRef.current = queryToolCtx;
+  React.useLayoutEffect(()=>{
+    queryToolCtxRef.current = queryToolCtx;
+  }, [queryToolCtx]);
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
