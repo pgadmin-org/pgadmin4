@@ -18,7 +18,7 @@ from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, does_utility_exist, get_server, \
-    filename_with_file_manager_path
+    filename_with_file_manager_path, database_conninfo
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -259,6 +259,10 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     if backup_obj_type != 'objects':
         args.append('--database')
         args.append(server.maintenance_db)
+    else:
+        # Never pass the user-supplied database name directly: see
+        # database_conninfo() for why it is wrapped in a connection string.
+        args.extend(['--dbname', database_conninfo(data['database'])])
 
     if backup_obj_type == 'globals':
         args.append('--globals-only')
@@ -294,6 +298,14 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
               data.get('only_tablespaces', None))
     set_param('only_roles', '--roles-only',
               data.get('only_roles', None))
+    # pg_dump rejects --statistics-only alongside --data-only or
+    # --schema-only, so suppress it the same way --schema-only is suppressed
+    # above. The dialog disables the switches, but a request can still arrive
+    # with both set.
+    set_param('only_statistics', '--statistics-only',
+              manager.version >= 180000 and
+              not data.get('only_data', None) and
+              not data.get('only_schema', None))
 
     # Sections
     set_param('pre_data', '--section=pre-data')
@@ -317,6 +329,17 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('dns_table_access_method', '--no-table-access-method',
               manager.version >= 150000)
     set_param('dns_no_role_passwords', '--no-role-passwords')
+    set_param('no_policies', '--no-policies', manager.version >= 180000)
+    # Each of these conflicts with the matching --*-only option.
+    set_param('no_data', '--no-data',
+              manager.version >= 180000 and
+              not data.get('only_data', None))
+    set_param('no_schema', '--no-schema',
+              manager.version >= 180000 and
+              not data.get('only_schema', None))
+    set_param('no_statistics', '--no-statistics',
+              manager.version >= 180000 and
+              not data.get('only_statistics', None))
 
     # Query Options
     set_param('use_insert_commands', '--inserts')
@@ -353,6 +376,15 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
     set_param('use_set_session_auth', '--use-set-session-authorization')
+    # pg_dump rejects --statistics alongside --data-only, --schema-only or
+    # --no-statistics. Statistics are not dumped by default, so dropping
+    # --statistics gives the result the other option asked for.
+    set_param('statistics', '--statistics',
+              manager.version >= 180000 and
+              not data.get('only_data', None) and
+              not data.get('only_schema', None) and
+              not data.get('no_statistics', None))
+    set_param('sequence_data', '--sequence-data', manager.version >= 180000)
     set_value('exclude_schema', '--exclude-schema')
     set_value('extra_float_digits', '--extra-float-digits', None,
               manager.version >= 120000)
@@ -420,6 +452,16 @@ def create_backup_objects_job(sid):
     data = json.loads(request.data)
     backup_obj_type = data.get('type', 'objects')
 
+    # A target database is mandatory for an object backup. Reject an
+    # empty/missing value up front: otherwise the empty name would make libpq
+    # fall back to a database named after the login role, silently backing
+    # up the wrong database instead of failing safely. Server and globals
+    # backups connect to the maintenance database instead, so they need no
+    # database here.
+    if backup_obj_type == 'objects' and not data.get('database'):
+        return bad_request(
+            errormsg=gettext("Database parameter is required."))
+
     try:
         backup_file = filename_with_file_manager_path(
             data['file'], (data.get('format', '') != 'directory'))
@@ -469,16 +511,7 @@ def create_backup_objects_job(sid):
     try:
         bfile = data['file'].encode('utf-8') \
             if hasattr(data['file'], 'encode') else data['file']
-        # Pass the target database via the PGDATABASE environment variable
-        # instead of as a command-line argument. A positional dbname is unsafe
-        # even with a "--" end-of-options marker: pg_dump/libpq expand a value
-        # containing "=" (e.g. "host=evil port=5433 dbname=postgres") into a
-        # connection string, letting a user redirect the connection -- and the
-        # exported PGPASSWORD credential -- to an arbitrary server. PGDATABASE
-        # is used as a literal database name and is not expanded.
-        env = {}
         if backup_obj_type == 'objects':
-            env['PGDATABASE'] = data['database']
             p = BatchProcess(
                 desc=BackupMessage(
                     BACKUP.OBJECT, server.id, bfile,
@@ -498,7 +531,7 @@ def create_backup_objects_job(sid):
                 cmd=utility, args=escaped_args, manager_obj=manager
             )
 
-        p.set_env_variables(server, env=env)
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:

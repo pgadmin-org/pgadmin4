@@ -169,6 +169,24 @@ Set this variable to the path of a pgpass file if you want to supply passwords
 for the servers added in pgAdmin. On startup, the file is copied into the
 container and used as the ``.pgpass`` file.
 
+**PUID**
+
+*Default: 5050*
+
+The user ID that pgAdmin runs as. This is only used when the container is
+started as root (for example with ``--user root``), in which case the
+*pgadmin* user is given this UID, the ownership of */var/lib/pgadmin* is
+changed to match, and pgAdmin is then run as that user rather than as root.
+It is ignored when the container is started as any other user, which is the
+default. The value must be numeric, and may not be 0.
+
+**PGID**
+
+*Default: 0*
+
+The group ID that pgAdmin runs as. As with *PUID*, this is only used when the
+container is started as root.
+
 **GUNICORN_ACCESS_LOGFILE**
 
 *Default: -* (stdout)
@@ -264,13 +282,37 @@ host machine to allow configuration to be customised and shared between
 instances.
 
 .. warning:: Warning: pgAdmin runs as the *pgadmin* user (UID: 5050) in the
-    *pgadmin* group (GID: 5050) in the container. You must ensure that all files
+    *root* group (GID: 0) in the container. You must ensure that all files
     are readable, and where necessary (e.g. the working/session directory)
     writeable for this user on the host machine. For example:
 
     .. code-block:: bash
 
-        sudo chown -R 5050:5050 <host_directory>
+        sudo chown -R 5050:0 <host_directory>
+
+    When using rootless Podman, user IDs in the container are mapped to a
+    range of subordinate IDs on the host, so changing the ownership of a host
+    directory to 5050 as shown above does not make it writeable by the
+    container. Instead, either add the *U* option to the volume, which has
+    Podman recursively change the ownership of the directory and everything
+    in it to match the container's user, for example:
+
+    .. code-block:: bash
+
+        -v /path/to/pgadmin-data:/var/lib/pgadmin:U
+
+    or start the container as root, which in a rootless container is your own
+    user on the host. The container will change the ownership of
+    */var/lib/pgadmin* and then run pgAdmin as the *pgadmin* user; see *PUID*
+    and *PGID* above. For example:
+
+    .. code-block:: bash
+
+        --user root
+
+    Neither option changes SELinux labels, so on a host with SELinux enforcing,
+    the volume also needs the *z* (shared) or *Z* (private) option to relabel
+    it, for example ``-v /path/to/pgadmin-data:/var/lib/pgadmin:Z,U``.
 
     On some filesystems that do not support extended attributes, it may not be
     possible to run pgAdmin without specifying a value for *PGADMIN_LISTEN_PORT*

@@ -13,7 +13,7 @@ import { withTheme } from '../fake_theme';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 
-import {FormInput, FormInputText, FormInputFileSelect, FormInputSQL,
+import {FormInput, FormInputText, FormInputFileSelect, FormInputSQL, InputSQL,
   FormInputSwitch, FormInputCheckbox, FormInputToggle, FormInputSelect,
   FormInputColor,
   FormFooterMessage,
@@ -196,6 +196,121 @@ describe('FormComponents', ()=>{
       expect(screen.getByLabelText('First')).toBeInTheDocument();
       expect(screen.getByText('thevalue')).toBeInTheDocument();
       expect(screen.getByText('some help message')).toBeInTheDocument();
+    });
+  });
+
+  describe('InputSQL with a lagging value', ()=>{
+    let ThemedInputSQL = withTheme(InputSQL), ctrl, editor, onChange;
+    const renderSQL = (value)=>{
+      const elem = (
+        <ThemedInputSQL
+          value={value}
+          onChange={onChange}
+          inputRef={(obj)=>{editor = obj;}}
+        />
+      );
+      if(ctrl) {
+        ctrl.rerender(elem);
+      } else {
+        ctrl = render(elem);
+      }
+    };
+    const typeAt = (pos, text)=>{
+      act(()=>{
+        editor.dispatch({
+          changes: {from: pos, insert: text},
+          selection: {anchor: pos + text.length},
+          userEvent: 'input.type',
+        });
+      });
+    };
+    const deleteBefore = (pos)=>{
+      act(()=>{
+        editor.dispatch({
+          changes: {from: pos - 1, to: pos},
+          selection: {anchor: pos - 1},
+          userEvent: 'delete.backward',
+        });
+      });
+    };
+
+    beforeEach(()=>{
+      ctrl = null;
+      // The parent passes the value back later, by calling renderSQL.
+      onChange = jest.fn();
+      renderSQL('BEGIN END;');
+      // Ignore the change the editor reports when it loads the first value.
+      onChange.mockClear();
+    });
+
+    it('keeps the cursor when an older value is passed back', ()=>{
+      // Two keys pressed together: the editor reports both changes before
+      // the parent has passed either of them back.
+      typeAt(6, 'x');
+      typeAt(7, 'y');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+
+      // The parent passes back the value from the first key, then the second.
+      renderSQL('BEGIN xEND;');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+      expect(editor.state.selection.main.head).toBe(8);
+
+      renderSQL('BEGIN xyEND;');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+      expect(editor.state.selection.main.head).toBe(8);
+    });
+
+    it('keeps the cursor when an edit and its undo are passed back', ()=>{
+      // Type, delete and retype a key before the parent passes any of the
+      // values back, so the editor reports the same text twice.
+      typeAt(6, 'x');
+      deleteBefore(7);
+      typeAt(6, 'x');
+      expect(editor.getValue()).toBe('BEGIN xEND;');
+      expect(onChange).toHaveBeenCalledTimes(3);
+
+      // The parent passes back each value in turn.
+      for (const passedBack of ['BEGIN xEND;', 'BEGIN END;', 'BEGIN xEND;']) {
+        renderSQL(passedBack);
+        expect(editor.getValue()).toBe('BEGIN xEND;');
+        expect(editor.state.selection.main.head).toBe(7);
+      }
+      expect(onChange).toHaveBeenCalledTimes(3);
+    });
+
+    it('keeps the editor content when values are skipped', ()=>{
+      typeAt(6, 'x');
+      deleteBefore(7);
+      typeAt(6, 'x');
+
+      // The parent handles all three changes in one render, so only the
+      // final value comes back.
+      renderSQL('BEGIN xEND;');
+      expect(editor.getValue()).toBe('BEGIN xEND;');
+      expect(editor.state.selection.main.head).toBe(7);
+
+      // A later edit still comes back cleanly.
+      typeAt(7, 'y');
+      renderSQL('BEGIN xyEND;');
+      expect(editor.getValue()).toBe('BEGIN xyEND;');
+      expect(editor.state.selection.main.head).toBe(8);
+      expect(onChange).toHaveBeenCalledTimes(4);
+
+      // And a value the editor did not produce is still applied.
+      renderSQL('SELECT 1;');
+      expect(editor.getValue()).toBe('SELECT 1;');
+    });
+
+    it('applies a value the editor did not produce', ()=>{
+      typeAt(6, 'x');
+      renderSQL('BEGIN xEND;');
+
+      renderSQL('SELECT 1;');
+      expect(editor.getValue()).toBe('SELECT 1;');
+
+      // Once replaced, earlier editor values are no longer treated as stale.
+      renderSQL('BEGIN xEND;');
+      expect(editor.getValue()).toBe('BEGIN xEND;');
     });
   });
 
@@ -621,6 +736,29 @@ describe('FormComponents', ()=>{
           <input />
         </ThemedFormInput>);
       expect(ctrl.container.querySelector('script')).toBeNull();
+    });
+
+    it('opens help message links in a new window', ()=>{
+      const ctrl = render(
+        <ThemedFormInput label="Field"
+          helpMessage={'See <a href="https://example.com/docs">the docs</a>.'}>
+          <input />
+        </ThemedFormInput>);
+      const link = ctrl.container.querySelector('a');
+      expect(link.getAttribute('href')).toBe('https://example.com/docs');
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('still strips unsafe links from help messages', ()=>{
+      const ctrl = render(
+        <ThemedFormInput label="Field"
+          helpMessage={'<a href="javascript:window.__xss=true">bad</a>'}>
+          <input />
+        </ThemedFormInput>);
+      const link = ctrl.container.querySelector('a');
+      expect(link.getAttribute('href')).toBeNull();
+      expect(link.getAttribute('target')).toBeNull();
     });
 
     it('preserves safe HTML formatting', ()=>{

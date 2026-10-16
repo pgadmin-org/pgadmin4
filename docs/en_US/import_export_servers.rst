@@ -138,6 +138,15 @@ imported server.
 
 Password fields cannot be imported or exported.
 
+In desktop mode, ``PasswordExecCommand`` is the shell command to run, as shown
+in the example below. In server mode it must instead be the name of a command
+defined in the ``SERVER_PASSEXEC_COMMANDS`` setting (see :ref:`config_py`), and
+the same name is written when servers are exported. A server whose
+``PasswordExecCommand`` is not the name of a configured command is still
+imported, but without a password exec command, and a warning naming the server
+is printed. ``PasswordExecExpiration`` is imported only together with a valid
+command name.
+
 The following example shows both a minimally defined and a fully defined server:
 
 .. code-block:: python

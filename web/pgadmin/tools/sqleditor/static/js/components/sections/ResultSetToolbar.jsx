@@ -26,7 +26,7 @@ import EditOffRoundedIcon from '@mui/icons-material/EditOffRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import AllInboxRoundedIcon from '@mui/icons-material/AllInboxRounded';
 
-import {QUERY_TOOL_EVENTS} from '../QueryToolConstants';
+import {QUERY_TOOL_EVENTS, RESULT_DOWNLOAD_FORMATS, DEFAULT_RESULT_DOWNLOAD_FORMAT} from '../QueryToolConstants';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
@@ -267,7 +267,7 @@ PaginationInputs.propTypes = {
   clearSelection: PropTypes.func,
   serverCursor: PropTypes.bool,
 };
-export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, allRowsSelect}) {
+export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagination, allRowsSelect}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const [dataOutputQueryBtn,setDataOutputQueryBtn] = useState(false);
@@ -282,6 +282,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   /* Menu button refs */
   const copyMenuRef = React.useRef(null);
   const pasetMenuRef = React.useRef(null);
+  const downloadMenuRef = React.useRef(null);
 
   const queryToolPref = queryToolCtx.preferences.sqleditor;
 
@@ -309,8 +310,8 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   const addRow = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, [[]], {isNewRow: true});
   }, []);
-  const downloadResult = useCallback(()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS);
+  const downloadResult = useCallback((fmt=DEFAULT_RESULT_DOWNLOAD_FORMAT)=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, fmt);
   }, []);
   const showGraphVisualiser = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GRAPH_VISUALISER);
@@ -349,6 +350,14 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
   }, [totalRowCount]);
 
   useEffect(()=>{
+    // Seed the "Copy with headers" toggle default from the user preference.
+    setCheckedMenuItems((prev)=>({
+      ...prev,
+      copy_with_headers: queryToolPref.copy_column_headers,
+    }));
+  }, [queryToolPref.copy_column_headers]);
+
+  useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA, copyData);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA, copyData);
   }, [checkedMenuItems['copy_with_headers']]);
@@ -370,13 +379,13 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
     {
       shortcut: queryToolPref.btn_add_row,
       options: {
-        callback: ()=>{canEdit && addRow();}
+        callback: ()=>{canInsert && addRow();}
       }
     },
     {
       shortcut: queryToolPref.btn_paste_row,
       options: {
-        callback: ()=>{canEdit && pasteRows();}
+        callback: ()=>{canInsert && pasteRows();}
       }
     },
     {
@@ -414,13 +423,13 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
         <Box display="flex" alignItems="center" gap="4px">
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
-              shortcut={queryToolPref.btn_add_row} disabled={!canEdit} onClick={addRow} />
+              shortcut={queryToolPref.btn_add_row} disabled={!canInsert} onClick={addRow} />
             <PgIconButton title={gettext('Copy')} icon={<FileCopyRoundedIcon />}
               shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']||allRowsSelect=='ALL'} onClick={copyData} />
             <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
             <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}
-              shortcut={queryToolPref.btn_paste_row} disabled={!canEdit} onClick={pasteRows} />
+              shortcut={queryToolPref.btn_paste_row} disabled={!canInsert} onClick={pasteRows} />
             <PgIconButton title={gettext('Paste options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-pasteoptions" ref={pasetMenuRef} onClick={openMenu} />
             <PgIconButton title={gettext('Delete')} icon={<DeleteRoundedIcon />}
@@ -432,7 +441,10 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
           </PgButtonGroup>
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('Save results to file')} icon={<GetAppRoundedIcon />}
-              onClick={downloadResult} shortcut={queryToolPref.download_results}
+              onClick={()=>downloadResult(DEFAULT_RESULT_DOWNLOAD_FORMAT)} shortcut={queryToolPref.download_results}
+              disabled={buttonsDisabled['save-result']} />
+            <PgIconButton title={gettext('Save results options')} icon={<KeyboardArrowDownIcon />} splitButton
+              name="menu-downloadoptions" ref={downloadMenuRef} onClick={openMenu}
               disabled={buttonsDisabled['save-result']} />
           </PgButtonGroup>
           <PgButtonGroup size="small">
@@ -490,6 +502,16 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
       >
         <PgMenuItem hasCheck value="paste_with_serials" checked={checkedMenuItems['paste_with_serials']} onClick={checkMenuClick}>{gettext('Paste with SERIAL/IDENTITY values?')}</PgMenuItem>
       </PgMenu>
+      <PgMenu
+        anchorRef={downloadMenuRef}
+        open={menuOpenId=='menu-downloadoptions'}
+        onClose={handleMenuClose}
+        label={gettext('Save Results Options Menu')}
+      >
+        <PgMenuItem onClick={()=>downloadResult(RESULT_DOWNLOAD_FORMATS.CSV)}>{gettext('Save as CSV/Text')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult(RESULT_DOWNLOAD_FORMATS.JSON)}>{gettext('Save as JSON')}</PgMenuItem>
+        <PgMenuItem onClick={()=>downloadResult(RESULT_DOWNLOAD_FORMATS.XML)}>{gettext('Save as XML')}</PgMenuItem>
+      </PgMenu>
     </>
   );
 }
@@ -497,6 +519,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
 ResultSetToolbar.propTypes = {
   query: PropTypes.string,
   canEdit: PropTypes.bool,
+  canInsert: PropTypes.bool,
   totalRowCount: PropTypes.number,
   allRowsSelect: PropTypes.string,
   pagination: PropTypes.object,

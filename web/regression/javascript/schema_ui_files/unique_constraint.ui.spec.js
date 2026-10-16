@@ -41,7 +41,10 @@ describe('UniqueConstraintSchema', ()=>{
   let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-  beforeAll(()=>{
+  // A fresh schema per test, as each dialog gets in the product; the
+  // properties view mutates its fields (helpMessage), which would otherwise
+  // leak into the grid cells rendered by later tests.
+  beforeEach(()=>{
     schemaObj = new UniqueConstraintSchema({
       spcname: ()=>Promise.resolve([]),
     }, {});

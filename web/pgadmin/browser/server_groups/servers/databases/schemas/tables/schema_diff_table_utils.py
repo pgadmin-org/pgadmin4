@@ -38,11 +38,17 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
                              'indkey', 'seqtypid', 'defseqrelid']
 
+    # 'conkey' and 'confkey' are attribute numbers, which differ between
+    # databases whenever a column has been dropped from one of the tables,
+    # even though the columns they name are the same. The columns are
+    # compared by name through each constraint's 'columns' list instead
+    # (#10446), and a foreign key whose columns differ is recreated (see
+    # table_constraint_comp()).
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
                                  'references', 'refnsp', 'remote_schema',
-                                 'conkey', 'indkey', 'references_table_name',
-                                 'refnspoid']
+                                 'conkey', 'confkey', 'indkey',
+                                 'references_table_name', 'refnspoid']
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tgqual',
                               'tgconstraint']
@@ -207,12 +213,31 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     acl_dict['changed'] = source['attacl'].copy()
                     source['attacl'] = acl_dict
 
+            # A column with no comment in the source has a description of
+            # None, which the column update template skips, so a comment
+            # present only in the target would never be removed. Send an
+            # empty string instead, as the column dialog does when a
+            # comment is cleared, so that COMMENT ON COLUMN ... IS '' is
+            # generated (#10549).
+            if source.get('description') is None and \
+                    tmp.get('description') is not None:
+                source['description'] = ''
+
             updated.append(source)
             target_cols.remove(tmp)
         elif tmp and source == tmp:
             target_cols.remove(tmp)
         elif tmp is None:
             added.append(source)
+
+    @staticmethod
+    def _fk_column_pairs(foreign_key):
+        """
+        Return the (local column, referenced column) name pairs of a
+        foreign key, in order.
+        """
+        return [(col.get('local_column'), col.get('referenced'))
+                for col in foreign_key.get('columns', [])]
 
     @staticmethod
     def table_constraint_comp(source_table, target_table):
@@ -277,6 +302,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     deleted.append(tmp_updated)
                                     tmp_updated = None
                                     break
+                            # A foreign key's columns cannot be altered, so
+                            # it must be recreated if they differ. Only the
+                            # column names are compared, as 'references'
+                            # holds the referenced table's OID.
+                            pairs = SchemaDiffTableCompare._fk_column_pairs
+                            if tmp_updated and constraint == 'foreign_key' \
+                                    and pairs(tmp_updated) != pairs(tmp_tar):
+                                added.append(source)
+                                deleted.append(tmp_updated)
+                                tmp_updated = None
                             if tmp_updated:
                                 if 'oid' in tmp:
                                     tmp_updated['oid'] = tmp['oid']
@@ -321,6 +356,20 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         # Get the difference result for source and target constraints
         pk_diff = self.table_constraint_comp(source, target)
         diff_dict.update(pk_diff)
+
+        # When both the source and target tables are partitioned, the
+        # 'partition' submodule branch below rebuilds the whole table
+        # (and every one of its partitions) from scratch, handling any
+        # added, removed or bound-changed partition itself. The generic
+        # partition add/remove handling in get_sql_from_table_diff (via
+        # _check_for_partitions_in_sql) must not also run in that case:
+        # it would detach/recreate the same partitions using their real
+        # names ahead of the rebuild script, so the rebuild's row-copy
+        # step (which reads from the original table) would miss rows
+        # already detached out from under it, silently losing data.
+        if 'partitions' in diff_dict and \
+                source.get('is_partitioned') and target.get('is_partitioned'):
+            del diff_dict['partitions']
 
         # Get the difference DDL/DML statements for table
         target_params['diff_data'] = diff_dict

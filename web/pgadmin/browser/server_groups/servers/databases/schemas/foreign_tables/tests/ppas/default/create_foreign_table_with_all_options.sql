@@ -18,6 +18,4 @@ ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
 COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     IS 'Test Comment';
 
-GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
-
-GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO enterprisedb;
+GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO PUBLIC, enterprisedb;

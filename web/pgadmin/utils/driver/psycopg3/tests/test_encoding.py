@@ -44,8 +44,8 @@ class TestEncoding(BaseTestGenerator):
          dict(key='EUC_TW', expected=['utf-8', 'utf-8'])),
         ('UNICODE falls back to the pgAdmin-only override',
          dict(key='UNICODE', expected=['utf-8', 'utf-8'])),
-        ('the ascii special-case resolves via raw_unicode_escape',
-         dict(key='ascii', expected=['SQLASCII', 'raw-unicode-escape'])),
+        ('the ascii special-case resolves via the SQL_ASCII codec',
+         dict(key='ascii', expected=['SQLASCII', 'pgadmin_sql_ascii'])),
     ]
 
     # Only set by scenarios where more than one result is correct.

@@ -122,6 +122,23 @@ const StyledGrid = styled(Grid)(({theme}) => ({
   },
 }));
 
+/*
+ * Render the HTML in help messages and notes. DOMPurify drops the target
+ * attribute, so a link would otherwise navigate the pgAdmin page itself
+ * away (which, in the desktop app, prompts to quit). Open links in a new
+ * window instead.
+ */
+function parseHelpHTML(html) {
+  return HTMLReactParse(DOMPurify.sanitize(html || ''), {
+    replace: (node) => {
+      if (node.type === 'tag' && node.name === 'a' && node.attribs?.href) {
+        node.attribs.target = '_blank';
+        node.attribs.rel = 'noopener noreferrer';
+      }
+    },
+  });
+}
+
 /* Wrapper on any form component to add label, error indicator and help message */
 export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9, labelTooltip='', errorMessage='' }) {
 
@@ -140,7 +157,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
           <FormControl error={Boolean(error)} fullWidth>
             {React.cloneElement(children, { cid, helpid })}
           </FormControl>
-          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
+          <FormHelperText id={helpid} variant="outlined">{parseHelpHTML(helpMessage)}</FormHelperText>
         </StyledGrid>
       </>)
     );
@@ -164,7 +181,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
         <FormControl error={Boolean(error)} fullWidth>
           {React.cloneElement(children, { cid, helpid })}
         </FormControl>
-        <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
+        <FormHelperText id={helpid} variant="outlined">{parseHelpHTML(helpMessage)}</FormHelperText>
         {errorMessage && <FormHelperText variant="outlined" error={true} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}><SafeMessage text={errorMessage} /></FormHelperText> }
       </Grid>
     </StyledGrid>
@@ -186,10 +203,57 @@ FormInput.propTypes = {
   errorMessage: PropTypes.string
 };
 
+// Upper bound on the editor values remembered whilst waiting for them to come
+// back through the 'value' prop, so the list cannot grow without limit if the
+// parent does not pass them back.
+const MAX_PENDING_SQL_VALUES = 50;
+
 export function InputSQL({ value, options={}, onChange, className, controlProps, inputRef, ...props }) {
 
   const editor = useRef();
   const { autocompleteProvider, autocompleteOnKeyPress } = options;
+
+  // Values the editor has reported through onChange that the parent has not
+  // yet passed back as 'value'. SchemaView updates the value it hands to a
+  // field a render or two after the change, so when two keys are pressed
+  // almost together it can pass back the value from the first key whilst the
+  // editor already holds the second. Applying that older value replaces the
+  // whole document and moves the cursor to the start (#10357), so a value
+  // matching an entry in this list is treated as stale, and the editor's
+  // latest content is kept instead.
+  //
+  // Values come back in the order the editor reported them, although some
+  // may be skipped when several changes are handled in one render. The
+  // earliest match is used because an edit and its undo can report the same
+  // text twice (#10551): with [A, B, A] pending, matching the last A would
+  // drop B as well, and B coming back next would then replace the document.
+  // If values were skipped, matching early only leaves entries in the list
+  // that later changes clear, whilst the editor still shows its own content.
+  const pendingValues = useRef([]);
+  const currValue = value || '';
+  const pendingIdx = pendingValues.current.indexOf(currValue);
+  const editorValue = pendingIdx >= 0 ?
+    pendingValues.current[pendingValues.current.length - 1] : currValue;
+
+  useEffect(() => {
+    const pending = pendingValues.current;
+    const idx = pending.indexOf(currValue);
+    if (idx >= 0) {
+      // Everything up to this value has now come back from the parent.
+      pending.splice(0, idx + 1);
+    } else {
+      // A value the editor never produced (a reset, for example) replaces
+      // the editor content, so nothing is pending any more.
+      pending.length = 0;
+    }
+  }, [currValue]);
+
+  const onEditorChange = useCallback((changedValue, ...args) => {
+    const pending = pendingValues.current;
+    pending.push(changedValue);
+    if (pending.length > MAX_PENDING_SQL_VALUES) pending.shift();
+    onChange?.(changedValue, ...args);
+  }, [onChange]);
 
   return (
     <Root style={{height: '100%'}}>
@@ -201,12 +265,12 @@ export function InputSQL({ value, options={}, onChange, className, controlProps,
             editor.current.registerAutocomplete(autocompleteProvider);
           }
         }}
-        value={value || ''}
+        value={editorValue}
         options={{
           ..._.omit(options, ['autocompleteProvider', 'autocompleteOnKeyPress']),
         }}
         className={'Form-sql ' + className}
-        onChange={onChange}
+        onChange={onEditorChange}
         autocomplete={true}
         autocompleteOnKeyPress={autocompleteOnKeyPress}
         {...controlProps}
@@ -307,7 +371,8 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, e
     format: format.replace('xxx', timeZoneString),
     label: '',
     variant: 'inline',
-    ampm: controlProps.ampm ? controlProps.ampm : undefined,
+    // DatePicker has no clock and passes unknown props through to the DOM.
+    ampm: controlProps?.pickerType === 'Date' ? undefined : controlProps.ampm,
     disablePast: controlProps.disablePast || false,
     onChange: handleChange,
     slotProps: {textField: {placeholder:placeholder, error: error}}
@@ -1156,7 +1221,7 @@ export function FormNote({ text, className, controlProps }) {
       <Box className={className}>
         <Paper elevation={0} className={controlProps?.raw ? '' : 'Form-noteRoot'}>
           {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
-          <Box>{HTMLReactParse(DOMPurify.sanitize(text || ''))}</Box>
+          <Box>{parseHelpHTML(text)}</Box>
         </Paper>
       </Box>
     </Root>

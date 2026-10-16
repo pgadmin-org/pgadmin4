@@ -150,7 +150,7 @@ class NewConnectionSchema extends BaseUISchema {
             let sid = actionObj.value;
 
             if(!_.find(self.flatServers, (s) => s.value == sid)?.connected) {
-              this.connectServer(sid, state.user, null, (data) => {
+              this.connectServer(sid, null, (data) => {
                 self.setServerConnected(sid, data.icon);
                 resolve(() => ({ sid: sid, connected: true }));
               });
@@ -224,17 +224,12 @@ export default function NewConnectionDialog({onClose, onSave}) {
   const queryToolCtx = React.useContext(QueryToolContext);
   const pgAdmin = usePgAdmin();
 
-  const connectServer = async (sid, user, formData, connectCallback) => {
+  const connectServer = async (sid, formData, connectCallback) => {
     setConnecting(true);
     try {
       let {data: respData} = await queryToolCtx.api({
         method: 'POST',
-        url: url_for('sqleditor.connect_server', {
-          'sid': sid,
-          ...(user ? {
-            'usr': user,
-          }:{}),
-        }),
+        url: url_for('sqleditor.connect_server', {'sid': sid}),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: formData
       });
@@ -253,7 +248,7 @@ export default function NewConnectionDialog({onClose, onSave}) {
               }}
               data={error.response?.data?.result}
               onOK={(formData)=>{
-                connectServer(sid, null, formData, connectCallback);
+                connectServer(sid, formData, connectCallback);
               }}
             />
           );

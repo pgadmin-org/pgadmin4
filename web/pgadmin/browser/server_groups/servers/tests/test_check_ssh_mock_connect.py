@@ -24,6 +24,9 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
     scenarios = utils.generate_scenarios('connect_ssh_mock',
                                          servers_utils.test_cases)
 
+    def setUp(self):
+        servers_utils.restore_server_fixture_on_cleanup(self)
+
     def connect_to_server(self, url, server):
         return self.tester.post(
             url,
@@ -98,7 +101,7 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
             server_mock_result.first.return_value = mock_server_obj
 
             if self.mock_data['tunnel_password'] == '':
-                del self.server['tunnel_password']
+                self.server.pop('tunnel_password', None)
 
             response = self.connect_to_server(url, self.server)
 

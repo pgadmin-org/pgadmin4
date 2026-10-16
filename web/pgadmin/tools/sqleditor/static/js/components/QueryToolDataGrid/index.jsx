@@ -311,6 +311,19 @@ RowNumColFormatter.propTypes = {
   onSelectedColumnsChange: PropTypes.func,
 };
 
+/* Shift + mousedown on a cell extends the selected cell range, but on the
+ * row number column shift + click belongs to row selection (handled by
+ * RowNumColFormatter). Select the row number cell as a plain click would,
+ * so a cell range left over from earlier is cleared rather than kept
+ * alongside the selected rows.
+ */
+export function onCellMouseDown({column, selectCell}, e) {
+  if(column.key == ROWNUM_KEY && e.shiftKey) {
+    e.preventGridDefault();
+    selectCell();
+  }
+}
+
 function formatColumns(columns, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChange, rowKeyGetter) {
   let retColumns = [
     ...columns,
@@ -465,6 +478,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         }}
         enableRangeSelection={true}
         rangeLeftBoundaryColIdx={0}
+        onCellMouseDown={onCellMouseDown}
         onCellKeyDown={({column, rowIdx, selectCell, mode}, e)=>{
           /* Enter should not be propagated to editor and should
           only be used to open the editor */

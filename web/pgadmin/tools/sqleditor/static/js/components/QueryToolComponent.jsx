@@ -38,7 +38,7 @@ import { retrieveNodeName } from '../show_view_data';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
-import { connectServer, connectServerModal } from './connectServer';
+import { connectServer, connectServerModal, connectionCancelledError, ensureServerConnected } from './connectServer';
 import { FileManagerUtils  } from '../../../../../misc/file_manager/static/js/components/FileManager';
 
 export const QueryToolContext = React.createContext();
@@ -115,13 +115,19 @@ const FIXED_PREF = {
   },
 };
 
-/* Raised when the user dismisses the password prompt rather than supplying
- * credentials. The flag lets callers tell a deliberate cancellation from a
- * genuine failure without matching on the (translated) message text. */
-function connectionCancelledError() {
-  const error = new Error(gettext('Connection cancelled'));
-  error.cancelled = true;
-  return error;
+// The body of the request that initialises the transaction. A Query Tool
+// sends the execute options currently chosen on the toolbar, so that they
+// are kept rather than reset to the preferences when the transaction is
+// re-created; only boolean values are sent, and the server uses the
+// preference for any that are missing.
+export function getInitialiseRequestData(params, connParams, toolbarOptions) {
+  if(params.is_query_tool) {
+    return {
+      ..._.pickBy(_.pick(toolbarOptions ?? {}, ['auto_commit', 'auto_rollback', 'server_cursor']), _.isBoolean),
+      ...connParams,
+    };
+  }
+  return {sql_filter: params.sql_filter, server_cursor: params.server_cursor, ...connParams};
 }
 
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
@@ -180,6 +186,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
   const isDirtyRef = useRef(false); // usefull when conn change.
   const qtStateRef = useRef(qtState);
+  // The toolbar's check menu options (execute, explain and open file
+  // options) for this tab, kept up to date by MainToolBar so that they are
+  // saved and restored with the rest of the tab's state.
+  const toolbarOptionsRef = useRef(null);
   const eventBus = useRef(eventBusObj || (new EventBus()));
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
@@ -352,6 +362,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           },
         }));
       }
+      const toolbarOptions = toolContent.connectionInfo?.toolbar_options;
+      if (toolbarOptions && typeof toolbarOptions === 'object') {
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, toolbarOptions);
+      }
       if (toolContent?.modifiedExternally) {
         toolContent = await fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent.data, '');
       }
@@ -398,9 +412,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       password: password,
       dbname: selectedConn.database_name
     };
-    api.post(baseUrl, qtState.params.is_query_tool ?
-      {...requestParams} :
-      {sql_filter: qtState.params.sql_filter, server_cursor: qtState.params.server_cursor, ...requestParams})
+    api.post(baseUrl, getInitialiseRequestData(qtState.params, requestParams, toolbarOptionsRef.current))
       .then(()=>{
         setQtStatePartial({
           connected: true,
@@ -773,6 +785,16 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     };
+    /* Put the previous selection back if the change does not go ahead */
+    const revertSelection = ()=>{
+      if(!isNew) {
+        selectConn(currSelectedConn, currConnected, false);
+      } else {
+        setQtStatePartial({
+          obtaining_conn: false,
+        });
+      }
+    };
     /* If not new, select it initially to show loading */
     if(!isNew) {
       selectConn(connectionData);
@@ -782,7 +804,20 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     }
 
-    return new Promise((resolve, reject)=>{
+    /* Connect the server itself first, so that the Object Explorer reflects
+     * the connection if the server had been disconnected. The backend only
+     * does so when this connection uses the server's own user and role. */
+    return ensureServerConnected(api, modal, connectionData.sid, (isConnecting)=>{
+      setQtStatePartial({
+        obtaining_conn: isConnecting,
+      });
+    }, {
+      user: connectionData.user,
+      role: connectionData.role,
+    }).catch((error)=>{
+      revertSelection();
+      throw error;
+    }).then(()=>new Promise((resolve, reject)=>{
       api.post(url_for('sqleditor.update_sqleditor_connection', {
         trans_id: qtState.params.trans_id,
         sgid: connectionData.sgid,
@@ -823,13 +858,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               obtaining_conn: false,
             });
             const onCancel = ()=>{
-              if(!isNew) {
-                selectConn(currSelectedConn, currConnected, false);
-              } else {
-                setQtStatePartial({
-                  obtaining_conn: false,
-                });
-              }
+              revertSelection();
               reject(connectionCancelledError());
             };
             connectServerModal(modal, error.response?.data?.result, (passwordData)=>{
@@ -844,17 +873,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               );
             }, onCancel);
           } else {
-            if(!isNew) {
-              selectConn(currSelectedConn, currConnected, false);
-            } else {
-              setQtStatePartial({
-                obtaining_conn: false,
-              });
-            }
+            revertSelection();
             reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
           }
         });
-    });
+    }));
   };
 
   const onNewConnClick = useCallback(()=>{
@@ -1012,6 +1035,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eol: qtState.eol,
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
+    toolbarOptionsRef: toolbarOptionsRef,
     toggleQueryTool: () => {
       let panel = qtPanelDocker?.find(qtPanelId);
       if (!panel) {

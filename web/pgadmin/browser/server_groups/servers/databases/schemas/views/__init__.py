@@ -912,6 +912,107 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
 
         return False, '', sql
 
+    # A character that may appear in an unquoted identifier, and so cannot
+    # immediately precede the start of a dollar-quoted string or an E''
+    # string's prefix.
+    _IDENT_CHAR = re.compile(r'[A-Za-z0-9_$\u0080-\uffff]')
+    _DOLLAR_TAG = re.compile(
+        r'\$(?:[A-Za-z_\u0080-\uffff][A-Za-z0-9_\u0080-\uffff]*)?\$')
+
+    @staticmethod
+    def _tokenise_definition(definition):
+        """
+        Split a view definition into plain SQL and quoted parts, in the same
+        shape as re.split() with one capturing group: even indexes hold plain
+        SQL and odd indexes hold a quoted identifier, string literal or
+        dollar-quoted string exactly as written. This follows PostgreSQL's
+        lexer: '' and "" are escaped quotes, E'' strings also take backslash
+        escapes, block comments nest, and a $ that continues an identifier
+        does not start a dollar-quoted string. Comments are replaced with a
+        space in the plain SQL. A construct left unterminated runs to the
+        end of the definition.
+        """
+        def follows_ident(pos):
+            return pos > 0 and \
+                ViewNode._IDENT_CHAR.match(definition[pos - 1]) is not None
+
+        parts = ['']
+        i, n = 0, len(definition)
+        while i < n:
+            ch = definition[i]
+            pair = definition[i:i + 2]
+            if pair == '--':
+                end = definition.find('\n', i)
+                i = n if end < 0 else end
+                parts[-1] += ' '
+            elif pair == '/*':
+                depth, i = 1, i + 2
+                while i < n and depth:
+                    pair = definition[i:i + 2]
+                    if pair == '/*':
+                        depth, i = depth + 1, i + 2
+                    elif pair == '*/':
+                        depth, i = depth - 1, i + 2
+                    else:
+                        i += 1
+                parts[-1] += ' '
+            elif ch in '"\'':
+                escapes = ch == "'" and i > 0 and \
+                    definition[i - 1] in 'eE' and not follows_ident(i - 1)
+                j = i + 1
+                while j < n:
+                    if escapes and definition[j] == '\\':
+                        j += 2
+                    elif definition[j] != ch:
+                        j += 1
+                    elif definition[j + 1:j + 2] == ch:
+                        j += 2
+                    else:
+                        break
+                j = min(j + 1, n)
+                parts.extend([definition[i:j], ''])
+                i = j
+            else:
+                tag = None if ch != '$' or follows_ident(i) else \
+                    ViewNode._DOLLAR_TAG.match(definition, i)
+                if tag is None:
+                    parts[-1] += ch
+                    i += 1
+                    continue
+                end = definition.find(tag.group(0), tag.end())
+                j = n if end < 0 else end + len(tag.group(0))
+                parts.extend([definition[i:j], ''])
+                i = j
+        return parts
+
+    @staticmethod
+    def _split_definition(definition):
+        """
+        Split a view definition at each FROM keyword and normalise the parts
+        so that only changes that can affect the view's columns are noticed.
+        The contents of quoted identifiers and string literals are kept
+        exactly as written, although the double quotes around an identifier
+        are dropped so that "name" still matches name. Everything else is
+        lower-cased (keywords, function names, type names and unquoted
+        identifiers are case-insensitive) and has its non-word characters
+        removed, so a pure reformat, such as one from the SQL formatter, is
+        not mistaken for a change to the column list. FROM is only matched as
+        a whole word outside quotes and comments, so identifiers such as
+        valid_from, and comments such as /* from */, do not end the select
+        list early.
+        """
+        segments = ['']
+        parts = ViewNode._tokenise_definition(definition or '')
+        for i, part in enumerate(parts):
+            if i % 2:
+                segments[-1] += part[1:-1] if part[0] == '"' else part
+                continue
+            pieces = [re.sub(r"\W", "", piece)
+                      for piece in re.split(r'\bfrom\b', part.lower())]
+            segments[-1] += pieces[0]
+            segments.extend(pieces[1:])
+        return segments
+
     def _get_definition_data(self, vid, data, old_data, res, acls):
         """
         Check and process definition data.
@@ -925,9 +1026,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         if not retun False with error msg empty('')
         """
         if 'definition' in data and self.manager.server_type == 'pg':
-            new_def = re.sub(r"\W", "", data['definition']).split('FROM')
-            old_def = re.sub(r"\W", "", res['rows'][0]['definition']
-                             ).split('FROM')
+            new_def = ViewNode._split_definition(data['definition'])
+            old_def = ViewNode._split_definition(
+                res['rows'][0]['definition'])
             if 'definition' in data and (
                 len(old_def) > 1 or len(new_def) > 1
             ) and (

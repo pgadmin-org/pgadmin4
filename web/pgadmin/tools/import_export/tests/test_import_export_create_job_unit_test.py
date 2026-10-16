@@ -356,6 +356,9 @@ class IECreateJobTest(BaseTestGenerator):
                                 'ESCAPE \\\'\\\'\\\'\\\''],
              not_expected_cmd_opts=['FORMAT binary', 'FORMAT text', 'DEFAULT',
                                     'FORCE_NOT_NULL', 'FORCE_NULL'],
+             # Passed as a connection string so a service file's dbname
+             # cannot override it.
+             expected_dbname='dbname=postgres',
              expected_exit_code=[0, None]
          )),
         ('When export file with csv file, header, delimiter=tab, '
@@ -1183,3 +1186,66 @@ class IECreateJobTest(BaseTestGenerator):
                     opt,
                     arg
                 )
+        if getattr(self, 'expected_dbname', None):
+            args = batch_process_mock.call_args_list[0][1]['args']
+            self.assertIn('--dbname', args)
+            self.assertEqual(args[args.index('--dbname') + 1],
+                             self.expected_dbname)
+
+
+class IECreateJobDatabaseRequiredTest(BaseTestGenerator):
+    """An import or export without a target database must be rejected up
+    front, before any job is created, rather than letting libpq pick one."""
+
+    import_export_url = '/import_export/job/{0}'
+
+    scenarios = [
+        ('When export with an empty database name',
+         dict(
+             params=dict(
+                 filename='test_export_file.csv',
+                 format='csv',
+                 is_import=False,
+                 schema='public',
+                 table='test_table',
+                 database=''
+             ),
+             url=import_export_url
+         )),
+        ('When import with a null database name',
+         dict(
+             params=dict(
+                 filename='test_import_file.csv',
+                 format='csv',
+                 is_import=True,
+                 schema='public',
+                 table='test_table',
+                 database=None
+             ),
+             url=import_export_url
+         )),
+        ('When export without a database name',
+         dict(
+             params=dict(
+                 filename='test_export_file.csv',
+                 format='csv',
+                 is_import=False,
+                 schema='public',
+                 table='test_table'
+             ),
+             url=import_export_url
+         )),
+    ]
+
+    @patch('pgadmin.tools.import_export.BatchProcess')
+    def runTest(self, batch_process_mock):
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
+        url = self.url.format(self.server_id)
+
+        response = self.tester.post(url,
+                                    data=json.dumps(self.params),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.data)['errormsg'],
+                         'Database parameter is required.')
+        self.assertFalse(batch_process_mock.called)

@@ -965,19 +965,31 @@ export function NLQChatPanel() {
     case 'thinking': {
       const streamId = streamingIdRef.current;
       if (streamId) {
-        // Transition from streaming back to thinking (tool use)
-        // Remove streaming message and re-add thinking indicator
+        // Transition from streaming back to thinking (tool use).
+        // Keep the text the LLM streamed so far as a message of its
+        // own, as the final 'complete' event only carries the last
+        // response, then re-add the thinking indicator below it.
+        const interimText = streamingTextRef.current;
         streamingTextRef.current = '';
         streamingIdRef.current = null;
+        const interimMessages = interimText.trim() ? [{
+          type: interimText.includes('```')
+            ? MESSAGE_TYPES.SQL : MESSAGE_TYPES.ASSISTANT,
+          content: interimText,
+        }] : [];
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== streamId),
+          ...interimMessages,
           {
             type: MESSAGE_TYPES.THINKING,
             content: event.message,
             id: thinkingId,
           },
         ]);
-        setThinkingMessageId(thinkingId);
+        // The LLM is now producing its own output, so show the
+        // server's status message rather than cycling through the
+        // random placeholder messages.
+        setThinkingMessageId(null);
       } else {
         setMessages((prev) =>
           prev.map((m) =>
@@ -991,8 +1003,10 @@ export function NLQChatPanel() {
     case 'text_delta':
       streamingTextRef.current += event.content;
       if (!streamingIdRef.current) {
-        // First text chunk: replace thinking with streaming message
+        // First text chunk: replace thinking with streaming message,
+        // and stop cycling the placeholder messages for this request
         streamingIdRef.current = Date.now();
+        setThinkingMessageId(null);
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== thinkingId),
           {

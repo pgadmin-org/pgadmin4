@@ -102,7 +102,7 @@ class TestGetSharedServerProperties(BaseTestGenerator):
     using mock objects."""
 
     scenarios = [
-        ('Merge overlays passexec_cmd from SharedServer',
+        ('Merge keeps the owner passexec fields',
          dict(test_method='test_overlays_passexec')),
         ('Merge overlays post_connection_sql from SharedServer',
          dict(test_method='test_overlays_post_sql')),
@@ -110,6 +110,14 @@ class TestGetSharedServerProperties(BaseTestGenerator):
          dict(test_method='test_overlays_kerberos_tags')),
         ('Merge strips owner SSL paths not in SharedServer',
          dict(test_method='test_strips_owner_ssl_paths')),
+        ('Merge never passes the owner passfile to a non-owner',
+         dict(test_method='test_owner_passfile_not_inherited')),
+        ('Merge honours the non-owner\'s own passfile',
+         dict(test_method='test_own_passfile_is_honoured')),
+        ('Merge falls back to owner tags when SharedServer tags are NULL',
+         dict(test_method='test_tags_fall_back_to_owner')),
+        ('Merge respects tags a user has deliberately cleared',
+         dict(test_method='test_cleared_tags_are_respected')),
         ('Merge applies SharedServer SSL paths',
          dict(test_method='test_applies_ss_ssl_paths')),
         ('Merge overrides service from SharedServer',
@@ -138,17 +146,15 @@ class TestGetSharedServerProperties(BaseTestGenerator):
             server, ss)
 
     def test_overlays_passexec(self):
-        # SharedServer defaults have None - overlay copies that.
-        result = self._merge()
-        self.assertIsNone(result.passexec_cmd)
-        self.assertIsNone(result.passexec_expiration)
-        # If SharedServer has a value, it should appear.
+        # The overlay must not copy the SharedServer's passexec fields;
+        # resolve_server_passexec() reads them from the SharedServer row.
         ss = _make_shared_server(
             passexec_cmd='/usr/bin/get-pw',
             passexec_expiration=120)
         result = self._merge(ss=ss)
-        self.assertEqual(result.passexec_cmd, '/usr/bin/get-pw')
-        self.assertEqual(result.passexec_expiration, 120)
+        self.assertEqual(result.passexec_cmd,
+                         '/usr/bin/vault-get-secret')
+        self.assertEqual(result.passexec_expiration, 300)
 
     def test_overlays_post_sql(self):
         # SharedServer defaults have None - overlay copies that.
@@ -183,6 +189,46 @@ class TestGetSharedServerProperties(BaseTestGenerator):
         self.assertNotIn('sslcrldir', cp)
         self.assertNotIn('sslrootcert', cp)
         self.assertNotIn('passfile', cp)
+
+    def test_owner_passfile_not_inherited(self):
+        # The owner's passfile is a credential source, like their
+        # password and SSH tunnel key, so a non-owner must never see
+        # it: neither when their row has no passfile at all, nor when
+        # it has no connection_params at all (#10137).
+        without_passfile = _make_shared_server(
+            connection_params={'sslmode': 'require'})
+        without_params = _make_shared_server(connection_params=None)
+        for ss in (without_passfile, without_params):
+            result = self._merge(server=_make_server(), ss=ss)
+            self.assertNotIn('passfile', result.connection_params)
+
+    def test_own_passfile_is_honoured(self):
+        # A passfile the non-owner set in their own row is theirs and
+        # takes effect, whatever the owner has configured.
+        ss = _make_shared_server(connection_params={
+            'passfile': '/home/nonowner/.pgpass'})
+        result = self._merge(ss=ss)
+        self.assertEqual(
+            result.connection_params['passfile'],
+            '/home/nonowner/.pgpass')
+
+    def test_tags_fall_back_to_owner(self):
+        # NULL tags on the SharedServer means the row predates tags
+        # being copied across, so the owner's should show through.
+        owner_tags = [{'text': 'prod', 'color': '#f00'}]
+        result = self._merge(
+            server=_make_server(tags=owner_tags),
+            ss=_make_shared_server(tags=None))
+        self.assertEqual(result.tags, owner_tags)
+
+    def test_cleared_tags_are_respected(self):
+        # An empty list is a user who has removed every tag they had,
+        # which is not the same thing as never having had any, so the
+        # owner's tags must not come back.
+        result = self._merge(
+            server=_make_server(tags=[{'text': 'prod', 'color': '#f00'}]),
+            ss=_make_shared_server(tags=[]))
+        self.assertEqual(result.tags, [])
 
     def test_applies_ss_ssl_paths(self):
         result = self._merge()
@@ -236,6 +282,10 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
     scenarios = [
         ('Sanitizes connection_params on creation',
          dict(test_method='test_sanitizes_conn_params')),
+        ('Never copies the owner passfile on creation',
+         dict(test_method='test_does_not_copy_passfile')),
+        ('Copies tags from owner on creation',
+         dict(test_method='test_copies_tags')),
         ('Copies tunnel_port from owner',
          dict(test_method='test_copies_tunnel_port')),
         ('Copies tunnel_keep_alive from owner',
@@ -283,6 +333,25 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
         # Non-sensitive keys preserved
         self.assertEqual(cp.get('sslmode'), 'verify-full')
         self.assertEqual(cp.get('connect_timeout'), '10')
+
+    def test_does_not_copy_passfile(self):
+        # The owner's passfile is a credential source and is never
+        # handed to a non-owner, any more than the owner's password
+        # or SSH tunnel key would be (#10137).
+        self._create()
+        cp = self.captured_kwargs.get('connection_params', {})
+        self.assertNotIn('passfile', cp)
+        self.assertEqual(cp.get('sslmode'), 'verify-full')
+
+    def test_copies_tags(self):
+        # Tags configured on the owner's server (e.g. via
+        # servers.json) must be visible to non-owners too (#10136).
+        server = _make_server(
+            tags=[{'text': 'prod', 'color': '#f00'}])
+        self._create(server)
+        self.assertEqual(
+            self.captured_kwargs.get('tags'),
+            [{'text': 'prod', 'color': '#f00'}])
 
     def test_copies_tunnel_port(self):
         server = _make_server(tunnel_port=2222)
@@ -339,8 +408,9 @@ class TestMergeExpungesServer(BaseTestGenerator):
             # Should not crash
             result = ServerModule.get_shared_server_properties(
                 server, ss)
-        # SharedServer defaults passexec_cmd to None
-        self.assertIsNone(result.passexec_cmd)
+        # The owner's passexec fields are left alone by the overlay
+        self.assertEqual(result.passexec_cmd,
+                         '/usr/bin/vault-get-secret')
 
 
 class TestUpdateConnectionParameter(BaseTestGenerator):
@@ -620,6 +690,10 @@ class TestUpdateTagsBase(BaseTestGenerator):
          dict(test_method='test_nonowner_tags_base')),
         ('Owner tag delta uses server tags',
          dict(test_method='test_owner_tags_base')),
+        ('Non-owner delta on NULL tags starts from owner tags',
+         dict(test_method='test_nonowner_null_tags_fallback')),
+        ('Non-owner delta on empty tags ignores owner tags',
+         dict(test_method='test_nonowner_empty_tags_no_fallback')),
     ]
 
     def runTest(self):
@@ -663,6 +737,43 @@ class TestUpdateTagsBase(BaseTestGenerator):
         texts = {t['text'] for t in data['tags']}
         self.assertIn('owner-tag', texts)
         self.assertIn('new-tag', texts)
+
+    def test_nonowner_null_tags_fallback(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server(
+            tags=[{'text': 'owner-tag', 'color': '#000'}])
+        ss = _make_shared_server(tags=None)
+
+        data = {'tags': {
+            'added': [{'text': 'my-tag', 'color': '#f00'}],
+        }}
+
+        # A SharedServer row with NULL tags is shown the owner's tags,
+        # so adding one must keep them rather than replace them.
+        ServerNode.update_tags(data, ss, server.tags)
+
+        texts = {t['text'] for t in data['tags']}
+        self.assertEqual(texts, {'owner-tag', 'my-tag'})
+
+    def test_nonowner_empty_tags_no_fallback(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server(
+            tags=[{'text': 'owner-tag', 'color': '#000'}])
+        ss = _make_shared_server(tags=[])
+
+        data = {'tags': {
+            'added': [{'text': 'my-tag', 'color': '#f00'}],
+        }}
+
+        # An explicitly emptied list is the user's choice, so the
+        # owner's tags must not come back.
+        ServerNode.update_tags(data, ss, server.tags)
+
+        self.assertEqual([t['text'] for t in data['tags']], ['my-tag'])
 
 
 class TestGetSharedServerRaisesOnNone(BaseTestGenerator):

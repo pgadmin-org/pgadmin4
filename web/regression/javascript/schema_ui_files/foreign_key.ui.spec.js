@@ -45,10 +45,13 @@ describe('ForeignKeySchema', ()=>{
   beforeAll(()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    schemaObj = getNodeForeignKeySchema({}, {}, {Nodes: {table: {}}});
   });
 
   beforeEach(()=>{
+    // A fresh schema per test, as each dialog gets in the product; the
+    // properties view mutates its fields (helpMessage), which would otherwise
+    // leak into the grid cells rendered by later tests.
+    schemaObj = getNodeForeignKeySchema({}, {}, {Nodes: {table: {}}});
     genericBeforeEach();
   });
 

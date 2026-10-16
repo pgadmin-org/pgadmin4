@@ -1531,6 +1531,66 @@
       }
     },
     {
+      "name": "Get view msql: Reformatted definition does not drop the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t.id, concat(t.a, ' x ', t.b) AS ab, (t.d)::text AS ds, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT\n\tt.id,\n\tCONCAT(t.a, ' x ', t.b) AS ab,\n\t(t.d)::TEXT AS ds,\n\tu.n\nFROM\n\t(VALUES (1, 'a', 'b', NOW()::DATE)) t (id, a, b, d)\n\tCROSS JOIN (VALUES (2)) u (n);"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "sql_not_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Changing the columns drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t.id, concat(t.a, ' x ', t.b) AS ab, (t.d)::text AS ds, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT t.id, concat(t.a, ' x ', t.b) AS ab, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n)"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Removing a column after valid_from drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, valid_from, name FROM (VALUES (1, now()::date, 'a')) t(id, valid_from, name); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT id, valid_from FROM (VALUES (1, now()::date, 'a')) t(id, valid_from, name)"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
       "name": "Get view msql: With Non-existing view.",
       "url": "/browser/view/msql/",
       "is_positive_test": false,

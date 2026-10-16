@@ -8,10 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
-import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { MappedCellControl } from '../../../pgadmin/static/js/SchemaView/MappedControl';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView, withBrowser} from '../genericFunctions';
 
 /* Used to check collection mode */
 class MockSchema extends BaseUISchema {
@@ -64,6 +67,16 @@ describe('VariableSchema', ()=>{
     expect(schemaObj.getValueFieldProps({vartype: 'enum', enumvals: []})).toEqual(expect.objectContaining({
       cell: 'select',
     }));
+    expect(schemaObj.getValueFieldProps({
+      value: 'sslnegotiation', vartype: 'enum', enumvals: ['postgres', 'direct'],
+    })).toEqual(expect.objectContaining({
+      cell: 'select',
+      optionsReloadBasis: 'sslnegotiation',
+      options: [
+        {label: 'postgres', value: 'postgres'},
+        {label: 'direct', value: 'direct'},
+      ],
+    }));
     expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toEqual(expect.objectContaining({
       cell: 'int',
     }));
@@ -77,6 +90,46 @@ describe('VariableSchema', ()=>{
       cell: 'file',
     }));
     expect(schemaObj.getValueFieldProps({})).toBe('');
+  });
+
+  it('value options follow a change of enum variable name', async ()=>{
+    /* The grid keeps the value cell's select mounted when the name changes,
+    so render the value cell on its own and re-render it with the props the
+    grid builds for each name. Driving the select menus through the full
+    grid was flaky: the grid focuses a new row from a timer and re-renders
+    on validation, and a focus change between opening a menu and clicking
+    an option closes the menu, so the click is lost. */
+    const schemaObj = new VariableSchema([{
+      value: 'sslmode', label: 'sslmode', vartype: 'enum',
+      enumvals: ['prefer', 'require'],
+    }, {
+      value: 'sslnegotiation', label: 'sslnegotiation', vartype: 'enum',
+      enumvals: ['postgres', 'direct'],
+    }], null, null, ['name', 'value']);
+    /* The variable types are loaded asynchronously by the constructor. */
+    await waitFor(()=>expect(Object.keys(schemaObj.varTypes)).toHaveLength(2));
+
+    const valueField = schemaObj.fields.find((f)=>f.id == 'value');
+    const cellProps = (name, value)=>({
+      ...valueField, ...valueField.cell({name}),
+      visible: true, value: value, onCellChange: ()=>{/* Not needed */},
+    });
+    const ValueCell = withBrowser(MappedCellControl);
+    const hiddenVal = ()=>ctrl.container.querySelector(
+      'input[type="hidden"][name="value"]'
+    )?.value;
+
+    const ctrl = render(<ValueCell {...cellProps('sslmode', 'require')}/>);
+    await waitFor(()=>expect(hiddenVal()).toBe('require'));
+
+    /* A value is only shown if it is one of the loaded options, so this
+    fails if the options are not reloaded for the new name. */
+    ctrl.rerender(<ValueCell {...cellProps('sslnegotiation', 'direct')}/>);
+    await waitFor(()=>expect(hiddenVal()).toBe('direct'));
+
+    await userEvent.setup().click(ctrl.container.querySelector('input[role="combobox"]'));
+    expect(await screen.findByRole('option', {name: 'postgres'})).toBeInTheDocument();
+    expect(screen.queryByRole('option', {name: 'require'})).not.toBeInTheDocument();
   });
 
   it('variable collection', async ()=>{

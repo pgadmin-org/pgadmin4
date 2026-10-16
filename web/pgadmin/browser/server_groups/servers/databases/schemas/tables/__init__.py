@@ -961,6 +961,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         partitions_sql = ''
         if self.is_table_partitioned(data):
             data['relkind'] = 'p'
+            if self._unlogged_unsupported(data, self.manager.version):
+                data['relpersistence'] = False
             # create partition scheme
             data['partition_scheme'] = self.get_partition_scheme(data)
             partitions_sql = self.get_partitions_sql(data)

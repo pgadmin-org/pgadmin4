@@ -269,6 +269,14 @@ def reproject_serial_column(col):
     with, so that callers can emit round-trippable DDL. Columns that are
     not SERIAL, including ones already reprojected, are left untouched.
 
+    The real ``nextval(...)`` expression is kept alongside the emptied
+    ``defval`` (under ``serial_defval``) rather than discarded, because
+    Schema Diff needs it back verbatim whenever it finds this column
+    genuinely differs in "serialness" from its counterpart: converting a
+    column to or from SERIAL means creating or dropping the sequence
+    behind it, which the pseudo-type's own implied default can't drive by
+    itself (#10292).
+
     :param col: Column properties, modified in place
     :return: The same column
     """
@@ -280,9 +288,73 @@ def reproject_serial_column(col):
     col['displaytypname'] = serial_type
     col['cltype'] = serial_type
     col['typname'] = serial_type
+    col['serial_defval'] = col['defval']
     col['defval'] = ''
 
     return col
+
+
+def parse_nextval_sequence(defval):
+    """
+    Extract the schema-qualified sequence name out of a ``nextval(...)``
+    column default expression, e.g. ``nextval('public.t_id_seq'::regclass)``
+    yields ``public.t_id_seq``. The identifier is returned exactly as
+    PostgreSQL would render it as a bare identifier (already quoted if it
+    needs to be), so callers should use it verbatim rather than
+    re-quoting it.
+
+    PostgreSQL renders the argument to ``::regclass`` as a string literal,
+    so any single quote that is part of the identifier itself (e.g. a
+    sequence named ``id'seq``, which the server prints as the
+    double-quoted identifier ``"id'seq"``) is doubled per standard SQL
+    string-literal escaping: ``nextval('public."id''seq"'::regclass)``.
+    That doubling has to be undone before the extracted text is usable
+    outside of a string literal, i.e. spliced directly into
+    ``CREATE SEQUENCE``/``ALTER SEQUENCE`` DDL, or the doubled quote would
+    be read back as two literal characters instead of one (#10318).
+
+    :param defval: A column's default value expression, or None
+    :return: The schema-qualified sequence name, or None if it is not a
+        nextval() default
+    """
+    if not defval:
+        return None
+
+    match = re.match(r"nextval\('(.+)'::regclass\)$", defval)
+    return match.group(1).replace("''", "'") if match else None
+
+
+@get_template_path
+def add_identity_sequence_state(conn, data, o_data, template_path=None):
+    """
+    Add the position of an identity column's sequence (its last_value and
+    is_called) to the column's old data, so that update.sql only RESTARTs
+    the sequence when a new START needs it (#10550). Both are left as None
+    when the START is not being set, or the sequence cannot be read.
+
+    :param conn: Connection Object
+    :param data: The column's new data
+    :param o_data: The column's old data, from properties.sql
+    :param template_path: Optional template path
+    """
+    o_data['seqlastvalue'] = None
+    o_data['seqiscalled'] = None
+
+    if data.get('seqstart') in (None, '') or not o_data.get('seqrelid'):
+        return
+
+    sql_path = "/".join([template_path, 'sequence_state.sql'])
+    status, res = conn.execute_dict(
+        render_template(sql_path, seqrelid=o_data['seqrelid'], conn=conn))
+    if not status or not res['rows']:
+        return
+
+    status, res = conn.execute_dict(
+        render_template(sql_path, nspname=res['rows'][0]['nspname'],
+                        seqname=res['rows'][0]['relname'], conn=conn))
+    if status and res['rows']:
+        o_data['seqlastvalue'] = res['rows'][0]['seqlastvalue']
+        o_data['seqiscalled'] = res['rows'][0]['seqiscalled']
 
 
 @get_template_path
@@ -330,6 +402,8 @@ def get_formatted_columns(conn, tid, data, other_columns,
             if col['name'] == other_col['name']:
                 col['inheritedfrom' + table_or_type] = \
                     other_col['inheritedfrom']
+                if col.get('inheritedid') is None:
+                    col['inheritedid'] = other_col['inheritedid']
 
         if with_serial:
             reproject_serial_column(col)

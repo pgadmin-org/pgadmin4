@@ -8,9 +8,7 @@ CREATE SCHEMA IF NOT EXISTS "test_schema_$%{}[]()&*^!@""""'`\/#"
 COMMENT ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
     IS 'This is a test comment';
 
-GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO PUBLIC;
-
-GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO enterprisedb;
+GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO PUBLIC, enterprisedb;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE enterprisedb IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT ALL ON TABLES TO PUBLIC;

@@ -474,10 +474,16 @@ define('pgadmin.node.database', [
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', _item, _data
               );
-              /* Call enable/disable menu function after database is connected.
-               To make sure all the menus for database is in the right state */
-              pgBrowser.enable_disable_menus(_item);
-              pgBrowser.Nodes['database'].callbacks.selected(_item, _data);
+              /* Refresh the menus after the database is connected, so that
+               they are in the right state. The menus always belong to the
+               selected node, which may not be this database: it can be
+               connected by expanding it, e.g. whilst the previous tree state
+               is restored, so only treat it as selected if it really is. */
+              if (_tree.selected() === _item) {
+                pgBrowser.Nodes['database'].callbacks.selected(_item, _data);
+              } else {
+                pgBrowser.enable_disable_menus();
+              }
 
               if (!_connected) {
                 setTimeout(function() {
@@ -553,10 +559,12 @@ define('pgadmin.node.database', [
               } catch (e) {
                 console.warn(e.stack || e);
               }
+              t.setLabel(i, {label});
               t.unload(i);
             }
           }).catch(function(error) {
             pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+            t.setLabel(i, {label});
             t.unload(i);
           });
         };

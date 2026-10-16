@@ -10,6 +10,8 @@
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from . import utils as cast_utils
+from pgadmin.browser.server_groups.servers.tests.utils import \
+    restore_server_fixture_on_cleanup
 from regression.test_setup import config_data
 import json
 import config
@@ -36,6 +38,7 @@ class ServerGroupsChildren(BaseTestGenerator):
                                follow_redirects=True)
 
     def setUp(self):
+        restore_server_fixture_on_cleanup(self)
 
         if config.SERVER_MODE is True:
             self.server['shared'] = True

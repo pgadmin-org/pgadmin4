@@ -25,6 +25,7 @@ class ServersGetTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the GET API"""
+        servers_utils.restore_server_fixture_on_cleanup(self)
         if hasattr(self, 'shared'):
 
             self.server['shared'] = True

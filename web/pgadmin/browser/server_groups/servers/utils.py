@@ -150,9 +150,15 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
         grantee = driver.qtIdent(None, priv['grantee']) \
             if priv['grantee'] != 'PUBLIC' else 'PUBLIC'
 
-        old_grantee = driver.qtIdent(None, priv['old_grantee']) \
-            if 'old_grantee' in priv and priv['old_grantee'] != 'PUBLIC' \
-            else grantee
+        # PUBLIC is a keyword, not a role name, so it must not be quoted;
+        # it still has to be carried over as the old grantee, or a change
+        # of grantee away from PUBLIC would never revoke its privileges.
+        if 'old_grantee' not in priv:
+            old_grantee = grantee
+        elif priv['old_grantee'] == 'PUBLIC':
+            old_grantee = 'PUBLIC'
+        else:
+            old_grantee = driver.qtIdent(None, priv['old_grantee'])
 
         acltype = priv['acltype'] if 'acltype' in priv else 'defaultacls'
 
@@ -168,7 +174,27 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
             'acltype': acltype
         })
 
-    return privileges
+    return _group_privileges_by_grantee(privileges)
+
+
+def _group_privileges_by_grantee(privileges):
+    """
+    Merge entries that grant exactly the same privileges (from the same
+    grantor and of the same ACL type) to different roles, so that the
+    templates emit a single GRANT ... TO role1, role2 statement rather than
+    one statement per role. The order of first appearance is preserved.
+    """
+    grouped = {}
+    for priv in privileges:
+        key = (priv['grantor'], priv['acltype'],
+               tuple(priv['with_grant']), tuple(priv['without_grant']))
+        if key in grouped:
+            grouped[key]['grantee'] += ', ' + priv['grantee']
+            grouped[key]['old_grantee'] += ', ' + priv['old_grantee']
+        else:
+            grouped[key] = dict(priv)
+
+    return list(grouped.values())
 
 
 def tokenize_options(options_from_db, option_name, option_value):

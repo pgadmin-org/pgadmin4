@@ -195,7 +195,6 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode.bind(obj));
-      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */
@@ -991,13 +990,15 @@ define('pgadmin.browser', [
               _.extend(this.d, this.new);
               this.t.update(ctx.i, this.d);
               this.t.setLabel(ctx.i, {label: this.new.label});
+              // Re-sort the renamed node amongst its siblings.
+              let moved = this.t.resortItem(ctx.i, _.escape(this.new._label));
               this.t.addIcon(ctx.i, {icon: this.new.icon});
               this.t.setId(ctx.i, {id: this.new.id});
               this.t.openPath(this.i);
               this.t.deselect(this.i);
 
-              // select tree item
-              self.t.select(self.i);
+              // select tree item, scrolling to it if it has moved
+              self.t.select(self.i, moved);
             }
           }
           let success = this.o?.success;
@@ -1260,21 +1261,6 @@ define('pgadmin.browser', [
       await this.tree.refresh(nodeItem);
       this.tree.toggleItemLoader(nodeItem, false);
       opts?.success?.();
-    },
-
-    onLoadFailNode: function(_nodeData) {
-      let self = this,
-        isSelected = self.tree.isSelected(_nodeData);
-
-      /** Check if master password set **/
-      self.check_master_password((is_set)=>{
-        if(!is_set) {
-          self.set_master_password('', ()=>{
-            if(isSelected) { self.tree.select(_nodeData); }
-            self.tree.open(_nodeData);
-          });
-        }
-      });
     },
 
     removeChildTreeNodesById: function(_parentNode, _collType, _childIds) {
