@@ -62,6 +62,17 @@ describe('TableSchema', () => {
     await getPropertiesView(createTableSchemaObject(), getInitData);
   });
 
+  it('storage parameters are shown in properties', () => {
+    // Fill factor, toast tuple target and parallel workers are shown in
+    // the dialog's Advanced tab, so the Properties panel should show
+    // them too (issue #9212).
+    ['fillfactor', 'toast_tuple_target', 'parallel_workers'].forEach((id)=>{
+      const field = _.find(schemaObj.fields, (f)=>f.id==id);
+      expect(field.mode).toEqual(['properties', 'create', 'edit']);
+      expect(field.group).toBe('advanced');
+    });
+  });
+
   it('getTableOid', () => {
     schemaObj.inheritedTableList = [
       {label: 'tab1', tid: 140391},

@@ -48,7 +48,12 @@ jest.mock('sources/components/Loader', () => ({
   default: () => <div data-testid="loader">Loading...</div>,
 }));
 
-import { render, screen, fireEvent } from '@testing-library/react';
+// Make the placeholder messages predictable
+jest.mock('../../../pgadmin/static/js/ai_thinking_messages', () => ({
+  getRandomThinkingMessage: jest.fn(() => 'Placeholder elephant message'),
+}));
+
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { withTheme } from '../fake_theme';
 import { NLQChatPanel } from '../../../pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx';
@@ -183,5 +188,134 @@ describe('NLQChatPanel Component', () => {
 
     // Input should still have text (clear only clears messages)
     expect(input.value).toBe('Find all users');
+  });
+
+  describe('streamed responses', () => {
+    // Build a fetch mock whose response body yields SSE events one at a
+    // time, under the test's control.
+    const createStreamingFetch = () => {
+      const encoder = new TextEncoder();
+      const pending = [];
+      const waiters = [];
+      const reader = {
+        read: () => new Promise((resolve) => {
+          if (pending.length) {
+            resolve(pending.shift());
+          } else {
+            waiters.push(resolve);
+          }
+        }),
+        cancel: jest.fn(),
+      };
+      const push = (chunk) => {
+        if (waiters.length) {
+          waiters.shift()(chunk);
+        } else {
+          pending.push(chunk);
+        }
+      };
+      return {
+        fetchMock: jest.fn(() => Promise.resolve({
+          ok: true,
+          body: { getReader: () => reader },
+        })),
+        send: async (event) => {
+          await act(async () => {
+            push({
+              done: false,
+              value: encoder.encode(`data: ${JSON.stringify(event)}\n\n`),
+            });
+          });
+        },
+        end: async () => {
+          await act(async () => {
+            push({ done: true, value: undefined });
+          });
+        },
+      };
+    };
+
+    const submit = async (text) => {
+      const input = screen.getByPlaceholderText(
+        /Ask a question or describe the SQL you need/i,
+      );
+      fireEvent.change(input, { target: { value: text } });
+      await act(async () => {
+        fireEvent.keyDown(input, { key: 'Enter' });
+      });
+    };
+
+    let savedPgAdmin;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      savedPgAdmin = window.pgAdmin;
+      window.pgAdmin = {
+        ...savedPgAdmin,
+        csrf_token_header: 'X-CSRFToken',
+        csrf_token: 'test-token',
+      };
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      window.pgAdmin = savedPgAdmin;
+    });
+
+    it('should keep intermediate text when the LLM goes on to use a tool', async () => {
+      const stream = createStreamingFetch();
+      global.fetch = stream.fetchMock;
+      renderWithContexts(<ThemedNLQChatPanel />);
+
+      await submit('How many users are there?');
+      await stream.send({ type: 'thinking', message: 'Analyzing your request...' });
+      await stream.send({ type: 'text_delta', content: 'Let me check the ' });
+      await stream.send({ type: 'text_delta', content: 'users table.' });
+      await stream.send({ type: 'thinking', message: 'Querying the database...' });
+
+      expect(screen.getByText('Let me check the users table.')).toBeInTheDocument();
+      expect(screen.getByText('Querying the database...')).toBeInTheDocument();
+
+      await stream.send({ type: 'text_delta', content: 'There are 42 users.' });
+      await stream.send({
+        type: 'complete',
+        content: 'There are 42 users.',
+        sql: null,
+        conversation_id: 'abc',
+        history: [],
+      });
+      await stream.end();
+
+      expect(screen.getByText('Let me check the users table.')).toBeInTheDocument();
+      expect(screen.getByText('There are 42 users.')).toBeInTheDocument();
+      expect(screen.queryByText('Querying the database...')).not.toBeInTheDocument();
+    });
+
+    it('should stop cycling placeholder messages once the LLM has produced text', async () => {
+      const stream = createStreamingFetch();
+      global.fetch = stream.fetchMock;
+      renderWithContexts(<ThemedNLQChatPanel />);
+
+      await submit('How many users are there?');
+      // Before any LLM output, the placeholder messages are shown
+      await act(async () => {
+        jest.advanceTimersByTime(2500);
+      });
+      expect(screen.getByText('Placeholder elephant message')).toBeInTheDocument();
+
+      await stream.send({ type: 'text_delta', content: 'Let me look.' });
+      await stream.send({ type: 'thinking', message: 'Querying the database...' });
+      await act(async () => {
+        jest.advanceTimersByTime(5000);
+      });
+
+      expect(screen.getByText('Querying the database...')).toBeInTheDocument();
+      expect(screen.queryByText('Placeholder elephant message')).not.toBeInTheDocument();
+
+      await stream.send({
+        type: 'complete', content: 'Done.', sql: null, history: [],
+      });
+      await stream.end();
+    });
   });
 });

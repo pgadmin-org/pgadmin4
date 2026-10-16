@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+/* global expect */
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../pgadmin/static/js/SchemaView';
 import pgWindow from 'sources/window';
@@ -90,8 +91,27 @@ export const getPropertiesView = async (schemaObj, getInitData)=> {
   });
 };
 
+// Count the rows belonging to the data grid itself, ignoring rows of any
+// grid nested inside an expanded row.
+const countDatagridRows = (gridEle)=>{
+  const tableEle = gridEle.querySelector('[data-test="data-grid-view"]');
+  return Array.from(
+    tableEle?.querySelectorAll('[data-test="data-table-row"]') ?? []
+  ).filter(
+    (rowEle)=>rowEle.closest('[data-test="data-grid-view"]') === tableEle
+  ).length;
+};
+
 export const addNewDatagridRow = async (user, ctrl)=>{
-  await user.click(ctrl.container.querySelector('[data-test="add-row"] button'));
+  const addBtn = ctrl.container.querySelector('[data-test="add-row"]');
+  expect(addBtn).not.toBeNull();
+
+  const gridEle = addBtn.closest('.DataGridView-grid');
+  expect(gridEle).not.toBeNull();
+
+  const rowCount = countDatagridRows(gridEle);
+  await user.click(addBtn);
+  expect(countDatagridRows(gridEle)).toBe(rowCount + 1);
 };
 
 export const genericBeforeEach = ()=> {

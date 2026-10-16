@@ -30,6 +30,9 @@ modify the values for the following parameters.
    "MFA_SUPPORTED_METHODS", "Set the authentication methods to be supported e.g. email, authenticator"
    "MFA_EMAIL_SUBJECT", "<APP_NAME> - Verification Code e.g. pgAdmin 4 -
    Verification Code"
+   "MFA_EMAIL_CODE_MAX_ATTEMPTS", "The number of wrong entries allowed for one
+   emailed verification code, after which the code is discarded and a new one
+   must be sent. The default value is 5. Values below 1 are treated as 1."
    "MFA_FORCE_REGISTRATION", "Force the user to configure the authentication
    method on login (if no authentication is already configured)."
 

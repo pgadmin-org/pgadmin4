@@ -66,7 +66,6 @@ describe('ModalProvider AlertContent', () => {
   });
 });
 
-
 describe('ModalProvider keeps focus in an open modal (#9784)', () => {
   let iframe;
 
@@ -164,5 +163,39 @@ describe('ModalProvider keeps focus in an open modal (#9784)', () => {
       window.dispatchEvent(new Event('blur'));
       await flush();
       expect(document.activeElement).toBe(input);
+    });
+});
+
+describe('ModalProvider aria-hidden handling', () => {
+  let modalApi;
+  function CaptureModal() {
+    modalApi = useModal();
+    return <button>Background action</button>;
+  }
+  const ThemedProvider = withTheme(ModalProvider);
+
+  it('hides the background content but not the dialog itself',
+    async () => {
+      const ctrl = await act(async () => render(
+        <ThemedProvider><CaptureModal /></ThemedProvider>
+      ));
+      const background = screen.getByText('Background action');
+      background.focus();
+
+      await act(async () => {
+        modalApi.confirm('Reset statistics', 'Are you sure?', () => {});
+      });
+
+      const dialog = screen.getByRole('dialog');
+      expect(dialog.closest('[aria-hidden="true"]')).toBeNull();
+      expect(dialog.contains(document.activeElement)).toBe(true);
+      expect(background.closest('[aria-hidden="true"]')).not.toBeNull();
+      expect(ctrl.container.closest('[aria-hidden="true"]')).toBeNull();
+
+      await act(async () => {
+        screen.getByText('No').click();
+      });
+      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(background.closest('[aria-hidden="true"]')).toBeNull();
     });
 });

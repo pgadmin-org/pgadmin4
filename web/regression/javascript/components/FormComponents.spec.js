@@ -738,6 +738,29 @@ describe('FormComponents', ()=>{
       expect(ctrl.container.querySelector('script')).toBeNull();
     });
 
+    it('opens help message links in a new window', ()=>{
+      const ctrl = render(
+        <ThemedFormInput label="Field"
+          helpMessage={'See <a href="https://example.com/docs">the docs</a>.'}>
+          <input />
+        </ThemedFormInput>);
+      const link = ctrl.container.querySelector('a');
+      expect(link.getAttribute('href')).toBe('https://example.com/docs');
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('still strips unsafe links from help messages', ()=>{
+      const ctrl = render(
+        <ThemedFormInput label="Field"
+          helpMessage={'<a href="javascript:window.__xss=true">bad</a>'}>
+          <input />
+        </ThemedFormInput>);
+      const link = ctrl.container.querySelector('a');
+      expect(link.getAttribute('href')).toBeNull();
+      expect(link.getAttribute('target')).toBeNull();
+    });
+
     it('preserves safe HTML formatting', ()=>{
       const ctrl = render(
         <ThemedFormFooterMessage

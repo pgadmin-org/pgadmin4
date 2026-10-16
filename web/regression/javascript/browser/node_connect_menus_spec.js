@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 const mockPost = jest.fn();
+const mockDelete = jest.fn();
 
 jest.mock('../../../pgadmin/static/js/api_instance', () => ({
   __esModule: true,
   default: () => ({
     post: mockPost, get: jest.fn(() => Promise.resolve({data: {}})),
-    delete: jest.fn(),
+    delete: mockDelete,
   }),
   parseApiError: (e) => e,
 }));
@@ -30,7 +31,11 @@ const pgBrowser = {
   Collection: {extend: (props) => props},
   Events: {trigger: jest.fn(), on: jest.fn()},
   enable_disable_menus: jest.fn(),
-  notifier: {success: jest.fn(), info: jest.fn(), warning: jest.fn()},
+  notifier: {
+    success: jest.fn(), info: jest.fn(), warning: jest.fn(),
+    errorText: jest.fn(), pgRespErrorNotify: jest.fn(),
+    confirm: jest.fn((_title, _msg, onOk) => onOk()),
+  },
   stdW: {md: 650},
 };
 const pgAdmin = {Browser: pgBrowser};
@@ -103,6 +108,55 @@ describe('database node connection', () => {
 
     expect(dbData.connected).toBe(true);
     expect(pgBrowser.Node.callbacks.selected).toHaveBeenCalledWith(dbItem, dbData);
+  });
+});
+
+describe('database node disconnection', () => {
+  let tree, dbItem, dbData;
+
+  beforeEach(() => {
+    dbItem = {id: 'db'};
+    dbData = {_type: 'database', connected: true, label: 'my db'};
+    tree = {
+      selected: jest.fn(() => dbItem),
+      itemData: jest.fn(() => dbData),
+      setLabel: jest.fn(),
+      close: jest.fn(),
+      unload: jest.fn(),
+    };
+    pgBrowser.tree = tree;
+    pgBrowser.notifier.errorText.mockClear();
+    pgBrowser.notifier.pgRespErrorNotify.mockClear();
+    mockDelete.mockReset();
+  });
+
+  const disconnect = async () => {
+    const node = pgBrowser.Nodes['database'];
+    node.callbacks.disconnect_database.call(node, {item: dbItem});
+    await flushPromises();
+  };
+
+  it('restores the label when the disconnect request fails', async () => {
+    mockDelete.mockRejectedValue(new Error('404 Not Found'));
+
+    await disconnect();
+
+    expect(tree.setLabel).toHaveBeenCalledWith(
+      dbItem, {label: '[Disconnecting...] my db', className: 'text-muted'});
+    expect(tree.setLabel).toHaveBeenLastCalledWith(dbItem, {label: 'my db'});
+    expect(pgBrowser.notifier.pgRespErrorNotify).toHaveBeenCalled();
+  });
+
+  it('restores the label when the server refuses to disconnect', async () => {
+    mockDelete.mockResolvedValue({data: {
+      success: 0, errormsg: 'Could not disconnect.',
+    }});
+
+    await disconnect();
+
+    expect(tree.setLabel).toHaveBeenLastCalledWith(dbItem, {label: 'my db'});
+    expect(pgBrowser.notifier.errorText).toHaveBeenCalledWith(
+      'Could not disconnect.');
   });
 });
 

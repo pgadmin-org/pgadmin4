@@ -99,6 +99,9 @@ def verify_credentials():
     if cached_state is None or auth_type_changed or tenant_changed:
         # Drop any stale state — these creds don't match the cached ones.
         session['azure'].pop('state', None)
+        # Also drop the device code from any earlier attempt, so the wizard
+        # does not show it in place of the one for this attempt.
+        session['azure'].pop('azure_auth_code', None)
         azure = Azure(
             interactive_browser_credential=interactive_browser_credential,
             tenant_id=tenant_id,
