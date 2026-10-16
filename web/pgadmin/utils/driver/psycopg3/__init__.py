@@ -320,6 +320,9 @@ class Driver(BaseDriver):
                                 manager_source)
 
         managers['pinged'] = datetime.datetime.now()
+        # The session is active again, so gc_timeout() should run the
+        # session GC callbacks the next time it goes idle.
+        managers.pop('gc_callbacks_run', None)
         if str(sid) not in managers:
             # server_data was already access-checked above;
             # it cannot be None at this point.
@@ -450,6 +453,7 @@ class Driver(BaseDriver):
 
             if sess == session.sid:
                 sess_mgr['pinged'] = curr_time
+                sess_mgr.pop('gc_callbacks_run', None)
                 continue
             if curr_time - sess_mgr['pinged'] >= session_idle_timeout:
                 for mgr in [
@@ -457,6 +461,11 @@ class Driver(BaseDriver):
                                                                ServerManager)
                 ]:
                     mgr.release()
+                # Expired sessions stay in self.managers, so only run the
+                # callbacks once per idle period rather than on every sweep.
+                if not sess_mgr.get('gc_callbacks_run'):
+                    self.run_session_gc_callbacks(sess)
+                    sess_mgr['gc_callbacks_run'] = True
 
     def gc_own(self):
         """
