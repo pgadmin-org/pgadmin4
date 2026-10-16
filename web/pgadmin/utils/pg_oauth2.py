@@ -28,6 +28,7 @@ import re
 import sys
 import threading
 import time
+from authlib.integrations.requests_client import OAuth2Session
 from collections.abc import Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -36,7 +37,6 @@ from urllib.parse import urlsplit
 
 import requests
 from flask import has_request_context, session
-from requests.auth import AuthBase
 
 _install_lock = threading.Lock()
 logger = logging.getLogger(__name__)
@@ -592,16 +592,6 @@ class OAuthTokenExchangeError(OAuthTokenError):
     """Token exchange failed; the connection must not proceed."""
 
 
-class _TokenExchangeNoAuth(AuthBase):
-    """Prevent implicit HTTP Basic authentication from a .netrc file."""
-
-    def __call__(
-        self,
-        request: requests.PreparedRequest,
-    ) -> requests.PreparedRequest:
-        return request
-
-
 class OAuthRequestContextRequired(OAuthTokenError):
     """OAuth credentials require an authenticated request."""
 
@@ -760,9 +750,108 @@ def _get_pgadmin_oauth_token() -> Optional[str]:
     return access_token
 
 
+def _get_validated_oauth_client(oauth_issuer: Optional[str]):
+    """Return the login client, issuer-checked metadata and TLS setting."""
+    if (
+        not isinstance(oauth_issuer, str) or
+        not oauth_issuer.strip() or
+        "\0" in oauth_issuer
+    ):
+        raise OAuthTokenError(
+            "Set oauth_issuer to the issuer of the pgAdmin login "
+            "OIDC provider."
+        )
+
+    oauth_client = _get_current_oauth_client()
+    client_kwargs = oauth_client.client_kwargs or {}
+    verify_tls = client_kwargs.get("verify", True)
+
+    if verify_tls is not True and not (
+        isinstance(verify_tls, str) and verify_tls.strip()
+    ):
+        raise OAuthTokenError(
+            "PostgreSQL OAuth requires TLS verification for the login "
+            "OIDC provider. Enable verification or configure a trusted "
+            "CA bundle."
+        )
+
+    try:
+        metadata = oauth_client.load_server_metadata()
+    except Exception:
+        # Do not expose provider responses or exception text.
+        raise OAuthTokenError(
+            "Could not load the pgAdmin login OIDC provider metadata."
+        ) from None
+
+    if not isinstance(metadata, dict):
+        raise OAuthTokenError(
+            "The pgAdmin login OIDC provider returned invalid metadata."
+        )
+
+    issuer = metadata.get("issuer")
+    if not isinstance(issuer, str) or not issuer.strip():
+        raise OAuthTokenError(
+            "The pgAdmin login OIDC provider metadata contains no issuer."
+        )
+
+    # Issuer identifiers must match exactly. Do not normalize slashes,
+    # case or URL encoding, and do not use unverified JWT claims.
+    if oauth_issuer != issuer:
+        raise OAuthTokenError(
+            "The server's oauth_issuer does not match the pgAdmin "
+            "login OIDC provider issuer."
+        )
+
+    return oauth_client, metadata, verify_tls
+
+
+def _get_token_exchange_auth(oauth_client, metadata):
+    """Authenticate exchange using the pgAdmin login client's credentials."""
+    client_id = oauth_client.client_id
+    client_secret = oauth_client.client_secret
+
+    if (
+        not isinstance(client_id, str) or
+        not client_id.strip() or
+        "\0" in client_id or
+        not isinstance(client_secret, str) or
+        not client_secret.strip() or
+        "\0" in client_secret
+    ):
+        raise OAuthTokenExchangeError(
+            "PostgreSQL token exchange requires the pgAdmin login "
+            "OIDC client to have a client ID and client secret."
+        )
+
+    client_kwargs = oauth_client.client_kwargs or {}
+    auth_method = client_kwargs.get(
+        "token_endpoint_auth_method",
+        metadata.get("token_endpoint_auth_method"),
+    )
+    if auth_method is None:
+        auth_method = "client_secret_basic"
+
+    if auth_method not in ("client_secret_basic", "client_secret_post"):
+        raise OAuthTokenExchangeError(
+            "PostgreSQL token exchange supports client_secret_basic "
+            "or client_secret_post authentication. Configure a "
+            "supported method for the pgAdmin login OIDC client."
+        )
+
+    # Only construct the Requests authentication object here. No token
+    # request is made and no login scopes or token callbacks are copied.
+    with OAuth2Session(
+        client_id=client_id,
+        client_secret=client_secret,
+        token_endpoint_auth_method=auth_method,
+    ) as client:
+        return client.client_auth(auth_method)
+
+
 def _exchange_oauth_access_token(
     client_id: str,
     oauth_scope: Optional[str],
+    oauth_issuer: Optional[str],
 ) -> str:
     """
     Exchange the current pgAdmin access token for a cluster access token.
@@ -798,51 +887,13 @@ def _exchange_oauth_access_token(
         )
 
     try:
-        oauth_client = _get_current_oauth_client()
+        oauth_client, metadata, verify_tls = _get_validated_oauth_client(
+            oauth_issuer,
+        )
     except OAuthTokenError as exc:
         raise OAuthTokenExchangeError(str(exc)) from None
 
-    verify_tls = oauth_client.client_kwargs.get("verify", True)
-
-    if verify_tls is not True and not (
-        isinstance(verify_tls, str) and verify_tls.strip()
-    ):
-        raise OAuthTokenExchangeError(
-            "PostgreSQL token exchange requires TLS verification. "
-            "Enable verification or configure a trusted CA bundle."
-        )
-
-    subject_token = _get_pgadmin_oauth_token()
-
-    if (
-        not isinstance(subject_token, str) or
-        not subject_token.strip() or
-        "\0" in subject_token
-    ):
-        raise OAuthTokenExchangeError(
-            "No current pgAdmin OAuth access token is available. "
-            "Sign in to pgAdmin again."
-        )
-
-    try:
-        metadata = oauth_client.load_server_metadata()
-    except requests.exceptions.SSLError:
-        raise OAuthTokenExchangeError(
-            "TLS verification failed while loading OAuth provider "
-            "metadata."
-        ) from None
-    except requests.exceptions.Timeout:
-        raise OAuthTokenExchangeError(
-            "The request for OAuth provider metadata timed out."
-        ) from None
-    except requests.exceptions.RequestException:
-        raise OAuthTokenExchangeError(
-            "Could not load OAuth provider metadata."
-        ) from None
-    except Exception:
-        raise OAuthTokenExchangeError(
-            "Could not load OAuth provider metadata."
-        ) from None
+    exchange_auth = _get_token_exchange_auth(oauth_client, metadata)
 
     endpoint = (
         oauth_client.access_token_url or
@@ -873,9 +924,21 @@ def _exchange_oauth_access_token(
             "without embedded credentials or a fragment."
         )
 
+    subject_token = _get_pgadmin_oauth_token()
+
+    if (
+        not isinstance(subject_token, str) or
+        not subject_token.strip() or
+        "\0" in subject_token
+    ):
+        raise OAuthTokenExchangeError(
+            "No current pgAdmin OAuth access token is available. "
+            "Sign in to pgAdmin again."
+        )
+
     try:
         request_data = {
-            "client_id": client_id,
+            "audience": client_id,
             "grant_type": (
                 "urn:ietf:params:oauth:grant-type:token-exchange"
             ),
@@ -896,7 +959,7 @@ def _exchange_oauth_access_token(
                 "Accept": "application/json",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            auth=_TokenExchangeNoAuth(),
+            auth=exchange_auth,
             verify=verify_tls,
             timeout=(5, 30),
             allow_redirects=False,
@@ -983,15 +1046,13 @@ def _exchange_oauth_access_token(
 
     return access_token
 
-
 def get_postgres_oauth_token(
     mode: str,
     client_id: Optional[str],
     oauth_scope: Optional[str],
+    oauth_issuer: Optional[str],
 ) -> str:
-    """
-    Return a PostgreSQL OAuth token using the selected pgAdmin token mode.
-    """
+    """Return a PostgreSQL OAuth token using the selected token mode."""
     if not has_request_context():
         logger.debug(
             "PostgreSQL OAuth token retrieval outside a request context.",
@@ -1003,9 +1064,14 @@ def get_postgres_oauth_token(
         )
 
     if mode == "direct":
+        _get_validated_oauth_client(oauth_issuer)
         token = _get_pgadmin_oauth_token()
 
-        if not isinstance(token, str) or not token:
+        if (
+            not isinstance(token, str) or
+            not token.strip() or
+            "\0" in token
+        ):
             raise OAuthTokenError(
                 "No current pgAdmin OAuth access token is available. "
                 "Sign in to pgAdmin again."
@@ -1024,7 +1090,9 @@ def get_postgres_oauth_token(
                 "when using OAuth token exchange."
             )
 
-        return _exchange_oauth_access_token(client_id, oauth_scope)
+        return _exchange_oauth_access_token(
+            client_id, oauth_scope, oauth_issuer,
+        )
 
     raise OAuthTokenError(
         'Invalid pgAdmin OAuth token mode "{0}".'.format(mode)

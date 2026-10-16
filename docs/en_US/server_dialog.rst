@@ -185,9 +185,9 @@ For both ``direct`` and ``exchange``, also add the following parameters:
   Use the issuer configured for the database and the corresponding pgAdmin
   login OIDC provider.
 * ``oauth_client_id``: the OAuth client identifier configured for the database
-  connection. In ``exchange`` mode, pgAdmin also sends this value as the
-  ``client_id`` in the token exchange request. The OIDC provider must support
-  and authorize that use.
+  connection. In ``exchange`` mode, pgAdmin sends this value as the requested
+  ``audience`` and authenticates using the pgAdmin login OIDC client's
+  credentials.
 
 For ``exchange`` mode, optionally set ``oauth_scope`` to a space-separated
 list of scopes to request. If unset or blank, the OIDC provider determines

@@ -457,6 +457,12 @@ In the *Parameters* tab of the Server dialog, add *OAuth pgAdmin token mode*
 (``oauth_pgadmin_token_mode``). Select ``direct`` or ``exchange`` to enable
 this integration.
 
+.. note::
+
+   For shared servers, each user must explicitly enable
+   ``oauth_pgadmin_token_mode`` in their own server settings.
+   The owner's selection is not inherited.
+
 Both ``direct`` and ``exchange`` require ``oauth_client_id`` and
 ``oauth_issuer``. The issuer must match the PostgreSQL OAuth configuration
 and the issuer used for the pgAdmin login token.
@@ -515,7 +521,7 @@ redirects are not followed.
      - Value
    * - ``grant_type``
      - ``urn:ietf:params:oauth:grant-type:token-exchange``
-   * - ``client_id``
+   * - ``audience``
      - The server connection's ``oauth_client_id``.
    * - ``subject_token``
      - The pgAdmin login access token, refreshed when required and possible.
@@ -532,16 +538,17 @@ the scopes. Exchange occurs before connecting to PostgreSQL, so it cannot
 use scopes advertised by the database server. Configure ``oauth_scope``
 when the OIDC provider's defaults do not meet the database's requirements.
 
-The OIDC provider must support and authorize this request without additional
-client authentication. The implementation does not send an exchange client
-secret or other client authentication credentials.
+pgAdmin authenticates the exchange request using its registered login
+OIDC client's credentials. This integration supports
+``client_secret_basic`` and ``client_secret_post``. A client secret is
+required; unauthenticated exchange is not supported.
 
 .. important::
 
-   The request does not send ``audience`` or ``resource``. Its ``client_id``
-   alone does not guarantee a database-specific token. Configure the OIDC
-   provider to issue the intended audience and permissions, and the database
-   validator to enforce them.
+   The OIDC provider must authorize pgAdmin's login client to exchange
+   tokens for the requested audience and issue the intended permissions.
+   The PostgreSQL validator must enforce that audience and those
+   permissions.
 
 The OIDC provider must return a non-empty ``access_token`` with a
 ``token_type`` of ``Bearer``. Exchanged tokens are not cached or stored in the

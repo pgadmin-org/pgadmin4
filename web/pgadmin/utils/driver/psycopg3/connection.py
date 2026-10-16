@@ -516,6 +516,7 @@ class Connection(BaseConnection):
                 mode,
                 connection_params.get("oauth_client_id"),
                 connection_params.get("oauth_scope"),
+                connection_params.get("oauth_issuer"),
             )
 
         return oauth_token_context(token)
@@ -642,6 +643,7 @@ class Connection(BaseConnection):
                                 prepare_threshold=manager.prepare_threshold,
                             )
                 except OAuthTokenError as exc:
+                    manager.stop_ssh_tunnel()
                     current_app.logger.warning(
                         "PostgreSQL OAuth authentication "
                         "failed for server %s: %s",

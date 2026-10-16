@@ -9,9 +9,11 @@
 
 """Tests for pgAdmin PostgreSQL OAuth bearer-token support."""
 
+import base64
 import ctypes
 import unittest
 from unittest.mock import MagicMock, Mock, patch, create_autospec
+from pgadmin.utils.route import BaseTestGenerator
 
 from contextlib import ExitStack
 
@@ -20,8 +22,31 @@ from pgadmin.utils import pg_oauth2
 
 from authlib.integrations.flask_client.apps import FlaskOAuth2App
 
+ISSUER = 'https://keycloak.example.test/realms/postgres'
 
-class TestOAuthTokenContext(unittest.TestCase):
+
+class _OAuthUnitTestMixin:
+    """Run each OAuth unit test as a separate regression scenario."""
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        cls.scenarios = [
+            (name[5:], {'case_method': name})
+            for name in sorted(dir(cls))
+            if name.startswith('case_') and callable(getattr(cls, name))
+        ]
+
+    def setUp(self):
+        # These tests mock database connections.
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        getattr(self, self.case_method)()
+
+
+class TestOAuthTokenContext(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test propagation of tokens through ContextVar."""
 
     def setUp(self):
@@ -30,7 +55,7 @@ class TestOAuthTokenContext(unittest.TestCase):
     def tearDown(self):
         pg_oauth2._oauth_token.reset(self.token_handle)
 
-    def test_context_sets_and_restores_token(self):
+    def case_context_sets_and_restores_token(self):
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         with pg_oauth2.oauth_token_context('access-token'):
@@ -41,7 +66,7 @@ class TestOAuthTokenContext(unittest.TestCase):
 
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
-    def test_context_restores_existing_token(self):
+    def case_context_restores_existing_token(self):
         existing_handle = pg_oauth2._oauth_token.set(
             'existing-token'
         )
@@ -60,7 +85,7 @@ class TestOAuthTokenContext(unittest.TestCase):
         finally:
             pg_oauth2._oauth_token.reset(existing_handle)
 
-    def test_nested_contexts_restore_previous_token(self):
+    def case_nested_contexts_restore_previous_token(self):
         with pg_oauth2.oauth_token_context('outer-token'):
             self.assertEqual(
                 pg_oauth2._oauth_token.get(),
@@ -80,7 +105,7 @@ class TestOAuthTokenContext(unittest.TestCase):
 
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
-    def test_context_restores_token_when_exception_is_raised(self):
+    def case_context_restores_token_when_exception_is_raised(self):
         with self.assertRaisesRegex(RuntimeError, 'test error'):
             with pg_oauth2.oauth_token_context('access-token'):
                 raise RuntimeError('test error')
@@ -88,7 +113,8 @@ class TestOAuthTokenContext(unittest.TestCase):
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
 
-class TestOAuthHook(unittest.TestCase):
+class TestOAuthHook(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test the ctypes libpq OAuth callback."""
 
     def setUp(self):
@@ -122,7 +148,7 @@ class TestOAuthHook(unittest.TestCase):
 
         return request, request_pointer, data
 
-    def test_non_bearer_request_delegates_to_previous_hook(self):
+    def case_non_bearer_request_delegates_to_previous_hook(self):
         previous_hook = Mock(return_value=73)
         pg_oauth2._previous_hook = previous_hook
 
@@ -139,7 +165,7 @@ class TestOAuthHook(unittest.TestCase):
             None
         )
 
-    def test_non_bearer_request_returns_zero_without_previous_hook(self):
+    def case_non_bearer_request_returns_zero_without_previous_hook(self):
         result = pg_oauth2._oauth_hook(
             0,
             None,
@@ -148,7 +174,7 @@ class TestOAuthHook(unittest.TestCase):
 
         self.assertEqual(result, 0)
 
-    def test_missing_token_delegates_to_previous_hook(self):
+    def case_missing_token_delegates_to_previous_hook(self):
         previous_hook = Mock(return_value=41)
         pg_oauth2._previous_hook = previous_hook
 
@@ -165,7 +191,7 @@ class TestOAuthHook(unittest.TestCase):
             None
         )
 
-    def test_missing_token_returns_zero_without_previous_hook(self):
+    def case_missing_token_returns_zero_without_previous_hook(self):
         result = pg_oauth2._oauth_hook(
             pg_oauth2.PQAUTHDATA_OAUTH_BEARER_TOKEN,
             None,
@@ -174,7 +200,7 @@ class TestOAuthHook(unittest.TestCase):
 
         self.assertEqual(result, 0)
 
-    def test_bearer_request_receives_token(self):
+    def case_bearer_request_receives_token(self):
         previous_hook = Mock(return_value=51)
         pg_oauth2._previous_hook = previous_hook
 
@@ -200,7 +226,7 @@ class TestOAuthHook(unittest.TestCase):
         # Keep the ctypes pointer alive for the whole test.
         self.assertIsNotNone(request_pointer)
 
-    def test_cleanup_removes_retained_token_buffer(self):
+    def case_cleanup_removes_retained_token_buffer(self):
         request, request_pointer, data = self._make_request()
 
         with pg_oauth2.oauth_token_context(
@@ -230,7 +256,7 @@ class TestOAuthHook(unittest.TestCase):
         # Keep request_pointer alive until cleanup has completed.
         self.assertIsNotNone(request_pointer)
 
-    def test_previous_hook_exception_returns_minus_one(self):
+    def case_previous_hook_exception_returns_minus_one(self):
         """
         Never allow an exception from the previous libpq hook to cross
         the native callback boundary.
@@ -253,7 +279,7 @@ class TestOAuthHook(unittest.TestCase):
             None
         )
 
-    def test_bearer_hook_internal_failure_returns_minus_one(self):
+    def case_bearer_hook_internal_failure_returns_minus_one(self):
         """
         Never allow an exception raised while populating the bearer
         request to cross the native callback boundary.
@@ -286,7 +312,7 @@ class TestOAuthHook(unittest.TestCase):
         # Keep the ctypes allocation alive for the complete callback.
         self.assertIsNotNone(request_pointer)
 
-    def test_none_context_clears_and_restores_existing_token(self):
+    def case_none_context_clears_and_restores_existing_token(self):
         with pg_oauth2.oauth_token_context('existing-token'):
             with pg_oauth2.oauth_token_context(None):
                 self.assertIsNone(pg_oauth2._oauth_token.get())
@@ -299,7 +325,8 @@ class TestOAuthHook(unittest.TestCase):
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
 
-class TestGetCurrentOAuthClient(unittest.TestCase):
+class TestGetCurrentOAuthClient(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test lookup of the Authlib client for the current OAuth provider."""
 
     def setUp(self):
@@ -310,7 +337,7 @@ class TestGetCurrentOAuthClient(unittest.TestCase):
         )
 
     @patch('pgadmin.authenticate.get_auth_sources')
-    def test_unknown_provider_raises_error(self, get_auth_sources):
+    def case_unknown_provider_raises_error(self, get_auth_sources):
         oauth_source = MagicMock()
         oauth_source.oauth2_clients = {}
         get_auth_sources.return_value = oauth_source
@@ -322,7 +349,7 @@ class TestGetCurrentOAuthClient(unittest.TestCase):
                 pg_oauth2._get_current_oauth_client()
 
     @patch('pgadmin.authenticate.get_auth_sources')
-    def test_returns_registered_oauth_client(self, get_auth_sources):
+    def case_returns_registered_oauth_client(self, get_auth_sources):
         oauth_client = MagicMock()
         oauth_source = MagicMock()
         oauth_source.oauth2_clients = {
@@ -338,7 +365,8 @@ class TestGetCurrentOAuthClient(unittest.TestCase):
         self.assertIs(result, oauth_client)
 
 
-class TestGetPgAdminOAuthToken(unittest.TestCase):
+class TestGetPgAdminOAuthToken(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test pgAdmin access-token retrieval and refresh."""
 
     PROVIDER_NAME = 'keycloak'
@@ -357,18 +385,18 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
             spec_set=True
         )
 
-    def test_returns_none_without_request_context(self):
+    def case_returns_none_without_request_context(self):
         self.assertIsNone(
             pg_oauth2._get_pgadmin_oauth_token()
         )
 
-    def test_returns_none_without_oauth_token(self):
+    def case_returns_none_without_oauth_token(self):
         with self.app.test_request_context('/'):
             self.assertIsNone(
                 pg_oauth2._get_pgadmin_oauth_token()
             )
 
-    def test_returns_none_when_token_data_is_not_dictionary(self):
+    def case_returns_none_when_token_data_is_not_dictionary(self):
         with self.app.test_request_context('/'):
             session['oauth2_token'] = 'not-a-dictionary'
 
@@ -376,7 +404,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
                 pg_oauth2._get_pgadmin_oauth_token()
             )
 
-    def test_returns_none_when_access_token_is_missing(self):
+    def case_returns_none_when_access_token_is_missing(self):
         with self.app.test_request_context('/'):
             session['oauth2_token'] = {
                 'refresh_token': 'refresh-token',
@@ -386,7 +414,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
                 pg_oauth2._get_pgadmin_oauth_token()
             )
 
-    def test_returns_current_unexpired_access_token(self):
+    def case_returns_current_unexpired_access_token(self):
         with self.app.test_request_context('/'):
             session['oauth2_token'] = {
                 'access_token': 'current-access-token',
@@ -408,7 +436,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_refreshes_expired_access_token(self, get_oauth_client):
+    def case_refreshes_expired_access_token(self, get_oauth_client):
         oauth_client = self._make_oauth_client()
         oauth_client.fetch_access_token.return_value = {
             'access_token': 'refreshed-access-token',
@@ -442,7 +470,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_refresh_failure_returns_none(self, get_oauth_client):
+    def case_refresh_failure_returns_none(self, get_oauth_client):
         oauth_client = self._make_oauth_client()
         oauth_client.fetch_access_token.side_effect = RuntimeError(
             'token endpoint unavailable'
@@ -473,7 +501,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_expired_token_without_refresh_token_returns_none(
+    def case_expired_token_without_refresh_token_returns_none(
             self, get_oauth_client):
         with self.app.test_request_context('/'):
             session['oauth2_token'] = {
@@ -495,7 +523,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_refreshes_access_token_within_expiry_safety_window(
+    def case_refreshes_access_token_within_expiry_safety_window(
             self, get_oauth_client):
         """
         Refresh a token that has not expired yet but will expire within
@@ -536,7 +564,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
                 refresh_token='original-refresh-token'
             )
 
-    def test_returns_access_token_without_expiration(self):
+    def case_returns_access_token_without_expiration(self):
         """
         Return an access token when the provider did not supply expires_at.
         """
@@ -562,7 +590,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_refresh_preserves_existing_refresh_token(
+    def case_refresh_preserves_existing_refresh_token(
             self, get_oauth_client):
         """
         Preserve the old refresh token when the provider returns only a
@@ -602,7 +630,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
                 refresh_token='original-refresh-token'
             )
 
-    def test_expired_token_without_provider_returns_none(self):
+    def case_expired_token_without_provider_returns_none(self):
         """
         An expired token cannot be refreshed when the OAuth provider
         identity is missing from the session.
@@ -629,7 +657,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
             'Unknown OAuth provider.'
         )
     )
-    def test_expired_token_returns_none_when_client_lookup_fails(
+    def case_expired_token_returns_none_when_client_lookup_fails(
             self, get_oauth_client):
         with self.app.test_request_context('/'):
             session['oauth2_token'] = {
@@ -652,7 +680,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_refresh_returns_none_for_non_dictionary_response(
+    def case_refresh_returns_none_for_non_dictionary_response(
             self, get_oauth_client):
         """
         Reject a malformed refresh response instead of attempting to use
@@ -693,7 +721,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def test_refresh_returns_none_when_access_token_is_missing(
+    def case_refresh_returns_none_when_access_token_is_missing(
             self, get_oauth_client):
         """
         Reject a syntactically valid refresh response that does not contain
@@ -734,7 +762,7 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
             )
 
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
-    def test_refresh_does_not_reuse_previous_token_expiry(
+    def case_refresh_does_not_reuse_previous_token_expiry(
             self, get_oauth_client):
         # The payload is {"exp": 3000}. Signature validation is not
         # involved: the implementation only reads an expiration hint.
@@ -783,7 +811,8 @@ class TestGetPgAdminOAuthToken(unittest.TestCase):
         )
 
 
-class TestExchangeOAuthAccessToken(unittest.TestCase):
+class TestExchangeOAuthAccessToken(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test OAuth access-token exchange for PostgreSQL."""
 
     TOKEN_ENDPOINT = (
@@ -807,11 +836,14 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
             access_token_url=None,
             verify=True):
         oauth_client = MagicMock()
+        oauth_client.client_id = 'pgadmin-client'
+        oauth_client.client_secret = 'pgadmin-client-secret'
         oauth_client.access_token_url = access_token_url
         oauth_client.client_kwargs = {
             'verify': verify,
         }
         oauth_client.load_server_metadata.return_value = {
+            'issuer': ISSUER,
             'token_endpoint': (
                 TestExchangeOAuthAccessToken.DISCOVERED_TOKEN_ENDPOINT
             ),
@@ -829,19 +861,20 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
 
         return response
 
-    def test_exchange_requires_request_context(self):
+    def case_exchange_requires_request_context(self):
         with self.assertRaisesRegex(
                 pg_oauth2.OAuthTokenExchangeError,
                 'pgAdmin login session'):
             pg_oauth2._exchange_oauth_access_token(
                 'postgres-cluster',
-                'openid'
+                'openid',
+                ISSUER,
             )
 
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_returns_access_token(
+    def case_exchange_returns_access_token(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -860,7 +893,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
         with self.app.test_request_context('/'):
             result = pg_oauth2._exchange_oauth_access_token(
                 'postgres-cluster',
-                'openid'
+                'openid',
+                ISSUER,
             )
 
         self.assertEqual(result, 'exchanged-access-token')
@@ -876,7 +910,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
         self.assertEqual(
             kwargs['data'],
             {
-                'client_id': 'postgres-cluster',
+                'audience': 'postgres-cluster',
                 'grant_type': (
                     'urn:ietf:params:oauth:grant-type:token-exchange'
                 ),
@@ -896,9 +930,21 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
             }
         )
 
-        self.assertIsInstance(
-            kwargs['auth'],
-            pg_oauth2._TokenExchangeNoAuth
+        prepared = pg_oauth2.requests.Request(
+            'POST',
+            args[0],
+            data=kwargs['data'],
+            headers=kwargs['headers'],
+            auth=kwargs['auth'],
+        ).prepare()
+
+        expected_credentials = base64.b64encode(
+            b'pgadmin-client:pgadmin-client-secret'
+        ).decode('ascii')
+
+        self.assertEqual(
+            prepared.headers['Authorization'],
+            'Basic ' + expected_credentials,
         )
         self.assertTrue(kwargs['verify'])
         self.assertEqual(kwargs['timeout'], (5, 30))
@@ -907,7 +953,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_uses_discovered_token_endpoint(
+    def case_exchange_uses_discovered_token_endpoint(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -926,7 +972,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
         with self.app.test_request_context('/'):
             result = pg_oauth2._exchange_oauth_access_token(
                 'postgres-cluster',
-                'openid'
+                'openid',
+                ISSUER,
             )
 
         self.assertEqual(result, 'exchanged-access-token')
@@ -943,7 +990,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_fails_when_provider_metadata_cannot_be_loaded(
+    def case_exchange_fails_when_provider_metadata_cannot_be_loaded(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -960,7 +1007,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     pg_oauth2.OAuthTokenExchangeError):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
-                    'openid'
+                    'openid',
+                    ISSUER,
                 )
 
         oauth_client.load_server_metadata.assert_called_once_with()
@@ -969,7 +1017,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_rejects_disabled_tls_verification(
+    def case_exchange_rejects_disabled_tls_verification(
             self, get_token, get_oauth_client, post):
         oauth_client = self._make_oauth_client(
             access_token_url=self.TOKEN_ENDPOINT,
@@ -982,7 +1030,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     pg_oauth2.OAuthTokenExchangeError):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
-                    oauth_scope='openid',
+                    'openid',
+                    ISSUER,
                 )
 
         get_oauth_client.assert_called_once_with()
@@ -993,7 +1042,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_translates_request_timeout(
+    def case_exchange_translates_request_timeout(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -1011,7 +1060,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     'timed out'):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
-                    'openid'
+                    'openid',
+                    ISSUER,
                 )
 
         post.assert_called_once()
@@ -1019,7 +1069,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_rejects_oauth_error_response(
+    def case_exchange_rejects_oauth_error_response(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -1040,7 +1090,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     'invalid_grant'):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
-                    'openid'
+                    'openid',
+                    ISSUER,
                 )
 
         post.assert_called_once()
@@ -1048,7 +1099,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_rejects_non_dictionary_response(
+    def case_exchange_rejects_non_dictionary_response(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -1065,7 +1116,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     pg_oauth2.OAuthTokenExchangeError):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
-                    'openid'
+                    'openid',
+                    ISSUER,
                 )
 
         post.assert_called_once()
@@ -1073,7 +1125,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_rejects_invalid_access_token(
+    def case_exchange_rejects_invalid_access_token(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -1102,7 +1154,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                             pg_oauth2.OAuthTokenExchangeError):
                         pg_oauth2._exchange_oauth_access_token(
                             'postgres-cluster',
-                            'openid'
+                            'openid',
+                            ISSUER,
                         )
 
         self.assertEqual(
@@ -1113,7 +1166,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_rejects_non_bearer_token(
+    def case_exchange_rejects_non_bearer_token(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
 
@@ -1133,7 +1186,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     pg_oauth2.OAuthTokenExchangeError):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
-                    'openid'
+                    'openid',
+                    ISSUER,
                 )
 
         post.assert_called_once()
@@ -1141,7 +1195,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_omits_scope_when_not_configured(
+    def case_exchange_omits_scope_when_not_configured(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
         get_oauth_client.return_value = self._make_oauth_client(
@@ -1162,6 +1216,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     result = pg_oauth2._exchange_oauth_access_token(
                         'postgres-cluster',
                         scope,
+                        ISSUER,
                     )
 
                 self.assertEqual(result, 'exchanged-access-token')
@@ -1174,7 +1229,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
-    def test_exchange_uses_configured_scopes(
+    def case_exchange_uses_configured_scopes(
             self, get_token, get_oauth_client, post):
         get_token.return_value = 'subject-access-token'
         get_oauth_client.return_value = self._make_oauth_client(
@@ -1201,6 +1256,7 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                     result = pg_oauth2._exchange_oauth_access_token(
                         'postgres-cluster',
                         configured_scope,
+                        ISSUER,
                     )
 
                 self.assertEqual(result, 'exchanged-access-token')
@@ -1211,7 +1267,8 @@ class TestExchangeOAuthAccessToken(unittest.TestCase):
                 )
 
 
-class TestGetPostgresOAuthToken(unittest.TestCase):
+class TestGetPostgresOAuthToken(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test selection of the PostgreSQL OAuth token source."""
 
     def setUp(self):
@@ -1225,15 +1282,29 @@ class TestGetPostgresOAuthToken(unittest.TestCase):
         request_context.push()
         self.addCleanup(request_context.pop)
 
+        oauth_client = MagicMock()
+        oauth_client.client_kwargs = {'verify': True}
+        oauth_client.load_server_metadata.return_value = {
+            'issuer': ISSUER,
+        }
+
+        client_patch = patch(
+            'pgadmin.utils.pg_oauth2._get_current_oauth_client',
+            return_value=oauth_client,
+        )
+        client_patch.start()
+        self.addCleanup(client_patch.stop)
+
     @patch(
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
         return_value='pgadmin-access-token'
     )
-    def test_direct_mode_returns_pgadmin_access_token(self, get_token):
+    def case_direct_mode_returns_pgadmin_access_token(self, get_token):
         result = pg_oauth2.get_postgres_oauth_token(
             'direct',
+            'postgres-cluster',
             None,
-            None
+            ISSUER,
         )
 
         self.assertEqual(result, 'pgadmin-access-token')
@@ -1243,15 +1314,16 @@ class TestGetPostgresOAuthToken(unittest.TestCase):
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
         return_value=None
     )
-    def test_direct_mode_raises_when_pgadmin_token_is_missing(
+    def case_direct_mode_raises_when_pgadmin_token_is_missing(
             self, get_token):
         with self.assertRaisesRegex(
                 pg_oauth2.OAuthTokenError,
                 'No current pgAdmin OAuth access token is available'):
             pg_oauth2.get_postgres_oauth_token(
                 'direct',
+                'postgres-cluster',
                 None,
-                None
+                ISSUER,
             )
 
         get_token.assert_called_once_with()
@@ -1260,18 +1332,19 @@ class TestGetPostgresOAuthToken(unittest.TestCase):
         'pgadmin.utils.pg_oauth2._exchange_oauth_access_token',
         return_value='exchanged-access-token'
     )
-    def test_exchange_mode_returns_exchanged_access_token(self, exchange):
+    def case_exchange_mode_returns_exchanged_access_token(self, exchange):
         result = pg_oauth2.get_postgres_oauth_token(
             'exchange',
             'postgres-cluster',
-            'openid'
+            'openid',
+            ISSUER,
         )
 
         self.assertEqual(result, 'exchanged-access-token')
-        exchange.assert_called_once_with('postgres-cluster', 'openid')
+        exchange.assert_called_once_with('postgres-cluster', 'openid', ISSUER)
 
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def test_exchange_mode_requires_client_id(self, exchange):
+    def case_exchange_mode_requires_client_id(self, exchange):
         invalid_client_ids = (
             None,
             '',
@@ -1287,21 +1360,23 @@ class TestGetPostgresOAuthToken(unittest.TestCase):
                     pg_oauth2.get_postgres_oauth_token(
                         'exchange',
                         client_id,
-                        'openid'
+                        'openid',
+                        ISSUER,
                     )
 
         exchange.assert_not_called()
 
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def test_invalid_mode_raises_error(self, exchange, get_token):
+    def case_invalid_mode_raises_error(self, exchange, get_token):
         with self.assertRaisesRegex(
                 pg_oauth2.OAuthTokenError,
                 'Invalid pgAdmin OAuth token mode'):
             pg_oauth2.get_postgres_oauth_token(
                 'invalid-mode',
                 'postgres-cluster',
-                'openid'
+                'openid',
+                ISSUER,
             )
 
         get_token.assert_not_called()
@@ -1309,7 +1384,7 @@ class TestGetPostgresOAuthToken(unittest.TestCase):
 
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def test_exchange_failure_does_not_fall_back_to_direct(
+    def case_exchange_failure_does_not_fall_back_to_direct(
             self, exchange, get_token):
         failure = pg_oauth2.OAuthTokenExchangeError(
             'Token exchange failed.'
@@ -1326,17 +1401,20 @@ class TestGetPostgresOAuthToken(unittest.TestCase):
                     'exchange',
                     'postgres-cluster',
                     'openid',
+                    ISSUER,
                 )
 
         self.assertIs(raised.exception, failure)
         exchange.assert_called_once_with(
             'postgres-cluster',
             'openid',
+            ISSUER,
         )
         get_token.assert_not_called()
 
 
-class TestInstallOAuthHook(unittest.TestCase):
+class TestInstallOAuthHook(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test installation of the process-global libpq OAuth hook."""
 
     def setUp(self):
@@ -1380,7 +1458,7 @@ class TestInstallOAuthHook(unittest.TestCase):
 
         return libpq
 
-    def test_installs_oauth_hook(self):
+    def case_installs_oauth_hook(self):
         libpq = self._make_libpq()
 
         with patch(
@@ -1403,7 +1481,7 @@ class TestInstallOAuthHook(unittest.TestCase):
         )
         self.assertIsNone(pg_oauth2._previous_hook)
 
-    def test_installation_is_idempotent(self):
+    def case_installation_is_idempotent(self):
         libpq = self._make_libpq()
 
         with patch(
@@ -1419,7 +1497,7 @@ class TestInstallOAuthHook(unittest.TestCase):
             pg_oauth2._oauth_hook
         )
 
-    def test_preserves_previous_auth_data_hook(self):
+    def case_preserves_previous_auth_data_hook(self):
         @pg_oauth2._AUTH_HOOK
         def previous_hook(authdata_type, conn, data):
             return 67
@@ -1450,7 +1528,7 @@ class TestInstallOAuthHook(unittest.TestCase):
         # reconstructed callback pointer has been invoked.
         self.assertIsNotNone(previous_hook)
 
-    def test_failed_installation_can_be_retried(self):
+    def case_failed_installation_can_be_retried(self):
         libpq = self._make_libpq()
 
         # Override the fixture's sequence: each installation attempt
@@ -1491,12 +1569,13 @@ class TestInstallOAuthHook(unittest.TestCase):
         )
 
 
-class TestOAuthRequestContext(unittest.TestCase):
+class TestOAuthRequestContext(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test rejection of token retrieval outside a request."""
 
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def test_token_modes_require_request_context(
+    def case_token_modes_require_request_context(
             self, exchange, get_token):
         for mode in ('direct', 'exchange'):
             with self.subTest(mode=mode):
@@ -1507,13 +1586,15 @@ class TestOAuthRequestContext(unittest.TestCase):
                         mode,
                         'postgres-cluster',
                         'openid',
+                        ISSUER,
                     )
 
         get_token.assert_not_called()
         exchange.assert_not_called()
 
 
-class TestLibpqSelection(unittest.TestCase):
+class TestLibpqSelection(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test the restrictions used when selecting Psycopg's libpq."""
 
     def setUp(self):
@@ -1568,7 +1649,7 @@ class TestLibpqSelection(unittest.TestCase):
             )
         )
 
-    def test_python_implementation_reuses_existing_handle(self):
+    def case_python_implementation_reuses_existing_handle(self):
         ctypes_module = MagicMock()
         ctypes_module.pq = self.libpq
 
@@ -1597,7 +1678,7 @@ class TestLibpqSelection(unittest.TestCase):
         self.discover.assert_not_called()
         self.load_library.assert_not_called()
 
-    def test_c_implementation_uses_existing_loaded_library(self):
+    def case_c_implementation_uses_existing_loaded_library(self):
         result = pg_oauth2._get_libpq()
 
         self.assertIs(result, self.libpq)
@@ -1607,7 +1688,7 @@ class TestLibpqSelection(unittest.TestCase):
             mode=pg_oauth2.os.RTLD_NOW | pg_oauth2.os.RTLD_NOLOAD,
         )
 
-    def test_c_implementation_rejects_missing_or_ambiguous_library(self):
+    def case_c_implementation_rejects_missing_or_ambiguous_library(self):
         cases = (
             [],
             ['/test/libpq.so.5', '/other/libpq.so.5'],
@@ -1623,7 +1704,7 @@ class TestLibpqSelection(unittest.TestCase):
                 self.load_library.assert_not_called()
                 self.assertIsNone(pg_oauth2._libpq)
 
-    def test_unsupported_implementations_fail_before_library_acquisition(self):
+    def case_unsupported_implementations_fail_before_library_acquisition(self):
         cases = (
             ('binary', 'linux'),
             ('c', 'win32'),
@@ -1653,7 +1734,7 @@ class TestLibpqSelection(unittest.TestCase):
                 self.load_library.assert_not_called()
                 self.assertIsNone(pg_oauth2._libpq)
 
-    def test_runtime_version_mismatch_is_rejected(self):
+    def case_runtime_version_mismatch_is_rejected(self):
         # Both versions are supported individually, but they disagree.
         self.libpq.PQlibVersion.return_value = 180001
 
@@ -1665,7 +1746,7 @@ class TestLibpqSelection(unittest.TestCase):
         self.assertIsNone(pg_oauth2._libpq)
         self.libpq.PQsetAuthDataHook.assert_not_called()
 
-    def test_only_libpq_18_versions_are_accepted(self):
+    def case_only_libpq_18_versions_are_accepted(self):
         for version in (180000, 180001, 189999):
             with self.subTest(version=version):
                 pg_oauth2._check_oauth_libpq_version(version)

@@ -12,6 +12,7 @@
 import unittest
 from contextlib import ExitStack, nullcontext
 from unittest.mock import AsyncMock, MagicMock, patch
+from pgadmin.utils.route import BaseTestGenerator
 
 import psycopg
 from flask import Flask
@@ -20,7 +21,28 @@ from pgadmin.utils import pg_oauth2
 import pgadmin.utils.driver.psycopg3.connection as connection_module
 
 
-class TestOAuthConnection(unittest.TestCase):
+class _OAuthUnitTestMixin:
+    """Run each OAuth unit test as a separate regression scenario."""
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        cls.scenarios = [
+            (name[5:], {'case_method': name})
+            for name in sorted(dir(cls))
+            if name.startswith('case_') and callable(getattr(cls, name))
+        ]
+
+    def setUp(self):
+        # These tests mock database connections.
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        getattr(self, self.case_method)()
+
+
+class TestOAuthConnection(
+        _OAuthUnitTestMixin, BaseTestGenerator):
     """Test pgAdmin OAuth handling during Psycopg connection creation."""
 
     def setUp(self):
@@ -139,7 +161,7 @@ class TestOAuthConnection(unittest.TestCase):
             )
         )
 
-    def test_oauth_disabled_does_not_access_pgadmin_token(self):
+    def case_oauth_disabled_does_not_access_pgadmin_token(self):
         """
         Existing non-OAuth connections must not install the OAuth hook
         or access the pgAdmin OAuth session.
@@ -198,7 +220,7 @@ class TestOAuthConnection(unittest.TestCase):
             None
         )
 
-    def test_oauth_enabled_without_token_returns_error(self):
+    def case_oauth_enabled_without_token_returns_error(self):
         """
         An OAuth-enabled server must fail clearly before calling
         Psycopg when the pgAdmin session has no access token.
@@ -242,11 +264,12 @@ class TestOAuthConnection(unittest.TestCase):
             'is available. Sign in to pgAdmin again.'
         )
 
-        get_token.assert_called_once_with('direct', None, None)
+        get_token.assert_called_once_with('direct', None, None, None)
         psycopg_connect.assert_not_called()
         connection._initialize.assert_not_called()
+        manager.stop_ssh_tunnel.assert_called_once_with()
 
-    def test_sync_connection_is_created_inside_token_context(self):
+    def case_sync_connection_is_created_inside_token_context(self):
         """
         The synchronous Psycopg connection must be created while the
         pgAdmin access token is present in the ContextVar.
@@ -294,13 +317,13 @@ class TestOAuthConnection(unittest.TestCase):
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         install_hook.assert_called_once_with()
-        get_token.assert_called_once_with('direct', None, None)
+        get_token.assert_called_once_with('direct', None, None, None)
         psycopg_connect.assert_called_once()
 
         connection._initialize.assert_called_once()
         self.assertIs(connection.conn, pg_connection)
 
-    def test_async_connection_is_created_inside_token_context(self):
+    def case_async_connection_is_created_inside_token_context(self):
         """
         The asynchronous Psycopg connection must inherit the token
         context while asyncio.run() executes the connection coroutine.
@@ -355,7 +378,7 @@ class TestOAuthConnection(unittest.TestCase):
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         install_hook.assert_called_once_with()
-        get_token.assert_called_once_with('direct', None, None)
+        get_token.assert_called_once_with('direct', None, None, None)
         async_connect.assert_awaited_once()
 
         connection._initialize.assert_called_once()
@@ -365,7 +388,7 @@ class TestOAuthConnection(unittest.TestCase):
             connection_module.AsyncDictServerCursor
         )
 
-    def test_token_context_is_restored_after_connection_failure(self):
+    def case_token_context_is_restored_after_connection_failure(self):
         """
         A Psycopg failure must not leave the failed connection's token
         available to later libpq callbacks.
@@ -413,12 +436,12 @@ class TestOAuthConnection(unittest.TestCase):
         self.assertIn('test connection failure', message)
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
-        get_token.assert_called_once_with('direct', None, None)
+        get_token.assert_called_once_with('direct', None, None, None)
         psycopg_connect.assert_called_once()
         connection._initialize.assert_not_called()
         self.assertIsNone(connection.conn)
 
-    def test_exchange_mode_passes_client_id(self):
+    def case_exchange_mode_passes_client_id(self):
         """
         Token exchange mode must pass the configured OAuth client ID
         when obtaining the PostgreSQL token.
@@ -473,11 +496,12 @@ class TestOAuthConnection(unittest.TestCase):
             'exchange',
             'postgres-cluster',
             'openid',
+            None,
         )
         psycopg_connect.assert_called_once()
         connection._initialize.assert_called_once()
 
-    def test_missing_connection_params_uses_non_oauth_path(self):
+    def case_missing_connection_params_uses_non_oauth_path(self):
         """
         A connection manager without connection parameters must behave as a
         normal non-OAuth connection.
@@ -531,7 +555,7 @@ class TestOAuthConnection(unittest.TestCase):
     @patch.object(connection_module, 'install_oauth_hook')
     @patch.object(connection_module, 'get_postgres_oauth_token')
     @patch.object(connection_module.psycopg, 'connect')
-    def test_reset_creates_connection_inside_token_context(
+    def case_reset_creates_connection_inside_token_context(
             self, psycopg_connect, get_token, install_hook):
         manager = self._make_manager(
             mode='exchange',
@@ -540,7 +564,7 @@ class TestOAuthConnection(unittest.TestCase):
         )
         connection = self._make_connection(manager)
         connection._decrypt_password = MagicMock(
-            return_value=(False, None, None),
+            return_value=(True, '', None),
         )
 
         pg_connection = self._make_psycopg_connection()
@@ -578,6 +602,7 @@ class TestOAuthConnection(unittest.TestCase):
             'exchange',
             'postgres-cluster',
             'openid',
+            None,
         )
         psycopg_connect.assert_called_once_with(
             manager.create_connection_string.return_value,
@@ -587,7 +612,7 @@ class TestOAuthConnection(unittest.TestCase):
     @patch.object(connection_module, 'install_oauth_hook')
     @patch.object(connection_module, 'get_postgres_oauth_token')
     @patch.object(connection_module.psycopg, 'connect')
-    def test_cancel_creates_connection_inside_token_context(
+    def case_cancel_creates_connection_inside_token_context(
             self, psycopg_connect, get_token, install_hook):
         manager = self._make_manager(
             mode='exchange',
@@ -633,6 +658,7 @@ class TestOAuthConnection(unittest.TestCase):
             'exchange',
             'postgres-cluster',
             'openid',
+            None,
         )
         psycopg_connect.assert_called_once_with(
             manager.create_connection_string.return_value,
@@ -643,7 +669,7 @@ class TestOAuthConnection(unittest.TestCase):
         )
         pg_connection.close.assert_called_once_with()
 
-    def test_auxiliary_connections_handle_oauth_token_errors(self):
+    def case_auxiliary_connections_handle_oauth_token_errors(self):
         cases = (
             ('reset', pg_oauth2.OAuthTokenError),
             ('reset', pg_oauth2.OAuthRequestContextRequired),
@@ -662,7 +688,7 @@ class TestOAuthConnection(unittest.TestCase):
                 )
                 connection = self._make_connection(manager)
                 connection._decrypt_password = MagicMock(
-                    return_value=(False, None, None),
+                    return_value=(True, '', None),
                 )
                 connection._Connection__backend_pid = 12345
                 manager.connection.return_value = connection
@@ -711,6 +737,7 @@ class TestOAuthConnection(unittest.TestCase):
                     'exchange',
                     'postgres-cluster',
                     'openid',
+                    None,
                 )
                 psycopg_connect.assert_not_called()
 
