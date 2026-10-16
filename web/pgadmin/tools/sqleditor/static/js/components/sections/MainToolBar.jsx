@@ -50,7 +50,14 @@ function changeQueryExecutionSettings(type, api, transId, value) {
   let url = url_for(`sqleditor.${type}`, {
     'trans_id': transId,
   });
-  return api.post(url, JSON.stringify(value));
+  return api.post(url, JSON.stringify(value)).then((res)=>{
+    // The server answers 200 with status false when it cannot check the
+    // transaction or connection, in which case nothing was changed.
+    if(res?.data?.data?.status === false) {
+      throw new Error(res.data.data.result || gettext('Failed to change the execute option.'));
+    }
+    return res;
+  });
 }
 
 // Execute options that also live on the server side transaction object, so
@@ -84,6 +91,12 @@ export function getChangedExecutionOptions(restored, current) {
 export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddToMacros}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
+  /* A connection change replaces the transaction, so callbacks that outlive
+     a render read the current context from here rather than capturing it. */
+  const queryToolCtxRef = React.useRef(queryToolCtx);
+  React.useLayoutEffect(()=>{
+    queryToolCtxRef.current = queryToolCtx;
+  }, [queryToolCtx]);
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
@@ -107,6 +120,13 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const [pendingExecOptions, setPendingExecOptions] = useState(null);
   // The number of restored execute options still being sent to the server.
   const [applyingExecOptions, setApplyingExecOptions] = useState(0);
+  /* Each execute option request rewrites the whole transaction object kept in
+     the session, so they are sent one at a time, chained on this promise, so
+     that a later request cannot overwrite an earlier one's change. */
+  const execOptionsQueueRef = React.useRef(Promise.resolve());
+  // Whether an execute option changed from the menu is still being sent.
+  const [changingExecOption, setChangingExecOption] = useState(false);
+  const changingExecOptionRef = React.useRef(false);
   const {isSaveToolDataEnabled} = useApplicationState() ?? {};
   /* Menu button refs */
   const saveAsMenuRef = React.useRef(null);
@@ -168,22 +188,57 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     explain(true);
   }, [explain]);
 
+  const sendExecOption = useCallback((option, value)=>{
+    // Start from the queue so that a synchronous failure is handled too.
+    // Read the context when the request is sent, as it may be queued.
+    const request = execOptionsQueueRef.current
+      .then(()=>{
+        const {api, params} = queryToolCtxRef.current;
+        return changeQueryExecutionSettings(option, api, params.trans_id, value);
+      });
+    execOptionsQueueRef.current = request.catch(()=>{/* handled by the caller */});
+    return request;
+  }, []);
+
   const checkMenuClick = useCallback((e)=>{
+    if(EXECUTION_OPTIONS.includes(e.value)) {
+      if(changingExecOptionRef.current) {
+        return;
+      }
+      const option = e.value;
+      const oldVal = Boolean(checkedMenuItemsRef.current[option]);
+      const newVal = !oldVal;
+      const setOption = (val)=>{
+        setCheckedMenuItems((prev)=>({...prev, [option]: val}));
+        if(option === 'server_cursor') {
+          queryToolCtxRef.current.updateServerCursor({server_cursor: val});
+        }
+      };
+      changingExecOptionRef.current = true;
+      setChangingExecOption(true);
+      setOption(newVal);
+      sendExecOption(option, newVal)
+        .catch((error)=>{
+          setOption(oldVal);
+          // Save the reverted value so the tab state matches the server.
+          if(isSaveToolDataEnabled?.('sqleditor')) {
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+          }
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+            checkTransaction: true,
+          });
+        })
+        .finally(()=>{
+          changingExecOptionRef.current = false;
+          setChangingExecOption(false);
+        });
+      if(isSaveToolDataEnabled?.('sqleditor')) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+      }
+      return;
+    }
     setCheckedMenuItems((prev)=>{
       let newVal = !prev[e.value];
-      if (e.value === 'server_cursor') {
-        queryToolCtx.updateServerCursor({server_cursor: newVal});
-      }
-      if(e.value === 'auto_commit' || e.value === 'auto_rollback' || e.value === 'server_cursor') {
-        changeQueryExecutionSettings(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
-          .catch ((error)=>{
-            newVal = prev[e.value];
-            eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
-              checkTransaction: true,
-            });
-          });
-      }
-
       let otherVars = {};
       if (e.value === 'explain_serialize_binary' && newVal) {
         otherVars = { 'explain_serialize_text': false };
@@ -242,9 +297,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     const options = Object.entries(pendingExecOptions);
     setApplyingExecOptions((prev)=>prev + options.length);
     options.forEach(([option, value])=>{
-      // Start from a promise so that a synchronous failure is handled too.
-      Promise.resolve()
-        .then(()=>changeQueryExecutionSettings(option, queryToolCtx.api, queryToolCtx.params.trans_id, value))
+      sendExecOption(option, value)
         .catch((error)=>{
           setCheckedMenuItems((prev)=>({...prev, [option]: !value}));
           if(option === 'server_cursor') {
@@ -759,11 +812,11 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         label={gettext('Execute Options Menu')}
       >
         <PgMenuItem hasCheck value="auto_commit" checked={checkedMenuItems['auto_commit']}
-          onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
+          disabled={changingExecOption} onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
         <PgMenuItem hasCheck value="auto_rollback" checked={checkedMenuItems['auto_rollback']}
-          onClick={checkMenuClick}>{gettext('Auto rollback on error?')}</PgMenuItem>
+          disabled={changingExecOption} onClick={checkMenuClick}>{gettext('Auto rollback on error?')}</PgMenuItem>
         <PgMenuItem hasCheck value="server_cursor" checked={checkedMenuItems['server_cursor']}
-          onClick={checkMenuClick}>{gettext('Use server cursor?')}</PgMenuItem>
+          disabled={changingExecOption} onClick={checkMenuClick}>{gettext('Use server cursor?')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={explainMenuRef}
