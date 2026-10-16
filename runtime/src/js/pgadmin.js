@@ -247,12 +247,18 @@ function startDesktopMode() {
   misc.writeServerLog('pgAdmin Command: "' + command + '"');
   misc.writeServerLog('Environment: ');
   Object.keys(process.env).forEach(function (key) {
-    // Below code is included only for Mac OS as default path for azure CLI
-    // installation path is not included in PATH variable while spawning
-    // runtime environment.
+    // On macOS, apps launched from the Finder or Dock get a minimal PATH that
+    // does not include the directories Homebrew installs into (/usr/local/bin
+    // on Intel, /opt/homebrew/bin on Apple Silicon), so tools such as the
+    // Azure CLI would not be found.
     if (process.platform === 'darwin' && key === 'PATH') {
-      let updated_path = process.env[key] + ':/usr/local/bin';
-      process.env[key] = updated_path;
+      let pathDirs = process.env[key].split(':');
+      ['/usr/local/bin', '/opt/homebrew/bin'].forEach((dir) => {
+        if (!pathDirs.includes(dir)) {
+          pathDirs.push(dir);
+        }
+      });
+      process.env[key] = pathDirs.join(':');
     }
 
     if (process.platform === 'win32' && key.toUpperCase() === 'PATH') {
@@ -478,9 +484,60 @@ function notifyUpdateInstalled() {
   }
 }
 
+// Native file dialogs don't reliably remember the last used directory across
+// calls, so we track it ourselves and use it as the default when the caller
+// hasn't asked for a specific location.
+async function withLastVisitedDirectory(options) {
+  if (options.defaultPath) {
+    return options;
+  }
+  const lastVisitedDirectory = configStore.get('lastVisitedDirectory');
+  if (!lastVisitedDirectory) {
+    return options;
+  }
+  try {
+    const stats = await fs.promises.stat(lastVisitedDirectory);
+    if (stats.isDirectory()) {
+      return { ...options, defaultPath: lastVisitedDirectory };
+    }
+  } catch {
+    // Remembered directory no longer exists (e.g. removable/network drive) - fall through.
+  }
+  return options;
+}
+
+function rememberVisitedDirectory(options, result) {
+  const chosenPath = result.filePath || result.filePaths?.[0];
+  if (!chosenPath) {
+    return;
+  }
+  const isDirectory = options.properties?.includes('openDirectory');
+  try {
+    configStore.set('lastVisitedDirectory', isDirectory ? chosenPath : path.dirname(chosenPath));
+  } catch (error) {
+    try {
+      misc.writeServerLog(`Error remembering last visited directory: ${error}`);
+    } catch (logError) {
+      console.error('Error remembering last visited directory:', error, logError);
+    }
+  }
+}
+
 // setup preload events.
-ipcMain.handle('showOpenDialog', (e, options) => dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), options));
-ipcMain.handle('showSaveDialog', (e, options) => dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), options));
+ipcMain.handle('showOpenDialog', async (e, options) => {
+  const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options));
+  if (!result.canceled) {
+    rememberVisitedDirectory(options, result);
+  }
+  return result;
+});
+ipcMain.handle('showSaveDialog', async (e, options) => {
+  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options));
+  if (!result.canceled) {
+    rememberVisitedDirectory(options, result);
+  }
+  return result;
+});
 ipcMain.handle('showMessageBox', (e, options) => dialog.showMessageBox(BrowserWindow.fromWebContents(e.sender), options));
 ipcMain.handle('getStoreData', (_e, key) => key ? configStore.get(key) : configStore.store);
 ipcMain.handle('setStoreData', (_e, newValues) => {

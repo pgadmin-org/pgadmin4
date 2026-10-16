@@ -25,13 +25,17 @@ export function AzureCredentials(props) {
 
   let _eventBus = React.useContext(CloudWizardEventsContext);
   React.useMemo(() => {
+    // Polls for the device code whilst an interactive authentication is in
+    // progress, and is stopped once that authentication has finished.
+    let authCodeInterval = null;
+    const stopAuthCodePolling = () => {
+      clearInterval(authCodeInterval);
+      authCodeInterval = null;
+    };
     const azureCloudDBCredSchema = new AzureCredSchema(_eventBus, {
       authenticateAzure:(auth_type, azure_tenant_id) => {
-        let loading_icon_url = url_for(
-          'static', { 'filename': 'img/loading.gif'}
-        );
         const axiosApi = getApiInstance();
-        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Microsoft Azure authentication process is in progress. <img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
+        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, gettext('Microsoft Azure authentication process is in progress. Please wait...')]);
         let _url = url_for('azure.verify_credentials');
         const post_data = {
           cloud: 'azure',
@@ -39,6 +43,7 @@ export function AzureCredentials(props) {
         };
         return new Promise((resolve, reject)=>{axiosApi.post(_url, post_data)
           .then((res) => {
+            stopAuthCodePolling();
             if (res.data && res.data.success == 1 ) {
               _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
               _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',true);
@@ -51,6 +56,7 @@ export function AzureCredentials(props) {
             }
           })
           .catch((error) => {
+            stopAuthCodePolling();
             _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while verifying Microsoft Azure: ${error}`)]);
             reject(new Error(gettext(error)));
           });
@@ -59,12 +65,13 @@ export function AzureCredentials(props) {
       getAuthCode:()=>{
         let _url_get_azure_verification_codes = url_for('azure.get_azure_verification_codes');
         const axiosApi = getApiInstance();
+        stopAuthCodePolling();
         return new Promise((resolve, reject)=>{
           const interval = setInterval(()=>{
             axiosApi.get(_url_get_azure_verification_codes)
               .then((res)=>{
-                if (res.data.success){
-                  clearInterval(interval);
+                if (res.data.success && authCodeInterval === interval){
+                  stopAuthCodePolling();
                   let params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=550,height=650,left=920,top=150';
                   window.open(res.data.data.verification_uri, 'azure_authentication', params);
                   resolve(res);
@@ -75,6 +82,7 @@ export function AzureCredentials(props) {
                 reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
               });
           }, 1000);
+          authCodeInterval = interval;
         });
       }
     }, {});

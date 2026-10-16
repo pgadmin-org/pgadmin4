@@ -17,6 +17,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PropTypes from 'prop-types';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
 import { useResizeObserver } from 'use-resize-observer';
+import { getDndManager } from '../dnd_manager';
 
 
 const Root = styled('div')(({ theme }) => ({
@@ -76,7 +77,6 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
   let treeData = data;
   const Node = NodeComponent ?? DefaultNode;
   const treeObj = useRef();
-  const treeContainerRef = useRef();
   const [checkedState, setCheckedState] = React.useState({});
   const { ref: containerRef, width, height } = useResizeObserver();
 
@@ -167,7 +167,7 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
         data={treeData}
         disableDrag={true}
         disableDrop={true}
-        dndRootElement={treeContainerRef.current}
+        dndManager={getDndManager()}
         selectionFollowsFocus
         {...props}
         indent={24}

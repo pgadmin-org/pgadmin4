@@ -14,6 +14,119 @@ import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 import { getPrivilegesForTableAndLikeObjects } from '../../../tables/static/js/table.ui';
 
+// A character that may appear in an unquoted identifier, and so cannot
+// immediately precede the start of a dollar-quoted string or an E'' string's
+// prefix.
+const IDENT_CHAR = /[A-Za-z0-9_$\u0080-\uffff]/;
+const DOLLAR_TAG = /\$(?:[A-Za-z_\u0080-\uffff][A-Za-z0-9_\u0080-\uffff]*)?\$/y;
+
+/*
+ * Split a view definition into plain SQL and quoted parts, in the same shape
+ * as String.split() with one capturing group: even indexes hold plain SQL and
+ * odd indexes hold a quoted identifier, string literal or dollar-quoted string
+ * exactly as written. This follows PostgreSQL's lexer: '' and "" are escaped
+ * quotes, E'' strings also take backslash escapes, block comments nest, and a
+ * $ that continues an identifier does not start a dollar-quoted string.
+ * Comments are replaced with a space in the plain SQL. A construct left
+ * unterminated runs to the end of the definition. This must stay in step with
+ * ViewNode._tokenise_definition() on the server.
+ */
+function tokeniseViewDefinition(definition) {
+  const followsIdent = (pos) => pos > 0 && IDENT_CHAR.test(definition[pos - 1]);
+  const n = definition.length;
+  let parts = [''];
+  let i = 0;
+  while (i < n) {
+    const ch = definition[i];
+    let pair = definition.slice(i, i + 2);
+    if (pair == '--') {
+      const end = definition.indexOf('\n', i);
+      i = end < 0 ? n : end;
+      parts[parts.length - 1] += ' ';
+    } else if (pair == '/*') {
+      let depth = 1;
+      i += 2;
+      while (i < n && depth) {
+        pair = definition.slice(i, i + 2);
+        if (pair == '/*') {
+          depth += 1;
+          i += 2;
+        } else if (pair == '*/') {
+          depth -= 1;
+          i += 2;
+        } else {
+          i += 1;
+        }
+      }
+      parts[parts.length - 1] += ' ';
+    } else if (ch == '"' || ch == '\'') {
+      const escapes = ch == '\'' && i > 0 && 'eE'.includes(definition[i - 1]) &&
+        !followsIdent(i - 1);
+      let j = i + 1;
+      while (j < n) {
+        if (escapes && definition[j] == '\\') {
+          j += 2;
+        } else if (definition[j] != ch) {
+          j += 1;
+        } else if (definition[j + 1] == ch) {
+          j += 2;
+        } else {
+          break;
+        }
+      }
+      j = Math.min(j + 1, n);
+      parts.push(definition.slice(i, j), '');
+      i = j;
+    } else {
+      let tag = null;
+      if (ch == '$' && !followsIdent(i)) {
+        DOLLAR_TAG.lastIndex = i;
+        tag = DOLLAR_TAG.exec(definition);
+      }
+      if (tag === null) {
+        parts[parts.length - 1] += ch;
+        i += 1;
+        continue;
+      }
+      const end = definition.indexOf(tag[0], i + tag[0].length);
+      const j = end < 0 ? n : end + tag[0].length;
+      parts.push(definition.slice(i, j), '');
+      i = j;
+    }
+  }
+  return parts;
+}
+
+/*
+ * Split a view definition at each FROM keyword and normalise the parts so
+ * that only changes that can affect the view's columns are noticed. The
+ * contents of quoted identifiers and string literals are kept exactly as
+ * written, although the double quotes around an identifier are dropped so
+ * that "name" still matches name. Everything else is lower-cased (SQL
+ * keywords, function names, type names and unquoted identifiers are
+ * case-insensitive) and has its whitespace removed, so a pure reformat (for
+ * example with the SQL formatter, which can change keyword, function and data
+ * type case) does not look like a change to the column list. FROM is only
+ * matched as a whole word outside quotes and comments, so identifiers such as
+ * valid_from, and comments such as /* from *\/, do not end the select list
+ * early.
+ */
+export function splitViewDefinition(definition) {
+  let segments = [''];
+  tokeniseViewDefinition(definition ?? '').forEach((part, i) => {
+    if (i % 2 == 1) {
+      segments[segments.length - 1] += part.startsWith('"') ?
+        part.slice(1, -1) : part;
+      return;
+    }
+    let pieces = part.toLowerCase().split(/\bfrom\b/).map(
+      (piece) => piece.replace(/\s/g, '')
+    );
+    segments[segments.length - 1] += pieces[0];
+    segments.push(...pieces.slice(1));
+  });
+  return segments;
+}
 
 export default class ViewSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues={}) {
@@ -147,15 +260,11 @@ export default class ViewSchema extends BaseUISchema {
           return false;
         }
 
-        let old_def = obj.origData.definition?.replace(
-            /\s/gi, ''
-          ).split('FROM'),
+        let old_def = splitViewDefinition(obj.origData.definition),
           new_def = [];
 
         if (!_.isUndefined(state.definition)) {
-          new_def = state.definition.replace(
-            /\s/gi, ''
-          ).split('FROM');
+          new_def = splitViewDefinition(state.definition);
         }
 
         if ((old_def.length != new_def.length) || (

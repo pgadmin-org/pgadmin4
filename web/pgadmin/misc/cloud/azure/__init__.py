@@ -10,7 +10,8 @@
 # Azure implementation
 import config
 import secrets
-from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
+from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc, \
+    write_session_through
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
 from pgadmin.utils import PgAdminModule
@@ -70,6 +71,7 @@ def _save_azure_to_session(azure_obj):
     if 'azure' not in session:
         session['azure'] = {}
     session['azure']['state'] = azure_obj.to_state()
+    write_session_through()
 
 
 @blueprint.route('/verify_credentials/',
@@ -97,6 +99,9 @@ def verify_credentials():
     if cached_state is None or auth_type_changed or tenant_changed:
         # Drop any stale state — these creds don't match the cached ones.
         session['azure'].pop('state', None)
+        # Also drop the device code from any earlier attempt, so the wizard
+        # does not show it in place of the one for this attempt.
+        session['azure'].pop('azure_auth_code', None)
         azure = Azure(
             interactive_browser_credential=interactive_browser_credential,
             tenant_id=tenant_id,
@@ -108,6 +113,7 @@ def verify_credentials():
             session['azure']['azure_tenant_id'] = tenant_id
         if not status and 'double check your tenant name' in error:
             error = 'Authentication failed.Please double check tenant id.'
+        write_session_through()
     return make_json_response(
         success=status, errormsg=sanitize_external_text(error))
 
@@ -398,6 +404,7 @@ class Azure:
                            'user_code': user_code,
                            'expires_at': expires_at}
         session['azure']['azure_auth_code'] = azure_auth_code
+        write_session_through()
 
     def _azure_interactive_auth(self):
         sdk = _azure_sdk()
@@ -852,6 +859,7 @@ def deploy_on_azure(data):
         return False, None, str(e)
     finally:
         session['azure'].pop('state', None)
+        write_session_through()
 
 
 def clear_azure_session(pid=None):
@@ -862,6 +870,7 @@ def clear_azure_session(pid=None):
         cache_file_to_delete = session['azure_cache_files_list'][pid]
         delete_azure_cache(cache_file_to_delete)
         del session['azure_cache_files_list'][pid]
+        write_session_through()
 
     if 'azure' in session:
         if cache_file_to_delete is None and \
@@ -869,6 +878,7 @@ def clear_azure_session(pid=None):
             cache_file_to_delete = session['azure']['azure_cache_file_name']
             delete_azure_cache(cache_file_to_delete)
         session.pop('azure')
+        write_session_through()
 
 
 def delete_azure_cache(file_name):

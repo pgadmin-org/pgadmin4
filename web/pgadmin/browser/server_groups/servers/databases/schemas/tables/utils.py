@@ -679,6 +679,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     c['cltype'], c['hasSqrBracket'] = \
                         column_utils.type_formatter(c['cltype'])
 
+    @staticmethod
+    def _unlogged_unsupported(data, server_version):
+        """
+        PostgreSQL 18 and later reject UNLOGGED on a partitioned table,
+        both in CREATE TABLE and in ALTER TABLE ... SET UNLOGGED/LOGGED,
+        whereas a leaf partition may still be unlogged.
+        """
+        return server_version >= 180000 and \
+            bool(data.get('is_partitioned', False))
+
     def _get_resql_for_table(self, did, scid, tid, data, json_resp, main_sql,
                              add_not_exists_clause=False):
         """
@@ -717,6 +727,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     data['revoke_all'].append(
                         driver.qtIdent(None, acl['grantee'])
                         if acl['grantee'] != 'PUBLIC' else 'PUBLIC')
+
+        if self._unlogged_unsupported(data, self.manager.version):
+            data['relpersistence'] = False
 
         # if table is partitions then
         if 'relispartition' in data and data['relispartition']:
@@ -929,6 +942,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 part_data['name'] = row['name']
                 part_data['partition_value'] = row['partition_value']
                 part_data['is_partitioned'] = row['is_partitioned']
+                part_data['relpersistence'] = \
+                    row['relpersistence'] and not self._unlogged_unsupported(
+                        row, self.manager.version)
                 part_data['partition_scheme'] = row['partition_scheme']
                 part_data['description'] = row['description']
                 part_data['relowner'] = row['relowner']
@@ -1304,30 +1320,103 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         The pseudo-type is shorthand for a declaration rather than a type
         ALTER COLUMN can be given, so compare and alter the underlying
-        integer type instead, drop the default the reprojection emptied,
-        and leave the owned sequence to be compared as the object it is in
-        its own right.
+        integer type instead. Three cases follow, distinguished by whether
+        each side is genuinely SERIAL (owns the sequence its own nextval()
+        default points at):
+
+        * Both sides are SERIAL: the only differences are things like a
+          comment or NOT NULL, so drop the default the reprojection
+          emptied (it is not a request to drop the real one) and leave the
+          owned sequence to be compared as the object it is in its own
+          right.
+        * The column is becoming SERIAL: the sequence behind it does not
+          exist on the other side yet, so it must be created, and its
+          owner column given back its real ``nextval()`` default, before
+          `ALTER COLUMN ... SET DEFAULT` can reference it at all.
+        * The column is leaving SERIAL: PostgreSQL refuses to drop a
+          sequence that a column's default still references, so the
+          now-unused sequence must be dropped only once that default is
+          gone (#10292).
 
         :param data: The changed column, modified in place
         :param old_col_data: Properties of the column as it stands now
         """
         cltype = data.get('cltype')
-        if cltype not in column_utils.UNDERLYING_SERIAL_TYPES:
+        becomes_serial = cltype in column_utils.UNDERLYING_SERIAL_TYPES
+        was_serial = column_utils.is_serial_column(old_col_data)
+
+        # A column can only be "leaving SERIAL" when this update actually
+        # says something about its type at all. This function also runs
+        # for the ordinary (non-diff) column PUT, where a partial update
+        # that never mentions cltype (e.g. changing only a comment or a
+        # privilege on an already-SERIAL column) carries no 'cltype' key
+        # whatsoever, and is not a request to change the type, however
+        # SERIAL the column already is; unlike Schema Diff's columns,
+        # which always carry the full properties and so always have one.
+        # Nor is a change of type alone (e.g. widening integer to bigint
+        # in the table dialog, which sends no 'defval'): the column only
+        # stops being SERIAL once its nextval() default is replaced or
+        # dropped, and until then PostgreSQL would refuse to drop the
+        # sequence that default still references.
+        leaving_serial = was_serial and not becomes_serial \
+            and 'cltype' in data and 'defval' in data \
+            and data['defval'] != old_col_data.get('defval')
+
+        if not becomes_serial and not leaving_serial:
             return
 
-        data['cltype'] = column_utils.UNDERLYING_SERIAL_TYPES[cltype]
-        if data.get('typname') == cltype:
-            data['typname'] = data['cltype']
+        serial_defval = None
+        if becomes_serial:
+            data['cltype'] = column_utils.UNDERLYING_SERIAL_TYPES[cltype]
+            if data.get('typname') == cltype:
+                data['typname'] = data['cltype']
+            serial_defval = data.pop('serial_defval', None)
 
-        # The reprojection emptied the nextval() default; that is not a
-        # request to drop it.
-        data.pop('defval', None)
+        if becomes_serial and was_serial:
+            # The reprojection emptied the nextval() default on both
+            # sides; that is not a request to drop it.
+            data.pop('defval', None)
+        elif becomes_serial and not was_serial:
+            # Genuinely becoming SERIAL: recreate the sequence the
+            # reprojection's own default was emptied from, and restore
+            # that default so it can be set once the sequence exists.
+            data['defval'] = serial_defval or ''
+            seq_name = column_utils.parse_nextval_sequence(serial_defval)
+            if seq_name:
+                data['serial_seq_create'] = {
+                    'name': seq_name,
+                    # A bare CREATE SEQUENCE is always bigint, so give it
+                    # the source sequence's own type, which its MINVALUE
+                    # and MAXVALUE below are bounded by. That is usually
+                    # the column's own integer type, as PostgreSQL gives
+                    # a SERIAL/SMALLSERIAL, but not always: an integer
+                    # column can own a bigint sequence (e.g. one restored
+                    # from before PostgreSQL 10), and a widened SERIAL can
+                    # keep its integer one. Fall back to the column's type
+                    # when the source sequence's is unknown (e.g. the
+                    # table dialog, which never sends it).
+                    'data_type': data.get('seqtypname') or data['cltype'],
+                    'increment': data.get('seqincrement'),
+                    'start': data.get('seqstart'),
+                    'minimum': data.get('seqmin'),
+                    'maximum': data.get('seqmax'),
+                    'cache': data.get('seqcache'),
+                    'cycled': data.get('seqcycle'),
+                }
+        elif leaving_serial:
+            # Genuinely leaving SERIAL: the generic default handling
+            # below already drops the (empty, non-serial) default, so
+            # queue the now-unused sequence to be dropped afterwards.
+            seq_name = column_utils.parse_nextval_sequence(
+                old_col_data.get('defval'))
+            if seq_name:
+                data['serial_seq_drop'] = seq_name
 
         # Sequence options ride along with a column because it owns a
         # sequence, but ALTER COLUMN only accepts them for identity
         # columns; the sequence itself is compared as a separate object.
         for key in ('seqincrement', 'seqstart', 'seqmin', 'seqmax',
-                    'seqcache', 'seqcycle'):
+                    'seqcache', 'seqcycle', 'seqtypname'):
             data.pop(key, None)
 
     def _check_for_column_update(self, columns, data, column_sql, tid):
@@ -1365,6 +1454,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                         old_col_data['cltype'])
 
                 self._normalise_serial_column(c, old_col_data)
+                column_utils.add_identity_sequence_state(
+                    self.conn, c, old_col_data,
+                    template_path=self.column_template_path)
 
                 # Sql for alter column
                 if c.get('inheritedfrom', None) is None and \
@@ -1481,6 +1573,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         partitions_sql = ''
         if 'is_partitioned' in data and data['is_partitioned']:
             data['relkind'] = 'p'
+            if self._unlogged_unsupported(data, self.manager.version):
+                data['relpersistence'] = False
             # create partition scheme
             data['partition_scheme'] = self.get_partition_scheme(data)
             partitions_sql = self.get_partitions_sql(data)
@@ -1542,6 +1636,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             self.update_vacuum_settings('vacuum_table', old_data, data)
             # Update the vacuum toast table settings.
             self.update_vacuum_settings('vacuum_toast', old_data, data)
+
+            if self._unlogged_unsupported(old_data, self.manager.version):
+                data.pop('relpersistence', None)
 
             sql = render_template(
                 "/".join([self.table_template_path, self._UPDATE_SQL]),

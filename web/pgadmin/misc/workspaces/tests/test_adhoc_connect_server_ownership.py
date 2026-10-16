@@ -31,6 +31,8 @@ import json
 import config
 
 from pgadmin.utils.route import BaseTestGenerator
+from pgadmin.browser.server_groups.servers.tests.utils import \
+    restore_server_fixture_on_cleanup
 from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
 from regression.python_test_utils.test_utils import \
@@ -55,6 +57,8 @@ class AdhocConnectServerOwnershipTestCase(BaseTestGenerator):
         if not config.SERVER_MODE:
             self.skipTest(
                 'Adhoc ownership isolation only applies to server mode.')
+
+        restore_server_fixture_on_cleanup(self)
 
         # Create a shared server as the admin user.
         self.server['shared'] = True

@@ -167,8 +167,13 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, configStore, callbacks) {
         },
         { type: 'separator' },
         { role: 'resetZoom' },
+        // Electron zoom roles only match main keyboard keys (see electron/electron#5256).
+        // Register hidden items to support numpad zoom shortcuts.
+        { role: 'resetZoom', accelerator: 'CmdOrCtrl+num0', visible: false },
         { role: 'zoomIn' },
+        { role: 'zoomIn', accelerator: 'CmdOrCtrl+numadd', visible: false },
         { role: 'zoomOut' },
+        { role: 'zoomOut', accelerator: 'CmdOrCtrl+numsub', visible: false },
         { type: 'separator' },
       ].concat(isLinux ? [] : [{ role: 'togglefullscreen' }]),
     },

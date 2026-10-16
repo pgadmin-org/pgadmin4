@@ -184,7 +184,7 @@ class AdHocConnectionSchema extends BaseUISchema {
             let sid = actionObj.value;
             let selectedServer = _.find(self.flatServers, (s)=>s.value==sid);
             if(sid && !_.find(self.flatServers, (s) => s.value == sid)?.connected) {
-              this.connectExistingServer(sid, state.user, null, (data) => {
+              this.connectExistingServer(sid, null, (data) => {
                 self.setServerConnected(sid, data.icon);
                 selectedServer.connected = true;
                 resolve(() => ({ sid: sid, server_name:selectedServer?.label, host: selectedServer?.host,
@@ -352,16 +352,11 @@ export default function AdHocConnection({mode}) {
   const preferencesStore = usePreferences();
   const {currentWorkspace} = useWorkspace();
 
-  const connectExistingServer = async (sid, user, formData, connectCallback) => {
+  const connectExistingServer = async (sid, formData, connectCallback) => {
     try {
       let {data: respData} = await api({
         method: 'POST',
-        url: url_for('sqleditor.connect_server', {
-          'sid': sid,
-          ...(user ? {
-            'usr': user,
-          }:{}),
-        }),
+        url: url_for('sqleditor.connect_server', {'sid': sid}),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: formData
       });
@@ -378,7 +373,7 @@ export default function AdHocConnection({mode}) {
               }}
               data={error.response?.data?.result}
               onOK={(formData)=>{
-                connectExistingServer(sid, null, formData, connectCallback);
+                connectExistingServer(sid, formData, connectCallback);
               }}
               hideSavePassword={true}
             />

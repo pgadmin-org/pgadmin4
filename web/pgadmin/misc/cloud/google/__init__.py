@@ -18,7 +18,8 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.ajax import plain_text_response, unauthorized, \
     make_json_response, bad_request
 from pgadmin.misc.bgprocess import BatchProcess
-from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
+from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc, \
+    write_session_through
 from pgadmin.utils import PgAdminModule, filename_with_file_manager_path
 from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.user_login_check import pga_login_required
@@ -84,6 +85,7 @@ def _save_google_to_session(google_obj):
     if 'google' not in session:
         session['google'] = {}
     session['google']['state'] = google_obj.to_state()
+    write_session_through()
 
 
 @blueprint.route("/")
@@ -147,6 +149,7 @@ def verify_credentials():
     else:
         error = 'Client secret path not found'
         session.pop('google', None)
+        write_session_through()
 
     return make_json_response(
         success=status,
@@ -366,6 +369,7 @@ def clear_google_session():
     """Clear Google Session"""
     if 'google' in session:
         session.pop('google')
+        write_session_through()
 
 
 def _google_sdk():
@@ -384,7 +388,8 @@ def _google_sdk():
 
 class Google:
     def __init__(self, client_config=None):
-        # Google cloud sql api versions
+        # Google cloud sql api versions. Only the discovery documents for
+        # these are shipped in the packages; see pkg/prune_site_packages.py.
         self._cloud_resource_manager_api_version = 'v1'
         self._sqladmin_api_version = 'v1'
         self._compute_api_version = 'v1'

@@ -17,7 +17,8 @@ from pgadmin.user_login_check import pga_login_required
 from werkzeug.datastructures import Headers
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.text_sanitize import sanitize_external_text
-from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
+from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc, \
+    write_session_through
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, bad_request, success_return
@@ -70,6 +71,7 @@ def verify_credentials():
         status, identity = _rds.validate_credentials()
         if status:
             session['aws']['secret'] = data['secret']
+            write_session_through()
             msg = 'verified'
         else:
             msg = identity
@@ -288,6 +290,7 @@ def clear_aws_session():
     """Clear AWS Session"""
     if 'aws' in session:
         session.pop('aws')
+        write_session_through()
 
 
 def deploy_on_rds(data):

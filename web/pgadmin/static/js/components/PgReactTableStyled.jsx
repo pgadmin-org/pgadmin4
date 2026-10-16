@@ -8,7 +8,14 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect } from 'react';
-import { flexRender } from '@tanstack/react-table';
+import {
+  flexRender, tableFeatures, columnFilteringFeature, globalFilteringFeature,
+  rowSortingFeature, rowSelectionFeature, rowExpandingFeature,
+  columnSizingFeature, columnResizingFeature, columnVisibilityFeature,
+  createFilteredRowModel, createSortedRowModel, createExpandedRowModel,
+  filterFn_includesString, filterFn_equalsString, sortFn_alphanumeric,
+  sortFn_alphanumericCaseSensitive, sortFn_text, sortFn_datetime, sortFn_basic,
+} from '@tanstack/react-table';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -91,6 +98,14 @@ const StyledDiv = styled('div')(({theme})=>({
         flexDirection: 'column',
         position: 'absolute',
         width: '100%',
+
+        // Opted out of the virtualizer's absolute positioning for grids
+        // small enough that virtualisation isn't used. Keeps the row in
+        // normal document flow so a hidden/shown dialog tab is a pure CSS
+        // toggle instead of triggering a virtualizer remeasure.
+        '&.pgrt-row--static': {
+          position: 'static',
+        },
 
         '& .pgrt-row-content': {
           display: 'flex',
@@ -273,6 +288,34 @@ PgReactTableRowExpandContent.propTypes = {
   children: CustomPropTypes.children,
 };
 
+// Features, row models and named sort/filter functions shared by every
+// pgAdmin table. In react-table v9 these must be registered explicitly;
+// the sortFns are the ones the 'auto' sort picks between.
+export const pgTableFeatures = tableFeatures({
+  columnFilteringFeature,
+  globalFilteringFeature,
+  rowSortingFeature,
+  rowSelectionFeature,
+  rowExpandingFeature,
+  columnSizingFeature,
+  columnResizingFeature,
+  columnVisibilityFeature,
+  filteredRowModel: createFilteredRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  expandedRowModel: createExpandedRowModel(),
+  filterFns: {
+    includesString: filterFn_includesString,
+    equalsString: filterFn_equalsString,
+  },
+  sortFns: {
+    alphanumeric: sortFn_alphanumeric,
+    alphanumericCaseSensitive: sortFn_alphanumericCaseSensitive,
+    text: sortFn_text,
+    datetime: sortFn_datetime,
+    basic: sortFn_basic,
+  },
+});
+
 export function PgReactTableHeader({table}) {
   return (
     <div className='pgrt-header'>
@@ -291,7 +334,7 @@ export function PgReactTableHeader({table}) {
               <div title={flexRender(header.column.columnDef.header, header.getContext())}
                 style={{cursor: header.column.getCanSort() ? 'pointer' : 'initial'}}
                 onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
-                onKeyDown={header.column.getCanSort() ? getEnterKeyHandler(header.column.getToggleSortingHandler): undefined}
+                onKeyDown={header.column.getCanSort() ? getEnterKeyHandler(header.column.getToggleSortingHandler()): undefined}
               >
                 {flexRender(header.column.columnDef.header, header.getContext())}
                 {header.column.getCanSort() && header.column.getIsSorted() &&
@@ -366,7 +409,7 @@ export function PgReactTable(
       colSizes[`--col-${header.column.id.replace(/\W/g, '_')}-size`] = header.column.getSize();
     }
     return colSizes;
-  }, [columns, table.getState().columnSizingInfo]);
+  }, [columns, table.state.columnResizing, table.state.columnSizing]);
 
   return (
     <StyledDiv className={['pgrt', rootClassName].join(' ')} ref={ref} onScroll={e => onScrollFunc?.(e.target)}>
@@ -437,7 +480,7 @@ export function getCheckboxCell({title}) {
         <Checkbox
           color="primary"
           checked={table.getIsAllRowsSelected()}
-          indeterminate={table.getIsSomeRowsSelected()}
+          indeterminate={table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
           onChange={table.getToggleAllRowsSelectedHandler()}
           slotProps={{input: { 'aria-label': title }}}
         />

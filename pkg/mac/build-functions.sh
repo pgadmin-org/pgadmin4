@@ -123,6 +123,11 @@ _create_python_env() {
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m ensurepip --upgrade || exit 1
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/pip3" install --no-cache-dir -r "${SOURCE_DIR}/requirements.txt" || exit 1
 
+    # Remove the files in the installed packages that we never use, and the
+    # packaging tools (pip, setuptools and wheel) that are only needed to
+    # build the environment
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" "${SOURCE_DIR}/pkg/prune_site_packages.py" "${BUNDLE_DIR}/Contents/Frameworks/Python.framework" || exit 1
+
     # Make sure all the .so's in the Python env have the executable bit set
     # so they get properly signed later
     OLD_IFS=${IFS}
@@ -317,8 +322,11 @@ _complete_bundle() {
     # PkgInfo
     echo APPLPGA4 > "${BUNDLE_DIR}/Contents/PkgInfo"
 
-    # Icon
+    # Icon. Assets.car is compiled from pgAdmin4.icon (see README.md) and
+    # gives macOS 26+ the dark, clear and tinted variants; older releases
+    # fall back to app.icns.
     cp pgAdmin4.icns "${BUNDLE_DIR}/Contents/Resources/app.icns"
+    cp Assets.car "${BUNDLE_DIR}/Contents/Resources/Assets.car"
 
     # Rename the executable
     mv "${BUNDLE_DIR}/Contents/MacOS/Electron" "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"

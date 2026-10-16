@@ -27,6 +27,8 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.tools.schema_diff.directory_compare import \
+    TITLE_KEY as SCHEMA_DIFF_TITLE_KEY
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
@@ -223,6 +225,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                       'proisagg', 'pronamespace', 'proargdefaults',
                       'prorettype', 'proallargtypes', 'proacl', 'oid-2',
                       'prolang']
+
+    # Schema Diff property holding a function's input argument names.
+    _INPUT_ARG_NAMES = 'input_arg_names'
 
     @property
     def required_args(self):
@@ -813,11 +818,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         # Parse privilege data
         if 'acl' in resp_data:
-            resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
-
-            # Check Revoke all for public
+            # Check Revoke all for public. This must look at the individual
+            # grantees, before parse_priv_to_db() merges them.
             resp_data['revoke_all'] = self._set_revoke_all(
                 resp_data['acl'])
+
+            resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
 
     def _get_schema_name_from_oid(self, resp_data):
         """
@@ -1685,18 +1691,24 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
+            source_params = kwargs.get('source_params', None)
+            if source_params and self._diff_needs_recreate(data):
+                # CREATE OR REPLACE cannot change the return type or
+                # the OUT arguments of an existing function, so drop the
+                # target function and create it afresh from the source.
+                drop_fun_sql = self.delete(gid=gid, sid=sid, did=did,
+                                           scid=scid, fnid=oid, only_sql=True)
+                create_params = dict(source_params)
+                create_params['target_schema'] = target_schema
+                create_sql = self.get_sql_from_diff(**create_params)
+                return drop_fun_sql + '\n' + create_sql
+
             if target_schema:
                 data['schema'] = target_schema
             _, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                    data=data, fnid=oid, is_sql=False,
                                    is_schema_diff=True,
                                    allow_code_formatting=False)
-            # Check if return type is changed then we need to drop the
-            # function first and then recreate it.
-            if 'prorettypename' in data:
-                drop_fun_sql = self.delete(gid=gid, sid=sid, did=did,
-                                           scid=scid, fnid=oid, only_sql=True)
-                sql = drop_fun_sql + '\n' + sql
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
@@ -1718,6 +1730,32 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)
         return sql
+
+    @classmethod
+    def _diff_needs_recreate(cls, data):
+        """
+        Check whether a Schema Diff difference can only be applied by
+        dropping and recreating the function, i.e. whether its return type,
+        its OUT arguments or the names of its input arguments differ.
+        Schema Diff matches functions on their input argument types, so any
+        argument added or deleted, or any changed argument that is an OUT
+        argument in the source, is a change to the OUT arguments.
+
+        :param data: Difference between the source and target function
+        :return: True if the function must be dropped and recreated
+        """
+        if 'prorettypename' in data or cls._INPUT_ARG_NAMES in data:
+            return True
+
+        arguments = data.get('arguments')
+        if not isinstance(arguments, dict):
+            return False
+
+        if arguments.get('added') or arguments.get('deleted'):
+            return True
+
+        return any(arg.get('argmode') == 'OUT'
+                   for arg in arguments.get('changed', []))
 
     def reformat_prosrc_code(self, data):
         """
@@ -1772,7 +1810,17 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             for row in rset['rows']:
                 data = self._fetch_properties(0, sid, did, scid, row['oid'])
                 if isinstance(data, dict):
-                    res[row['name']] = data
+                    # Match functions on their name and input argument
+                    # types, as PostgreSQL does, but show them under their
+                    # name with argument names.
+                    data[SCHEMA_DIFF_TITLE_KEY] = row['name']
+                    # CREATE OR REPLACE cannot rename an input argument, so
+                    # keep the input argument names as a single value that
+                    # Schema Diff reports as changed only if they differ.
+                    data[self._INPUT_ARG_NAMES] = json.dumps(
+                        [arg['argname'] for arg in data.get('arguments', [])
+                         if arg['argmode'] != 'OUT'])
+                    res[row.get('diff_key') or row['name']] = data
         else:
             data = self._fetch_properties(0, sid, did, scid, oid)
             res = data

@@ -25,7 +25,12 @@ export default function DebuggerMessages() {
     eventBus.registerListener(DEBUGGER_EVENTS.SET_MESSAGES, (text, append=false)=>{
       setMessageText((prev)=>{
         if(append) {
-          return prev+text;
+          // Each poll returns its own batch of messages, usually without a
+          // trailing newline, so start every appended batch on a new line.
+          if(prev && !prev.endsWith('\n')) {
+            return prev + '\n' + text;
+          }
+          return prev + text;
         }
         return text;
       });

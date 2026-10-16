@@ -74,6 +74,22 @@ people, not a source of trust, since whoever rebuilds an archive rebuilds its
 checksum too, so the action verifies against the lock instead.
 
 
+## Application icon
+
+*pgAdmin4.icon* is an Icon Composer document holding the layered icon that
+macOS 26 and later use for the light, dark, clear and tinted appearances.
+It is compiled ahead of time into *Assets.car*, which is committed so that the
+build does not need Xcode 26; *pgAdmin4.icns* remains the icon for older
+releases. After editing *pgAdmin4.icon*, regenerate *Assets.car* from this
+directory with:
+
+    mkdir -p /tmp/pgadmin-icon
+    xcrun actool pgAdmin4.icon --compile /tmp/pgadmin-icon \
+        --platform macosx --minimum-deployment-target 10.13 \
+        --app-icon pgAdmin4 --output-partial-info-plist /tmp/pgadmin-icon/partial.plist
+    cp /tmp/pgadmin-icon/Assets.car .
+
+
 ## Building
 
 1. The version of Python that gets bundled is read from

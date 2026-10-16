@@ -15,8 +15,15 @@ to specify the number of rows you would like to display in the editor panel.
 
 To modify the content of a table, each row in the table must be uniquely
 identifiable. If the table definition does not include an OID or a primary key,
-the displayed data is read only. Note that views cannot be edited; updatable
-views (using rules) are not supported.
+the displayed data is read only. Simple, automatically-updatable views (a
+single base table, with no ``INSTEAD OF`` triggers or rewrite rules, whose
+base table's primary key columns are all exposed in the view under their
+original names) can also be edited; updating and deleting rows is supported,
+but inserting new rows through a view is not, so the *Add row* and *Paste*
+buttons are disabled when editing a view. Materialized views, views based
+on more than one table, views exposing only part of a composite primary key,
+and views relying on ``INSTEAD OF`` triggers or rules created with
+``CREATE RULE`` remain read only.
 
 The editor features a toolbar that allows quick access to frequently used
 options, and a work environment divided into two panels:
