@@ -34,6 +34,7 @@ import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -49,12 +50,53 @@ function changeQueryExecutionSettings(type, api, transId, value) {
   let url = url_for(`sqleditor.${type}`, {
     'trans_id': transId,
   });
-  return api.post(url, JSON.stringify(value));
+  return api.post(url, JSON.stringify(value)).then((res)=>{
+    // The server answers 200 with status false when it cannot check the
+    // transaction or connection, in which case nothing was changed.
+    if(res?.data?.data?.status === false) {
+      throw new Error(res.data.data.result || gettext('Failed to change the execute option.'));
+    }
+    return res;
+  });
+}
+
+// Execute options that also live on the server side transaction object, so
+// they must be sent to the server when changed.
+const EXECUTION_OPTIONS = ['auto_commit', 'auto_rollback', 'server_cursor'];
+
+// Buttons kept disabled whilst restored execute options are being sent to the
+// server, so that nothing runs with the preference values instead.
+const BUTTONS_GATED_BY_EXEC_OPTIONS = ['execute', 'execute-options', 'explain', 'explain_analyse'];
+
+// Check menu options that are saved and restored with the tab's state.
+export const RESTORABLE_TOOLBAR_OPTIONS = [
+  ...EXECUTION_OPTIONS,
+  'open_in_new_tab',
+  'explain_verbose', 'explain_costs', 'explain_buffers', 'explain_timing',
+  'explain_summary', 'explain_settings', 'explain_wal', 'explain_generic_plan',
+  'explain_memory', 'explain_serialize_text', 'explain_serialize_binary',
+];
+
+// Keep only the known options with boolean values from saved tab state.
+export function getRestorableToolbarOptions(options) {
+  return _.pickBy(_.pick(options ?? {}, RESTORABLE_TOOLBAR_OPTIONS), _.isBoolean);
+}
+
+// The execute options whose restored value differs from the current one.
+export function getChangedExecutionOptions(restored, current) {
+  return _.pickBy(_.pick(restored, EXECUTION_OPTIONS),
+    (val, key)=>val !== Boolean(current?.[key]));
 }
 
 export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddToMacros}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
+  /* A connection change replaces the transaction, so callbacks that outlive
+     a render read the current context from here rather than capturing it. */
+  const queryToolCtxRef = React.useRef(queryToolCtx);
+  React.useLayoutEffect(()=>{
+    queryToolCtxRef.current = queryToolCtx;
+  }, [queryToolCtx]);
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
@@ -73,6 +115,19 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   });
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
+  const checkedMenuItemsRef = React.useRef(checkedMenuItems);
+  // Restored execute options waiting for the connection to be established.
+  const [pendingExecOptions, setPendingExecOptions] = useState(null);
+  // The number of restored execute options still being sent to the server.
+  const [applyingExecOptions, setApplyingExecOptions] = useState(0);
+  /* Each execute option request rewrites the whole transaction object kept in
+     the session, so they are sent one at a time, chained on this promise, so
+     that a later request cannot overwrite an earlier one's change. */
+  const execOptionsQueueRef = React.useRef(Promise.resolve());
+  // Whether an execute option changed from the menu is still being sent.
+  const [changingExecOption, setChangingExecOption] = useState(false);
+  const changingExecOptionRef = React.useRef(false);
+  const {isSaveToolDataEnabled} = useApplicationState() ?? {};
   /* Menu button refs */
   const saveAsMenuRef = React.useRef(null);
   const openInNewTabMenuRef = React.useRef(null);
@@ -87,6 +142,15 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const setDisableButton = useCallback((name, disable=true)=>{
     setButtonsDisabled((prev)=>({...prev, [name]: disable}));
   }, []);
+  /* Kept separate from buttonsDisabled, which the execution events set
+     directly, so that nothing else can enable these buttons early and the
+     gate always lifts once the requests have settled. Pending options count
+     only once connected, as they are sent in the effect after that render;
+     before then Execute is what re-makes a failed connection. */
+  const execOptionsGated = applyingExecOptions > 0
+    || (!_.isEmpty(pendingExecOptions) && Boolean(queryToolConnCtx.connected));
+  const isButtonDisabled = (name)=>(buttonsDisabled[name]
+    || (execOptionsGated && BUTTONS_GATED_BY_EXEC_OPTIONS.includes(name)));
 
   const executeCursor = useCallback(()=>{
     if(!queryToolCtx.preferences.sqleditor.underline_query_cursor && queryToolCtx.preferences.sqleditor.underlined_query_execute_warning){
@@ -124,22 +188,57 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     explain(true);
   }, [explain]);
 
+  const sendExecOption = useCallback((option, value)=>{
+    // Start from the queue so that a synchronous failure is handled too.
+    // Read the context when the request is sent, as it may be queued.
+    const request = execOptionsQueueRef.current
+      .then(()=>{
+        const {api, params} = queryToolCtxRef.current;
+        return changeQueryExecutionSettings(option, api, params.trans_id, value);
+      });
+    execOptionsQueueRef.current = request.catch(()=>{/* handled by the caller */});
+    return request;
+  }, []);
+
   const checkMenuClick = useCallback((e)=>{
+    if(EXECUTION_OPTIONS.includes(e.value)) {
+      if(changingExecOptionRef.current) {
+        return;
+      }
+      const option = e.value;
+      const oldVal = Boolean(checkedMenuItemsRef.current[option]);
+      const newVal = !oldVal;
+      const setOption = (val)=>{
+        setCheckedMenuItems((prev)=>({...prev, [option]: val}));
+        if(option === 'server_cursor') {
+          queryToolCtxRef.current.updateServerCursor({server_cursor: val});
+        }
+      };
+      changingExecOptionRef.current = true;
+      setChangingExecOption(true);
+      setOption(newVal);
+      sendExecOption(option, newVal)
+        .catch((error)=>{
+          setOption(oldVal);
+          // Save the reverted value so the tab state matches the server.
+          if(isSaveToolDataEnabled?.('sqleditor')) {
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+          }
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+            checkTransaction: true,
+          });
+        })
+        .finally(()=>{
+          changingExecOptionRef.current = false;
+          setChangingExecOption(false);
+        });
+      if(isSaveToolDataEnabled?.('sqleditor')) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+      }
+      return;
+    }
     setCheckedMenuItems((prev)=>{
       let newVal = !prev[e.value];
-      if (e.value === 'server_cursor') {
-        queryToolCtx.updateServerCursor({server_cursor: newVal});
-      }
-      if(e.value === 'auto_commit' || e.value === 'auto_rollback' || e.value === 'server_cursor') {
-        changeQueryExecutionSettings(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
-          .catch ((error)=>{
-            newVal = prev[e.value];
-            eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
-              checkTransaction: true,
-            });
-          });
-      }
-
       let otherVars = {};
       if (e.value === 'explain_serialize_binary' && newVal) {
         otherVars = { 'explain_serialize_text': false };
@@ -153,7 +252,70 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         ...otherVars,
       };
     });
+    if(isSaveToolDataEnabled?.('sqleditor')) {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+    }
   }, []);
+
+  useEffect(()=>{
+    checkedMenuItemsRef.current = checkedMenuItems;
+    if(queryToolCtx.toolbarOptionsRef) {
+      queryToolCtx.toolbarOptionsRef.current = checkedMenuItems;
+    }
+  }, [checkedMenuItems]);
+
+  useEffect(()=>{
+    const restoreToolbarOptions = (options)=>{
+      let restored = getRestorableToolbarOptions(options);
+      // Setting execute options on a View/Edit Data transaction would
+      // promote it to a Query Tool, so only restore them for a Query Tool.
+      if(!queryToolCtx.params.is_query_tool) {
+        restored = _.omit(restored, EXECUTION_OPTIONS);
+      }
+      const changedExecOptions = getChangedExecutionOptions(restored, checkedMenuItemsRef.current);
+      if(!_.isEmpty(changedExecOptions)) {
+        if('server_cursor' in changedExecOptions) {
+          queryToolCtx.updateServerCursor({server_cursor: changedExecOptions.server_cursor});
+        }
+        setPendingExecOptions((prev)=>({...prev, ...changedExecOptions}));
+      }
+      setCheckedMenuItems((prev)=>({...prev, ...restored}));
+    };
+    eventBus.registerListener(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, restoreToolbarOptions);
+    return ()=>{
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.RESTORE_TOOLBAR_OPTIONS, restoreToolbarOptions);
+    };
+  }, []);
+
+  useEffect(()=>{
+    /* The transaction is created with the preference values, so restored
+       execute options can only be applied once it exists. */
+    if(_.isEmpty(pendingExecOptions) || !queryToolConnCtx.connected) {
+      return;
+    }
+    setPendingExecOptions(null);
+    const options = Object.entries(pendingExecOptions);
+    setApplyingExecOptions((prev)=>prev + options.length);
+    options.forEach(([option, value])=>{
+      sendExecOption(option, value)
+        .catch((error)=>{
+          setCheckedMenuItems((prev)=>({...prev, [option]: !value}));
+          if(option === 'server_cursor') {
+            queryToolCtx.updateServerCursor({server_cursor: !value});
+          }
+          // Save the reverted value so it is not restored again next time.
+          if(isSaveToolDataEnabled?.('sqleditor')) {
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+          }
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+            checkTransaction: true,
+          });
+        })
+        .finally(()=>{
+          setApplyingExecOptions((prev)=>prev - 1);
+        });
+    });
+  }, [pendingExecOptions, queryToolConnCtx.connected]);
 
   const openFile = useCallback(()=>{
     confirmDiscard(()=>{
@@ -307,6 +469,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'ROLLBACK;', {external: true});
   };
   const executeMacro = (m)=>{
+    /* Macros run through the same transaction, so they must wait for the
+       restored execute options too. */
+    if(execOptionsGated) return;
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, null, m.sql);
   };
   const onLimitChange=(e)=>{
@@ -413,7 +578,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     {
       shortcut: queryToolPref.btn_execute_options,
       options: {
-        callback: ()=>{!buttonsDisabled['execute-options']&&toggleMenu({
+        callback: ()=>{!isButtonDisabled('execute-options')&&toggleMenu({
           currentTarget: {name: 'menu-autocommit'}
         });}
       }
@@ -421,25 +586,25 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     {
       shortcut: queryToolPref.execute_script,
       options: {
-        callback: ()=>{!buttonsDisabled['execute']&&executeScript();}
+        callback: ()=>{!isButtonDisabled('execute')&&executeScript();}
       }
     },
     {
       shortcut: queryToolPref.execute_cursor,
       options: {
-        callback: ()=>{!buttonsDisabled['execute']&&executeCursor();}
+        callback: ()=>{!isButtonDisabled('execute')&&executeCursor();}
       }
     },
     {
       shortcut: queryToolPref.explain_query,
       options: {
-        callback: (e)=>{e.preventDefault(); !buttonsDisabled['explain']&&explain();}
+        callback: (e)=>{e.preventDefault(); !isButtonDisabled('explain')&&explain();}
       }
     },
     {
       shortcut: queryToolPref.explain_analyze_query,
       options: {
-        callback: ()=>{!buttonsDisabled['explain_analyse']&&explainAnalyse();}
+        callback: ()=>{!isButtonDisabled('explain_analyse')&&explainAnalyse();}
       }
     },
     {
@@ -556,18 +721,18 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           <PgIconButton title={gettext('Cancel query')} icon={<StopRoundedIcon style={{height: 'unset'}} />}
             onClick={cancelQuery} disabled={buttonsDisabled['cancel']} shortcut={queryToolPref.btn_cancel_query} />
           <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
-            onClick={executeScript} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_script}/>
+            onClick={executeScript} disabled={isButtonDisabled('execute')} shortcut={queryToolPref.execute_script}/>
           <PgIconButton title={gettext('Execute query')} icon={<ExecuteQueryIcon style={{padding: '2px 5px'}} />}
-            onClick={executeCursor} disabled={buttonsDisabled['execute'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.execute_cursor}/>
+            onClick={executeCursor} disabled={isButtonDisabled('execute') || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.execute_cursor}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-autocommit" ref={autoCommitMenuRef} shortcut={queryToolPref.btn_execute_options}
-            onClick={toggleMenu} disabled={buttonsDisabled['execute-options']}/>
+            onClick={toggleMenu} disabled={isButtonDisabled('execute-options')}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Explain')} icon={<ExplicitRoundedIcon />}
-            onClick={()=>{explain();}} disabled={buttonsDisabled['explain'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_query}/>
+            onClick={()=>{explain();}} disabled={isButtonDisabled('explain') || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_query}/>
           <PgIconButton title={gettext('Explain Analyze')} icon={<AssessmentRoundedIcon />}
-            onClick={()=>{explainAnalyse();}} disabled={buttonsDisabled['explain_analyse'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_analyze_query}/>
+            onClick={()=>{explainAnalyse();}} disabled={isButtonDisabled('explain_analyse') || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_analyze_query}/>
           <PgIconButton title={gettext('Explain Settings')} icon={<KeyboardArrowDownIcon />} splitButton
             disabled={!queryToolCtx.params.is_query_tool}
             name="menu-explain" ref={explainMenuRef} onClick={toggleMenu} />
@@ -581,7 +746,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Macros')} icon={
             <><FormatListNumberedRoundedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
-          disabled={!queryToolCtx.params.is_query_tool} name="menu-macros" ref={macrosMenuRef} onClick={toggleMenu} />
+          disabled={!queryToolCtx.params.is_query_tool || execOptionsGated} name="menu-macros" ref={macrosMenuRef} onClick={toggleMenu} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
@@ -647,11 +812,11 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         label={gettext('Execute Options Menu')}
       >
         <PgMenuItem hasCheck value="auto_commit" checked={checkedMenuItems['auto_commit']}
-          onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
+          disabled={changingExecOption} onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
         <PgMenuItem hasCheck value="auto_rollback" checked={checkedMenuItems['auto_rollback']}
-          onClick={checkMenuClick}>{gettext('Auto rollback on error?')}</PgMenuItem>
+          disabled={changingExecOption} onClick={checkMenuClick}>{gettext('Auto rollback on error?')}</PgMenuItem>
         <PgMenuItem hasCheck value="server_cursor" checked={checkedMenuItems['server_cursor']}
-          onClick={checkMenuClick}>{gettext('Use server cursor?')}</PgMenuItem>
+          disabled={changingExecOption} onClick={checkMenuClick}>{gettext('Use server cursor?')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={explainMenuRef}

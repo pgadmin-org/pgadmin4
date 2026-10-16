@@ -8,11 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
-import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { MappedCellControl } from '../../../pgadmin/static/js/SchemaView/MappedControl';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView, withBrowser} from '../genericFunctions';
 
 /* Used to check collection mode */
 class MockSchema extends BaseUISchema {
@@ -91,69 +93,44 @@ describe('VariableSchema', ()=>{
   });
 
   it('value options follow a change of enum variable name', async ()=>{
-    const varOptions = [{
+    /* The grid keeps the value cell's select mounted when the name changes,
+    so render the value cell on its own and re-render it with the props the
+    grid builds for each name. Driving the select menus through the full
+    grid was flaky: the grid focuses a new row from a timer and re-renders
+    on validation, and a focus change between opening a menu and clicking
+    an option closes the menu, so the click is lost. */
+    const schemaObj = new VariableSchema([{
       value: 'sslmode', label: 'sslmode', vartype: 'enum',
       enumvals: ['prefer', 'require'],
     }, {
       value: 'sslnegotiation', label: 'sslnegotiation', vartype: 'enum',
       enumvals: ['postgres', 'direct'],
-    }];
-    let varCollObj = new MockSchema(
-      ()=>new VariableSchema(varOptions, null, null, ['name', 'value'])
-    );
-    const {ctrl, user} = await getCreateView(varCollObj);
-    await user.click(ctrl.container.querySelector('[data-test="add-row"]'));
+    }], null, null, ['name', 'value']);
+    /* The variable types are loaded asynchronously by the constructor. */
+    await waitFor(()=>expect(Object.keys(schemaObj.varTypes)).toHaveLength(2));
 
-    const rowSelects = ()=>ctrl.container.querySelectorAll(
-      '[data-test="data-table-row"] input[role="combobox"]'
-    );
-    const hiddenVal = (name)=>ctrl.container.querySelector(
-      `[data-test="data-table-row"] input[type="hidden"][name="${name}"]`
+    const valueField = schemaObj.fields.find((f)=>f.id == 'value');
+    const cellProps = (name, value)=>({
+      ...valueField, ...valueField.cell({name}),
+      visible: true, value: value, onCellChange: ()=>{/* Not needed */},
+    });
+    const ValueCell = withBrowser(MappedCellControl);
+    const hiddenVal = ()=>ctrl.container.querySelector(
+      'input[type="hidden"][name="value"]'
     )?.value;
-    /* Allow for slow CI runners re-rendering the grid row. */
-    const waitOpts = {timeout: 10000};
-    /* Open the select from the keyboard and wait for an option to show. A
-    freshly mounted select can drop the first open request on slow runners,
-    so it is re-sent, a bounded number of times, whilst no menu is shown. */
-    const findOption = async (selectIdx, label)=>{
-      for(let attempt = 0; attempt < 5; attempt++) {
-        if(screen.queryAllByRole('option').length == 0) {
-          const input = rowSelects()[selectIdx];
-          fireEvent.focus(input);
-          fireEvent.keyDown(input, {key: 'ArrowDown', keyCode: 40});
-        }
-        try {
-          return await screen.findByRole('option', {name: label}, {timeout: 2000});
-        } catch {
-          /* Not shown yet; retry. */
-        }
-      }
-      throw new Error(`Option '${label}' not shown; options: ${
-        screen.queryAllByRole('option').map((o)=>o.textContent).join(', ')
-      }`);
-    };
-    const closeMenu = ()=>{
-      fireEvent.keyDown(rowSelects()[1], {key: 'Escape', keyCode: 27});
-    };
-    const pickName = async (label)=>{
-      await user.click(await findOption(0, label));
-      await waitFor(()=>{
-        expect(hiddenVal('name')).toBe(label);
-        expect(hiddenVal('value')).toBe('');
-        expect(rowSelects().length).toBe(2);
-      }, waitOpts);
-    };
 
-    await waitFor(()=>expect(rowSelects().length).toBeGreaterThan(0), waitOpts);
-    await pickName('sslmode');
-    expect(await findOption(1, 'require')).toBeInTheDocument();
-    closeMenu();
-    await waitFor(()=>expect(screen.queryAllByRole('option')).toHaveLength(0), waitOpts);
+    const ctrl = render(<ValueCell {...cellProps('sslmode', 'require')}/>);
+    await waitFor(()=>expect(hiddenVal()).toBe('require'));
 
-    await pickName('sslnegotiation');
-    expect(await findOption(1, 'direct')).toBeInTheDocument();
+    /* A value is only shown if it is one of the loaded options, so this
+    fails if the options are not reloaded for the new name. */
+    ctrl.rerender(<ValueCell {...cellProps('sslnegotiation', 'direct')}/>);
+    await waitFor(()=>expect(hiddenVal()).toBe('direct'));
+
+    await userEvent.setup().click(ctrl.container.querySelector('input[role="combobox"]'));
+    expect(await screen.findByRole('option', {name: 'postgres'})).toBeInTheDocument();
     expect(screen.queryByRole('option', {name: 'require'})).not.toBeInTheDocument();
-  }, 30000);
+  });
 
   it('variable collection', async ()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);

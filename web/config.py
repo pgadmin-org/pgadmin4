@@ -1033,6 +1033,12 @@ MFA_SUPPORTED_METHODS = ["email", "authenticator"]
 # e.g.  pgAdmin 4 - Verification Code
 MFA_EMAIL_SUBJECT = None
 
+# Number of wrong entries allowed for one emailed verification code. Once
+# this many wrong codes have been entered, the code is discarded and the user
+# must send a new one. Values below 1 are treated as 1 (the code is discarded
+# after the first wrong entry), so the number of attempts is never unlimited.
+MFA_EMAIL_CODE_MAX_ATTEMPTS = 5
+
 ##########################################################################
 # PSQL tool settings
 ##########################################################################
