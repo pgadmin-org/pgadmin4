@@ -278,3 +278,153 @@ class OpenAIResponsesStreamToolCallTestCase(BaseTestGenerator):
         actual = [(tc.id, tc.name, tc.arguments)
                   for tc in result.tool_calls]
         self.assertEqual(actual, self.expected)
+
+
+class OpenAICompatibleServerTestCase(BaseTestGenerator):
+    """Adaptive behaviour for OpenAI-compatible servers and reasoning models.
+
+    Each scenario drives chat() with _make_request replaced by a script of
+    canned responses/errors, and asserts on the requests that would have
+    been sent. No network access is involved.
+    """
+
+    scenarios = [
+        ('Unsupported max_completion_tokens falls back to max_tokens', dict(
+            kind='token_fallback',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
+        ('Token parameter fallback is remembered for new clients', dict(
+            kind='token_cache',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
+        ('Custom host is never rerouted to the Responses API', dict(
+            kind='no_reroute',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
+        ('Reasoning exhaustion retries with a tripled budget', dict(
+            kind='reasoning_retry',
+            api_url='http://localhost:1234/v1',
+            model='deepseek-r1',
+        )),
+        ('Lookalike hostname is treated as a custom provider', dict(
+            kind='host_check',
+            api_url='https://api.openai.com.evil.example/v1',
+            model='gpt-4o',
+        )),
+    ]
+
+    def runTest(self):
+        from pgadmin.llm.providers import openai as openai_module
+        from pgadmin.llm.client import LLMClientError
+        from pgadmin.llm.models import LLMError, Message
+
+        openai_module._token_param_cache.clear()
+
+        def make_client():
+            return OpenAIClient(
+                api_key='test-key', model=self.model, api_url=self.api_url)
+
+        def ok_response(content='hello'):
+            return {
+                'choices': [{'message': {'content': content},
+                             'finish_reason': 'stop'}],
+                'usage': {'prompt_tokens': 1, 'completion_tokens': 1,
+                          'total_tokens': 2},
+                'model': self.model,
+            }
+
+        if self.kind == 'token_fallback':
+            client = make_client()
+            sent_params = []
+
+            def fake_request(payload):
+                sent_params.append(
+                    'max_completion_tokens'
+                    if 'max_completion_tokens' in payload else 'max_tokens')
+                if sent_params[-1] == 'max_completion_tokens':
+                    raise LLMClientError(LLMError(
+                        message="Unsupported parameter: "
+                                "'max_completion_tokens' is not supported "
+                                "with this model.",
+                        code='unsupported_parameter',
+                        provider='openai'))
+                return ok_response()
+
+            client._make_request = fake_request
+            result = client.chat([Message(role='user', content='hi')])
+            self.assertEqual(
+                sent_params, ['max_completion_tokens', 'max_tokens'])
+            self.assertEqual(result.content, 'hello')
+
+        elif self.kind == 'token_cache':
+            # A new client for the same (server, model) pair must use the
+            # remembered parameter immediately, without another rejection.
+            openai_module._token_param_cache[
+                ('http://localhost:1234/v1', 'glm-4')] = 'max_tokens'
+            client = make_client()
+            sent_params = []
+
+            def fake_request(payload):
+                sent_params.append(
+                    'max_completion_tokens'
+                    if 'max_completion_tokens' in payload else 'max_tokens')
+                return ok_response()
+
+            client._make_request = fake_request
+            result = client.chat([Message(role='user', content='hi')])
+            self.assertEqual(sent_params, ['max_tokens'])
+            self.assertEqual(result.content, 'hello')
+
+        elif self.kind == 'no_reroute':
+            client = make_client()
+            urls = []
+
+            def fake_request(payload):
+                urls.append(client._api_url)
+                raise LLMClientError(LLMError(
+                    message='This model requires the v1/responses endpoint',
+                    code='bad_request', provider='openai'))
+
+            client._make_request = fake_request
+            with self.assertRaises(LLMClientError):
+                client.chat([Message(role='user', content='hi')])
+            self.assertEqual(
+                urls, ['http://localhost:1234/v1/chat/completions'])
+
+        elif self.kind == 'reasoning_retry':
+            client = make_client()
+            budgets = []
+
+            def fake_request(payload):
+                budgets.append(
+                    payload.get('max_completion_tokens') or
+                    payload.get('max_tokens'))
+                if len(budgets) == 1:
+                    return {
+                        'choices': [{'message': {
+                            'content': '',
+                            'reasoning_content': 'thinking...'},
+                            'finish_reason': 'length'}],
+                        'usage': {'prompt_tokens': 1, 'completion_tokens': 100,
+                                  'total_tokens': 101},
+                        'model': self.model,
+                    }
+                return ok_response('done')
+
+            client._make_request = fake_request
+            result = client.chat(
+                [Message(role='user', content='hi')], max_tokens=1000)
+            self.assertEqual(budgets, [1000, 3000])
+            self.assertEqual(result.content, 'done')
+
+        elif self.kind == 'host_check':
+            # A hostname merely starting with api.openai.com must not be
+            # treated as the official endpoint.
+            self.assertTrue(make_client().is_available())
+            self.assertFalse(
+                OpenAIClient(api_key=None, model='gpt-4o').is_available())
+
+        openai_module._token_param_cache.clear()
