@@ -95,6 +95,9 @@ class IndexSqlOptionsTestCase(BaseTestGenerator):
         pg_cursor = connection.cursor()
         pg_cursor.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
         pg_cursor.execute(
+            'ALTER TABLE {0}.{1} ADD COLUMN search_vector tsvector'.format(
+                self.schema_name, self.table_name))
+        pg_cursor.execute(
             'CREATE INDEX {0} ON {1}.{2} USING GIST '
             '({3} gist_trgm_ops(siglen=32))'.format(
                 self.opclass_index_name, self.schema_name, self.table_name,
@@ -105,17 +108,25 @@ class IndexSqlOptionsTestCase(BaseTestGenerator):
             'vacuum_cleanup_index_scale_factor=0.5)'.format(
                 self.relopts_index_name, self.schema_name, self.table_name,
                 self.column_name))
+        self.default_opclass_index_name = "idx_def_opclass_options_%s" % (
+            str(uuid.uuid4())[1:8])
+        pg_cursor.execute(
+            'CREATE INDEX {0} ON {1}.{2} USING GIST '
+            '(search_vector tsvector_ops(siglen=64))'.format(
+                self.default_opclass_index_name, self.schema_name,
+                self.table_name))
         pg_cursor.execute(
             "SELECT cls.oid FROM pg_catalog.pg_class cls "
             "JOIN pg_catalog.pg_namespace nsp ON nsp.oid = cls.relnamespace "
             "WHERE cls.relkind = 'i' AND nsp.nspname = %s "
             "AND cls.relname = ANY(%s)",
             (self.schema_name,
-             [self.opclass_index_name, self.relopts_index_name]))
+             [self.opclass_index_name, self.relopts_index_name,
+              self.default_opclass_index_name]))
         self.index_ids = [row[0] for row in pg_cursor.fetchall()]
         utils.set_isolation_level(connection, old_isolation_level)
         connection.close()
-        if len(self.index_ids) != 2:
+        if len(self.index_ids) != 3:
             raise Exception("Could not create the test indexes.")
 
     def get_index_sql(self, index_id):
@@ -147,6 +158,14 @@ class IndexSqlOptionsTestCase(BaseTestGenerator):
             self.assertIsNotNone(opclass_sql)
             self.assertIsNotNone(relopts_sql)
             self.assertIn('gist_trgm_ops(siglen=32)', opclass_sql)
+            # Options on the default opclass still require the opclass
+            # name to be rendered, otherwise the options are lost.
+            default_sql = None
+            for idx, sql in sql_by_index.items():
+                if self.default_opclass_index_name in sql:
+                    default_sql = sql
+            self.assertIsNotNone(default_sql)
+            self.assertIn('tsvector_ops(siglen=64)', default_sql)
             self.assertIn('fillfactor=70', relopts_sql)
             self.assertIn('vacuum_cleanup_index_scale_factor=0.5',
                           relopts_sql)

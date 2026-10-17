@@ -132,9 +132,13 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
         # Preserve any opclass options (e.g. gist_trgm_ops(siglen=32)) in
         # the generated SQL. Only when creating SQL: the properties
         # dialog expects the plain opclass name. #9625
-        if mode == 'create' and row['opcname'] and row['attoptions']:
-            cols_data['op_class'] = "{0}({1})".format(
-                row['opcname'], ', '.join(row['attoptions']))
+        if mode == 'create' and row['attoptions']:
+            # A default opclass has opcname=None, but the name must still
+            # be rendered for the options to survive.
+            opclass = row['opcname'] or row['opclassname']
+            if opclass:
+                cols_data['op_class'] = "{0}({1})".format(
+                    opclass, ', '.join(row['attoptions']))
 
         # ASC/DESC and NULLS works only with btree indexes
         if 'amname' in data and data['amname'] == 'btree':
