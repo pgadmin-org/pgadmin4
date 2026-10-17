@@ -11,6 +11,7 @@ SELECT
     pg_catalog.pg_get_indexdef(i.indexrelid, i.attnum, true) as attdef,
     CASE WHEN pg_catalog.pg_get_indexdef(i.indexrelid, i.attnum, true) = pg_catalog.quote_ident(a.attname) THEN FALSE ELSE TRUE END AS is_exp,
     a.attstattarget as statistics,
+    a.attoptions AS attoptions,
     CASE WHEN (o.opcdefault = FALSE) THEN o.opcname ELSE null END AS opcname,
     op.oprname AS oprname,
 	CASE WHEN length(nspc.nspname::text) > 0 AND length(coll.collname::text) > 0  THEN
