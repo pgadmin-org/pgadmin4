@@ -14,6 +14,7 @@ import socket
 import ssl
 import urllib.request
 import urllib.error
+from urllib.parse import urlparse
 from collections.abc import Generator
 from typing import Optional, Union
 import uuid
@@ -38,6 +39,13 @@ from pgadmin.llm.utils import urlopen_no_redirect
 
 # Default model if none specified
 DEFAULT_MODEL = 'gpt-4o'
+
+# Cache of which token-limit parameter a given (base URL, model) pair
+# accepts. OpenAI-compatible servers vary: newer OpenAI models expect
+# 'max_completion_tokens' while many third-party servers still expect
+# 'max_tokens'. Populated adaptively when a server rejects a parameter,
+# so the fallback is remembered across new client instances.
+_token_param_cache = {}
 
 # Default API base URL
 DEFAULT_API_BASE_URL = 'https://api.openai.com/v1'
@@ -86,6 +94,12 @@ class OpenAIClient(LLMClient):
         return f'{self._base_url}/chat/completions'
 
     @property
+    def _is_default_host(self) -> bool:
+        """True when talking to the official OpenAI API host."""
+        return (urlparse(self._base_url).netloc.lower() ==
+                urlparse(DEFAULT_API_BASE_URL).netloc.lower())
+
+    @property
     def provider_name(self) -> str:
         return 'openai'
 
@@ -97,9 +111,7 @@ class OpenAIClient(LLMClient):
         """Check if the client is properly configured."""
         # API key is required for the default OpenAI endpoint, but optional
         # for custom endpoints (e.g., local LLM servers).
-        if self._base_url.rstrip('/').startswith(
-            DEFAULT_API_BASE_URL.rstrip('/')
-        ):
+        if self._is_default_host:
             return bool(self._api_key)
         return True
 
@@ -132,6 +144,34 @@ class OpenAIClient(LLMClient):
                 messages, tools, system_prompt, max_tokens
             )
 
+        # Reasoning models may consume the whole output budget on internal
+        # reasoning; retry once with a tripled budget.
+        if not kwargs.get('_reasoning_retried'):
+            try:
+                return self._chat_completions(
+                    messages, tools, system_prompt, max_tokens
+                )
+            except LLMClientError as e:
+                if e.error.code == 'reasoning_budget':
+                    kwargs['_reasoning_retried'] = True
+                    return self.chat(
+                        messages, tools, system_prompt,
+                        max_tokens * 3, **kwargs
+                    )
+                raise
+        return self._chat_completions(
+            messages, tools, system_prompt, max_tokens
+        )
+
+    def _chat_completions(
+        self,
+        messages: list[Message],
+        tools: Optional[list[Tool]],
+        system_prompt: Optional[str],
+        max_tokens: int
+    ) -> LLMResponse:
+        """Send a chat request using the Chat Completions API."""
+
         # Try Chat Completions API first
         payload = self._build_chat_payload(
             messages, tools, system_prompt, max_tokens
@@ -141,6 +181,17 @@ class OpenAIClient(LLMClient):
             response_data = self._make_request(payload)
             return self._parse_response(response_data)
         except LLMClientError as e:
+            if self._is_unsupported_token_param_error(e):
+                # The server rejected 'max_completion_tokens'. Remember the
+                # fallback for this (server, model) pair and retry once
+                # with the legacy 'max_tokens' parameter.
+                _token_param_cache[(self._base_url, self._model)] = \
+                    'max_tokens'
+                payload = self._build_chat_payload(
+                    messages, tools, system_prompt, max_tokens
+                )
+                response_data = self._make_request(payload)
+                return self._parse_response(response_data)
             if self._should_use_responses_api(e):
                 self._use_responses_api = True
                 return self._chat_responses(
@@ -178,10 +229,27 @@ class OpenAIClient(LLMClient):
 
     def _should_use_responses_api(self, error: LLMClientError) -> bool:
         """Check if the error indicates we should use the Responses API."""
+        # Only the official OpenAI API has a /responses endpoint to fall
+        # back to; never reroute requests for custom (OpenAI-compatible)
+        # servers.
+        if not self._is_default_host:
+            return False
         error_msg = str(error).lower()
         return ('v1/responses' in error_msg or
                 'not supported in the v1/chat/completions' in error_msg or
                 'not a chat model' in error_msg)
+
+    def _is_unsupported_token_param_error(
+        self, error: LLMClientError
+    ) -> bool:
+        """Check if the server rejected 'max_completion_tokens'."""
+        error_msg = str(error).lower()
+        return 'max_completion_tokens' in error_msg and (
+            'unsupported' in error_msg or
+            'unrecognized' in error_msg or
+            'unknown' in error_msg or
+            'not supported' in error_msg
+        )
 
     def _build_chat_payload(
         self,
@@ -199,10 +267,13 @@ class OpenAIClient(LLMClient):
                 'content': system_prompt
             })
 
+        token_param = _token_param_cache.get(
+            (self._base_url, self._model), 'max_completion_tokens'
+        )
         payload = {
             'model': self._model,
             'messages': converted_messages,
-            'max_completion_tokens': max_tokens,
+            token_param: max_tokens,
         }
 
         if tools:
@@ -493,6 +564,19 @@ class OpenAIClient(LLMClient):
         # Check for problematic responses
         if not content and not tool_calls:
             if stop_reason == StopReason.MAX_TOKENS:
+                if message.get('reasoning_content'):
+                    # A reasoning model exhausted its output budget on
+                    # internal reasoning before producing any visible
+                    # content.
+                    raise LLMClientError(LLMError(
+                        message=f'Reasoning model {self._model} used its '
+                                f'entire output budget on internal '
+                                f'reasoning and returned no content. '
+                                f'Increase the maximum tokens setting.',
+                        code='reasoning_budget',
+                        provider=self.provider_name,
+                        retryable=True
+                    ))
                 self._raise_max_tokens_error(usage.input_tokens)
             elif finish_reason and finish_reason not in ('stop', 'tool_calls'):
                 raise LLMClientError(LLMError(
