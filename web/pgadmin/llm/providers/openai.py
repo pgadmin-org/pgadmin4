@@ -718,7 +718,21 @@ class OpenAIClient(LLMClient):
         try:
             yield from self._process_stream(payload)
         except LLMClientError as e:
-            if self._should_use_responses_api(e):
+            if self._is_unsupported_token_param_error(e):
+                # The server rejected 'max_completion_tokens'. Remember the
+                # fallback for this (server, model) pair and retry once
+                # with the legacy 'max_tokens' parameter. The rejection
+                # happens when the connection is opened, before any chunk
+                # has been yielded.
+                _token_param_cache[(self._base_url, self._model)] = \
+                    'max_tokens'
+                payload = self._build_chat_payload(
+                    messages, tools, system_prompt, max_tokens
+                )
+                payload['stream'] = True
+                payload['stream_options'] = {'include_usage': True}
+                yield from self._process_stream(payload)
+            elif self._should_use_responses_api(e):
                 self._use_responses_api = True
                 payload = self._build_responses_payload(
                     messages, tools, system_prompt, max_tokens

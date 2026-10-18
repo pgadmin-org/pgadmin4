@@ -80,8 +80,9 @@ Select your preferred LLM provider from the dropdown:
    OpenAI-compatible endpoint, including Docker Model Runner and other local
    inference servers. pgAdmin automatically adapts to providers that expect
    the legacy ``max_tokens`` parameter instead of
-   ``max_completion_tokens``. Custom API URLs must also be listed in the
-   ``ALLOWED_LLM_API_URLS`` configuration setting.
+   ``max_completion_tokens``. When the ``ALLOWED_LLM_API_URLS`` configuration
+   setting is non-empty, custom API URLs must match one of its entries; an
+   empty list permits any URL.
 
 After configuring your provider, click *Save* to apply the changes.
 

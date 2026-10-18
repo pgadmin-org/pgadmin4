@@ -314,6 +314,11 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             api_url='https://api.openai.com.evil.example/v1',
             model='gpt-4o',
         )),
+        ('Streaming falls back to max_tokens on unsupported parameter', dict(
+            kind='stream_token_fallback',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
     ]
 
     def runTest(self):
@@ -419,6 +424,31 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
                 [Message(role='user', content='hi')], max_tokens=1000)
             self.assertEqual(budgets, [1000, 3000])
             self.assertEqual(result.content, 'done')
+
+        elif self.kind == 'stream_token_fallback':
+            client = make_client()
+            sent_params = []
+
+            def fake_process_stream(payload):
+                sent_params.append(
+                    'max_completion_tokens'
+                    if 'max_completion_tokens' in payload else 'max_tokens')
+                self.assertTrue(payload.get('stream'))
+                if sent_params[-1] == 'max_completion_tokens':
+                    raise LLMClientError(LLMError(
+                        message="Unsupported parameter: "
+                                "'max_completion_tokens' is not supported "
+                                "with this model.",
+                        code='unsupported_parameter',
+                        provider='openai'))
+                yield 'chunk'
+
+            client._process_stream = fake_process_stream
+            chunks = list(client.chat_stream(
+                [Message(role='user', content='hi')]))
+            self.assertEqual(
+                sent_params, ['max_completion_tokens', 'max_tokens'])
+            self.assertEqual(chunks, ['chunk'])
 
         elif self.kind == 'host_check':
             # A hostname merely starting with api.openai.com must not be
