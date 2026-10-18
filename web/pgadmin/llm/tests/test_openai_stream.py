@@ -329,6 +329,11 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             api_url='http://localhost:1234/v1',
             model='deepseek-r1',
         )),
+        ('Streaming falls back on structured error fields', dict(
+            kind='stream_structured_fallback',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
     ]
 
     def runTest(self):
@@ -511,6 +516,51 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
                     [Message(role='user', content='hi')], max_tokens=1000)
             self.assertEqual(budgets, [1000, 3000])
             self.assertEqual(ctx.exception.error.code, 'reasoning_budget')
+
+        elif self.kind == 'stream_structured_fallback':
+            # Exercises the real _process_stream HTTP error branch: a
+            # streaming server reporting the rejection only through
+            # structured error fields must still trigger the fallback.
+            import io
+            import urllib.error
+
+            client = make_client()
+            calls = []
+            body = json.dumps({'error': {
+                'message': 'Invalid request',
+                'code': 'unsupported_parameter',
+                'param': 'max_completion_tokens'}}).encode('utf-8')
+
+            def fake_urlopen(request, timeout=None, context=None):
+                payload = json.loads(request.data.decode('utf-8'))
+                calls.append(
+                    'max_completion_tokens'
+                    if 'max_completion_tokens' in payload else 'max_tokens')
+                if calls[-1] == 'max_completion_tokens':
+                    raise urllib.error.HTTPError(
+                        request.full_url, 400, 'Bad Request', {},
+                        io.BytesIO(body))
+                stream = _FakeStream([
+                    _sse({'choices': [{'index': 0, 'delta': {
+                        'role': 'assistant', 'content': 'hi'}}]}),
+                    _sse({'choices': [{'index': 0,
+                                       'finish_reason': 'stop',
+                                       'delta': {}}]}),
+                    'data: [DONE]',
+                ])
+                stream.close = lambda: None
+                return stream
+
+            original = openai_module.urlopen_no_redirect
+            openai_module.urlopen_no_redirect = fake_urlopen
+            try:
+                chunks = list(client.chat_stream(
+                    [Message(role='user', content='hi')]))
+            finally:
+                openai_module.urlopen_no_redirect = original
+            self.assertEqual(
+                calls, ['max_completion_tokens', 'max_tokens'])
+            self.assertIn('hi', chunks)
 
         elif self.kind == 'host_check':
             # A hostname merely starting with api.openai.com must not be

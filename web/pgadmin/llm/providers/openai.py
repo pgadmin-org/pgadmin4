@@ -429,6 +429,35 @@ class OpenAIClient(LLMClient):
             for tool in tools
         ]
 
+    def _http_error_to_llm_error(
+        self, e: urllib.error.HTTPError
+    ) -> LLMError:
+        """Convert an HTTP error response to an LLMError.
+
+        Preserves the structured error details (code, parameter) so
+        callers can react to them - e.g. the unsupported-parameter
+        fallback - even when the message itself is generic.
+        """
+        error_body = e.read().decode('utf-8')
+        try:
+            error_data = json.loads(error_body)
+            error_info = error_data.get('error', {})
+            error_msg = error_info.get('message', str(e))
+            if error_info.get('param'):
+                error_msg = (f"{error_msg} "
+                             f"(parameter: '{error_info['param']}')")
+            error_code = error_info.get('code') or str(e.code)
+        except json.JSONDecodeError:
+            error_msg = error_body or str(e)
+            error_code = str(e.code)
+
+        return LLMError(
+            message=error_msg,
+            code=error_code,
+            provider=self.provider_name,
+            retryable=e.code in (429, 500, 502, 503, 504)
+        )
+
     def _make_request(self, payload: dict) -> dict:
         """Make an HTTP request to the OpenAI API."""
         headers = {
@@ -451,28 +480,7 @@ class OpenAIClient(LLMClient):
             ) as response:
                 return json.loads(response.read().decode('utf-8'))
         except urllib.error.HTTPError as e:
-            error_body = e.read().decode('utf-8')
-            try:
-                error_data = json.loads(error_body)
-                error_info = error_data.get('error', {})
-                error_msg = error_info.get('message', str(e))
-                # Preserve the structured error details so callers can
-                # react to them (e.g. the unsupported-parameter fallback)
-                # even when the message itself is generic.
-                if error_info.get('param'):
-                    error_msg = (f"{error_msg} "
-                                 f"(parameter: '{error_info['param']}')")
-                error_code = error_info.get('code') or str(e.code)
-            except json.JSONDecodeError:
-                error_msg = error_body or str(e)
-                error_code = str(e.code)
-
-            raise LLMClientError(LLMError(
-                message=error_msg,
-                code=error_code,
-                provider=self.provider_name,
-                retryable=e.code in (429, 500, 502, 503, 504)
-            ))
+            raise LLMClientError(self._http_error_to_llm_error(e))
         except urllib.error.URLError as e:
             raise LLMClientError(LLMError(
                 message=f"Connection error: {e.reason}",
@@ -780,20 +788,7 @@ class OpenAIClient(LLMClient):
                 request, timeout=120, context=SSL_CONTEXT
             )
         except urllib.error.HTTPError as e:
-            error_body = e.read().decode('utf-8')
-            try:
-                error_data = json.loads(error_body)
-                error_msg = error_data.get(
-                    'error', {}
-                ).get('message', str(e))
-            except json.JSONDecodeError:
-                error_msg = error_body or str(e)
-            raise LLMClientError(LLMError(
-                message=error_msg,
-                code=str(e.code),
-                provider=self.provider_name,
-                retryable=e.code in (429, 500, 502, 503, 504)
-            ))
+            raise LLMClientError(self._http_error_to_llm_error(e))
         except urllib.error.URLError as e:
             raise LLMClientError(LLMError(
                 message=f"Connection error: {e.reason}",
