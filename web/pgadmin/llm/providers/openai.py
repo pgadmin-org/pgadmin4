@@ -439,21 +439,30 @@ class OpenAIClient(LLMClient):
         fallback - even when the message itself is generic.
         """
         error_body = e.read().decode('utf-8')
+        error_msg = None
+        error_code = None
         try:
             error_data = json.loads(error_body)
-            error_info = error_data.get('error', {})
-            error_msg = error_info.get('message', str(e))
-            if error_info.get('param'):
-                error_msg = (f"{error_msg} "
-                             f"(parameter: '{error_info['param']}')")
-            error_code = error_info.get('code') or str(e.code)
         except json.JSONDecodeError:
+            error_data = None
+        # Compatible servers do not all use OpenAI's error shape; only
+        # read the structured fields when they are actually mappings.
+        if isinstance(error_data, dict):
+            error_info = error_data.get('error')
+            if isinstance(error_info, dict):
+                error_msg = error_info.get('message')
+                if error_info.get('param'):
+                    error_msg = (f"{error_msg or e!s} "
+                                 f"(parameter: '{error_info['param']}')")
+                error_code = error_info.get('code')
+            elif isinstance(error_info, str):
+                error_msg = error_info
+        if not error_msg:
             error_msg = error_body or str(e)
-            error_code = str(e.code)
 
         return LLMError(
             message=error_msg,
-            code=error_code,
+            code=error_code or str(e.code),
             provider=self.provider_name,
             retryable=e.code in (429, 500, 502, 503, 504)
         )
@@ -582,7 +591,10 @@ class OpenAIClient(LLMClient):
         # Check for problematic responses
         if not content and not tool_calls:
             if stop_reason == StopReason.MAX_TOKENS:
-                if message.get('reasoning_content'):
+                details = usage_data.get('completion_tokens_details') or {}
+                reasoning_tokens = details.get('reasoning_tokens', 0)
+                if (message.get('reasoning_content') or
+                        reasoning_tokens > 0):
                     # A reasoning model exhausted its output budget on
                     # internal reasoning before producing any visible
                     # content.
@@ -736,7 +748,17 @@ class OpenAIClient(LLMClient):
         try:
             yield from self._process_stream(payload)
         except LLMClientError as e:
-            if self._is_unsupported_token_param_error(e):
+            if (e.error.code == 'reasoning_budget' and
+                    not kwargs.get('_reasoning_retried')):
+                # Retry once with a tripled budget. The error is raised
+                # after the stream ends without content, so nothing has
+                # been yielded to the caller yet.
+                kwargs['_reasoning_retried'] = True
+                yield from self.chat_stream(
+                    messages, tools, system_prompt,
+                    max_tokens * 3, temperature, **kwargs
+                )
+            elif self._is_unsupported_token_param_error(e):
                 # The server rejected 'max_completion_tokens'. Remember the
                 # fallback for this (server, model) pair and retry once
                 # with the legacy 'max_tokens' parameter. The rejection
@@ -826,6 +848,8 @@ class OpenAIClient(LLMClient):
         finish_reason = None
         model_name = self._model
         usage = Usage()
+        reasoning_seen = False
+        reasoning_tokens = 0
 
         while True:
             line_bytes = response.readline()
@@ -856,6 +880,8 @@ class OpenAIClient(LLMClient):
                     output_tokens=u.get('completion_tokens', 0),
                     total_tokens=u.get('total_tokens', 0)
                 )
+                details = u.get('completion_tokens_details') or {}
+                reasoning_tokens = details.get('reasoning_tokens', 0)
 
             if 'model' in data:
                 model_name = data['model']
@@ -869,6 +895,11 @@ class OpenAIClient(LLMClient):
 
             if choice.get('finish_reason'):
                 finish_reason = choice['finish_reason']
+
+            # Reasoning content is tracked (for budget-exhaustion
+            # detection) but not yielded as visible content.
+            if delta.get('reasoning_content'):
+                reasoning_seen = True
 
             # Text content
             text_chunk = delta.get('content')
@@ -923,6 +954,20 @@ class OpenAIClient(LLMClient):
         )
 
         if not content and not tool_calls:
+            if finish_reason == 'length' and (
+                reasoning_seen or reasoning_tokens > 0
+            ):
+                # A reasoning model exhausted its output budget on
+                # internal reasoning before producing any content.
+                raise LLMClientError(LLMError(
+                    message=f'Reasoning model {self._model} used its '
+                            f'entire output budget on internal '
+                            f'reasoning and returned no content. '
+                            f'Increase the maximum tokens setting.',
+                    code='reasoning_budget',
+                    provider=self.provider_name,
+                    retryable=True
+                ))
             raise LLMClientError(LLMError(
                 message='No response content returned from API',
                 provider=self.provider_name,

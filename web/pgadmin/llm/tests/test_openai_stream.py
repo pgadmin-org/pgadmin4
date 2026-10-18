@@ -334,6 +334,21 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             api_url='http://localhost:1234/v1',
             model='glm-4',
         )),
+        ('Malformed error bodies still produce a usable error', dict(
+            kind='malformed_error_body',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
+        ('Reasoning exhaustion detected from usage details', dict(
+            kind='reasoning_from_usage',
+            api_url='http://localhost:1234/v1',
+            model='o3-mini',
+        )),
+        ('Streaming reasoning exhaustion retries with tripled budget', dict(
+            kind='stream_reasoning_retry',
+            api_url='http://localhost:1234/v1',
+            model='deepseek-r1',
+        )),
     ]
 
     def runTest(self):
@@ -560,6 +575,111 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
                 openai_module.urlopen_no_redirect = original
             self.assertEqual(
                 calls, ['max_completion_tokens', 'max_tokens'])
+            self.assertIn('hi', chunks)
+
+        elif self.kind == 'malformed_error_body':
+            import io
+            import urllib.error
+
+            client = make_client()
+
+            def http_error(body):
+                return urllib.error.HTTPError(
+                    'http://localhost:1234/v1/chat/completions',
+                    400, 'Bad Request', {},
+                    io.BytesIO(body.encode('utf-8')))
+
+            # error as a plain string
+            err = client._http_error_to_llm_error(
+                http_error('{"error": "invalid model"}'))
+            self.assertEqual(err.message, 'invalid model')
+            self.assertEqual(err.code, '400')
+
+            # JSON null body
+            err = client._http_error_to_llm_error(http_error('null'))
+            self.assertEqual(err.message, 'null')
+
+            # non-JSON body
+            err = client._http_error_to_llm_error(http_error('oops'))
+            self.assertEqual(err.message, 'oops')
+
+        elif self.kind == 'reasoning_from_usage':
+            # No reasoning_content in the message; the reasoning spend is
+            # only visible in usage.completion_tokens_details.
+            client = make_client()
+            budgets = []
+
+            def fake_request(payload):
+                budgets.append(
+                    payload.get('max_completion_tokens') or
+                    payload.get('max_tokens'))
+                if len(budgets) == 1:
+                    return {
+                        'choices': [{'message': {'content': ''},
+                                     'finish_reason': 'length'}],
+                        'usage': {
+                            'prompt_tokens': 1, 'completion_tokens': 100,
+                            'total_tokens': 101,
+                            'completion_tokens_details': {
+                                'reasoning_tokens': 100}},
+                        'model': self.model,
+                    }
+                return ok_response('done')
+
+            client._make_request = fake_request
+            result = client.chat(
+                [Message(role='user', content='hi')], max_tokens=1000)
+            self.assertEqual(budgets, [1000, 3000])
+            self.assertEqual(result.content, 'done')
+
+        elif self.kind == 'stream_reasoning_retry':
+            import io
+            import urllib.error  # noqa: F401
+
+            client = make_client()
+            budgets = []
+
+            exhausted_stream = _FakeStream([
+                _sse({'choices': [{'index': 0, 'delta': {
+                    'role': 'assistant',
+                    'reasoning_content': 'thinking...'}}]}),
+                _sse({'choices': [{'index': 0,
+                                   'finish_reason': 'length',
+                                   'delta': {}}],
+                      'usage': {
+                          'prompt_tokens': 1, 'completion_tokens': 100,
+                          'total_tokens': 101,
+                          'completion_tokens_details': {
+                              'reasoning_tokens': 100}}}),
+                'data: [DONE]',
+            ])
+            ok_stream = _FakeStream([
+                _sse({'choices': [{'index': 0, 'delta': {
+                    'role': 'assistant', 'content': 'hi'}}]}),
+                _sse({'choices': [{'index': 0,
+                                   'finish_reason': 'stop',
+                                   'delta': {}}]}),
+                'data: [DONE]',
+            ])
+            for s in (exhausted_stream, ok_stream):
+                s.close = lambda: None
+            streams = [exhausted_stream, ok_stream]
+
+            def fake_urlopen(request, timeout=None, context=None):
+                payload = json.loads(request.data.decode('utf-8'))
+                budgets.append(
+                    payload.get('max_completion_tokens') or
+                    payload.get('max_tokens'))
+                return streams[len(budgets) - 1]
+
+            original = openai_module.urlopen_no_redirect
+            openai_module.urlopen_no_redirect = fake_urlopen
+            try:
+                chunks = list(client.chat_stream(
+                    [Message(role='user', content='hi')], max_tokens=1000))
+            finally:
+                openai_module.urlopen_no_redirect = original
+            self.assertEqual(budgets, [1000, 3000])
             self.assertIn('hi', chunks)
 
         elif self.kind == 'host_check':
