@@ -319,6 +319,16 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             api_url='http://localhost:1234/v1',
             model='glm-4',
         )),
+        ('Structured error fields still trigger the fallback', dict(
+            kind='structured_token_fallback',
+            api_url='http://localhost:1234/v1',
+            model='glm-4',
+        )),
+        ('Reasoning budget is retried only once', dict(
+            kind='reasoning_retry_once',
+            api_url='http://localhost:1234/v1',
+            model='deepseek-r1',
+        )),
     ]
 
     def runTest(self):
@@ -449,6 +459,58 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             self.assertEqual(
                 sent_params, ['max_completion_tokens', 'max_tokens'])
             self.assertEqual(chunks, ['chunk'])
+
+        elif self.kind == 'structured_token_fallback':
+            # A server reporting the rejection only through structured
+            # error fields (generic message, code + parameter) must still
+            # trigger the fallback.
+            client = make_client()
+            sent_params = []
+
+            def fake_request(payload):
+                sent_params.append(
+                    'max_completion_tokens'
+                    if 'max_completion_tokens' in payload else 'max_tokens')
+                if sent_params[-1] == 'max_completion_tokens':
+                    raise LLMClientError(LLMError(
+                        message="Invalid request (parameter: "
+                                "'max_completion_tokens')",
+                        code='unsupported_parameter',
+                        provider='openai'))
+                return ok_response()
+
+            client._make_request = fake_request
+            result = client.chat([Message(role='user', content='hi')])
+            self.assertEqual(
+                sent_params, ['max_completion_tokens', 'max_tokens'])
+            self.assertEqual(result.content, 'hello')
+
+        elif self.kind == 'reasoning_retry_once':
+            # The tripled-budget retry happens once; a second exhausted
+            # response surfaces the budget error to the caller.
+            client = make_client()
+            budgets = []
+
+            def fake_request(payload):
+                budgets.append(
+                    payload.get('max_completion_tokens') or
+                    payload.get('max_tokens'))
+                return {
+                    'choices': [{'message': {
+                        'content': '',
+                        'reasoning_content': 'thinking...'},
+                        'finish_reason': 'length'}],
+                    'usage': {'prompt_tokens': 1, 'completion_tokens': 100,
+                              'total_tokens': 101},
+                    'model': self.model,
+                }
+
+            client._make_request = fake_request
+            with self.assertRaises(LLMClientError) as ctx:
+                client.chat(
+                    [Message(role='user', content='hi')], max_tokens=1000)
+            self.assertEqual(budgets, [1000, 3000])
+            self.assertEqual(ctx.exception.error.code, 'reasoning_budget')
 
         elif self.kind == 'host_check':
             # A hostname merely starting with api.openai.com must not be

@@ -248,7 +248,8 @@ class OpenAIClient(LLMClient):
             'unsupported' in error_msg or
             'unrecognized' in error_msg or
             'unknown' in error_msg or
-            'not supported' in error_msg
+            'not supported' in error_msg or
+            getattr(error.error, 'code', None) == 'unsupported_parameter'
         )
 
     def _build_chat_payload(
@@ -453,13 +454,22 @@ class OpenAIClient(LLMClient):
             error_body = e.read().decode('utf-8')
             try:
                 error_data = json.loads(error_body)
-                error_msg = error_data.get('error', {}).get('message', str(e))
+                error_info = error_data.get('error', {})
+                error_msg = error_info.get('message', str(e))
+                # Preserve the structured error details so callers can
+                # react to them (e.g. the unsupported-parameter fallback)
+                # even when the message itself is generic.
+                if error_info.get('param'):
+                    error_msg = (f"{error_msg} "
+                                 f"(parameter: '{error_info['param']}')")
+                error_code = error_info.get('code') or str(e.code)
             except json.JSONDecodeError:
                 error_msg = error_body or str(e)
+                error_code = str(e.code)
 
             raise LLMClientError(LLMError(
                 message=error_msg,
-                code=str(e.code),
+                code=error_code,
                 provider=self.provider_name,
                 retryable=e.code in (429, 500, 502, 503, 504)
             ))
