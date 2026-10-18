@@ -96,8 +96,10 @@ class OpenAIClient(LLMClient):
     @property
     def _is_default_host(self) -> bool:
         """True when talking to the official OpenAI API host."""
-        return (urlparse(self._base_url).netloc.lower() ==
-                urlparse(DEFAULT_API_BASE_URL).netloc.lower())
+        # Compare hostnames, not authorities: an explicit default port
+        # (https://api.openai.com:443/v1) is still the official endpoint.
+        return (urlparse(self._base_url).hostname ==
+                urlparse(DEFAULT_API_BASE_URL).hostname)
 
     @property
     def provider_name(self) -> str:

@@ -349,6 +349,11 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             api_url='http://localhost:1234/v1',
             model='deepseek-r1',
         )),
+        ('Default host with explicit port is still the official API', dict(
+            kind='explicit_port_host',
+            api_url='https://api.openai.com:443/v1',
+            model='gpt-4o',
+        )),
     ]
 
     def runTest(self):
@@ -681,6 +686,19 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
                 openai_module.urlopen_no_redirect = original
             self.assertEqual(budgets, [1000, 3000])
             self.assertIn('hi', chunks)
+
+        elif self.kind == 'explicit_port_host':
+            # An explicit default port must not make the official endpoint
+            # look like a custom provider.
+            self.assertTrue(make_client()._is_default_host)
+            self.assertFalse(
+                OpenAIClient(api_key=None, model='gpt-4o',
+                             api_url=self.api_url).is_available())
+            client = make_client()
+            err = LLMClientError(LLMError(
+                message='use v1/responses endpoint',
+                code='bad', provider='openai'))
+            self.assertTrue(client._should_use_responses_api(err))
 
         elif self.kind == 'host_check':
             # A hostname merely starting with api.openai.com must not be
