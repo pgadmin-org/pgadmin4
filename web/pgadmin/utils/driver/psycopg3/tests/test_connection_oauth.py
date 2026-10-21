@@ -20,6 +20,8 @@ from flask import Flask
 from pgadmin.utils import pg_oauth2
 import pgadmin.utils.driver.psycopg3.connection as connection_module
 
+ISSUER = 'https://keycloak.example.test/realms/postgres'
+
 
 class _OAuthUnitTestMixin:
     """Run each OAuth unit test as a separate regression scenario."""
@@ -76,6 +78,7 @@ class TestOAuthConnection(
 
         manager.connection_params = {
             'oauth_pgadmin_token_mode': mode,
+            'oauth_issuer': ISSUER,
         }
 
         if client_id is not None:
@@ -264,7 +267,7 @@ class TestOAuthConnection(
             'is available. Sign in to pgAdmin again.'
         )
 
-        get_token.assert_called_once_with('direct', None, None, None)
+        get_token.assert_called_once_with('direct', None, None, ISSUER)
         psycopg_connect.assert_not_called()
         connection._initialize.assert_not_called()
         manager.stop_ssh_tunnel.assert_called_once_with()
@@ -317,7 +320,7 @@ class TestOAuthConnection(
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         install_hook.assert_called_once_with()
-        get_token.assert_called_once_with('direct', None, None, None)
+        get_token.assert_called_once_with('direct', None, None, ISSUER)
         psycopg_connect.assert_called_once()
 
         connection._initialize.assert_called_once()
@@ -378,7 +381,7 @@ class TestOAuthConnection(
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         install_hook.assert_called_once_with()
-        get_token.assert_called_once_with('direct', None, None, None)
+        get_token.assert_called_once_with('direct', None, None, ISSUER)
         async_connect.assert_awaited_once()
 
         connection._initialize.assert_called_once()
@@ -436,7 +439,7 @@ class TestOAuthConnection(
         self.assertIn('test connection failure', message)
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
-        get_token.assert_called_once_with('direct', None, None, None)
+        get_token.assert_called_once_with('direct', None, None, ISSUER)
         psycopg_connect.assert_called_once()
         connection._initialize.assert_not_called()
         self.assertIsNone(connection.conn)
@@ -496,7 +499,7 @@ class TestOAuthConnection(
             'exchange',
             'postgres-cluster',
             'openid',
-            None,
+            ISSUER,
         )
         psycopg_connect.assert_called_once()
         connection._initialize.assert_called_once()
@@ -602,7 +605,7 @@ class TestOAuthConnection(
             'exchange',
             'postgres-cluster',
             'openid',
-            None,
+            ISSUER,
         )
         psycopg_connect.assert_called_once_with(
             manager.create_connection_string.return_value,
@@ -658,7 +661,7 @@ class TestOAuthConnection(
             'exchange',
             'postgres-cluster',
             'openid',
-            None,
+            ISSUER,
         )
         psycopg_connect.assert_called_once_with(
             manager.create_connection_string.return_value,
@@ -737,10 +740,7 @@ class TestOAuthConnection(
                     'exchange',
                     'postgres-cluster',
                     'openid',
-                    None,
+                    ISSUER,
                 )
                 psycopg_connect.assert_not_called()
 
-
-if __name__ == '__main__':
-    unittest.main()

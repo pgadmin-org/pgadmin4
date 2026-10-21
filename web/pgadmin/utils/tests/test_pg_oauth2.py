@@ -12,6 +12,7 @@
 import base64
 import ctypes
 import unittest
+from urllib.parse import parse_qs
 from unittest.mock import MagicMock, Mock, patch, create_autospec
 from pgadmin.utils.route import BaseTestGenerator
 
@@ -377,6 +378,20 @@ class TestGetPgAdminOAuthToken(
             SECRET_KEY='pg-oauth2-unit-test-secret',
             TESTING=True,
         )
+
+        self.oauth_source = Mock()
+        self.oauth_source.oauth2_config = {
+            self.PROVIDER_NAME: {
+                "OAUTH2_CLIENT_AUTH_METHOD": "client_secret",
+            },
+        }
+
+        source_patch = patch(
+            "pgadmin.authenticate.get_auth_sources",
+            return_value=self.oauth_source,
+        )
+        source_patch.start()
+        self.addCleanup(source_patch.stop)
 
     def _make_oauth_client(self):
         return create_autospec(
@@ -809,6 +824,78 @@ class TestGetPgAdminOAuthToken(
             grant_type='refresh_token',
             refresh_token='original-refresh-token',
         )
+    
+    @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
+    def case_workload_identity_refresh_is_explicitly_rejected(
+            self, get_oauth_client):
+        self.oauth_source.oauth2_config[self.PROVIDER_NAME][
+            'OAUTH2_CLIENT_AUTH_METHOD'
+        ] = 'workload_identity'
+
+        oauth_client = self._make_oauth_client()
+        get_oauth_client.return_value = oauth_client
+
+        # Cover both expiration and the early-refresh window.
+        for expires_at in (999, 1020):
+            with self.subTest(expires_at=expires_at):
+                original_token = {
+                    'access_token': 'existing-access-token',
+                    'refresh_token': 'existing-refresh-token',
+                    'expires_at': expires_at,
+                    'token_type': 'Bearer',
+                }
+
+                with self.app.test_request_context('/'):
+                    session['oauth2_provider'] = self.PROVIDER_NAME
+                    session['oauth2_token'] = dict(original_token)
+                    session.modified = False
+
+                    with patch(
+                            'pgadmin.utils.pg_oauth2.time.time',
+                            return_value=1000):
+                        with self.assertRaisesRegex(
+                                pg_oauth2.OAuthRefreshUnsupportedError,
+                                'Automatic OAuth token refresh for '
+                                'workload-identity login is not supported'):
+                            pg_oauth2._get_pgadmin_oauth_token()
+
+                    self.assertEqual(
+                        session['oauth2_token'],
+                        original_token,
+                    )
+                    self.assertFalse(session.modified)
+
+        oauth_client.fetch_access_token.assert_not_called()
+
+    @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
+    def case_workload_identity_can_use_token_before_refresh_window(
+            self, get_oauth_client):
+        self.oauth_source.oauth2_config[self.PROVIDER_NAME][
+            'OAUTH2_CLIENT_AUTH_METHOD'
+        ] = 'workload_identity'
+
+        original_token = {
+            'access_token': 'current-access-token',
+            'refresh_token': 'existing-refresh-token',
+            'expires_at': 2000,
+            'token_type': 'Bearer',
+        }
+
+        with self.app.test_request_context('/'):
+            session['oauth2_provider'] = self.PROVIDER_NAME
+            session['oauth2_token'] = dict(original_token)
+            session.modified = False
+
+            with patch(
+                    'pgadmin.utils.pg_oauth2.time.time',
+                    return_value=1000):
+                result = pg_oauth2._get_pgadmin_oauth_token()
+
+            self.assertEqual(result, 'current-access-token')
+            self.assertEqual(session['oauth2_token'], original_token)
+            self.assertFalse(session.modified)
+
+        get_oauth_client.assert_not_called()
 
 
 class TestExchangeOAuthAccessToken(
@@ -949,6 +1036,93 @@ class TestExchangeOAuthAccessToken(
         self.assertTrue(kwargs['verify'])
         self.assertEqual(kwargs['timeout'], (5, 30))
         self.assertFalse(kwargs['allow_redirects'])
+
+    @patch('pgadmin.utils.pg_oauth2.requests.post')
+    @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
+    @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
+    def case_client_secret_post_authenticates_pgadmin_for_database_audience(
+            self, get_token, get_oauth_client, post):
+        oauth_client = self._make_oauth_client(self.TOKEN_ENDPOINT)
+        oauth_client.client_kwargs['token_endpoint_auth_method'] = (
+            'client_secret_post'
+        )
+        oauth_client.client_secret = 'secret+with&reserved=characters'
+        get_oauth_client.return_value = oauth_client
+        get_token.return_value = 'subject-access-token'
+        post.return_value = self._make_response(token_data={
+            'access_token': 'exchanged-access-token',
+            'token_type': 'Bearer',
+        })
+
+        with self.app.test_request_context('/'):
+            result = pg_oauth2.get_postgres_oauth_token(
+                'exchange', 'postgres-cluster', 'openid', ISSUER,
+            )
+
+        self.assertEqual(result, 'exchanged-access-token')
+        get_token.assert_called_once_with()
+        post.assert_called_once()
+        args, kwargs = post.call_args
+
+        # Exercise the real Authlib authentication object. Inspecting
+        # request_data alone would miss the credentials it adds later.
+        prepared = pg_oauth2.requests.Request(
+            'POST', args[0], data=kwargs['data'],
+            headers=kwargs['headers'], auth=kwargs['auth'],
+        ).prepare()
+        body = prepared.body
+        if isinstance(body, bytes):
+            body = body.decode('utf-8')
+        fields = parse_qs(body)
+
+        self.assertEqual(prepared.url, self.TOKEN_ENDPOINT)
+        self.assertNotIn('Authorization', prepared.headers)
+        self.assertEqual(fields['client_id'], ['pgadmin-client'])
+        self.assertEqual(
+            fields['client_secret'], [oauth_client.client_secret],
+        )
+        self.assertEqual(fields['audience'], ['postgres-cluster'])
+        self.assertEqual(fields['subject_token'], ['subject-access-token'])
+        self.assertEqual(fields['scope'], ['openid'])
+
+    @patch('pgadmin.utils.pg_oauth2.requests.post')
+    @patch('pgadmin.utils.pg_oauth2._refresh_pgadmin_oauth_token')
+    @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
+    @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
+    def _assert_exchange_auth_rejected(
+            self, oauth_client, message, get_client, get_token,
+            refresh_token, post):
+        get_client.return_value = oauth_client
+        get_token.return_value = 'subject-access-token'
+
+        with self.app.test_request_context('/'):
+            with self.assertRaisesRegex(
+                    pg_oauth2.OAuthTokenExchangeError, message):
+                pg_oauth2.get_postgres_oauth_token(
+                    'exchange', 'postgres-cluster', 'openid', ISSUER,
+                )
+
+        get_token.assert_not_called()
+        refresh_token.assert_not_called()
+        post.assert_not_called()
+
+    def case_exchange_rejects_missing_pgadmin_client_credentials(self):
+        for field in ('client_id', 'client_secret'):
+            for value in (None, '', '   '):
+                with self.subTest(field=field, value=value):
+                    oauth_client = self._make_oauth_client(self.TOKEN_ENDPOINT)
+                    setattr(oauth_client, field, value)
+                    self._assert_exchange_auth_rejected(
+                        oauth_client, 'client ID and client secret',
+                    )
+
+    def case_exchange_rejects_unauthenticated_client(self):
+        oauth_client = self._make_oauth_client(self.TOKEN_ENDPOINT)
+        oauth_client.client_kwargs['token_endpoint_auth_method'] = 'none'
+        self._assert_exchange_auth_rejected(
+            oauth_client,
+            'supports client_secret_basic or client_secret_post',
+        )
 
     @patch('pgadmin.utils.pg_oauth2.requests.post')
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
@@ -1282,18 +1456,71 @@ class TestGetPostgresOAuthToken(
         request_context.push()
         self.addCleanup(request_context.pop)
 
-        oauth_client = MagicMock()
-        oauth_client.client_kwargs = {'verify': True}
-        oauth_client.load_server_metadata.return_value = {
-            'issuer': ISSUER,
-        }
+        self.oauth_client = TestExchangeOAuthAccessToken._make_oauth_client(
+            TestExchangeOAuthAccessToken.TOKEN_ENDPOINT,
+        )
 
         client_patch = patch(
             'pgadmin.utils.pg_oauth2._get_current_oauth_client',
-            return_value=oauth_client,
+            return_value=self.oauth_client,
         )
         client_patch.start()
         self.addCleanup(client_patch.stop)
+
+    @patch('pgadmin.utils.pg_oauth2.requests.post')
+    @patch('pgadmin.utils.pg_oauth2._refresh_pgadmin_oauth_token')
+    @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
+    def _assert_issuer_rejected(
+            self, issuer, message, get_token, refresh_token, post):
+        get_token.return_value = 'subject-access-token'
+        post.return_value = TestExchangeOAuthAccessToken._make_response(
+            token_data={
+                'access_token': 'exchanged-access-token',
+                'token_type': 'Bearer',
+            },
+        )
+
+        # Leave issuer validation and the exchange implementation real.
+        for mode in ('direct', 'exchange'):
+            with self.subTest(mode=mode):
+                with self.assertRaisesRegex(
+                        pg_oauth2.OAuthTokenError, message):
+                    pg_oauth2.get_postgres_oauth_token(
+                        mode, 'postgres-cluster', 'openid', issuer,
+                    )
+
+        get_token.assert_not_called()
+        refresh_token.assert_not_called()
+        post.assert_not_called()
+
+    def case_missing_configured_issuer_is_rejected_before_token_access(self):
+        for issuer in (None, '', '   '):
+            with self.subTest(issuer=issuer):
+                self._assert_issuer_rejected(issuer, 'Set oauth_issuer')
+
+    def case_missing_metadata_issuer_is_rejected_before_token_access(self):
+        metadata = self.oauth_client.load_server_metadata.return_value
+        metadata.pop('issuer')
+        self._assert_issuer_rejected(ISSUER, 'metadata contains no issuer')
+
+        for issuer in (None, '', '   '):
+            with self.subTest(metadata_issuer=issuer):
+                metadata['issuer'] = issuer
+                self._assert_issuer_rejected(
+                    ISSUER, 'metadata contains no issuer',
+                )
+
+    def case_mismatched_issuer_is_rejected_before_token_access(self):
+        # A trailing slash is also a mismatch; issuer IDs are exact.
+        for issuer in ('https://other.example.test', ISSUER + '/'):
+            with self.subTest(issuer=issuer):
+                self._assert_issuer_rejected(issuer, 'does not match')
+
+    def case_unavailable_metadata_is_rejected_before_token_access(self):
+        self.oauth_client.load_server_metadata.side_effect = RuntimeError(
+            'OIDC metadata unavailable',
+        )
+        self._assert_issuer_rejected(ISSUER, 'Could not load')
 
     @patch(
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
@@ -1755,7 +1982,3 @@ class TestLibpqSelection(
             with self.subTest(version=version):
                 with self.assertRaisesRegex(RuntimeError, '18.x'):
                     pg_oauth2._check_oauth_libpq_version(version)
-
-
-if __name__ == '__main__':
-    unittest.main()

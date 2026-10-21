@@ -555,13 +555,12 @@ The OIDC provider must return a non-empty ``access_token`` with a
 pgAdmin login session. Each connection attempt using this mode performs a
 new exchange.
 
-TLS verification for exchange
+TLS verification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Exchange requires TLS certificate verification for the OIDC provider. Keep
-``OAUTH2_SSL_CERT_VERIFICATION`` enabled in its ``OAUTH2_CONFIG`` entry.
-Disabled verification is rejected before any token refresh, metadata request
-or exchange is attempted as part of preparing the database connection.
+Both direct and exchange modes require TLS certificate verification for
+the login OIDC provider. Enable ``OAUTH2_SSL_CERT_VERIFICATION`` in
+the ``OAUTH2_CONFIG``.
 
 For a private certificate authority, configure a trusted CA bundle for the
 OAuth client. The exchange request reuses the login OAuth client's
@@ -610,3 +609,11 @@ request. Reconnects made through such requests are supported. Independent
 background connection attempts without the user's request context are not;
 initiate reconnection through pgAdmin. Existing database connections do not
 require a new token exchange for each query.
+
+Automatic token refresh is not supported by this integration when the
+login OIDC provider uses
+``OAUTH2_CLIENT_AUTH_METHOD="workload_identity"``. Direct mode can use
+the login access token until it expires or enters the 30-second refresh
+window. Sign in to pgAdmin again before retrying the connection.
+Exchange mode requires client-secret authentication and does not support
+workload-identity clients.

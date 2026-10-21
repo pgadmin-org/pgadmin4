@@ -596,6 +596,10 @@ class OAuthRequestContextRequired(OAuthTokenError):
     """OAuth credentials require an authenticated request."""
 
 
+class OAuthRefreshUnsupportedError(OAuthTokenError):
+    """The configured client authentication cannot be used for refresh."""
+
+
 def _get_current_oauth_client() -> Any:
     """Return the OAuth client used for the current pgAdmin login."""
     if not has_request_context():
@@ -640,7 +644,8 @@ def _refresh_pgadmin_oauth_token(
     Refresh the pgAdmin OAuth access token.
 
     Return the refreshed access token, or None when refreshing is not
-    possible.
+    possible. Raise OAuthRefreshUnsupportedError when workload-identity
+    client authentication is configured.
     """
     refresh_token = token_data.get("refresh_token")
 
@@ -652,7 +657,30 @@ def _refresh_pgadmin_oauth_token(
         return None
 
     try:
+        from pgadmin.authenticate import get_auth_sources
+        from pgadmin.utils.constants import OAUTH2
+
         oauth_client = _get_current_oauth_client()
+
+        # Use this user's login provider, not process-global selection.
+        provider_name = session["oauth2_provider"]
+        oauth_source = get_auth_sources(OAUTH2)
+        provider = oauth_source.oauth2_config[provider_name]
+
+        client_auth_method = provider.get(
+            "OAUTH2_CLIENT_AUTH_METHOD",
+            "client_secret",
+        )
+
+        if (
+            isinstance(client_auth_method, str) and
+            client_auth_method.strip().lower() == "workload_identity"
+        ):
+            raise OAuthRefreshUnsupportedError(
+                "Automatic OAuth token refresh for workload-identity "
+                "login is not supported by this PostgreSQL integration. "
+                "Sign in to pgAdmin again, then retry the connection."
+            )
 
         refreshed_token = oauth_client.fetch_access_token(
             grant_type="refresh_token",
@@ -694,6 +722,9 @@ def _refresh_pgadmin_oauth_token(
 
         return access_token
 
+    except OAuthRefreshUnsupportedError:
+        # Preserve the actionable message for the connection error handler.
+        raise
     except OAuthTokenError as exc:
         logger.warning(
             "Cannot refresh the pgAdmin OAuth access token: %s",
@@ -925,6 +956,8 @@ def _exchange_oauth_access_token(
         )
 
     subject_token = _get_pgadmin_oauth_token()
+    logger.info("Original token:")
+    logger.info(subject_token)
 
     if (
         not isinstance(subject_token, str) or
@@ -1044,7 +1077,11 @@ def _exchange_oauth_access_token(
             "The OAuth token exchange response is not a bearer token."
         )
 
+    logger.info("Exchanged token:")
+    logger.info(access_token)
+
     return access_token
+
 
 def get_postgres_oauth_token(
     mode: str,
