@@ -32,7 +32,7 @@ GLUED_KEYWORD = re.compile(r'[^\s](ORDER BY|GROUP BY|LIMIT)\b')
 
 
 class StatisticsNodesTemplateTestCase(BaseTestGenerator):
-    """nodes.sql must be valid SQL for every combination it is rendered with."""
+    """nodes.sql must be valid SQL for every way it is rendered."""
 
     scenarios = [
         ('Listing the statistics of a schema (Object Explorer)',
