@@ -824,7 +824,7 @@ class TestGetPgAdminOAuthToken(
             grant_type='refresh_token',
             refresh_token='original-refresh-token',
         )
-    
+
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
     def case_workload_identity_refresh_is_explicitly_rejected(
             self, get_oauth_client):

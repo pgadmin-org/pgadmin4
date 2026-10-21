@@ -743,4 +743,3 @@ class TestOAuthConnection(
                     ISSUER,
                 )
                 psycopg_connect.assert_not_called()
-

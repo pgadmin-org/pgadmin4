@@ -956,8 +956,6 @@ def _exchange_oauth_access_token(
         )
 
     subject_token = _get_pgadmin_oauth_token()
-    logger.info("Original token:")
-    logger.info(subject_token)
 
     if (
         not isinstance(subject_token, str) or
@@ -1076,9 +1074,6 @@ def _exchange_oauth_access_token(
         raise OAuthTokenExchangeError(
             "The OAuth token exchange response is not a bearer token."
         )
-
-    logger.info("Exchanged token:")
-    logger.info(access_token)
 
     return access_token
 
