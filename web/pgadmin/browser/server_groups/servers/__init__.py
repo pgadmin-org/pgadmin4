@@ -143,6 +143,13 @@ def require_entra_ssl(params):
     return params
 
 
+def should_connect_server_on_create(data):
+    """Defer an Entra connection until this pgAdmin user signs in."""
+    return bool(data.get('connect_now')) and not (
+        data.get('auth_method') == 'entra' and
+        not session.get('entra_db_auth'))
+
+
 def passexec_api_fields(server, shared_server, is_non_owner):
     """The password exec fields for the properties response. In server
     mode the free-text command is never returned, and a non-owner sees
@@ -1553,7 +1560,7 @@ class ServerNode(PGChildNodeView):
             replication_type = None
             tunnel_password_saved = False
 
-            if 'connect_now' in data and data['connect_now']:
+            if should_connect_server_on_create(data):
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                     server.id)
                 manager.update(server)

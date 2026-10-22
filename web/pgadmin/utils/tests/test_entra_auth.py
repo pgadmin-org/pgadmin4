@@ -17,7 +17,8 @@ from flask import Flask, session
 
 from pgadmin.utils import entra_auth
 from pgadmin.browser.server_groups.servers import (
-    ServerModule, ServerNode, prepare_auth_method_data, require_entra_ssl)
+    ServerModule, ServerNode, prepare_auth_method_data, require_entra_ssl,
+    should_connect_server_on_create)
 from pgadmin.utils.driver.psycopg3 import connection as connection_module
 from pgadmin.utils.driver.psycopg3.connection import Connection
 from pgadmin.utils.driver.psycopg3.server_manager import ServerManager
@@ -254,3 +255,17 @@ class TestEntraServerSettings(unittest.TestCase):
     def test_entra_requires_verified_tls(self):
         self.assertEqual(require_entra_ssl({'sslmode': 'disable'})['sslmode'],
                          'verify-full')
+
+    def test_server_registration_defers_entra_connect_until_sign_in(self):
+        app = Flask(__name__)
+        app.secret_key = 'test-only'
+        with app.test_request_context():
+            self.assertFalse(should_connect_server_on_create({
+                'auth_method': 'entra', 'connect_now': True}))
+            session['entra_db_auth'] = {'record': 'signed-in-account'}
+            self.assertTrue(should_connect_server_on_create({
+                'auth_method': 'entra', 'connect_now': True}))
+            self.assertTrue(should_connect_server_on_create({
+                'auth_method': 'password', 'connect_now': True}))
+            self.assertFalse(should_connect_server_on_create({
+                'auth_method': 'entra', 'connect_now': False}))
