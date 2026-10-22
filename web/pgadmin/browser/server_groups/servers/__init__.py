@@ -139,6 +139,7 @@ def prepare_auth_method_data(data, server=None, is_non_owner=False):
 def require_entra_ssl(params):
     """A database access token must not be sent on a plaintext connection."""
     params = dict(params or {})
+    params.pop('passfile', None)
     params['sslmode'] = 'verify-full'
     return params
 

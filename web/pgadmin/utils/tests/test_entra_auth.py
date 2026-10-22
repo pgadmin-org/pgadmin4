@@ -256,6 +256,15 @@ class TestEntraServerSettings(unittest.TestCase):
         self.assertEqual(require_entra_ssl({'sslmode': 'disable'})['sslmode'],
                          'verify-full')
 
+    def test_entra_removes_password_file_from_connection_parameters(self):
+        params = {'passfile': '/tmp/pgpass', 'sslmode': 'disable'}
+
+        normalized = require_entra_ssl(params)
+
+        self.assertNotIn('passfile', normalized)
+        self.assertEqual(normalized['sslmode'], 'verify-full')
+        self.assertIn('passfile', params)
+
     def test_server_registration_defers_entra_connect_until_sign_in(self):
         app = Flask(__name__)
         app.secret_key = 'test-only'
