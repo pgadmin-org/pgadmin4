@@ -10,6 +10,9 @@ metadata:
   annotations: {{ merge .Values.ingress.annotations .Values.commonAnnotations | toYaml | nindent 4 }}
   {{- end }}
 spec:
+  {{- with .Values.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
   rules:
   - host: {{ tpl .Values.ingress.hostname . }}
     http:
