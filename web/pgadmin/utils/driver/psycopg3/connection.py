@@ -455,7 +455,7 @@ class Connection(BaseConnection):
         encpass = None
         is_update_password = True
 
-        if 'user' in kwargs and kwargs['password']:
+        if 'user' in kwargs and kwargs.get('password'):
             password = kwargs['password']
             kwargs.pop('password')
             is_update_password = False
@@ -498,6 +498,12 @@ class Connection(BaseConnection):
 
         manager = self.manager
 
+        if getattr(manager, 'auth_method', 'password') == 'entra':
+            # Ignore credentials supplied by a caller or a restored session.
+            kwargs.pop('password', None)
+            kwargs.pop('encpass', None)
+            self.password = None
+
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
             raise CryptKeyMissing()
@@ -534,6 +540,18 @@ class Connection(BaseConnection):
             encpass, manager, password, crypt_key)
         if is_error:
             return False, errmsg
+
+        if getattr(manager, 'auth_method', 'password') == 'entra':
+            # Tokens are short lived and belong to the current pgAdmin user.
+            # Never reuse an encrypted password from a restored connection.
+            from pgadmin.utils.entra_auth import EntraAuthenticationError
+            try:
+                password = manager.passexec.get()
+            except EntraAuthenticationError as error:
+                return False, str(error)
+            encpass = None
+            self.password = None
+            is_update_password = False
 
         # If no password credential is found then connect request might come
         # from Query tool, ViewData grid, debugger, etc. In that case, fall
