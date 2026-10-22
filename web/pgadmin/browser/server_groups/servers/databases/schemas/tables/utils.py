@@ -1304,28 +1304,43 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         return {c['name'] for c in other_columns}
 
-    def _get_inherit_prerequisites(self, tid, data):
+    def _get_inherit_changes(self, tid, data):
         """
-        Return the columns and CHECK constraints of the parents being added
-        to 'Inherited from' that the table does not have yet, as INHERIT
-        fails unless the table already has them.
+        Return what the table needs alongside INHERIT and NO INHERIT for the
+        parents added to and removed from 'Inherited from':
+        - inherit_columns, inherit_checks: the columns (or their NOT NULL)
+          and CHECK constraints of the added parents that the table does
+          not have yet, as INHERIT fails unless it has them.
+        - uninherit_checks: the CHECK constraints the table only has from
+          the removed parents, which NO INHERIT keeps on it.
         """
-        if not data.get('coll_inherits_added'):
-            return [], []
+        changes = {'inherit_columns': [], 'inherit_checks': [],
+                   'uninherit_checks': []}
 
-        result = []
-        for template in ['get_missing_inherited_columns.sql',
-                         'get_missing_inherited_checks.sql']:
+        def _fetch(template, **kwargs):
             sql = render_template(
                 "/".join([self.table_template_path, template]),
-                tid=tid, parents=data['coll_inherits_added'],
-                conn=self.conn)
+                tid=tid, conn=self.conn, **kwargs)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 raise ExecuteError(res)
-            result.append(res['rows'])
+            return res['rows']
 
-        return result
+        if data.get('coll_inherits_added'):
+            changes['inherit_columns'] = _fetch(
+                'get_inherit_prerequisite_columns.sql',
+                parents=data['coll_inherits_added'])
+            changes['inherit_checks'] = _fetch(
+                'get_inherit_prerequisite_checks.sql',
+                parents=data['coll_inherits_added'])
+
+        if data.get('coll_inherits_removed'):
+            changes['uninherit_checks'] = _fetch(
+                'get_uninherit_checks.sql',
+                removed=data['coll_inherits_removed'],
+                remaining=data.get('coll_inherits', []))
+
+        return changes
 
     def _check_for_column_delete(self, columns, data, column_sql,
                                  still_inherited=None):
@@ -1686,14 +1701,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             if self._unlogged_unsupported(old_data, self.manager.version):
                 data.pop('relpersistence', None)
 
-            inherit_columns, inherit_checks = \
-                self._get_inherit_prerequisites(tid, data)
-
             sql = render_template(
                 "/".join([self.table_template_path, self._UPDATE_SQL]),
                 o_data=old_data, data=data, conn=self.conn,
-                inherit_columns=inherit_columns,
-                inherit_checks=inherit_checks
+                **self._get_inherit_changes(tid, data)
             )
             # Removes training new lines
             sql = sql.strip('\n') + self.double_newline

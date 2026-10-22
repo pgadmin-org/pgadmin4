@@ -10,11 +10,13 @@
 """Changing 'Inherited from' on an existing table (#10657).
 
 Removing a parent removes its columns from the table dialog's Columns tab,
-but NO INHERIT keeps them on the child as local columns, so saving must
-drop them too, except a column that a remaining parent still provides.
+but NO INHERIT keeps them, and the parent's CHECK constraints, on the child
+as local ones, so saving must drop them too, except the ones that a
+remaining parent still provides.
 
-Adding a parent must first give the table the parent's columns and CHECK
-constraints that it does not have yet, as INHERIT fails without them.
+Adding a parent must first give the table the parent's columns (including
+generated ones), NOT NULL markings and CHECK constraints that it does not
+have yet, as INHERIT fails without them.
 
 Either way, the tree icon returned by the save must show the table's
 inheritance after the change, not before it.
@@ -93,6 +95,12 @@ class InheritsColumnsTestMixin:
             "WHERE attrelid = {0}::oid AND attnum > 0 "
             "AND NOT attisdropped ORDER BY attname".format(self.table_id))]
 
+    def _child_checks(self):
+        return [row[0] for row in self._query(
+            "SELECT conname FROM pg_catalog.pg_constraint "
+            "WHERE conrelid = {0}::oid AND contype = 'c' "
+            "ORDER BY conname".format(self.table_id))]
+
     def _qualified(self, name):
         return '{0}.{1}'.format(self.schema_name, name)
 
@@ -127,16 +135,32 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
                             'DROP COLUMN IF EXISTS a_name;'],
               unexpected_sql=['own_col'],
               expected_columns=['own_col'],
+              expected_checks=[],
               expected_icon='icon-table')),
         ('A column still provided by another parent is kept',
-         dict(parents=['id integer, a_name text',
-                       'id integer, b_name text'],
+         dict(parents=['id integer, a_name text, '
+                       'CONSTRAINT id_pos CHECK (id > 0), '
+                       'CONSTRAINT id_set CHECK (id <> 0)',
+                       'id integer, b_name text, '
+                       'CONSTRAINT id_set CHECK (id <> 0)'],
               child='own_col text',
-              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS a_name;'],
+              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS a_name;',
+                            'DROP CONSTRAINT IF EXISTS id_pos;'],
               unexpected_sql=['DROP COLUMN IF EXISTS id;', 'b_name',
-                              'own_col'],
+                              'own_col', 'id_set'],
               expected_columns=['id', 'b_name', 'own_col'],
+              expected_checks=['id_set'],
               expected_icon='icon-table-inherits')),
+        ('A CHECK constraint also defined on the table is dropped',
+         dict(parents=['id integer, CONSTRAINT id_pos CHECK (id > 0)'],
+              child='id integer, own_col text, '
+                    'CONSTRAINT id_pos CHECK (id > 0)',
+              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS id;',
+                            'DROP CONSTRAINT IF EXISTS id_pos;'],
+              unexpected_sql=['own_col'],
+              expected_columns=['own_col'],
+              expected_checks=[],
+              expected_icon='icon-table')),
     ]
 
     def _inherits_clause(self):
@@ -172,6 +196,7 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
         node = self._put(data)
         self.assertEqual(self._child_columns(),
                          sorted(self.expected_columns))
+        self.assertEqual(self._child_checks(), self.expected_checks)
         # The tree icon follows the inheritance after the save.
         self.assertEqual(node['icon'], self.expected_icon)
 
@@ -184,20 +209,28 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
     scenarios = [
         ('Missing columns and CHECK constraints are added before INHERIT',
          dict(parents=['id varchar(10) NOT NULL, code text COLLATE "C", '
+                       'g integer GENERATED ALWAYS AS (n * 2) STORED, '
+                       'n integer, '
                        'CONSTRAINT id_not_empty CHECK (id <> \'\')'],
               child='cid bigint',
               expected_sql=['ADD COLUMN id character varying(10) NOT NULL;',
                             'ADD COLUMN code text COLLATE pg_catalog."C";',
+                            'ADD COLUMN n integer;',
+                            'ADD COLUMN g integer '
+                            'GENERATED ALWAYS AS ((n * 2)) STORED;',
                             "ADD CONSTRAINT id_not_empty "
                             "CHECK (id::text <> ''::text);"],
               unexpected_sql=['cid'],
-              expected_columns=['cid', 'code', 'id'])),
+              expected_columns=['cid', 'code', 'g', 'id', 'n'],
+              expected_checks=['id_not_empty'])),
         ('Columns the table already has are not added again',
-         dict(parents=['id bigint, name text'],
+         dict(parents=['id bigint NOT NULL, name text'],
               child='id bigint, cid bigint',
-              expected_sql=['ADD COLUMN name text;'],
+              expected_sql=['ALTER COLUMN id SET NOT NULL;',
+                            'ADD COLUMN name text;'],
               unexpected_sql=['ADD COLUMN id', 'cid', 'ADD CONSTRAINT'],
-              expected_columns=['cid', 'id', 'name'])),
+              expected_columns=['cid', 'id', 'name'],
+              expected_checks=[])),
     ]
 
     def runTest(self):
@@ -228,10 +261,15 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
             self.assertLess(sql.index(text), sql.index('INHERIT ' + parent))
         for text in self.unexpected_sql:
             self.assertNotIn(text, sql)
+        # A generated column comes after the columns its expression uses.
+        if 'ADD COLUMN g ' in sql:
+            self.assertLess(sql.index('ADD COLUMN n '),
+                            sql.index('ADD COLUMN g '))
 
         node = self._put(data)
         self.assertEqual(self._child_columns(),
                          sorted(self.expected_columns))
+        self.assertEqual(self._child_checks(), self.expected_checks)
         self.assertEqual(node['icon'], 'icon-table-inherits')
         self.assertEqual(self._query(
             "SELECT inhparent FROM pg_catalog.pg_inherits "
