@@ -41,6 +41,30 @@ describe('ServerSchema', ()=>{
     await getPropertiesView(createSchemaObject(), getInitData);
   });
 
+  it('shows Entra authentication without password controls when enabled', ()=>{
+    const originalMode = pgAdmin.server_mode;
+    const originalEnabled = pgAdmin.entra_db_auth_enabled;
+    try {
+      pgAdmin.server_mode = 'True';
+      pgAdmin.entra_db_auth_enabled = true;
+      const schema = createSchemaObject();
+      const field = (id) => _.find(schema.fields, (f) => f.id == id);
+      expect(field('auth_method').visible({})).toBe(true);
+      expect(field('auth_method').options).toContainEqual({
+        label: 'Microsoft Entra ID', value: 'entra',
+      });
+      expect(field('password').visible({auth_method: 'entra'})).toBe(false);
+      expect(field('save_password').visible({auth_method: 'entra'})).toBe(false);
+      expect(field('entra_signin').visible({auth_method: 'entra'})).toBe(true);
+      expect(field('entra_signin').btnName).toBe('Sign in to Microsoft');
+      expect(field('auth_method').depChange({auth_method: 'entra'}))
+        .toMatchObject({password: null, save_password: false});
+    } finally {
+      pgAdmin.server_mode = originalMode;
+      pgAdmin.entra_db_auth_enabled = originalEnabled;
+    }
+  });
+
   it('validate', ()=>{
     let state = {};
     let setError = jest.fn();

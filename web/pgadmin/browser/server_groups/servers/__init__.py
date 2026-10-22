@@ -50,6 +50,8 @@ from pgadmin.utils import get_complete_file_path
 from pgadmin.settings.utils import with_object_filters
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query, get_server_group
+from pgadmin.utils.entra_auth import start_sign_in, \
+    EntraAuthenticationError
 
 
 # File-path keys in connection_params that are per-user and must
@@ -103,6 +105,42 @@ def prepare_passexec_data(data, is_non_owner):
                 'The password exec command is not one of those configured '
                 'by the administrator.')
     return data, None
+
+
+def prepare_auth_method_data(data, server=None, is_non_owner=False):
+    """Validate database authentication without accepting a hidden password."""
+    data = dict(data)
+    method = data.get('auth_method',
+                      server.auth_method if server is not None else 'password')
+    if method not in ('password', 'entra'):
+        return data, gettext('Unknown database authentication method.')
+    if is_non_owner:
+        data.pop('auth_method', None)
+        method = server.auth_method
+    if method == 'entra':
+        if not config.SERVER_MODE or not getattr(
+                config, 'ENTRA_DB_AUTH_ENABLED', False):
+            return data, gettext(
+                'Microsoft Entra database authentication is not enabled.')
+        if data.get('password') or data.get('save_password') or \
+                data.get('passexec_cmd') or \
+                data.get('passexec_name') not in (
+                    None, '', '__none__', '__inherit__'):
+            return data, gettext(
+                'Microsoft Entra authentication cannot use a saved '
+                'password or password exec command.')
+        data['password'] = None
+        data['save_password'] = False
+        data['passexec_name'] = None
+        data['passexec_expiration'] = None
+    return data, None
+
+
+def require_entra_ssl(params):
+    """A database access token must not be sent on a plaintext connection."""
+    params = dict(params or {})
+    params['sslmode'] = 'verify-full'
+    return params
 
 
 def passexec_api_fields(server, shared_server, is_non_owner):
@@ -509,7 +547,11 @@ class ServerModule(sg.ServerGroupPluginModule):
         ServerType.register_preferences()
 
     def get_exposed_url_endpoints(self):
-        return ['NODE-server.connect_id']
+        return [
+            'NODE-server.connect_id',
+            'NODE-server.entra_signin',
+            'NODE-server.entra_signin_code',
+        ]
 
     @staticmethod
     def create_shared_server(data, gid):
@@ -622,6 +664,29 @@ class ServerMenuItem(MenuItem):
 
 
 blueprint = ServerModule(__name__)
+
+
+@blueprint.route('/entra_signin/', methods=['POST'],
+                 endpoint='entra_signin')
+@pga_login_required
+def entra_signin():
+    """Authenticate this pgAdmin user to Azure PostgreSQL."""
+    try:
+        username = start_sign_in()
+    except EntraAuthenticationError as error:
+        return make_json_response(success=0, status=401, errormsg=str(error))
+    return make_json_response(success=1, data={'username': username})
+
+
+@blueprint.route('/entra_signin_code/', methods=['GET'],
+                 endpoint='entra_signin_code')
+@pga_login_required
+def entra_signin_code():
+    """Return the current device challenge without exposing a token."""
+    if not getattr(config, 'ENTRA_DB_AUTH_ENABLED', False):
+        return make_json_response(success=0, status=404)
+    code = session.get('entra_db_code')
+    return make_json_response(success=1 if code else 0, data=code)
 
 
 class ServerNode(PGChildNodeView):
@@ -957,6 +1022,7 @@ class ServerNode(PGChildNodeView):
             'port': 'port',
             'db': 'maintenance_db',
             'username': 'username',
+            'auth_method': 'auth_method',
             'password': 'password',
             'save_password': 'save_password',
             'gid': 'servergroup_id',
@@ -992,6 +1058,7 @@ class ServerNode(PGChildNodeView):
             'port': gettext('Port'),
             'db': gettext('Maintenance database'),
             'username': gettext('Username'),
+            'auth_method': gettext('Authentication'),
             'comment': gettext('Comments'),
             'role': gettext('Role'),
             'service': gettext('Service')
@@ -1007,11 +1074,21 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 success=0, status=400, errormsg=passexec_err)
 
+        data, auth_err = prepare_auth_method_data(
+            data, server, _is_non_owner(server))
+        if auth_err:
+            return make_json_response(
+                success=0, status=400, errormsg=auth_err)
+
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
+        if data.get('auth_method', server.auth_method) == 'entra':
+            data['connection_params'] = require_entra_ssl(
+                data.get('connection_params',
+                         (sharedserver or server).connection_params))
         self.update_tags(data, sharedserver or server,
                          server.tags if sharedserver else None)
 
@@ -1031,6 +1108,11 @@ class ServerNode(PGChildNodeView):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
         connected = conn.connected()
+
+        if connected and 'auth_method' in data and \
+                data['auth_method'] != server.auth_method:
+            return forbidden(errmsg=gettext(
+                'Disconnect the server before changing authentication.'))
 
         disallowed = self._server_modify_disallowed_when_connected(
             connected, data, disp_lbl)
@@ -1116,7 +1198,7 @@ class ServerNode(PGChildNodeView):
         # SharedServer — they enable command/SQL execution
         # or are owner-level concepts not on SharedServer.
         _owner_only_fields = frozenset({
-            'passexec_cmd',
+            'passexec_cmd', 'auth_method',
             'db_res', 'db_res_type',
         })
 
@@ -1128,7 +1210,8 @@ class ServerNode(PGChildNodeView):
                     continue
                 value = data[arg]
                 if arg == 'password':
-                    value = encrypt(data[arg], crypt_key)
+                    value = encrypt(data[arg], crypt_key) \
+                        if data[arg] is not None else None
                 # sqlite3 do not have boolean type so we need to
                 # convert it manually to integer.
                 # Only the owner may unshare — this deletes ALL
@@ -1277,6 +1360,7 @@ class ServerNode(PGChildNodeView):
             'shared_username': server.shared_username
             if config.SERVER_MODE else None,
             'username': server.username,
+            'auth_method': server.auth_method,
             'gid': str(server.servergroup_id),
             'group-name': sg.name if (sg and sg.name) else gettext('Servers'),
             'comment': server.comment,
@@ -1357,6 +1441,11 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 success=0, status=400, errormsg=passexec_err)
 
+        data, auth_err = prepare_auth_method_data(data)
+        if auth_err:
+            return make_json_response(
+                success=0, status=400, errormsg=auth_err)
+
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1402,6 +1491,8 @@ class ServerNode(PGChildNodeView):
 
         # To check ssl configuration
         _, connection_params = check_ssl_fields(connection_params)
+        if data.get('auth_method') == 'entra':
+            connection_params = require_entra_ssl(connection_params)
         # set the connection params again in the data
         if 'connection_params' in data:
             data['connection_params'] = connection_params
@@ -1423,6 +1514,7 @@ class ServerNode(PGChildNodeView):
                 port=data.get('port'),
                 maintenance_db=data.get('db', None),
                 username=data.get('username'),
+                auth_method=data.get('auth_method', 'password'),
                 save_password=1 if data.get('save_password', False) and
                 config.ALLOW_SAVE_PASSWORD else 0,
                 comment=data.get('comment', None),
@@ -1824,11 +1916,17 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
+            if server.auth_method == 'entra':
+                return self.get_response_for_password(
+                    server, 428, errmsg=str(e))
             return self.get_response_for_password(
                 server, 401, not server.save_password, prompt_tunnel_password,
                 getattr(e, 'message', str(e)))
 
         if not status:
+            if server.auth_method == 'entra':
+                return self.get_response_for_password(
+                    server, 428, errmsg=errmsg)
             current_app.logger.error(
                 "Could not connect to server(#{0}) - '{1}'.\nError: {2}"
                 .format(server.id, server.name, errmsg)
@@ -2273,6 +2371,18 @@ class ServerNode(PGChildNodeView):
 
     def get_response_for_password(self, server, status, prompt_password=False,
                                   prompt_tunnel_password=False, errmsg=None):
+
+        if server.auth_method == 'entra' and not prompt_tunnel_password:
+            return make_json_response(
+                success=0, status=status,
+                result={
+                    'sid': server.id,
+                    'server_label': server.name,
+                    'username': server.username,
+                    'errmsg': errmsg,
+                    'prompt_entra': True,
+                    'entra_signin_method': config.ENTRA_DB_SIGNIN_METHOD,
+                })
 
         if server.use_ssh_tunnel:
             data = {

@@ -45,6 +45,8 @@ define('pgadmin.browser.utils',
   pgAdmin['csrf_token_header'] = '{{ current_app.config.get('WTF_CSRF_HEADERS')[0] }}';
   pgAdmin['csrf_token'] = '{{ csrf_token() }}';
   pgAdmin['server_mode'] = '{{ current_app.config.get('SERVER_MODE') }}';
+  pgAdmin['entra_db_auth_enabled'] = {{ current_app.config.get('ENTRA_DB_AUTH_ENABLED', False)|tojson }};
+  pgAdmin['entra_db_signin_method'] = {{ current_app.config.get('ENTRA_DB_SIGNIN_METHOD', 'device_code')|tojson }};
 
   /* Get the inactivity related config */
   pgAdmin['user_inactivity_timeout'] = {{ current_app.config.get('USER_INACTIVITY_TIMEOUT') }};

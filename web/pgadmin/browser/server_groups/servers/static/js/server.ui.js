@@ -16,6 +16,8 @@ import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from 'sources/validators';
 import VariableSchema from './variable.ui';
 import { getRandomColor } from '../../../../../static/js/utils';
+import getApiInstance from '../../../../../static/js/api_instance';
+import url_for from 'sources/url_for';
 
 class TagsSchema extends BaseUISchema {
   get idAttribute() { return 'old_text'; }
@@ -217,6 +219,11 @@ export default class ServerSchema extends BaseUISchema {
       port: 5432,
       db: 'postgres',
       username: current_user.name,
+      auth_method: 'password',
+      entra_auth_code: '',
+      entra_auth_uri: '',
+      entra_auth_status: '',
+      entra_authenticating: false,
       role: null,
       connect_now: true,
       password: undefined,
@@ -412,8 +419,96 @@ export default class ServerSchema extends BaseUISchema {
           }
         }
       },{
+        id: 'auth_method', label: gettext('Authentication'), type: 'select',
+        group: gettext('Connection'), mode: ['properties', 'edit', 'create'],
+        visible: () => pgAdmin.server_mode == 'True' &&
+          pgAdmin.entra_db_auth_enabled,
+        options: [
+          {label: gettext('Password'), value: 'password'},
+          {label: gettext('Microsoft Entra ID'), value: 'entra'},
+        ],
+        readonly: obj.isConnectedOrShared,
+        depChange: (state) => state.auth_method == 'entra' ? {
+          password: null, save_password: false,
+          passexec_name: '__none__', passexec_cmd: null,
+          passexec_expiration: null, kerberos_conn: false,
+        } : {},
+        helpMessage: gettext('Sign in to Microsoft. pgAdmin refreshes database tokens until your organization requires sign-in again.'),
+      },{
+        id: 'entra_signin', type: 'button',
+        group: gettext('Connection'), mode: ['create', 'edit'],
+        btnName: gettext('Sign in to Microsoft'),
+        visible: (state) => state.auth_method == 'entra',
+        disabled: (state) => state.entra_authenticating,
+        onClick: () => {
+          const schemaState = obj.state;
+          if (!schemaState) return;
+          const setState = (key, value) =>
+            schemaState.setUnpreparedData([key], value);
+          const api = getApiInstance();
+          const deviceCode = pgAdmin.entra_db_signin_method != 'browser';
+          const popup = deviceCode ? window.open('', 'pgadmin_entra_signin',
+            'width=550,height=650,resizable=yes,scrollbars=yes') : null;
+          setState('entra_authenticating', true);
+          setState('entra_auth_code', '');
+          setState('entra_auth_uri', '');
+          setState('entra_auth_status', gettext('Waiting for Microsoft sign-in...'));
+          let polling = true;
+          const poll = async () => {
+            if (!polling) return;
+            try {
+              const response = await api.get(url_for('NODE-server.entra_signin_code'));
+              const code = response.data.data;
+              if (code && code.user_code) {
+                setState('entra_auth_code', code.user_code);
+                setState('entra_auth_uri', code.verification_uri);
+                if (popup && !popup.closed) popup.location = code.verification_uri;
+                return;
+              }
+            } catch {
+              // The POST response reports sign-in errors to the user.
+            }
+            if (polling) setTimeout(poll, 1000);
+          };
+          if (deviceCode) setTimeout(poll, 500);
+          api.post(url_for('NODE-server.entra_signin')).then((response) => {
+            if (response.data.success !== 1) {
+              throw new Error(response.data.errormsg ||
+                gettext('Microsoft sign-in failed.'));
+            }
+            const username = response.data.data?.username;
+            if (username && (!schemaState.data.username ||
+                schemaState.data.username == current_user.name)) {
+              setState('username', username);
+            }
+            setState('entra_auth_status', gettext('Microsoft sign-in complete.'));
+          }).catch((error) => {
+            if (popup && !popup.closed) popup.close();
+            setState('entra_auth_status',
+              error.response?.data?.errormsg || error.message ||
+              gettext('Microsoft sign-in failed.'));
+          }).finally(() => {
+            polling = false;
+            setState('entra_authenticating', false);
+            setState('entra_auth_code', '');
+          });
+        },
+      },{
+        id: 'entra_auth_note',
+        group: gettext('Connection'), mode: ['create', 'edit'],
+        deps: ['entra_auth_code', 'entra_auth_status'],
+        type: (state) => ({
+          type: 'note',
+          text: state.entra_auth_code ?
+            `${gettext('Open')} ${state.entra_auth_uri} ${gettext('and enter this code:')} ${state.entra_auth_code}` :
+            state.entra_auth_status,
+        }),
+        visible: (state) => state.auth_method == 'entra' &&
+          Boolean(state.entra_auth_code || state.entra_auth_status),
+      },{
         id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
         group: gettext('Connection'), disabled: obj.isShared,
+        visible: (state) => state.auth_method != 'entra',
       },{
         id: 'gss_authenticated', label: gettext('GSS authenticated?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
@@ -424,7 +519,8 @@ export default class ServerSchema extends BaseUISchema {
         id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
         mode: ['create', 'edit'],
-        deps: ['kerberos_conn', 'save_password'],
+        deps: ['kerberos_conn', 'save_password', 'auth_method'],
+        visible: (state) => state.auth_method != 'entra',
         controlProps: {
           maxLength: null,
           autoComplete: 'new-password'
@@ -439,7 +535,8 @@ export default class ServerSchema extends BaseUISchema {
       },{
         id: 'save_password', label: gettext('Save password?'),
         type: 'switch', group: gettext('Connection'), mode: ['create', 'edit'],
-        deps: ['kerberos_conn'],
+        deps: ['kerberos_conn', 'auth_method'],
+        visible: (state) => state.auth_method != 'entra',
         readonly: function(state) {
           return state.connected;
         },
@@ -605,6 +702,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('Advanced'), controlProps: {maxLength: null},
         mode: ['properties', 'edit', 'create'],
         visible: () => pgAdmin.server_mode != 'True',
+        disabled: (state) => state.auth_method == 'entra',
         helpMessage: gettext('The server hostname, port, and username can be passed as variables by using the placeholders %HOSTNAME%, %PORT%, and %USERNAME%, which will be replaced with the corresponding server connection information.')
       },
       {
@@ -612,7 +710,8 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
         controlProps: {allowClear: false},
-        visible: () => pgAdmin.server_mode == 'True' &&
+        visible: (state) => pgAdmin.server_mode == 'True' &&
+          state.auth_method != 'entra' &&
           (pgAdmin.server_passexec_commands || []).length > 0,
         type: (state) => {
           let options = [{label: gettext('None'), value: '__none__'}];
@@ -631,8 +730,9 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
-        visible: () => pgAdmin.server_mode != 'True' ||
-          (pgAdmin.server_passexec_commands || []).length > 0,
+        visible: (state) => state.auth_method != 'entra' &&
+          (pgAdmin.server_mode != 'True' ||
+          (pgAdmin.server_passexec_commands || []).length > 0),
         disabled: function(state) {
           if (pgAdmin.server_mode == 'True') {
             return !state.passexec_name ||

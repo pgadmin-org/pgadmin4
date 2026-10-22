@@ -616,6 +616,7 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "Port", server.port)
             add_value(attr_dict, "MaintenanceDB", server.maintenance_db)
             add_value(attr_dict, "Username", server.username)
+            add_value(attr_dict, "AuthenticationMethod", server.auth_method)
             add_value(attr_dict, "Role", server.role)
             add_value(attr_dict, "Comment", server.comment)
             add_value(attr_dict, "Shared", server.shared)
@@ -886,6 +887,12 @@ def load_database_servers(input_file, selected_servers,
             new_server.port = obj.get("Port", None)
 
             new_server.username = username
+            auth_method = obj.get("AuthenticationMethod", "password")
+            if auth_method not in ("password", "entra"):
+                return _handle_error(
+                    gettext("Invalid authentication method for server '%s'."
+                            % obj["Name"]), from_setup)
+            new_server.auth_method = auth_method
 
             new_server.role = obj.get("Role", None)
 
@@ -951,7 +958,12 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.post_connection_sql = obj.get("PostConnectionSQL", None)
 
-            if not current_app.config['SERVER_MODE']:
+            if auth_method == 'entra':
+                new_server.save_password = 0
+                new_server.password = None
+                new_server.passexec_name = None
+                new_server.passexec_cmd = None
+            elif not current_app.config['SERVER_MODE']:
                 new_server.passexec_cmd = obj.get("PasswordExecCommand", None)
                 new_server.passexec_expiration = obj.get(
                     "PasswordExecExpiration", None)
