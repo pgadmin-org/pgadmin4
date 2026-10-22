@@ -34,5 +34,5 @@
 # be built for it, since its PyO3 supports nothing newer than 3.13. Move to
 # 3.14 once pywinpty 3.x is shown to work in the PSQL tool on Windows.
 
-PYTHON_VERSION=3.13.16
-PYTHON_BUILD_STANDALONE_TAG=20261013
+PYTHON_VERSION=3.13.17
+PYTHON_BUILD_STANDALONE_TAG=20261021
