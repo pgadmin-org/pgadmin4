@@ -46,6 +46,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas. \
     tables.row_security_policies import \
     utils as row_security_policies_utils
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.exception import ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import VacuumSettings
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -1286,14 +1287,59 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     set(data['coll_inherits'])
                 )
 
-    def _check_for_column_delete(self, columns, data, column_sql):
+    def _get_still_inherited_columns(self, scid, data):
+        """
+        Return the names of the columns still provided by the parents left
+        in 'Inherited from', or None if no parent is being removed.
+        """
+        if not data.get('coll_inherits_removed'):
+            return None
+
+        other_columns = []
+        if data.get('coll_inherits'):
+            is_error, errmsg = self._get_inherited_tables(scid, data,
+                                                          other_columns)
+            if is_error:
+                raise ExecuteError(errmsg)
+
+        return {c['name'] for c in other_columns}
+
+    def _get_inherit_prerequisites(self, tid, data):
+        """
+        Return the columns and CHECK constraints of the parents being added
+        to 'Inherited from' that the table does not have yet, as INHERIT
+        fails unless the table already has them.
+        """
+        if not data.get('coll_inherits_added'):
+            return [], []
+
+        result = []
+        for template in ['get_missing_inherited_columns.sql',
+                         'get_missing_inherited_checks.sql']:
+            sql = render_template(
+                "/".join([self.table_template_path, template]),
+                tid=tid, parents=data['coll_inherits_added'],
+                conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                raise ExecuteError(res)
+            result.append(res['rows'])
+
+        return result
+
+    def _check_for_column_delete(self, columns, data, column_sql,
+                                 still_inherited=None):
         # If column(s) is/are deleted
         if 'deleted' in columns:
             for c in columns['deleted']:
                 c['schema'] = data['schema']
                 c['table'] = data['name']
-                # Sql for drop column
-                if c.get('inheritedfrom', None) is None:
+                # Sql for drop column. NO INHERIT keeps the columns of a
+                # removed parent as local columns, so drop them as well,
+                # unless a remaining parent still provides them.
+                if c.get('inheritedfrom', None) is None or \
+                    (still_inherited is not None and
+                     c['name'] not in still_inherited):
                     column_sql += render_template("/".join(
                         [self.column_template_path, self._DELETE_SQL]),
                         data=c, conn=self.conn).strip('\n') + \
@@ -1640,9 +1686,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             if self._unlogged_unsupported(old_data, self.manager.version):
                 data.pop('relpersistence', None)
 
+            inherit_columns, inherit_checks = \
+                self._get_inherit_prerequisites(tid, data)
+
             sql = render_template(
                 "/".join([self.table_template_path, self._UPDATE_SQL]),
-                o_data=old_data, data=data, conn=self.conn
+                o_data=old_data, data=data, conn=self.conn,
+                inherit_columns=inherit_columns,
+                inherit_checks=inherit_checks
             )
             # Removes training new lines
             sql = sql.strip('\n') + self.double_newline
@@ -1656,8 +1707,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 column_sql = '\n'
 
                 # If column(s) is/are deleted
-                column_sql = self._check_for_column_delete(columns, data,
-                                                           column_sql)
+                column_sql = self._check_for_column_delete(
+                    columns, data, column_sql,
+                    self._get_still_inherited_columns(scid, data))
 
                 # If column(s) is/are changed
                 column_sql = self._check_for_column_update(columns, data,
@@ -1781,7 +1833,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 res['rows'][0]['is_sub_partitioned'] = is_partitioned
                 icon = self.get_partition_icon_css_class(res['rows'][0])
             else:
-                icon = self.get_icon_css_class(res['rows'][0])
+                # res holds the properties from before the update, which
+                # may have added or removed parents, so use the table's
+                # current inheritance for its icon.
+                sql = render_template(
+                    "/".join([self.table_template_path, self._NODES_SQL]),
+                    scid=rest['rows'][0]['scid'], tid=tid)
+                status, node_res = self.conn.execute_2darray(sql)
+                if not status:
+                    return internal_server_error(errormsg=node_res)
+                icon = self.get_icon_css_class(node_res['rows'][0])
 
             other_node_info = {}
             if 'description' in data:

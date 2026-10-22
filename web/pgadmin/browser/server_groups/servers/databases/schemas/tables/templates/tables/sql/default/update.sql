@@ -29,6 +29,17 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 {## Update Inherits table definition ##}
 {#####################################################}
 {% if data.coll_inherits_added|length > 0 %}
+{### A table must have the parent's columns and CHECK constraints before it can inherit from it ###}
+{% for col in inherit_columns %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    ADD COLUMN {{conn|qtIdent(col.name)}} {{col.displaytypname}}{% if col.collspcname %} COLLATE {{col.collspcname}}{% endif %}{% if col.attnotnull %} NOT NULL{% endif %};
+
+{% endfor %}
+{% for chk in inherit_checks %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    ADD CONSTRAINT {{conn|qtIdent(chk.name)}} {{chk.definition}};
+
+{% endfor %}
 {% for val in data.coll_inherits_added %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     INHERIT {{val}};
