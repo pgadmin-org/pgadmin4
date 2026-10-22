@@ -2012,7 +2012,15 @@ Failed to reset the connection to the server due to following error:
         # to cancel the query and release it.
         if cancel_conn.__backend_pid == self.__backend_pid:
             password = getattr(self.manager, 'password', None)
-            if password:
+            if getattr(self.manager, 'auth_method', 'password') == 'entra':
+                # Query cancellation uses a separate physical connection and
+                # therefore needs its own current Entra access token.
+                from pgadmin.utils.entra_auth import EntraAuthenticationError
+                try:
+                    password = self.manager.passexec.get()
+                except EntraAuthenticationError as error:
+                    return False, str(error)
+            elif password:
                 # Fetch Logged in User Details.
                 user = User.query.filter_by(id=current_user.id).first()
                 if user is None:

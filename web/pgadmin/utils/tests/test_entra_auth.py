@@ -18,6 +18,7 @@ from flask import Flask, session
 from pgadmin.utils import entra_auth
 from pgadmin.browser.server_groups.servers import (
     ServerModule, ServerNode, prepare_auth_method_data, require_entra_ssl)
+from pgadmin.utils.driver.psycopg3 import connection as connection_module
 from pgadmin.utils.driver.psycopg3.connection import Connection
 from pgadmin.utils.driver.psycopg3.server_manager import ServerManager
 from pgadmin.tools.sqleditor import entra_signin_challenge
@@ -180,6 +181,53 @@ class TestEntraServerSettings(unittest.TestCase):
         self.assertEqual(password, 'test-only-password')
         self.assertIsNone(encpass)
         self.assertFalse(update_password)
+
+    @patch.object(connection_module.psycopg, 'connect')
+    @patch.object(connection_module, 'ConnectionLocker')
+    def test_cancel_transaction_uses_a_fresh_entra_token(
+            self, locker_class, connect):
+        manager = Mock(auth_method='entra', password=None,
+                       kerberos_conn=False, user='user@example.com',
+                       passexec=Mock(get=Mock(return_value='database-token')))
+        cancel_connection = Mock()
+        cancel_connection._Connection__backend_pid = 42
+        manager.connection.return_value = cancel_connection
+        manager.create_connection_string.return_value = 'token-dsn'
+        pg_connection = Mock()
+        connect.return_value = pg_connection
+        connection = Connection(manager, 'connection-id', 'postgres')
+        connection._Connection__backend_pid = 42
+
+        status, message = connection.cancel_transaction('connection-id')
+
+        self.assertTrue(status)
+        self.assertEqual(message, '')
+        manager.passexec.get.assert_called_once_with()
+        manager.create_connection_string.assert_called_once_with(
+            'postgres', 'user@example.com', 'database-token')
+        connect.assert_called_once_with(
+            'token-dsn', cursor_factory=connection_module.DictCursor)
+
+    @patch.object(connection_module.psycopg, 'connect')
+    @patch.object(connection_module, 'ConnectionLocker')
+    def test_cancel_transaction_returns_signin_error_when_token_is_unavailable(
+            self, locker_class, connect):
+        auth_error = entra_auth.EntraAuthenticationError(
+            'Sign in to Microsoft again.')
+        manager = Mock(auth_method='entra', password=None,
+                       kerberos_conn=False,
+                       passexec=Mock(get=Mock(side_effect=auth_error)))
+        cancel_connection = Mock()
+        cancel_connection._Connection__backend_pid = 42
+        manager.connection.return_value = cancel_connection
+        connection = Connection(manager, 'connection-id', 'postgres')
+        connection._Connection__backend_pid = 42
+
+        status, message = connection.cancel_transaction('connection-id')
+
+        self.assertFalse(status)
+        self.assertEqual(message, 'Sign in to Microsoft again.')
+        connect.assert_not_called()
 
     def test_sign_in_routes_are_exposed_to_the_browser(self):
         endpoints = ServerModule(__name__).get_exposed_url_endpoints()
