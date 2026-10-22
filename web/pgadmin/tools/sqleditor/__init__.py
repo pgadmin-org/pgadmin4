@@ -18,6 +18,7 @@ from threading import Lock
 from io import BytesIO
 import threading
 import math
+import config
 
 import json
 
@@ -85,6 +86,20 @@ MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
 sqleditor_close_session_lock = Lock()
+
+
+def entra_signin_challenge(server, errmsg):
+    """Ask for Microsoft sign-in instead of a PostgreSQL password."""
+    return make_json_response(
+        success=0, status=428,
+        result={
+            'sid': server.id,
+            'server_label': server.name,
+            'username': server.username,
+            'errmsg': errmsg,
+            'prompt_entra': True,
+            'entra_signin_method': config.ENTRA_DB_SIGNIN_METHOD,
+        })
 # SQLAutoComplete objects, keyed by _auto_complete_key(). Each one holds a
 # live connection belonging to the session that created it, so the key must
 # include the session as well as the client-chosen transaction id; otherwise
@@ -287,6 +302,8 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
             conn,**kwargs)
         if not status:
             current_app.logger.error(msg)
+            if server.auth_method == 'entra':
+                return entra_signin_challenge(server, msg)
             if is_ask_password:
                 return make_json_response(
                     success=0,
@@ -315,11 +332,15 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     status, msg = default_conn.connect()
     if not status:
         current_app.logger.error(msg)
+        if server.auth_method == 'entra':
+            return entra_signin_challenge(server, msg)
         return internal_server_error(errormsg=str(msg))
 
     status, msg = conn.connect()
     if not status:
         current_app.logger.error(msg)
+        if server.auth_method == 'entra':
+            return entra_signin_challenge(server, msg)
         return internal_server_error(errormsg=str(msg))
     try:
         # if object type is partition then it is nothing but a table.
@@ -639,6 +660,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                 conn, **kwargs)
             if not status:
                 current_app.logger.error(msg)
+                if server.auth_method == 'entra':
+                    return True, entra_signin_challenge(server, msg), '', ''
                 if is_ask_password:
                     return True, make_json_response(
                         success=0,

@@ -79,6 +79,19 @@ Use the fields in the *Connection* tab to configure a connection:
   installed on that database.
 * Use the *Username* field to specify the name of a role that will be used when
   authenticating with the server.
+* In server mode, when Microsoft Entra database authentication is enabled by
+  the pgAdmin administrator, use *Authentication* to choose *Microsoft Entra
+  ID*, then click *Sign in to Microsoft*. On a local pgAdmin desktop, the
+  Microsoft sign-in opens in a browser. On a remote server, pgAdmin can show
+  a device code and sign-in URL instead. Enter the user's Entra UPN, or an
+  authorized group name, in *Username*. pgAdmin obtains a PostgreSQL token
+  for each new connection and renews it when permitted; no database password
+  is saved. If an organization's sign-in policy requires reauthentication,
+  pgAdmin prompts for Microsoft sign-in again. This development flow uses
+  Azure Identity's public client.
+  The host must be an Azure Database for PostgreSQL host ending in
+  ``.postgres.database.azure.com``. pgAdmin verifies TLS using its bundled
+  certificate authorities for this method.
 * When *Kerberos authentication?* is set to *True*, pgAdmin will try to connect
   the PostgreSQL server using Kerberos authentication.
 * Use the *Password* field to provide a password that will be supplied when

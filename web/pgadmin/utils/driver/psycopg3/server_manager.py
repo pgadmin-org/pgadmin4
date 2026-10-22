@@ -14,6 +14,7 @@ import os
 import datetime
 import config
 import logging
+import certifi
 from flask import current_app, session
 from flask_security import current_user
 from flask_babel import gettext
@@ -30,6 +31,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import build_passexec
+from pgadmin.utils.entra_auth import EntraPassword
 from psycopg.conninfo import make_conninfo
 
 if config.SUPPORT_SSH_TUNNEL:
@@ -79,7 +81,9 @@ class ServerManager(object):
         self.shared = server.shared
         self.did = None
         self.user = server.username
-        self.password = server.password
+        self.auth_method = server.auth_method or 'password'
+        self.password = None if self.auth_method == 'entra' \
+            else server.password
         self.role = server.role
         self.pinged = datetime.datetime.now()
         self.db_info = dict()
@@ -87,8 +91,10 @@ class ServerManager(object):
         self.db_res = server.db_res
         self.db_res_type = server.db_res_type
         self.name = server.name
-        self.passexec = build_passexec(server)
         self.service = server.service
+        self.passexec = EntraPassword(
+            server.host, server.service, server.connection_params
+        ) if self.auth_method == 'entra' else build_passexec(server)
 
         if config.SUPPORT_SSH_TUNNEL:
             self.use_ssh_tunnel = server.use_ssh_tunnel
@@ -373,6 +379,8 @@ WHERE db.oid = {0}""".format(did))
         masterpass_processed = process_masterpass_disabled()
 
         ServerManager._get_password_to_conn(data, masterpass_processed)
+        if self.auth_method == 'entra':
+            data['password'] = None
         # Get server type.
         self._get_server_type()
 
@@ -409,8 +417,12 @@ WHERE db.oid = {0}""".format(did))
             self._check_and_reconnect_server(conn, conn_info, data)
 
     def _restore_connections(self):
-        for conn_id in self.connections:
-            conn = self.connections[conn_id]
+        # Reconnecting a connection can add or remove entries while this
+        # manager is being restored (for example from the Query Tool).
+        for conn_id in list(self.connections):
+            conn = self.connections.get(conn_id)
+            if conn is None:
+                continue
             # only try to reconnect if connection was connected previously
             # and auto_reconnect is true.
             was_connected = conn.wasConnected
@@ -728,6 +740,14 @@ WHERE db.oid = {0}""".format(did))
                 dsn_args[key] = value
                 display_dsn_args[key] = orig_value if with_complete_path else \
                     value
+
+        if self.auth_method == 'entra':
+            # Entra access tokens must only be sent to a TLS peer whose
+            # certificate matches the configured Azure hostname.
+            dsn_args['sslmode'] = 'verify-full'
+            display_dsn_args['sslmode'] = 'verify-full'
+            dsn_args['sslrootcert'] = certifi.where()
+            display_dsn_args['sslrootcert'] = certifi.where()
 
         # Enable TCP keepalive so that stale/half-open connections are
         # detected by the OS within a reasonable time instead of hanging

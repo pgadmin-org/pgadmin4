@@ -977,6 +977,15 @@ OAUTH2_AUTO_CREATE_USER = True
 # Add ?no_auto_login to the login page URL to display it regardless.
 OAUTH2_AUTO_LOGIN = False
 
+# Enable interactive Microsoft Entra sign-in for Azure PostgreSQL servers.
+# Uses the Azure Identity development client and encrypted per-user token
+# caches. A dedicated app registration is recommended for production use.
+ENTRA_DB_AUTH_ENABLED = False
+ENTRA_DB_TENANT_ID = None
+# Browser opens on the pgAdmin host; use only when the user and server share
+# a desktop. Device code presents a URL and code to remote browser users.
+ENTRA_DB_SIGNIN_METHOD = 'device_code'
+
 ##########################################################################
 # Webserver Configuration
 ##########################################################################

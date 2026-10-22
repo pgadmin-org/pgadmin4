@@ -34,7 +34,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 53
+SCHEMA_VERSION = 54
 
 ##########################################################################
 #
@@ -306,6 +306,8 @@ class Server(db.Model, UserScopedMixin):
         nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
+    auth_method = db.Column(db.String(16), nullable=False,
+                            default='password', server_default='password')
     password = db.Column(PgAdminDbBinaryString())
     save_password = db.Column(
         db.Integer(),
