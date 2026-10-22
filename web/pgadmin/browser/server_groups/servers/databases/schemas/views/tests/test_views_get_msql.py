@@ -33,6 +33,11 @@ class ViewsGetMsqlTestCase(BaseTestGenerator):
         # Load test data
         self.data = self.test_data
 
+        # Check server type
+        if "server_type" in self.data and \
+                self.server['type'] != self.data["server_type"]:
+            self.skipTest(self.data["skip_msg"])
+
         # Create db connection
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
