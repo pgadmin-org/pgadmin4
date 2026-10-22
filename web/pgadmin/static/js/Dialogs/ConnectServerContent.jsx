@@ -16,6 +16,8 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
 import { FormFooterMessage, InputCheckbox, InputText, MESSAGE_TYPE } from '../components/FormComponents';
 import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
+import getApiInstance from '../api_instance';
+import url_for from 'sources/url_for';
 
 export default function ConnectServerContent({closeModal, data, onOK, setHeight, hideSavePassword=false}) {
 
@@ -28,6 +30,58 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
     password: '',
     save_password: false,
   });
+  const [entraStatus, setEntraStatus] = useState('');
+  const [entraCode, setEntraCode] = useState(null);
+  const [entraAuthenticating, setEntraAuthenticating] = useState(false);
+  const signInActive = useRef(true);
+
+  useEffect(() => () => { signInActive.current = false; }, []);
+
+  const onEntraSignIn = () => {
+    const deviceCode = data.entra_signin_method != 'browser';
+    const popup = deviceCode ? window.open('', 'pgadmin_entra_signin',
+      'width=550,height=650,resizable=yes,scrollbars=yes') : null;
+    const api = getApiInstance();
+    let polling = true;
+    setEntraAuthenticating(true);
+    setEntraStatus(gettext('Waiting for Microsoft sign-in...'));
+    setEntraCode(null);
+
+    const poll = async () => {
+      if (!polling || !signInActive.current) return;
+      try {
+        const response = await api.get(url_for('NODE-server.entra_signin_code'));
+        const code = response.data.data;
+        if (code?.user_code) {
+          setEntraCode(code);
+          if (popup && !popup.closed) popup.location = code.verification_uri;
+          return;
+        }
+      } catch {
+        // The sign-in request reports errors below.
+      }
+      if (polling) setTimeout(poll, 1000);
+    };
+    if (deviceCode) setTimeout(poll, 500);
+
+    api.post(url_for('NODE-server.entra_signin')).then((response) => {
+      if (response.data.success !== 1) {
+        throw new Error(response.data.errormsg ||
+          gettext('Microsoft sign-in failed.'));
+      }
+      if (popup && !popup.closed) popup.close();
+      onOK?.(new FormData());
+      closeModal();
+    }).catch((error) => {
+      if (popup && !popup.closed) popup.close();
+      if (signInActive.current) setEntraStatus(
+        error.response?.data?.errormsg || error.message ||
+        gettext('Microsoft sign-in failed.'));
+    }).finally(() => {
+      polling = false;
+      if (signInActive.current) setEntraAuthenticating(false);
+    });
+  };
 
   const onTextChange = (e, id) => {
     let val = e;
@@ -101,6 +155,16 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
               onChange={(e)=>onTextChange(e.target.checked, 'save_password')} disabled={!data.allow_save_password} />
           </Box>
         </>}
+        {data.prompt_entra && <>
+          <Box sx={{fontWeight: 'bold'}}>
+            {gettext('Sign in to Microsoft to connect the server "%s".', data.server_label)}
+          </Box>
+          {entraCode && <Box marginTop='12px'>
+            {gettext('Open %s and enter this code: %s',
+              entraCode.verification_uri, entraCode.user_code)}
+          </Box>}
+          {entraStatus && <Box marginTop='12px'>{entraStatus}</Box>}
+        </>}
         <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={_.escape(data.errmsg)} closable={false} style={{
           position: 'unset', padding: '12px 0px 0px'
         }}/>
@@ -126,6 +190,10 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
             closeModal();
           }} >{gettext('OK')}</PrimaryButton>
         </>}
+        {data.prompt_entra && <PrimaryButton data-test="entra-signin"
+          disabled={entraAuthenticating} onClick={onEntraSignIn}>
+          {gettext('Sign in to Microsoft')}
+        </PrimaryButton>}
       </ModalFooter>
     </ModalContent>
   );
