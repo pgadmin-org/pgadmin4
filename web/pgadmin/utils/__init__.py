@@ -15,6 +15,7 @@ import json
 import subprocess
 import re
 from collections import defaultdict
+from functools import lru_cache
 from operator import attrgetter
 
 from pathlib import Path
@@ -272,16 +273,27 @@ def get_directory_and_file_name(drivefilepath):
     return dir_name, file_name
 
 
-def get_complete_file_path(file, validate=True):
+def get_complete_file_path(file, validate=True, for_write=False):
     """
     Args:
         file: File returned by file manager
         validate: if True, return None unless the path names an existing
             file; pass False for a directory, or for a file that may not
             exist yet
+        for_write: set True when libpq will write the file (e.g.
+            sslkeylogfile) rather than read it. A write target must
+            additionally honour a shared storage directory that is
+            read-only for non-administrators, and must resolve its short
+            path on Windows even though the file does not exist yet.
 
     Returns:
          Full path for the file
+
+    Raises:
+        PermissionError: in server mode, if the path resolves to somewhere
+            outside the user's storage directory (or the named shared
+            storage directory), or names a read-only shared storage
+            directory when for_write is set
     """
     if not file:
         return None
@@ -292,19 +304,71 @@ def get_complete_file_path(file, validate=True):
             return file
         return file if os.path.isfile(file) else None
 
+    orig_file = file
+
     # get dir name and file name
     dir_name, file = get_directory_and_file_name(file)
 
     storage_dir = get_storage_directory(shared_storage=dir_name) if dir_name \
         else get_storage_directory()
-    if storage_dir:
-        file = os.path.join(
-            storage_dir,
-            file.lstrip('/').lstrip('\\')
-        )
-        if IS_WIN:
-            file = file.replace('\\', '/')
-            file = fs_short_path(file)
+
+    # Without a storage directory to anchor it, the path would be used
+    # exactly as given, so refuse it rather than let it name any file the
+    # pgAdmin service account can read.
+    if not storage_dir:
+        raise PermissionError(
+            gettext("Access denied ({0}): the storage directory it refers "
+                    "to could not be found.").format(orig_file))
+
+    # A write target (e.g. sslkeylogfile) must honour a shared storage
+    # directory that is read-only for non-administrators; get_storage_
+    # directory() itself does not enforce that flag, so a non-admin could
+    # otherwise create or append a file there.
+    if for_write and dir_name:
+        shared_dir = next(
+            (sdir for sdir in current_app.config['SHARED_STORAGE']
+             if sdir['name'] == dir_name), None)
+        if shared_dir and shared_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            raise PermissionError(
+                gettext("Access denied ({0}): the shared storage directory "
+                        "it names is read-only.").format(orig_file))
+
+    file = os.path.join(
+        storage_dir,
+        file.lstrip('/').lstrip('\\')
+    )
+
+    # The path is the user's to choose, and is used for things like the
+    # password file and SSL key libpq connects with, so it must not climb
+    # out of their storage directory with "..", an absolute path or a
+    # symbolic link. This mirrors Filemanager.check_access_permission().
+    try:
+        Path(os.path.realpath(file)).relative_to(
+            os.path.realpath(storage_dir))
+    except ValueError:
+        current_app.logger.warning(
+            'Refusing the path %r, which resolves outside the storage '
+            'directory.', orig_file)
+        raise PermissionError(
+            gettext("Access denied ({0}): the path resolves outside your "
+                    "storage directory, or outside the shared storage "
+                    "directory it names.").format(orig_file))
+
+    if IS_WIN:
+        file = file.replace('\\', '/')
+        short_path = fs_short_path(file)
+        # fs_short_path() returns an empty string on Windows when the file
+        # does not exist yet. For a write target (sslkeylogfile) that is
+        # the normal case, so fall back to the short path of the parent
+        # directory joined with the file name, instead of silently
+        # dropping the path.
+        if for_write and short_path == '':
+            base_name = os.path.basename(file)
+            dir_short_path = fs_short_path(os.path.dirname(file))
+            if dir_short_path != '':
+                short_path = os.path.join(dir_short_path, base_name)
+        file = short_path
 
     if validate:
         return file if os.path.isfile(file) else None
@@ -325,6 +389,52 @@ def connection_param_bool_to_int(value):
         return 0 if value.strip().lower() in \
             ('', '0', 'false', 'f', 'no', 'n', 'off') else 1
     return 1 if value else 0
+
+
+@lru_cache(maxsize=1)
+def get_libpq_connection_keywords():
+    """
+    Return the set of connection-parameter keywords recognised by the
+    libpq that psycopg is linked against.
+
+    This is read from libpq itself rather than hard-coded, so it always
+    matches the installed version; a keyword unknown to this libpq is not
+    treated as valid, since make_conninfo() would reject it anyway.
+    """
+    from psycopg.pq import Conninfo
+    return frozenset(
+        defn.keyword.decode() for defn in Conninfo.get_defaults()
+    )
+
+
+def is_valid_connection_param_key(key):
+    """
+    Return True only if key is an exact libpq connection keyword.
+
+    psycopg's make_conninfo() quotes parameter values but not their keys,
+    so a key that smuggles its own "keyword=value" pairs (for example via
+    an '=' sign or embedded/leading/trailing whitespace) would reach libpq
+    as extra, unconfined connection directions. Accepting only exact libpq
+    keywords closes that injection.
+    """
+    return isinstance(key, str) and key in get_libpq_connection_keywords()
+
+
+def get_invalid_connection_param_key(connection_params):
+    """
+    Return the first key in connection_params that is not a valid libpq
+    keyword, or None if every key is valid (or there are no params).
+
+    Callers use this to refuse a server whose connection parameters carry
+    an injected key, before it is saved or used to build a connection
+    string.
+    """
+    if not connection_params or not isinstance(connection_params, dict):
+        return None
+    for key in connection_params:
+        if not is_valid_connection_param_key(key):
+            return key
+    return None
 
 
 def connection_params_to_env(connection_params):
@@ -1115,6 +1225,20 @@ def load_database_servers(input_file, selected_servers,
                         conn_param[key] = obj.get(item)
 
                 new_server.connection_params = conn_param
+
+            # Refuse a key that is not an exact libpq keyword:
+            # make_conninfo() quotes values but not keys, so a key carrying
+            # its own "keyword=value" pairs would reach libpq as extra
+            # connection directions.
+            invalid_key = get_invalid_connection_param_key(
+                new_server.connection_params)
+            if invalid_key is not None:
+                if from_setup:
+                    print(ADD_SERVERS_MSG % (groups_added, servers_added))
+                return _handle_error(
+                    gettext(
+                        "Invalid connection parameter '%s' for server '%s'" %
+                        (invalid_key, new_server.name)), from_setup)
 
             new_server.bgcolor = obj.get("BGColor", None)
 

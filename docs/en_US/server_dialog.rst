@@ -156,6 +156,20 @@ icon that is located to the right of each of the following fields.
     means that administrators of the server may be able to access those files;
     appropriate caution should be taken before choosing to use this feature.
 
+.. note:: In Server mode, every connection file path (the *Password file*,
+    client certificate and key, root certificate, certificate revocation list,
+    CRL directory and SSL key log file) must resolve inside your storage
+    directory, or inside a *SHARED_STORAGE* entry (see :ref:`config_py`)
+    written as *Name:/path*. A path that leaves it through *..* or a symbolic
+    link is refused with an "Access denied (...): the path resolves outside
+    your storage directory..." message when connecting or starting a utility.
+    If you used a symbolic link in your storage directory to reach, for
+    example, */etc/pgadmin/certs*, configure that directory as a
+    *SHARED_STORAGE* entry instead (see :ref:`storage_manager`). Every pgAdmin
+    user can use a file in shared storage, so it should hold only shareable
+    files such as a root certificate or CRL, never a private key or a
+    *.pgpass* file.
+
 Click the *SSH Tunnel* tab to continue.
 
 .. image:: images/server_ssh_tunnel.png

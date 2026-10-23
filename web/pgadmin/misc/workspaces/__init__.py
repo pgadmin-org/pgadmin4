@@ -15,7 +15,7 @@ from flask import request, current_app
 from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from flask_security import current_user
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, get_invalid_connection_param_key
 from pgadmin.model import db, Server
 from pgadmin.utils.server_access import get_server
 from pgadmin.utils.driver import get_driver
@@ -103,6 +103,19 @@ def adhoc_connect_server():
         connection_params = convert_connection_parameter(raw_params)
 
     if connection_params is not None:
+        # Refuse a key that is not an exact libpq keyword: make_conninfo()
+        # quotes values but not keys, so a key carrying its own
+        # "keyword=value" pairs would reach libpq as extra connection
+        # directions.
+        invalid_key = get_invalid_connection_param_key(connection_params)
+        if invalid_key is not None:
+            return make_json_response(
+                success=0,
+                status=400,
+                errormsg=gettext(
+                    'Invalid connection parameter: {0}').format(invalid_key)
+            )
+
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):
             return make_json_response(

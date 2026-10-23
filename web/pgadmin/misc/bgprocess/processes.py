@@ -97,7 +97,10 @@ class IProcessDesc(metaclass=ABCMeta):
                 # do nothing if bfile is not encoded.
                 pass
 
-            path = get_complete_file_path(process_file)
+            try:
+                path = get_complete_file_path(process_file)
+            except PermissionError:
+                path = None
             path = process_file if path is None else path
 
             if IS_WIN:
@@ -261,6 +264,10 @@ class BatchProcess:
         )
         db.session.add(j)
         db.session.commit()
+        # Process.pid is a string column: PostgreSQL does not compare it
+        # with an integer, so keep it as the string that was stored.
+        self._unstarted_pid = str(uid)
+        self._unstarted_uid = current_user.id
 
     def check_start_end_time(self):
         """
@@ -849,6 +856,43 @@ class BatchProcess:
         db.session.commit()
 
     def set_env_variables(self, server, **kwargs):
+        """
+        Set environment variables.
+
+        A job whose environment cannot be resolved (for instance because a
+        connection file path is refused) can never start, so its row and log
+        directory are removed rather than left in the Processes list.
+        """
+        try:
+            self._set_env_variables(server, **kwargs)
+        except Exception:
+            self._discard_unstarted()
+            raise
+        # The environment is resolved: this job is no longer "unstarted",
+        # so a later call can never remove the row of a running job.
+        self._unstarted_pid = None
+
+    def _discard_unstarted(self):
+        """Remove the row and log directory of a job that never started.
+        This must never raise, so as not to mask the original error."""
+        pid = getattr(self, '_unstarted_pid', None)
+        if pid is None:
+            return
+        self._unstarted_pid = None
+        try:
+            p = Process.query.filter_by(
+                pid=pid, user_id=self._unstarted_uid).first()
+            if p is not None:
+                db.session.delete(p)
+                db.session.commit()
+            if self.log_dir:
+                shutil.rmtree(self.log_dir, True)
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.warning(
+                'Could not discard the unstarted process %s: %s', pid, e)
+
+    def _set_env_variables(self, server, **kwargs):
         """Set environment variables"""
         # The connection parameters configured against the server are what
         # the utility must connect with, so pass every one of them that

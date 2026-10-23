@@ -46,7 +46,8 @@ from sqlalchemy.orm import object_session
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, \
+    get_invalid_connection_param_key
 from pgadmin.settings.utils import with_object_filters
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query, get_server_group
@@ -63,6 +64,7 @@ from pgadmin.utils.server_access import get_server, \
 SENSITIVE_CONN_KEYS = frozenset({
     'passfile', 'sslcert', 'sslkey',
     'sslrootcert', 'sslcrl', 'sslcrldir',
+    'sslkeylogfile',
 })
 
 
@@ -1012,6 +1014,22 @@ class ServerNode(PGChildNodeView):
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
+
+        # Refuse a key that is not an exact libpq keyword (see create()).
+        # The merged parameters live in data['connection_params'] once
+        # update_connection_parameter() has applied the deltas.
+        if 'connection_params' in data:
+            invalid_key = get_invalid_connection_param_key(
+                data['connection_params'])
+            if invalid_key is not None:
+                return make_json_response(
+                    success=0,
+                    status=400,
+                    errormsg=gettext(
+                        'Invalid connection parameter: {0}').format(
+                            invalid_key)
+                )
+
         self.update_tags(data, sharedserver or server,
                          server.tags if sharedserver else None)
 
@@ -1391,6 +1409,19 @@ class ServerNode(PGChildNodeView):
             connection_params = raw_params
         else:
             connection_params = convert_connection_parameter(raw_params)
+
+        # Refuse a key that is not an exact libpq keyword: make_conninfo()
+        # quotes values but not keys, so a key carrying its own
+        # "keyword=value" pairs would reach libpq as extra connection
+        # directions.
+        invalid_key = get_invalid_connection_param_key(connection_params)
+        if invalid_key is not None:
+            return make_json_response(
+                success=0,
+                status=400,
+                errormsg=gettext(
+                    'Invalid connection parameter: {0}').format(invalid_key)
+            )
 
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):
@@ -1780,14 +1811,21 @@ class ServerNode(PGChildNodeView):
                     'passfile' in server.connection_params:
                 passfile_param = server.connection_params['passfile']
 
+            passfile_path = None
+            if passfile_param:
+                try:
+                    passfile_path = get_complete_file_path(passfile_param)
+                except PermissionError as e:
+                    return self.get_response_for_password(
+                        server, 401, False, prompt_tunnel_password, str(e))
+
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and not server.save_password and \
                     passfile_param is None and \
                     manager.passexec is None and \
                     server.service is None:
                 prompt_password = True
-            elif passfile_param and passfile_param != '' and \
-                    get_complete_file_path(passfile_param):
+            elif passfile_path:
                 passfile = passfile_param
             else:
                 password = conn_passwd or server.password

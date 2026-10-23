@@ -605,6 +605,11 @@ class Connection(BaseConnection):
                         cursor_factory=DictCursor,
                         prepare_threshold=manager.prepare_threshold)
 
+        except PermissionError as e:
+            # A connection file path that escapes the user's storage
+            # directory (see get_complete_file_path()).
+            manager.stop_ssh_tunnel()
+            return False, str(e)
         except psycopg.Error as e:
             manager.stop_ssh_tunnel()
             if hasattr(e, 'pgerror'):
@@ -1786,6 +1791,8 @@ WHERE db.datname = current_database()""")
 
                 pg_conn = psycopg.connect(connection_string,
                                           cursor_factory=DictCursor)
+        except PermissionError as e:
+            return False, str(e)
         except psycopg.Error as e:
             if hasattr(e, 'pgerror'):
                 msg = e.pgerror
@@ -2020,6 +2027,9 @@ Failed to reset the connection to the server due to following error:
                 # Close the connection
                 pg_conn.close()
 
+            except PermissionError as e:
+                status = False
+                msg = str(e)
             except psycopg.Error as e:
                 status = False
                 if hasattr(e, 'pgerror'):

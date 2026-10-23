@@ -20,7 +20,7 @@ from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils import get_complete_file_path, \
-    connection_param_bool_to_int
+    connection_param_bool_to_int, is_valid_connection_param_key
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import process_masterpass_disabled
 from .connection import Connection
@@ -118,7 +118,14 @@ class ServerManager(object):
         self.gss_authenticated = False
         self.gss_encrypted = False
         self.connection_params = server.connection_params
-        self.create_connection_string(self.db, self.user)
+        try:
+            self.create_connection_string(self.db, self.user)
+        except PermissionError:
+            # A file path that escapes the user's storage directory, or a
+            # connection parameter whose key is not a libpq keyword, is
+            # reported when a connection is attempted; it must not stop the
+            # server being listed, or edited to correct the value.
+            pass
         self.prepare_threshold = server.prepare_threshold
         self.post_connection_sql = server.post_connection_sql
 
@@ -610,8 +617,11 @@ WHERE db.oid = {0}""".format(did))
             # preserving the previous behaviour for anyone relying on
             # "Prompt for Password?" or on the agent itself.
             if self.tunnel_authentication == 1:
-                tunnel_identity_file = get_complete_file_path(
-                    self.tunnel_identity_file)
+                try:
+                    tunnel_identity_file = get_complete_file_path(
+                        self.tunnel_identity_file)
+                except PermissionError as e:
+                    return False, str(e)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
@@ -704,9 +714,26 @@ WHERE db.oid = {0}""".format(did))
             display_dsn_args['password'] = 'xxxxxxx'
             dsn_args['password'] = password
 
+        # A file path that escapes the user's storage directory is refused,
+        # but only once the display string below has been built.
+        path_error = None
+        # A connection parameter whose key is not an exact libpq keyword is
+        # refused the same way (see below).
+        key_error = None
+
         # Loop through all the connection parameters set in the server dialog.
         if self.connection_params and isinstance(self.connection_params, dict):
             for key, value in self.connection_params.items():
+                # make_conninfo() quotes values but not keys, so a key that
+                # smuggles its own "keyword=value" pairs would reach libpq
+                # unconfined. Rows already in the database are never
+                # re-validated on save, so refuse any key that is not an
+                # exact libpq keyword here as well, and keep it out of both
+                # the connection string and its display copy.
+                if not is_valid_connection_param_key(key):
+                    key_error = key_error or key
+                    continue
+
                 with_complete_path = False
                 orig_value = value
                 # Getting complete file path if the key is one of the below.
@@ -714,7 +741,23 @@ WHERE db.oid = {0}""".format(did))
                            'sslcrldir'] or \
                         (key == 'sslrootcert' and value != 'system'):
                     with_complete_path = True
-                    value = get_complete_file_path(value)
+                    try:
+                        value = get_complete_file_path(value)
+                    except PermissionError as e:
+                        path_error = path_error or e
+                        value = None
+                elif key == 'sslkeylogfile':
+                    # libpq writes this file (it may not exist yet), so skip
+                    # the existence check, but still confine it to the user's
+                    # storage directory and refuse a read-only shared
+                    # storage directory (for_write).
+                    with_complete_path = True
+                    try:
+                        value = get_complete_file_path(
+                            value, validate=False, for_write=True)
+                    except PermissionError as e:
+                        path_error = path_error or e
+                        value = None
 
                 # If key is hostaddr and ssh tunnel is in use don't overwrite.
                 if key == 'hostaddr' and self.use_ssh_tunnel:
@@ -746,5 +789,19 @@ WHERE db.oid = {0}""".format(did))
                 dsn_args[k] = v
 
         self.display_connection_string = make_conninfo(**display_dsn_args)
+
+        # Raised as PermissionError, like a refused path, so the same guard
+        # in __init__ defers it: a server with an invalid saved key can
+        # still be listed and edited to correct it, while an actual
+        # connection attempt is refused.
+        if key_error is not None:
+            raise PermissionError(
+                gettext(
+                    'Invalid connection parameter: {0}'
+                ).format(key_error)
+            )
+
+        if path_error is not None:
+            raise path_error
 
         return make_conninfo(**dsn_args)
