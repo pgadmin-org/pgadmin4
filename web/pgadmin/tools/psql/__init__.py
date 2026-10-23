@@ -27,7 +27,7 @@ from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, does_utility_exist
 from pgadmin.utils.locker import kerberos_environ, kerberos_libpq_env
 from pgadmin.authenticate import socket_login_required, \
     socket_permissions_required
@@ -424,15 +424,11 @@ def start_process(data):
 
             _, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
-            if psql_utility is None or not os.path.exists(psql_utility):
+            utility_error = does_utility_exist(psql_utility)
+            if utility_error:
                 sio.emit('pty-output',
                          {
-                             'result': gettext(
-                                 'PSQL utility not found. Specify the valid '
-                                 'binary path in the preferences for the '
-                                 'appropriate server version, or select '
-                                 '"Set as default" to use an existing binary '
-                                 'path.'),
+                             'result': utility_error,
                              'error': True},
                          namespace='/pty', room=request.sid)
                 return

@@ -490,6 +490,10 @@ CHECK_SUPPORTED_BROWSER = True
 # Storage Manager storage url config settings
 # If user sets STORAGE_DIR to empty it will show all volumes if platform
 # is Windows, '/' if it is Linux, Mac or any other unix type system.
+#
+# WARNING: an empty STORAGE_DIR exposes the whole filesystem to users in
+# server mode, so the guard that stops the binary path from pointing into
+# the storage directories (CWE-426) cannot protect that configuration.
 
 # For example:
 # 1. STORAGE_DIR = get_drive("C") or get_drive() # return C:/ by default

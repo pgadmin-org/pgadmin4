@@ -846,6 +846,70 @@ def filename_with_file_manager_path(_file, create_file=False,
     return short_filepath()
 
 
+def _normalised_path(file):
+    """Resolve a path the way the utilities will be run from it: '..'
+    segments are collapsed as text first (abspath), then symlinks are
+    followed (realpath), and case is folded where the platform's
+    normcase does so (Windows).
+    """
+    return Path(os.path.normcase(os.path.realpath(os.path.abspath(file))))
+
+
+def _reserved_storage_dirs():
+    """Directories an ordinary, non-admin pgAdmin user can write files
+    into: the per-user STORAGE_DIR, and every configured SHARED_STORAGE
+    entry (whether or not it is marked restricted_access, since a
+    restricted entry is still writable by an Administrator, and the
+    binary-path guard has to hold for every account, not just
+    non-admins). None of these may ever be trusted as a source of
+    pg_dump/pg_restore/psql/pg_dumpall binaries (CWE-426).
+    """
+    dirs = []
+    # An empty STORAGE_DIR means the whole filesystem is exposed to users
+    # by design; realpath('') would resolve to the current working
+    # directory, so it must not be treated as a reserved directory.
+    if config.STORAGE_DIR:
+        dirs.append(_normalised_path(config.STORAGE_DIR))
+    for entry in getattr(config, 'SHARED_STORAGE', None) or []:
+        path = entry.get('path') if isinstance(entry, dict) else None
+        if path:
+            dirs.append(_normalised_path(path))
+    return dirs
+
+
+def is_reserved_storage_path(file):
+    """Return True if `file` is, or is nested under, one of the
+    directories returned by _reserved_storage_dirs().
+
+    '$DIR' is expanded first, as the utilities are run from the expanded
+    path, then the path is resolved so '..' segments, symlinks and case
+    differences cannot be used to reach a reserved directory by a
+    different spelling.
+    """
+    # An embedded NUL is not a usable path (and some Python versions
+    # raise ValueError on it): refuse it rather than guess.
+    if '\x00' in file:
+        return True
+    target = _normalised_path(replace_binary_path(file))
+    reserved_dirs = _reserved_storage_dirs()
+    if any(reserved == target or reserved in target.parents
+           for reserved in reserved_dirs):
+        return True
+
+    # normcase() does not fold case on macOS, whose filesystem is
+    # case-insensitive by default, so also compare the directories
+    # themselves: any existing ancestor of the target that is the same
+    # directory as a reserved one makes the target reserved.
+    for candidate in (target, *target.parents):
+        for reserved in reserved_dirs:
+            try:
+                if os.path.samefile(candidate, reserved):
+                    return True
+            except OSError:
+                continue
+    return False
+
+
 def does_utility_exist(file):
     """
     This function will check the utility file exists on given path.
@@ -858,13 +922,12 @@ def does_utility_exist(file):
                             " Path in the Preferences")
         return error_msg
 
-    if Path(config.STORAGE_DIR) == Path(file) or \
-            Path(config.STORAGE_DIR) in Path(file).parents:
+    if is_reserved_storage_path(file):
         error_msg = gettext("Please correct the Binary Path in the "
-                            "Preferences. pgAdmin storage directory cannot "
-                            "be a utility binary directory.")
-
-    if not os.path.exists(file):
+                            "Preferences. pgAdmin storage and shared "
+                            "storage directories cannot be a utility "
+                            "binary directory.")
+    elif not os.path.exists(file):
         error_msg = gettext("'%s' file not found. Please correct the Binary"
                             " Path in the Preferences" % file)
     return error_msg
@@ -882,6 +945,12 @@ def get_server(sid, only_owned=False):
 
 def get_binary_path_versions(binary_path: str) -> dict:
     ret = {}
+    # Never run utilities from a directory users can write to (CWE-426).
+    if is_reserved_storage_path(binary_path):
+        current_app.logger.warning('Reserved storage path rejected as '
+                                   'binary path.')
+        return {utility: None for utility in UTILITIES_ARRAY}
+
     binary_path = os.path.abspath(
         replace_binary_path(binary_path)
     )

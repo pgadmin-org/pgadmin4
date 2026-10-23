@@ -14,8 +14,8 @@ from pgadmin.utils import driver
 from flask import request, current_app
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
-from pathlib import Path
-from pgadmin.utils import PgAdminModule, get_binary_path_versions
+from pgadmin.utils import PgAdminModule, get_binary_path_versions, \
+    is_reserved_storage_path
 from pgadmin.utils.constants import PREF_LABEL_USER_INTERFACE, \
     PREF_LABEL_FILE_DOWNLOADS
 from pgadmin.utils.csrf import pgCSRFProtect
@@ -335,10 +335,10 @@ def validate_binary_path():
     if data != '':
         data = json.loads(data)
 
-    # Do not allow storage dir as utility path
+    # Do not allow the storage dir, or a shared storage dir, as the
+    # utility path (CWE-426: both are writable by ordinary users).
     if 'utility_path' in data and data['utility_path'] is not None and \
-        Path(config.STORAGE_DIR) != Path(data['utility_path']) and \
-            Path(config.STORAGE_DIR) not in Path(data['utility_path']).parents:
+            not is_reserved_storage_path(data['utility_path']):
         binary_versions = get_binary_path_versions(data['utility_path'])
         utilities = [
             {'utility': utility, 'version': version}
