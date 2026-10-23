@@ -31,7 +31,8 @@ from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
     MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL, \
     CONNECTION_PARAM_ENV_VARS, CONNECTION_PARAM_FILE_PATHS, \
-    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS
+    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS, \
+    CONNECTION_PARAM_CREDENTIAL_FILES
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
@@ -376,6 +377,47 @@ def get_complete_file_path(file, validate=True, for_write=False):
         return file
 
 
+# A path that libpq can never open: a name below a regular file fails with
+# ENOTDIR, which libpq treats exactly as it does a missing file, and no
+# user can create a directory in place of the file to change that.  This
+# relies on __file__ being a regular file; under zipimport or a frozen build
+# the open fails with ENOTDIR or ENOENT instead, which is still safe.
+NO_CLIENT_FILE = os.path.join(os.path.abspath(__file__), 'no-client-file')
+
+
+def client_files_isolated():
+    """
+    Whether connections are made on behalf of a user who must not use the
+    client files of the account pgAdmin runs as, which is so in server
+    mode.  The test is the one get_complete_file_path() uses.
+    """
+    return not (current_app.PGADMIN_RUNTIME or
+                not current_app.config['SERVER_MODE'])
+
+
+def isolate_client_credential_files(params, names=None):
+    """
+    In server mode, set each client credential file parameter that has no
+    value to NO_CLIENT_FILE, so that libpq does not fall back to the
+    service account's own ~/.pgpass or client certificate and key.
+
+    Args:
+        params: a dict of connection parameters, updated in place
+        names: a dict mapping each parameter to the key to set in params,
+            such as its environment variable; the parameter names
+            themselves by default
+
+    Returns:
+        params
+    """
+    if client_files_isolated():
+        for param in CONNECTION_PARAM_CREDENTIAL_FILES:
+            key = names[param] if names else param
+            if not params.get(key):
+                params[key] = NO_CLIENT_FILE
+    return params
+
+
 def connection_param_bool_to_int(value):
     """
     Convert a boolean connection parameter to the 0 or 1 that libpq expects.
@@ -446,6 +488,11 @@ def connection_params_to_env(connection_params):
     Only the parameters libpq actually reads from the environment can be
     passed this way; anything else in connection_params is dropped.
 
+    libpq ranks the environment below a pg_service.conf entry, so in server
+    mode the credential files are also passed in the utility's --dbname
+    connection string (see utility_conninfo()); that copy is what beats a
+    service file entry, and these variables are kept as a second layer.
+
     Args:
         connection_params: the server's connection parameters, as a dict
 
@@ -455,7 +502,13 @@ def connection_params_to_env(connection_params):
     env = dict()
 
     if not connection_params or not isinstance(connection_params, dict):
-        return env
+        connection_params = dict()
+
+    # In server mode a file is passed on even if it does not exist yet,
+    # rather than dropped, because libpq would then use its default file in
+    # the service account's home directory instead.  The path is still
+    # confined to the user's storage directory.
+    validate = not client_files_isolated()
 
     for param, value in connection_params.items():
         env_var = CONNECTION_PARAM_ENV_VARS.get(param, None)
@@ -466,20 +519,22 @@ def connection_params_to_env(connection_params):
             # A directory, which the file check in get_complete_file_path()
             # would reject, so resolve it unvalidated and check it here.
             value = get_complete_file_path(value, validate=False)
-            value = value if value and os.path.isdir(value) else ''
+            value = value if value and (
+                not validate or os.path.isdir(value)) else ''
         elif param in CONNECTION_PARAM_FILE_PATHS or \
                 (param == 'sslrootcert' and value != 'system'):
-            # An unresolvable path is passed on as an empty value, matching
-            # what the connection string does, so that libpq reports the
-            # missing file rather than silently falling back to its default.
-            value = get_complete_file_path(value)
+            # An unresolvable path is passed on as an empty value, which
+            # libpq treats as unset, so it uses its default file; in server
+            # mode the credential files are set to NO_CLIENT_FILE below.
+            value = get_complete_file_path(value, validate=validate)
             value = '' if value is None else value
         elif param in CONNECTION_PARAM_BOOLEANS:
             value = connection_param_bool_to_int(value)
 
         env[env_var] = str(value)
 
-    return env
+    return isolate_client_credential_files(
+        env, names=CONNECTION_PARAM_ENV_VARS)
 
 
 def _fd_above_stdio(fd):
@@ -1586,3 +1641,48 @@ def database_conninfo(database):
     # build, and importing psycopg needs libpq.
     from psycopg.conninfo import make_conninfo
     return make_conninfo(dbname=database)
+
+
+def utility_connection_params(manager, server):
+    """
+    The connection parameters a utility connects with: the manager's copy,
+    which reflects the live connection, else the server's.  This is the
+    selection BatchProcess.set_env_variables() makes for the environment, so
+    that utility_conninfo() and the environment never name different files.
+
+    :param manager: The connection manager, or None.
+    :param server: The server row, or None.
+    :return: The connection parameters dict, or None.
+    """
+    if manager and manager.connection_params:
+        return manager.connection_params
+    if server and getattr(server, 'connection_params', None):
+        return server.connection_params
+    return None
+
+
+def utility_conninfo(database, connection_params):
+    """
+    The --dbname value for a utility: the database name (if given) plus, in
+    server mode, passfile/sslcert/sslkey (the user's own file or
+    NO_CLIENT_FILE), which libpq ranks above a pg_service.conf entry; the
+    PG* environment variables alone are ranked below it.
+
+    :param database: Name of the database to connect to, or None.
+    :param connection_params: The server's connection parameters.
+    :return: A connection string such as "dbname='my db' passfile='...'".
+    """
+    params = {} if database is None else {'dbname': database}
+    if client_files_isolated():
+        try:
+            env = connection_params_to_env(connection_params)
+        except PermissionError:
+            # A path escaping the storage directory: set_env_variables()
+            # raises this again, inside the caller's error handling.
+            env = {}
+        for param in CONNECTION_PARAM_CREDENTIAL_FILES:
+            params[param] = \
+                env.get(CONNECTION_PARAM_ENV_VARS[param]) or NO_CLIENT_FILE
+    # See database_conninfo() for why this is imported here.
+    from psycopg.conninfo import make_conninfo
+    return make_conninfo(**params)

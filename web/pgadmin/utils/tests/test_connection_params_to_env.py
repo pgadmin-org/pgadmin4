@@ -8,7 +8,7 @@
 ##########################################################################
 from unittest.mock import patch
 
-from pgadmin.utils import connection_params_to_env
+from pgadmin.utils import connection_params_to_env, NO_CLIENT_FILE
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -16,6 +16,7 @@ class TestConnectionParamsToEnv(BaseTestGenerator):
     """Check that the connection parameters set against a server are
     translated into the libpq environment variables that carry them, so
     that the utilities connect the way the server dialog says they should.
+    The scenarios run in desktop mode unless they say otherwise.
     """
 
     scenarios = [
@@ -130,19 +131,66 @@ class TestConnectionParamsToEnv(BaseTestGenerator):
              file_paths={},
              expected_env={'PGSSLROOTCERT': 'system'}
          )),
+        ('Server mode names every credential file when none is set, so '
+         'that libpq does not use the service account\'s own',
+         dict(
+             server_mode=True,
+             connection_params=None,
+             expected_env={'PGPASSFILE': NO_CLIENT_FILE,
+                           'PGSSLCERT': NO_CLIENT_FILE,
+                           'PGSSLKEY': NO_CLIENT_FILE}
+         )),
+        ('Server mode keeps the user\'s own password file',
+         dict(
+             server_mode=True,
+             connection_params={'passfile': 'pgpass', 'sslmode': 'require'},
+             file_paths={'pgpass': '/storage/pgpass'},
+             expected_env={'PGPASSFILE': '/storage/pgpass',
+                           'PGSSLCERT': NO_CLIENT_FILE,
+                           'PGSSLKEY': NO_CLIENT_FILE,
+                           'PGSSLMODE': 'require'}
+         )),
+        ('Server mode passes on a configured file that does not exist',
+         dict(
+             server_mode=True,
+             connection_params={'sslkey': 'missing.key',
+                                'sslrootcert': 'missing.crt'},
+             file_paths={'missing.key': '/storage/missing.key',
+                         'missing.crt': '/storage/missing.crt'},
+             expected_env={'PGPASSFILE': NO_CLIENT_FILE,
+                           'PGSSLCERT': NO_CLIENT_FILE,
+                           'PGSSLKEY': '/storage/missing.key',
+                           'PGSSLROOTCERT': '/storage/missing.crt'}
+         )),
+        ('Server mode passes on a CRL directory that does not exist',
+         dict(
+             server_mode=True,
+             connection_params={'sslcrldir': 'missing'},
+             file_paths={'missing': '/storage/missing'},
+             dirs=[],
+             expected_env={'PGPASSFILE': NO_CLIENT_FILE,
+                           'PGSSLCERT': NO_CLIENT_FILE,
+                           'PGSSLKEY': NO_CLIENT_FILE,
+                           'PGSSLCRLDIR': '/storage/missing'}
+         )),
     ]
+
+    server_mode = False
 
     def runTest(self):
         file_paths = getattr(self, 'file_paths', None)
 
-        if file_paths is None:
-            env = connection_params_to_env(self.connection_params)
-        else:
-            dirs = getattr(self, 'dirs', [])
-            with patch('pgadmin.utils.get_complete_file_path',
-                       side_effect=lambda f, **kwargs: file_paths.get(f)), \
-                    patch('pgadmin.utils.os.path.isdir',
-                          side_effect=lambda d: d in dirs):
+        with patch('pgadmin.utils.client_files_isolated',
+                   return_value=self.server_mode):
+            if file_paths is None:
                 env = connection_params_to_env(self.connection_params)
+            else:
+                dirs = getattr(self, 'dirs', [])
+                with patch('pgadmin.utils.get_complete_file_path',
+                           side_effect=lambda f, **kwargs:
+                           file_paths.get(f)), \
+                        patch('pgadmin.utils.os.path.isdir',
+                              side_effect=lambda d: d in dirs):
+                    env = connection_params_to_env(self.connection_params)
 
         self.assertEqual(env, self.expected_env)

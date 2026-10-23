@@ -23,7 +23,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, client_files_isolated
 
 
 class SubscriptionModule(CollectionNodeModule):
@@ -690,7 +690,20 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         passfile = connection_details['passfile'] if \
             'passfile' in connection_details and \
             connection_details['passfile'] != '' else None
+
+        # In server mode a file is passed on even if it does not exist yet,
+        # rather than dropped, so that libpq does not use its default file
+        # in the service account's home directory in its place.
+        validate = not client_files_isolated()
+
+        def _file(path):
+            return get_complete_file_path(path, validate=validate)
+
         try:
+            sslrootcert = connection_details['sslrootcert']
+            if sslrootcert != 'system':
+                sslrootcert = _file(sslrootcert)
+
             from pgadmin.utils.driver import get_driver
             driver = get_driver(PG_DEFAULT_DRIVER)
             conn = driver.get_connection(
@@ -702,15 +715,14 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                     'password'] if 'password' in connection_details else None,
                 port=connection_details['port'] if
                 connection_details['port'] else None,
-                passfile=get_complete_file_path(passfile),
+                passfile=_file(passfile),
                 connect_timeout=connection_details['connect_timeout'] if
                 'connect_timeout' in connection_details and
                 connection_details['connect_timeout'] else 0,
                 sslmode=connection_details['sslmode'],
-                sslcert=get_complete_file_path(connection_details['sslcert']),
-                sslkey=get_complete_file_path(connection_details['sslkey']),
-                sslrootcert=get_complete_file_path(
-                    connection_details['sslrootcert']),
+                sslcert=_file(connection_details['sslcert']),
+                sslkey=_file(connection_details['sslkey']),
+                sslrootcert=sslrootcert,
                 sslcompression=True if connection_details[
                     'sslcompression'] else False,
             )

@@ -18,7 +18,8 @@ from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, html, does_utility_exist, \
-    get_server, database_conninfo
+    get_server, utility_conninfo, \
+    utility_connection_params
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.driver import get_driver
 
@@ -273,7 +274,8 @@ def create_maintenance_job(sid, did):
         str(manager.local_bind_port) if manager.use_ssh_tunnel
         else str(server.port),
         '--username', server.username,
-        '--dbname', database_conninfo(data['database']),
+        '--dbname', utility_conninfo(
+            data['database'], utility_connection_params(manager, server)),
         '--command', query
     ]
 

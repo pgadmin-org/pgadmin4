@@ -19,7 +19,8 @@ from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, does_utility_exist, get_server, \
-    filename_with_file_manager_path, database_conninfo, \
+    filename_with_file_manager_path, utility_conninfo, \
+    utility_connection_params, database_conninfo, client_files_isolated, \
     open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
@@ -259,12 +260,23 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             args.append(val)
 
     if backup_obj_type != 'objects':
-        args.append('--database')
-        args.append(server.maintenance_db)
+        # Never pass the maintenance database name directly: pg_dumpall
+        # expands a --database value containing "=" into a connection
+        # string, whose keywords (passfile, sslcert, service, host...) would
+        # override the connection settings pgAdmin sets. See
+        # database_conninfo().
+        args.extend(['--database', database_conninfo(server.maintenance_db)])
+        if client_files_isolated():
+            # pg_dumpall's --database conninfo does not reach the pg_dump
+            # processes it starts, but its --dbname keywords do, so pass
+            # the client files this way too.
+            args.extend(['--dbname', utility_conninfo(
+                None, utility_connection_params(manager, server))])
     else:
         # Never pass the user-supplied database name directly: see
         # database_conninfo() for why it is wrapped in a connection string.
-        args.extend(['--dbname', database_conninfo(data['database'])])
+        args.extend(['--dbname', utility_conninfo(
+            data['database'], utility_connection_params(manager, server))])
 
     if backup_obj_type == 'globals':
         args.append('--globals-only')

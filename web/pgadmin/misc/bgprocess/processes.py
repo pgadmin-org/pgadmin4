@@ -25,7 +25,7 @@ import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN, \
-    connection_params_to_env
+    connection_params_to_env, utility_connection_params
 from pgadmin.utils.constants import (KERBEROS, UTILITIES_ARRAY,
                                      BG_PROCESS_ERROR_MSGS)
 from pgadmin.utils.locker import ConnectionLocker
@@ -901,11 +901,8 @@ class BatchProcess:
         # unpassed for years, leaving pg_dump and friends unable to connect
         # to a server that the object explorer was perfectly happy with.
         # Prefer the manager's copy, which reflects the live connection.
-        connection_params = None
-        if self.manager_obj and self.manager_obj.connection_params:
-            connection_params = self.manager_obj.connection_params
-        elif server and getattr(server, 'connection_params', None):
-            connection_params = server.connection_params
+        connection_params = utility_connection_params(
+            self.manager_obj, server)
 
         conn_env = connection_params_to_env(connection_params)
 

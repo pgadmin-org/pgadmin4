@@ -29,6 +29,7 @@ from pgadmin.model import Server, SharedServer
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query
 from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils import isolate_client_credential_files
 from pgadmin.utils.passexec import build_passexec
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
@@ -398,7 +399,7 @@ class Driver(BaseDriver):
             return manager.connection(database=database, conn_id=conn_id,
                                       auto_reconnect=auto_reconnect)
         else:
-            return psycopg.Connection.connect(
+            params = dict(
                 host=kwargs['host'],
                 dbname=database,
                 user=kwargs['user'],
@@ -417,6 +418,8 @@ class Driver(BaseDriver):
                 sslcompression=True if kwargs[
                     'sslcompression'] else False
             )
+            return psycopg.Connection.connect(
+                **isolate_client_credential_files(params))
 
     def release_connection(self, sid, database=None, conn_id=None):
         """

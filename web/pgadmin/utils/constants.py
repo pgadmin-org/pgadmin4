@@ -189,6 +189,12 @@ CONNECTION_PARAM_FILE_PATHS = [
     'passfile', 'sslcert', 'sslkey', 'sslcrl'
 ]
 
+# Connection parameters naming a client credential file.  When one is not
+# given, libpq falls back to ~/.pgpass, ~/.postgresql/postgresql.crt or
+# ~/.postgresql/postgresql.key in the home directory of the account it runs
+# as, which in server mode is the pgAdmin service account, not the user.
+CONNECTION_PARAM_CREDENTIAL_FILES = ['passfile', 'sslcert', 'sslkey']
+
 # Connection parameters whose value is a directory selected through the
 # file manager, resolved in the same way but checked as a directory.
 CONNECTION_PARAM_DIR_PATHS = ['sslcrldir']

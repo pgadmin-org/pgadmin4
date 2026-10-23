@@ -29,7 +29,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from .schema_diff_view_utils import SchemaDiffViewCompare
-from pgadmin.utils import does_utility_exist, database_conninfo
+from pgadmin.utils import does_utility_exist, utility_conninfo, \
+    utility_connection_params
 from pgadmin.model import Server
 from pgadmin.utils.server_access import get_server
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
@@ -2466,7 +2467,8 @@ class MViewNode(ViewNode, VacuumSettings):
                 str(manager.local_bind_port) if manager.use_ssh_tunnel
                 else str(server.port),
                 '--username', server.username, '--dbname',
-                database_conninfo(data['database']),
+                utility_conninfo(data['database'],
+                                 utility_connection_params(manager, server)),
                 '--command', SQL
             ]
 

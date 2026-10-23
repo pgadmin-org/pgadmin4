@@ -20,7 +20,8 @@ from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils import get_complete_file_path, \
-    connection_param_bool_to_int, is_valid_connection_param_key
+    connection_param_bool_to_int, is_valid_connection_param_key, \
+    client_files_isolated, isolate_client_credential_files
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import process_masterpass_disabled
 from .connection import Connection
@@ -721,6 +722,12 @@ WHERE db.oid = {0}""".format(did))
         # refused the same way (see below).
         key_error = None
 
+        # In server mode a file is passed on even if it does not exist yet,
+        # rather than dropped, because libpq would then use its default file
+        # in the service account's home directory instead.  The path is
+        # still confined to the user's storage directory.
+        validate = not client_files_isolated()
+
         # Loop through all the connection parameters set in the server dialog.
         if self.connection_params and isinstance(self.connection_params, dict):
             for key, value in self.connection_params.items():
@@ -742,7 +749,8 @@ WHERE db.oid = {0}""".format(did))
                         (key == 'sslrootcert' and value != 'system'):
                     with_complete_path = True
                     try:
-                        value = get_complete_file_path(value)
+                        value = get_complete_file_path(
+                            value, validate=validate)
                     except PermissionError as e:
                         path_error = path_error or e
                         value = None
@@ -787,6 +795,8 @@ WHERE db.oid = {0}""".format(did))
         for k, v in keepalive_defaults.items():
             if k not in dsn_args:
                 dsn_args[k] = v
+
+        isolate_client_credential_files(dsn_args)
 
         self.display_connection_string = make_conninfo(**display_dsn_args)
 

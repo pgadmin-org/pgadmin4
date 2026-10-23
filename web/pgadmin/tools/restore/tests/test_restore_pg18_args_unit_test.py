@@ -85,8 +85,10 @@ class RestorePG18ArgsTestCase(BaseTestGenerator):
         server = MagicMock(host='localhost', port=5432, username='postgres')
         data = dict(format='custom', database='postgres', **self.data)
 
-        return get_restore_util_args(data, manager, server, MagicMock(),
-                                     MagicMock(), 'test_restore_file')
+        # utility_conninfo() needs the application context.
+        with self.app.app_context():
+            return get_restore_util_args(data, manager, server, MagicMock(),
+                                         MagicMock(), 'test_restore_file')
 
     def runTest(self):
         args = self._args()

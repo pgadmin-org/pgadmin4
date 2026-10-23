@@ -21,8 +21,8 @@ from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \
-    get_server, filename_with_file_manager_path, database_conninfo, \
-    open_utility_file_or_error
+    get_server, filename_with_file_manager_path, utility_conninfo, \
+    utility_connection_params, open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
@@ -318,7 +318,8 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
         set_value('role', '--role', data, args)
         # Never pass the user-supplied database name directly: see
         # database_conninfo() for why it is wrapped in a connection string.
-        args.extend(['--dbname', database_conninfo(data['database'])])
+        args.extend(['--dbname', utility_conninfo(
+            data['database'], utility_connection_params(manager, server))])
 
         if data['format'] == 'directory':
             args.extend(['--format=d'])
@@ -419,7 +420,8 @@ def get_sql_util_args(data, manager, server, filepath):
     args = [
         '-c', f'\\restrict {restrict_key}',
         '--file', fs_short_path(filepath),
-        '--dbname', database_conninfo(data['database'])
+        '--dbname', utility_conninfo(
+            data['database'], utility_connection_params(manager, server))
     ]
     if host:
         args.extend(['--host', host])

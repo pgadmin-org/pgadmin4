@@ -71,6 +71,8 @@ class TestSetEnvVariablesService(BaseTestGenerator):
             server = SimpleNamespace(service=self.server_service,
                                      connection_params={})
 
-        p.set_env_variables(server)
+        # Connection parameters are resolved against the app's mode.
+        with self.app.app_context():
+            p.set_env_variables(server)
 
         self.assertEqual(p.env.get('PGSERVICE'), self.expected)

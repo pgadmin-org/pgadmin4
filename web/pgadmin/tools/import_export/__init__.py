@@ -20,7 +20,7 @@ from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
     does_utility_exist, get_server, filename_with_file_manager_path, \
-    database_conninfo, open_utility_file_or_error
+    utility_conninfo, utility_connection_params, open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -533,7 +533,9 @@ def create_import_export_job(sid):
 
     # Never pass the user-supplied database name directly: see
     # database_conninfo() for why it is wrapped in a connection string.
-    args = ['--dbname', database_conninfo(data['database']),
+    args = ['--dbname',
+            utility_conninfo(data['database'],
+                             utility_connection_params(manager, server)),
             '--command', query]
 
     # In server mode, open the file ourselves without following a leaf
