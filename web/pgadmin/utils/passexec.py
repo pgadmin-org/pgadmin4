@@ -152,8 +152,8 @@ def convert_legacy_server_passexec(logger):
 
 # Variables copied from pgAdmin's environment into a server-mode password
 # exec command's environment. Everything else is withheld, because the
-# process environment can hold secrets such as another user's PGPASSWORD
-# (set by export_password_env) or the container's setup password.
+# process environment can hold secrets such as the container's setup
+# password.
 PASSEXEC_BASE_ENV = ('PATH', 'HOME', 'LANG', 'LANGUAGE', 'TZ', 'TMPDIR',
                      'TMP', 'TEMP', 'USER', 'LOGNAME')
 PASSEXEC_WINDOWS_ENV = ('SYSTEMROOT', 'SYSTEMDRIVE', 'PATHEXT', 'COMSPEC',

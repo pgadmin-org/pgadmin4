@@ -924,8 +924,10 @@ class BatchProcess:
             self.env['PGSERVICE'] = service
 
         if self.manager_obj:
-            # export password environment
-            self.manager_obj.export_password_env(self.id)
+            # Pass the password in this process's environment only, under
+            # its ID, which the process executor hands to the utility as
+            # PGPASSWORD.
+            self.manager_obj.export_password_env(self.env, self.id)
 
         if 'env' in kwargs:
             self.env.update(kwargs['env'])

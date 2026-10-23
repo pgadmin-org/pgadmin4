@@ -10,7 +10,6 @@
 """
 Implementation of ServerManager
 """
-import os
 import datetime
 import config
 import logging
@@ -562,16 +561,28 @@ WHERE db.oid = {0}""".format(did))
 
         return None
 
-    def export_password_env(self, env):
+    def export_password_env(self, env, name='PGPASSWORD'):
+        """
+        Put the server's password, if it has one, into env[name], where env
+        is the environment being built for a child process.
+
+        It must never go into os.environ: pgAdmin's own environment is
+        shared by every user's requests and copied into every process it
+        starts, so a password left there would be handed to other users'
+        utilities and psql sessions, and read by libpq for their
+        connections.
+
+        Returns:
+            False and an error message if the password cannot be
+            decrypted, otherwise None
+        """
         if self.password:
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
                 return False, crypt_key
-            password = decrypt(self.password, crypt_key).decode()
-            os.environ[str(env)] = password
+            env[str(name)] = decrypt(self.password, crypt_key).decode()
         elif self.passexec:
-            password = self.passexec.get()
-            os.environ[str(env)] = password
+            env[str(name)] = self.passexec.get()
 
     def create_ssh_tunnel(self, tunnel_password):
         """

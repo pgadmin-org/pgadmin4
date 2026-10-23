@@ -331,7 +331,7 @@ def execute(argv):
         _log('Status updated...')
 
         if os.environ.get(os.environ.get('PROCID', None), None):
-            os.environ['PGPASSWORD'] = os.environ[os.environ['PROCID']]
+            os.environ['PGPASSWORD'] = os.environ.pop(os.environ['PROCID'])
 
         kwargs = dict()
         kwargs['close_fds'] = False
