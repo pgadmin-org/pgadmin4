@@ -25,7 +25,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     unauthorized
 from pgadmin.model import ServerGroup, Server
-from pgadmin.utils import clear_database_servers, dump_database_servers,\
+from pgadmin.utils import dump_database_servers, \
     load_database_servers, validate_json_data, \
     filename_with_file_manager_path, get_file_manager_storage_dir
 from urllib.parse import unquote
@@ -195,11 +195,11 @@ def save():
         status, errmsg = \
             dump_database_servers(data['filename'], data['selected_sever_ids'])
     elif data['type'] == 'import':
-        # Clear all the existing servers
-        if 'replace_servers' in data and data['replace_servers']:
-            clear_database_servers()
-        status, errmsg = \
-            load_database_servers(data['filename'], data['selected_sever_ids'])
+        # The existing servers are cleared only once the file has been
+        # validated.
+        status, errmsg = load_database_servers(
+            data['filename'], data['selected_sever_ids'],
+            replace=bool(data.get('replace_servers')))
 
     if not status:
         return internal_server_error(errmsg)

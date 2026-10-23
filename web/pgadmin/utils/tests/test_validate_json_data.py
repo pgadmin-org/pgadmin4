@@ -131,6 +131,39 @@ class TestValidateJsonData(BaseTestGenerator):
              expected_error=None,
              expected_servers=["2"]
          )),
+        ('A non-admin shared server is dropped even when another server '
+         'fails validation',
+         dict(
+             servers={"1": server(Shared=True, SharedUsername="postgres"),
+                      "2": {"Group": "Servers", "Name": "No host",
+                            "Port": 5432, "Username": "postgres",
+                            "MaintenanceDB": "postgres"}},
+             is_admin=False,
+             expected_error="'Host' or 'Service' attribute not found",
+             expected_servers=["2"]
+         )),
+        ('A non-admin shared server without a name is dropped quietly',
+         dict(
+             servers={"1": {"Group": "Servers", "Shared": True,
+                            "Host": "127.0.0.1", "Port": 5432,
+                            "SharedUsername": "postgres",
+                            "MaintenanceDB": "postgres"},
+                      "2": server(Username="postgres")},
+             is_admin=False,
+             expected_error=None,
+             expected_servers=["2"]
+         )),
+        ('An admin keeps the shared server when another one fails '
+         'validation',
+         dict(
+             servers={"1": server(Shared=True, SharedUsername="postgres"),
+                      "2": {"Group": "Servers", "Name": "No host",
+                            "Port": 5432, "Username": "postgres",
+                            "MaintenanceDB": "postgres"}},
+             is_admin=True,
+             expected_error="'Host' or 'Service' attribute not found",
+             expected_servers=["1", "2"]
+         )),
     ]
 
     def runTest(self):

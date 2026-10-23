@@ -33,6 +33,18 @@ Use the fields in the *General* tab to identify the server:
 * If the *Shared?* switch is moved to *Yes* then that server can be
   shared with all the other users. This option is available only to admin users.
   For more information on users see :ref:`User Management Dialog <user_management>`.
+  Sharing a server, whether in this dialog, through the API or by importing a
+  servers.json file, is restricted to users with the *Administrator* role.
+  Servers that were shared by non-administrator users before this restriction
+  was introduced remain shared until they are un-shared, so administrators
+  should audit them: look for servers with the shared flag set in the
+  configuration database whose owner does not have the *Administrator* role.
+  pgAdmin logs a warning for each such server when it starts in server mode.
+  Such a server can be un-shared by its owner through the server API (a PUT
+  request on the server with ``"shared": false``), or by an administrator
+  changing the ``shared`` column of the server record in the pgAdmin
+  configuration database. The *Shared?* switch in this dialog is shown only
+  to administrators, and only the owner of a server can change it.
   Users can access the shared servers with some restrictions - the following
   operations on shared servers are not permitted:
 

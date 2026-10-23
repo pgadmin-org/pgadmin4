@@ -40,7 +40,7 @@ else:
 from pgadmin.model import db, Version, User, Role, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
-from pgadmin.utils import clear_database_servers, dump_database_servers, \
+from pgadmin.utils import dump_database_servers, \
     load_database_servers, _handle_error
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.setup import db_upgrade, create_app_data_directory
@@ -124,10 +124,8 @@ class ManageServers:
         try:
             app = create_app(config.APP_NAME + '-cli')
             with app.test_request_context():
-                if replace:
-                    clear_database_servers(load_user, True, auth_source)
                 load_database_servers(input_file, None, load_user, True,
-                                      auth_source)
+                                      auth_source, replace=replace)
         except Exception as e:
             print(str(e))
 

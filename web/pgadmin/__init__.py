@@ -557,6 +557,9 @@ def create_app(app_name=None):
         from pgadmin.utils.passexec import server_passexec_startup
         server_passexec_startup(app, cli_mode)
 
+        from pgadmin.utils import check_non_admin_shared_servers
+        check_non_admin_shared_servers(app.logger, cli_mode)
+
     Mail(app)
 
     # Don't bother paths when running in cli mode

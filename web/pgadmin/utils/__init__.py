@@ -983,22 +983,26 @@ def validate_json_data(data, is_admin):
     :param is_admin:
     :return: error message if any
     """
-    skip_servers = []
     # Loop through the servers...
     if "Servers" not in data:
         return gettext("'Servers' attribute not found in the specified file.")
 
+    # Shared servers can only be imported by administrators. Prune them
+    # before validating, so that they are dropped even when the
+    # validation of the remaining servers fails.
+    if not is_admin:
+        skip_servers = [server for server, obj in data["Servers"].items()
+                        if obj.get("Shared") is True]
+        for server in skip_servers:
+            print("Won't import the server '%s' as it is shared " %
+                  data["Servers"][server].get("Name", server))
+            del data["Servers"][server]
+
     for server in data["Servers"]:
         obj = data["Servers"][server]
 
-        is_shared = obj.get("Shared", None)
-
-        # Check if server is shared.Won't import if user is non-admin
-        if is_shared and not is_admin:
-            print("Won't import the server '%s' as it is shared " %
-                  obj["Name"])
-            skip_servers.append(server)
-            continue
+        # Only the JSON value true means shared, anything else is not.
+        is_shared = obj.get("Shared") is True
 
         def check_attrib(attrib):
             if attrib not in obj:
@@ -1053,9 +1057,45 @@ def validate_json_data(data, is_admin):
             return gettext("'Host' or 'Service' attribute not "
                            "found for server '%s'" % server)
 
-    for server in skip_servers:
-        del data["Servers"][server]
     return None
+
+
+def check_non_admin_shared_servers(logger, cli_mode=False):
+    """Server mode only: log a warning for each server that is shared by a
+    user who is not an administrator. Only administrators can share a
+    server now, but servers shared before that restriction stay shared
+    until they are un-shared. Read-only, and it never raises, so it cannot
+    block the startup. Credentials and host details are not logged.
+    Returns the number of servers found."""
+    if not config.SERVER_MODE or cli_mode:
+        return 0
+    try:
+        rows = db.session.query(Server.id, Server.name, Server.user_id) \
+            .filter(Server.shared.is_(True)).all()
+        found = 0
+        owner_is_admin = {}
+        for server_id, name, user_id in rows:
+            if user_id not in owner_is_admin:
+                owner = db.session.get(User, user_id)
+                owner_is_admin[user_id] = owner is not None and \
+                    owner.has_role('Administrator')
+            if owner_is_admin[user_id]:
+                continue
+            found += 1
+            logger.warning(
+                "Server %s ('%s') is shared by user %s, who is not an "
+                "administrator. The owner can un-share it with a PUT of "
+                "\"shared\": false through the API, or an administrator "
+                "can change its 'shared' column in the configuration "
+                "database.", server_id, name, user_id)
+        return found
+    except Exception as e:
+        try:
+            logger.warning("Unable to check for servers shared by "
+                           "non-administrators: %s", e)
+        except Exception:
+            pass
+        return 0
 
 
 def _load_server_passexec(new_server, obj):
@@ -1081,8 +1121,11 @@ def _load_server_passexec(new_server, obj):
 
 def load_database_servers(input_file, selected_servers,
                           load_user=current_user, from_setup=False,
-                          auth_source=INTERNAL):
+                          auth_source=INTERNAL, replace=False):
     """Load server groups and servers.
+
+    :param replace: clear the user's existing servers once the file has
+        been validated, and just before the servers are loaded.
     """
     user = _does_user_exist(load_user, from_setup, auth_source)
     if user is None:
@@ -1149,14 +1192,31 @@ def load_database_servers(input_file, selected_servers,
     groups = ServerGroup.query.filter_by(user_id=user_id)
 
     # Validate server data
-    error_msg = validate_json_data(data, user.has_role("Administrator"))
-    if error_msg is not None and from_setup:
-        print(ADD_SERVERS_MSG % (groups_added, servers_added))
+    is_admin = user.has_role("Administrator")
+    error_msg = validate_json_data(data, is_admin)
+    if error_msg is not None:
+        if from_setup:
+            print(ADD_SERVERS_MSG % (groups_added, servers_added))
         return _handle_error(error_msg, from_setup)
+
+    if replace:
+        # Clear the existing servers only once the file is known to be
+        # valid, so that a refused file does not lose the user's servers.
+        result = clear_database_servers(load_user, from_setup, auth_source)
+        if result is not None and result is not True:
+            return result
 
     for server in data["Servers"]:
         if selected_servers is None or str(server) in selected_servers:
             obj = data["Servers"][server]
+
+            # Defence in depth: only administrators can import shared
+            # servers. Checked before the group is created, so that no
+            # empty group is left behind.
+            if obj.get("Shared") is True and not is_admin:
+                print("Won't import the server '%s' as it is shared " %
+                      obj.get("Name", server))
+                continue
 
             # Get the group. Create if necessary
             group_id = next(
@@ -1181,7 +1241,8 @@ def load_database_servers(input_file, selected_servers,
                 groups_added = groups_added + 1
                 groups = ServerGroup.query.filter_by(user_id=user_id)
 
-            is_shared = obj.get("Shared", None)
+            # Only the JSON value true means shared, as in validation.
+            is_shared = obj.get("Shared") is True
             username = obj.get("Username", None)
             shared_username = obj.get("SharedUsername", None)
             if is_shared and username is None:
@@ -1266,9 +1327,10 @@ def load_database_servers(input_file, selected_servers,
             new_server.tunnel_keep_alive = \
                 obj.get("TunnelKeepAlive", None)
 
-            new_server.shared = is_shared
+            new_server.shared = is_shared and is_admin
 
-            new_server.shared_username = shared_username
+            new_server.shared_username = \
+                shared_username if new_server.shared else None
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 

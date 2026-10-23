@@ -58,6 +58,16 @@ export function passexecForServerCopy(d) {
   return d;
 }
 
+// Only an administrator can share a server, so a copy made by anyone else
+// is not shared, and does not carry the shared user name.
+export function sharingForServerCopy(d, user) {
+  if (d?.shared && !user?.is_admin) {
+    d.shared = false;
+    d.shared_username = null;
+  }
+  return d;
+}
+
 export function getConnectionParameters() {
   let conParams = [{
     'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'

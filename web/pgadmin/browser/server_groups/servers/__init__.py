@@ -74,6 +74,26 @@ def _is_non_owner(server):
     return server.shared and server.user_id != current_user.id
 
 
+def prepare_sharing_data(data, server=None):
+    """Refuse a create or update payload sent to the servers API that would
+    share a server unless it comes from an administrator, matching the
+    server dialog. The servers.json import enforces the same rule
+    separately, in validate_json_data and load_database_servers.
+    Returns (data, errormsg); data is a plain dict copy.
+
+    A shared value that changes nothing, such as an unchanged false or a
+    non-owner's true, is let through. shared_username only matters for a
+    shared server, and the dialog can send it for anyone because it follows
+    the username field, so it is dropped rather than refused."""
+    data = dict(data)
+    if not config.SERVER_MODE or current_user.has_role('Administrator'):
+        return data, None
+    if data.get('shared') and not (server is not None and server.shared):
+        return data, gettext('Only an administrator can share a server.')
+    data.pop('shared_username', None)
+    return data, None
+
+
 def prepare_passexec_data(data, is_non_owner):
     """Validate and normalise the password exec fields of a create or
     update payload. Returns (data, errormsg); data is a plain dict copy,
@@ -1003,6 +1023,10 @@ class ServerNode(PGChildNodeView):
             request.data
         )
 
+        data, sharing_err = prepare_sharing_data(data, server)
+        if sharing_err:
+            return forbidden(errmsg=sharing_err)
+
         data, passexec_err = prepare_passexec_data(
             data, _is_non_owner(server))
         if passexec_err:
@@ -1369,6 +1393,10 @@ class ServerNode(PGChildNodeView):
         for item in data:
             if data[item] == '':
                 data[item] = None
+
+        data, sharing_err = prepare_sharing_data(data)
+        if sharing_err:
+            return forbidden(errmsg=sharing_err)
 
         data, passexec_err = prepare_passexec_data(data, False)
         if passexec_err:
