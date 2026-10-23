@@ -13,7 +13,7 @@
 ###############################################################################
 
 Authlib==1.6.*; python_version <= '3.9'
-Authlib==1.8.*; python_version > '3.9'
+Authlib==1.9.*; python_version > '3.9'
 azure-identity==1.26.0
 azure-mgmt-rdbms==10.1.1
 # Azure CLI (a common companion package on Linux distros) still pins
