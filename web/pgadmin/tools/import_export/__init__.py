@@ -283,18 +283,26 @@ def _is_query_parens_balanced(query):
     skip content inside those constructs either, or an attacker can
     hide an unbalanced ) inside them to bypass validation.
 
-    Backslash handling inside single-quoted strings is ambiguous:
-    psql treats \\ as a plain character when
+    Backslash handling inside a quoted token is ambiguous: psql
+    treats \\ as a plain character when
     standard_conforming_strings=on (the default since PG 9.1, and
     the default on every PostgreSQL version pgAdmin 4 supports), but
     as an escape character when scs=off or inside E'...' strings.
+    strtokx takes that escape character from the connection's scs
+    setting and applies it to whichever quote opened the token, so
+    the ambiguity affects double-quoted identifiers exactly as it
+    affects single-quoted strings.
+
     Silently picking one interpretation can let a crafted query be
-    accepted here while psql parses it differently (e.g. a \\'
-    that we treat as "still inside the string" while psql, under
-    the default scs=on, treats it as the string's closing quote,
-    exposing a real ')' immediately after). Rather than guess the
-    server's scs setting, we reject any query containing a
-    backslash inside a single-quoted string outright.
+    accepted here while psql parses it differently, in either
+    direction: a \\' that we treat as "still inside the string"
+    while psql, under the default scs=on, treats as the string's
+    closing quote, or a \\" that we treat as closing an identifier
+    while psql, under scs=off, treats as an escaped quote. Either
+    desynchronises our quote state from psql's and leaves a real ')'
+    exposed to close the wrapping \\copy (...) context. Rather than
+    guess the server's scs setting, we reject any query containing a
+    backslash inside a quoted token outright.
     """
     depth = 0
     i = 0
@@ -325,12 +333,19 @@ def _is_query_parens_balanced(query):
             i += 1
             continue
 
-        # Double-quoted identifier: skip to closing quote
-        # (handles "" escape sequences — matches strtokx behavior)
+        # Double-quoted identifier: skip to closing quote.
+        # Handles the "" escape sequence to match psql's strtokx.
+        # A bare backslash is rejected outright for the same reason
+        # as in a single-quoted string (see docstring): strtokx
+        # applies its escape character to whichever quote opened the
+        # token, so under standard_conforming_strings=off a \" is an
+        # escaped quote to psql but a closing quote to us.
         if ch == '"':
             i += 1
             while i < length:
-                if query[i] == '"':
+                if query[i] == '\\':
+                    return False  # ambiguous escape: reject
+                elif query[i] == '"':
                     if i + 1 < length and query[i + 1] == '"':
                         i += 2  # escaped quote
                     else:

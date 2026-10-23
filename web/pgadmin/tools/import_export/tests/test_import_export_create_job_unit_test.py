@@ -116,6 +116,25 @@ class IEQueryParensBalancedTest(BaseTestGenerator):
         ('Unbalanced: scs=on backslash-quote RCE bypass (CVE)',
          dict(query="SELECT 'a\\') TO PROGRAM 'echo pwned' x'",
               expected=False)),
+        # CVE regression: the mirror image of the case above, in a
+        # double-quoted identifier. strtokx applies its escape
+        # character to whichever quote opened the token, so with
+        # standard_conforming_strings=off the \\" in "a\\"b" is an
+        # escaped quote to psql and the identifier runs on to the
+        # next quote, whereas the old parser closed the identifier
+        # at that quote, opened a second one, and so believed the
+        # ')' was quoted. psql sees it live, closes the wrapping
+        # \\copy (...) context and honours the TO PROGRAM clause,
+        # which popen()s before the backend ever rejects the SQL.
+        # An ordinary role can set scs=off on itself, so this needs
+        # no privileged database access.
+        ('Unbalanced: scs=off backslash-quote identifier bypass',
+         dict(query='SELECT "a\\"b"c) TO PROGRAM \'echo pwned\' x"',
+              expected=False)),
+        ('Rejected: backslash inside double-quoted identifier',
+         dict(query='SELECT "a\\b" FROM t', expected=False)),
+        ('Balanced: doubled quote inside identifier',
+         dict(query='SELECT "a""b)" FROM t', expected=True)),
     ]
 
     def runTest(self):
