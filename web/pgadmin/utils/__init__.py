@@ -390,8 +390,13 @@ def client_files_isolated():
     Whether connections are made on behalf of a user who must not use the
     client files of the account pgAdmin runs as, which is so in server
     mode.  The test is the one get_complete_file_path() uses.
+
+    PGADMIN_RUNTIME is set by the entry points that know they run as the
+    desktop runtime.  When it is missing (as in the setup.py CLI commands)
+    this is not the desktop runtime, so server mode still isolates: the
+    check fails closed.
     """
-    return not (current_app.PGADMIN_RUNTIME or
+    return not (getattr(current_app, 'PGADMIN_RUNTIME', False) or
                 not current_app.config['SERVER_MODE'])
 
 
@@ -416,6 +421,87 @@ def isolate_client_credential_files(params, names=None):
             if not params.get(key):
                 params[key] = NO_CLIENT_FILE
     return params
+
+
+class ServiceNotAllowed(PermissionError):
+    """A connection service that may not be used in server mode."""
+
+
+def service_allowed(service):
+    """
+    Whether a server may connect using the named libpq service.
+
+    The service is looked up in the service file of the account pgAdmin
+    runs as, whose entries can hold passwords and other credentials, so in
+    server mode only the services the administrator has listed in
+    SERVER_MODE_ALLOWED_SERVICES may be used. Any service may be used in
+    desktop mode.
+    """
+    if not service or not client_files_isolated():
+        return True
+    allowed = current_app.config.get('SERVER_MODE_ALLOWED_SERVICES') or []
+    if isinstance(allowed, str):
+        # A lone string would otherwise allow any substring of it.
+        allowed = [allowed]
+    return service in allowed
+
+
+def check_service_allowed(service):
+    """
+    Raise ServiceNotAllowed, with a message for the user and administrator,
+    if a server may not connect using the named libpq service.
+    """
+    if not service_allowed(service):
+        raise ServiceNotAllowed(gettext(
+            'The service "{0}" cannot be used in server mode because it is '
+            'not listed in SERVER_MODE_ALLOWED_SERVICES. Ask the pgAdmin '
+            'administrator to add it to that setting in the pgAdmin '
+            'configuration, or clear the service in the server\'s '
+            'properties.').format(service))
+
+
+def check_connection_params_allowed(params):
+    """
+    Raise ServiceNotAllowed if a server's connection parameters, as a dict,
+    name a service that may not be used, or, in server mode, a service file:
+    either would let the user read entries from a service file that is not
+    theirs.
+    """
+    if not params or not isinstance(params, dict):
+        return
+    check_service_allowed(params.get('service'))
+    if params.get('servicefile') and client_files_isolated():
+        raise ServiceNotAllowed(gettext(
+            'The servicefile connection parameter cannot be used in server '
+            'mode.'))
+
+
+# Variables the account pgAdmin runs as may have set that libpq would read
+# for every connection made without a value of its own: PGPASSWORD supplies
+# a password, and PGSERVICE selects a service file entry, which can hold
+# one. PGSERVICEFILE and PGSYSCONFDIR are kept, because they locate the
+# services listed in SERVER_MODE_ALLOWED_SERVICES, and only those can be
+# selected.
+INHERITED_LIBPQ_CREDENTIAL_VARS = ('PGPASSWORD', 'PGSERVICE')
+
+
+def remove_inherited_libpq_credentials(logger=None):
+    """
+    Remove INHERITED_LIBPQ_CREDENTIAL_VARS from pgAdmin's own environment,
+    so that in server mode neither libpq nor any process pgAdmin starts can
+    use them on behalf of a user.
+
+    Returns:
+        the names of the variables removed
+    """
+    removed = [var for var in INHERITED_LIBPQ_CREDENTIAL_VARS
+               if os.environ.pop(var, None) is not None]
+    if removed and logger is not None:
+        logger.warning(
+            'Ignoring %s in the environment: in server mode, connections '
+            'must not use the credentials of the account pgAdmin runs as.',
+            ', '.join(removed))
+    return removed
 
 
 def connection_param_bool_to_int(value):
@@ -1111,6 +1197,16 @@ def validate_json_data(data, is_admin):
         if "Host" not in obj and not is_service_attrib_available:
             return gettext("'Host' or 'Service' attribute not "
                            "found for server '%s'" % server)
+
+        conn_params = obj.get("ConnectionParameters", None)
+        conn_params = dict(conn_params) \
+            if isinstance(conn_params, dict) else {}
+        if is_service_attrib_available:
+            conn_params['service'] = obj["Service"]
+        try:
+            check_connection_params_allowed(conn_params)
+        except ServiceNotAllowed as e:
+            return gettext("Server '%s': %s") % (server, e)
 
     return None
 

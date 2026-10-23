@@ -8,7 +8,8 @@
 ##########################################################################
 
 """Tests that a job whose environment cannot be resolved (a refused
-connection file path) leaves no never-started row behind."""
+connection file path, or a service that is not allowed) leaves no
+never-started row behind."""
 
 import os
 import shutil
@@ -19,6 +20,7 @@ from unittest.mock import MagicMock, patch
 
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.model import Process, User, db
+from pgadmin.utils import ServiceNotAllowed
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -41,7 +43,13 @@ class TestSetEnvVariablesRefusedDiscardsJob(BaseTestGenerator):
          dict(passfile='../bob/.pgpass', refused=True)),
         ('A passfile in storage keeps the job',
          dict(passfile='/.pgpass', refused=False)),
+        ('A service that is not allowed discards the job',
+         dict(passfile='/.pgpass', refused=True, service='forbidden',
+              exception=ServiceNotAllowed)),
     ]
+
+    service = None
+    exception = PermissionError
 
     def setUp(self):
         # No test server is needed.
@@ -70,9 +78,11 @@ class TestSetEnvVariablesRefusedDiscardsJob(BaseTestGenerator):
     def runTest(self):
         params = {'passfile': self.passfile}
         manager = MagicMock(connection_params=params, use_ssh_tunnel=False,
-                            service=None, kerberos_conn=False)
+                            service=self.service, kerberos_conn=False)
         with self.app.test_request_context(), \
-                patch.dict(self.app.config, {'SERVER_MODE': True}), \
+                patch.dict(self.app.config, {
+                    'SERVER_MODE': True,
+                    'SERVER_MODE_ALLOWED_SERVICES': []}), \
                 patch.object(self.app, 'PGADMIN_RUNTIME', False), \
                 patch('pgadmin.utils.get_storage_directory',
                       return_value=self.alice), \
@@ -87,8 +97,11 @@ class TestSetEnvVariablesRefusedDiscardsJob(BaseTestGenerator):
             self.assertTrue(os.path.isdir(p.log_dir))
 
             if self.refused:
-                with self.assertRaises(PermissionError):
+                with self.assertRaises(self.exception) as cm:
                     p.set_env_variables(None)
+                if self.service:
+                    self.assertIn('SERVER_MODE_ALLOWED_SERVICES',
+                                  str(cm.exception))
                 self.assertIsNone(
                     Process.query.filter_by(pid=self.pid).first())
                 self.assertFalse(os.path.exists(p.log_dir))

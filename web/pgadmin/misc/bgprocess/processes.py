@@ -25,7 +25,7 @@ import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN, \
-    connection_params_to_env, utility_connection_params
+    connection_params_to_env, utility_connection_params, check_service_allowed
 from pgadmin.utils.constants import (KERBEROS, UTILITIES_ARRAY,
                                      BG_PROCESS_ERROR_MSGS)
 from pgadmin.utils.locker import ConnectionLocker
@@ -921,6 +921,7 @@ class BatchProcess:
         else:
             service = server.service if server else None
         if service:
+            check_service_allowed(service)
             self.env['PGSERVICE'] = service
 
         if self.manager_obj:

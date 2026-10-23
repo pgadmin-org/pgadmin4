@@ -8,6 +8,7 @@
 ##########################################################################
 
 import json
+from unittest.mock import patch
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -22,6 +23,11 @@ class AddServerTest(BaseTestGenerator):
 
     def setUp(self):
         servers_utils.restore_server_fixture_on_cleanup(self)
+        # In server mode, a server may only use a listed service.
+        allow = patch.dict(self.app.config,
+                           {'SERVER_MODE_ALLOWED_SERVICES': ['TestDB']})
+        allow.start()
+        self.addCleanup(allow.stop)
 
     def create_server(self, url):
         return self.tester.post(

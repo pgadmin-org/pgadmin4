@@ -1363,6 +1363,52 @@ class BackupCreateJobTest(BaseTestGenerator):
                              "dbname=postgres'",
              expected_exit_code=[0, None]
          )),
+        ('When backup the server the maintenance database is passed '
+         'as a dbname connection string',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 verbose=True,
+                 type='server'
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[],
+             not_expected_cmd_opts=[],
+             expected_database=True,
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the globals the maintenance database is passed '
+         'as a dbname connection string',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 verbose=True,
+                 type='globals'
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--globals-only'],
+             not_expected_cmd_opts=[],
+             expected_database=True,
+             expected_exit_code=[0, None]
+         )),
         ('When backup the object with option - Do not save Row security '
          'policies, Data, Schema (>= v18)',
          dict(
@@ -1614,6 +1660,15 @@ class BackupCreateJobTest(BaseTestGenerator):
                     args[args.index('--dbname') + 1]).items()
                  if k not in ('passfile', 'sslcert', 'sslkey')},
                 conninfo_to_dict(self.expected_dbname))
+        # Server and globals backups pass the maintenance database to
+        # --database, which pg_dumpall expands in the same way, so it must
+        # be a dbname connection string (see
+        # test_backup_maintenance_db_conninfo.py for hostile names).
+        if getattr(self, 'expected_database', None):
+            args = batch_process_mock.call_args_list[0][1]['args']
+            self.assertIn('--database', args)
+            self.assertTrue(
+                args[args.index('--database') + 1].startswith('dbname='))
 
 
 class BackupCreateJobDatabaseRequiredTest(BaseTestGenerator):

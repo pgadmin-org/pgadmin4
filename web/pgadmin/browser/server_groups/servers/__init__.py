@@ -47,7 +47,8 @@ from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
 from pgadmin.utils import get_complete_file_path, \
-    get_invalid_connection_param_key
+    get_invalid_connection_param_key, ServiceNotAllowed, \
+    check_connection_params_allowed
 from pgadmin.settings.utils import with_object_filters
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query, get_server_group
@@ -92,6 +93,42 @@ def prepare_sharing_data(data, server=None):
         return data, gettext('Only an administrator can share a server.')
     data.pop('shared_username', None)
     return data, None
+
+
+def _named_connection_params(params):
+    """Yield (name, value) for each connection parameter a create or update
+    payload sets, whether it is in the stored dict shape, the dialog's
+    list of {name, value}, or an update's added/changed delta."""
+    if isinstance(params, dict):
+        if any(k in params for k in ('added', 'changed', 'deleted')):
+            for key in ('added', 'changed'):
+                for item in params.get(key) or []:
+                    if isinstance(item, dict) and 'name' in item:
+                        yield item['name'], item.get('value')
+            return
+        yield from params.items()
+    elif isinstance(params, list):
+        for item in params:
+            if isinstance(item, dict) and 'name' in item:
+                yield item['name'], item.get('value')
+
+
+def check_service_data(data):
+    """Return an error message if a create or update payload sets a
+    service, either as the server's service or as a connection parameter,
+    that may not be used in server mode, or a service file, or None."""
+    params = {}
+    if data.get('service'):
+        params['service'] = data['service']
+    for name, value in _named_connection_params(
+            data.get('connection_params')):
+        if name in ('service', 'servicefile') and value:
+            params[name] = value
+    try:
+        check_connection_params_allowed(params)
+    except ServiceNotAllowed as e:
+        return str(e)
+    return None
 
 
 def prepare_passexec_data(data, is_non_owner):
@@ -1033,6 +1070,10 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 success=0, status=400, errormsg=passexec_err)
 
+        service_err = check_service_data(data)
+        if service_err:
+            return forbidden(errmsg=service_err)
+
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
 
@@ -1402,6 +1443,10 @@ class ServerNode(PGChildNodeView):
         if passexec_err:
             return make_json_response(
                 success=0, status=400, errormsg=passexec_err)
+
+        service_err = check_service_data(data)
+        if service_err:
+            return forbidden(errmsg=service_err)
 
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()

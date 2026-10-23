@@ -1129,6 +1129,24 @@ SERVER_PASSEXEC_COMMANDS = {}
 SERVER_PASSEXEC_ENV_PASSTHROUGH = []
 
 #############################################################################
+# SERVER_MODE_ALLOWED_SERVICES lists the libpq service names that a server
+# may use in server mode, for example ['reporting']. Services are looked up
+# in the connection service file of the account pgAdmin runs as
+# (~/.pg_service.conf, or the file named by PGSERVICEFILE or found in
+# PGSYSCONFDIR), not in a file belonging to the pgAdmin user. A server set
+# to use any other service cannot be saved or connected to. An empty list
+# (the default) allows no services. This setting is applicable only for
+# server mode; any service may be used in desktop mode.
+#
+# WARNING: listing a service shares its credentials with every pgAdmin
+# user. Any user can connect using a listed service, including any
+# password, password file or client certificate its entry names, and can
+# override the entry's host to send that password to a server of their
+# own choosing.
+#############################################################################
+SERVER_MODE_ALLOWED_SERVICES = []
+
+#############################################################################
 # DEPRECATED and ignored: free-text password exec commands are never run in
 # server mode. Use SERVER_PASSEXEC_COMMANDS instead.
 #############################################################################

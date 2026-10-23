@@ -15,7 +15,8 @@ from flask import request, current_app
 from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from flask_security import current_user
-from pgadmin.utils import PgAdminModule, get_invalid_connection_param_key
+from pgadmin.utils import PgAdminModule, get_invalid_connection_param_key, \
+    ServiceNotAllowed, check_connection_params_allowed
 from pgadmin.model import db, Server
 from pgadmin.utils.server_access import get_server
 from pgadmin.utils.driver import get_driver
@@ -129,6 +130,16 @@ def adhoc_connect_server():
         # set the connection params again in the data
         if 'connection_params' in data:
             data['connection_params'] = connection_params
+
+    # The service is looked up in the service file of the account pgAdmin
+    # runs as, so in server mode only an allowed one may be used.
+    params = dict(connection_params or {})
+    if data.get('service', None):
+        params['service'] = data['service']
+    try:
+        check_connection_params_allowed(params)
+    except ServiceNotAllowed as e:
+        return make_json_response(success=0, status=403, errormsg=str(e))
 
     # Fetch all the new data in case of non-existing servers
     new_host = data.get('host', None)

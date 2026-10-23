@@ -262,9 +262,9 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     if backup_obj_type != 'objects':
         # Never pass the maintenance database name directly: pg_dumpall
         # expands a --database value containing "=" into a connection
-        # string, whose keywords (passfile, sslcert, service, host...) would
-        # override the connection settings pgAdmin sets. See
-        # database_conninfo().
+        # string, whose keywords (passfile, sslcert, service, servicefile,
+        # host...) would override the connection settings pgAdmin sets, or
+        # select a service. See database_conninfo().
         args.extend(['--database', database_conninfo(server.maintenance_db)])
         if client_files_isolated():
             # pg_dumpall's --database conninfo does not reach the pg_dump

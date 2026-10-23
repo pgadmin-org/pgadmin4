@@ -7,6 +7,7 @@
 #
 ##########################################################################
 import copy
+from unittest.mock import patch
 
 from pgadmin.utils import validate_json_data
 from pgadmin.utils.route import BaseTestGenerator
@@ -168,7 +169,11 @@ class TestValidateJsonData(BaseTestGenerator):
 
     def runTest(self):
         data = {"Servers": copy.deepcopy(self.servers)}
-        errmsg = validate_json_data(data, self.is_admin)
+        # A service must be listed to be imported in server mode.
+        with self.app.test_request_context(), \
+                patch.dict(self.app.config,
+                           {'SERVER_MODE_ALLOWED_SERVICES': ['pgsql']}):
+            errmsg = validate_json_data(data, self.is_admin)
 
         if self.expected_error is None:
             self.assertIsNone(errmsg)

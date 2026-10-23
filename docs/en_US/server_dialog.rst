@@ -108,6 +108,17 @@ Use the fields in the *Connection* tab to configure a connection:
   see
   `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgservice.html>`_.
 
+  In server mode, services are read from the connection service file of the
+  account that pgAdmin runs as, so a server can use only a service that the
+  administrator has listed in the ``SERVER_MODE_ALLOWED_SERVICES`` setting
+  (see :ref:`config_py`), which is empty by default. A server that uses any
+  other service cannot be saved, and an existing one fails to connect with an
+  error naming the setting. Listing a service shares its credentials, such as
+  a password in its entry, with every pgAdmin user. The ``servicefile``
+  connection parameter cannot be used in server mode, and pgAdmin ignores any
+  ``PGPASSWORD`` or ``PGSERVICE`` environment variable set for the account it
+  runs as.
+
 Click the *Parameters* tab to continue.
 
 .. image:: images/server_parameters.png

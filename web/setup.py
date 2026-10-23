@@ -96,6 +96,9 @@ class ManageServers:
 
         try:
             app = create_app(config.APP_NAME + '-cli')
+            # Not the desktop runtime: client_files_isolated() reads this,
+            # but only pgAdmin4.py and a few other entry points set it.
+            app.PGADMIN_RUNTIME = False
             with app.test_request_context():
                 dump_database_servers(output_file, server, dump_user, True,
                                       auth_source)
@@ -123,6 +126,9 @@ class ManageServers:
 
         try:
             app = create_app(config.APP_NAME + '-cli')
+            # Not the desktop runtime: client_files_isolated() reads this,
+            # but only pgAdmin4.py and a few other entry points set it.
+            app.PGADMIN_RUNTIME = False
             with app.test_request_context():
                 load_database_servers(input_file, None, load_user, True,
                                       auth_source, replace=replace)

@@ -40,7 +40,8 @@ from flask_wtf.csrf import CSRFError
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
+from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat, \
+    remove_inherited_libpq_credentials
 from pgadmin.utils.db_utils import normalize_database_uri
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
@@ -327,6 +328,11 @@ def create_app(app_name=None):
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('########################################################')
     app.logger.debug("Python syspath: %s", sys.path)
+
+    # In server mode, libpq connects on behalf of pgAdmin users, so must not
+    # pick up a password or service from the service account's environment.
+    if config.SERVER_MODE is True:
+        remove_inherited_libpq_credentials(app.logger)
 
     ##########################################################################
     # Setup i18n

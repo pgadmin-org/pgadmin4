@@ -20,7 +20,8 @@ from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils import get_complete_file_path, \
     connection_param_bool_to_int, is_valid_connection_param_key, \
-    client_files_isolated, isolate_client_credential_files
+    client_files_isolated, isolate_client_credential_files, \
+    check_connection_params_allowed
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import process_masterpass_disabled
 from .connection import Connection
@@ -30,7 +31,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import build_passexec
-from psycopg.conninfo import make_conninfo
+from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
@@ -809,6 +810,17 @@ WHERE db.oid = {0}""".format(did))
 
         isolate_client_credential_files(dsn_args)
 
+        # The server's service and a 'service' connection parameter are
+        # both looked up in the service account's service file, so both
+        # are checked. Only the server's service is passed to utilities
+        # (PGSERVICE, via BatchProcess.set_env_variables): 'service' is
+        # not in CONNECTION_PARAM_ENV_VARS, so a service set only as a
+        # connection parameter applies to pgAdmin's own connections.
+        # This is checked before building the display string, as a libpq
+        # that does not know an option such as servicefile would fail to
+        # build it.
+        check_connection_params_allowed(dsn_args)
+
         self.display_connection_string = make_conninfo(**display_dsn_args)
 
         # Raised as PermissionError, like a refused path, so the same guard
@@ -825,4 +837,14 @@ WHERE db.oid = {0}""".format(did))
         if path_error is not None:
             raise path_error
 
-        return make_conninfo(**dsn_args)
+        conn_string = make_conninfo(**dsn_args)
+
+        # make_conninfo() quotes parameter values but not their keys, so a
+        # crafted key such as 'sslmode=prefer service' smuggles its own
+        # service= into the connection string and slips past the dict check
+        # above, which matches the exact key 'service'. Re-check the parsed
+        # final string, which is exactly what libpq will act on, so the
+        # allowlist holds regardless of how the parameters were serialised.
+        check_connection_params_allowed(conninfo_to_dict(conn_string))
+
+        return conn_string
