@@ -468,9 +468,12 @@ def create_backup_objects_job(sid):
         backup_file = filename_with_file_manager_path(
             data['file'], (data.get('format', '') != 'directory'))
     except PermissionError as e:
-        return unauthorized(errormsg=str(e))
+        return unauthorized(errormsg=e.strerror or str(e))
     except Exception as e:
-        return bad_request(errormsg=str(e))
+        # str(e) would include the user's absolute storage path (e.g. the
+        # OSError from a symlinked parent directory); strerror is the reason
+        # without the path, matching open_utility_file_or_error().
+        return bad_request(errormsg=getattr(e, 'strerror', None) or str(e))
 
     # Fetch the server details like hostname, port, roles etc
     server = get_server(sid)

@@ -440,14 +440,30 @@ def open_utility_file(path, for_write, is_directory=False, root=None):
 
     flags = os.O_NONBLOCK
     if for_write:
-        flags |= os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+        # O_TRUNC is applied only after the hard-link check below, so a
+        # second name for a file outside the storage directory is never
+        # emptied before we have refused it.
+        flags |= os.O_WRONLY | os.O_CREAT
     else:
         flags |= os.O_RDONLY
     fd = _open_beneath(root, path, flags, 0o600)
     try:
-        if not stat.S_ISREG(os.fstat(fd).st_mode):
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
             raise OSError(errno.EINVAL,
                           gettext("Not a regular file"), path)
+        # A hard link is an ordinary file O_NOFOLLOW cannot detect; refuse a
+        # second name for the same inode, which could be a file outside the
+        # storage directory. st_nlink == 0 means the file was unlinked after
+        # the open, which is refused too.
+        if st.st_nlink > 1:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file with multiple hard links"), path)
+        if st.st_nlink == 0:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file that was unlinked after opening"), path)
+        if for_write:
+            os.ftruncate(fd, 0)
         if not _dev_fd_reopens():
             # Elsewhere, opening /dev/fd/N dup()s the descriptor, so the
             # utility would share its file offset, which pg_restore cannot
@@ -455,7 +471,8 @@ def open_utility_file(path, for_write, is_directory=False, root=None):
             # and seeked, and parallel workers reopen them). The open above
             # still refuses a symbolic link already present and creates or
             # truncates the file safely, but the utility then reopens it by
-            # name, so a symbolic link swapped in afterwards is followed.
+            # name, so a symbolic or hard link swapped in afterwards is
+            # followed.
             os.close(fd)
             return path, None
         os.set_blocking(fd, True)
@@ -836,7 +853,10 @@ def dump_database_servers(output_file, selected_servers,
         err_msg = error_str.format(e.strerror)
         return _handle_error(err_msg, from_setup)
     except Exception as e:
-        err_msg = error_str.format(e.strerror)
+        # A non-OSError has no strerror; fall back to its string form so this
+        # never raises AttributeError and returns a 500.
+        current_app.logger.exception(e)
+        err_msg = error_str.format(getattr(e, 'strerror', None) or str(e))
         return _handle_error(err_msg, from_setup)
 
     msg = gettext("Configuration for %s servers dumped to %s" %
@@ -978,18 +998,35 @@ def load_database_servers(input_file, selected_servers,
             with _open_read_target(
                     file_path, get_file_manager_storage_dir()) as f:
                 data = json.load(f)
-    except json.decoder.JSONDecodeError as e:
-        return _handle_error(gettext("Error parsing input file %s: %s" %
-                             (file_path, e)), from_setup)
+    except (json.decoder.JSONDecodeError, UnicodeDecodeError) as e:
+        # The absolute path is shown only for the setup.py CLI, where the
+        # administrator named the file; in server mode it would reveal the
+        # user's storage directory location on the server.
+        if from_setup:
+            return _handle_error(gettext("Error parsing input file %s: %s" %
+                                 (file_path, e)), from_setup)
+        return _handle_error(gettext("Error parsing the selected file: %s" %
+                             e), from_setup)
     except OSError as e:
         if not from_setup and _is_refused_leaf_symlink(e):
             return _handle_error(gettext(
                 "Refusing to read through a symbolic link."), from_setup)
-        return _handle_error(gettext("Error reading input file %s: [%d] %s" %
-                             (file_path, e.errno, e.strerror)), from_setup)
+        if from_setup:
+            return _handle_error(
+                gettext("Error reading input file %s: [%d] %s" %
+                        (file_path, e.errno, e.strerror)), from_setup)
+        return _handle_error(gettext("Error reading the selected file: "
+                             "[%d] %s" % (e.errno, e.strerror)), from_setup)
     except Exception as e:
-        return _handle_error(gettext("Error reading input file %s: [%d] %s" %
-                             (file_path, e.errno, e.strerror)), from_setup)
+        # A non-OSError (e.g. UnicodeDecodeError from a non-UTF-8 file) has no
+        # errno/strerror, so don't assume them here.
+        current_app.logger.exception(e)
+        if from_setup:
+            return _handle_error(
+                gettext("Error reading input file %s: %s" %
+                        (file_path, e)), from_setup)
+        return _handle_error(
+            gettext("Unable to read the selected file."), from_setup)
 
     f.close()
 

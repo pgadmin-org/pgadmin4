@@ -194,6 +194,29 @@ class TestImportServersRefusesParentSymlink(_SymlinkMixin,
         self.assertEqual(msg, "Refusing to read through a symbolic link.")
 
 
+class TestImportServersRejectsNonUtf8(_SymlinkMixin, BaseTestGenerator):
+    """A non-UTF-8 servers.json is reported cleanly rather than crashing. The
+    catch-all handler must not assume errno/strerror on the UnicodeDecodeError
+    json.load raises, and the message must not leak the storage path. On the
+    base commit the handler reads e.errno on a UnicodeDecodeError and raises
+    AttributeError (a 500)."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from pgadmin.utils import load_database_servers
+        bad = os.path.join(self.storage_dir, "bad.json")
+        with open(bad, "wb") as f:
+            f.write(b"\x80abc")
+
+        with patch(PATH_CHECK, return_value=bad), \
+                redirect_stdout(io.StringIO()):
+            ok, msg = load_database_servers("bad.json", None, self.user)
+
+        self.assertFalse(ok)
+        self.assertNotIn(self.storage_dir, msg)
+
+
 class TestOpenBeneath(_SymlinkMixin, BaseTestGenerator):
     """_open_beneath() opens paths inside the root, including in nested
     directories, and refuses anything that leaves it."""

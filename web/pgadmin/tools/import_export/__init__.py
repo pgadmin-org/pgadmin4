@@ -430,9 +430,12 @@ def create_import_export_job(sid):
             _file = filename_with_file_manager_path(
                 data['filename'], not data['is_import'])
         except PermissionError as e:
-            return unauthorized(errormsg=str(e))
+            return unauthorized(errormsg=e.strerror or str(e))
         except Exception as e:
-            return bad_request(errormsg=str(e))
+            # str(e) would leak the user's absolute storage path; strerror is
+            # the reason without it, matching open_utility_file_or_error().
+            return bad_request(
+                errormsg=getattr(e, 'strerror', None) or str(e))
 
         if not _file:
             return bad_request(errormsg=_('Please specify a valid file.'))

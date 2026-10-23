@@ -162,7 +162,10 @@ def _get_create_req_data():
     try:
         filepath = filename_with_file_manager_path(data['file'])
     except Exception as e:
-        return True, internal_server_error(errormsg=str(e)), data, None
+        # strerror is the failure reason without the user's absolute storage
+        # path, which str(e) on the OSError would otherwise leak.
+        return True, internal_server_error(
+            errormsg=getattr(e, 'strerror', None) or str(e)), data, None
 
     if filepath is None:
         return True, make_json_response(

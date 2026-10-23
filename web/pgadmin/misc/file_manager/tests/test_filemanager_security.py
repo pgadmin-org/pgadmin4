@@ -509,6 +509,58 @@ class TestOpenUploadTargetDesktopUsesUmask(
         self.assertEqual(os.stat(target).st_mode & 0o777, 0o644)
 
 
+class TestOpenUploadTargetRejectsHardLink(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """A hard link is refused on upload, and its target is left intact.
+
+    O_NOFOLLOW cannot detect a hard link - it is an ordinary directory entry
+    for an existing inode - so the open succeeds and the st_nlink check is
+    what refuses a second name that could point at a file outside storage.
+    O_TRUNC is deferred until after that check, so the target is never
+    emptied. On the base commit the upload truncates and overwrites it.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("hard-link semantics differ on Windows")
+        from pgadmin.misc.file_manager import _open_upload_target
+        victim = os.path.join(self.tmpdir, "victim.txt")
+        with open(victim, "wb") as f:
+            f.write(b"VICTIM")
+        link_path = os.path.join(self.tmpdir, "hardlink.txt")
+        os.link(victim, link_path)
+
+        with self.assertRaises(OSError) as ctx:
+            with _open_upload_target(link_path, self.tmpdir) as f:
+                f.write(b"EVIL")
+        self.assertEqual(ctx.exception.errno, errno.EPERM)
+        with open(victim, "rb") as f:
+            self.assertEqual(f.read(), b"VICTIM")
+
+
+class TestOpenUploadTargetRejectsFifo(
+        _OpenUploadTargetMixin, BaseTestGenerator):
+    """A FIFO at the upload path is refused with a path-free
+    'Not a regular file', and the non-blocking open does not hang waiting for
+    a reader. The ENXIO translation lives in _open_beneath(), so the upload
+    path gets it without its own handling.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("POSIX FIFOs unavailable on Windows")
+        from pgadmin.misc.file_manager import _open_upload_target
+        fifo = os.path.join(self.tmpdir, "pipe")
+        os.mkfifo(fifo)
+        with self.assertRaises(OSError) as ctx:
+            _open_upload_target(fifo, self.tmpdir).close()
+        self.assertEqual(ctx.exception.strerror, "Not a regular file")
+
+
 # ---------------------------------------------------------------------------
 # save_file() must use the same O_NOFOLLOW-protected open as uploads.
 #

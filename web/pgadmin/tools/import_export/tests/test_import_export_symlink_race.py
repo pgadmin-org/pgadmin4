@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import errno
 import json
 import os
 import shutil
@@ -39,6 +40,8 @@ class ImportExportSymlinkRaceTest(BaseTestGenerator):
          dict(kind='invalid', is_import=False)),
         ('Descriptor is closed when start() fails',
          dict(kind='fail', is_import=False)),
+        ('A path-bearing OSError is reported without the path',
+         dict(kind='leak', is_import=True)),
     ]
 
     def setUp(self):
@@ -86,6 +89,14 @@ class ImportExportSymlinkRaceTest(BaseTestGenerator):
                 os.symlink(real, target)
                 return target
             filename_mock.side_effect = plant
+        elif self.kind == 'leak':
+            # filename_with_file_manager_path() raises an OSError whose str()
+            # carries the absolute storage path; the handler must return only
+            # the reason.
+            self.leak_path = os.path.join(self.tmpdir, 'sd', 'y')
+            filename_mock.side_effect = OSError(
+                errno.ELOOP, 'Too many levels of symbolic links',
+                self.leak_path)
         else:
             os.rename(real, target)
             filename_mock.return_value = target
@@ -126,6 +137,14 @@ class ImportExportSymlinkRaceTest(BaseTestGenerator):
             self.assertEqual(response.status_code, 400)
             self.assertEqual(json.loads(response.data)['errormsg'],
                              'Refusing to use a symbolic link.')
+            self.assertFalse(batch_process_mock.called)
+            return
+
+        if self.kind == 'leak':
+            self.assertEqual(response.status_code, 400)
+            errmsg = json.loads(response.data)['errormsg']
+            self.assertEqual(errmsg, 'Too many levels of symbolic links')
+            self.assertNotIn(self.leak_path, errmsg)
             self.assertFalse(batch_process_mock.called)
             return
 

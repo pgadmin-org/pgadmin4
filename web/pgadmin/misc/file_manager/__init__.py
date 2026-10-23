@@ -116,6 +116,18 @@ def _open_beneath(root, path, flags, mode=0o777):
     dir_fd, name = _open_parent_beneath(root, path)
     try:
         return _openat_nofollow(dir_fd, name, flags, mode, path)
+    except OSError as e:
+        # O_WRONLY | O_NONBLOCK on a FIFO with no reader fails with ENXIO
+        # ("Device not configured" on macOS, "No such device or address" on
+        # Linux); report it as what it means so the raw OS message, with its
+        # path, never reaches the client. Done here rather than in a single
+        # caller so every write path (upload, save_file, Export Servers and
+        # open_utility_file) is covered. A read open of a FIFO does not raise
+        # ENXIO; a non-regular file there is caught by the caller's S_ISREG
+        # check instead.
+        if e.errno == errno.ENXIO:
+            raise OSError(errno.EINVAL, gettext("Not a regular file"), path)
+        raise
     finally:
         os.close(dir_fd)
 
@@ -140,14 +152,46 @@ def _open_upload_target(path, root):
     return ELOOP for it even on regular files.
 
     On Windows, O_NOFOLLOW and descriptor-relative opens are unavailable,
-    so the file is opened by name; the residual TOCTOU is mitigated by the
-    absence of any in-pgAdmin primitive that creates symlinks.
+    so the file is opened by name; the residual TOCTOU (a symbolic or hard
+    link swapped in after the check) is mitigated by the absence of any
+    in-pgAdmin primitive that creates either.
     """
-    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
     if _refuses_leaf_symlinks():
+        # Open non-blocking and accept only a regular file, so a FIFO planted
+        # at the path cannot hang the write waiting for a reader (a reader-less
+        # FIFO fails with ENXIO, which _open_beneath() translates), and a
+        # symbolic link is refused rather than followed. O_TRUNC is NOT used
+        # here: a hard link is truncated only after the link check below, so
+        # a second name for a file outside the storage directory is never
+        # emptied.
+        flags = os.O_WRONLY | os.O_CREAT | os.O_NONBLOCK
         fd = _open_beneath(root, path, flags, 0o600)
+        try:
+            st = os.fstat(fd)
+            if not stat.S_ISREG(st.st_mode):
+                raise OSError(errno.EINVAL,
+                              gettext("Not a regular file"), path)
+            # A hard link is an ordinary file O_NOFOLLOW cannot detect;
+            # refuse a second name for the same inode. st_nlink == 0 means the
+            # file was unlinked between the open and here, which is refused
+            # too (and would make the "multiple hard links" wording wrong).
+            if st.st_nlink > 1:
+                raise OSError(errno.EPERM, gettext(
+                    "Refusing a file with multiple hard links"), path)
+            if st.st_nlink == 0:
+                raise OSError(errno.EPERM, gettext(
+                    "Refusing a file that was unlinked after opening"), path)
+            os.set_blocking(fd, True)
+            os.ftruncate(fd, 0)
+        except BaseException:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            raise
     else:
-        fd = os.open(path, flags, 0o600 if config.SERVER_MODE else 0o666)
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+                     0o600 if config.SERVER_MODE else 0o666)
     return os.fdopen(fd, 'wb')
 
 
@@ -170,8 +214,19 @@ def _open_read_target(path, root):
 
     fd = _open_beneath(root, path, os.O_RDONLY | os.O_NONBLOCK)
     try:
-        if not stat.S_ISREG(os.fstat(fd).st_mode):
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
             raise OSError(errno.EINVAL, gettext("Not a regular file"), path)
+        # A hard link is an ordinary file that O_NOFOLLOW cannot detect, so
+        # refuse a second name for the same inode, which could point at a
+        # file outside the storage directory. st_nlink == 0 means the file
+        # was unlinked after the open, which is refused too.
+        if st.st_nlink > 1:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file with multiple hard links"), path)
+        if st.st_nlink == 0:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file that was unlinked after opening"), path)
         os.set_blocking(fd, True)
     except BaseException:
         os.close(fd)
@@ -622,7 +677,9 @@ def save_file():
         err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
     except Exception as e:
-        err_msg = error_str.format(e.strerror)
+        # A non-OSError has no strerror; fall back to its string form so the
+        # handler itself never raises AttributeError (a 500).
+        err_msg = error_str.format(getattr(e, 'strerror', None) or str(e))
         return internal_server_error(errormsg=err_msg)
 
     # Record the encoding only once the file has actually been written in it.
@@ -1281,7 +1338,10 @@ class Filemanager():
 
         return {
             'Path': path,
-            'Name': new_name,
+            # new_name is prefixed with the_dir (the user's absolute storage
+            # directory); return the storage-relative path instead so the
+            # response never leaks the real on-disk location.
+            'Name': "{0}{1}".format(path, file_name),
         }
 
     def is_file_exist(self, path, name):

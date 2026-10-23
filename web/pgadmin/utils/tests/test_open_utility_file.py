@@ -13,6 +13,7 @@ without following a symbolic link below the storage directory, and for the
 safe touch in filename_with_file_manager_path().
 """
 
+import errno
 import os
 import shutil
 import stat
@@ -192,6 +193,47 @@ class TestFifoRefused(_UtilityFileMixin, BaseTestGenerator):
         for for_write in (False, True):
             with self.assertRaises(OSError):
                 self.open_ok(fifo, for_write)
+
+
+class TestFifoWriteReportsNotRegularFile(
+        _UtilityFileMixin, BaseTestGenerator):
+    """Writing to a reader-less FIFO is refused with a path-free
+    'Not a regular file', not the raw ENXIO text ("Device not configured" /
+    "No such device or address") that would otherwise reach the client. The
+    translation lives in _open_beneath(), so it covers this utility-write path
+    as well as uploads."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        fifo = os.path.join(self.storage, 'fifo')
+        os.mkfifo(fifo)
+        # The write open is non-blocking (O_NONBLOCK), so a reader-less FIFO
+        # fails at once with ENXIO rather than hanging; _open_beneath()
+        # translates that to a path-free "Not a regular file".
+        with self.assertRaises(OSError) as ctx:
+            self.open_ok(fifo, True)
+        self.assertEqual(ctx.exception.strerror, 'Not a regular file')
+
+
+class TestHardLinkRefused(_UtilityFileMixin, BaseTestGenerator):
+    """A hard link to a file outside the storage directory is refused, and
+    the target is left intact. O_NOFOLLOW cannot see a hard link, so the open
+    succeeds and the st_nlink check is what catches it."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        victim = os.path.join(self.outside, 'victim.txt')
+        with open(victim, 'wb') as f:
+            f.write(b'VICTIM')
+        link = os.path.join(self.storage, 'hardlink')
+        os.link(victim, link)
+        for for_write in (False, True):
+            with self.assertRaises(OSError) as ctx:
+                self.open_ok(link, for_write)
+            self.assertEqual(ctx.exception.errno, errno.EPERM)
+        self.assertEqual(self.read_file(victim), b'VICTIM')
 
 
 class TestDirectoryWriteCreates(_UtilityFileMixin, BaseTestGenerator):
