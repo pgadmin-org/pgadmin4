@@ -14,6 +14,7 @@ import socket
 import ssl
 import urllib.request
 import urllib.error
+from urllib.parse import urlparse
 from collections.abc import Generator
 from typing import Optional, Union
 import uuid
@@ -38,6 +39,13 @@ from pgadmin.llm.utils import urlopen_no_redirect
 
 # Default model if none specified
 DEFAULT_MODEL = 'gpt-4o'
+
+# Cache of which token-limit parameter a given (base URL, model) pair
+# accepts. OpenAI-compatible servers vary: newer OpenAI models expect
+# 'max_completion_tokens' while many third-party servers still expect
+# 'max_tokens'. Populated adaptively when a server rejects a parameter,
+# so the fallback is remembered across new client instances.
+_token_param_cache = {}
 
 # Default API base URL
 DEFAULT_API_BASE_URL = 'https://api.openai.com/v1'
@@ -86,6 +94,14 @@ class OpenAIClient(LLMClient):
         return f'{self._base_url}/chat/completions'
 
     @property
+    def _is_default_host(self) -> bool:
+        """True when talking to the official OpenAI API host."""
+        # Compare hostnames, not authorities: an explicit default port
+        # (https://api.openai.com:443/v1) is still the official endpoint.
+        return (urlparse(self._base_url).hostname ==
+                urlparse(DEFAULT_API_BASE_URL).hostname)
+
+    @property
     def provider_name(self) -> str:
         return 'openai'
 
@@ -97,9 +113,7 @@ class OpenAIClient(LLMClient):
         """Check if the client is properly configured."""
         # API key is required for the default OpenAI endpoint, but optional
         # for custom endpoints (e.g., local LLM servers).
-        if self._base_url.rstrip('/').startswith(
-            DEFAULT_API_BASE_URL.rstrip('/')
-        ):
+        if self._is_default_host:
             return bool(self._api_key)
         return True
 
@@ -132,6 +146,34 @@ class OpenAIClient(LLMClient):
                 messages, tools, system_prompt, max_tokens
             )
 
+        # Reasoning models may consume the whole output budget on internal
+        # reasoning; retry once with a tripled budget.
+        if not kwargs.get('_reasoning_retried'):
+            try:
+                return self._chat_completions(
+                    messages, tools, system_prompt, max_tokens
+                )
+            except LLMClientError as e:
+                if e.error.code == 'reasoning_budget':
+                    kwargs['_reasoning_retried'] = True
+                    return self.chat(
+                        messages, tools, system_prompt,
+                        max_tokens * 3, **kwargs
+                    )
+                raise
+        return self._chat_completions(
+            messages, tools, system_prompt, max_tokens
+        )
+
+    def _chat_completions(
+        self,
+        messages: list[Message],
+        tools: Optional[list[Tool]],
+        system_prompt: Optional[str],
+        max_tokens: int
+    ) -> LLMResponse:
+        """Send a chat request using the Chat Completions API."""
+
         # Try Chat Completions API first
         payload = self._build_chat_payload(
             messages, tools, system_prompt, max_tokens
@@ -141,6 +183,17 @@ class OpenAIClient(LLMClient):
             response_data = self._make_request(payload)
             return self._parse_response(response_data)
         except LLMClientError as e:
+            if self._is_unsupported_token_param_error(e):
+                # The server rejected 'max_completion_tokens'. Remember the
+                # fallback for this (server, model) pair and retry once
+                # with the legacy 'max_tokens' parameter.
+                _token_param_cache[(self._base_url, self._model)] = \
+                    'max_tokens'
+                payload = self._build_chat_payload(
+                    messages, tools, system_prompt, max_tokens
+                )
+                response_data = self._make_request(payload)
+                return self._parse_response(response_data)
             if self._should_use_responses_api(e):
                 self._use_responses_api = True
                 return self._chat_responses(
@@ -178,10 +231,28 @@ class OpenAIClient(LLMClient):
 
     def _should_use_responses_api(self, error: LLMClientError) -> bool:
         """Check if the error indicates we should use the Responses API."""
+        # Only the official OpenAI API has a /responses endpoint to fall
+        # back to; never reroute requests for custom (OpenAI-compatible)
+        # servers.
+        if not self._is_default_host:
+            return False
         error_msg = str(error).lower()
         return ('v1/responses' in error_msg or
                 'not supported in the v1/chat/completions' in error_msg or
                 'not a chat model' in error_msg)
+
+    def _is_unsupported_token_param_error(
+        self, error: LLMClientError
+    ) -> bool:
+        """Check if the server rejected 'max_completion_tokens'."""
+        error_msg = str(error).lower()
+        return 'max_completion_tokens' in error_msg and (
+            'unsupported' in error_msg or
+            'unrecognized' in error_msg or
+            'unknown' in error_msg or
+            'not supported' in error_msg or
+            getattr(error.error, 'code', None) == 'unsupported_parameter'
+        )
 
     def _build_chat_payload(
         self,
@@ -199,10 +270,13 @@ class OpenAIClient(LLMClient):
                 'content': system_prompt
             })
 
+        token_param = _token_param_cache.get(
+            (self._base_url, self._model), 'max_completion_tokens'
+        )
         payload = {
             'model': self._model,
             'messages': converted_messages,
-            'max_completion_tokens': max_tokens,
+            token_param: max_tokens,
         }
 
         if tools:
@@ -357,6 +431,44 @@ class OpenAIClient(LLMClient):
             for tool in tools
         ]
 
+    def _http_error_to_llm_error(
+        self, e: urllib.error.HTTPError
+    ) -> LLMError:
+        """Convert an HTTP error response to an LLMError.
+
+        Preserves the structured error details (code, parameter) so
+        callers can react to them - e.g. the unsupported-parameter
+        fallback - even when the message itself is generic.
+        """
+        error_body = e.read().decode('utf-8')
+        error_msg = None
+        error_code = None
+        try:
+            error_data = json.loads(error_body)
+        except json.JSONDecodeError:
+            error_data = None
+        # Compatible servers do not all use OpenAI's error shape; only
+        # read the structured fields when they are actually mappings.
+        if isinstance(error_data, dict):
+            error_info = error_data.get('error')
+            if isinstance(error_info, dict):
+                error_msg = error_info.get('message')
+                if error_info.get('param'):
+                    error_msg = (f"{error_msg or e!s} "
+                                 f"(parameter: '{error_info['param']}')")
+                error_code = error_info.get('code')
+            elif isinstance(error_info, str):
+                error_msg = error_info
+        if not error_msg:
+            error_msg = error_body or str(e)
+
+        return LLMError(
+            message=error_msg,
+            code=error_code or str(e.code),
+            provider=self.provider_name,
+            retryable=e.code in (429, 500, 502, 503, 504)
+        )
+
     def _make_request(self, payload: dict) -> dict:
         """Make an HTTP request to the OpenAI API."""
         headers = {
@@ -379,19 +491,7 @@ class OpenAIClient(LLMClient):
             ) as response:
                 return json.loads(response.read().decode('utf-8'))
         except urllib.error.HTTPError as e:
-            error_body = e.read().decode('utf-8')
-            try:
-                error_data = json.loads(error_body)
-                error_msg = error_data.get('error', {}).get('message', str(e))
-            except json.JSONDecodeError:
-                error_msg = error_body or str(e)
-
-            raise LLMClientError(LLMError(
-                message=error_msg,
-                code=str(e.code),
-                provider=self.provider_name,
-                retryable=e.code in (429, 500, 502, 503, 504)
-            ))
+            raise LLMClientError(self._http_error_to_llm_error(e))
         except urllib.error.URLError as e:
             raise LLMClientError(LLMError(
                 message=f"Connection error: {e.reason}",
@@ -493,6 +593,22 @@ class OpenAIClient(LLMClient):
         # Check for problematic responses
         if not content and not tool_calls:
             if stop_reason == StopReason.MAX_TOKENS:
+                details = usage_data.get('completion_tokens_details') or {}
+                reasoning_tokens = details.get('reasoning_tokens', 0)
+                if (message.get('reasoning_content') or
+                        reasoning_tokens > 0):
+                    # A reasoning model exhausted its output budget on
+                    # internal reasoning before producing any visible
+                    # content.
+                    raise LLMClientError(LLMError(
+                        message=f'Reasoning model {self._model} used its '
+                                f'entire output budget on internal '
+                                f'reasoning and returned no content. '
+                                f'Increase the maximum tokens setting.',
+                        code='reasoning_budget',
+                        provider=self.provider_name,
+                        retryable=True
+                    ))
                 self._raise_max_tokens_error(usage.input_tokens)
             elif finish_reason and finish_reason not in ('stop', 'tool_calls'):
                 raise LLMClientError(LLMError(
@@ -634,7 +750,31 @@ class OpenAIClient(LLMClient):
         try:
             yield from self._process_stream(payload)
         except LLMClientError as e:
-            if self._should_use_responses_api(e):
+            if (e.error.code == 'reasoning_budget' and
+                    not kwargs.get('_reasoning_retried')):
+                # Retry once with a tripled budget. The error is raised
+                # after the stream ends without content, so nothing has
+                # been yielded to the caller yet.
+                kwargs['_reasoning_retried'] = True
+                yield from self.chat_stream(
+                    messages, tools, system_prompt,
+                    max_tokens * 3, temperature, **kwargs
+                )
+            elif self._is_unsupported_token_param_error(e):
+                # The server rejected 'max_completion_tokens'. Remember the
+                # fallback for this (server, model) pair and retry once
+                # with the legacy 'max_tokens' parameter. The rejection
+                # happens when the connection is opened, before any chunk
+                # has been yielded.
+                _token_param_cache[(self._base_url, self._model)] = \
+                    'max_tokens'
+                payload = self._build_chat_payload(
+                    messages, tools, system_prompt, max_tokens
+                )
+                payload['stream'] = True
+                payload['stream_options'] = {'include_usage': True}
+                yield from self._process_stream(payload)
+            elif self._should_use_responses_api(e):
                 self._use_responses_api = True
                 payload = self._build_responses_payload(
                     messages, tools, system_prompt, max_tokens
@@ -672,20 +812,7 @@ class OpenAIClient(LLMClient):
                 request, timeout=120, context=SSL_CONTEXT
             )
         except urllib.error.HTTPError as e:
-            error_body = e.read().decode('utf-8')
-            try:
-                error_data = json.loads(error_body)
-                error_msg = error_data.get(
-                    'error', {}
-                ).get('message', str(e))
-            except json.JSONDecodeError:
-                error_msg = error_body or str(e)
-            raise LLMClientError(LLMError(
-                message=error_msg,
-                code=str(e.code),
-                provider=self.provider_name,
-                retryable=e.code in (429, 500, 502, 503, 504)
-            ))
+            raise LLMClientError(self._http_error_to_llm_error(e))
         except urllib.error.URLError as e:
             raise LLMClientError(LLMError(
                 message=f"Connection error: {e.reason}",
@@ -723,6 +850,8 @@ class OpenAIClient(LLMClient):
         finish_reason = None
         model_name = self._model
         usage = Usage()
+        reasoning_seen = False
+        reasoning_tokens = 0
 
         while True:
             line_bytes = response.readline()
@@ -753,6 +882,8 @@ class OpenAIClient(LLMClient):
                     output_tokens=u.get('completion_tokens', 0),
                     total_tokens=u.get('total_tokens', 0)
                 )
+                details = u.get('completion_tokens_details') or {}
+                reasoning_tokens = details.get('reasoning_tokens', 0)
 
             if 'model' in data:
                 model_name = data['model']
@@ -766,6 +897,11 @@ class OpenAIClient(LLMClient):
 
             if choice.get('finish_reason'):
                 finish_reason = choice['finish_reason']
+
+            # Reasoning content is tracked (for budget-exhaustion
+            # detection) but not yielded as visible content.
+            if delta.get('reasoning_content'):
+                reasoning_seen = True
 
             # Text content
             text_chunk = delta.get('content')
@@ -820,6 +956,20 @@ class OpenAIClient(LLMClient):
         )
 
         if not content and not tool_calls:
+            if finish_reason == 'length' and (
+                reasoning_seen or reasoning_tokens > 0
+            ):
+                # A reasoning model exhausted its output budget on
+                # internal reasoning before producing any content.
+                raise LLMClientError(LLMError(
+                    message=f'Reasoning model {self._model} used its '
+                            f'entire output budget on internal '
+                            f'reasoning and returned no content. '
+                            f'Increase the maximum tokens setting.',
+                    code='reasoning_budget',
+                    provider=self.provider_name,
+                    retryable=True
+                ))
             raise LLMClientError(LLMError(
                 message='No response content returned from API',
                 provider=self.provider_name,
