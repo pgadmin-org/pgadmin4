@@ -30,6 +30,8 @@ from pgadmin.utils.server_access import get_server, \
     get_user_server_query
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils import isolate_client_credential_files
+from pgadmin.utils.locker import ConnectionLocker, \
+    REQUIRE_AUTH_MIN_LIBPQ, apply_kerberos_conn_params, libpq_version
 from pgadmin.utils.passexec import build_passexec
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
@@ -418,8 +420,19 @@ class Driver(BaseDriver):
                 sslcompression=True if kwargs[
                     'sslcompression'] else False
             )
-            return psycopg.Connection.connect(
-                **isolate_client_credential_files(params))
+            # This connection never uses Kerberos, so libpq is told to
+            # refuse it.
+            apply_kerberos_conn_params(params, is_kerberos_conn=False)
+            params = isolate_client_credential_files(params)
+            if libpq_version() >= REQUIRE_AUTH_MIN_LIBPQ:
+                # GSSAPI and SSPI are refused before any credentials are
+                # used, so there is nothing for the lock to guard.
+                return psycopg.Connection.connect(**params)
+
+            # Under the lock, so that pgAdmin's environment does not hold
+            # another user's Kerberos credential cache meanwhile.
+            with ConnectionLocker():
+                return psycopg.Connection.connect(**params)
 
     def release_connection(self, sid, database=None, conn_id=None):
         """

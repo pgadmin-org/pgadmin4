@@ -141,6 +141,10 @@ Click on the *+* button to add a new parameter. Some of the parameters are:
   in seconds. Zero or not specified means wait indefinitely. It is not
   recommended to use a timeout of less than 2 seconds. By default it is set to
   10 seconds.
+* *Require authentication* (*require_auth*) field to specify the
+  authentication methods the server may use. In server mode, pgAdmin
+  refuses the GSSAPI and SSPI methods for a connection that may not use
+  Kerberos, as described in :ref:`kerberos`.
 * *SSL mode* field to select the type of SSL connection the server should use.
   For more information about using SSL encryption, see
   `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-ssl.html>`_.

@@ -37,6 +37,7 @@ class PSQLPasswordEnvTestCase(BaseTestGenerator):
         manager.password = b'encrypted'
         manager.passexec = None
         manager.user = 'alice'
+        manager.kerberos_conn = False
         manager.create_connection_string = MagicMock(
             return_value='host=127.0.0.1 dbname=postgres user=alice')
 

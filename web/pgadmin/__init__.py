@@ -43,6 +43,8 @@ from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
 from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat, \
     remove_inherited_libpq_credentials
 from pgadmin.utils.db_utils import normalize_database_uri
+from pgadmin.utils.locker import isolate_kerberos_credentials, \
+    warn_if_no_auth_refusal
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -333,6 +335,8 @@ def create_app(app_name=None):
     # pick up a password or service from the service account's environment.
     if config.SERVER_MODE is True:
         remove_inherited_libpq_credentials(app.logger)
+        isolate_kerberos_credentials()
+        warn_if_no_auth_refusal(app.logger)
 
     ##########################################################################
     # Setup i18n

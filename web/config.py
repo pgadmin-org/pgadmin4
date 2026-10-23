@@ -1142,7 +1142,9 @@ SERVER_PASSEXEC_ENV_PASSTHROUGH = []
 # user. Any user can connect using a listed service, including any
 # password, password file or client certificate its entry names, and can
 # override the entry's host to send that password to a server of their
-# own choosing.
+# own choosing. psql and the utilities also take the entry's require_auth,
+# gssencmode and gsslib in preference to the settings pgAdmin gives them
+# for Kerberos, so do not set those in a listed service.
 #############################################################################
 SERVER_MODE_ALLOWED_SERVICES = []
 

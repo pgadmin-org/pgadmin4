@@ -24,6 +24,8 @@ from pgadmin.utils import get_complete_file_path, \
     check_connection_params_allowed
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import process_masterpass_disabled
+from pgadmin.utils.locker import KerberosNotAllowed, \
+    apply_kerberos_conn_params, check_kerberos_conn_params_unchanged
 from .connection import Connection
 from pgadmin.model import Server, User
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
@@ -703,10 +705,15 @@ WHERE db.oid = {0}""".format(did))
 
         return value
 
-    def create_connection_string(self, database, user, password=None):
+    def create_connection_string(self, database, user, password=None,
+                                 for_utility=False):
         """
         This function is used to create connection string based on the
         parameters.
+
+        :param for_utility: the string is for a utility, such as psql, with
+            its own libpq, so parameters that only a newer libpq knows are
+            not added to it; they are in its environment instead.
         """
         dsn_args = dict()
         dsn_args['host'] = self.host
@@ -808,6 +815,18 @@ WHERE db.oid = {0}""".format(did))
             if k not in dsn_args:
                 dsn_args[k] = v
 
+        # In server mode, libpq must refuse GSSAPI and SSPI where this
+        # connection may not use Kerberos; the environment alone does not
+        # stop SSPI or gssproxy.
+        kerberos_error = None
+        for args in (dsn_args, display_dsn_args):
+            try:
+                apply_kerberos_conn_params(
+                    args, getattr(self, 'kerberos_conn', False),
+                    add_missing=not for_utility)
+            except KerberosNotAllowed as e:
+                kerberos_error = kerberos_error or e
+
         isolate_client_credential_files(dsn_args)
 
         # The server's service and a 'service' connection parameter are
@@ -837,6 +856,9 @@ WHERE db.oid = {0}""".format(did))
         if path_error is not None:
             raise path_error
 
+        if kerberos_error is not None:
+            raise kerberos_error
+
         conn_string = make_conninfo(**dsn_args)
 
         # make_conninfo() quotes parameter values but not their keys, so a
@@ -846,5 +868,13 @@ WHERE db.oid = {0}""".format(did))
         # final string, which is exactly what libpq will act on, so the
         # allowlist holds regardless of how the parameters were serialised.
         check_connection_params_allowed(conninfo_to_dict(conn_string))
+
+        # A crafted parameter key (make_conninfo() does not escape keys) can
+        # serialise its own require_auth/gssencmode/gsslib into the string,
+        # which libpq, or psql whose conninfo outranks PGREQUIREAUTH, would
+        # honour. Re-check the parsed final string so the forced values (or
+        # their absence, for a utility that gets them from the environment)
+        # are what libpq actually acts on, however the parameters were built.
+        check_kerberos_conn_params_unchanged(conn_string, dsn_args)
 
         return conn_string

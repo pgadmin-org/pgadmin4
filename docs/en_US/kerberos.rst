@@ -126,6 +126,62 @@ PostgreSQL Server settings to configure Kerberos Authentication
 * Note that, you have to login into pgAdmin with Kerberos authentication to
   then connect to PostgreSQL using Kerberos.
 
+* In server mode, the only Kerberos credentials used to connect to a
+  PostgreSQL server are those delegated by a user who logged in to pgAdmin
+  with Kerberos, and only for a server with "Kerberos authentication"
+  enabled. The default credential cache and client keytab of the operating
+  system account that pgAdmin runs as are never used, so a user cannot
+  connect to a server with that account's Kerberos identity.
+
+* To enforce this for Windows SSPI, which uses the logon of the account
+  pgAdmin runs as, and for gssproxy, which environment variables do not
+  stop, in server mode pgAdmin also tells libpq what to use and what to
+  refuse.
+
+  * For a Kerberos-login user's connection to a server with Kerberos
+    authentication enabled, pgAdmin forces ``gsslib=gssapi``, replacing any
+    ``gsslib`` the user set. Without it, a libpq built with both GSSAPI and
+    SSPI answers the server's request with SSPI, which uses the Windows
+    logon of the account pgAdmin runs as and ignores the delegated
+    credentials, whereas ``gsslib=gssapi`` makes libpq use the delegated
+    credential cache. This helps only with a Windows libpq build that
+    includes both GSSAPI and SSPI, as pgAdmin's Windows packages do. With
+    libpq 16 or later, SSPI is also refused with ``require_auth=!sspi``;
+    with an older libpq it is not refused.
+
+  * Every other connection uses ``require_auth=!gss,!sspi`` and
+    ``gssencmode=disable``, merged with the server's own "Require
+    authentication" (``require_auth``) parameter. A server whose
+    ``require_auth`` allows only ``gss`` can be used only by a
+    Kerberos-login user connecting to a server with Kerberos authentication
+    enabled, and one that allows only ``sspi`` cannot be used in server
+    mode.
+
+  * The ``require_auth`` protection needs libpq 16 or later in pgAdmin.
+    Without it only the ``KRB5CCNAME`` and ``KRB5_CLIENT_KTNAME`` isolation
+    applies to connections that may not use Kerberos, which does not cover
+    Windows SSPI or gssproxy. ``gssencmode`` needs libpq 12 or later;
+    ``gsslib`` is known to every libpq that pgAdmin supports.
+
+  * psql and the utilities (such as pg_dump) get no ``require_auth`` in their
+    connection string unless the user set one for the server, which is then
+    merged as above. Their protection is the ``PGREQUIREAUTH``,
+    ``PGGSSENCMODE`` and ``PGGSSLIB`` environment variables. Only a libpq
+    16 or later in the utility honours ``PGREQUIREAUTH``; an older one
+    ignores it silently.
+
+  * A service file entry's settings take precedence over these environment
+    variables for psql and the utilities, whereas pgAdmin's own connections
+    are not affected, because their connection string takes precedence over
+    the service file. Only a service listed in
+    ``SERVER_MODE_ALLOWED_SERVICES`` can be used in server mode, so only an
+    entry the administrator has written can do this. Do not set
+    ``require_auth``, ``gssencmode`` or ``gsslib`` in such an entry unless
+    every pgAdmin user may use what it allows: the ``KRB5CCNAME`` and
+    ``KRB5_CLIENT_KTNAME`` isolation cannot be overridden by a service file,
+    but ``require_auth`` and ``gsslib`` in a listed service can re-enable
+    Windows SSPI or gssproxy for the utilities.
+
 
 Master Password
 ===============

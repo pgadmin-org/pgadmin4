@@ -34,6 +34,7 @@ def _make_process():
     p.log_dir = '/nonexistent/log/dir'
     p.stime = p.etime = None
     p.env = dict()
+    p.kerberos_conn = False
     return p
 
 

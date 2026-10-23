@@ -28,6 +28,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
+from pgadmin.utils.locker import kerberos_environ, kerberos_libpq_env
 from pgadmin.authenticate import socket_login_required, \
     socket_permissions_required
 from pgadmin.model import Server
@@ -513,13 +514,20 @@ def get_connection_str(psql_utility, db, manager, env):
     :param psql_utility: PostgreSQL binary path.
     :param db: database name to connect specific db.
     :param env: a dict to put the environment psql needs in, which is
-        the password.
+        the password and the Kerberos settings.
     :return: connection attribute list for PSQL connection.
     """
     manager.export_password_env(env, 'PGPASSWORD')
+    # Set explicitly, as pgAdmin's own environment holds another user's
+    # Kerberos credential cache whilst that user is connecting.
+    env.update(kerberos_environ(manager.kerberos_conn))
+    # psql has its own libpq, so tell it through its environment to refuse
+    # GSSAPI and SSPI where it may not use them.
+    kerberos_libpq_env(env, manager.kerberos_conn)
     database = db if db != '' else 'postgres'
     user = underscore_unescape(manager.user) if manager.user else None
-    conn_attr = manager.create_connection_string(database, user)
+    conn_attr = manager.create_connection_string(
+        database, user, for_utility=True)
 
     conn_attr_list = list()
     conn_attr_list.append(psql_utility)

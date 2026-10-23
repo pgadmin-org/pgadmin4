@@ -26,13 +26,14 @@ import shutil
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN, \
     connection_params_to_env, utility_connection_params, check_service_allowed
-from pgadmin.utils.constants import (KERBEROS, UTILITIES_ARRAY,
+from pgadmin.utils.constants import (UTILITIES_ARRAY,
                                      BG_PROCESS_ERROR_MSGS)
-from pgadmin.utils.locker import ConnectionLocker
+from pgadmin.utils.locker import ConnectionLocker, kerberos_environ, \
+    kerberos_libpq_env
 from pgadmin.utils.preferences import Preferences
 
 from dateutil import parser
-from flask import current_app, session
+from flask import current_app
 from flask_babel import gettext as _
 from flask_security import current_user
 
@@ -140,6 +141,7 @@ class BatchProcess:
             self.stdout = self.stderr = self.stime = self.etime = \
             self.ecode = self.manager_obj = None
         self.env = dict()
+        self.kerberos_conn = False
 
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
@@ -333,11 +335,9 @@ class BatchProcess:
         env['PROCID'] = self.id
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
-        if config.SERVER_MODE and session and \
-                session.get('auth_source_manager', {}).get(
-                    'current_source') == KERBEROS and \
-                'KRB5CCNAME' in session:
-            env['KRB5CCNAME'] = session['KRB5CCNAME']
+        # A user who logged in with Kerberos has their own credentials;
+        # in server mode, no other user may have any.
+        env.update(kerberos_environ(self.kerberos_conn))
 
         if self.env:
             env.update(self.env)
@@ -910,6 +910,13 @@ class BatchProcess:
         # caller, so the server's own address must not override it.
         if self.manager_obj and self.manager_obj.use_ssh_tunnel:
             conn_env.pop('PGHOSTADDR', None)
+
+        # Whether the server has Kerberos enabled decides if the utility may
+        # use Kerberos, and so which authentication libpq must refuse.
+        self.kerberos_conn = bool(getattr(
+            self.manager_obj if self.manager_obj else server,
+            'kerberos_conn', False))
+        kerberos_libpq_env(conn_env, self.kerberos_conn)
 
         self.env.update(conn_env)
 
