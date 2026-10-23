@@ -33,7 +33,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 {% for col in inherit_columns %}
 {% if col.is_missing %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    ADD COLUMN {{conn|qtIdent(col.name)}} {{col.displaytypname}}{% if col.collspcname %} COLLATE {{col.collspcname}}{% endif %}{% if col.attnotnull %} NOT NULL{% endif %}{% if col.genexpr %} GENERATED ALWAYS AS ({{col.genexpr}}) STORED{% endif %};
+    ADD COLUMN {{conn|qtIdent(col.name)}} {{col.displaytypname}}{% if col.collspcname %} COLLATE {{col.collspcname}}{% endif %}{% if col.attnotnull %} NOT NULL{% endif %}{% if col.defval %} DEFAULT {{col.defval}}{% endif %}{% if col.genexpr %} GENERATED ALWAYS AS ({{col.genexpr}}) STORED{% endif %};
 {% else %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     ALTER COLUMN {{conn|qtIdent(col.name)}} SET NOT NULL;
@@ -57,10 +57,15 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     NO INHERIT {{val}};
 
 {% endfor %}
-{### NO INHERIT keeps the removed parents' CHECK constraints on the table ###}
+{### NO INHERIT keeps the removed parents' CHECK constraints and NOT NULL on the table ###}
 {% for chk in uninherit_checks %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     DROP CONSTRAINT IF EXISTS {{conn|qtIdent(chk.name)}};
+
+{% endfor %}
+{% for col in uninherit_not_nulls %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    ALTER COLUMN {{conn|qtIdent(col.name)}} DROP NOT NULL;
 
 {% endfor %}
 {% endif %}

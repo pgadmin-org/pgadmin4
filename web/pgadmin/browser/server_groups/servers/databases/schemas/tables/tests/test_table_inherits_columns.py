@@ -10,13 +10,14 @@
 """Changing 'Inherited from' on an existing table (#10657).
 
 Removing a parent removes its columns from the table dialog's Columns tab,
-but NO INHERIT keeps them, and the parent's CHECK constraints, on the child
-as local ones, so saving must drop them too, except the ones that a
-remaining parent still provides.
+but NO INHERIT keeps them, and the parent's CHECK constraints and NOT NULL
+markings, on the child as local ones, so saving must drop them too, except
+the ones that a remaining parent still provides.
 
 Adding a parent must first give the table the parent's columns (including
-generated ones), NOT NULL markings and CHECK constraints that it does not
-have yet, as INHERIT fails without them.
+generated ones, and with their defaults so existing rows get a value),
+NOT NULL markings and CHECK constraints that it does not have yet, as
+INHERIT fails without them.
 
 Either way, the tree icon returned by the save must show the table's
 inheritance after the change, not before it.
@@ -69,6 +70,9 @@ class InheritsColumnsTestMixin:
         self.table_id = self._query(
             "SELECT '{0}.{1}'::regclass::oid".format(
                 self.schema_name, self.table_name))[0][0]
+        if getattr(self, 'child_rows', None):
+            self._query("INSERT INTO {0}.{1} VALUES {2}".format(
+                self.schema_name, self.table_name, self.child_rows))
 
     def _inherits_clause(self):
         return ''
@@ -100,6 +104,12 @@ class InheritsColumnsTestMixin:
             "SELECT conname FROM pg_catalog.pg_constraint "
             "WHERE conrelid = {0}::oid AND contype = 'c' "
             "ORDER BY conname".format(self.table_id))]
+
+    def _child_not_nulls(self):
+        return [row[0] for row in self._query(
+            "SELECT attname FROM pg_catalog.pg_attribute "
+            "WHERE attrelid = {0}::oid AND attnum > 0 AND attnotnull "
+            "AND NOT attisdropped ORDER BY attname".format(self.table_id))]
 
     def _qualified(self, name):
         return '{0}.{1}'.format(self.schema_name, name)
@@ -161,6 +171,16 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
               expected_columns=['own_col'],
               expected_checks=[],
               expected_icon='icon-table')),
+        ('NOT NULL only required by the removed parent is dropped',
+         dict(parents=['id integer NOT NULL, code text NOT NULL',
+                       'id integer, code text NOT NULL'],
+              child='own_col text',
+              expected_sql=['NO INHERIT', 'ALTER COLUMN id DROP NOT NULL;'],
+              unexpected_sql=['DROP COLUMN', 'ALTER COLUMN code'],
+              expected_columns=['code', 'id', 'own_col'],
+              expected_not_nulls=['code'],
+              expected_checks=[],
+              expected_icon='icon-table-inherits')),
     ]
 
     def _inherits_clause(self):
@@ -197,6 +217,9 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
         self.assertEqual(self._child_columns(),
                          sorted(self.expected_columns))
         self.assertEqual(self._child_checks(), self.expected_checks)
+        if hasattr(self, 'expected_not_nulls'):
+            self.assertEqual(self._child_not_nulls(),
+                             self.expected_not_nulls)
         # The tree icon follows the inheritance after the save.
         self.assertEqual(node['icon'], self.expected_icon)
 
@@ -229,6 +252,15 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
               expected_sql=['ALTER COLUMN id SET NOT NULL;',
                             'ADD COLUMN name text;'],
               unexpected_sql=['ADD COLUMN id', 'cid', 'ADD CONSTRAINT'],
+              expected_columns=['cid', 'id', 'name'],
+              expected_checks=[])),
+        ('A NOT NULL column gets its default for the existing rows',
+         dict(parents=['id integer NOT NULL DEFAULT 5, name text'],
+              child='cid bigint',
+              child_rows='(1), (2)',
+              expected_sql=['ADD COLUMN id integer NOT NULL DEFAULT 5;',
+                            'ADD COLUMN name text;'],
+              unexpected_sql=['cid', 'ADD CONSTRAINT'],
               expected_columns=['cid', 'id', 'name'],
               expected_checks=[])),
     ]

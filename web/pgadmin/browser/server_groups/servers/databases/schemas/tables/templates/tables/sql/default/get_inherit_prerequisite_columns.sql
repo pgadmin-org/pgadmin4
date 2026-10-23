@@ -1,12 +1,15 @@
 {### Columns of the given parents that the table must have before it can inherit from them: ###}
 {### the ones it does not have yet, and the ones it has without the NOT NULL a parent requires ###}
-SELECT name, displaytypname, collspcname, attnotnull, genexpr, is_missing FROM (
+SELECT name, displaytypname, collspcname, attnotnull, defval, genexpr, is_missing FROM (
     SELECT DISTINCT ON (a.attname) a.attname AS name,
         pg_catalog.format_type(a.atttypid, a.atttypmod) AS displaytypname,
         CASE WHEN a.attcollation <> ty.typcollation THEN
             pg_catalog.quote_ident(cn.nspname)||'.'||pg_catalog.quote_ident(co.collname)
         END AS collspcname,
         pg_catalog.bool_or(a.attnotnull) OVER (PARTITION BY a.attname) AS attnotnull,
+        CASE WHEN a.attgenerated = '' THEN
+            pg_catalog.pg_get_expr(def.adbin, def.adrelid)
+        END AS defval,
         CASE WHEN a.attgenerated = 's' THEN
             pg_catalog.pg_get_expr(def.adbin, def.adrelid)
         END AS genexpr,

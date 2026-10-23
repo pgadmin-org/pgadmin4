@@ -1311,11 +1311,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         - inherit_columns, inherit_checks: the columns (or their NOT NULL)
           and CHECK constraints of the added parents that the table does
           not have yet, as INHERIT fails unless it has them.
-        - uninherit_checks: the CHECK constraints the table only has from
-          the removed parents, which NO INHERIT keeps on it.
+        - uninherit_checks, uninherit_not_nulls: the CHECK constraints and
+          NOT NULL markings the table only has from the removed parents,
+          which NO INHERIT keeps on it.
         """
         changes = {'inherit_columns': [], 'inherit_checks': [],
-                   'uninherit_checks': []}
+                   'uninherit_checks': [], 'uninherit_not_nulls': []}
 
         def _fetch(template, **kwargs):
             sql = render_template(
@@ -1335,10 +1336,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 parents=data['coll_inherits_added'])
 
         if data.get('coll_inherits_removed'):
-            changes['uninherit_checks'] = _fetch(
-                'get_uninherit_checks.sql',
-                removed=data['coll_inherits_removed'],
-                remaining=data.get('coll_inherits', []))
+            for key, template in [
+                    ('uninherit_checks', 'get_uninherit_checks.sql'),
+                    ('uninherit_not_nulls', 'get_uninherit_not_nulls.sql')]:
+                changes[key] = _fetch(
+                    template, removed=data['coll_inherits_removed'],
+                    remaining=data.get('coll_inherits', []))
 
         return changes
 
