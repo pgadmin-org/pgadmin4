@@ -11,6 +11,7 @@ import config as app_config
 from pgAdmin4 import app
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
+from regression.python_test_utils.user_utils import add_user
 from regression.test_setup import config_data
 from pgadmin.authenticate.registry import AuthSourceRegistry
 from unittest.mock import patch
@@ -33,6 +34,7 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
         ('LDAP Authentication without Auto Create User', dict(
             auth_source=[LDAP],
             auto_create_user=False,
+            ldap_account=True,
             username='ldap_user',
             password='ldap_pass')),
         # LDAP refuses the internal account's credentials, so the user is
@@ -81,6 +83,8 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
     ]
 
     ldap_bind = True
+    # Whether the test adds the LDAP account the login needs.
+    ldap_account = False
     expect_login = True
     internal_attempts = None
 
@@ -107,8 +111,11 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
         app_config.LDAP_BIND_USER = None
         app_config.LDAP_BIND_PASSWORD = None
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = LDAP
-        if self.internal_attempts is not None:
+        if self.ldap_account:
+            add_user(self, self.username, LDAP)
+        elif self.auto_create_user:
             self.addCleanup(self._delete_ldap_account)
+        if self.internal_attempts is not None:
             self.addCleanup(self._set_internal_attempts, 0)
             self._set_internal_attempts(self.internal_attempts)
 
