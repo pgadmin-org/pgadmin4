@@ -581,7 +581,7 @@ class ManageUsers:
             status, msg = create_user(data)
             if status:
                 _user = ManageUsers.get_users_from_db(
-                    username=data['email'],
+                    username=username,
                     auth_source=data['auth_source'],
                     console=console)
             else:
