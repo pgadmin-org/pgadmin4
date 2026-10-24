@@ -31,12 +31,13 @@ describe('ScratchPad Reopen & LayoutDocker dock positioning', () => {
             },
             {
               size: 75,
+              maximizable: true,
               tabs: [
                 LayoutDocker.getPanel({
                   id: 'id-scratch',
                   title: 'Scratch Pad',
                   closable: true,
-                  content: <textarea data-testid="scratch-pad-area" />,
+                  content: <textarea />,
                 }),
               ],
             },
@@ -56,6 +57,33 @@ describe('ScratchPad Reopen & LayoutDocker dock positioning', () => {
       ],
     },
   };
+  const ThemedLayout = withTheme(Layout);
+
+  let dockerInstance;
+  const renderLayout = (props = {}) => {
+    render(
+      <ApplicationStateProvider>
+        <ThemedLayout
+          defaultLayout={queryToolLayout}
+          layoutId="SQLEditor/Layout"
+          resetToTabPanel="id-messages"
+          getLayoutInstance={(obj) => {
+            dockerInstance = obj;
+          }}
+          {...props}
+        />
+      </ApplicationStateProvider>
+    );
+  };
+
+  const reopenFromMenu = async (rightClickText) => {
+    fireEvent.contextMenu(screen.getByText(rightClickText));
+    fireEvent.click(await screen.findByText('Add Panel'));
+    const item = await screen.findByText('Scratch Pad', { selector: '[role="menuitem"]' });
+    act(() => {
+      fireEvent.click(item);
+    });
+  };
 
   beforeEach(() => {
     getApiInstance.mockReturnValue({
@@ -65,180 +93,85 @@ describe('ScratchPad Reopen & LayoutDocker dock positioning', () => {
   });
 
   describe('findDefaultDockPosition', () => {
-    let layoutDocker;
-
-    beforeEach(() => {
-      layoutDocker = new LayoutDocker('SQLEditor/Layout', queryToolLayout, 'id-messages');
-    });
-
-    it('should find adjacent dock position to the right for Scratch Pad when Query Editor is open', () => {
-      const flatDefault = [
-        { id: 'id-query', title: 'Query' },
-        { id: 'id-history', title: 'Query History' },
-        { id: 'id-scratch', title: 'Scratch Pad', internal: { closable: true } },
-      ];
-      const flatCurrent = [
-        { id: 'id-query', title: 'Query' },
-        { id: 'id-history', title: 'Query History' },
-      ];
-
-      const dockPos = layoutDocker.findDefaultDockPosition('id-scratch', flatDefault, flatCurrent);
-      expect(dockPos).toEqual({
+    it('docks Scratch Pad to the right of the panel holding the open Query tab', () => {
+      renderLayout();
+      act(() => {
+        dockerInstance.close('id-scratch');
+      });
+      expect(dockerInstance.findDefaultDockPosition('id-scratch')).toEqual({
         refTabId: 'id-query',
         direction: 'right',
       });
     });
 
-    it('should find middle direction for a tab that shares a tab group with an open sibling', () => {
-      const flatDefault = [
-        { id: 'id-query', title: 'Query' },
-        { id: 'id-history', title: 'Query History' },
-        { id: 'id-scratch', title: 'Scratch Pad', internal: { closable: true } },
-      ];
-      const flatCurrent = [
-        { id: 'id-query', title: 'Query' },
-      ];
-
-      const dockPos = layoutDocker.findDefaultDockPosition('id-history', flatDefault, flatCurrent);
-      expect(dockPos).toEqual({
-        refTabId: 'id-query',
-        direction: 'middle',
+    it('uses the middle of the group when an open sibling shares the tab group', () => {
+      renderLayout();
+      act(() => {
+        dockerInstance.close('id-scratch');
       });
+      expect(dockerInstance.findSiblingTab('id-history', (id) => dockerInstance.isTabOpen(id)))
+        .toBe('id-query');
+    });
+
+    it('returns null when no related tab is open', () => {
+      renderLayout();
+      expect(dockerInstance.findDefaultDockPosition('unknown-tab')).toBeNull();
     });
   });
 
-  describe('Layout Context Menu Add Panel', () => {
-    const ThemedLayout = withTheme(Layout);
-
-    it('should show Add Panel menu when closable tab is closed, and reopen it upon click', async () => {
-      let dockerInstance;
-
-      render(
-        <ApplicationStateProvider>
-          <ThemedLayout
-            defaultLayout={queryToolLayout}
-            layoutId="SQLEditor/Layout"
-            resetToTabPanel="id-messages"
-            getLayoutInstance={(obj) => {
-              dockerInstance = obj;
-            }}
-          />
-        </ApplicationStateProvider>
-      );
-
-      // Verify Scratch Pad tab is initially present
-      expect(screen.queryByText('Scratch Pad')).not.toBeNull();
-
-      // Close Scratch Pad
+  describe('Add Panel menu', () => {
+    it('is not shown unless allowAddPanel is set', async () => {
+      renderLayout();
       act(() => {
         dockerInstance.close('id-scratch');
       });
+      fireEvent.contextMenu(screen.getByText('Query'));
+      await screen.findByText('Close All');
+      expect(screen.queryByText('Add Panel')).toBeNull();
+    });
 
+    it('reopens the Scratch Pad in its own pane to the right of Query, keeping size and maximizable', async () => {
+      renderLayout({ allowAddPanel: true });
+      act(() => {
+        dockerInstance.close('id-scratch');
+      });
       expect(dockerInstance.isTabOpen('id-scratch')).toBe(false);
 
-      // Right-click on the Query tab to trigger context menu
-      const queryTabTitle = screen.getByText('Query');
-      fireEvent.contextMenu(queryTabTitle);
+      await reopenFromMenu('Query');
 
-      // Context menu should display 'Add Panel'
-      const addPanelMenu = await screen.findByText('Add Panel');
-      expect(addPanelMenu).not.toBeNull();
-
-      // Click or hover on Add Panel to reveal submenu items in react-menu
-      fireEvent.click(addPanelMenu);
-      const scratchSubmenuItem = await screen.findByText('Scratch Pad');
-      expect(scratchSubmenuItem).not.toBeNull();
-
-      // Click on Scratch Pad in the submenu to reopen it
-      act(() => {
-        fireEvent.click(scratchSubmenuItem);
-      });
-
-      // Scratch Pad should now be open again
       expect(dockerInstance.isTabOpen('id-scratch')).toBe(true);
+      const queryPanel = dockerInstance.find('id-query').parent;
+      const scratchPanel = dockerInstance.find('id-scratch').parent;
+      // Query group is untouched, Scratch Pad is not merged into it
+      expect(queryPanel.tabs.map((t) => t.id)).toEqual(['id-query', 'id-history']);
+      expect(scratchPanel.tabs.map((t) => t.id)).toEqual(['id-scratch']);
+      // Both panes sit side by side, with the Scratch Pad on the right
+      expect(scratchPanel.parent).toBe(queryPanel.parent);
+      const siblings = scratchPanel.parent.children;
+      expect(siblings.indexOf(scratchPanel)).toBeGreaterThan(siblings.indexOf(queryPanel));
+      expect(scratchPanel.maximizable).toBe(true);
     });
 
-    it('should use "after-tab" fallback direction for tab targets when dockPos has no explicit direction', async () => {
-      let dockerInstance;
-
-      render(
-        <ApplicationStateProvider>
-          <ThemedLayout
-            defaultLayout={queryToolLayout}
-            layoutId="SQLEditor/Layout"
-            resetToTabPanel="id-messages"
-            getLayoutInstance={(obj) => {
-              dockerInstance = obj;
-            }}
-          />
-        </ApplicationStateProvider>
-      );
-
-      act(() => {
+    it('falls back to the right-clicked tab group when no related tab is open', async () => {
+      renderLayout({ allowAddPanel: true });
+      await act(async () => {
         dockerInstance.close('id-scratch');
       });
-
-      jest.spyOn(dockerInstance, 'findDefaultDockPosition').mockReturnValue(null);
-      const openTabSpy = jest.spyOn(dockerInstance, 'openTab');
-
-      const queryTabTitle = screen.getByText('Query');
-      fireEvent.contextMenu(queryTabTitle);
-
-      const addPanelMenu = await screen.findByText('Add Panel');
-      fireEvent.click(addPanelMenu);
-      const scratchSubmenuItem = await screen.findByText('Scratch Pad');
-
+      const posSpy = jest.spyOn(dockerInstance, 'findDefaultDockPosition').mockReturnValue(null);
       act(() => {
-        fireEvent.click(scratchSubmenuItem);
+        dockerInstance.reopenDefaultTab('id-scratch', 'id-messages');
       });
-
-      expect(openTabSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'id-scratch' }),
-        'id-query',
-        'after-tab'
-      );
+      posSpy.mockRestore();
+      expect(dockerInstance.find('id-scratch').parent.tabs.map((t) => t.id))
+        .toEqual(['id-data-output', 'id-messages', 'id-scratch']);
     });
 
-    it('should use "middle" fallback direction when target resolves to a dock panel without explicit dockPos direction', async () => {
-      let dockerInstance;
-
-      render(
-        <ApplicationStateProvider>
-          <ThemedLayout
-            defaultLayout={queryToolLayout}
-            layoutId="SQLEditor/Layout"
-            resetToTabPanel="id-messages"
-            getLayoutInstance={(obj) => {
-              dockerInstance = obj;
-            }}
-          />
-        </ApplicationStateProvider>
-      );
-
-      act(() => {
-        dockerInstance.close('id-scratch');
-      });
-
-      const parentPanel = dockerInstance.find('id-query').parent;
-      jest.spyOn(dockerInstance, 'findDefaultDockPosition').mockReturnValue({ refTabId: parentPanel.id });
-      const openTabSpy = jest.spyOn(dockerInstance, 'openTab');
-
-      const queryTabTitle = screen.getByText('Query');
-      fireEvent.contextMenu(queryTabTitle);
-
-      const addPanelMenu = await screen.findByText('Add Panel');
-      fireEvent.click(addPanelMenu);
-      const scratchSubmenuItem = await screen.findByText('Scratch Pad');
-
-      act(() => {
-        fireEvent.click(scratchSubmenuItem);
-      });
-
-      expect(openTabSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'id-scratch' }),
-        parentPanel.id,
-        'middle'
-      );
+    it('does nothing for a tab that is already open', () => {
+      renderLayout({ allowAddPanel: true });
+      const dockMoveSpy = jest.spyOn(dockerInstance.layoutObj, 'dockMove');
+      dockerInstance.reopenDefaultTab('id-scratch', 'id-messages');
+      expect(dockMoveSpy).not.toHaveBeenCalled();
+      dockMoveSpy.mockRestore();
     });
   });
 });

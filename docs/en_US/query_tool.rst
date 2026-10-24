@@ -36,7 +36,8 @@ The Query Tool features two panels:
   which can be used to hold text snippets during editing, and an *AI Assistant*
   tab for generating SQL from natural language (when AI is configured). If the Scratch Pad is
   closed, it can be re-opened by right-clicking on any panel tab and selecting
-  *Add Panel*.
+  *Add Panel*. Each Query Tool has a single Scratch Pad, so *Add Panel* only lists
+  it while it is closed.
 * The lower panel displays the *Data Output* panel. The tabbed panel displays
   the result set returned by a query, information about a query's execution plan,
   server messages related to the query's execution and any asynchronous

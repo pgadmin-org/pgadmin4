@@ -342,6 +342,8 @@ export class LayoutDocker {
     flattenLayout(this.defaultLayout.dockbox, flatDefault);
     flattenLayout(this.layoutObj.getLayout().dockbox, flatCurrent);
 
+    const currentIds = flatCurrent.map(t => t.id);
+
     // Find tabs in default but not in saved layout
     const missingTabs = _.differenceBy(flatDefault, flatCurrent, 'id');
 
@@ -366,7 +368,7 @@ export class LayoutDocker {
 
     // Add each missing tab next to a sibling from its original panel group
     missingNonClosableTabs.forEach((tab) => {
-      const siblingId = this.findSiblingTab(tab.id, flatDefault, flatCurrent);
+      const siblingId = this.findSiblingTab(tab.id, (id) => currentIds.includes(id));
       if (siblingId) {
         this.openTab({
           id: tab.id,
@@ -389,72 +391,111 @@ export class LayoutDocker {
     });
   }
 
-  findSiblingTab(tabId, flatDefault, flatCurrent) {
-    // Find which panel group this tab belongs to in the default layout
-    const findPanelTabs = (box, targetId) => {
-      for (const child of box.children) {
+  /**
+   * Finds an open tab that shares a panel group with the given tab in the
+   * default layout.
+   * @param {string} tabId - id of the tab to find a sibling for.
+   * @param {function} isOpen - predicate telling whether a tab id is open.
+   * @returns {string|undefined} id of the open sibling, if any.
+   */
+  findSiblingTab(tabId, isOpen) {
+    const siblingIds = this.findDefaultTab(tabId)?.panel.tabs.map(t => t.id);
+    return siblingIds?.find(id => id !== tabId && isOpen(id));
+  }
+
+  /**
+   * Finds a tab in the default layout along with the panel holding it.
+   * @param {string} tabId - id of the tab to look for.
+   * @returns {{tab: object, panel: object}|null}
+   */
+  findDefaultTab(tabId) {
+    const search = (box) => {
+      for (const child of box?.children ?? []) {
         if (child.children) {
-          const result = findPanelTabs(child, targetId);
+          const result = search(child);
           if (result) return result;
-        } else if (child.tabs) {
-          const hasTarget = child.tabs.some(t => t.id === targetId);
-          if (hasTarget) return child.tabs.map(t => t.id);
+        } else {
+          const tab = child.tabs?.find(t => t.id === tabId);
+          if (tab) return {tab, panel: child};
         }
       }
       return null;
     };
-
-    const siblingIds = findPanelTabs(this.defaultLayout.dockbox, tabId);
-    if (!siblingIds) return null;
-
-    // Find a sibling that exists in current layout
-    const currentIds = flatCurrent.map(t => t.id);
-    return siblingIds.find(id => id !== tabId && currentIds.includes(id));
+    return search(this.defaultLayout.dockbox);
   }
 
-  findDefaultDockPosition(tabId, flatDefault, flatCurrent) {
-    // 1. Try finding a sibling tab in the same panel group
-    const siblingId = this.findSiblingTab(tabId, flatDefault, flatCurrent);
+  /**
+   * Works out where a closed default tab should be docked: next to an open
+   * tab of its original panel group, or else beside the neighbouring panel
+   * it sat next to in the default layout.
+   * @param {string} tabId - id of the closed tab.
+   * @returns {{refTabId: string, direction: string}|null} an open tab to dock
+   * against and the rc-dock direction, or null when nothing relevant is open.
+   */
+  findDefaultDockPosition(tabId) {
+    const isOpen = (id) => this.isTabOpen(id);
+    const siblingId = this.findSiblingTab(tabId, isOpen);
     if (siblingId) {
-      return { refTabId: siblingId, direction: 'middle' };
+      return {refTabId: siblingId, direction: 'middle'};
     }
 
-    const currentIds = flatCurrent.map(t => t.id);
-
-    // 2. Try finding an adjacent panel in the same parent box (e.g. Scratch Pad next to Query Editor)
-    const findAdjacentInBox = (box) => {
-      if (!box?.children) return null;
-      for (let i = 0; i < box.children.length; i++) {
-        const child = box.children[i];
-        if (child.tabs && child.tabs.some(t => t.id === tabId)) {
-          // Look for adjacent sibling child in parent box
-          const adjIndices = [i - 1, i + 1].filter(idx => idx >= 0 && idx < box.children.length);
-          for (const adjIdx of adjIndices) {
-            const adjChild = box.children[adjIdx];
-            const adjTabIds = [];
-            const collectIds = (b) => {
-              if (b.tabs) adjTabIds.push(...b.tabs.map(t => t.id));
-              if (b.children) b.children.forEach(collectIds);
-            };
-            collectIds(adjChild);
-            const openAdjTabId = adjTabIds.find(id => currentIds.includes(id));
-            if (openAdjTabId) {
+    const collectIds = (box) => [
+      ...(box.tabs?.map(t => t.id) ?? []),
+      ...(box.children ?? []).flatMap(collectIds),
+    ];
+    const findAdjacent = (box) => {
+      const children = box.children ?? [];
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (child.tabs?.some(t => t.id === tabId)) {
+          for (const adjIdx of [i - 1, i + 1]) {
+            const openId = collectIds(children[adjIdx] ?? {}).find(isOpen);
+            if (openId) {
               const isAfter = i > adjIdx;
               const direction = box.mode === 'vertical'
                 ? (isAfter ? 'bottom' : 'top')
                 : (isAfter ? 'right' : 'left');
-              return { refTabId: openAdjTabId, direction };
+              return {refTabId: openId, direction};
             }
           }
         } else if (child.children) {
-          const res = findAdjacentInBox(child);
+          const res = findAdjacent(child);
           if (res) return res;
         }
       }
       return null;
     };
+    return findAdjacent(this.defaultLayout.dockbox);
+  }
 
-    return findAdjacentInBox(this.defaultLayout?.dockbox);
+  /**
+   * Re-opens a closed default tab where it originally was, keeping the size
+   * and other properties of the panel that held it.
+   * @param {string} tabId - id of the default tab to re-open.
+   * @param {string} fallbackTabId - tab whose panel is used when the original
+   * position can't be worked out.
+   */
+  reopenDefaultTab(tabId, fallbackTabId) {
+    const defaultTab = this.findDefaultTab(tabId);
+    if (!defaultTab || this.isTabOpen(tabId)) return;
+
+    const {tab, panel} = defaultTab;
+    const newTab = LayoutDocker.getPanel({id: tab.id, content: tab.content, ...tab.internal});
+    const dockPos = this.findDefaultDockPosition(tabId);
+    const refPanel = this.find(dockPos?.refTabId ?? fallbackTabId)?.parent;
+    if (!refPanel) return;
+
+    // Side directions need a panel target, and can't split a maximised or
+    // floating panel; the other cases join the target's tab group.
+    if (!['left', 'right', 'top', 'bottom'].includes(dockPos?.direction)
+      || ['maximize', 'float'].includes(refPanel.parent?.mode)) {
+      this.layoutObj.dockMove(newTab, refPanel, 'middle');
+    } else {
+      this.layoutObj.dockMove({
+        ..._.pick(panel, ['size', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight', 'maximizable']),
+        tabs: [newTab],
+      }, refPanel, dockPos.direction);
+    }
   }
 
   saveLayout(l) {
@@ -628,7 +669,7 @@ export function getDefaultGroup() {
   };
 }
 
-export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, className, ...props}) {
+export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, className, allowAddPanel=false, ...props}) {
   const [[contextPos, contextPanelId, contextExtraMenus], setContextPos] = React.useState([null, null, null]);
   const defaultGroups = React.useMemo(()=>({
     'dialogs': getDialogsGroup(),
@@ -639,12 +680,12 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const prefStore = usePreferences();
   const dynamicTabsStyleRef = useRef();
   const saveAppStateRef = useRef(prefStore?.getPreferencesForModule('misc')?.save_app_state);
-  const { deleteToolData } = useApplicationState() || {};
+  const { deleteToolData } = useApplicationState();
 
   useEffect(()=>{
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (panelId)=>{
       layoutDockerObj.close(panelId);
-      deleteToolData?.(panelId);
+      deleteToolData(panelId);
     });
 
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.CONTEXT, (e, id, extraMenus)=>{
@@ -675,22 +716,6 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     saveAppStateRef.current = saveAppState;
 
   }, [prefStore]);
-
-  const flatDefaultLayout = useMemo(()=>{
-    const flat = [];
-    const flattenLayout = (box)=>{
-      box.children.forEach((child)=>{
-        if(child.children) {
-          flattenLayout(child);
-        }
-        else {
-          flat.push(...(child.tabs ?? []));
-        }
-      });
-    };
-    flattenLayout(props.defaultLayout.dockbox);
-    return flat;
-  }, [props.defaultLayout]);
 
   const getTabMenuItems = (panelId)=>{
     const ret = [];
@@ -731,40 +756,19 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
         });
       }
 
-      // Check for closed default closable tabs that can be re-opened
-      const missingClosableTabs = flatDefaultLayout.filter(
+      // Closed default tabs that can be re-opened, e.g. the Scratch Pad
+      const closedTabs = allowAddPanel ? flatDefaultLayout.filter(
         (t) => t.internal?.closable && !layoutDockerObj.isTabOpen(t.id)
-      );
-      if (missingClosableTabs.length > 0) {
+      ) : [];
+      if(closedTabs.length > 0) {
         ret.push({
           type: 'separator',
         }, {
           label: gettext('Add Panel'),
-          getMenuItems: () => missingClosableTabs.map((tab) => ({
-            label: tab.internal?.title || (typeof tab.title === 'string' ? tab.title : tab.id),
+          getMenuItems: () => closedTabs.map((tab) => ({
+            label: tab.internal?.title || tab.id,
             callback: () => {
-              const flatCurrent = [];
-              const flatten = (box) => {
-                box.children.forEach((child) => {
-                  if (child.children) flatten(child);
-                  else flatCurrent.push(...(child.tabs ?? []));
-                });
-              };
-              const currentDockbox = layoutDockerObj.layoutObj?.getLayout()?.dockbox;
-              if (currentDockbox) {
-                flatten(currentDockbox);
-              }
-              const dockPos = layoutDockerObj.findDefaultDockPosition(tab.id, flatDefaultLayout, flatCurrent);
-              const targetTabId = dockPos?.refTabId || panelId || layoutDockerObj.resetToTabPanel;
-              const targetData = layoutDockerObj.find(targetTabId);
-              const fallbackDirection = targetData?.tabs ? 'middle' : 'after-tab';
-              const direction = dockPos?.direction || fallbackDirection;
-
-              layoutDockerObj.openTab({
-                id: tab.id,
-                content: tab.content,
-                ...tab.internal,
-              }, targetTabId, direction);
+              layoutDockerObj.reopenDefaultTab(tab.id, panelId);
               layoutDockerObj.focus(tab.id);
               layoutDockerObj.saveLayout();
             }
@@ -795,6 +799,22 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     }
     return savedTab;
   };
+
+  const flatDefaultLayout = useMemo(()=>{
+    const flat = [];
+    const flattenLayout = (box)=>{
+      box.children.forEach((child)=>{
+        if(child.children) {
+          flattenLayout(child);
+        }
+        else {
+          flat.push(...(child.tabs ?? []));
+        }
+      });
+    };
+    flattenLayout(props.defaultLayout.dockbox);
+    return flat;
+  }, [props.defaultLayout]);
 
   const loadTab = (tab)=>{
     const tabData = flatDefaultLayout.find((t)=>t.id == tab.id);
@@ -860,7 +880,8 @@ Layout.propTypes = {
   resetToTabPanel: PropTypes.string,
   enableToolEvents: PropTypes.bool,
   isLayoutVisible: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
+  allowAddPanel: PropTypes.bool
 };
 
 
