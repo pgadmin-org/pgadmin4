@@ -196,8 +196,9 @@ class LDAPAuthentication(BaseAuthentication):
                 user = User.query.filter_by(username=self.username,
                                             auth_source=LDAP).first()
             else:
-                user = User.query.filter_by(username=func.lower(self.username),
-                                            auth_source=LDAP).first()
+                user = User.query.filter(
+                    func.lower(User.username) == func.lower(self.username),
+                    User.auth_source == LDAP).first()
 
             if user is None:
                 create_msg = ("Creating user {0} with email {1} "

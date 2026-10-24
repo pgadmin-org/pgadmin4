@@ -433,12 +433,14 @@ class ManageUsers:
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            rid = ManageRoles.get_role(data['role'])
-            if rid is None:
-                print("Role '{0}' does not exists.".format(data['role']))
-                exit()
+            # The role is only changed when --role or --admin is given.
+            if 'role' in data:
+                rid = ManageRoles.get_role(data['role'])
+                if rid is None:
+                    print("Role '{0}' does not exists.".format(data['role']))
+                    exit()
 
-            data['role'] = rid
+                data['role'] = rid
 
             uid = ManageUsers.get_user(username=email,
                                        auth_source=INTERNAL)
@@ -528,12 +530,14 @@ class ManageUsers:
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            rid = ManageRoles.get_role(data['role'])
-            if rid is None:
-                print("Role '{0}' does not exists.".format(data['role']))
-                exit()
+            # The role is only changed when --role or --admin is given.
+            if 'role' in data:
+                rid = ManageRoles.get_role(data['role'])
+                if rid is None:
+                    print("Role '{0}' does not exists.".format(data['role']))
+                    exit()
 
-            data['role'] = rid
+                data['role'] = rid
 
             uid = ManageUsers.get_user(username=username,
                                        auth_source=auth_source)

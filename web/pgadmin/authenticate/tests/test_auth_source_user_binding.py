@@ -7,9 +7,9 @@
 #
 ##########################################################################
 
-"""Verify that the Kerberos, Internal and OAuth2 authentication sources only
-log in, or create, the account from their own auth source, even when an
-account from another source shares the username.
+"""Verify that the Kerberos, Internal, Webserver and OAuth2 authentication
+sources only log in, or create, the account from their own auth source,
+even when an account from another source shares the username.
 
 The colliding account is added first, so that it is the one an unfiltered
 lookup by username would find. See test_ldap_auth_source_binding.py for
@@ -21,7 +21,8 @@ from unittest.mock import patch
 
 import config
 from pgadmin.model import db, User
-from pgadmin.utils.constants import INTERNAL, KERBEROS, LDAP, OAUTH2
+from pgadmin.utils.constants import INTERNAL, KERBEROS, LDAP, OAUTH2, \
+    WEBSERVER
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils.user_utils import add_user, \
     push_app_context
@@ -40,6 +41,9 @@ def _auth_class(source):
     if source == KERBEROS:
         from pgadmin.authenticate.kerberos import KerberosAuthentication
         return KerberosAuthentication
+    if source == WEBSERVER:
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+        return WebserverAuthentication
     from pgadmin.authenticate.internal import InternalAuthentication
     return InternalAuthentication
 
@@ -92,6 +96,16 @@ class AuthSourceLoginBindingTestCase(_CollidingUsersMixin,
          dict(source=INTERNAL, form_user=LDAP,
               accounts=[(LDAP, 'Administrator'), (INTERNAL, 'User')],
               expected=None)),
+
+        ('Webserver: colliding internal admin',
+         dict(source=WEBSERVER, form_user=None,
+              accounts=[(INTERNAL, 'Administrator'), (WEBSERVER, 'User')],
+              expected=WEBSERVER)),
+
+        ('Webserver: only an internal account exists',
+         dict(source=WEBSERVER, form_user=None,
+              accounts=[(INTERNAL, 'Administrator')],
+              expected=None)),
     ]
 
     def runTest(self):
@@ -102,6 +116,9 @@ class AuthSourceLoginBindingTestCase(_CollidingUsersMixin,
         form = _FakeForm(COLLIDING_USERNAME, self.users.get(self.form_user))
 
         with self.app.test_request_context('/'), \
+                patch.object(auth_class, 'get_user',
+                             return_value=COLLIDING_USERNAME,
+                             create=True), \
                 patch(module + '.login_user',
                       return_value=True) as mock_login_user:
             status, message = auth.login(form)
@@ -155,6 +172,39 @@ class KerberosFormUserOtherAccountTestCase(BaseTestGenerator):
         mock_login_user.assert_called_once()
         self.assertEqual(mock_login_user.call_args[0][0].id,
                          self.users[self.AUTHENTICATED].id)
+
+
+class WebserverAutoCreateBindingTestCase(_CollidingUsersMixin,
+                                         BaseTestGenerator):
+    """Webserver auto-creation must create the Webserver account when only
+    an account from another source has the username.
+    """
+
+    scenarios = [
+        ('only an internal account exists: the Webserver one is created',
+         dict(accounts=[(INTERNAL, 'Administrator')], expect_create=True)),
+
+        ('the Webserver account exists: nothing is created',
+         dict(accounts=[(INTERNAL, 'Administrator'), (WEBSERVER, 'User')],
+              expect_create=False)),
+    ]
+
+    def runTest(self):
+        from pgadmin.authenticate.webserver import WebserverAuthentication
+
+        auth = WebserverAuthentication()
+        with patch.object(config, 'WEBSERVER_AUTO_CREATE_USER', True), \
+                patch('pgadmin.authenticate.webserver.create_user',
+                      return_value=(True, None)) as mock_create_user:
+            auth._WebserverAuthentication__auto_create_user(
+                COLLIDING_USERNAME, '')
+
+        if self.expect_create:
+            mock_create_user.assert_called_once()
+            self.assertEqual(mock_create_user.call_args[0][0]['auth_source'],
+                             WEBSERVER)
+        else:
+            mock_create_user.assert_not_called()
 
 
 class OAuth2LoginBindingTestCase(_CollidingUsersMixin, BaseTestGenerator):

@@ -162,3 +162,55 @@ class LDAPFormUserOtherAccountTestCase(BaseTestGenerator):
         mock_login_user.assert_called_once()
         self.assertEqual(mock_login_user.call_args[0][0].id,
                          self.users[self.AUTHENTICATED].id)
+
+
+class LDAPAutoCreateAuthSourceBindingTestCase(BaseTestGenerator):
+    """Auto-creation must find an existing LDAP account by its username,
+    case-insensitively unless LDAP_DN_CASE_SENSITIVE, and must not be
+    satisfied by an account from another source.
+    """
+
+    MIXED_CASE_USERNAME = 'LDAP-Mixed@example.com'
+
+    scenarios = [
+        ('the LDAP account exists, case-insensitive: nothing is created',
+         dict(case_sensitive=False, accounts=[INTERNAL, LDAP],
+              login_name=MIXED_CASE_USERNAME, expect_create=False)),
+
+        ('the LDAP account exists, login name in another case',
+         dict(case_sensitive=False, accounts=[INTERNAL, LDAP],
+              login_name=MIXED_CASE_USERNAME.lower(), expect_create=False)),
+
+        ('the LDAP account exists, case-sensitive: nothing is created',
+         dict(case_sensitive=True, accounts=[INTERNAL, LDAP],
+              login_name=MIXED_CASE_USERNAME, expect_create=False)),
+
+        ('only an internal account exists: the LDAP one is created',
+         dict(case_sensitive=False, accounts=[INTERNAL],
+              login_name=MIXED_CASE_USERNAME, expect_create=True)),
+    ]
+
+    def setUp(self):
+        push_app_context(self)
+        for auth_source in self.accounts:
+            add_user(self, self.MIXED_CASE_USERNAME, auth_source)
+
+    def runTest(self):
+        from pgadmin.authenticate.ldap import LDAPAuthentication
+
+        auth = LDAPAuthentication()
+        auth.username = self.login_name
+        with patch.object(config, 'LDAP_AUTO_CREATE_USER', True), \
+                patch.object(config, 'LDAP_DN_CASE_SENSITIVE',
+                             self.case_sensitive), \
+                patch('pgadmin.authenticate.ldap.create_user',
+                      return_value=(True, None)) as mock_create_user:
+            auth._LDAPAuthentication__auto_create_user(
+                self.MIXED_CASE_USERNAME)
+
+        if self.expect_create:
+            mock_create_user.assert_called_once()
+            self.assertEqual(mock_create_user.call_args[0][0]['auth_source'],
+                             LDAP)
+        else:
+            mock_create_user.assert_not_called()

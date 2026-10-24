@@ -35,6 +35,9 @@ class ResetPasswordAuthSourceTestCase(BaseTestGenerator):
     scenarios = [
         ('Reset instructions are sent for the internal account',
          dict(step='request', typed_email=SHARED_EMAIL)),
+        # Flask-Security finds the account whatever the case of the email.
+        ('Reset instructions are sent whatever the case of the email',
+         dict(step='request', typed_email=SHARED_EMAIL.upper())),
         ('A reset token for the internal account is accepted',
          dict(step='reset', auth_source=INTERNAL)),
         ('A reset token for an LDAP account is refused',
