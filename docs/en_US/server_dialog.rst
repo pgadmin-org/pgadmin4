@@ -227,6 +227,9 @@ not be able to connect directly.
 
 * If the SSH host is expecting a private key file for authentication, use the
   *Identity file* field to specify the location of the key file.
+  In server mode, pgAdmin does not use the private keys, ssh-agent or
+  ``~/.ssh/config`` of the account pgAdmin runs as; the identity file must be
+  located inside your storage directory.
 * If the SSH host is expecting a password of the user name or an identity file
   if being used, use the *Password* field to specify the password.
 * Check the box next to *Prompt for password?* to to have pgAdmin prompt for

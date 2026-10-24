@@ -11,6 +11,7 @@
 Implementation of ServerManager
 """
 import datetime
+import os
 import config
 import logging
 from flask import current_app, session
@@ -623,39 +624,63 @@ WHERE db.oid = {0}""".format(did))
                 ssh_logger.setLevel(logging.DEBUG)
                 for h in current_app.logger.handlers:
                     ssh_logger.addHandler(h)
-            # Keep sshtunnel away from the agent whenever the user has
-            # configured a credential of their own (#9814). The identity file
-            # check uses the configured path, not the resolved one, so a
-            # missing key file is reported as a failure rather than silently
-            # authenticating with some other key from the agent. With no
-            # identity file or password configured the agent stays enabled,
-            # preserving the previous behaviour for anyone relying on
-            # "Prompt for Password?" or on the agent itself.
+            # In desktop mode the account pgAdmin runs as is the user, so
+            # sshtunnel keeps its defaults: the keys in ~/.ssh, ~/.ssh/config
+            # and the ssh-agent are all available, and the agent is only
+            # kept away when the user configured a credential of their own
+            # (#9814). In server mode that account is shared by every pgAdmin
+            # user, so none of its ambient credentials may be used: the
+            # tunnel authenticates only with the password or the identity
+            # file (inside the user's storage directory) the user supplied.
+            # Do not read ~/.ssh/id_*, ~/.ssh/config (IdentityFile, User,
+            # HostName, ProxyCommand) or the agent, and report a missing
+            # identity file as a failure instead of falling back to them.
+            server_mode = config.SERVER_MODE and \
+                not getattr(current_app, 'PGADMIN_RUNTIME', False)
+            isolation = {}
+            if server_mode:
+                isolation = dict(
+                    host_pkey_directories=[],
+                    ssh_config_file=os.devnull,
+                    allow_agent=False
+                )
+
             if self.tunnel_authentication == 1:
                 try:
                     tunnel_identity_file = get_complete_file_path(
                         self.tunnel_identity_file)
                 except PermissionError as e:
                     return False, str(e)
+                if server_mode and tunnel_identity_file is None:
+                    return False, gettext(
+                        "The SSH tunnel identity file \"{0}\" could not be "
+                        "found. Specify an identity file located in your "
+                        "storage directory.").format(
+                            self.tunnel_identity_file or '')
+                if not server_mode:
+                    isolation = dict(
+                        allow_agent=not self.tunnel_identity_file)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_pkey=tunnel_identity_file,
                     ssh_private_key_password=tunnel_password,
-                    allow_agent=not self.tunnel_identity_file,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
-                    set_keepalive=int(self.tunnel_keep_alive)
+                    set_keepalive=int(self.tunnel_keep_alive),
+                    **isolation
                 )
             else:
+                if not server_mode:
+                    isolation = dict(allow_agent=not tunnel_password)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
-                    allow_agent=not tunnel_password,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
-                    set_keepalive=int(self.tunnel_keep_alive)
+                    set_keepalive=int(self.tunnel_keep_alive),
+                    **isolation
                 )
             # flag tunnel threads in daemon mode to fix hang issue.
             self.tunnel_object.daemon_forward_servers = True
