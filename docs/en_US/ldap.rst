@@ -153,7 +153,7 @@ LDAP administrator account, for example:
 
 .. code-block:: bash
 
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap --admin
+    /path/to/python /path/to/setup.py add-external-user ldapuser --auth-source ldap --admin
 
 and then deactivate the initial ``INTERNAL`` administrator account so that
 it cannot be used if internal authentication is enabled again later:

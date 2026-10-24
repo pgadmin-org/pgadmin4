@@ -162,19 +162,18 @@ class LDAPAuthentication(BaseAuthentication):
 
     def login(self, form):
         # The same username may exist under several auth sources, so only
-        # ever log in the LDAP-sourced account. form.user may have been set
-        # by Flask-Security's internal validation to an account from another
-        # source (e.g. the internal default admin) and must not be trusted.
-        user = getattr(form, 'user', None)
-        if user is None or user.auth_source != LDAP:
-            if config.LDAP_DN_CASE_SENSITIVE:
-                user = User.query.filter_by(username=self.username,
-                                            auth_source=LDAP).first()
-            else:
-                user = User.query.filter(
-                    func.lower(User.username) == func.lower(
-                        self.username),
-                    User.auth_source == LDAP).first()
+        # ever log in the LDAP account of the user LDAP authenticated.
+        # form.user is not used: Flask-Security's validation, run for
+        # internal authentication, sets it to the account whose email was
+        # typed, which may be from another source (e.g. the internal default
+        # admin) or another LDAP user.
+        if config.LDAP_DN_CASE_SENSITIVE:
+            user = User.query.filter_by(username=self.username,
+                                        auth_source=LDAP).first()
+        else:
+            user = User.query.filter(
+                func.lower(User.username) == func.lower(self.username),
+                User.auth_source == LDAP).first()
 
         if user is None:
             current_app.logger.exception(

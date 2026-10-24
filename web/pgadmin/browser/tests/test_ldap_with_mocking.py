@@ -34,15 +34,42 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
             auto_create_user=False,
             username='ldap_user',
             password='ldap_pass')),
+        # LDAP refuses the internal account's credentials, so the user is
+        # logged in by internal authentication.
         ('LDAP + Internal Authentication', dict(
             auth_source=[LDAP, INTERNAL],
             auto_create_user=False,
+            ldap_bind=False,
             username=config_data[
                 'pgAdmin4_login_credentials']['login_username'],
             password=config_data[
                 'pgAdmin4_login_credentials']['login_password']
-        ))
+        )),
+        # LDAP accepts a user whose username is that of an internal account
+        # and who has no LDAP account. They must not be logged in as the
+        # internal account, whichever source is tried first. With internal
+        # first, Flask-Security's validation sets form.user to the internal
+        # account although its password does not match.
+        ('LDAP accepts an internal username, LDAP first', dict(
+            auth_source=[LDAP, INTERNAL],
+            auto_create_user=False,
+            username=config_data[
+                'pgAdmin4_login_credentials']['login_username'],
+            password='ldap-only-password',
+            expect_login=False
+        )),
+        ('LDAP accepts an internal username, internal first', dict(
+            auth_source=[INTERNAL, LDAP],
+            auto_create_user=False,
+            username=config_data[
+                'pgAdmin4_login_credentials']['login_username'],
+            password='ldap-only-password',
+            expect_login=False
+        )),
     ]
+
+    ldap_bind = True
+    expect_login = True
 
     @classmethod
     def setUpClass(cls):
@@ -52,7 +79,15 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
         """
         cls.tester.logout()
 
+    _CONFIG = ('AUTHENTICATION_SOURCES', 'LDAP_AUTO_CREATE_USER',
+               'LDAP_ANONYMOUS_BIND', 'LDAP_BIND_USER', 'LDAP_BIND_PASSWORD')
+
     def setUp(self):
+        # Restored when the test ends, even if setUp() fails part way, so
+        # that later tests see the usual config.
+        for name in self._CONFIG:
+            self.addCleanup(setattr, app_config, name,
+                            getattr(app_config, name))
         app_config.AUTHENTICATION_SOURCES = self.auth_source
         app_config.LDAP_AUTO_CREATE_USER = self.auto_create_user
         app_config.LDAP_ANONYMOUS_BIND = False
@@ -64,17 +99,24 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
                   return_value=[True, "Done"])
     @patch.object(AuthSourceRegistry._registry[LDAP], 'search_ldap_user',
                   return_value=[True, ''])
-    def runTest(self, conn_mock_obj, search_mock_obj):
+    def runTest(self, search_mock_obj, conn_mock_obj):
         """This function checks ldap login functionality."""
+        if not self.ldap_bind:
+            conn_mock_obj.return_value = [False, "Invalid credentials"]
         AuthSourceRegistry._registry[LDAP].dedicated_user = False
         res = self.tester.login(self.username, self.password, True)
         # The "Gravatar image for X" HTML is no longer server-rendered
         # in the React SPA. Verify successful login via session state.
         self.assertEqual(res.status_code, 200)
         with self.tester.session_transaction() as sess:
-            self.assertIsNotNone(
-                sess.get('_user_id'),
-                'Post-login session should contain _user_id')
+            if self.expect_login:
+                self.assertIsNotNone(
+                    sess.get('_user_id'),
+                    'Post-login session should contain _user_id')
+            else:
+                self.assertIsNone(
+                    sess.get('_user_id'),
+                    'An LDAP login must not log in an internal account')
 
     def tearDown(self):
         self.tester.logout()

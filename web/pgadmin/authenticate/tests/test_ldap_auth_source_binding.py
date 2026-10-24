@@ -25,9 +25,11 @@ a module-level import would bind a class that patch() no longer reaches.
 from unittest.mock import patch
 
 import config
-from pgadmin.model import db, Role, User
+from pgadmin.model import db, User
 from pgadmin.utils.constants import INTERNAL, LDAP
 from pgadmin.utils.route import BaseTestGenerator
+from regression.python_test_utils.user_utils import add_user, \
+    push_app_context
 
 COLLIDING_USERNAME = 'ldap-collision@example.com'
 
@@ -47,6 +49,11 @@ class LDAPLoginAuthSourceBindingTestCase(BaseTestGenerator):
         ('form.user is the colliding internal admin',
          dict(form_user=INTERNAL, case_sensitive=True,
               login_name=COLLIDING_USERNAME, create_ldap=True,
+              expected=LDAP)),
+
+        ('form.user is the colliding internal admin, case-insensitive',
+         dict(form_user=INTERNAL, case_sensitive=False,
+              login_name=COLLIDING_USERNAME.upper(), create_ldap=True,
               expected=LDAP)),
 
         ('no form.user, case-sensitive lookup',
@@ -78,30 +85,17 @@ class LDAPLoginAuthSourceBindingTestCase(BaseTestGenerator):
     # No Postgres server interaction needed.
     def setUp(self):
         # Don't rely on the runner's app context surviving earlier tests.
-        self._app_ctx = self.app.app_context()
-        self._app_ctx.push()
-        self._orig_case_sensitive = config.LDAP_DN_CASE_SENSITIVE
+        push_app_context(self)
+        self.addCleanup(setattr, config, 'LDAP_DN_CASE_SENSITIVE',
+                        config.LDAP_DN_CASE_SENSITIVE)
         self.users = {}
         self._add_user(INTERNAL, 'Administrator')
         if self.create_ldap:
             self._add_user(LDAP, 'User')
-        db.session.commit()
 
     def _add_user(self, auth_source, role_name):
-        user = User(username=COLLIDING_USERNAME,
-                    email=COLLIDING_USERNAME,
-                    auth_source=auth_source,
-                    active=True,
-                    roles=[Role.query.filter_by(name=role_name).first()])
-        db.session.add(user)
-        self.users[auth_source] = user
-
-    def tearDown(self):
-        config.LDAP_DN_CASE_SENSITIVE = self._orig_case_sensitive
-        for user in self.users.values():
-            db.session.delete(user)
-        db.session.commit()
-        self._app_ctx.pop()
+        uid = add_user(self, COLLIDING_USERNAME, auth_source, role_name)
+        self.users[auth_source] = db.session.get(User, uid)
 
     def runTest(self):
         from pgadmin.authenticate.ldap import LDAPAuthentication
@@ -131,3 +125,40 @@ class LDAPLoginAuthSourceBindingTestCase(BaseTestGenerator):
         self.assertEqual(logged_in.id, self.users[LDAP].id)
         self.assertEqual(logged_in.auth_source, LDAP)
         self.assertFalse(logged_in.has_role('Administrator'))
+
+
+class LDAPFormUserOtherAccountTestCase(BaseTestGenerator):
+    """login() must log in the account of the user LDAP authenticated, not
+    form.user, which Flask-Security sets to the account whose email matches
+    the typed username and which may be another LDAP account.
+    """
+
+    AUTHENTICATED = 'ldap-authenticated'
+    OTHER = 'ldap-other'
+
+    def setUp(self):
+        push_app_context(self)
+        self.users = {}
+        # The other account's email is the authenticated user's username.
+        for username, email, role_name in (
+                (self.AUTHENTICATED, 'authenticated@example.com', 'User'),
+                (self.OTHER, self.AUTHENTICATED, 'Administrator')):
+            uid = add_user(self, username, LDAP, role_name, email=email)
+            self.users[username] = db.session.get(User, uid)
+
+    def runTest(self):
+        from pgadmin.authenticate.ldap import LDAPAuthentication
+
+        auth = LDAPAuthentication()
+        auth.username = self.AUTHENTICATED
+        form = _FakeForm(self.users[self.OTHER])
+
+        with self.app.test_request_context('/'), \
+                patch('pgadmin.authenticate.ldap.login_user',
+                      return_value=True) as mock_login_user:
+            status, message = auth.login(form)
+
+        self.assertTrue(status, message)
+        mock_login_user.assert_called_once()
+        self.assertEqual(mock_login_user.call_args[0][0].id,
+                         self.users[self.AUTHENTICATED].id)
