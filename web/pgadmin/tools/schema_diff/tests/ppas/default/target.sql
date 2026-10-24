@@ -84,6 +84,9 @@ CREATE TABLE test_schema_diff.table_for_column (
 
 ALTER TABLE test_schema_diff.table_for_column OWNER TO enterprisedb;
 
+COMMENT ON COLUMN test_schema_diff.table_for_column.col1
+    IS 'Comment only in the target';
+
 --
 -- TOC entry 12268 (class 1259 OID 149089)
 -- Name: table_for_constraints; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb

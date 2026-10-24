@@ -135,6 +135,14 @@ module.exports = [{
         fullySpecified: false
       },
     },{
+      // react-frame-component 5.3 declares "type": "module" but maps its
+      // "require" export to a UMD build. Babel compiles our imports to
+      // require(), so webpack picks the UMD file and, honouring the package
+      // type, parses it as ESM, where the UMD wrapper finds no exports object
+      // and exports nothing. Parse it as CommonJS/auto so the UMD works.
+      test: /[\\/]node_modules[\\/]react-frame-component[\\/].*\.js$/,
+      type: 'javascript/auto',
+    },{
       test: /\.tsx?$|\.ts?$|\.jsx?$/,
       exclude: [/node_modules/, /vendor/],
       use: {
@@ -213,6 +221,7 @@ module.exports = [{
             'pure|pgadmin.node.trigger_function',
             'pure|pgadmin.node.package',
             'pure|pgadmin.node.sequence',
+            'pure|pgadmin.node.statistics',
             'pure|pgadmin.node.synonym',
             'pure|pgadmin.node.type',
             'pure|pgadmin.node.rule',
@@ -231,6 +240,7 @@ module.exports = [{
             'pure|pgadmin.node.replica_node',
             'pure|pgadmin.node.pgd_replication_groups',
             'pure|pgadmin.node.pgd_replication_servers',
+            'pure|pgadmin.node.pgt_chain',
           ],
         },
       },
@@ -252,6 +262,7 @@ module.exports = [{
             'pure|pgadmin.tools.import_export_servers',
             'pure|pgadmin.tools.debugger',
             'pure|pgadmin.node.pga_job',
+            'pure|pgadmin.node.pgt_chain',
             'pure|pgadmin.tools.schema_diff',
             'pure|pgadmin.tools.file_manager',
             'pure|pgadmin.tools.search_objects',

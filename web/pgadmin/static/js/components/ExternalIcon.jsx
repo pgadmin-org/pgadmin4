@@ -30,6 +30,7 @@ import ExecuteQuerySvg from '../../img/execute_query.svg?svgr';
 import MagicSvg from '../../img/magic.svg?svgr';
 import MsAzure from '../../img/ms_azure.svg?svgr';
 import GoogleCloud from '../../img/google-cloud-1.svg?svgr';
+import PgEdge from '../../img/pgedge.svg?svgr';
 import RowFilterSvg from '../../img/fonticon/row_filter.svg?svgr';
 import SvgIcon from '@mui/material/SvgIcon';
 import SchemaDiffSvg from '../../img/fonticon/compare.svg?svgr';
@@ -95,6 +96,9 @@ AzureIcon.propTypes = {style: PropTypes.object};
 
 export const GoogleCloudIcon = ({style})=><ExternalIcon Icon={GoogleCloud} style={{height: '2.2rem', width: '3.2rem', ...style}} data-label="GoogleCloudIcon" />;
 GoogleCloudIcon.propTypes = {style: PropTypes.object};
+
+export const StarfleetIcon = ({style})=><ExternalIcon Icon={PgEdge} style={{height: '2.2rem', width: '3.2rem', ...style}} data-label="StarfleetIcon" />;
+StarfleetIcon.propTypes = {style: PropTypes.object};
 
 export const SQLFileIcon = ({style})=><ExternalIcon Icon={SQLFileSvg} style={{height: '1rem', ...style}} data-label="SQLFileIcon" />;
 SQLFileIcon.propTypes = {style: PropTypes.object};

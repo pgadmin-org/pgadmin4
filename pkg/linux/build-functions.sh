@@ -102,6 +102,16 @@ _create_python_virtualenv() {
     # file inside the venv's own site-packages (which we do own), added
     # once pip/wheel are installed below.
     "${SYSTEM_PYTHON_PATH}" -m venv venv
+
+    # Python 3.14's venv module adds a novelty "𝜋thon" alias (U+1D70B, see
+    # CPython gh-119535) alongside python/python3/python3.X. Nothing uses it,
+    # and the "sed -i" hash bang fixup below turns the symlink into a full
+    # copy of the interpreter which, unlike the python* links, is never put
+    # back. dpkg on Ubuntu 26.04 then fails to unpack it with EPERM (#10414),
+    # so remove it. The name is given as raw UTF-8 bytes so that it matches
+    # whatever the build shell's locale is.
+    rm -f "venv/bin/"$'\360\235\234\213'"thon"
+
     # shellcheck disable=SC1091
     . venv/bin/activate
 
@@ -136,6 +146,11 @@ _create_python_virtualenv() {
         pip3 install --force-reinstall --no-cache-dir \
             --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
     fi
+
+    # Remove the files in the installed packages that we never use, and the
+    # packaging tools (pip, setuptools and wheel) that are only needed to
+    # build the environment
+    python3 "${SOURCEDIR}/pkg/prune_site_packages.py" venv || exit 1
 
     # Fixup the paths in the venv activation scripts
     sed -i 's/VIRTUAL_ENV=.*/VIRTUAL_ENV="\/usr\/pgadmin4\/venv"/g' venv/bin/activate
@@ -202,14 +217,32 @@ _build_runtime() {
       ELECTRON_ARCH="arm64"
     fi
 
-    # Resolve the electron version from runtime/package.json, NOT from
-    # `npm info electron version`. The latter fetches whatever currently
-    # carries the `latest` dist-tag on the npm registry, which means any
-    # newly published electron release lands in shipped binaries without
-    # review. Keep the build deterministic and pinned.
-    ELECTRON_VERSION=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' "${SOURCEDIR}/runtime/package.json" | head -1)
+    # Resolve the electron version from runtime/yarn.lock, NOT from the npm
+    # registry and NOT from the range in runtime/package.json. The registry's
+    # `latest` dist-tag lands any newly published electron release in shipped
+    # binaries without review, whilst the package.json range is only a lower
+    # bound, so yarn is free to resolve it to a build other than the one we
+    # ship. The lockfile is the single source of truth, and `yarn info` reports
+    # its resolution without touching the network or needing node_modules.
+    #
+    # It must run inside runtime/ though: outside a yarn project, `yarn info`
+    # silently falls back to querying the registry and still exits 0, so check
+    # the lockfile is present first and validate what comes back.
+    if [ ! -f "${SOURCEDIR}/runtime/yarn.lock" ]; then
+        echo "ERROR: ${SOURCEDIR}/runtime/yarn.lock not found; cannot resolve the pinned electron version" >&2
+        exit 1
+    fi
+
+    ELECTRON_VERSION=$(cd "${SOURCEDIR}/runtime" && yarn info electron --json | node -e "
+        const lines = require('fs').readFileSync(0, 'utf8').split('\n').filter(Boolean);
+        const pkg = lines.map(l => { try { return JSON.parse(l); } catch (e) { return null; } })
+            .find(o => o && typeof o.value === 'string' && o.value.startsWith('electron@npm:'));
+        const version = (pkg && pkg.children && pkg.children.Version) || '';
+        process.stdout.write(/^[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?$/.test(version) ? version : '');
+    ")
+
     if [ -z "${ELECTRON_VERSION}" ]; then
-        echo "ERROR: could not resolve electron version from runtime/package.json" >&2
+        echo "ERROR: could not resolve the pinned electron version from ${SOURCEDIR}/runtime/yarn.lock" >&2
         exit 1
     fi
 

@@ -27,5 +27,12 @@
 # any given tag only carries the CPython releases that were current when it was
 # cut.
 
-PYTHON_VERSION=3.13.15
-PYTHON_BUILD_STANDALONE_TAG=20260901
+# This stays on 3.13 for now. The Windows build needs pywinpty, which
+# requirements.txt holds at 2.0.x because of
+# https://github.com/andfoy/pywinpty/issues/545 (reads from the psql process
+# lag behind what is typed in 3.x), and 2.0.x has no wheel for 3.14 and cannot
+# be built for it, since its PyO3 supports nothing newer than 3.13. Move to
+# 3.14 once pywinpty 3.x is shown to work in the PSQL tool on Windows.
+
+PYTHON_VERSION=3.13.16
+PYTHON_BUILD_STANDALONE_TAG=20261013

@@ -44,6 +44,9 @@ from branding import APP_NAME, APP_ICON, APP_COPYRIGHT, APP_PATH, \
 HELP_PATH = '../../../docs/en_US/_build/html/'
 
 # Languages we support in the UI
+# Babel's locale data for other languages is removed from the packages by
+# pkg/prune_site_packages.py, which parses this assignment, so it must stay a
+# plain dict literal.
 LANGUAGES = {
     'en': 'English',
     'zh_Hans_CN': 'Chinese (Simplified)',
@@ -862,6 +865,12 @@ KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
 
 AZURE_CREDENTIAL_CACHE_DIR = os.path.join(DATA_DIR, 'azurecredentialcache')
 
+#############################################################################
+# pgEdge Starfleet API base URL, used by the cloud deployment wizard
+#############################################################################
+
+STARFLEET_API_URL = 'https://api.pgedge.com'
+
 ##########################################################################
 # OAuth2 Configuration
 ##########################################################################
@@ -926,6 +935,21 @@ OAUTH2_CONFIG = [
         #     'wids': ["cf1c38e5-3621-4004-a7cb-879624dced7c"],
         # }
         'OAUTH2_ADDITIONAL_CLAIMS': None,
+        # The claim listing the server groups whose shared servers the user
+        # may see (ID token first, then userinfo). When set, shared servers
+        # owned by other users are only visible if their server group's name
+        # is in the claim; if the claim is missing, none are. The user's own
+        # servers are unaffected. Names are matched exactly, and the claim
+        # is only read at login.
+        # Without mapping, claim values are treated as server group names.
+        # Example:
+        # 'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
+        # Optional mapping from claim value -> server group name(s):
+        # 'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': {
+        #     'readonly': ['RO Server 1', 'RO Server 2']
+        # },
+        'OAUTH2_SERVER_GROUP_CLAIM': None,
+        'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': None,
         # Set this variable to False to disable SSL certificate verification
         # for OAuth2 provider.
         # This may need to set False, in case of self-signed certificates.
@@ -945,6 +969,13 @@ OAUTH2_CONFIG = [
 # in this case Admin has to add the user manually in the SQLite database.
 
 OAUTH2_AUTO_CREATE_USER = True
+
+# If set to True, and OAuth2 is the only authentication source with exactly
+# one provider in OAUTH2_CONFIG, users are sent straight to that provider
+# instead of seeing the pgAdmin login page. After logging out, the login
+# page is shown so the provider does not log the user straight back in.
+# Add ?no_auto_login to the login page URL to display it regardless.
+OAUTH2_AUTO_LOGIN = False
 
 ##########################################################################
 # Webserver Configuration
@@ -1002,6 +1033,12 @@ MFA_SUPPORTED_METHODS = ["email", "authenticator"]
 # e.g.  pgAdmin 4 - Verification Code
 MFA_EMAIL_SUBJECT = None
 
+# Number of wrong entries allowed for one emailed verification code. Once
+# this many wrong codes have been entered, the code is discarded and the user
+# must send a new one. Values below 1 are treated as 1 (the code is discarded
+# after the first wrong entry), so the number of attempts is never unlimited.
+MFA_EMAIL_CODE_MAX_ATTEMPTS = 5
+
 ##########################################################################
 # PSQL tool settings
 ##########################################################################
@@ -1046,10 +1083,54 @@ AUTO_DISCOVER_SERVERS = True
 SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 
 #############################################################################
-# ENABLE_SERVER_PASS_EXEC_CMD is used to enable/disable Password exec command
-# field in server properties. This is used to specify a shell command to be
-# executed to retrieve a password to be used for server authentication.
-# This setting is applicable only for server mode.
+# SERVER_PASSEXEC_COMMANDS is an allowlist of named commands that may be used
+# to retrieve a password for server authentication. Users pick a command by
+# name in the server properties; they cannot supply their own. Each value is
+# a list holding the executable followed by its arguments, for example:
+#
+#   SERVER_PASSEXEC_COMMANDS = {
+#       'vault': ['/usr/local/bin/get-pg-pass', '--ttl', '300']
+#   }
+#
+# Commands are run directly, without a shell, so no quoting or substitution
+# is applied to the arguments. Connection details are passed in these
+# environment variables: PGADMIN_PASSEXEC_HOST, PGADMIN_PASSEXEC_PORT,
+# PGADMIN_PASSEXEC_USERNAME, PGADMIN_PASSEXEC_DATABASE,
+# PGADMIN_PASSEXEC_PGADMIN_USER and PGADMIN_PASSEXEC_AUTH_SOURCE. Only the
+# last two identify the pgAdmin user; the host, port, username and database
+# are set by whoever edits the server, so commands must authorise on the
+# pgAdmin identity and treat the other four as untrusted input.
+# Names may not start with "__". An empty dictionary (the default) turns the
+# feature off. This setting is applicable only for server mode.
+#
+# Upgrading from a release that allowed free-text commands in server mode:
+# configure this BEFORE the first start after upgrading. On that start, an
+# existing free-text command is converted to the name of the entry whose
+# arguments, joined by single spaces, match it exactly, and every other
+# command is cleared; the clearing cannot be undone. If the dictionary is
+# empty at that start, the conversion is postponed: existing commands stay
+# in the configuration database unused, a warning is logged at each start,
+# and they are converted or cleared on the first start with at least one
+# entry configured.
+#############################################################################
+SERVER_PASSEXEC_COMMANDS = {}
+
+#############################################################################
+# SERVER_PASSEXEC_ENV_PASSTHROUGH lists the names of additional environment
+# variables to pass from pgAdmin's environment to the commands defined in
+# SERVER_PASSEXEC_COMMANDS, for example ['VAULT_ADDR']. The commands do not
+# receive pgAdmin's full environment; they get only PATH, HOME, LANG,
+# LANGUAGE, TZ, TMPDIR, TMP, TEMP, USER, LOGNAME, any LC_* variable (and on
+# Windows, SYSTEMROOT, SYSTEMDRIVE, PATHEXT, COMSPEC and WINDIR), the
+# variables named here, and the PGADMIN_PASSEXEC_* variables, which always
+# take precedence. Do not list variables that hold secrets the commands do
+# not need. This setting is applicable only for server mode.
+#############################################################################
+SERVER_PASSEXEC_ENV_PASSTHROUGH = []
+
+#############################################################################
+# DEPRECATED and ignored: free-text password exec commands are never run in
+# server mode. Use SERVER_PASSEXEC_COMMANDS instead.
 #############################################################################
 ENABLE_SERVER_PASS_EXEC_CMD = False
 

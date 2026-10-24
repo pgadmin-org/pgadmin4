@@ -18,6 +18,7 @@ import { setupMenu } from './menu.js';
 import contextMenu from 'electron-context-menu';
 import { setupDownloader } from './downloader.js';
 import { setupAutoUpdater, updateConfigAndMenus } from './autoUpdaterHandler.js';
+import { classifyWindowOpen, isAppUrl, isExternalUrl } from './window_policy.js';
 
 const configStore = new Store({
   defaults: {
@@ -42,8 +43,6 @@ let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let baseUrl = `http://127.0.0.1:${serverPort}`;
-
-let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
 
 process.env['ELECTRON_ENABLE_SECURITY_WARNINGS'] = false;
 
@@ -247,12 +246,18 @@ function startDesktopMode() {
   misc.writeServerLog('pgAdmin Command: "' + command + '"');
   misc.writeServerLog('Environment: ');
   Object.keys(process.env).forEach(function (key) {
-    // Below code is included only for Mac OS as default path for azure CLI
-    // installation path is not included in PATH variable while spawning
-    // runtime environment.
+    // On macOS, apps launched from the Finder or Dock get a minimal PATH that
+    // does not include the directories Homebrew installs into (/usr/local/bin
+    // on Intel, /opt/homebrew/bin on Apple Silicon), so tools such as the
+    // Azure CLI would not be found.
     if (process.platform === 'darwin' && key === 'PATH') {
-      let updated_path = process.env[key] + ':/usr/local/bin';
-      process.env[key] = updated_path;
+      let pathDirs = process.env[key].split(':');
+      ['/usr/local/bin', '/opt/homebrew/bin'].forEach((dir) => {
+        if (!pathDirs.includes(dir)) {
+          pathDirs.push(dir);
+        }
+      });
+      process.env[key] = pathDirs.join(':');
     }
 
     if (process.platform === 'win32' && key.toUpperCase() === 'PATH') {
@@ -355,6 +360,94 @@ function startDesktopMode() {
   performPing();
 }
 
+// Restrict what a window showing pgAdmin (and so carrying pgadmin_preload.js)
+// may open or navigate to. Pages that are not served by the local pgAdmin
+// server must never be loaded with the preload attached, as it gives them
+// access to privileged APIs such as writing and opening files.
+function setupWindowGuards(win) {
+  const contents = win.webContents;
+
+  contents.setWindowOpenHandler(({url, frameName})=>{
+    const openDocsInBrowser = configStore.get('openDocsInBrowser', true);
+    const target = classifyWindowOpen({url, frameName}, baseUrl, openDocsInBrowser);
+
+    if (target === 'external') {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    } else if (target === 'deny') {
+      misc.writeServerLog(`Refused to open a window for ${url}`);
+      return { action: 'deny' };
+    }
+
+    // Both remaining cases open in-app, but only pgAdmin's own pages get
+    // the preload. Electron does not pass the preload on to child windows
+    // unless it is given here.
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        'position': 'center',
+        'minWidth': 640,
+        'minHeight': 480,
+        icon: '../../assets/pgAdmin4.png',
+        ...pgAdminMainScreen.getBounds(),
+        webPreferences: target === 'app' ? {
+          preload: path.join(__dirname, 'pgadmin_preload.js'),
+        } : {
+          contextIsolation: true,
+          nodeIntegration: false,
+          sandbox: true,
+        },
+      },
+    };
+  });
+
+  // Child windows showing pgAdmin pages need the same restrictions, or they
+  // could open or navigate to other sites with the preload attached.
+  contents.on('did-create-window', (childWindow, {url, frameName})=>{
+    const openDocsInBrowser = configStore.get('openDocsInBrowser', true);
+    const target = classifyWindowOpen({url, frameName}, baseUrl, openDocsInBrowser);
+    if (target === 'app') {
+      setupWindowGuards(childWindow);
+    } else if (target === 'isolated') {
+      setupIsolatedWindowGuards(childWindow);
+    }
+  });
+
+  // Keep the window, and any frames within it (the preload is also loaded
+  // into subframes of the main window), on pgAdmin's own pages. Links to
+  // other sites are sent to the default browser instead.
+  const guardNavigation = (event)=>{
+    const url = event.url;
+    if (url === 'about:blank' || url === 'about:srcdoc' || isAppUrl(url, baseUrl)) {
+      return;
+    }
+    event.preventDefault();
+    if (isExternalUrl(url)) {
+      shell.openExternal(url);
+    } else {
+      misc.writeServerLog(`Refused to navigate to ${url}`);
+    }
+  };
+  contents.on('will-frame-navigate', guardNavigation);
+  contents.on('will-redirect', guardNavigation);
+}
+
+// Windows showing third party pages in-app (the Google sign-in flow, or the
+// online documentation) must not open further in-app windows; links that try
+// to are sent to the default browser instead. Navigation within the window is
+// left alone, as the Google sign-in flow moves between Google's own hosts
+// before finally redirecting back to the local pgAdmin server.
+function setupIsolatedWindowGuards(win) {
+  win.webContents.setWindowOpenHandler(({url})=>{
+    if (isExternalUrl(url)) {
+      shell.openExternal(url);
+    } else {
+      misc.writeServerLog(`Refused to open a window for ${url}`);
+    }
+    return { action: 'deny' };
+  });
+}
+
 // This function is used to hide the splash screen and create/launch
 // new window to render pgAdmin4 page.
 function launchPgAdminWindow() {
@@ -403,35 +496,7 @@ function launchPgAdminWindow() {
     forceQuitAndInstallUpdate,
   });
 
-  pgAdminMainScreen.webContents.setWindowOpenHandler(({url})=>{
-    let openDocsInBrowser = configStore.get('openDocsInBrowser', true);
-    let isDocURL = false;
-    docsURLSubStrings.forEach(function (key) {
-      if (url.indexOf(key) >= 0) {
-        isDocURL = true;
-      }
-    });
-
-    if (openDocsInBrowser && isDocURL) {
-      // Do not open the window
-      shell.openExternal(url);
-      return { action: 'deny' };
-    } else {
-      return {
-        action: 'allow',
-        overrideBrowserWindowOptions: {
-          'position': 'center',
-          'minWidth': 640,
-          'minHeight': 480,
-          icon: '../../assets/pgAdmin4.png',
-          ...pgAdminMainScreen.getBounds(),
-          webPreferences: {
-            preload: path.join(__dirname, 'pgadmin_preload.js'),
-          },
-        },
-      };
-    }
-  });
+  setupWindowGuards(pgAdminMainScreen);
 
   pgAdminMainScreen.on('closed', ()=>{
     cleanupAutoUpdateFlag();
@@ -478,9 +543,60 @@ function notifyUpdateInstalled() {
   }
 }
 
+// Native file dialogs don't reliably remember the last used directory across
+// calls, so we track it ourselves and use it as the default when the caller
+// hasn't asked for a specific location.
+async function withLastVisitedDirectory(options) {
+  if (options.defaultPath) {
+    return options;
+  }
+  const lastVisitedDirectory = configStore.get('lastVisitedDirectory');
+  if (!lastVisitedDirectory) {
+    return options;
+  }
+  try {
+    const stats = await fs.promises.stat(lastVisitedDirectory);
+    if (stats.isDirectory()) {
+      return { ...options, defaultPath: lastVisitedDirectory };
+    }
+  } catch {
+    // Remembered directory no longer exists (e.g. removable/network drive) - fall through.
+  }
+  return options;
+}
+
+function rememberVisitedDirectory(options, result) {
+  const chosenPath = result.filePath || result.filePaths?.[0];
+  if (!chosenPath) {
+    return;
+  }
+  const isDirectory = options.properties?.includes('openDirectory');
+  try {
+    configStore.set('lastVisitedDirectory', isDirectory ? chosenPath : path.dirname(chosenPath));
+  } catch (error) {
+    try {
+      misc.writeServerLog(`Error remembering last visited directory: ${error}`);
+    } catch (logError) {
+      console.error('Error remembering last visited directory:', error, logError);
+    }
+  }
+}
+
 // setup preload events.
-ipcMain.handle('showOpenDialog', (e, options) => dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), options));
-ipcMain.handle('showSaveDialog', (e, options) => dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), options));
+ipcMain.handle('showOpenDialog', async (e, options) => {
+  const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options));
+  if (!result.canceled) {
+    rememberVisitedDirectory(options, result);
+  }
+  return result;
+});
+ipcMain.handle('showSaveDialog', async (e, options) => {
+  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options));
+  if (!result.canceled) {
+    rememberVisitedDirectory(options, result);
+  }
+  return result;
+});
 ipcMain.handle('showMessageBox', (e, options) => dialog.showMessageBox(BrowserWindow.fromWebContents(e.sender), options));
 ipcMain.handle('getStoreData', (_e, key) => key ? configStore.get(key) : configStore.store);
 ipcMain.handle('setStoreData', (_e, newValues) => {

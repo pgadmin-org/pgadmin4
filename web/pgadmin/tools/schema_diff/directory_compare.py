@@ -24,6 +24,12 @@ list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
 SPECIAL_NODES = ['table', 'view', 'mview']
 VIEW_NODES = ['view', 'mview']
 
+# A node whose objects are matched on something other than the name the user
+# knows them by (e.g. functions, matched on their argument types but shown
+# with their argument names) can store that name in each object's properties
+# under this key, to be shown as the object's title. It is never compared.
+TITLE_KEY = 'schema_diff_title'
+
 
 def _get_user_mapping_name(user_mapping_name):
     """
@@ -36,6 +42,21 @@ def _get_user_mapping_name(user_mapping_name):
         mapping_name = mapping_name.split(PGADMIN_STRING_SEPARATOR)[0]
 
     return mapping_name
+
+
+def _get_title(node, key, obj):
+    """
+    Get the title to show for a compared object.
+
+    :param node: Node type
+    :param key: Key the object was matched on
+    :param obj: Object properties
+    :return: Title
+    """
+    if node == 'user_mapping':
+        return _get_user_mapping_name(key)
+
+    return obj.get(TITLE_KEY, key) if isinstance(obj, dict) else key
 
 
 def _get_source_list(**kwargs):
@@ -101,9 +122,7 @@ def _get_source_list(**kwargs):
                 view_object.conn, source_object_id, where=None,
                 show_system_objects=None, is_schema_diff=True)
 
-        title = item
-        if node == 'user_mapping':
-            title = _get_user_mapping_name(item)
+        title = _get_title(node, item, source_dict[item])
 
         source_only.append({
             'id': count,
@@ -191,9 +210,7 @@ def _get_target_list(removed, target_dict, node, target_params, view_object,
                 {'drop_sql': True})
             diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
 
-        title = item
-        if node == 'user_mapping':
-            title = _get_user_mapping_name(item)
+        title = _get_title(node, item, target_dict[item])
 
         target_only.append({
             'id': count,
@@ -291,9 +308,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
 
         if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys,
                                       ignore_whitespaces):
-            title = key
-            if node == 'user_mapping':
-                title = _get_user_mapping_name(key)
+            title = _get_title(node, key, source_dict[key])
 
             identical.append({
                 'id': count,
@@ -383,13 +398,15 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     view_object.conn, source_object_id, where=None,
                     show_system_objects=None, is_schema_diff=True)
                 target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
+                # The source object's parameters let a node that cannot
+                # alter the target in place (e.g. a function whose return
+                # type differs) drop it and recreate it from the source.
                 temp_tgt_params.update(
-                    {'data': diff_dict, 'target_schema': target_schema})
+                    {'data': diff_dict, 'target_schema': target_schema,
+                     'source_params': temp_src_params})
                 diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
 
-            title = key
-            if node == 'user_mapping':
-                title = _get_user_mapping_name(key)
+            title = _get_title(node, key, source_dict[key])
 
             different.append({
                 'id': count,
@@ -462,6 +479,9 @@ def compare_dictionaries(**kwargs):
     removed = dict2_keys - dict1_keys
     target_only = _get_target_list(removed, target_dict, node, target_params,
                                    view_object, node_label, group_name)
+
+    # The title an object is shown under is not one of its properties.
+    ignore_keys = (ignore_keys or []) + [TITLE_KEY]
 
     # if ignore_owner is True then add all the possible owner keys to the
     # ignore keys.

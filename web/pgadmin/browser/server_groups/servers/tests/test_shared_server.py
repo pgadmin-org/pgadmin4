@@ -33,6 +33,7 @@ class SharedServersGetTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the GET API"""
+        servers_utils.restore_server_fixture_on_cleanup(self)
 
         if config.SERVER_MODE is False:
             self.skipTest(
@@ -86,6 +87,7 @@ class SharedServerUpdateTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the PUT API"""
+        servers_utils.restore_server_fixture_on_cleanup(self)
         if config.SERVER_MODE is False:
             self.skipTest(
                 "Can not run shared servers test cases in the Desktop mode."

@@ -33,14 +33,32 @@ _build_runtime() {
 
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
     # Get a fresh copy of electron
-    # Resolve the electron version from runtime/package.json, NOT from
-    # `npm info electron version`. The latter fetches whatever currently
-    # carries the `latest` dist-tag on the npm registry, which means any
-    # newly published electron release lands in shipped binaries without
-    # review. Keep the build deterministic and pinned.
-    ELECTRON_VERSION=$(sed -nE 's/.*"electron":[[:space:]]*"\^?([0-9.]+)".*/\1/p' "${SOURCE_DIR}/runtime/package.json" | head -1)
+    # Resolve the electron version from runtime/yarn.lock, NOT from the npm
+    # registry and NOT from the range in runtime/package.json. The registry's
+    # `latest` dist-tag lands any newly published electron release in shipped
+    # binaries without review, whilst the package.json range is only a lower
+    # bound, so yarn is free to resolve it to a build other than the one we
+    # ship. The lockfile is the single source of truth, and `yarn info` reports
+    # its resolution without touching the network or needing node_modules.
+    #
+    # It must run inside runtime/ though: outside a yarn project, `yarn info`
+    # silently falls back to querying the registry and still exits 0, so check
+    # the lockfile is present first and validate what comes back.
+    if [ ! -f "${SOURCE_DIR}/runtime/yarn.lock" ]; then
+        echo "ERROR: ${SOURCE_DIR}/runtime/yarn.lock not found; cannot resolve the pinned electron version" >&2
+        exit 1
+    fi
+
+    ELECTRON_VERSION=$(cd "${SOURCE_DIR}/runtime" && yarn info electron --json | node -e "
+        const lines = require('fs').readFileSync(0, 'utf8').split('\n').filter(Boolean);
+        const pkg = lines.map(l => { try { return JSON.parse(l); } catch (e) { return null; } })
+            .find(o => o && typeof o.value === 'string' && o.value.startsWith('electron@npm:'));
+        const version = (pkg && pkg.children && pkg.children.Version) || '';
+        process.stdout.write(/^[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?$/.test(version) ? version : '');
+    ")
+
     if [ -z "${ELECTRON_VERSION}" ]; then
-        echo "ERROR: could not resolve electron version from runtime/package.json" >&2
+        echo "ERROR: could not resolve the pinned electron version from ${SOURCE_DIR}/runtime/yarn.lock" >&2
         exit 1
     fi
 
@@ -104,6 +122,11 @@ _create_python_env() {
 
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m ensurepip --upgrade || exit 1
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/pip3" install --no-cache-dir -r "${SOURCE_DIR}/requirements.txt" || exit 1
+
+    # Remove the files in the installed packages that we never use, and the
+    # packaging tools (pip, setuptools and wheel) that are only needed to
+    # build the environment
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" "${SOURCE_DIR}/pkg/prune_site_packages.py" "${BUNDLE_DIR}/Contents/Frameworks/Python.framework" || exit 1
 
     # Make sure all the .so's in the Python env have the executable bit set
     # so they get properly signed later
@@ -299,8 +322,11 @@ _complete_bundle() {
     # PkgInfo
     echo APPLPGA4 > "${BUNDLE_DIR}/Contents/PkgInfo"
 
-    # Icon
+    # Icon. Assets.car is compiled from pgAdmin4.icon (see README.md) and
+    # gives macOS 26+ the dark, clear and tinted variants; older releases
+    # fall back to app.icns.
     cp pgAdmin4.icns "${BUNDLE_DIR}/Contents/Resources/app.icns"
+    cp Assets.car "${BUNDLE_DIR}/Contents/Resources/Assets.car"
 
     # Rename the executable
     mv "${BUNDLE_DIR}/Contents/MacOS/Electron" "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"

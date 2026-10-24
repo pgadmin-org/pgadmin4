@@ -32,6 +32,17 @@ export default function reactAspenOverride(theme) {
       display: 'inline-block',
       position: 'relative',
       width: '100%',
+      // The tree carries tabindex="-1" and the Object Explorer shortcut
+      // focuses it deliberately, so draw the focus indicator ourselves.
+      // Left to the browser this is an outline-style: auto ring, which takes
+      // the host's accent colour - orange in one browser, blue in another -
+      // and Safari may not draw it at all, leaving keyboard users with no
+      // indication of where focus has landed. The negative offset keeps the
+      // outline inside the scrolling container so it is not clipped.
+      '&:focus-visible': {
+        outline: '1px solid ' + theme.otherVars.activeBorder,
+        outlineOffset: '-1px',
+      },
       '&, & *': {
         boxSizing: 'border-box',
       },

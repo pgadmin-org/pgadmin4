@@ -14,5 +14,4 @@ ALTER SERVER "FS_$%{}[]()&*^!@""'`\/#"
 COMMENT ON SERVER "FS_$%{}[]()&*^!@""'`\/#"
     IS 'Test comment';
 
-GRANT USAGE ON FOREIGN SERVER "FS_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
-GRANT USAGE ON FOREIGN SERVER "FS_$%{}[]()&*^!@""'`\/#" TO enterprisedb;
+GRANT USAGE ON FOREIGN SERVER "FS_$%{}[]()&*^!@""'`\/#" TO PUBLIC, enterprisedb;

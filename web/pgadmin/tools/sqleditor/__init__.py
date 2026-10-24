@@ -8,11 +8,12 @@
 ##########################################################################
 
 """A blueprint module implementing the sqleditor frame."""
+import codecs
 import os
 import pickle
 import re
 import secrets
-from urllib.parse import unquote
+from urllib.parse import quote as url_quote, unquote
 from threading import Lock
 from io import BytesIO
 import threading
@@ -29,7 +30,7 @@ from flask import Response, url_for, render_template, session, current_app, \
 from flask import request
 from flask_babel import gettext
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
-    import query_tool_connection_check
+    import query_tool_connection_check, connect_as_transaction_user
 from pgadmin.user_login_check import pga_login_required
 from flask_security import current_user, permissions_required
 from pgadmin.misc.file_manager import Filemanager
@@ -46,6 +47,7 @@ from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error, service_unavailable, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.driver.abstract import BaseDriver
 from pgadmin.utils.crypto import encrypt
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
@@ -83,7 +85,34 @@ MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
 sqleditor_close_session_lock = Lock()
+# SQLAutoComplete objects, keyed by _auto_complete_key(). Each one holds a
+# live connection belonging to the session that created it, so the key must
+# include the session as well as the client-chosen transaction id; otherwise
+# another session using the same id would be given someone else's connection.
 auto_complete_objects = dict()
+
+
+def _auto_complete_key(trans_id):
+    """
+    Return the key for the current session's SQLAutoComplete object for the
+    given transaction id. Connection managers are held per session (see
+    connection_manager() in the driver), so the cache is scoped the same way.
+    """
+    return session.sid, int(trans_id)
+
+
+def _release_session_auto_complete(session_id):
+    """
+    Drop every SQLAutoComplete object belonging to the given session. Called
+    by the driver when it releases the connections of a session that has
+    expired without logging out, as their connections are no longer usable.
+    """
+    for key in [k for k in list(auto_complete_objects)
+                if k[0] == session_id]:
+        auto_complete_objects.pop(key, None)
+
+
+BaseDriver.register_session_gc_callback(_release_session_auto_complete)
 
 
 class SqlEditorModule(PgAdminModule):
@@ -438,6 +467,11 @@ def panel(trans_id):
             params=json.dumps(params))
 
 
+# Execute options that can be changed from the Query Tool toolbar, and which
+# are kept on the transaction object.
+EXECUTE_OPTIONS = ('auto_commit', 'auto_rollback', 'server_cursor')
+
+
 @blueprint.route(
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
     '<did>',
@@ -482,6 +516,13 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
         'role': data['role'] if 'role' in data else None,
         'password': data['password'] if 'password' in data else None
     }
+    # The execute options currently chosen on the toolbar, sent when the
+    # transaction is re-created, so they are kept rather than reset to the
+    # preferences. Anything other than a boolean falls back to the
+    # preference in _init_sqleditor.
+    for option in EXECUTE_OPTIONS:
+        if isinstance(data.get(option), bool):
+            kwargs[option] = data[option]
 
     is_error, errmsg, conn_id, version = _init_sqleditor(
         trans_id, connect, sgid, sid, did, data['dbname'], **kwargs)
@@ -520,6 +561,21 @@ def _connect(conn, **kwargs):
         status, msg = conn.connect(**kwargs)
 
     return status, msg, is_ask_password, user, role, password
+
+
+def _has_custom_credentials(manager, **kwargs):
+    """
+    Check whether the connection is being made with credentials that differ
+    from the server's own user, role and stored password.
+    :param manager: Server connection manager.
+    :param kwargs: user, role and password data from user.
+    :return: True if custom credentials were supplied.
+    """
+    user = kwargs.get('user')
+    role = kwargs.get('role')
+    return bool(kwargs.get('password') or
+                (user and user != manager.user) or
+                (role and role != manager.role))
 
 
 def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
@@ -602,7 +658,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                     return True, internal_server_error(
                         errormsg=str(msg)), '', ''
 
-            if pref.preference('autocomplete_on_key_press').get():
+            # The autocomplete connection is normally opened lazily on the
+            # first request, but that can only use the server's own user,
+            # role and stored password. If the user supplied different
+            # credentials, open it now whilst they are still available,
+            # otherwise autocomplete would run as the wrong user, or fail.
+            if pref.preference('autocomplete_on_key_press').get() or \
+                    _has_custom_credentials(manager, **kwargs):
                 conn_ac = manager.connection(conn_id=conn_id_ac,
                                              auto_reconnect=False,
                                              use_binary_placeholder=True,
@@ -632,6 +694,11 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
 
     # Set the value of database name, that will be used later
     command_obj.dbname = dbname if dbname else None
+    # Remember the login (never the password) chosen for this connection, so
+    # a lost autocomplete connection is reopened as the same user and role
+    # rather than the server's defaults.
+    command_obj.conn_user = kwargs.get('user')
+    command_obj.conn_role = kwargs.get('role')
     # Use pickle to store the command object which will be used
     # later by the sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -681,9 +748,13 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
             'user': data['user'],
             'role': data['role'] if 'role' in data else None,
             'password': data['password'] if 'password' in data else None,
-            'auto_commit': getattr(trans_obj, 'auto_commit', None),
-            'auto_rollback': getattr(trans_obj, 'auto_rollback', None),
         }
+        # Keep the execute options from the old transaction, but only
+        # booleans, as initialize_sqleditor() does; anything else falls
+        # back to the preferences.
+        for option in EXECUTE_OPTIONS:
+            value = getattr(trans_obj, option, None)
+            kwargs[option] = value if isinstance(value, bool) else None
 
         is_error, errmsg, conn_id, version = _init_sqleditor(
             new_trans_id, connect, sgid, sid, did, data['database_name'],
@@ -733,9 +804,8 @@ def close(trans_id):
         trans_id: unique transaction id
     """
     with sqleditor_close_session_lock:
-        # delete the SQLAutoComplete object
-        if trans_id in auto_complete_objects:
-            del auto_complete_objects[trans_id]
+        # delete this session's SQLAutoComplete object
+        auto_complete_objects.pop(_auto_complete_key(trans_id), None)
 
         if 'gridData' not in session:
             return make_json_response(data={'status': True})
@@ -802,6 +872,10 @@ def close_sqleditor_session(trans_id):
     :param trans_id: Transaction id
     :return:
     """
+    # Drop this session's autocomplete object, which holds the autocomplete
+    # connection about to be released.
+    auto_complete_objects.pop(_auto_complete_key(trans_id), None)
+
     if 'gridData' in session and str(trans_id) in session['gridData']:
         cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
         # Use pickle.loads function to get the command object
@@ -892,7 +966,19 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        conn.connect()
+        status, msg = connect_as_transaction_user(conn, trans_obj)
+
+        if not status:
+            current_app.logger.error(msg)
+            # Autocomplete has no other reconnect, so report the failure
+            # rather than carrying on with the dead connection. Other
+            # callers that pass connect=1 (view_data_start and save) go
+            # on to query_tool_connection_check(), which reconnects again
+            # and can ask for a password (HTTP 428) that the failure here
+            # would otherwise pre-empt, so leave the failure to it.
+            if auto_comp:
+                return False, internal_server_error(errormsg=msg), \
+                    None, None, None
 
     return True, None, conn, trans_obj, session_obj
 
@@ -987,6 +1073,7 @@ def start_view_data(trans_id):
 
         can_edit = trans_obj.can_edit()
         can_filter = trans_obj.can_filter()
+        can_insert = can_edit and trans_obj.can_insert()
 
         # Store the primary keys to the session object
         session_obj['primary_keys'] = primary_keys
@@ -1011,6 +1098,7 @@ def start_view_data(trans_id):
         filter_applied = False
         can_edit = False
         can_filter = False
+        can_insert = False
         sql = None
 
     return make_json_response(
@@ -1018,7 +1106,8 @@ def start_view_data(trans_id):
             'status': status, 'result': result,
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
-            'can_filter': can_filter, 'sql': sql,
+            'can_filter': can_filter, 'can_insert': can_insert,
+            'sql': sql,
         }
     )
 
@@ -1150,7 +1239,8 @@ def poll(trans_id):
                 'transaction_status': transaction_status,
                 'explain_query_length':
                 get_explain_query_length(conn._Connection__async_cursor._query)
-                if conn._Connection__async_cursor else 0
+                if conn._Connection__async_cursor and
+                conn._Connection__async_cursor._query else 0
             }
             return internal_server_error(result, query_len_data)
         elif status == ASYNC_OK:
@@ -1517,7 +1607,7 @@ def _check_and_connect(trans_obj):
 
     # Connect to the Server if not connected.
     if not conn.connected():
-        status, msg = conn.connect()
+        status, msg = connect_as_transaction_user(conn, trans_obj)
         if not status:
             return True, msg, conn
     return False, '', conn
@@ -1574,6 +1664,13 @@ def save(trans_id):
             # when password is not saved for the server
             if response is not None:
                 return response
+            # The reconnect failed (e.g. the user the connection was
+            # changed to cannot log in), so report it; there is no
+            # transaction object to carry on with.
+            if not status:
+                return make_json_response(
+                    data={'status': False, 'result': error_msg}
+                )
 
         is_error, _, conn = _check_and_connect(trans_obj)
         if is_error:
@@ -2092,6 +2189,9 @@ def auto_complete(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id, auto_comp=True)
 
+    if isinstance(error_msg, Response):
+        return error_msg
+
     if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
@@ -2101,14 +2201,18 @@ def auto_complete(trans_id):
             trans_obj is not None and session_obj is not None:
 
         with sqleditor_close_session_lock:
-            if trans_id not in auto_complete_objects:
+            ac_key = _auto_complete_key(trans_id)
+            auto_complete_obj = auto_complete_objects.get(ac_key)
+            # Only reuse the cached object if it was built on the very
+            # connection that this session's transaction uses now.
+            if auto_complete_obj is None or auto_complete_obj.conn is not conn:
                 # Create object of SQLAutoComplete class and pass
                 # connection object
-                auto_complete_objects[trans_id] = \
+                auto_complete_obj = \
                     SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
                                     conn=conn)
+                auto_complete_objects[ac_key] = auto_complete_obj
 
-            auto_complete_obj = auto_complete_objects[trans_id]
             # # Get the auto completion suggestions.
             res = auto_complete_obj.get_completions(full_sql,
                                                     text_before_cursor)
@@ -2179,35 +2283,121 @@ def start_query_download_tool(trans_id):
                 }
             )
 
+        # Output format: csv (default), json or xml.
+        data_format = (data.get('format') or 'csv').lower()
+        if data_format not in ('csv', 'json', 'xml'):
+            data_format = 'csv'
+
+        # Encoding and BOM apply to the CSV/text output only; the structured
+        # formats are always emitted as UTF-8.
+        if data_format == 'csv':
+            output_encoding = blueprint.csv_output_encoding.get() or 'utf-8'
+            add_bom = blueprint.csv_add_bom.get()
+        else:
+            output_encoding = 'utf-8'
+            add_bom = False
+        # Validate the (free-text, user-configurable) encoding up front so
+        # an invalid codec returns a clean 400 here, rather than raising a
+        # LookupError mid-stream after the 200 Response has been returned.
+        # Carry on with the codec's canonical name rather than the raw text:
+        # lookup() accepts aliases ('u8'), case and stray whitespace, and
+        # the BOM decisions and the charset header below need the real name.
+        try:
+            output_encoding = codecs.lookup(output_encoding).name
+        except LookupError:
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=gettext(
+                    "Unknown output encoding '{0}'."
+                ).format(output_encoding)
+            )
+
+        is_utf = output_encoding.startswith('utf')
+        # The 'utf-16' and 'utf-32' codecs (without an explicit endianness
+        # suffix) and 'utf-8-sig' emit their own BOM, so we must not
+        # hand-prepend one too; doing so would produce two BOMs and corrupt
+        # the output. The explicit-endian forms (utf-16-le/-be,
+        # utf-32-le/-be) and utf-8 do not self-emit a BOM, so for those we
+        # keep writing it ourselves.
+        codec_self_emits_bom = output_encoding in (
+            'utf-16', 'utf-32', 'utf-8-sig')
+
+        str_gen = gen(conn_obj,
+                      trans_obj,
+                      quote=blueprint.csv_quoting.get(),
+                      quote_char=blueprint.csv_quote_char.get(),
+                      field_separator=blueprint.csv_field_separator.get(),
+                      replace_nulls_with=blueprint.replace_nulls_with.get(),
+                      data_format=data_format)
+
+        # Encode incrementally rather than a chunk at a time. The codecs
+        # that emit their own BOM do so on every encode() call, so encoding
+        # each chunk on its own would put a BOM at the head of every chunk
+        # rather than once at the head of the file; an incremental encoder
+        # emits it once and then keeps going.
+        encoder = codecs.getincrementalencoder(output_encoding)(
+            errors='replace')
+
+        def encoded_gen(text_gen):
+            is_first_chunk = True
+            for chunk in text_gen:
+                if is_first_chunk:
+                    is_first_chunk = False
+                    # Only hand-prepend a BOM when the codec does not emit
+                    # one itself, otherwise we'd end up with two BOMs.
+                    if add_bom and is_utf and not codec_self_emits_bom:
+                        chunk = '\ufeff' + chunk
+                yield encoder.encode(chunk)
+
+            trailing = encoder.encode('', True)
+            if trailing:
+                yield trailing
+
+        if data_format == 'json':
+            base_mimetype = 'application/json'
+        elif data_format == 'xml':
+            base_mimetype = 'application/xml'
+        elif blueprint.csv_field_separator.get() == ',':
+            base_mimetype = 'text/csv'
+        else:
+            base_mimetype = 'text/plain'
+
         r = Response(
-            gen(conn_obj,
-                trans_obj,
-                quote=blueprint.csv_quoting.get(),
-                quote_char=blueprint.csv_quote_char.get(),
-                field_separator=blueprint.csv_field_separator.get(),
-                replace_nulls_with=blueprint.replace_nulls_with.get()),
-            mimetype='text/csv' if
-            blueprint.csv_field_separator.get() == ','
-            else 'text/plain'
+            encoded_gen(str_gen),
+            mimetype='{0}; charset={1}'.format(base_mimetype, output_encoding)
         )
 
         import time
-        extn = 'csv' if blueprint.csv_field_separator.get() == ',' else 'txt'
+        if data_format == 'csv':
+            extn = 'csv' if blueprint.csv_field_separator.get() == ',' \
+                else 'txt'
+        else:
+            extn = data_format
         filename = data['filename'] if data.get('filename', '') != "" else \
             '{0}.{1}'.format(int(time.time()), extn)
 
-        # We will try to encode report file name with latin-1
-        # If it fails then we will fallback to default ascii file name
-        # werkzeug only supports latin-1 encoding supported values
+        # Werkzeug will only put latin-1 in a header, so a name it cannot
+        # encode needs an ASCII stand-in. RFC 6266 lets us send the real name
+        # alongside it as filename*, so rather than losing the name entirely
+        # we offer both and let the client prefer the latter. The fallback
+        # follows the chosen format rather than always claiming to be a CSV.
+        ascii_filename = filename
         try:
-            tmp_file_name = filename
-            tmp_file_name.encode('latin-1', 'strict')
+            filename.encode('latin-1', 'strict')
         except UnicodeEncodeError:
-            filename = "download.csv"
+            ascii_filename = 'download.{0}'.format(extn)
 
-        r.headers[
-            "Content-Disposition"
-        ] = "attachment;filename={0}".format(filename)
+        # RFC 6266 requires the quoted form for anything with a space or a
+        # separator character in it, which a user supplied name can easily
+        # have.
+        disposition = 'attachment; filename="{0}"'.format(
+            ascii_filename.replace('\\', '\\\\').replace('"', '\\"'))
+        if ascii_filename != filename:
+            disposition += "; filename*=UTF-8''{0}".format(
+                url_quote(filename, safe=''))
+
+        r.headers["Content-Disposition"] = disposition
 
         return r
     except (ConnectionLost, SSHTunnelConnectionLost):
@@ -2699,6 +2889,18 @@ def connect_server(sid):
             status=410, success=0,
             errormsg=gettext("Could not find the required server.")
         )
+
+    # When the Query Tool switches to a connection made as a different user
+    # or role, connecting the server itself would prompt for the server's
+    # own user's password, which that user may not know, so leave the
+    # server as it is.
+    if not _connects_as_server_user(server):
+        return make_json_response(
+            success=1,
+            info=gettext("Server connection not required."),
+            data={}
+        )
+
     driver = get_driver(PG_DEFAULT_DRIVER)
     manager = driver.connection_manager(sid)
 
@@ -2724,6 +2926,39 @@ def connect_server(sid):
     return view.connect(
         server.servergroup_id, sid
     )
+
+
+def _connects_as_server_user(server):
+    """
+    Return whether the user and role supplied with the current request (if
+    any) are the ones the server itself connects with.  A request that does
+    not supply a user is treated as connecting as the server's own user, so
+    callers that do not pass one behave as they always have.
+
+    An empty role matches, since a connection opened without a role falls
+    back to the server's configured role.
+    """
+    data = request.form
+    if not data and request.data:
+        try:
+            data = json.loads(request.data)
+        except ValueError:
+            data = {}
+    if not hasattr(data, 'get') or 'user' not in data:
+        return True
+
+    if server.shared and server.user_id != current_user.id:
+        # Import here to avoid circular dependency
+        from pgadmin.browser.server_groups.servers import ServerModule
+        shared_server = ServerModule.get_shared_server(
+            server, server.servergroup_id)
+        server = ServerModule.get_shared_server_properties(
+            server, shared_server)
+
+    user = data.get('user') or None
+    role = data.get('role') or None
+    return user == (server.username or None) and \
+        role in (None, server.role or None)
 
 
 def _cache_manager_password_from_request(manager):

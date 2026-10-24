@@ -62,6 +62,17 @@ describe('TableSchema', () => {
     await getPropertiesView(createTableSchemaObject(), getInitData);
   });
 
+  it('storage parameters are shown in properties', () => {
+    // Fill factor, toast tuple target and parallel workers are shown in
+    // the dialog's Advanced tab, so the Properties panel should show
+    // them too (issue #9212).
+    ['fillfactor', 'toast_tuple_target', 'parallel_workers'].forEach((id)=>{
+      const field = _.find(schemaObj.fields, (f)=>f.id==id);
+      expect(field.mode).toEqual(['properties', 'create', 'edit']);
+      expect(field.group).toBe('advanced');
+    });
+  });
+
   it('getTableOid', () => {
     schemaObj.inheritedTableList = [
       {label: 'tab1', tid: 140391},
@@ -302,6 +313,26 @@ describe('TableSchema', () => {
     expect(getFieldDepChange(schemaObj.constraintsObj, 'exclude_constraint')({is_partitioned: true})).toEqual({
       exclude_constraint: []
     });
+  });
+
+  it('relpersistence on a partitioned table', () => {
+    const field = _.find(schemaObj.fields, (f)=>f.id=='relpersistence');
+    const spy = jest.spyOn(schemaObj, 'getServerVersion');
+
+    // PostgreSQL 18 and later reject UNLOGGED on a partitioned table.
+    spy.mockReturnValue(180000);
+    expect(field.disabled({is_partitioned: true})).toBe(true);
+    expect(field.depChange({is_partitioned: true, relpersistence: true})).toEqual({
+      relpersistence: false,
+    });
+    expect(field.disabled({is_partitioned: false})).toBe(false);
+    expect(field.depChange({is_partitioned: false, relpersistence: true})).toBeUndefined();
+
+    // Older servers still accept it.
+    spy.mockReturnValue(170000);
+    expect(field.disabled({is_partitioned: true})).toBe(false);
+    expect(field.depChange({is_partitioned: true, relpersistence: true})).toBeUndefined();
+    spy.mockRestore();
   });
 
   it('depChange column rename propagation', () => {

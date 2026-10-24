@@ -26,7 +26,9 @@ import config
 from .paths import get_storage_directory
 from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
-    MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL
+    MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL, \
+    CONNECTION_PARAM_ENV_VARS, CONNECTION_PARAM_FILE_PATHS, \
+    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
@@ -224,6 +226,31 @@ else:
         return os.path.realpath(os.path.expanduser('~/'))
 
 
+# A single SQL identifier, quoted, with every embedded double quote doubled.
+_QUOTED_IDENT = re.compile(r'"(?:[^"]|"")*"\Z')
+
+
+def unquote_ident(value):
+    """
+    Reverse the quoting that Driver.qtIdent() and the server's own
+    quote_ident() apply to an identifier.
+
+    Catalogue functions such as pg_get_indexdef() return an identifier quoted
+    only when it needs to be, with any embedded double quote doubled, so a
+    column named 'col"x' arrives as '"col""x"'. Stripping the outer quotes
+    alone would leave that doubled quote behind.
+
+    Anything that is not a single quoted identifier, an unquoted name or an
+    expression such as '(a || b)', is returned unchanged.
+
+    :param value: identifier as returned by the server
+    :return: the identifier as the user typed it
+    """
+    if value and _QUOTED_IDENT.match(value):
+        return value[1:-1].replace('""', '"')
+    return value
+
+
 def get_directory_and_file_name(drivefilepath):
     """
     Returns directory name if specified and file name
@@ -247,6 +274,9 @@ def get_complete_file_path(file, validate=True):
     """
     Args:
         file: File returned by file manager
+        validate: if True, return None unless the path names an existing
+            file; pass False for a directory, or for a file that may not
+            exist yet
 
     Returns:
          Full path for the file
@@ -256,6 +286,8 @@ def get_complete_file_path(file, validate=True):
 
     # If desktop mode
     if current_app.PGADMIN_RUNTIME or not current_app.config['SERVER_MODE']:
+        if not validate:
+            return file
         return file if os.path.isfile(file) else None
 
     # get dir name and file name
@@ -276,6 +308,66 @@ def get_complete_file_path(file, validate=True):
         return file if os.path.isfile(file) else None
     else:
         return file
+
+
+def connection_param_bool_to_int(value):
+    """
+    Convert a boolean connection parameter to the 0 or 1 that libpq expects.
+
+    The server dialog stores these as booleans, but a servers.json import
+    or a direct API call stores whatever it is given, so the strings
+    "false", "0" and the like must not be treated as true merely for being
+    non-empty strings.
+    """
+    if isinstance(value, str):
+        return 0 if value.strip().lower() in \
+            ('', '0', 'false', 'f', 'no', 'n', 'off') else 1
+    return 1 if value else 0
+
+
+def connection_params_to_env(connection_params):
+    """
+    Translate the connection parameters configured against a server into the
+    libpq environment variables that carry them, so that a utility such as
+    pg_dump or psql connects the same way the server dialog says it should.
+
+    Only the parameters libpq actually reads from the environment can be
+    passed this way; anything else in connection_params is dropped.
+
+    Args:
+        connection_params: the server's connection parameters, as a dict
+
+    Returns:
+        A dict of environment variables and their values
+    """
+    env = dict()
+
+    if not connection_params or not isinstance(connection_params, dict):
+        return env
+
+    for param, value in connection_params.items():
+        env_var = CONNECTION_PARAM_ENV_VARS.get(param, None)
+        if env_var is None or value is None or value == '':
+            continue
+
+        if param in CONNECTION_PARAM_DIR_PATHS:
+            # A directory, which the file check in get_complete_file_path()
+            # would reject, so resolve it unvalidated and check it here.
+            value = get_complete_file_path(value, validate=False)
+            value = value if value and os.path.isdir(value) else ''
+        elif param in CONNECTION_PARAM_FILE_PATHS or \
+                (param == 'sslrootcert' and value != 'system'):
+            # An unresolvable path is passed on as an empty value, matching
+            # what the connection string does, so that libpq reports the
+            # missing file rather than silently falling back to its default.
+            value = get_complete_file_path(value)
+            value = '' if value is None else value
+        elif param in CONNECTION_PARAM_BOOLEANS:
+            value = connection_param_bool_to_int(value)
+
+        env[env_var] = str(value)
+
+    return env
 
 
 def filename_with_file_manager_path(_file, create_file=False,
@@ -555,12 +647,16 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "PostConnectionSQL",
                       server.post_connection_sql)
 
-            # if desktop mode or server mode with
-            # ENABLE_SERVER_PASS_EXEC_CMD flag is True
-            if not current_app.config['SERVER_MODE'] or \
-                    current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
+            if not current_app.config['SERVER_MODE']:
                 add_value(attr_dict, "PasswordExecCommand",
                           server.passexec_cmd)
+                add_value(attr_dict, "PasswordExecExpiration",
+                          server.passexec_expiration)
+            elif server.passexec_name:
+                # Server mode never exports free-text commands, only
+                # the name of an entry in SERVER_PASSEXEC_COMMANDS.
+                add_value(attr_dict, "PasswordExecCommand",
+                          server.passexec_name)
                 add_value(attr_dict, "PasswordExecExpiration",
                           server.passexec_expiration)
 
@@ -678,6 +774,27 @@ def validate_json_data(data, is_admin):
     for server in skip_servers:
         del data["Servers"][server]
     return None
+
+
+def _load_server_passexec(new_server, obj):
+    """Apply PasswordExecCommand from an import file in server mode,
+    where it must be the name of a configured command. Anything else
+    is ignored with a warning that names the server only, as the text
+    could be a secret."""
+    from pgadmin.utils.passexec import get_server_passexec_commands
+
+    name = obj.get("PasswordExecCommand", None)
+    if not name:
+        return
+
+    if isinstance(name, str) and name in get_server_passexec_commands():
+        new_server.passexec_name = name
+        new_server.passexec_expiration = obj.get(
+            "PasswordExecExpiration", None)
+    else:
+        print("Ignoring the password exec command for server '%s' as it "
+              "is not the name of a command in SERVER_PASSEXEC_COMMANDS." %
+              obj.get("Name"))
 
 
 def load_database_servers(input_file, selected_servers,
@@ -834,13 +951,12 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.post_connection_sql = obj.get("PostConnectionSQL", None)
 
-            # if desktop mode or server mode with
-            # ENABLE_SERVER_PASS_EXEC_CMD flag is True
-            if not current_app.config['SERVER_MODE'] or \
-                    current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
+            if not current_app.config['SERVER_MODE']:
                 new_server.passexec_cmd = obj.get("PasswordExecCommand", None)
                 new_server.passexec_expiration = obj.get(
                     "PasswordExecExpiration", None)
+            else:
+                _load_server_passexec(new_server, obj)
 
             db.session.add(new_server)
 
@@ -1049,3 +1165,26 @@ def check_extension_exists(conn, extension_name):
     else:
         # If the query fails, we assume the extension does not exist
         return status, res
+
+
+def database_conninfo(database):
+    """
+    Build the value to pass to a utility's --dbname option so that it
+    connects to the named database.
+
+    A bare --dbname value containing "=" (or a postgresql:// URI) is expanded
+    by libpq into a connection string, which would let a user redirect the
+    connection, and the credentials exported with it, to another server.
+    Passing a conninfo string in which the name is the quoted value of the
+    dbname keyword avoids that, since libpq never expands a dbname given
+    inside a connection string. Unlike the PGDATABASE environment variable,
+    it also takes precedence over a dbname set in the server's service file.
+
+    :param database: Name of the database to connect to.
+    :return: A connection string such as "dbname='my db'".
+    """
+    # Imported here rather than at module level, because pgadmin.utils is
+    # also imported where libpq is unavailable, such as the documentation
+    # build, and importing psycopg needs libpq.
+    from psycopg.conninfo import make_conninfo
+    return make_conninfo(dbname=database)

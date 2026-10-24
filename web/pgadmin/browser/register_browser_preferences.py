@@ -130,6 +130,17 @@ def register_browser_preferences(self):
         )
     )
 
+    self.pgtimetable_row_threshold = self.preference.register(
+        'properties', 'pgtimetable_row_threshold',
+        gettext("Maximum pgTimeTable history rows"), 'integer', 250,
+        category_label=gettext('Properties'),
+        min_val=1, max_val=9999,
+        help_str=gettext(
+            'The maximum number of history rows to show on '
+            'the Statistics tab for pgTimeTable chains and tasks.'
+        )
+    )
+
     self.table_row_count_threshold = self.preference.register(
         'processes', 'process_retain_days',
         gettext("Process details/logs retention days"), 'integer', 5,
@@ -185,9 +196,9 @@ def register_browser_preferences(self):
         'keyboardshortcut',
         {
             'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 91, 'char': '['}
+            'shift': False,
+            'control': True,
+            'key': {'key_code': 33, 'char': 'PageUp'}
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields
@@ -215,9 +226,9 @@ def register_browser_preferences(self):
         'keyboardshortcut',
         {
             'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 93, 'char': ']'}
+            'shift': False,
+            'control': True,
+            'key': {'key_code': 34, 'char': 'PageDown'}
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields

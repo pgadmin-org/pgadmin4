@@ -1,3 +1,5 @@
+{# 12_plus/nodes.sql is a copy of this file that adds is_generated; keep the
+   two in step. #}
 SELECT DISTINCT att.attname as name, att.attnum as OID, pg_catalog.format_type(ty.oid,NULL) AS datatype,
 pg_catalog.format_type(ty.oid,att.atttypmod) AS displaytypname,
 att.attnotnull as not_null,

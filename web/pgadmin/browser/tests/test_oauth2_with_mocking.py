@@ -114,6 +114,66 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={'email': 'claims@example.com'},
             id_token_claims={'groups': ['group-b']},
         )),
+        ('OIDC Server Group Claim Direct Mapping', dict(
+            oauth2_provider='oidc-server-groups-direct',
+            kind='login_success',
+            profile={'email': 'claims@example.com'},
+            id_token_claims={'pgadmin_server_groups': ['RO Server 1']},
+            expected_server_groups=['RO Server 1'],
+        )),
+        ('OIDC Server Group Claim Value Mapping', dict(
+            oauth2_provider='oidc-server-groups-mapped',
+            kind='login_success',
+            profile={'email': 'claims@example.com'},
+            id_token_claims={'pgadmin_server_groups': ['readonly']},
+            expected_server_groups=['RO Server 1', 'RO Server 2'],
+        )),
+        ('OIDC Server Group Claim Ignores Non-String Values', dict(
+            oauth2_provider='oidc-server-groups-mapped',
+            kind='login_success',
+            profile={'email': 'claims@example.com'},
+            id_token_claims={'pgadmin_server_groups': [
+                {'id': 'readonly'}, 'Reporting', 42, 'readonly',
+                'RO Server 1'
+            ]},
+            expected_server_groups=['Reporting', 'RO Server 1',
+                                    'RO Server 2'],
+        )),
+        ('OIDC Server Group Claim Single String', dict(
+            oauth2_provider='oidc-server-groups-direct',
+            kind='login_success',
+            profile={'email': 'claims@example.com'},
+            id_token_claims={'pgadmin_server_groups': 'Reporting'},
+            expected_server_groups=['Reporting'],
+        )),
+        ('OIDC Server Group Claim From Userinfo', dict(
+            oauth2_provider='oidc-server-groups-direct',
+            kind='login_success',
+            profile={'email': 'claims@example.com',
+                     'pgadmin_server_groups': ['Reporting']},
+            id_token_claims={'sub': 'abc'},
+            expected_server_groups=['Reporting'],
+        )),
+        ('OIDC Server Group Claim Missing', dict(
+            oauth2_provider='oidc-server-groups-direct',
+            kind='login_success',
+            profile={'email': 'claims@example.com'},
+            id_token_claims={'sub': 'abc'},
+            expected_server_groups=[],
+        )),
+        ('OIDC Server Group Claim Not Stored On Rejected Login', dict(
+            oauth2_provider='oidc-server-groups-additional-claims',
+            kind='login_failure',
+            profile={'email': 'claims@example.com'},
+            id_token_claims={'groups': ['group-b'],
+                             'pgadmin_server_groups': ['Reporting']},
+        )),
+        ('OIDC get_user_profile Fetches Userinfo For Server Groups', dict(
+            oauth2_provider='oidc-server-groups-direct',
+            kind='oidc_get_user_profile_server_groups',
+            profile={},
+            id_token_claims=None,
+        )),
         ('OIDC get_user_profile Skips Userinfo', dict(
             oauth2_provider='oidc-basic',
             kind='oidc_get_user_profile_skip',
@@ -136,6 +196,12 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         ('OAuth2 Callback Without Provider State Redirects', dict(
             oauth2_provider='github',
             kind='callback_missing_provider_state',
+            profile={},
+            id_token_claims=None,
+        )),
+        ('OAuth2 Failed Callback Clears Stored Logout URL', dict(
+            oauth2_provider='github',
+            kind='callback_login_failure_clears_logout_url',
             profile={},
             id_token_claims=None,
         )),
@@ -279,6 +345,54 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 'OAUTH2_ADDITIONAL_CLAIMS': {
                     'groups': ['group-a']
                 }
+            },
+            {
+                'OAUTH2_NAME': 'oidc-server-groups-direct',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Server Groups Direct',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
+            },
+            {
+                'OAUTH2_NAME': 'oidc-server-groups-mapped',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Server Groups Mapped',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
+                'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': {
+                    'readonly': ['RO Server 1', 'RO Server 2']
+                }
+            },
+            {
+                'OAUTH2_NAME': 'oidc-server-groups-additional-claims',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Server Groups With Claims',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_ADDITIONAL_CLAIMS': {
+                    'groups': ['group-a']
+                },
+                'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
             }
         ]
 
@@ -309,7 +423,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self._test_workload_identity_missing_token_file_fails_fast()
         elif self.kind == 'login_success':
             self._test_oauth2_login_success(
-                self.oauth2_provider, self.profile, self.id_token_claims
+                self.oauth2_provider, self.profile, self.id_token_claims,
+                getattr(self, 'expected_server_groups', None)
             )
         elif self.kind == 'login_failure':
             self._test_oauth2_login_failure(
@@ -317,6 +432,10 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             )
         elif self.kind == 'oidc_get_user_profile_skip':
             self._test_oidc_get_user_profile_skip_userinfo(
+                self.oauth2_provider
+            )
+        elif self.kind == 'oidc_get_user_profile_server_groups':
+            self._test_oidc_get_user_profile_server_group_userinfo(
                 self.oauth2_provider
             )
         elif self.kind == 'oidc_get_user_profile_call':
@@ -327,6 +446,9 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self._test_session_state_after_redirect(self.oauth2_provider)
         elif self.kind == 'callback_missing_provider_state':
             self._test_oauth2_callback_missing_provider_state()
+        elif self.kind == 'callback_login_failure_clears_logout_url':
+            self._test_oauth2_callback_failure_clears_logout_url(
+                self.oauth2_provider)
         elif self.kind == 'openid_without_metadata_url':
             self._test_openid_scope_without_metadata_url_fails_fast()
         else:
@@ -386,7 +508,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 )
 
     def _test_oauth2_login_success(
-            self, provider, profile, id_token_claims=None
+            self, provider, profile, id_token_claims=None,
+            expected_server_groups=None
     ):
         from pgadmin.authenticate.oauth2 import OAuth2Authentication
 
@@ -421,6 +544,14 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             )
         self.assertEqual(res.status_code, 200)
         self._assert_oauth2_session_logged_in()
+        with self.tester.session_transaction() as sess:
+            if expected_server_groups is None:
+                self.assertNotIn('oauth2_server_group_claims', sess)
+            else:
+                self.assertEqual(
+                    sess.get('oauth2_server_group_claims'),
+                    expected_server_groups
+                )
 
     def _test_oauth2_login_failure(
             self, provider, profile, id_token_claims=None
@@ -456,6 +587,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             )
         self.assertEqual(res.status_code, 200)
         self._assert_oauth2_session_not_logged_in()
+        with self.tester.session_transaction() as sess:
+            self.assertNotIn('oauth2_server_group_claims', sess)
 
     def _test_oauth2_authentication_with_pkce(self):
         """
@@ -575,6 +708,37 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile = oauth.get_user_profile()
             self.assertEqual(profile.get('email'), 'oidc-skip@example.com')
             client.get.assert_not_called()
+
+    def _test_oidc_get_user_profile_server_group_userinfo(self, provider):
+        """The ID token has the standard claims but not the server group
+        claim, so userinfo must still be fetched."""
+        from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+        with self.app.test_request_context('/'):
+            oauth = OAuth2Authentication()
+            oauth.oauth2_current_client = provider
+
+            client = MagicMock()
+            client.authorize_access_token = MagicMock(return_value={
+                'access_token': 't',
+                'id_token': 'mock.jwt.token',
+                'token_type': 'Bearer',
+                'userinfo': {'email': 'oidc@example.com', 'sub': 'abc'}
+            })
+
+            resp = MagicMock()
+            resp.raise_for_status = MagicMock()
+            resp.json = MagicMock(return_value={
+                'email': 'oidc@example.com',
+                'pgadmin_server_groups': ['Reporting']
+            })
+            client.get = MagicMock(return_value=resp)
+
+            OAuth2Authentication.oauth2_clients[provider] = client
+            profile = oauth.get_user_profile()
+            self.assertEqual(profile.get('pgadmin_server_groups'),
+                             ['Reporting'])
+            client.get.assert_called_once()
 
     def _test_oidc_get_user_profile_calls_userinfo(self, provider):
         from pgadmin.authenticate.oauth2 import OAuth2Authentication
@@ -784,6 +948,26 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         # Allow a redirect (302) or a 4xx error response — anything except
         # an unhandled exception.
         self.assertLess(res.status_code, 500)
+
+    def _test_oauth2_callback_failure_clears_logout_url(self, provider):
+        """A failed OAuth2 callback must drop any logout URL already stored
+        in the session, since get_user_profile() stores it before the login
+        can fail, and a later logout would otherwise redirect to it.
+        """
+        with self.tester.session_transaction() as sess:
+            sess['oauth2_current_client'] = provider
+            sess['oauth2_logout_url'] = 'https://idp.example.com/logout'
+
+        with patch('pgadmin.authenticate.AuthSourceManager.login',
+                   return_value=(False, 'Login failed')):
+            res = self.tester.get('/oauth2/authorize',
+                                  follow_redirects=False)
+
+        self.assertEqual(res.status_code, 302)
+        with self.tester.session_transaction() as sess:
+            self.assertNotIn('oauth2_logout_url', sess)
+            self.assertNotIn('oauth2_current_client', sess)
+        self._assert_oauth2_session_not_logged_in()
 
     def _test_openid_scope_without_metadata_url_fails_fast(self):
         """'openid' in OAUTH2_SCOPE without OAUTH2_SERVER_METADATA_URL must

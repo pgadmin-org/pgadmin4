@@ -64,21 +64,45 @@ function updateProgress(callerWindow) {
   setProgress.call(callerWindow, progress);
 }
 
-async function fileDownloadPath(callerWindow, options, prompt=true) {
-  let filePath = path.join(app.getPath('downloads'), options.defaultPath);
-  // prompt is true when the user has set the preference to prompt for download location
-  if(prompt) {
-    const result = await dialog.showSaveDialog(callerWindow, {
-      title: 'Save File',
-      ...options,
-    });
+// Work out where to save a download without asking the user. Only the file
+// name part of the suggested name is used, so the file always lands directly
+// in the downloads directory, whatever the requesting page asked for.
+export function defaultDownloadPath(downloadsDir, defaultPath) {
+  const fileName = path.basename(String(defaultPath ?? ''));
+  if (fileName === '' || fileName === '.' || fileName === '..') {
+    return null;
+  }
 
-    if (result.canceled) {
-      return;
-    }
-    filePath = result.filePath;
+  const resolvedDir = path.resolve(downloadsDir);
+  const filePath = path.resolve(resolvedDir, fileName);
+  if (path.dirname(filePath) !== resolvedDir) {
+    return null;
   }
   return filePath;
+}
+
+async function fileDownloadPath(callerWindow, options, prompt=true) {
+  // prompt is true when the user has set the preference to prompt for download location
+  if(!prompt) {
+    const filePath = defaultDownloadPath(app.getPath('downloads'), options?.defaultPath);
+    if (!filePath) {
+      writeServerLog(`Refused to save a download as ${options?.defaultPath}`);
+    }
+    return filePath ?? undefined;
+  }
+
+  // The page only gets to suggest a file name; the dialog always starts in
+  // the downloads directory.
+  const result = await dialog.showSaveDialog(callerWindow, {
+    title: 'Save File',
+    ...options,
+    defaultPath: defaultDownloadPath(app.getPath('downloads'), options?.defaultPath) ?? undefined,
+  });
+
+  if (result.canceled) {
+    return;
+  }
+  return result.filePath;
 }
 
 export function setupDownloader() {
@@ -87,6 +111,9 @@ export function setupDownloader() {
     try {
       const callerWindow = BrowserWindow.fromWebContents(event.sender);
       const filePath = await fileDownloadPath(callerWindow, options, prompt);
+      if (!filePath) {
+        return;
+      }
       downloadQueue[filePath] = new DownloadItem(filePath, () => {
         updateProgress(callerWindow);
       }, () => {
@@ -128,6 +155,9 @@ export function setupDownloader() {
   ipcMain.handle('download-base64-url-data', async (event, base64url, options, prompt=true, openFile=false) => {
     const callerWindow = BrowserWindow.fromWebContents(event.sender);
     const filePath = await fileDownloadPath(callerWindow, options, prompt);
+    if (!filePath) {
+      return;
+    }
     const buffer = Buffer.from(base64url.split(',')[1], 'base64');
     fs.writeFileSync(filePath, buffer);
     openFile && shell.openPath(filePath);
@@ -136,6 +166,9 @@ export function setupDownloader() {
   ipcMain.handle('download-text-data', async (event, text, options, prompt=true, openFile=false) => {
     const callerWindow = BrowserWindow.fromWebContents(event.sender);
     const filePath = await fileDownloadPath(callerWindow, options, prompt);
+    if (!filePath) {
+      return;
+    }
     fs.writeFileSync(filePath, text);
     openFile && shell.openPath(filePath);
   });
