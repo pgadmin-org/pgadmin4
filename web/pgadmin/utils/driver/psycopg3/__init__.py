@@ -441,6 +441,31 @@ class Driver(BaseDriver):
         """
         return self.connection_manager(sid).release(database, conn_id)
 
+    def rebind_session_managers(self, old_pga_user, new_pga_user):
+        """
+        Re-tag this browser session's connection managers after the
+        logged-in user's fs_uniquifier has been rotated (a password change),
+        so that _manager_is_stale/_saved_state_is_stale do not drop the
+        session's live connections. Only state built for old_pga_user is
+        re-tagged, so another user's state on this session stays stale.
+        Other sessions keep the old uniquifier, as they are being revoked.
+        """
+        if not old_pga_user or old_pga_user == new_pga_user:
+            return
+
+        for manager in self.managers.get(session.sid, {}).values():
+            if getattr(manager, 'pga_user', None) == old_pga_user:
+                manager.pga_user = new_pga_user
+
+        saved_managers = session.get('__pgsql_server_managers')
+        if saved_managers:
+            for saved in saved_managers.values():
+                if isinstance(saved, dict) and \
+                        saved.get('pga_user') == old_pga_user:
+                    saved['pga_user'] = new_pga_user
+            session['__pgsql_server_managers'] = saved_managers
+            session.force_write = True
+
     def delete_manager(self, sid):
         """
         Delete manager for given server id.

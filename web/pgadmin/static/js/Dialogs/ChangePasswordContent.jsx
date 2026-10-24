@@ -5,7 +5,8 @@ import BaseUISchema from '../SchemaView/base_schema.ui';
 import SchemaView from '../SchemaView';
 
 export class ChangePasswordSchema extends BaseUISchema {
-  constructor(user, isPgpassFileUsed, hasCsrfToken=false, showUser=true) {
+  constructor(user, isPgpassFileUsed, hasCsrfToken=false, showUser=true,
+    warnSessionLogout=false) {
     super({
       user: user,
       password: '',
@@ -15,6 +16,15 @@ export class ChangePasswordSchema extends BaseUISchema {
     this.isPgpassFileUsed = isPgpassFileUsed;
     this.hasCsrfToken = hasCsrfToken;
     this.showUser = showUser;
+    // Changing the pgAdmin login password rotates the session uniquifier,
+    // which signs the user out everywhere else. Warn them first (SchemaView
+    // turns warningText into a Yes/No confirm before the save goes through).
+    if (warnSessionLogout) {
+      this.warningText = gettext(
+        'Changing your password will log you out of all your other active '
+        + 'sessions. Do you want to continue?'
+      );
+    }
   }
 
   get baseFields() {
@@ -64,11 +74,12 @@ export class ChangePasswordSchema extends BaseUISchema {
 }
 
 export default function ChangePasswordContent({getInitData=() => { /*This is intentional (SonarQube)*/ },
-  onSave, onClose, hasCsrfToken=false, showUser=true, userName='', isPgpassFileUsed=false}) {
+  onSave, onClose, hasCsrfToken=false, showUser=true, userName='', isPgpassFileUsed=false,
+  warnSessionLogout=false}) {
   const schema=React.useRef(null);
   if (!schema.current)
     schema.current = new ChangePasswordSchema(
-      userName, isPgpassFileUsed, hasCsrfToken, showUser
+      userName, isPgpassFileUsed, hasCsrfToken, showUser, warnSessionLogout
     );
 
   return <SchemaView
@@ -94,5 +105,6 @@ ChangePasswordContent.propTypes = {
   hasCsrfToken: PropTypes.bool,
   showUser: PropTypes.bool,
   userName: PropTypes.string,
-  isPgpassFileUsed: PropTypes.bool
+  isPgpassFileUsed: PropTypes.bool,
+  warnSessionLogout: PropTypes.bool
 };

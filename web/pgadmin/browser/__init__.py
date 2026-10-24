@@ -28,6 +28,7 @@ from flask import current_app, render_template, url_for, make_response, \
 from flask_babel import gettext
 from libgravatar import Gravatar
 from flask_security import current_user, permissions_required
+from flask_login import COOKIE_NAME as REMEMBER_COOKIE_NAME
 from flask_login.utils import login_url
 from flask_security.changeable import send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
@@ -915,7 +916,10 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             if form.validate():
                 errormsg = None
                 # change_user_password from flask-security logs out the user
-                # this is undesirable, so change password on own
+                # this is undesirable, so change password on own. We still
+                # rotate the user's fs_uniquifier below so that any other
+                # active sessions for this user are invalidated, and re-login
+                # the current session so it stays authenticated (CWE-613).
                 try:
                     user = User.query.filter(
                         User.fs_uniquifier == current_user.fs_uniquifier)\
@@ -932,26 +936,93 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                     logging.exception(str(e), exc_info=True)
                     errormsg = gettext(PASS_ERROR).format(e)
 
+                pw_cleared = 0
                 if errormsg is None:
                     old_key = get_crypt_key()[1]
                     set_crypt_key(form.new_password.data, False)
 
-                    from pgadmin.browser.server_groups.servers.utils \
-                        import reencrpyt_server_passwords
-                    reencrpyt_server_passwords(
-                        current_user.id, old_key, form.new_password.data)
-
+                    # Rotate the identity key to invalidate every existing
+                    # session of this user (other browsers/devices), and
+                    # commit it together with the new password, before the
+                    # re-encryption below, so that no failure there can leave
+                    # the password changed while other sessions stay
+                    # authenticated (CWE-613). Only this user's row is
+                    # touched, so other users are unaffected.
+                    old_uniquifier = user.fs_uniquifier
+                    _security.datastore.set_uniquifier(user)
                     db.session.commit()
+
+                    # Re-login so the current session gets a fresh, valid
+                    # cookie and the user who changed the password stays
+                    # logged in - done before the re-encryption so an error
+                    # there cannot log them out. Mirror Flask-Security's
+                    # change_user_password so a "remember me" login is kept.
+                    remember_cookie_name = current_app.config.get(
+                        'REMEMBER_COOKIE_NAME', REMEMBER_COOKIE_NAME)
+                    has_remember_cookie = (
+                        remember_cookie_name in request.cookies and
+                        session.get('remember') != 'clear')
+                    login_user(user, remember=has_remember_cookie,
+                               authn_via=['change'])
+
+                    # This session's connection managers were tagged with
+                    # the old uniquifier, and would otherwise be dropped as
+                    # stale, closing its open connections and transactions.
+                    from pgadmin.utils.driver import get_driver
+                    driver = get_driver(config.PG_DEFAULT_DRIVER)
+                    driver.rebind_session_managers(
+                        old_uniquifier, user.fs_uniquifier)
+
+                    # Re-encrypt saved server passwords with the new key. Runs
+                    # last and is tolerant: a saved password that can no longer
+                    # be decrypted is cleared (reported below) rather than
+                    # failing the change, whose security-critical work (new
+                    # password + revoked sessions) is already committed.
+                    from pgadmin.browser.server_groups.servers.utils \
+                        import reencrpyt_server_passwords, \
+                        remove_saved_passwords
+                    try:
+                        pw_cleared = reencrpyt_server_passwords(
+                            current_user.id, old_key, form.new_password.data,
+                            clear_undecryptable=True)
+                    except Exception as e:
+                        # The password has changed and other sessions are
+                        # revoked, so do not report a failure. The saved
+                        # passwords are still under the old key, which can
+                        # no longer decrypt them, so clear them.
+                        db.session.rollback()
+                        current_app.logger.exception(e)
+                        try:
+                            from pgadmin.model import SharedServer
+                            SharedServer.query.filter_by(
+                                user_id=current_user.id).update(
+                                {SharedServer.password: None,
+                                 SharedServer.tunnel_password: None,
+                                 SharedServer.save_password: 0})
+                            # Commits both.
+                            remove_saved_passwords(current_user.id)
+                        except Exception as e:
+                            current_app.logger.exception(e)
+                        pw_cleared = -1
                 elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
                 return bad_request(_first_form_error_message(
                     form, gettext('Invalid input.')))
 
-        return make_json_response(
-            success=1,
-            info=gettext('pgAdmin user password changed successfully')
-        )
+        info = gettext('pgAdmin user password changed successfully')
+        if pw_cleared < 0:
+            info = gettext(
+                'pgAdmin user password changed successfully. The saved '
+                'server passwords could not be re-encrypted and were '
+                'cleared; please re-enter them when you next connect.')
+        elif pw_cleared:
+            info = gettext(
+                'pgAdmin user password changed successfully. Some saved '
+                'server passwords could not be re-encrypted and were '
+                'cleared; please re-enter them when you next connect.')
+        return make_json_response(success=1, info=info,
+                                  data={'passwords_cleared': pw_cleared})
 
 # Only register route if SECURITY_RECOVERABLE is set to True
 if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
