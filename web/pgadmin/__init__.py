@@ -21,7 +21,8 @@ from types import MethodType
 from collections import defaultdict
 from importlib import import_module
 
-from flask import Flask, abort, request, current_app, g, session, url_for
+from flask import Flask, Response, abort, request, current_app, g, \
+    session, url_for
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
 from flask_babel import Babel, gettext
@@ -184,6 +185,13 @@ def _find_blueprint():
 
 
 current_blueprint = LocalProxy(_find_blueprint)
+
+# Flask-Security's views whose submission is refused: see
+# refuse_flask_security_forms() in create_app().
+FLASK_SECURITY_FORM_ENDPOINTS = (
+    'security.login', 'security.verify', 'security.change_password',
+    'security.forgot_password', 'security.reset_password'
+)
 
 
 class PgAdminUserDatastore(SQLAlchemyUserDatastore):
@@ -924,6 +932,26 @@ def create_app(app_name=None):
                 status=403, success=0,
                 errormsg=_("403 FORBIDDEN")
             )
+
+    @app.before_request
+    def refuse_flask_security_forms():
+        """
+        Flask-Security's own views log a user in, check, change and reset
+        passwords without pgAdmin's checks: failed login counting, the
+        account lock, internal accounts only, permissions, and re-encrypting
+        saved server passwords. pgAdmin does all of these through views of
+        its own (authenticate.login and browser.change_password,
+        forgot_password and reset_password), so refuse any submission to
+        Flask-Security's. A GET only renders a page: GET /login renders
+        pgAdmin's login page, whose form is posted to /authenticate/login.
+
+        The refusal is a plain response, not an error: anyone can send
+        such a request, and an error would be logged with a traceback.
+        """
+        if request.endpoint in FLASK_SECURITY_FORM_ENDPOINTS and \
+                request.method not in ('GET', 'HEAD', 'OPTIONS'):
+            return Response(status=405,
+                            headers={'Allow': 'GET, HEAD, OPTIONS'})
 
     ##########################################################################
     # Handle the desktop login
