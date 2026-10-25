@@ -15,7 +15,7 @@ import Theme from '../../../pgadmin/static/js/Theme';
 import FileManager, { FileManagerUtils, getComparator } from '../../../pgadmin/misc/file_manager/static/js/components/FileManager';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
-import getApiInstance from '../../../pgadmin/static/js/api_instance';
+import getApiInstance, { parseApiError } from '../../../pgadmin/static/js/api_instance';
 import DownloadUtils from '../../../pgadmin/static/js/DownloadUtils';
 import userEvent from '@testing-library/user-event';
 
@@ -237,7 +237,10 @@ describe('FileManagerUtils', ()=>{
         retVal = 'blobdata';
         headers = {filename: 'newfile1'};
       } else if(apiData.mode == 'is_file_exist') {
-        retVal = {data: {result: {Code: 1}}};
+        // Only the shared storage named in the request has the file.
+        retVal = {data: {result: {
+          Code: apiData.storage_folder == 'shared1' ? 1 : 0,
+        }}};
       }
       return [200, retVal, headers];
     });
@@ -341,6 +344,12 @@ describe('FileManagerUtils', ()=>{
 
   it('isFileExists', async ()=>{
     let res = await fmObj.isFileExists('/home/newfolder', 'newfile1');
+    expect(res).toBe(false);
+  });
+
+  it('isFileExists looks in the selected storage', async ()=>{
+    fmObj.storage_folder = 'shared1';
+    let res = await fmObj.isFileExists('/home/newfolder', 'newfile1');
     expect(res).toBe(true);
   });
 
@@ -349,5 +358,19 @@ describe('FileManagerUtils', ()=>{
     let row = {Filename: 'newfile1', Path: '/home/newfile1', 'storage_folder': 'my_storage'};
     await fmObj.downloadFile(row);
     expect(DownloadUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
+  });
+
+  it('downloadFile reports the error the server sent', async ()=>{
+    // A refused download is sent as JSON but arrives as a Blob, since the
+    // request asks for one.
+    networkMock.onPost(`/file_manager/filemanager/${transId}/`).reply(()=>[
+      404,
+      new Blob([JSON.stringify({errormsg: 'File does not exist.'})],
+        {type: 'application/json'}),
+      {'content-type': 'application/json'},
+    ]);
+    let error = await fmObj.downloadFile(
+      {Filename: 'gone', Path: '/home/gone'}).catch((e)=>e);
+    expect(parseApiError(error)).toBe('File does not exist.');
   });
 });

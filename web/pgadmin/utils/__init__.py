@@ -806,10 +806,12 @@ def filename_with_file_manager_path(_file, create_file=False,
                                   status=403)
 
     from pgadmin.misc.file_manager import Filemanager
-    Filemanager.check_access_permission(
+    checked_path = Filemanager.check_access_permission(
         storage_dir, _file, skip_permission_check)
     if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
+        # Use the path that was checked: joining storage_dir and _file any
+        # other way can name a different file.
+        _file = checked_path
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
@@ -1646,9 +1648,9 @@ def _is_refused_leaf_symlink(e):
     """True if `e` is the kernel refusing to follow a symbolic link because
     the file was opened with O_NOFOLLOW (ELOOP, or EMLINK on some BSDs),
     rather than a genuine filesystem error."""
-    from pgadmin.misc.file_manager import _refuses_leaf_symlinks
-    return _refuses_leaf_symlinks() and \
-        e.errno in (errno.ELOOP, errno.EMLINK)
+    from pgadmin.misc.file_manager import _refuses_leaf_symlinks, \
+        _is_nofollow_refusal
+    return _refuses_leaf_symlinks() and _is_nofollow_refusal(e)
 
 
 def _handle_error(error_msg, from_setup):

@@ -19,13 +19,17 @@ The `O_NOFOLLOW` upload-leaf protection is tested in a separate class.
 
 import contextlib
 import errno
+import io
 import json
 import os
 import shutil
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
+
+from werkzeug.datastructures import FileStorage
 
 import config
 from pgadmin.misc.file_manager import Filemanager
@@ -647,10 +651,11 @@ class TestSaveFileRejectsLeafSymlink(_SaveFileMixin, BaseTestGenerator):
         def check_then_lose_the_race(*args, **kwargs):
             # The real containment check runs and passes: at this instant
             # the leaf is absent, so nothing escapes the storage root.
-            real_check(*args, **kwargs)
+            checked_path = real_check(*args, **kwargs)
             # T+0: the attacker swaps a symlink into the leaf, exactly the
             # window the bare open() used to write through.
             os.symlink(outside_target, link_path)
+            return checked_path
 
         response = self._save_file(
             "/evil.sql", "OWNED",
@@ -741,3 +746,1180 @@ class TestSaveFileEloopReportsRawErrorWithoutNofollow(
         # substring with the refusal message, so assert on whole messages.
         self.assertEqual(response.json['errormsg'],
                          "Error: %s" % os.strerror(errno.ELOOP))
+
+
+# ---------------------------------------------------------------------------
+# download() — the path checked must be the path served.
+# ---------------------------------------------------------------------------
+
+def _skip_check(in_dir, path, skip_permission_check=False):
+    """Stand-in for check_access_permission() that skips the check but,
+    like it, returns the path to act on: simulates an attacker who wins
+    the race between the check and the file operation."""
+    return Filemanager.get_abs_path(in_dir, path)
+
+
+class _DownloadMixin:
+    """Mixin (NOT a TestCase) — storage layout for download() tests.
+
+    The user's storage directory ends in a repeated name
+    (.../storage/storage), as it does for a user called "storage", next to
+    another user's directory holding a file they must not be able to read.
+    """
+
+    def setUp(self):
+        # Filesystem and request logic only: no Postgres connection needed.
+        unittest.TestCase.setUp(self)
+        self.outer = tempfile.mkdtemp(prefix="pga_filemgr_download_")
+        self.storage_dir = os.path.join(self.outer, "storage", "storage")
+        os.makedirs(self.storage_dir)
+        other_dir = os.path.join(self.outer, "storage", "alice")
+        os.makedirs(other_dir)
+        with open(os.path.join(other_dir, "secret.sql"), "w") as f:
+            f.write("ALICE_SECRET")
+        with open(os.path.join(self.storage_dir, "mine.sql"), "w") as f:
+            f.write("MY_DATA")
+
+        self._prev_server_mode = config.SERVER_MODE
+        config.SERVER_MODE = True
+
+    def tearDown(self):
+        config.SERVER_MODE = self._prev_server_mode
+        shutil.rmtree(self.outer, ignore_errors=True)
+
+    def _download(self, path, storage_dir=None, headers=False):
+        """Call download() for `path` with the storage directory confined
+        to `storage_dir` (self.storage_dir by default), and return
+        (status code, response body), plus the headers if asked."""
+        fm = Filemanager.__new__(Filemanager)
+        fm.trans_id = 0
+        fm.dir = self.storage_dir if storage_dir is None else storage_dir
+        fm.shared_dir = None
+        with self.app.test_request_context(), \
+                patch.object(fm, 'validate_request', return_value=True):
+            response = fm.download(path)
+            response.direct_passthrough = False
+            body = response.get_data()
+            response.close()
+            if headers:
+                return response.status_code, body, response.headers
+            return response.status_code, body
+
+
+class TestDownloadServesFileInsideStorage(_DownloadMixin, BaseTestGenerator):
+    """A file inside the user's storage directory is downloaded."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        status, body, headers = self._download("/mine.sql", headers=True)
+        self.assertEqual((status, body), (200, b"MY_DATA"))
+        self.assertEqual(headers['Content-Length'], str(len(b"MY_DATA")))
+        self.assertIn('Last-Modified', headers)
+        # The file object gives no way to serve a range, so none is offered.
+        self.assertNotIn('Accept-Ranges', headers)
+
+
+class TestDownloadRejectsEscapeThroughRepeatedName(
+        _DownloadMixin, BaseTestGenerator):
+    """A path that leaves the storage directory is refused, even when the
+    storage directory's name repeats the one above it, so that the path
+    appended to itself would land back inside."""
+
+    scenarios = [
+        # As on Windows: the file is opened by name, so only the check
+        # stands between the path and the other user's file.
+        ('check', dict(check=True, beneath=False)),
+        # The descriptor-relative open refuses it on its own too.
+        ('descriptor-relative open', dict(check=False, beneath=True)),
+    ]
+
+    def runTest(self):
+        if self.beneath and sys.platform == "win32":
+            self.skipTest("O_NOFOLLOW unavailable on Windows")
+        path = "/../../storage/alice/secret.sql"
+        with patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+                   return_value=self.beneath):
+            if self.check:
+                with self.assertRaises(PermissionError):
+                    self._download(path)
+                return
+            with patch('pgadmin.misc.file_manager.Filemanager.'
+                       'check_access_permission', side_effect=_skip_check):
+                status, body = self._download(path)
+        self.assertEqual(status, 500)
+        self.assertNotIn(b"ALICE_SECRET", body)
+
+
+class TestDownloadRejectsLeafSymlinkSwappedInAfterCheck(
+        _DownloadMixin, BaseTestGenerator):
+    """A symbolic link swapped in after the check is not followed out of
+    the storage directory."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("O_NOFOLLOW unavailable on Windows")
+        os.symlink(os.path.join(self.outer, "storage", "alice", "secret.sql"),
+                   os.path.join(self.storage_dir, "link.sql"))
+        # Simulate the attacker winning the check-to-open race.
+        with patch('pgadmin.misc.file_manager.Filemanager.'
+                   'check_access_permission', side_effect=_skip_check):
+            status, body = self._download("/link.sql")
+        self.assertEqual(status, 500)
+        self.assertEqual(json.loads(body)['errormsg'],
+                         "Refusing to read through a symbolic link.")
+        self.assertNotIn(b"ALICE_SECRET", body)
+
+
+class TestDownloadMissingFileReportsNotFound(
+        _DownloadMixin, BaseTestGenerator):
+    """A missing file is reported as not found, without the storage
+    directory's path."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        status, body = self._download("/missing.sql")
+        self.assertEqual(status, 404)
+        self.assertIn("/missing.sql", json.loads(body)['errormsg'])
+        self.assertNotIn(self.storage_dir.encode(), body)
+
+
+class TestDownloadDesktopModeServesAbsolutePath(
+        _DownloadMixin, BaseTestGenerator):
+    """In desktop mode there is no storage directory and the path is
+    absolute; the file is served as before."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        config.SERVER_MODE = False
+        self.assertEqual(
+            self._download(os.path.join(self.storage_dir, "mine.sql"), ''),
+            (200, b"MY_DATA"))
+
+
+class _PrefixSiblingMixin(_DownloadMixin):
+    """Mixin (NOT a TestCase) — another user's storage directory whose name
+    is this user's followed by more characters (bob and bobx), so the path
+    "x/secret.sql", appended to the storage directory as a plain string,
+    would land in the other user's directory instead of bob/x/."""
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.outer = tempfile.mkdtemp(prefix="pga_filemgr_prefix_")
+        self.storage_dir = os.path.join(self.outer, "storage", "bob")
+        self.victim_dir = os.path.join(self.outer, "storage", "bobx")
+        os.makedirs(os.path.join(self.storage_dir, "x"))
+        os.makedirs(self.victim_dir)
+        self.victim = os.path.join(self.victim_dir, "secret.sql")
+        with open(self.victim, "w") as f:
+            f.write("BOBBY_SECRET")
+        # The user's own file of the same name, which is the one meant.
+        self.own = os.path.join(self.storage_dir, "x", "secret.sql")
+        with open(self.own, "w") as f:
+            f.write("BOB_DATA")
+
+        self._prev_server_mode = config.SERVER_MODE
+        config.SERVER_MODE = True
+
+    def _fm(self):
+        fm = Filemanager.__new__(Filemanager)
+        fm.trans_id = 0
+        fm.dir = self.storage_dir
+        fm.shared_dir = None
+        return fm
+
+    def _call(self, method, *args):
+        fm = self._fm()
+        with self.app.test_request_context(), \
+                patch.object(fm, 'validate_request', return_value=True):
+            return getattr(fm, method)(*args)
+
+
+class TestDownloadWithoutLeadingSeparatorStaysInStorage(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """A download path without a leading separator does not reach a
+    sibling directory whose name starts with the storage directory's."""
+
+    scenarios = [
+        ('check', dict(beneath=False)),
+        ('descriptor-relative open', dict(beneath=True)),
+    ]
+
+    def runTest(self):
+        if self.beneath and sys.platform == "win32":
+            self.skipTest("O_NOFOLLOW unavailable on Windows")
+        with patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+                   return_value=self.beneath):
+            self.assertEqual(self._download("x/secret.sql"),
+                             (200, b"BOB_DATA"))
+
+
+class TestDeleteWithoutLeadingSeparatorStaysInStorage(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """delete() removes the path it checked, not a file in a sibling
+    directory whose name starts with the storage directory's."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self._call('delete', "x/secret.sql")
+        self.assertTrue(os.path.exists(self.victim))
+        self.assertFalse(os.path.exists(self.own))
+
+
+class TestRenameWithoutLeadingSeparatorStaysInStorage(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """rename() moves the path it checked, not a file in a sibling
+    directory whose name starts with the storage directory's."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self._call('rename', "x/secret.sql", "renamed.sql")
+        self.assertTrue(os.path.exists(self.victim))
+        self.assertTrue(os.path.exists(
+            os.path.join(self.storage_dir, "x", "renamed.sql")))
+
+
+class TestRenameChecksNewNameAgainstItsDirectory(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """The new name is relative to the old file's directory, so it is
+    checked there: moving a file up from a subdirectory to the storage
+    directory is allowed, and going further up is not."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self._call('rename', "/x/secret.sql", "../moved.sql")
+        self.assertTrue(os.path.exists(
+            os.path.join(self.storage_dir, "moved.sql")))
+        with self.assertRaises(PermissionError):
+            self._call('rename', "/moved.sql", "../bobx/moved.sql")
+
+
+class TestRenameWithinStorageStillWorks(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """A file in a subdirectory of the storage directory is renamed."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        with open(os.path.join(self.storage_dir, "x", "mine.sql"), "w") as f:
+            f.write("MY_DATA")
+        self._call('rename', "/x/mine.sql", "renamed.sql")
+        self.assertTrue(os.path.exists(
+            os.path.join(self.storage_dir, "x", "renamed.sql")))
+
+
+class TestIsFileExistWithoutLeadingSeparatorStaysInStorage(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """is_file_exist() looks at the path it checked, so it does not report
+    files in a sibling directory whose name starts with the storage
+    directory's."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self.assertEqual(
+            self._call('is_file_exist', "x/", "secret.sql")['Code'], 1)
+        os.remove(self.own)
+        self.assertEqual(
+            self._call('is_file_exist', "x/", "secret.sql")['Code'], 0)
+
+
+class TestFileOperationsRefusePathsOutsideStorage(
+        _PrefixSiblingMixin, BaseTestGenerator):
+    """download(), delete(), rename() and is_file_exist() refuse a path
+    that leaves the storage directory, with or without a leading
+    separator, and leave the other user's file alone."""
+
+    scenarios = [
+        ('download, leading separator',
+         dict(method='download', args=("/../bobx/secret.sql",))),
+        ('download, no leading separator',
+         dict(method='download', args=("../bobx/secret.sql",))),
+        ('delete, leading separator',
+         dict(method='delete', args=("/../bobx/secret.sql",))),
+        ('delete, no leading separator',
+         dict(method='delete', args=("../bobx/secret.sql",))),
+        ('rename from outside',
+         dict(method='rename', args=("/../bobx/secret.sql", "mine.sql"))),
+        ('rename to outside',
+         dict(method='rename', args=("/x/secret.sql",
+                                     "../../bobx/secret.sql"))),
+        ('is_file_exist, leading separator',
+         dict(method='is_file_exist', args=("/../bobx/", "secret.sql"))),
+        ('is_file_exist, no leading separator',
+         dict(method='is_file_exist', args=("../bobx/", "secret.sql"))),
+    ]
+
+    def runTest(self):
+        with self.assertRaises(PermissionError):
+            self._call(self.method, *self.args)
+        with open(self.victim) as f:
+            self.assertEqual(f.read(), "BOBBY_SECRET")
+        with open(self.own) as f:
+            self.assertEqual(f.read(), "BOB_DATA")
+
+
+# ---------------------------------------------------------------------------
+# Every other File Manager entry point acts on the path that was checked.
+# ---------------------------------------------------------------------------
+
+LOAD_FILE_URL = '/file_manager/load_file/'
+
+
+class _StorageOpsMixin(_PrefixSiblingMixin):
+    """Mixin (NOT a TestCase) — bob's storage directory with a file of his
+    own, another user's directory (alice) and a file outside the storage
+    root altogether."""
+
+    def setUp(self):
+        super().setUp()
+        with open(os.path.join(self.storage_dir, "mine.sql"), "w") as f:
+            f.write("MY_DATA")
+        self.alice_dir = os.path.join(self.outer, "storage", "alice")
+        os.makedirs(self.alice_dir)
+        self.outside = os.path.join(self.outer, "outside.txt")
+        with open(self.outside, "w") as f:
+            f.write("OUTSIDE")
+
+    def _storage_patches(self):
+        prefs = patch('pgadmin.misc.file_manager.Preferences.module')
+        return [
+            patch('pgadmin.misc.file_manager.get_storage_directory',
+                  return_value=self.storage_dir),
+            prefs,
+        ]
+
+    def _post(self, url, payload, extra_patches=()):
+        # As for the save_file tests above: SERVER_MODE cannot be flipped
+        # for an endpoint test, as it also changes how the request is
+        # authenticated.
+        if not self._prev_server_mode:
+            self.skipTest("Endpoint test needs a server-mode run")
+        with contextlib.ExitStack() as stack:
+            mocks = [stack.enter_context(p) for p in
+                     self._storage_patches() + list(extra_patches)]
+            mocks[1].return_value.preference.return_value.get \
+                .return_value = MY_STORAGE
+            return self.tester.post(url, data=json.dumps(payload),
+                                    content_type='application/json')
+
+    def _load(self, file_name):
+        return self._post(LOAD_FILE_URL,
+                          {"file_name": file_name, "storage": MY_STORAGE})
+
+    def _unchanged(self):
+        with open(self.outside) as f:
+            self.assertEqual(f.read(), "OUTSIDE")
+        with open(self.victim) as f:
+            self.assertEqual(f.read(), "BOBBY_SECRET")
+
+
+class TestLoadFileReadsFileInsideStorage(_StorageOpsMixin, BaseTestGenerator):
+    """load_file reads the user's own file."""
+
+    scenarios = [
+        ('leading separator', dict(path="/mine.sql", data=b"MY_DATA")),
+        ('no leading separator', dict(path="mine.sql", data=b"MY_DATA")),
+        # bob's own x/secret.sql, not the one in bobx.
+        ('subdirectory, no leading separator',
+         dict(path="x/secret.sql", data=b"BOB_DATA")),
+    ]
+
+    def runTest(self):
+        response = self._load(self.path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, self.data)
+
+
+class TestLoadFileRefusesPathsOutsideStorage(
+        _StorageOpsMixin, BaseTestGenerator):
+    """load_file does not read a file outside the storage directory, even
+    when stripping separators from the front of the path would turn it
+    into an absolute path that the check never saw."""
+
+    scenarios = [
+        ('dot-dot', dict(path="/../../outside.txt", posix_only=False,
+                         error="Access denied")),
+        # On POSIX a backslash is an ordinary character, so the check sees
+        # a directory named "\\" inside storage, which does not exist.
+        ('separators stripped to an absolute path',
+         dict(path=None, posix_only=True,
+              error=os.strerror(errno.ENOENT))),
+    ]
+
+    def runTest(self):
+        if self.posix_only and sys.platform == "win32":
+            self.skipTest("A backslash is a separator on Windows")
+        path = self.path if self.path is not None else "/\\" + self.outside
+        response = self._load(path)
+        # Refused by load_file itself, not by anything else on the way.
+        self.assertEqual(response.status_code, 500)
+        self.assertIn(self.error, response.json['errormsg'])
+        self.assertNotIn(b"OUTSIDE", response.data)
+
+
+class TestLoadFileReportsMissingFile(_StorageOpsMixin, BaseTestGenerator):
+    """A missing file is reported as an error rather than failing while
+    reading it."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        response = self._load("/missing.sql")
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json['errormsg'],
+                         os.strerror(errno.ENOENT))
+
+
+class TestSaveFileRefusesPathsOutsideStorage(
+        _StorageOpsMixin, BaseTestGenerator):
+    """save_file does not write outside the storage directory, including
+    where the file is opened by name (as on Windows), so the check is the
+    only guard."""
+
+    scenarios = [
+        ('dot-dot', dict(path="/../../outside.txt", posix_only=False)),
+        ('separators stripped to an absolute path',
+         dict(path=None, posix_only=True)),
+    ]
+
+    def runTest(self):
+        if self.posix_only and sys.platform == "win32":
+            self.skipTest("A backslash is a separator on Windows")
+        path = self.path if self.path is not None else "/\\" + self.outside
+        response = self._post(
+            SAVE_FILE_URL, {"file_name": path, "file_content": "OWNED"},
+            [patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+                   return_value=False)])
+        # Refused by save_file itself, not by anything else on the way.
+        self.assertEqual(response.status_code, 500)
+        self.assertIn('errormsg', response.json)
+        self._unchanged()
+
+
+class TestFilenameWithFileManagerPathStaysInStorage(
+        _StorageOpsMixin, BaseTestGenerator):
+    """filename_with_file_manager_path(), behind Import/Export Data,
+    Backup, Restore and the Google client secret, returns the path it
+    checked."""
+
+    scenarios = [('default', dict())]
+
+    def _resolve(self, path):
+        from pgadmin.utils import filename_with_file_manager_path
+        with self.app.test_request_context(), \
+                patch('pgadmin.utils.get_file_manager_storage_dir',
+                      return_value=self.storage_dir):
+            return filename_with_file_manager_path(path)
+
+    def runTest(self):
+        self.assertEqual(os.path.realpath(self._resolve("/mine.sql")),
+                         os.path.realpath(
+                             os.path.join(self.storage_dir, "mine.sql")))
+        with self.assertRaises(PermissionError):
+            self._resolve("/../../outside.txt")
+        if sys.platform != "win32":
+            resolved = os.path.realpath(self._resolve("/\\" + self.outside))
+            self.assertTrue(resolved.startswith(
+                os.path.realpath(self.storage_dir) + os.sep), resolved)
+
+
+class TestListFilesystemStaysInStorage(_StorageOpsMixin, BaseTestGenerator):
+    """getfolder lists the folder it checked. Folder names that look
+    percent-encoded are not decoded a second time after the check."""
+
+    scenarios = [('default', dict())]
+
+    def _list(self, path):
+        return Filemanager.list_filesystem(
+            self.storage_dir, path, {}, '*', True)
+
+    def runTest(self):
+        names = [f['Filename'] for f in self._list("/")]
+        self.assertIn("mine.sql", names)
+
+        with self.assertRaises(PermissionError):
+            self._list("/../")
+
+        # Folders literally named "%2e%2e", which the user can create.
+        os.makedirs(os.path.join(self.storage_dir, "%2e%2e", "%2e%2e"))
+        listing = self._list("/%252e%252e/%252e%252e/")
+        self.assertEqual(listing, [])
+
+
+class TestAddFolder(_StorageOpsMixin, BaseTestGenerator):
+    """addfolder creates a folder that does not exist yet inside storage,
+    and refuses one that would be created outside it."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self._call('addfolder', "/", "newdir")
+        self.assertTrue(os.path.isdir(
+            os.path.join(self.storage_dir, "newdir")))
+
+        self._call('addfolder', "/x/", "nested")
+        self.assertTrue(os.path.isdir(
+            os.path.join(self.storage_dir, "x", "nested")))
+
+        # An existing name gets a suffix, still inside storage.
+        res = self._call('addfolder', "/", "newdir")
+        self.assertEqual(res['Name'], "newdir_1")
+        self.assertTrue(os.path.isdir(
+            os.path.join(self.storage_dir, "newdir_1")))
+
+        # A parent that does not exist is an error, and nothing is created.
+        res = self._call('addfolder', "/nodir/", "new")
+        self.assertEqual(res.status_code, 500)
+        self.assertFalse(os.path.exists(
+            os.path.join(self.storage_dir, "nodir")))
+
+        # Split across path and name, the check of the two joined as they
+        # are would see a name inside storage; the folder would be created
+        # in another user's directory.
+        with self.assertRaises(PermissionError):
+            self._call('addfolder', "/..", "alice/pwned")
+        self.assertFalse(os.path.exists(
+            os.path.join(self.alice_dir, "pwned")))
+
+        with self.assertRaises(PermissionError):
+            self._call('addfolder', "/", "../escape")
+        self.assertFalse(os.path.exists(
+            os.path.join(self.outer, "storage", "escape")))
+
+
+class TestUpload(_StorageOpsMixin, BaseTestGenerator):
+    """Upload writes a new file inside storage, and refuses one that would
+    be written outside it."""
+
+    scenarios = [('default', dict())]
+
+    def _upload(self, currentpath, filename):
+        req = SimpleNamespace(
+            form={'currentpath': currentpath},
+            files={'newfile': FileStorage(io.BytesIO(b"UPLOADED"),
+                                          filename=filename)})
+        return self._call('add', req)
+
+    def runTest(self):
+        self._upload("/", "new.sql")
+        with open(os.path.join(self.storage_dir, "new.sql"), "rb") as f:
+            self.assertEqual(f.read(), b"UPLOADED")
+
+        # Without a leading separator: bob's own x/, not bobx.
+        self._upload("x/", "new.sql")
+        self.assertTrue(os.path.exists(
+            os.path.join(self.storage_dir, "x", "new.sql")))
+        self.assertFalse(os.path.exists(
+            os.path.join(self.victim_dir, "new.sql")))
+
+        # A folder that does not exist is an error, and nothing is created.
+        res = self._upload("/nodir/", "new.sql")
+        self.assertEqual(res.status_code, 500)
+        self.assertFalse(os.path.exists(
+            os.path.join(self.storage_dir, "nodir")))
+
+        for currentpath, filename in (("/", "../escape.sql"),
+                                      ("/../alice/", "escape.sql")):
+            res = self._upload(currentpath, filename)
+            self.assertEqual(res.status_code, 401)
+        self.assertFalse(os.path.exists(
+            os.path.join(self.outer, "storage", "escape.sql")))
+        self.assertFalse(os.path.exists(
+            os.path.join(self.alice_dir, "escape.sql")))
+
+
+# ---------------------------------------------------------------------------
+# Symbolic links swapped in after the check, and other related fixes.
+# ---------------------------------------------------------------------------
+
+class _SubdirMixin(_StorageOpsMixin):
+    """Mixin (NOT a TestCase) — a subdirectory of the storage directory and
+    a file outside the storage root, on every platform."""
+
+    def setUp(self):
+        super().setUp()
+        self.sub = os.path.join(self.storage_dir, "sub")
+        os.makedirs(self.sub)
+        self.outside_dir = os.path.join(self.outer, "outside_dir")
+        os.makedirs(self.outside_dir)
+        self.outside_file = os.path.join(self.outside_dir, "f.sql")
+        with open(self.outside_file, "w") as f:
+            f.write("OUTSIDE")
+
+
+class _SwapMixin(_StorageOpsMixin):
+    """Mixin (NOT a TestCase) — a subdirectory of the storage directory
+    that the tests replace with a symbolic link to a directory outside it,
+    as an attacker winning the check-to-use race would."""
+
+    def setUp(self):
+        # Skip before the mixins change config.SERVER_MODE: tearDown() does
+        # not run when setUp() raises, so nothing would restore it.
+        if sys.platform == "win32":
+            self.skipTest("O_NOFOLLOW unavailable on Windows")
+        super().setUp()
+        self.sub = os.path.join(self.storage_dir, "sub")
+        os.makedirs(self.sub)
+        self.outside_dir = os.path.join(self.outer, "outside_dir")
+        os.makedirs(self.outside_dir)
+        self.outside_file = os.path.join(self.outside_dir, "f.sql")
+        with open(self.outside_file, "w") as f:
+            f.write("OUTSIDE")
+
+    def swap_sub(self):
+        shutil.rmtree(self.sub)
+        os.symlink(self.outside_dir, self.sub)
+
+    def _call_racing(self, method, *args):
+        with patch('pgadmin.misc.file_manager.Filemanager.'
+                   'check_access_permission', side_effect=_skip_check):
+            return self._call(method, *args)
+
+
+class TestDeleteDoesNotFollowSwappedParent(_SwapMixin, BaseTestGenerator):
+    """delete() refuses a parent directory swapped for a symbolic link."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self.swap_sub()
+        res = self._call_racing('delete', "/sub/f.sql")
+        self.assertEqual(res.status_code, 500)
+        self.assertIn("symbolic link", res.json['errormsg'])
+        self.assertTrue(os.path.exists(self.outside_file))
+
+
+class TestDeleteRemovesLeafSymlinkItself(_SwapMixin, BaseTestGenerator):
+    """A symbolic link at the leaf is removed, not what it names, even
+    when it names a directory."""
+
+    scenarios = [
+        ('to a file', dict(directory=False)),
+        ('to an empty directory', dict(directory=True)),
+    ]
+
+    def runTest(self):
+        link = os.path.join(self.storage_dir, "link")
+        if self.directory:
+            target = os.path.join(self.outer, "empty_dir")
+            os.makedirs(target)
+        else:
+            target = self.outside_file
+        os.symlink(target, link)
+        res = self._call_racing('delete', "/link")
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(os.path.lexists(link))
+        self.assertTrue(os.path.exists(target))
+
+
+class TestDeleteStillDeletesFilesAndFolders(_SubdirMixin, BaseTestGenerator):
+    """delete() removes a file and an empty folder inside storage."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        with open(os.path.join(self.sub, "f.sql"), "w") as f:
+            f.write("MINE")
+        self._call('delete', "/sub/f.sql")
+        self.assertFalse(os.path.exists(os.path.join(self.sub, "f.sql")))
+        self._call('delete', "/sub")
+        self.assertFalse(os.path.exists(self.sub))
+
+
+class TestDeleteRefusesStorageDirectory(_StorageOpsMixin, BaseTestGenerator):
+    """The storage directory itself cannot be deleted, whether or not the
+    delete is done relative to directory descriptors (it is not on
+    Windows, so only the explicit refusal stops it there)."""
+
+    scenarios = [
+        ('slash', dict(path="/", beneath=True)),
+        ('dot', dict(path="/.", beneath=True)),
+        ('slash, by name', dict(path="/", beneath=False)),
+        ('dot, by name', dict(path="/.", beneath=False)),
+    ]
+
+    def runTest(self):
+        for name in os.listdir(self.storage_dir):
+            target = os.path.join(self.storage_dir, name)
+            if os.path.isdir(target):
+                shutil.rmtree(target)
+            else:
+                os.remove(target)
+        with patch('pgadmin.misc.file_manager._acts_beneath',
+                   return_value=self.beneath), \
+                self.assertRaises(PermissionError):
+            self._call('delete', self.path)
+        self.assertTrue(os.path.isdir(self.storage_dir))
+
+
+class TestRenameDoesNotFollowSwappedParent(_SwapMixin, BaseTestGenerator):
+    """rename() refuses a parent directory of the source or the target
+    swapped for a symbolic link, so files are neither moved in from nor
+    out to the directory it names."""
+
+    scenarios = [
+        ('source', dict(old="/sub/f.sql", new="../stolen.sql")),
+        ('target', dict(old="/mine.sql", new="sub/mine.sql")),
+    ]
+
+    def runTest(self):
+        self.swap_sub()
+        res = self._call_racing('rename', self.old, self.new)
+        self.assertEqual(res.status_code, 500)
+        self.assertIn("symbolic link", res.json['errormsg'])
+        self.assertTrue(os.path.exists(self.outside_file))
+        self.assertTrue(os.path.exists(
+            os.path.join(self.storage_dir, "mine.sql")))
+        self.assertFalse(os.path.exists(
+            os.path.join(self.storage_dir, "stolen.sql")))
+        self.assertFalse(os.path.exists(
+            os.path.join(self.outside_dir, "mine.sql")))
+
+
+class TestRenameStillMovesIntoSubfolder(_SubdirMixin, BaseTestGenerator):
+    """rename() moves a file into a subfolder of storage."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self._call('rename', "/mine.sql", "sub/mine.sql")
+        self.assertTrue(os.path.exists(os.path.join(self.sub, "mine.sql")))
+
+
+class TestLoadFileDoesNotFollowSwappedSymlink(
+        _SwapMixin, BaseTestGenerator):
+    """load_file refuses a symbolic link swapped in after the check, at
+    the leaf or for a parent directory."""
+
+    scenarios = [
+        ('leaf', dict(parent=False)),
+        ('parent', dict(parent=True)),
+    ]
+
+    def runTest(self):
+        if self.parent:
+            self.swap_sub()
+            path = "/sub/f.sql"
+        else:
+            os.symlink(self.outside_file,
+                       os.path.join(self.storage_dir, "link.sql"))
+            path = "/link.sql"
+        response = self._post(
+            LOAD_FILE_URL, {"file_name": path, "storage": MY_STORAGE},
+            [patch('pgadmin.misc.file_manager.Filemanager.'
+                   'check_access_permission', side_effect=_skip_check)])
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json['errormsg'],
+                         "Refusing to read through a symbolic link.")
+        self.assertNotIn(b"OUTSIDE", response.data)
+
+
+class TestReadFileGeneratorWithStorageRoot(_SwapMixin, BaseTestGenerator):
+    """read_file_generator() reads a file below its storage directory and
+    refuses a symbolic link there."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        from pgadmin.misc.file_manager import read_file_generator
+        mine = os.path.join(self.storage_dir, "mine.sql")
+        self.assertEqual(
+            "".join(read_file_generator(mine, 'utf-8', self.storage_dir)),
+            "MY_DATA")
+        link = os.path.join(self.storage_dir, "link.sql")
+        os.symlink(self.outside_file, link)
+        with self.assertRaises(OSError) as cm:
+            list(read_file_generator(link, 'utf-8', self.storage_dir))
+        self.assertIn(cm.exception.errno, (errno.ELOOP, errno.EMLINK))
+
+
+class TestIsFileExistUsesSelectedSharedStorage(
+        _StorageOpsMixin, BaseTestGenerator):
+    """is_file_exist() looks in the shared storage that is selected, so
+    the overwrite prompt sees files there."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        shared = os.path.join(self.outer, "shared")
+        os.makedirs(shared)
+        with open(os.path.join(shared, "s.sql"), "w") as f:
+            f.write("SHARED")
+        fm = self._fm()
+        fm.shared_dir = shared
+        with self.app.test_request_context():
+            self.assertEqual(fm.is_file_exist("/", "s.sql")['Code'], 1)
+            self.assertEqual(fm.is_file_exist("/", "mine.sql")['Code'], 0)
+
+
+class TestGetClosestParentStaysInStorage(_StorageOpsMixin, BaseTestGenerator):
+    """The folder the File Manager opens in is the closest one that still
+    exists inside storage; a remembered folder outside storage is never
+    tested for existence or returned."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        closest = Filemanager.get_closest_parent
+        os.makedirs(os.path.join(self.storage_dir, "a"))
+        self.assertEqual(closest(self.storage_dir, "/a/"), "/a/")
+        self.assertEqual(closest(self.storage_dir, "/a/gone/deeper/"), "/a/")
+        self.assertEqual(closest(self.storage_dir, "/gone/"), "/")
+        # The folder above storage exists, but is outside it.
+        self.assertEqual(closest(self.storage_dir, "/../alice/"), "/")
+        # A remembered folder that cannot be resolved is just missing.
+        self.assertEqual(closest(self.storage_dir, "/a/\0bad/"), "/a/")
+        # Without a separator there is no parent: not "a" for "ab".
+        os.makedirs(os.path.join(self.storage_dir, "ab"))
+        self.assertEqual(closest(self.storage_dir, "a"), "a/")
+        self.assertEqual(closest(self.storage_dir, "abc"), "/")
+
+
+class TestLoadFileDoesNotFollowSymlinkSwappedBeforeRead(
+        _SwapMixin, BaseTestGenerator):
+    """load_file opens the file twice, to look at its start and then to
+    read it; a symbolic link swapped in between is not followed either."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        link = os.path.join(self.storage_dir, "link.sql")
+        os.symlink(self.outside_file, link)
+        try:
+            response = self._post(
+                LOAD_FILE_URL, {"file_name": "/link.sql",
+                                "storage": MY_STORAGE},
+                [patch('pgadmin.misc.file_manager.Filemanager.'
+                       'check_access_permission', side_effect=_skip_check),
+                 # The first open saw a regular file.
+                 patch('pgadmin.misc.file_manager.Filemanager.'
+                       'check_file_for_bom_and_binary',
+                       return_value=(True, None, False, False, 'utf-8'))])
+            data = response.data
+        except OSError as e:
+            self.assertIn(e.errno, (errno.ELOOP, errno.EMLINK))
+            return
+        self.assertNotIn(b"OUTSIDE", data)
+
+
+class TestDeleteAndRenameByName(_SubdirMixin, BaseTestGenerator):
+    """Where delete and rename cannot act relative to directory
+    descriptors (desktop mode, Windows), they act by name as before:
+    files and folders are deleted and renamed, and a path outside storage
+    is still refused by the check."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        with patch('pgadmin.misc.file_manager._acts_beneath',
+                   return_value=False):
+            self._call('rename', "/mine.sql", "sub/mine.sql")
+            self.assertTrue(os.path.exists(
+                os.path.join(self.sub, "mine.sql")))
+            self._call('rename', "/sub", "renamed")
+            renamed = os.path.join(self.storage_dir, "renamed")
+            self.assertTrue(os.path.exists(os.path.join(renamed,
+                                                        "mine.sql")))
+            self._call('delete', "/renamed/mine.sql")
+            self.assertFalse(os.path.exists(os.path.join(renamed,
+                                                         "mine.sql")))
+            self._call('delete', "/renamed")
+            self.assertFalse(os.path.exists(renamed))
+
+            with self.assertRaises(PermissionError):
+                self._call('delete', "/../../outside_dir/f.sql")
+            with self.assertRaises(PermissionError):
+                self._call('rename', "/../../outside_dir/f.sql", "f.sql")
+        self.assertTrue(os.path.exists(self.outside_file))
+
+
+class TestPermissionUsesSelectedSharedStorage(
+        _StorageOpsMixin, BaseTestGenerator):
+    """permission() checks the path against the shared storage that is
+    selected, not the user's own storage directory."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        # A shared storage next to the user's own: "/../bob/x" is inside
+        # the user's own directory, but outside the shared one.
+        shared = os.path.join(self.outer, "storage", "shared")
+        os.makedirs(shared)
+        fm = self._fm()
+        fm.shared_dir = shared
+        with self.app.test_request_context():
+            self.assertEqual(fm.permission("/x")['Code'], 1)
+            with self.assertRaises(PermissionError):
+                fm.permission("/../bob/x")
+
+
+class TestRenameReportsTooManyLinksOnLinux(_SubdirMixin, BaseTestGenerator):
+    """EMLINK is a symbolic link refusal only on the BSDs that use it for
+    O_NOFOLLOW; on Linux it is a real error (a directory at its link
+    limit) and is reported as such."""
+
+    scenarios = [
+        ('linux', dict(platform='linux', refusal=False)),
+        ('freebsd', dict(platform='freebsd14', refusal=True)),
+    ]
+
+    def runTest(self):
+        with patch('pgadmin.misc.file_manager._platform', self.platform), \
+                patch('pgadmin.misc.file_manager._acts_beneath',
+                      return_value=True), \
+                patch('pgadmin.misc.file_manager._rename_beneath',
+                      side_effect=OSError(errno.EMLINK,
+                                          os.strerror(errno.EMLINK))):
+            res = self._call('rename', "/mine.sql", "sub/mine.sql")
+        self.assertEqual(res.status_code, 500)
+        if self.refusal:
+            self.assertEqual(res.json['errormsg'],
+                             "Refusing to rename through a symbolic link.")
+        else:
+            self.assertIn(os.strerror(errno.EMLINK), res.json['errormsg'])
+            self.assertNotIn("symbolic link", res.json['errormsg'])
+        # ELOOP is a refusal everywhere.
+        from pgadmin.misc.file_manager import _is_nofollow_refusal
+        with patch('pgadmin.misc.file_manager._platform', self.platform):
+            self.assertTrue(_is_nofollow_refusal(OSError(errno.ELOOP, '')))
+
+
+class TestDotDotAfterSymlinkIsNotCollapsed(_SwapMixin, BaseTestGenerator):
+    """A ".." after a symbolic link inside storage is not collapsed in the
+    path's text: the check resolves the link first and so names a
+    different file. The path is refused rather than used on the file its
+    text names."""
+
+    scenarios = [
+        ('delete', dict(method='delete', args=("/link/../mine.sql",))),
+        ('rename', dict(method='rename', args=("/link/../mine.sql",
+                                               "moved.sql"))),
+        ('download', dict(method='download', args=("/link/../mine.sql",))),
+    ]
+
+    def setUp(self):
+        super().setUp()
+        deep = os.path.join(self.storage_dir, "inner", "deep")
+        os.makedirs(deep)
+        with open(os.path.join(self.storage_dir, "inner", "mine.sql"),
+                  "w") as f:
+            f.write("INNER_DATA")
+        os.symlink(deep, os.path.join(self.storage_dir, "link"))
+
+    def runTest(self):
+        res = self._call(self.method, *self.args)
+        self.assertEqual(res.status_code, 500)
+        self.assertNotIn(b"MY_DATA", res.get_data())
+        self.assertNotIn(b"INNER_DATA", res.get_data())
+        with open(os.path.join(self.storage_dir, "mine.sql")) as f:
+            self.assertEqual(f.read(), "MY_DATA")
+        with open(os.path.join(self.storage_dir, "inner", "mine.sql")) as f:
+            self.assertEqual(f.read(), "INNER_DATA")
+
+
+class TestDotDotThroughRealFolderStillWorks(
+        _SubdirMixin, BaseTestGenerator):
+    """A ".." after a real folder is followed as before."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        self._call('rename', "/sub/../mine.sql", "renamed.sql")
+        self.assertTrue(os.path.exists(
+            os.path.join(self.storage_dir, "renamed.sql")))
+        self._call('delete', "/sub/../renamed.sql")
+        self.assertFalse(os.path.exists(
+            os.path.join(self.storage_dir, "renamed.sql")))
+
+
+class TestDesktopDownloadRefusesFifo(_DownloadMixin, BaseTestGenerator):
+    """In desktop mode a FIFO is refused rather than opened, which would
+    block the request until something wrote to it."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if not hasattr(os, 'mkfifo'):
+            self.skipTest("No FIFOs on this platform")
+        import threading
+        fifo = os.path.join(self.storage_dir, "pipe")
+        os.mkfifo(fifo)
+        config.SERVER_MODE = False
+
+        result = {}
+
+        def download():
+            result['res'] = self._download(fifo, '')
+
+        worker = threading.Thread(target=download, daemon=True)
+        worker.start()
+        worker.join(5)
+        if worker.is_alive():
+            # Release the blocked open so the worker can finish.
+            os.close(os.open(fifo, os.O_WRONLY | os.O_NONBLOCK))
+            worker.join(5)
+            self.fail("download blocked on the FIFO")
+        status, body = result['res']
+        self.assertNotEqual(status, 200)
+
+
+class TestDesktopDownloadFollowsSymlinkToFile(
+        _DownloadMixin, BaseTestGenerator):
+    """In desktop mode a symbolic link to a regular file is still
+    downloaded."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if sys.platform == "win32":
+            self.skipTest("Symlink semantics differ on Windows")
+        link = os.path.join(self.storage_dir, "link.sql")
+        os.symlink(os.path.join(self.storage_dir, "mine.sql"), link)
+        config.SERVER_MODE = False
+        self.assertEqual(self._download(link, ''), (200, b"MY_DATA"))
+
+
+class TestOpenParentBeneathDescriptors(BaseTestGenerator):
+    """_open_parent_beneath() keeps open only the ancestor directories a
+    later ".." in the path can still need, so a deep path doesn't exhaust
+    the process's file descriptors, and ".." still never goes above the
+    storage directory."""
+
+    scenarios = [
+        ('deep path within a lowered descriptor limit',
+         dict(check='rlimit')),
+        ('at most two walker descriptors open at once',
+         dict(check='bound')),
+        ('".." near the end of a deep path', dict(check='dotdot')),
+        ('".." above the storage directory after a deep walk',
+         dict(check='above_root')),
+        ('interleaved ".." segments', dict(check='interleaved')),
+        ('".." after a trimmed directory', dict(check='trimmed_dotdot')),
+        ('a very long path is refused in linear time',
+         dict(check='linear')),
+    ]
+
+    DEPTH = 100
+
+    def setUp(self):
+        if not hasattr(os, 'O_DIRECTORY') or sys.platform == 'win32':
+            self.skipTest("The descriptor walk is POSIX only")
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root, ignore_errors=True)
+        self.names = ['d%d' % i for i in range(self.DEPTH)]
+        os.makedirs(os.path.join(self.root, *self.names))
+
+    def _walk(self, *parts):
+        from pgadmin.misc.file_manager import _open_parent_beneath
+        dir_fd, leaf = _open_parent_beneath(
+            self.root, os.path.join(self.root, *parts))
+        self.addCleanup(os.close, dir_fd)
+        return dir_fd, leaf
+
+    def runTest(self):
+        getattr(self, '_check_' + self.check)()
+
+    @staticmethod
+    def _open_fds():
+        for fd_dir in ('/proc/self/fd', '/dev/fd'):
+            if os.path.isdir(fd_dir):
+                return len(os.listdir(fd_dir))
+        return None
+
+    def _check_rlimit(self):
+        import resource
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        in_use = self._open_fds()
+        if in_use is None:
+            self.skipTest("Can't count open file descriptors here")
+        self.addCleanup(resource.setrlimit, resource.RLIMIT_NOFILE,
+                        (soft, hard))
+        # Room for everything already open, but not for one descriptor
+        # per directory of the path.
+        limit = in_use + self.DEPTH // 2
+        if hard != resource.RLIM_INFINITY and limit > hard:
+            self.skipTest("The hard descriptor limit is too low")
+        resource.setrlimit(resource.RLIMIT_NOFILE, (limit, hard))
+        dir_fd, leaf = self._walk(*self.names, 'file.sql')
+        self.assertEqual(leaf, 'file.sql')
+
+    def _check_bound(self):
+        opened, peak = set(), [0]
+        real_open, real_close = os.open, os.close
+
+        def tracking_open(*args, **kwargs):
+            fd = real_open(*args, **kwargs)
+            opened.add(fd)
+            peak[0] = max(peak[0], len(opened))
+            return fd
+
+        def tracking_close(fd):
+            opened.discard(fd)
+            real_close(fd)
+
+        with patch('os.open', tracking_open), \
+                patch('os.close', tracking_close):
+            self._walk(*self.names[:60], 'file.sql')
+        self.assertLessEqual(peak[0], 2)
+
+    def _check_dotdot(self):
+        dir_fd, leaf = self._walk(*self.names, os.pardir, os.pardir,
+                                  'file.sql')
+        self.assertEqual(leaf, 'file.sql')
+        self.assertEqual(
+            os.fstat(dir_fd).st_ino,
+            os.stat(os.path.join(self.root,
+                                 *self.names[:-2])).st_ino)
+
+    def _check_above_root(self):
+        from pgadmin.misc.file_manager import _open_parent_beneath
+        path = os.path.join(self.root, *self.names[:3],
+                            *([os.pardir] * 4), 'file.sql')
+        before = self._open_fds()
+        with self.assertRaises(PermissionError):
+            _open_parent_beneath(self.root, path)
+        # Nothing the walk opened is left open.
+        self.assertEqual(self._open_fds(), before)
+
+    def _check_interleaved(self):
+        # Going down, back up and down again through the same names ends
+        # in the same directory as the path's text.
+        dir_fd, leaf = self._walk('d0', 'd1', os.pardir, 'd1', 'd2',
+                                  os.pardir, os.pardir, os.pardir, 'd0',
+                                  'd1', 'file.sql')
+        self.assertEqual(leaf, 'file.sql')
+        self.assertEqual(os.fstat(dir_fd).st_ino,
+                         os.stat(os.path.join(self.root, 'd0',
+                                              'd1')).st_ino)
+
+    def _check_trimmed_dotdot(self):
+        # d0/d1/d2/d3/../d4/.. ends in d0/d1/d2. By the first "..", the
+        # walk holds only d2 and d3, having let go of the storage
+        # directory, d0 and d1, and by the second only d2 and d4.
+        os.mkdir(os.path.join(self.root, 'd0', 'd1', 'd2', 'd4'))
+        dir_fd, leaf = self._walk('d0', 'd1', 'd2', 'd3', os.pardir, 'd4',
+                                  os.pardir, 'file.sql')
+        self.assertEqual(leaf, 'file.sql')
+        self.assertEqual(os.fstat(dir_fd).st_ino,
+                         os.stat(os.path.join(self.root, 'd0', 'd1',
+                                              'd2')).st_ino)
+
+    def _check_linear(self):
+        import time
+        from pgadmin.misc.file_manager import _open_parent_beneath
+        # A long path from a request is refused at its first missing
+        # directory; working out which ancestors to keep must not cost
+        # time proportional to the square of its length first.
+        parts = ['missing'] + [os.pardir, 'x'] * 25000 + ['file.sql']
+        start = time.monotonic()
+        with self.assertRaises(FileNotFoundError):
+            _open_parent_beneath(self.root, os.path.join(self.root, *parts))
+        self.assertLess(time.monotonic() - start, 2)

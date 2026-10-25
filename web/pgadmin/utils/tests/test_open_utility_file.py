@@ -25,6 +25,7 @@ from unittest.mock import patch
 import config
 from pgadmin.utils import open_utility_file, _is_refused_leaf_symlink, \
     filename_with_file_manager_path
+from pgadmin.misc.file_manager import Filemanager
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -83,9 +84,12 @@ class _UtilityFileMixin:
 
     def _call(self, name, plant_link_target=None):
         def plant(storage_dir, file, skip=False):
+            # Stands in for check_access_permission(), so returns the path
+            # to act on as it does.
             if plant_link_target is not None:
                 os.symlink(plant_link_target,
                            os.path.join(storage_dir, file.lstrip('/')))
+            return Filemanager.get_abs_path(storage_dir, file)
 
         with patch('pgadmin.utils.get_storage_directory',
                    return_value=self.storage), \
@@ -463,6 +467,7 @@ class TestParentSymlinkTouchRefused(_UtilityFileMixin, BaseTestGenerator):
         def swap(storage_dir, file, skip=False):
             os.rename(sub, sub + '.moved')
             os.symlink(self.outside, sub)
+            return Filemanager.get_abs_path(storage_dir, file)
 
         with patch('pgadmin.misc.file_manager.Filemanager.'
                    'check_access_permission', side_effect=swap), \
