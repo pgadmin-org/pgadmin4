@@ -67,6 +67,7 @@ class _StorageMixin:
         with self.app.test_request_context(), \
                 patch.dict(self.app.config, {'SERVER_MODE': server_mode}), \
                 patch.object(self.app, 'PGADMIN_RUNTIME', False), \
+                patch.object(config, 'SERVER_MODE', True), \
                 patch.object(config, 'SHARED_STORAGE', self.shared_storage), \
                 patch('pgadmin.utils.get_storage_directory',
                       side_effect=self._storage_dir):
@@ -227,6 +228,7 @@ class ConnectionParamsToEnvPathRefusalTestCase(_StorageMixin,
         with self.app.test_request_context(), \
                 patch.dict(self.app.config, {'SERVER_MODE': True}), \
                 patch.object(self.app, 'PGADMIN_RUNTIME', False), \
+                patch.object(config, 'SERVER_MODE', True), \
                 patch.object(config, 'SHARED_STORAGE', self.shared_storage), \
                 patch('pgadmin.utils.get_storage_directory',
                       side_effect=self._storage_dir):
@@ -391,6 +393,7 @@ class CompleteFilePathWriteTargetTestCase(_StorageMixin, BaseTestGenerator):
                                              'SHARED_STORAGE':
                                              self.shared_storage}), \
                 patch.object(self.app, 'PGADMIN_RUNTIME', False), \
+                patch.object(config, 'SERVER_MODE', True), \
                 patch.object(config, 'SHARED_STORAGE', self.shared_storage), \
                 patch('pgadmin.utils.get_storage_directory',
                       side_effect=self._storage_dir):
