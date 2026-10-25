@@ -219,15 +219,19 @@ def get_test_modules(arguments):
     global driver, app_starter, handle_cleanup
 
     if not config.SERVER_MODE:
-        # following test cases applicable only for server mode
+        # following test cases applicable only for server mode; each entry
+        # excludes that module only, not others whose names start with it
         exclude_pkgs.extend([
             "browser.tests.test_change_password",
+            "browser.tests.test_change_password_invalidates_sessions",
             "browser.tests.test_gravatar_image_display",
             "browser.tests.test_login",
             "browser.tests.test_logout",
             "browser.tests.test_reset_password",
+            "browser.tests.test_reset_password_auth_source",
             "browser.tests.test_ldap_login",
             "browser.tests.test_ldap_with_mocking",
+            "authenticate.tests.test_shared_email_lookup",
         ])
     if arguments['exclude'] is not None:
         exclude_pkgs += arguments['exclude'].split(',')

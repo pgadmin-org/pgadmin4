@@ -186,6 +186,44 @@ def _find_blueprint():
 current_blueprint = LocalProxy(_find_blueprint)
 
 
+class PgAdminUserDatastore(SQLAlchemyUserDatastore):
+    def find_user(self, case_insensitive=False, **kwargs):
+        """Prefer the internal account when looking up by email or username.
+
+        Neither is unique on its own: accounts from several auth sources may
+        share them. Flask-Security looks the account up this way to check
+        the password at login and to validate a password recovery request,
+        both of which only make sense for an internal account, so find that
+        one if there is one, rather than whichever row comes first.
+
+        Ignoring case, several internal accounts may match too: prefer the
+        one matching exactly, then the oldest.
+
+        A missing email or username identifies no account. Compared to None,
+        the column matches every account without one, Flask-Security's own
+        lookup included, so none is looked up.
+        """
+        if len(kwargs) == 1 and next(iter(kwargs)) in ('email', 'username'):
+            attr, value = next(iter(kwargs.items()))
+            if value is None:
+                return None
+            column = getattr(self.user_model, attr)
+            if case_insensitive:
+                match = db.func.lower(column) == db.func.lower(value)
+            else:
+                match = column == value
+            user = self.user_model.query.filter(
+                match, self.user_model.auth_source == INTERNAL
+            ).order_by(
+                db.case((column == value, 0), else_=1),
+                self.user_model.id
+            ).first()
+            if user is not None:
+                return user
+        return super().find_user(case_insensitive=case_insensitive,
+                                 **kwargs)
+
+
 def _remember_authenticated_user():
     """Stash the username so a logout within this request doesn't lose it."""
     if current_app.config.get('LOG_AUTHENTICATED_USER') and \
@@ -578,7 +616,7 @@ def create_app(app_name=None):
         paths.init_app()
 
     # Setup Flask-Security
-    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    user_datastore = PgAdminUserDatastore(db, User, Role)
     security = Security(None, user_datastore)
 
     ##########################################################################

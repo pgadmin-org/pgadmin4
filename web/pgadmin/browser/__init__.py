@@ -1060,11 +1060,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             form = form_class()
 
         if form.validate_on_submit():
-            # Check the Authentication source of the User
-            user = User.query.filter_by(
-                email=form.data['email'],
-                auth_source=INTERNAL
-            ).first()
+            # Check the Authentication source of the User. form.user is the
+            # internal account with this email (matched as Flask-Security
+            # does, ignoring case) if there is one.
+            user = form.user if form.user.auth_source == INTERNAL else None
 
             if user is None:
                 # If the user is not an internal user, raise the exception
@@ -1077,7 +1076,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                 has_error = True
             if not has_error:
                 try:
-                    send_reset_password_instructions(form.user)
+                    send_reset_password_instructions(user)
                 except SOCKETErrorException as e:
                     # Handle socket errors which are not
                     # covered by SMTPExceptions.
@@ -1142,6 +1141,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
     def reset_password(token):
         """View function that handles a reset password request."""
         expired, invalid, user = reset_password_token_status(token)
+
+        # Only an internal account has a password to reset.
+        if user is not None and user.auth_source != INTERNAL:
+            invalid, expired = True, False
 
         if invalid:
             do_flash(*get_message('INVALID_RESET_PASSWORD_TOKEN'))
