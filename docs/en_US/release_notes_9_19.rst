@@ -54,22 +54,32 @@ New features
   | `Issue #5691 <https://github.com/pgadmin-org/pgadmin4/issues/5691>`_ -  Close dialogs with the Escape key.
   | `Issue #6695 <https://github.com/pgadmin-org/pgadmin4/issues/6695>`_ -  Allow a byte order mark to be added to Query Tool result files.
   | `Issue #7167 <https://github.com/pgadmin-org/pgadmin4/issues/7167>`_ -  Allow dialogs such as Sort/Filter to be saved and closed with the Enter key.
+  | `Issue #8647 <https://github.com/pgadmin-org/pgadmin4/issues/8647>`_ -  Allow shift + click to extend the cell range selection in the Query Tool results grid.
   | `Issue #9057 <https://github.com/pgadmin-org/pgadmin4/issues/9057>`_ -  Support UNLOGGED partitioned tables correctly, which PostgreSQL 18 no longer allows to be created or altered.
   | `Issue #9064 <https://github.com/pgadmin-org/pgadmin4/issues/9064>`_ -  Add the PostgreSQL 18 pg_dump options to the Backup and Backup Server dialogs.
   | `Issue #9066 <https://github.com/pgadmin-org/pgadmin4/issues/9066>`_ -  Add the PostgreSQL 18 pg_restore options to the Restore dialog.
+  | `Issue #9212 <https://github.com/pgadmin-org/pgadmin4/issues/9212>`_ -  Show fill factor, TOAST tuple target and parallel workers in the table Properties panel.
+  | `Issue #9264 <https://github.com/pgadmin-org/pgadmin4/issues/9264>`_ -  Move the 'Returns a set?' option to the Definition tab in the Function dialog.
   | `Issue #9704 <https://github.com/pgadmin-org/pgadmin4/issues/9704>`_ -  Allow an OAuth2 claim to restrict which shared servers a user can see, configured through ``OAUTH2_SERVER_GROUP_CLAIM`` and ``OAUTH2_SERVER_GROUP_CLAIM_MAPPING``.
+  | `Issue #9975 <https://github.com/pgadmin-org/pgadmin4/issues/9975>`_ -  Allow the login page to be skipped when OAuth2 is the only authentication source, using ``OAUTH2_AUTO_LOGIN`` and ``OAUTH2_LOGOUT_URL``.
   | `Issue #10148 <https://github.com/pgadmin-org/pgadmin4/issues/10148>`_ -  Add support for managing pg_timetable chains and tasks.
   | `Issue #10249 <https://github.com/pgadmin-org/pgadmin4/issues/10249>`_ -  Replace free-text Password Exec Commands in server mode with an administrator-defined allowlist, ``SERVER_PASSEXEC_COMMANDS``. Commands run without a shell, with a reduced environment, and receive the pgAdmin user's identity in ``PGADMIN_PASSEXEC_*`` variables; users of a shared server inherit the owner's command by default.
   | `Issue #10473 <https://github.com/pgadmin-org/pgadmin4/issues/10473>`_ -  Add a macOS 26 layered app icon with dark, clear and tinted variants.
+  | `Issue #10503 <https://github.com/pgadmin-org/pgadmin4/issues/10503>`_ -  Add numpad zoom shortcuts to the Desktop View menu.
 
 Housekeeping
 ************
 
+  | `Issue #5369 <https://github.com/pgadmin-org/pgadmin4/issues/5369>`_ -  Clarify the configuration files documentation.
   | `Issue #9230 <https://github.com/pgadmin-org/pgadmin4/issues/9230>`_ -  Rename the server 'Change Password' option to 'Change Server Password', and the user menu option to 'Change pgAdmin Password', so the two can no longer be confused.
+  | `Issue #9331 <https://github.com/pgadmin-org/pgadmin4/issues/9331>`_ -  Remove unused Google API documents, Babel locale data and packaging tools from the packages.
+  | `Issue #9524 <https://github.com/pgadmin-org/pgadmin4/issues/9524>`_ -  Document running the container with rootless Podman, and the ``PUID`` and ``PGID`` environment variables.
   | `Issue #10363 <https://github.com/pgadmin-org/pgadmin4/issues/10363>`_ -  Enforce ``--immutable`` on every yarn install, in CI and the release builds, to harden the supply chain.
   | `Issue #10546 <https://github.com/pgadmin-org/pgadmin4/issues/10546>`_ -  Fix the flaky ``test_windows_pty_failures`` test counting psql output from other tests.
   | `Issue #10552 <https://github.com/pgadmin-org/pgadmin4/issues/10552>`_ -  Add a test for Reset discarding pending SQL editor values in dialogs.
   | `Issue #10553 <https://github.com/pgadmin-org/pgadmin4/issues/10553>`_ -  Make the server tests restore the shared test fixture after themselves.
+  | `Issue #10601 <https://github.com/pgadmin-org/pgadmin4/issues/10601>`_ -  Remove the dead tree ``loadfail`` handler from ``browser.js``.
+  | `Issue #10602 <https://github.com/pgadmin-org/pgadmin4/issues/10602>`_ -  Fix the Jest ``addNewDatagridRow`` helper so schema UI specs actually add a row.
 
 Bug fixes
 *********
@@ -78,15 +88,31 @@ Bug fixes
   | `Issue #6090 <https://github.com/pgadmin-org/pgadmin4/issues/6090>`_ -  Refresh a stale server connection manager when a server id is reused, so one user's session can no longer pick up settings from another server.
   | `Issue #6231 <https://github.com/pgadmin-org/pgadmin4/issues/6231>`_ -  Generate a single GRANT statement for roles with identical privileges.
   | `Issue #6481 <https://github.com/pgadmin-org/pgadmin4/issues/6481>`_ -  Fix index and constraint columns not being shown when their names require quoting.
+  | `Issue #6652 <https://github.com/pgadmin-org/pgadmin4/issues/6652>`_ -  Fix Schema Diff treating functions that differ only in OUT arguments or return type as unrelated objects.
+  | `Issue #6671 <https://github.com/pgadmin-org/pgadmin4/issues/6671>`_ -  Allow the emailed MFA code to be re-entered after an invalid code is entered.
   | `Issue #7232 <https://github.com/pgadmin-org/pgadmin4/issues/7232>`_ -  Fix the tab switching shortcuts not working whilst focus is inside the PSQL, Query, ERD or Schema Diff tools.
+  | `Issue #7612 <https://github.com/pgadmin-org/pgadmin4/issues/7612>`_ -  Fix the server context menu showing database options after the tree state is restored.
+  | `Issue #7619 <https://github.com/pgadmin-org/pgadmin4/issues/7619>`_ -  Fix Query Tool autocomplete running as the wrong user, or failing, after changing the connection to a different user.
+  | `Issue #8015 <https://github.com/pgadmin-org/pgadmin4/issues/8015>`_ -  Re-sort renamed server groups and other nodes in the Object Explorer instead of waiting for a reload.
+  | `Issue #8144 <https://github.com/pgadmin-org/pgadmin4/issues/8144>`_ -  Connect the server when changing the Query Tool connection after it was disconnected.
   | `Issue #8529 <https://github.com/pgadmin-org/pgadmin4/issues/8529>`_ -  Rewrite the container entrypoint using bash features, and pass values to the embedded Python safely, so an email address containing an apostrophe works and a validation error stops the container rather than passing silently.
   | `Issue #8664 <https://github.com/pgadmin-org/pgadmin4/issues/8664>`_ -  Fix debugger messages from successive steps running together on one line.
   | `Issue #8991 <https://github.com/pgadmin-org/pgadmin4/issues/8991>`_ -  Fix BEGIN, COMMIT and ROLLBACK silently failing in the Query Tool under server cursor mode.
+  | `Issue #9130 <https://github.com/pgadmin-org/pgadmin4/issues/9130>`_ -  Select the adjacent tab when the active tab is closed, rather than the left-most.
   | `Issue #9450 <https://github.com/pgadmin-org/pgadmin4/issues/9450>`_ -  Allow roles holding ADMIN OPTION to manage Group Role membership.
+  | `Issue #9603 <https://github.com/pgadmin-org/pgadmin4/issues/9603>`_ -  Restore the per-tab toolbar options when Query Tool tabs are restored on relaunch.
+  | `Issue #9624 <https://github.com/pgadmin-org/pgadmin4/issues/9624>`_ -  Fix a database's label staying at '[Disconnecting...]' when disconnecting it fails.
+  | `Issue #9630 <https://github.com/pgadmin-org/pgadmin4/issues/9630>`_ -  Fix the parameter value dropdown keeping stale options when the parameter name is changed.
   | `Issue #9672 <https://github.com/pgadmin-org/pgadmin4/issues/9672>`_ -  Fix View/Edit Data not handling generated columns properly.
+  | `Issue #9784 <https://github.com/pgadmin-org/pgadmin4/issues/9784>`_ -  Fix modal dialogs losing keyboard focus to a tool iframe loading in the background.
   | `Issue #9798 <https://github.com/pgadmin-org/pgadmin4/issues/9798>`_ -  Fix the collation and ctype query error for databases with a non-default LC_COLLATE.
   | `Issue #9814 <https://github.com/pgadmin-org/pgadmin4/issues/9814>`_ -  Disable the SSH agent when an SSH tunnel identity file or password is provided.
+  | `Issue #9818 <https://github.com/pgadmin-org/pgadmin4/issues/9818>`_ -  Keep the AI Assistant's intermediate responses instead of replacing them with placeholder messages.
   | `Issue #9836 <https://github.com/pgadmin-org/pgadmin4/issues/9836>`_ -  Fix the CREATE TABLE script ignoring the UNLOGGED attribute of a partition.
+  | `Issue #9838 <https://github.com/pgadmin-org/pgadmin4/issues/9838>`_ -  Fix formatting a view's SQL being treated as a column change that drops and re-creates the view.
+  | `Issue #9865 <https://github.com/pgadmin-org/pgadmin4/issues/9865>`_ -  Fix modal dialogs being hidden from assistive technology by ``aria-hidden`` on the application root.
+  | `Issue #9890 <https://github.com/pgadmin-org/pgadmin4/issues/9890>`_ -  Fix ERD tables becoming immovable after a Shift-drag selection.
+  | `Issue #9921 <https://github.com/pgadmin-org/pgadmin4/issues/9921>`_ -  Fix Azure and Google authentication in the cloud deployment wizard.
   | `Issue #9984 <https://github.com/pgadmin-org/pgadmin4/issues/9984>`_ -  Report an unreachable external configuration database, or a malformed ``CONFIG_DATABASE_URI``, as a failed check rather than an unhandled exception.
   | `Issue #10031 <https://github.com/pgadmin-org/pgadmin4/issues/10031>`_ -  Fix Query Tool tabs running their query automatically after a session restore.
   | `Issue #10103 <https://github.com/pgadmin-org/pgadmin4/issues/10103>`_ -  Exclude non-editable alias and expression columns when saving edited rows in the Query Tool.
@@ -98,6 +124,7 @@ Bug fixes
   | `Issue #10273 <https://github.com/pgadmin-org/pgadmin4/issues/10273>`_ -  Fix the dashboard transactions per second graph being wrong for refresh rates other than one second.
   | `Issue #10292 <https://github.com/pgadmin-org/pgadmin4/issues/10292>`_ -  Fix Schema Diff scripts that convert a column to or from SERIAL.
   | `Issue #10301 <https://github.com/pgadmin-org/pgadmin4/issues/10301>`_ -  Drop the scaffolding default partition after Schema Diff rebuilds a partitioned table.
+  | `Issue #10310 <https://github.com/pgadmin-org/pgadmin4/issues/10310>`_ -  Fix the Statistics node failing to list its children in Object Explorer.
   | `Issue #10334 <https://github.com/pgadmin-org/pgadmin4/issues/10334>`_ -  Add Caddy reverse proxy configuration examples to the documentation.
   | `Issue #10347 <https://github.com/pgadmin-org/pgadmin4/issues/10347>`_ -  Fix the selected UI language not persisting beyond the request that set it in server mode.
   | `Issue #10348 <https://github.com/pgadmin-org/pgadmin4/issues/10348>`_ -  Fix OpenAI streaming tool calls being split into two entries in the AI Assistant.
@@ -132,3 +159,15 @@ Bug fixes
   | `Issue #10550 <https://github.com/pgadmin-org/pgadmin4/issues/10550>`_ -  Fix changing an identity column's START value also restarting its sequence.
   | `Issue #10551 <https://github.com/pgadmin-org/pgadmin4/issues/10551>`_ -  Fix the cursor jumping to the start of SQL fields in dialogs after a quick edit and undo.
   | `Issue #10554 <https://github.com/pgadmin-org/pgadmin4/issues/10554>`_ -  Fix column properties reporting an arbitrary parent for columns merged from several parents.
+  | `Issue #10573 <https://github.com/pgadmin-org/pgadmin4/issues/10573>`_ -  Fix Query Tool state save/restore failing on installations with a legacy ``SECRET_KEY``.
+  | `Issue #10584 <https://github.com/pgadmin-org/pgadmin4/issues/10584>`_ -  Preserve explicit 24-hour mode in date-time picker popups.
+  | `Issue #10597 <https://github.com/pgadmin-org/pgadmin4/issues/10597>`_ -  Fix Schema Diff treating a function whose input argument was renamed as two unrelated functions.
+  | `Issue #10598 <https://github.com/pgadmin-org/pgadmin4/issues/10598>`_ -  Keep the Query Tool execute options when its transaction is re-created.
+  | `Issue #10600 <https://github.com/pgadmin-org/pgadmin4/issues/10600>`_ -  Revert the Query Tool execute option checkboxes when changing an option fails.
+  | `Issue #10603 <https://github.com/pgadmin-org/pgadmin4/issues/10603>`_ -  Fix the Query Tool not re-running the query after reconnecting at a password prompt.
+  | `Issue #10604 <https://github.com/pgadmin-org/pgadmin4/issues/10604>`_ -  Report a failed autocomplete reconnect in the Query Tool instead of ignoring it.
+  | `Issue #10607 <https://github.com/pgadmin-org/pgadmin4/issues/10607>`_ -  Fix Query Tool autocomplete objects being shared between sessions that use the same transaction id.
+  | `Issue #10612 <https://github.com/pgadmin-org/pgadmin4/issues/10612>`_ -  Free Query Tool autocomplete objects when an idle session's connections are released.
+  | `Issue #10613 <https://github.com/pgadmin-org/pgadmin4/issues/10613>`_ -  Reconnect a lost Query Tool connection as the user and role it was changed to.
+  | `Issue #10614 <https://github.com/pgadmin-org/pgadmin4/issues/10614>`_ -  Keep external pages out of the desktop runtime's privileged windows and confine non-prompted downloads to the downloads directory.
+  | `Issue #10618 <https://github.com/pgadmin-org/pgadmin4/issues/10618>`_ -  Keep Query Tool execution disabled until a restored tab's execute options reach the server.
