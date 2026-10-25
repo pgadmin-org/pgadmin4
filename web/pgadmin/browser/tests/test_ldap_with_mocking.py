@@ -15,6 +15,7 @@ from regression.test_setup import config_data
 from pgadmin.authenticate.registry import AuthSourceRegistry
 from unittest.mock import patch
 from pgadmin.utils.constants import LDAP, INTERNAL
+from pgadmin.model import db, User
 
 
 class LDAPLoginMockTestCase(BaseTestGenerator):
@@ -66,10 +67,22 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
             password='ldap-only-password',
             expect_login=False
         )),
+        # A successful login through another source must not reset the
+        # failed login attempts of the internal account with that username,
+        # or such logins could be used to keep guessing its password.
+        ('LDAP login keeps the internal account\'s failed attempts', dict(
+            auth_source=[LDAP, INTERNAL],
+            auto_create_user=True,
+            username=config_data[
+                'pgAdmin4_login_credentials']['login_username'],
+            password='ldap-only-password',
+            internal_attempts=1
+        )),
     ]
 
     ldap_bind = True
     expect_login = True
+    internal_attempts = None
 
     @classmethod
     def setUpClass(cls):
@@ -94,6 +107,30 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
         app_config.LDAP_BIND_USER = None
         app_config.LDAP_BIND_PASSWORD = None
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = LDAP
+        if self.internal_attempts is not None:
+            self.addCleanup(self._delete_ldap_account)
+            self.addCleanup(self._set_internal_attempts, 0)
+            self._set_internal_attempts(self.internal_attempts)
+
+    def _delete_ldap_account(self):
+        # The login created the LDAP account and rows of its own, such as a
+        # server group; delete_user() removes them all, so that a user
+        # created later with the same id does not inherit them.
+        from pgadmin.tools.user_management import delete_user
+        with self.app.app_context():
+            for user in User.query.filter_by(username=self.username,
+                                             auth_source=LDAP).all():
+                status, msg = delete_user(user.id)
+                self.assertTrue(status, msg)
+
+    def _internal_user(self):
+        return User.query.filter_by(username=self.username,
+                                    auth_source=INTERNAL).first()
+
+    def _set_internal_attempts(self, attempts):
+        with self.app.app_context():
+            self._internal_user().login_attempts = attempts
+            db.session.commit()
 
     @patch.object(AuthSourceRegistry._registry[LDAP], 'connect',
                   return_value=[True, "Done"])
@@ -117,6 +154,10 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
                 self.assertIsNone(
                     sess.get('_user_id'),
                     'An LDAP login must not log in an internal account')
+        if self.internal_attempts is not None:
+            with self.app.app_context():
+                self.assertEqual(self._internal_user().login_attempts,
+                                 self.internal_attempts)
 
     def tearDown(self):
         self.tester.logout()

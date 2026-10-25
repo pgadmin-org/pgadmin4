@@ -10,10 +10,15 @@
 """Verify, through the login endpoint, that a Kerberos login is logged in
 to the account of the authenticated principal only.
 
-With internal authentication listed before Kerberos, Flask-Security's
-validation sets form.user to the account whose email was typed in the form,
-although its password does not match. A Kerberos user who types another
-Kerberos user's principal must still be logged in as themselves.
+A Kerberos user who types another Kerberos user's principal must still be
+logged in as themselves.
+
+A POST carrying a password does not try Kerberos at all, so that a wrong
+internal password is always counted: a Kerberos login posts none. Before
+that, with internal authentication listed before Kerberos, such a POST let
+Flask-Security's validation set form.user to the account whose email was
+typed, although its password did not match; that the sources still log in
+only their own account is checked in test_auth_source_user_binding.
 
 The Kerberos ticket check is stubbed out, so neither GSSAPI nor the
 Kerberos blueprint is needed.
@@ -39,7 +44,11 @@ class KerberosLoginAuthSourceTestCase(BaseTestGenerator):
 
     scenarios = [
         ('Kerberos user types another Kerberos user\'s principal',
-         dict(auth_source=[INTERNAL, KERBEROS])),
+         dict(auth_source=[INTERNAL, KERBEROS], password='',
+              expect=AUTHENTICATED)),
+        ('A POST with a password does not try Kerberos',
+         dict(auth_source=[INTERNAL, KERBEROS], password='any-password',
+              expect=None)),
     ]
 
     @classmethod
@@ -69,13 +78,16 @@ class KerberosLoginAuthSourceTestCase(BaseTestGenerator):
         with patch.dict(source.authenticate.__globals__,
                         {'KERBEROS_AUTH_AVAILABLE': True}), \
                 patch.object(source, 'negotiate_start',
-                             return_value=[True, context]):
-            self.tester.login(TYPED, 'any-password', True,
+                             return_value=[True, context]) as negotiate:
+            self.tester.login(TYPED, self.password, True,
                               headers={'Authorization': 'Negotiate CTOKEN'})
 
-        with self.app.app_context():
-            expected = db.session.get(User, self.authenticated_uid)
-            expected_id = expected.get_id()
+        expected_id = None
+        if self.expect:
+            with self.app.app_context():
+                expected = db.session.get(User, self.authenticated_uid)
+                expected_id = expected.get_id()
+        self.assertEqual(negotiate.called, bool(self.expect))
         with self.tester.session_transaction() as sess:
             self.assertEqual(sess.get('_user_id'), expected_id)
 

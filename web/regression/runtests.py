@@ -231,6 +231,9 @@ def get_test_modules(arguments):
             "browser.tests.test_reset_password_auth_source",
             "browser.tests.test_ldap_login",
             "browser.tests.test_ldap_with_mocking",
+            "authenticate.tests.test_case_variant_accounts",
+            "authenticate.tests.test_internal_login_attempts",
+            "authenticate.tests.test_locked_internal_account",
             "authenticate.tests.test_shared_email_lookup",
         ])
     if arguments['exclude'] is not None:

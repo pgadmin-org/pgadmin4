@@ -23,9 +23,9 @@ from flask_security.utils import logout_user, config_value
 from flask_login import current_user
 from flask_socketio import disconnect, ConnectionRefusedError
 
-from pgadmin.model import db, User
+from pgadmin.model import db
 from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP,\
-    MessageType
+    WEBSERVER, MessageType
 import pgadmin.utils as pga_utils
 from pgadmin.authenticate.registry import AuthSourceRegistry
 
@@ -134,6 +134,41 @@ def login():
         return _login()
 
 
+def _locked_message():
+    return gettext('Your account is locked. Please contact the '
+                   'Administrator.')
+
+
+def _locked_or_failed_message():
+    return gettext('Incorrect username or password. If you sign in with a '
+                   'pgAdmin account, it may be locked; please contact the '
+                   'Administrator.')
+
+
+def _count_failed_login(user):
+    """Count a failed login against the internal account user, and return
+    the warning about the attempts left, or that the account is now
+    locked, if there is a limit."""
+    if config.MAX_LOGIN_ATTEMPTS <= 0:
+        return None
+    user.login_attempts += 1
+    # Lock now rather than at the next login: User.is_active depends on it.
+    user.locked = user.login_attempts >= config.MAX_LOGIN_ATTEMPTS > 0
+    db.session.commit()
+    if user.locked:
+        return _locked_message()
+    left_attempts = config.MAX_LOGIN_ATTEMPTS - user.login_attempts
+    if left_attempts > 1:
+        return gettext('{0} more attempts remaining.').format(left_attempts)
+    return gettext('{0} more attempt remaining.').format(left_attempts)
+
+
+def _refuse_locked_account():
+    flash(_locked_message(), MessageType.WARNING)
+    logout_user()
+    return redirect(pga_utils.get_safe_post_logout_redirect())
+
+
 def _login():
     """
     Internal authentication process locked by a mutex.
@@ -154,10 +189,14 @@ def _login():
 
     session['auth_source_manager'] = None
 
-    username = form.data['email']
-    user = User.query.filter_by(username=username,
-                                auth_source=INTERNAL).first()
+    # The internal account whose password Flask-Security checks: it is
+    # looked up the same way, by email and ignoring case.
+    user = _security.datastore.find_user(case_insensitive=True,
+                                         email=form.data['email'])
+    if user is not None and user.auth_source != INTERNAL:
+        user = None
 
+    internal_locked = False
     if user:
         if user.login_attempts >= config.MAX_LOGIN_ATTEMPTS > 0:
             user.locked = True
@@ -165,34 +204,36 @@ def _login():
             user.locked = False
         db.session.commit()
 
-        if user.login_attempts >= config.MAX_LOGIN_ATTEMPTS > 0:
-            flash(gettext('Your account is locked. Please contact the '
-                          'Administrator.'),
-                  MessageType.WARNING)
-            logout_user()
-            return redirect(pga_utils.get_safe_post_logout_redirect())
+        # The lock is that of the internal account: it only stops internal
+        # authentication, not a user of another source with the same name,
+        # whom anyone could otherwise lock out with wrong passwords. Those
+        # sources only ever log in an account of their own.
+        if user.locked and INTERNAL in auth_obj.auth_sources:
+            auth_obj.auth_sources.remove(INTERNAL)
+            current_app.logger.info(
+                'Internal authentication skipped for %s: the account is '
+                'locked.', user.email)
+            internal_locked = True
+            # Internal authentication is not tried, so nothing is counted.
+            user = None
+            if not auth_obj.auth_sources:
+                return _refuse_locked_account()
+
+    # Without internal authentication, the login says nothing about the
+    # internal account's password: count nothing against it.
+    if INTERNAL not in auth_obj.auth_sources:
+        user = None
 
     # Validate the user
     if not auth_obj.validate():
         for field in form.errors:
             flash_login_attempt_error = None
             if user and field in config.LOGIN_ATTEMPT_FIELDS:
-                if config.MAX_LOGIN_ATTEMPTS > 0:
-                    user.login_attempts += 1
-                    left_attempts = \
-                        config.MAX_LOGIN_ATTEMPTS - user.login_attempts
-                    if left_attempts > 1:
-                        flash_login_attempt_error = \
-                            gettext('{0} more attempts remaining.'.
-                                    format(left_attempts))
-                    else:
-                        flash_login_attempt_error = \
-                            gettext('{0} more attempt remaining.'.
-                                    format(left_attempts))
-                db.session.commit()
+                flash_login_attempt_error = _count_failed_login(user)
             for error in form.errors[field]:
                 if flash_login_attempt_error:
-                    error = error + flash_login_attempt_error
+                    error = '{0} {1}'.format(error,
+                                             flash_login_attempt_error)
                     flash_login_attempt_error = None
                 flash(error, MessageType.WARNING)
 
@@ -216,7 +257,9 @@ def _login():
 
         session['auth_source_manager'] = current_auth_obj
 
-        if user:
+        # user is the internal account looked up above; only an internal
+        # login proves its password, so only that resets its failed attempts.
+        if user and current_auth_obj['current_source'] == INTERNAL:
             user.login_attempts = 0
         db.session.commit()
 
@@ -228,6 +271,20 @@ def _login():
     elif 'oauth2_button' in request.form and not isinstance(msg, str):
         return msg
     session.pop('oauth2_current_client', None)
+    # The typed password is never checked against the locked internal
+    # account, and the message is the same whatever it is: telling the
+    # owner of the password that the account is locked would let anyone
+    # guess its password, uncounted.
+    if internal_locked:
+        msg = _locked_or_failed_message()
+    # No source authenticated the user. With a source other than internal
+    # listed, the form passed validation above whatever the internal
+    # password, so the failed login has not been counted yet.
+    if user:
+        attempts_msg = _count_failed_login(user)
+        if attempts_msg:
+            msg = '{0} {1}'.format(msg, attempts_msg) if msg \
+                else attempts_msg
     flash(msg, MessageType.ERROR)
     form_class = _security.forms.get('login_form').cls
     form = form_class()
@@ -262,8 +319,8 @@ class AuthSourceManager:
         return res
 
     def update_auth_sources(self):
-        # Only mutate the ordered list of auth sources when a user explicitly
-        # selected an auth method on the login form.
+        # Only mutate the ordered list of auth sources when the login form
+        # selects an auth method: with a button, or by typing a password.
         #
         # Without this guard, a plain internal login POST (email/password) can
         # incorrectly drop INTERNAL/LDAP and try OAUTH2 first, which then fails
@@ -271,17 +328,27 @@ class AuthSourceManager:
         if request.method != 'POST':
             return
 
-        if 'internal_button' in request.form:
-            for auth_src in [KERBEROS, OAUTH2]:
-                if auth_src in self.auth_sources:
-                    self.auth_sources.remove(auth_src)
-            return
-
+        # The OAuth2 buttons are in the login form, so they post whatever
+        # password was typed in it: the button decides.
         if 'oauth2_button' in request.form:
             if INTERNAL in self.auth_sources:
                 self.auth_sources.remove(INTERNAL)
             if LDAP in self.auth_sources:
                 self.auth_sources.remove(LDAP)
+            return
+
+        # A password is checked by internal or LDAP authentication only: a
+        # Kerberos or Webserver login posts none. Kerberos would otherwise
+        # answer a wrong password with its negotiate challenge before the
+        # failed login is counted against the internal account, and
+        # Webserver authentication would log in whoever the web server
+        # says the user is, letting a user with a Webserver identity guess
+        # another user's internal password, uncounted.
+        if 'internal_button' in request.form or \
+                request.form.get('password'):
+            for auth_src in [KERBEROS, OAUTH2, WEBSERVER]:
+                if auth_src in self.auth_sources:
+                    self.auth_sources.remove(auth_src)
             return
 
     def set_current_source(self, source):
