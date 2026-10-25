@@ -8,7 +8,8 @@
 ##########################################################################
 
 """Verify that setup.py add-user and add-external-user show the account
-they have just added, and only that account.
+they have just added, and only that account, and that they give it the
+right role.
 
 setup.py is run in a separate process against a copy of the test
 database, so the accounts in the test database are not changed.
@@ -17,6 +18,7 @@ database, so the accounts in the test database are not changed.
 import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -65,7 +67,7 @@ class SetupAddUserDisplayTestCase(BaseTestGenerator):
     def tearDown(self):
         shutil.rmtree(self.tmp_dir, ignore_errors=True)
 
-    def _run_setup(self, args):
+    def _run_setup(self, args, role_args=('--role', 'User')):
         # In testing mode create_app() uses the test database whatever
         # --sqlite-path says, so leave it to work on the copy.
         env = dict(os.environ)
@@ -73,8 +75,8 @@ class SetupAddUserDisplayTestCase(BaseTestGenerator):
         # Keep rich from wrapping the table columns.
         env['COLUMNS'] = '200'
         result = subprocess.run(
-            [sys.executable, SETUP_PY] + args +
-            ['--role', 'User', '--sqlite-path', self.sqlite_path],
+            [sys.executable, SETUP_PY] + args + list(role_args) +
+            ['--sqlite-path', self.sqlite_path],
             capture_output=True, text=True, timeout=120,
             cwd=os.path.dirname(SETUP_PY), env=env)
         output = result.stdout + result.stderr
@@ -97,3 +99,64 @@ class SetupAddUserDisplayTestCase(BaseTestGenerator):
         self.assertEqual(self._field(output, 'Username'), [username], output)
         self.assertEqual(self._field(output, 'auth_source'), [auth_source],
                          output)
+
+
+class SetupAddUserRoleTestCase(SetupAddUserDisplayTestCase):
+    """Without --role or --admin the user must get the 'User' role."""
+
+    scenarios = [
+        ('add-user without a role',
+         dict(args=['add-user', 'cli_role_new@example.com', 'cli_role_pass'],
+              role_args=[],
+              username='cli_role_new@example.com', auth_source='internal',
+              expected_role='User')),
+        ('add-external-user without a role',
+         dict(args=['add-external-user', 'cli_role_new',
+                    '--auth-source', 'ldap'],
+              role_args=[],
+              username='cli_role_new', auth_source='ldap',
+              expected_role='User')),
+        ('add-user with --admin',
+         dict(args=['add-user', 'cli_role_new@example.com', 'cli_role_pass'],
+              role_args=['--admin'],
+              username='cli_role_new@example.com', auth_source='internal',
+              expected_role='Administrator')),
+        ('add-external-user with --admin',
+         dict(args=['add-external-user', 'cli_role_new',
+                    '--auth-source', 'ldap'],
+              role_args=['--admin'],
+              username='cli_role_new', auth_source='ldap',
+              expected_role='Administrator')),
+        ('add-user with an unknown role',
+         dict(args=['add-user', 'cli_role_new@example.com', 'cli_role_pass'],
+              role_args=['--role', 'Nonexistent'],
+              username='cli_role_new@example.com', auth_source='internal',
+              expected_role=None)),
+        ('add-external-user with an unknown role',
+         dict(args=['add-external-user', 'cli_role_new',
+                    '--auth-source', 'ldap'],
+              role_args=['--role', 'Nonexistent'],
+              username='cli_role_new', auth_source='ldap',
+              expected_role=None)),
+    ]
+
+    def _roles(self):
+        conn = sqlite3.connect(self.sqlite_path)
+        try:
+            return [r[0] for r in conn.execute(
+                'SELECT r.name FROM user u '
+                'LEFT JOIN roles_users ru ON ru.user_id = u.id '
+                'LEFT JOIN role r ON r.id = ru.role_id '
+                'WHERE u.username = ? AND u.auth_source = ?',
+                (self.username, self.auth_source))]
+        finally:
+            conn.close()
+
+    def runTest(self):
+        output = self._run_setup(self.args, self.role_args)
+
+        if self.expected_role is None:
+            self.assertIn("Role 'Nonexistent' does not exists.", output)
+            self.assertEqual(self._roles(), [], output)
+        else:
+            self.assertEqual(self._roles(), [self.expected_role], output)

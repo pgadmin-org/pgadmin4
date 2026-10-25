@@ -325,7 +325,7 @@ class ManageUsers:
     def add_user(email: str, password: str,
                  admin: Annotated[Optional[bool],
                                   typer.Option("--admin")] = False,
-                 role: Optional[str] = None,
+                 role: Optional[str] = 'User',
                  active: Annotated[Optional[bool],
                                    typer.Option("--active/--inactive")] = True,
                  console: Optional[bool] = True,
@@ -351,7 +351,7 @@ class ManageUsers:
                           email: Optional[str] = None,
                           admin: Annotated[Optional[bool],
                                            typer.Option("--admin")] = False,
-                          role: Optional[str] = None,
+                          role: Optional[str] = 'User',
                           active: Annotated[Optional[bool],
                                             typer.Option(
                                                 "--active/--inactive")] = True,
