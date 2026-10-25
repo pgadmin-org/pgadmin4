@@ -267,6 +267,48 @@ _VALID_ON_ERROR = frozenset({'stop', 'ignore'})
 _VALID_LOG_VERBOSITY = frozenset({'default', 'verbose'})
 
 
+def _identifier_strings(value):
+    """The identifier strings columns_to_string() would feed to qtIdent()
+    for value, whatever JSON type it arrives as. A list yields its string
+    items and a dict its string keys (both are iterated by name), and a
+    bare string yields itself: columns_to_string() iterates a string
+    character by character, so a backslash anywhere in it still reaches
+    qtIdent().
+    """
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [n for n in value if isinstance(n, str)]
+    if isinstance(value, dict):
+        return [k for k in value if isinstance(k, str)]
+    return []
+
+
+def _identifier_has_unsafe_char(data):
+    """Whether any schema, table or column name in data contains a
+    backslash or a null byte.
+
+    These names are wrapped with qtIdent() and interpolated into psql's
+    \\copy command. qtIdent() doubles an embedded double quote but leaves
+    a backslash untouched, while psql's \\copy parser (strtokx) treats a
+    backslash inside a double-quoted identifier as an escape. A name
+    containing a backslash can therefore end the quoted identifier early
+    and break out of the command (CWE-78), the same class as the query
+    guarded by _is_query_parens_balanced(). A null byte can truncate the
+    C string so Python's validation and psql's parse disagree. pgAdmin
+    never needs to name an object containing either, so such a name is
+    rejected outright, as the query path does. The column lists reach the
+    \\copy command's FORCE_* options even for a query export, so they are
+    checked too.
+    """
+    names = _identifier_strings(data.get('schema')) + \
+        _identifier_strings(data.get('table'))
+    for key in ('columns', NOT_NULL_COLUMNS, NULL_COLUMNS,
+                'force_quote_columns'):
+        names += _identifier_strings(data.get(key))
+    return any('\\' in n or '\x00' in n for n in names)
+
+
 def _is_query_parens_balanced(query):
     """
     Check that parentheses are balanced in the query, matching the
@@ -495,6 +537,15 @@ def create_import_export_job(sid):
                 errormsg=_('Invalid log_verbosity value.')
             )
         data['log_verbosity'] = val.lower()
+
+    # A schema, table or column name is interpolated into psql's \copy
+    # command via qtIdent(), which does not escape a backslash; reject one
+    # outright to prevent breaking out of the command (CWE-78). See
+    # _identifier_has_unsafe_char().
+    if _identifier_has_unsafe_char(data):
+        return bad_request(
+            errormsg=_('A schema, table or column name must not contain a '
+                       'backslash or null byte.'))
 
     # Get required and other columns list
     cols = _get_formatted_column_list(data, 'columns', driver, conn)
