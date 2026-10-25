@@ -20,7 +20,7 @@ and modify the values for the following parameters:
    :widths: 35, 55
 
    "AUTHENTICATION_SOURCES", "The default value for this parameter is *internal*.
-   To enable OAUTH2 authentication, you must include *webserver* in the list of values
+   To enable Webserver authentication, you must include *webserver* in the list of values
    for this parameter. you can modify the value as follows:
 
    * [‘webserver’]: pgAdmin will use only Webserver authentication.
@@ -87,6 +87,9 @@ and modify the values for the following parameters:
     temporarily add *internal* back to ``AUTHENTICATION_SOURCES``, sign in
     with the internal administrator's password, fix the affected users'
     *Authentication source*, then remove *internal* again.
+
+    See :ref:`Accounts from different authentication sources
+    <auth_source_accounts>` for more information.
 
 Master Password
 ===============

@@ -39,3 +39,9 @@ in to pgAdmin itself, rather than the password of a database server connection:
 
 Click the *Change* button to change your password; click *Close* to exit the
 dialog.
+
+Changing your password signs out all of your other active sessions, so anyone
+using your account elsewhere must sign in again with the new password. The
+session you change it in stays signed in. When an administrator resets your
+password from the :ref:`User Management <user_management>` page, all of your
+sessions are signed out.

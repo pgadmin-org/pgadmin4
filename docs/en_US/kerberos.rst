@@ -34,7 +34,7 @@ from *config.py* file and modify the values for the following parameters.
      through kerberos. If that authentication fails, then it will return back
      to the login page where you need to provide internal pgAdmin user
      credentials for authentication."
-   "KERBEROS_AUTO_CREATE_USER", "Set the value to *True* if you want to
+   "KRB_AUTO_CREATE_USER", "Set the value to *True* if you want to
    automatically create a pgAdmin user corresponding to a successfully
    authenticated Kerberos user. Please note that password is not stored in the
    pgAdmin database."
@@ -182,6 +182,26 @@ PostgreSQL Server settings to configure Kerberos Authentication
     but ``require_auth`` and ``gsslib`` in a listed service can re-enable
     Windows SSPI or gssproxy for the utilities.
 
+
+Accounts
+========
+
+A Kerberos user is only ever logged in to the Kerberos account whose username
+is their principal (for example *user@EXAMPLE.COM*), never to an ``INTERNAL``
+or other account with the same username. If there is no such Kerberos account
+and *KRB_AUTO_CREATE_USER* is *False*, the login fails.
+
+The administrator account created when pgAdmin is first set up is an
+``INTERNAL`` account. If you use Kerberos authentication only, create a
+Kerberos administrator account and deactivate the initial one:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-external-user user@EXAMPLE.COM --auth-source kerberos --admin
+    /path/to/python /path/to/setup.py update-user admin@example.com --inactive
+
+See :ref:`Accounts from different authentication sources
+<auth_source_accounts>` for more information.
 
 Master Password
 ===============
