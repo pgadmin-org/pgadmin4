@@ -19,6 +19,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+import config
 from pgadmin.misc.file_manager import Filemanager
 from pgadmin.utils.constants import MY_STORAGE
 from pgadmin.utils.route import BaseTestGenerator
@@ -77,6 +78,11 @@ class TestFileEncodingRoundTrip(BaseTestGenerator):
     def _path(self, name):
         return os.path.join(self.storage_dir, name.lstrip('/'))
 
+    def _file_name(self, name):
+        # In server mode a path is relative to the storage directory; in
+        # desktop mode there is no storage directory and a path is absolute.
+        return name if config.SERVER_MODE else self._path(name)
+
     def _post(self, url, payload):
         with contextlib.ExitStack() as stack:
             stack.enter_context(
@@ -90,12 +96,13 @@ class TestFileEncodingRoundTrip(BaseTestGenerator):
                                     content_type='application/json')
 
     def runTest(self):
-        response = self._post(LOAD_FILE_URL, {'file_name': self.load})
+        response = self._post(LOAD_FILE_URL,
+                              {'file_name': self._file_name(self.load)})
         self.assertEqual(response.status_code, 200)
         loaded = response.data.decode('utf-8')
 
         response = self._post(SAVE_FILE_URL, {
-            'file_name': self.save,
+            'file_name': self._file_name(self.save),
             'file_content': loaded if self.edit is None else self.edit,
         })
         self.assertEqual(response.status_code, 200)

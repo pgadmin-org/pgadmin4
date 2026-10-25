@@ -684,10 +684,13 @@ class TestSaveFileWritesRegularFile(_SaveFileMixin, BaseTestGenerator):
     scenarios = [('default', dict())]
 
     def runTest(self):
-        response = self._save_file("/ok.sql", "SELECT 1;")
+        target = os.path.join(self.storage_dir, "ok.sql")
+        # In desktop mode there is no storage directory and a path is
+        # absolute.
+        response = self._save_file(
+            "/ok.sql" if config.SERVER_MODE else target, "SELECT 1;")
 
         self.assertEqual(response.status_code, 200)
-        target = os.path.join(self.storage_dir, "ok.sql")
         with open(target, "rb") as f:
             self.assertEqual(f.read(), b"SELECT 1;")
         # In server mode the helper opens with mode 0o600; pin it so the
