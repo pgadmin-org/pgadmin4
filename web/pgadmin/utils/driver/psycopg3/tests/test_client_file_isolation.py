@@ -25,7 +25,7 @@ from unittest.mock import MagicMock, patch
 import psycopg
 from psycopg.conninfo import conninfo_to_dict, make_conninfo
 
-from pgadmin.utils import NO_CLIENT_FILE
+from pgadmin.utils import NO_CLIENT_FILE, fs_short_path
 from pgadmin.utils.route import BaseTestGenerator
 
 import pgadmin.utils.driver.psycopg3 as psycopg3_driver
@@ -140,8 +140,11 @@ class ConnectionStringClientFilesTestCase(_StorageMixin, BaseTestGenerator):
         for key, value in self.expected.items():
             if value not in (NO_CLIENT_FILE, 'system'):
                 # Expected files are given relative to the storage
-                # directory.
-                value = os.path.join(self.storage, value)
+                # directory, and resolved as get_complete_file_path() returns
+                # them: the short (8.3) form with forward slashes on Windows,
+                # unchanged on POSIX.
+                value = fs_short_path(
+                    os.path.join(self.storage, value)).replace('\\', '/')
             self.assertEqual(dsn.get(key), value, key)
         for key in self.absent:
             self.assertNotIn(key, dsn)

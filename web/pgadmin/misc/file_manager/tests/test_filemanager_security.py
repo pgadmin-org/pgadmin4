@@ -1571,7 +1571,13 @@ class TestGetClosestParentStaysInStorage(_StorageOpsMixin, BaseTestGenerator):
     scenarios = [('default', dict())]
 
     def runTest(self):
-        closest = Filemanager.get_closest_parent
+        _closest = Filemanager.get_closest_parent
+
+        # The File Manager uses forward-slash paths; normalise the separator
+        # so the expectations hold on Windows, where os.path.join uses "\".
+        def closest(*args):
+            return _closest(*args).replace('\\', '/')
+
         os.makedirs(os.path.join(self.storage_dir, "a"))
         self.assertEqual(closest(self.storage_dir, "/a/"), "/a/")
         self.assertEqual(closest(self.storage_dir, "/a/gone/deeper/"), "/a/")

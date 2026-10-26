@@ -228,6 +228,12 @@ class InheritedCredentialsTestCase(_ServiceMixin, BaseTestGenerator):
         conn.close()
 
         with patch.dict(os.environ, env):
+            # The runner's own environment may already hold the other
+            # inherited credential variable (CI sets PGPASSWORD); drop it so
+            # the scenario sees only the one it set.
+            for other in ('PGPASSWORD', 'PGSERVICE'):
+                if other != self.var:
+                    os.environ.pop(other, None)
             removed = remove_inherited_libpq_credentials()
             remaining = dict(os.environ)
         self.assertEqual(removed, [self.var])

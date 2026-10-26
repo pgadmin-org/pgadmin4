@@ -22,6 +22,7 @@ from unittest.mock import MagicMock, patch
 
 import paramiko
 
+from pgadmin.utils import fs_short_path
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils.driver.psycopg3 import server_manager as sm
 
@@ -204,8 +205,12 @@ class TestSSHTunnelIdentityFileConfinement(
             self.assertNotIn(self.alice, result[1])
         else:
             self.assertEqual(result, (True, None))
-            self.assertEqual(forwarder.call_args.kwargs['ssh_pkey'],
-                             os.path.join(self.alice, 'mykey'))
+            # get_complete_file_path() returns the short (8.3) form with
+            # forward slashes on Windows, unchanged on POSIX.
+            self.assertEqual(
+                forwarder.call_args.kwargs['ssh_pkey'],
+                fs_short_path(
+                    os.path.join(self.alice, 'mykey')).replace('\\', '/'))
 
 
 class TestSSHTunnelRealSSHTunnelForwarder(

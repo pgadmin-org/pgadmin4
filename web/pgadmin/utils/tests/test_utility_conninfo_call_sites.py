@@ -28,11 +28,19 @@ from psycopg.conninfo import conninfo_to_dict
 
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils import (
-    NO_CLIENT_FILE, database_conninfo, utility_connection_params)
+    NO_CLIENT_FILE, database_conninfo, fs_short_path,
+    utility_connection_params)
 from pgadmin.utils.route import BaseTestGenerator
 
 DATABASE = 'host=evil dbname=x'
 CONNECTION_PARAMS = {'passfile': '.pgpass'}
+
+
+def _resolved(path):
+    """A storage file path as get_complete_file_path() returns it: on
+    Windows the short (8.3) form with forward slashes, which libpq is given;
+    unchanged on POSIX, where fs_short_path() is the identity."""
+    return fs_short_path(path).replace('\\', '/')
 
 
 SCENARIOS = [
@@ -105,7 +113,7 @@ class _CallSiteBase:
         if not self.server_mode:
             return {'dbname': DATABASE}
         return {'dbname': DATABASE,
-                'passfile': os.path.join(self.storage, '.pgpass'),
+                'passfile': _resolved(os.path.join(self.storage, '.pgpass')),
                 'sslcert': NO_CLIENT_FILE, 'sslkey': NO_CLIENT_FILE}
 
     def _assert_dbname(self, args, expected=None):
@@ -199,7 +207,7 @@ class ConnectionParamsSourceTestCase(_CallSiteBase, BaseTestGenerator):
             lambda: utility_conninfo(
                 'postgres', utility_connection_params(manager, server)))
         self.assertEqual(conninfo_to_dict(conninfo)['passfile'],
-                         os.path.join(self.storage, '.pgpass'))
+                         _resolved(os.path.join(self.storage, '.pgpass')))
 
 
 class RestoreArgsTestCase(_CallSiteBase, BaseTestGenerator):

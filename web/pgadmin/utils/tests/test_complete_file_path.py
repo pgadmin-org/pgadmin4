@@ -26,10 +26,17 @@ import flask
 
 import config
 from pgadmin.utils import (
-    connection_params_to_env, get_complete_file_path)
+    connection_params_to_env, fs_short_path, get_complete_file_path)
 from pgadmin.utils.route import BaseTestGenerator
 
 import pgadmin.utils.driver.psycopg3.server_manager as server_manager
+
+
+def _canon(path):
+    """Compare paths as get_complete_file_path() returns them: on Windows the
+    short (8.3) form libpq is given, so an expected long path matches;
+    fs_short_path() is the identity on POSIX."""
+    return os.path.normpath(fs_short_path(path))
 
 
 class _StorageMixin:
@@ -138,8 +145,7 @@ class CompleteFilePathContainmentTestCase(_StorageMixin, BaseTestGenerator):
         else:
             # Expected paths are given relative to the temporary root.
             expected = os.path.join(self.outer, *self.expected.split('/'))
-            self.assertEqual(os.path.normpath(result),
-                             os.path.normpath(expected))
+            self.assertEqual(_canon(result), _canon(expected))
 
 
 class CompleteFilePathDesktopTestCase(_StorageMixin, BaseTestGenerator):
@@ -263,8 +269,8 @@ class CompleteFilePathRealStorageDirTestCase(_StorageMixin,
 
     def runTest(self):
         self.assertEqual(
-            os.path.normpath(self._resolve_real('/.pgpass')),
-            os.path.join(self.alice, '.pgpass'))
+            _canon(self._resolve_real('/.pgpass')),
+            _canon(os.path.join(self.alice, '.pgpass')))
 
         with self.assertRaises(PermissionError) as cm:
             self._resolve_real('../bob/.pgpass')
@@ -272,8 +278,8 @@ class CompleteFilePathRealStorageDirTestCase(_StorageMixin,
                       str(cm.exception))
 
         self.assertEqual(
-            os.path.normpath(self._resolve_real('Team:/.pgpass')),
-            os.path.join(self.shared, '.pgpass'))
+            _canon(self._resolve_real('Team:/.pgpass')),
+            _canon(os.path.join(self.shared, '.pgpass')))
 
         # A name that is not configured is just part of a relative path.
         self.assertIsNone(self._resolve_real('Nope:/.pgpass'))
@@ -405,8 +411,8 @@ class CompleteFilePathWriteTargetTestCase(_StorageMixin, BaseTestGenerator):
             else:
                 result = get_complete_file_path('Team:/keylog', validate=False,
                                                 for_write=True)
-                self.assertEqual(os.path.normpath(result),
-                                 os.path.join(self.shared, 'keylog'))
+                self.assertEqual(_canon(result),
+                                 _canon(os.path.join(self.shared, 'keylog')))
 
 
 def _user(is_admin):

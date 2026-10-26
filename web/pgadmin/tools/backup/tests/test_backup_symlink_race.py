@@ -43,6 +43,13 @@ class BackupSymlinkRaceTest(BaseTestGenerator):
     ]
 
     def setUp(self):
+        # Opening the file without following a leaf symbolic link and handing
+        # it to the utility as /dev/fd/N needs O_NOFOLLOW and descriptor-based
+        # opens, which exist only on POSIX; on Windows the real path is passed
+        # and this protection does not apply.
+        if os.name == 'nt':
+            self.skipTest(
+                'Descriptor-based symlink-race protection is POSIX-only.')
         if 'default_binary_paths' not in self.server or \
             self.server['default_binary_paths'] is None or \
             self.server['type'] not in self.server['default_binary_paths'] or \

@@ -23,7 +23,7 @@ from unittest.mock import patch
 from psycopg.conninfo import conninfo_to_dict
 
 from pgadmin.utils import (
-    utility_conninfo, connection_params_to_env, NO_CLIENT_FILE)
+    utility_conninfo, connection_params_to_env, fs_short_path, NO_CLIENT_FILE)
 from pgadmin.utils.route import BaseTestGenerator
 
 CREDENTIAL_FILES = ('passfile', 'sslcert', 'sslkey')
@@ -55,7 +55,7 @@ class UtilityConninfoTestCase(BaseTestGenerator):
                         'sslkey': NO_CLIENT_FILE})),
         ('Server mode, a configured file that does not exist is passed on '
          'as the env translation gives it',
-         dict(server_mode=True, database='postgres',
+         dict(server_mode=True, database='postgres', posix_only=True,
               params={'sslcert': 'missing.crt'},
               expected={'dbname': 'postgres',
                         'passfile': NO_CLIENT_FILE,
@@ -129,8 +129,23 @@ class UtilityConninfoTestCase(BaseTestGenerator):
                 for p in reversed(patches):
                     p.stop()
 
-        expected = {k: v.replace('<storage>', self.storage)
-                    for k, v in self.expected.items()}
+        # On Windows a configured file that cannot be found is disabled
+        # (NO_CLIENT_FILE), not passed through as its resolved path; both are
+        # unopenable, so the connection still cannot use another file.
+        if getattr(self, 'posix_only', False) and os.name == 'nt':
+            self.skipTest(
+                'A missing configured file is disabled on Windows.')
+
+        def _exp(v):
+            # Storage files resolve as get_complete_file_path() returns them:
+            # the short (8.3) form with forward slashes on Windows, unchanged
+            # on POSIX.
+            if isinstance(v, str) and '<storage>' in v:
+                return fs_short_path(
+                    v.replace('<storage>', self.storage)).replace('\\', '/')
+            return v
+
+        expected = {k: _exp(v) for k, v in self.expected.items()}
         self.assertEqual(result, expected)
 
 

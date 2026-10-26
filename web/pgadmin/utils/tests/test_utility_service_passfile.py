@@ -304,7 +304,11 @@ class PgDumpallMaintenanceDatabaseTestCase(BaseTestGenerator):
             f.write('[pgadmin_probe]\npassfile={0}\n'.format(
                 service_passfile))
 
-        hostile = 'dbname=postgres passfile={0}'.format(service_passfile)
+        # The raw (control) value is parsed by libpq as a connection string,
+        # where a backslash escapes the next character; a Windows path must
+        # use forward slashes, which libpq accepts, to survive it unchanged.
+        hostile = 'dbname=postgres passfile={0}'.format(
+            service_passfile.replace(os.sep, '/'))
         database = database_conninfo(hostile) if self.fixed else hostile
         dbname, server_env = self._utility_dbname()
         env = {k: v for k, v in os.environ.items() if not k.startswith('PG')}
