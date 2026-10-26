@@ -141,7 +141,7 @@ Bug fixes
   | `Issue #10386 <https://github.com/pgadmin-org/pgadmin4/issues/10386>`_ -  Stop the Query Tool spinner, and its idle CPU use, whilst a password prompt is open.
   | `Issue #10401 <https://github.com/pgadmin-org/pgadmin4/issues/10401>`_ -  Show default privileges in the Database properties panel.
   | `Issue #10409 <https://github.com/pgadmin-org/pgadmin4/issues/10409>`_ -  Include the authenticated user in the access log on logout.
-  | `Issue #10414 <https://github.com/pgadmin-org/pgadmin4/issues/10414>`_ -  Fix the Linux packages shipping a stray copy of Python as ``venv/bin/𝜋thon``, which stopped the DEB package installing on Ubuntu 26.04.
+  | `Issue #10414 <https://github.com/pgadmin-org/pgadmin4/issues/10414>`_ -  Fix the Linux packages shipping a stray copy of Python as ``venv/bin/python``, which stopped the DEB package installing on Ubuntu 26.04.
   | `Issue #10415 <https://github.com/pgadmin-org/pgadmin4/issues/10415>`_ -  Prefer the user's email address as the Gravatar identifier.
   | `Issue #10418 <https://github.com/pgadmin-org/pgadmin4/issues/10418>`_ -  Remove the dead ``usr`` parameter from Query Tool connection URLs.
   | `Issue #10419 <https://github.com/pgadmin-org/pgadmin4/issues/10419>`_ -  Fix Kerberos login failures returning a JSON 500 response, and first-time automatically created Kerberos logins being rejected.
