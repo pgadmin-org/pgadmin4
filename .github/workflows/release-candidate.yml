@@ -90,6 +90,13 @@ jobs:
   container:
     needs: location
     if: inputs.publish
+    # The caller caps a called workflow's token: the top-level
+    # 'contents: read' leaves 'packages: none', so the publish-container job's
+    # 'packages: write' request must be granted here or the workflow is
+    # rejected before it starts.
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/check-container-build.yml
     with:
       publish: true
