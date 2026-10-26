@@ -463,3 +463,83 @@ jobs:
           else
               publish snapshot-purge
           fi
+
+  # The published snapshot reaches ftp.postgresql.org on the hourly sync from
+  # the download server, not when the publish step finishes, so the acceptance
+  # test cannot simply follow it. This waits until everything that test will
+  # fetch is being served, the signatures and repository indexes included,
+  # since those are written last on the server.
+  #
+  # Each request carries a throwaway query string. The mirrors sit behind
+  # Varnish, and a plain request for a file that has not arrived yet could
+  # leave a cached 404 for exactly the URL the acceptance test asks for next.
+  mirrored:
+    needs: [location, windows, assemble]
+    if: >-
+      always()
+      && needs.assemble.result == 'success'
+      && (github.event_name == 'schedule' || inputs.publish)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Wait for the snapshot to reach the mirrors
+        env:
+          BASE_URL: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/${{ needs.location.outputs.name }}
+          # The Windows runner is allowed to be offline, in which case the
+          # snapshot has no installer and waiting for one would only time out.
+          # The acceptance test still fails for it, which is right: the run
+          # is already red from the Windows job.
+          WINDOWS: ${{ needs.windows.result }}
+        run: |
+          set -euo pipefail
+
+          fetch() { curl -fsS "${BASE_URL}/$1?mirror-check=$(date +%s)"; }
+
+          complete() {
+              local listing name
+              listing=$(fetch '') || return 1
+              local wanted=(
+                  'pgadmin4-[0-9.]+\.tar\.gz\.asc'
+                  'pgadmin4-[0-9.]+-py3-none-any\.whl\.asc'
+                  'pgadmin4-[0-9.]+-docs\.tar\.gz\.asc'
+                  'pgadmin4-[0-9.]+\.pdf\.asc'
+                  'pgadmin4-[0-9.]+\.epub\.asc'
+                  'pgadmin4-[0-9.]+-arm64\.dmg'
+                  'pgadmin4-[0-9.]+-x64\.dmg'
+              )
+              [ "${WINDOWS}" = "success" ] && wanted+=('pgadmin4-[0-9.]+-x64\.exe')
+              for name in "${wanted[@]}"; do
+                  grep -Eq "\"${name}\"" <<< "${listing}" || {
+                      echo "  not yet: ${name}"; return 1; }
+              done
+
+              for name in bookworm trixie jammy noble resolute; do
+                  fetch "apt/${name}/dists/pgadmin4/InRelease" >/dev/null || {
+                      echo "  not yet: apt/${name}"; return 1; }
+              done
+              for name in redhat/rhel-9 redhat/rhel-10 fedora/fedora-43 fedora/fedora-44; do
+                  fetch "yum/${name}-x86_64/repodata/repomd.xml.asc" >/dev/null || {
+                      echo "  not yet: yum/${name}"; return 1; }
+              done
+          }
+
+          # Up to two and a half hours: two sync intervals and some slack.
+          for attempt in $(seq 1 30); do
+              echo "Check ${attempt} of ${BASE_URL}"
+              if complete; then
+                  echo "The snapshot is being served."
+                  exit 0
+              fi
+              sleep 300
+          done
+          echo "The snapshot had not reached the mirrors after 150 minutes." >&2
+          exit 1
+
+  # Installing from the published snapshot, as the release candidate does,
+  # so that a defect only visible in what a user downloads shows up the next
+  # morning rather than when a release is being cut.
+  acceptance:
+    needs: [location, mirrored]
+    uses: ./.github/workflows/acceptance-test.yml
+    with:
+      base-url: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/snapshots/${{ needs.location.outputs.name }}
