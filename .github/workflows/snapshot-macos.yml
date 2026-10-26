@@ -141,10 +141,21 @@ jobs:
           echo "=== gatekeeper assessment ==="
           spctl --assess --type execute --verbose=4 "${APP}"
           echo "=== stapled notarisation ==="
-          xcrun stapler validate "${APP}"
+          # stapler looks the ticket up in Apple's CloudKit, and a dropped
+          # connection there fails the step with error 68, so it is retried.
+          # A genuinely broken ticket still fails all three attempts.
+          validate() {
+              for attempt in 1 2 3; do
+                  xcrun stapler validate "$1" && return 0
+                  [ "${attempt}" -lt 3 ] || return 1
+                  echo "stapler validate failed; retrying in $((attempt * 30))s"
+                  sleep $((attempt * 30))
+              done
+          }
+          validate "${APP}"
           for F in dist/*.dmg; do
               echo "--- ${F} ---"
-              xcrun stapler validate "${F}"
+              validate "${F}"
           done
 
       - name: Archive the disk image and zip
