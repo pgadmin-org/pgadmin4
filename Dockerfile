@@ -59,8 +59,15 @@ RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
 FROM python:3-alpine AS env-builder
 
 # Install dependencies
+#
+# libpq is a runtime dependency of psycopg's C extension: psycopg[c] is built
+# from source against postgresql-dev, but that is removed with build-deps
+# below, so libpq.so.5 must be installed separately to survive. Without it,
+# importing psycopg (which the Sphinx docs build does, via config.py) fails
+# with "no pq wrapper available".
 RUN apk add --no-cache \
-        make && \
+        make \
+        libpq && \
     apk add --no-cache --virtual build-deps \
         build-base \
         openssl-dev \
