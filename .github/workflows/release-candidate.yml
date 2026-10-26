@@ -192,10 +192,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Only the build outputs, which are all named pgadmin4-*. The container
+      # build also leaves a 'pgadmin-org~pgadmin4~*.dockerbuild' build-record
+      # artifact that docker/build-push-action uploads; it is not a release
+      # file, and it is not stored as a plain zip, so download-artifact fails
+      # to extract it and, downloading everything, fails the whole step.
       - name: Collect the build artefacts
         uses: actions/download-artifact@v7
         with:
           path: artefacts
+          pattern: pgadmin4-*
 
       # The layout is the one the publishing scripts and the download site
       # expect, and is what the wrapper's stage-create verb creates on the
