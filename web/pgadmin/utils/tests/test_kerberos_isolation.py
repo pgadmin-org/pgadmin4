@@ -19,6 +19,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from flask import session
+import psycopg
 from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
 import config
@@ -31,6 +32,11 @@ from pgadmin.utils.route import BaseTestGenerator
 
 USER_CACHE = 'FILE:/tmp/pgadmin_cache_alice'
 SERVICE_ACCOUNT = {'KRB5CCNAME': 'FILE:/tmp/krb5cc_service_account'}
+
+# The libpq that parses a connection string is the one installed, which may
+# be older than 16 and then rejects require_auth. Scenarios that build or
+# parse a string carrying require_auth with the real libpq need 16 or later.
+LIBPQ_HAS_REQUIRE_AUTH = psycopg.pq.version() >= 160000
 
 
 def _login(source, ccache=USER_CACHE):
@@ -563,6 +569,9 @@ class ApplyKerberosConnParamsKeyInjectionTestCase(BaseTestGenerator):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
+        # The real libpq builds and parses the string carrying require_auth.
+        if not LIBPQ_HAS_REQUIRE_AUTH:
+            self.skipTest('The installed libpq cannot parse require_auth.')
 
     def runTest(self):
         params = dict(self.params)
@@ -626,6 +635,9 @@ class ConnectionStringKerberosKeyInjectionTestCase(BaseTestGenerator):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
+        # The real libpq builds and parses the string carrying require_auth.
+        if not LIBPQ_HAS_REQUIRE_AUTH:
+            self.skipTest('The installed libpq cannot parse require_auth.')
 
     def runTest(self):
         import pgadmin.utils.driver.psycopg3.server_manager as server_manager

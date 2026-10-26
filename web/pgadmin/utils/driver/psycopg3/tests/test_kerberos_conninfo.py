@@ -144,7 +144,18 @@ class ConnectionStringKerberosTestCase(BaseTestGenerator):
         shutil.rmtree(self.storage, ignore_errors=True)
 
     def runTest(self):
-        if self.real_parser and not LIBPQ_HAS_REQUIRE_AUTH:
+        # Any scenario that puts require_auth into the connection string needs
+        # a libpq that knows it: create_connection_string() validates the
+        # string, and a real_parser scenario parses it, with the installed
+        # libpq, which before 16 rejects require_auth. Only the connection
+        # parameter version is mocked per scenario, not the installed libpq.
+        produces_require_auth = (
+            self.real_parser or
+            getattr(self, 'error', False) or
+            'require_auth' in self.expected or
+            'require_auth' in self.params
+        )
+        if produces_require_auth and not LIBPQ_HAS_REQUIRE_AUTH:
             self.skipTest('The installed libpq cannot parse require_auth.')
 
         manager = server_manager.ServerManager.__new__(
