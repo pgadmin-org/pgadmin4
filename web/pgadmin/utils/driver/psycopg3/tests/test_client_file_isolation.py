@@ -106,7 +106,8 @@ class ConnectionStringClientFilesTestCase(_StorageMixin, BaseTestGenerator):
                         'sslcert': NO_CLIENT_FILE,
                         'sslkey': NO_CLIENT_FILE})),
         ('Server mode passes on a configured file that does not exist',
-         dict(params={'sslcert': '/missing.crt', 'sslkey': '/missing.key',
+         dict(posix_only=True,
+              params={'sslcert': '/missing.crt', 'sslkey': '/missing.key',
                       'sslrootcert': '/missing-root.crt',
                       'sslcrl': '/missing.crl'},
               expected={'passfile': NO_CLIENT_FILE,
@@ -133,8 +134,15 @@ class ConnectionStringClientFilesTestCase(_StorageMixin, BaseTestGenerator):
     server_mode = True
     expected = {}
     absent = ()
+    posix_only = False
 
     def runTest(self):
+        # On Windows a configured file that cannot be found is disabled
+        # (NO_CLIENT_FILE), not passed on as its path; both are unopenable.
+        if self.posix_only and os.name == 'nt':
+            self.skipTest(
+                'A missing configured file is disabled on Windows.')
+
         dsn, display = self._connection_string(self.params, self.server_mode)
 
         for key, value in self.expected.items():
