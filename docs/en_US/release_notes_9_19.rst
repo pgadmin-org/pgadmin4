@@ -70,6 +70,7 @@ New features
   | `Issue #10148 <https://github.com/pgadmin-org/pgadmin4/issues/10148>`_ -  Add support for managing pg_timetable chains and tasks.
   | `Issue #10249 <https://github.com/pgadmin-org/pgadmin4/issues/10249>`_ -  Replace free-text Password Exec Commands in server mode with an administrator-defined allowlist, ``SERVER_PASSEXEC_COMMANDS``. Commands run without a shell, with a reduced environment, and receive the pgAdmin user's identity in ``PGADMIN_PASSEXEC_*`` variables; users of a shared server inherit the owner's command by default.
   | `Issue #10473 <https://github.com/pgadmin-org/pgadmin4/issues/10473>`_ -  Add a macOS 26 layered app icon with dark, clear and tinted variants.
+  | `Issue #10499 <https://github.com/pgadmin-org/pgadmin4/issues/10499>`_ -  Add pgEdge Starfleet to the Deploy Cloud Instance wizard, for creating Starfleet Managed databases.
   | `Issue #10503 <https://github.com/pgadmin-org/pgadmin4/issues/10503>`_ -  Add numpad zoom shortcuts to the Desktop View menu.
 
 Housekeeping
