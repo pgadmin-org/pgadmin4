@@ -335,7 +335,15 @@ jobs:
           # on the bundle, set by SetFile -a E in _create_dmg to hide the .app
           # extension in the window, and --strict rejects any xattr at all.
           echo "=== notarisation and Gatekeeper ==="
-          xcrun stapler validate "${app}"
+          # stapler looks the ticket up in Apple's CloudKit, and a dropped
+          # connection there fails the step with error 68, so it is retried.
+          # A genuinely broken ticket still fails all three attempts.
+          for attempt in 1 2 3; do
+              xcrun stapler validate "${app}" && break
+              [ "${attempt}" -lt 3 ] || exit 1
+              echo "stapler validate failed; retrying in $((attempt * 30))s"
+              sleep $((attempt * 30))
+          done
           spctl --assess --type execute --verbose=4 "${app}"
 
           echo "=== signature ==="
