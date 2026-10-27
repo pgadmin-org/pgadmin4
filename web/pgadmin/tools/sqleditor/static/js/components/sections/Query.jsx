@@ -235,10 +235,14 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.NLQ_INSERT_SQL, (sql)=>{
-      // Insert SQL at current cursor position
-      const cursorPos = editor.current?.getCursor() || {line: 0, ch: 0};
-      editor.current?.replaceRange(sql, cursorPos);
-      editor.current?.focus();
+      const view = editor.current;
+      if (!sql || !view) return;
+      view.replaceSelection(sql);
+      view.dispatch({
+        selection: {anchor: view.state.selection.main.to},
+        scrollIntoView: true,
+      });
+      view.focus();
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
