@@ -236,7 +236,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.NLQ_INSERT_SQL, (sql)=>{
       const view = editor.current;
-      if (!sql || !view) return;
+      if (!view || typeof sql !== 'string' || !sql.trim()) return;
       view.replaceSelection(sql);
       view.dispatch({
         selection: {anchor: view.state.selection.main.to},

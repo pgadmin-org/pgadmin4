@@ -122,13 +122,18 @@ describe('Query: AI Assistant insert at cursor', ()=> {
     expect(editorView.state.selection.main.head).toBe(from + 'public.film'.length);
   });
 
-  it('ignores an empty SQL block instead of deleting the selection', async ()=>{
-    const query = 'SELECT * FROM public.actor;';
-    const from = query.indexOf('public.actor');
-    await setQuery(query, {anchor: from, head: from + 'public.actor'.length});
+  it.each(['', ' ', '\n\t ', 42, null, undefined])(
+    'ignores invalid SQL %p without touching the selection', async (sql)=>{
+      const query = 'SELECT * FROM public.actor;';
+      const from = query.indexOf('public.actor');
+      const to = from + 'public.actor'.length;
+      await setQuery(query, {anchor: from, head: to});
 
-    await insertSQL('');
+      await insertSQL(sql);
 
-    expect(editorView.state.doc.toString()).toBe(query);
-  });
+      expect(editorView.state.doc.toString()).toBe(query);
+      expect(editorView.state.selection.main.from).toBe(from);
+      expect(editorView.state.selection.main.to).toBe(to);
+      expect(editorView.getSelection()).toBe('public.actor');
+    });
 });
