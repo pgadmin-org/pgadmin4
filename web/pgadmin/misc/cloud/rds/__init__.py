@@ -100,8 +100,10 @@ def get_db_instances():
             errormsg=gettext('Session has not created yet.')
         )
 
-    if not eng_version or eng_version == '' or eng_version == 'undefined':
-        eng_version = '11.16'
+    # No version chosen yet: there is nothing to look up, and AWS rejects
+    # any hardcoded fallback once that version is retired.
+    if not eng_version or eng_version == 'undefined':
+        return make_json_response(data=[])
 
     res = rds_obj.get_available_db_instance_class(
         engine_version=eng_version)

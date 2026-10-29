@@ -74,7 +74,11 @@ export function AwsInstanceDetails(props) {
           const api = getApiInstance();
           let _url = url_for('rds.db_instances') ;
 
-          if (engine) _url += '?eng_version=' + engine;
+          if (!engine) {
+            resolve([]);
+            return;
+          }
+          _url += '?eng_version=' + encodeURIComponent(engine);
           if (reload || options === undefined || options.length == 0) {
             api.get(_url)
               .then(res=>{

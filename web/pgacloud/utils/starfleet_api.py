@@ -19,6 +19,15 @@ from urllib.parse import urlencode, urlsplit
 
 import urllib3
 
+# Verify against certifi's CA bundle where available: the Python bundled in
+# the macOS app has no usable default CA store, so certificate verification
+# against the system defaults fails there.
+try:
+    import certifi
+    CA_CERTS = certifi.where()
+except ImportError:
+    CA_CERTS = None
+
 DEFAULT_API_URL = 'https://api.pgedge.com'
 TOKEN_PATH = '/account/v1/oauth/token'
 # Re-mint this many seconds before the token's stated expiry.
@@ -43,7 +52,8 @@ class StarfleetClient:
         self.token = token
         self.expires_at = expires_at
         self._http = http or urllib3.PoolManager(
-            timeout=urllib3.Timeout(connect=10, read=60), retries=False)
+            timeout=urllib3.Timeout(connect=10, read=60), retries=False,
+            cert_reqs='CERT_REQUIRED', ca_certs=CA_CERTS)
 
     def _can_mint(self):
         return bool(self.client_id and self.client_secret)
