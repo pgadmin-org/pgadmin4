@@ -32,8 +32,9 @@ def _fake_client_class(routes, mint_error=None):
 
         def __init__(self, api_url=None, client_id=None,
                      client_secret=None, token=None, expires_at=None,
-                     http=None):
+                     http=None, ca_certs=None):
             self.api_url = api_url
+            self.ca_certs = ca_certs
             self.token = token
             self.expires_at = expires_at
             FakeClient.instances.append(self)
@@ -101,6 +102,9 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
                                 'expires_at': 5000.0})
         self.assertNotIn('test-secret', json.dumps(sess))
         self.assertTrue(self.forced)
+        # The API's certificate is verified against pgAdmin's CA bundle.
+        from pgadmin.utils.tls import get_ca_file
+        self.assertEqual(fake.instances[-1].ca_certs, get_ca_file())
 
     def _test_verify_old_libpq(self):
         from pgadmin.misc.cloud import starfleet as sf
@@ -246,4 +250,8 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self.assertEqual(env['STARFLEET_CLIENT_ID'], 'test-client-id')
         self.assertEqual(env['STARFLEET_CLIENT_SECRET'], 'test-secret')
         self.assertIn('STARFLEET_API_URL', env)
+        # The background job verifies against the same CA bundle.
+        from pgadmin.utils.tls import ca_file_env
+        for key, value in ca_file_env().items():
+            self.assertEqual(env[key], value)
         process.start.assert_called_once()

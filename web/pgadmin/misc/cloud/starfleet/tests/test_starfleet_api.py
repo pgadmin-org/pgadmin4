@@ -65,16 +65,15 @@ class TestStarfleetClient(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_params_encoded()
         self._test_https_required()
         self._test_bad_success_bodies()
-        self._test_default_pool_verifies_with_certifi()
+        self._test_default_pool_verifies()
 
-    def _test_default_pool_verifies_with_certifi(self):
-        # The macOS app's Python has no usable default CA store, so the
-        # default pool must verify against certifi's bundle.
-        import certifi
+    def _test_default_pool_verifies(self):
+        # The default pool must verify, against the bundle it is given;
+        # pgAdmin passes config.CA_FILE or certifi's.
         from pgacloud.utils.starfleet_api import StarfleetClient
-        pool = StarfleetClient()._http
+        pool = StarfleetClient(ca_certs='/path/to/ca.pem')._http
         self.assertEqual(pool.connection_pool_kw['ca_certs'],
-                         certifi.where())
+                         '/path/to/ca.pem')
         self.assertEqual(pool.connection_pool_kw['cert_reqs'],
                          'CERT_REQUIRED')
 

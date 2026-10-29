@@ -22,6 +22,7 @@ from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc, \
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, bad_request, success_return
+from pgadmin.utils.tls import ca_file_env
 from .regions import AWS_REGIONS
 import json
 
@@ -367,6 +368,9 @@ def deploy_on_rds(data):
             env['AWS_DATABASE_PASSWORD'] = data[
                 'db_details']['db_password']
 
+        # pgacloud's own HTTPS requests (such as the public IP lookup)
+        # verify against the same CA bundle as pgAdmin.
+        env.update(ca_file_env())
         p.set_env_variables(None, env=env)
         p.update_server_id(p.id, sid)
         p.start()

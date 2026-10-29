@@ -19,15 +19,6 @@ from urllib.parse import urlencode, urlsplit
 
 import urllib3
 
-# Verify against certifi's CA bundle where available: the Python bundled in
-# the macOS app has no usable default CA store, so certificate verification
-# against the system defaults fails there.
-try:
-    import certifi
-    CA_CERTS = certifi.where()
-except ImportError:
-    CA_CERTS = None
-
 DEFAULT_API_URL = 'https://api.pgedge.com'
 TOKEN_PATH = '/account/v1/oauth/token'
 # Re-mint this many seconds before the token's stated expiry.
@@ -45,15 +36,17 @@ class StarfleetError(Exception):
 class StarfleetClient:
     def __init__(self, api_url=DEFAULT_API_URL, client_id=None,
                  client_secret=None, token=None, expires_at=None,
-                 http=None):
+                 http=None, ca_certs=None):
         self.api_url = (api_url or DEFAULT_API_URL).rstrip('/')
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = token
         self.expires_at = expires_at
+        # ca_certs=None leaves OpenSSL's default verify paths in place, which
+        # honour SSL_CERT_FILE; pgAdmin sets that for its background jobs.
         self._http = http or urllib3.PoolManager(
             timeout=urllib3.Timeout(connect=10, read=60), retries=False,
-            cert_reqs='CERT_REQUIRED', ca_certs=CA_CERTS)
+            cert_reqs='CERT_REQUIRED', ca_certs=ca_certs)
 
     def _can_mint(self):
         return bool(self.client_id and self.client_secret)
