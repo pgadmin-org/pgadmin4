@@ -29,6 +29,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 from pgadmin.utils.crypto import encrypt
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.text_sanitize import sanitize_external_text
+from pgadmin.utils.tls import ca_file_env, get_ca_file
 
 MODULE_NAME = 'starfleet'
 TENANTS = '/account/v1/tenants'
@@ -73,7 +74,8 @@ def get_session_client(pid=None):
     if not state or not state.get('access_token'):
         return None
     return StarfleetClient(_api_url(), token=state['access_token'],
-                           expires_at=state.get('expires_at'))
+                           expires_at=state.get('expires_at'),
+                           ca_certs=get_ca_file())
 
 
 def clear_starfleet_session():
@@ -145,7 +147,8 @@ def verify_credentials():
     if not isinstance(secret, dict):
         secret = {}
     client = StarfleetClient(_api_url(), secret.get('client_id'),
-                             secret.get('client_secret'))
+                             secret.get('client_secret'),
+                             ca_certs=get_ca_file())
     try:
         client.get_token()
         tenants = client.get(TENANTS) or []
@@ -258,6 +261,7 @@ def deploy_on_starfleet(data):
             'STARFLEET_CLIENT_ID': data['secret']['client_id'],
             'STARFLEET_CLIENT_SECRET': data['secret']['client_secret'],
             'STARFLEET_API_URL': _api_url(),
+            **ca_file_env(),
         })
         p.update_server_id(p.id, sid)
         _keep_token_for_job(p.id)
