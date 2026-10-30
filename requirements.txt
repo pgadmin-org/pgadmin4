@@ -14,7 +14,7 @@
 
 Authlib==1.6.*; python_version <= '3.9'
 Authlib==1.9.*; python_version > '3.9'
-azure-identity==1.26.0
+azure-identity==1.27.0
 azure-mgmt-rdbms==10.1.1
 # Azure CLI (a common companion package on Linux distros) still pins
 # azure-mgmt-resource<25, so keep the lower bound at 24.0.0 to avoid
