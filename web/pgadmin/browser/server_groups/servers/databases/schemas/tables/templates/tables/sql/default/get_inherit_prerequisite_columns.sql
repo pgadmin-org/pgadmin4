@@ -37,7 +37,8 @@ SELECT name, displaytypname, collspcname, attnotnull, defval, genexpr, attgenera
     LEFT OUTER JOIN
         pg_catalog.pg_attribute ca ON ca.attrelid = {{tid}}::oid AND ca.attname = a.attname
             AND ca.attnum > 0 AND NOT ca.attisdropped
-    ORDER BY a.attname, p.ord, a.attnum
+    {### For a column several parents share, prefer the first parent that has a default ###}
+    ORDER BY a.attname, (a.attgenerated = '' AND def.adbin IS NOT NULL) DESC, p.ord, a.attnum
 ) cols
 WHERE is_missing OR (attnotnull AND NOT child_attnotnull)
 {### Generated columns go last, as their expressions use the other columns ###}

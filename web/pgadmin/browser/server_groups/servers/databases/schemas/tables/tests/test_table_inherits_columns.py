@@ -279,6 +279,16 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
               unexpected_sql=['cid', 'ADD CONSTRAINT'],
               expected_columns=['cid', 'id', 'name'],
               expected_checks=[])),
+        ('A shared column gets the default of the parent that has one',
+         dict(parents=['id integer NOT NULL, name text',
+                       'id integer DEFAULT 7'],
+              child='cid bigint',
+              child_rows='(1), (2)',
+              expected_sql=['ADD COLUMN id integer NOT NULL DEFAULT 7;',
+                            'ADD COLUMN name text;'],
+              unexpected_sql=['cid', 'ADD CONSTRAINT'],
+              expected_columns=['cid', 'id', 'name'],
+              expected_checks=[])),
         ('A virtual generated column is added as virtual',
          dict(min_version=180000,
               parents=['g integer GENERATED ALWAYS AS (n * 2) VIRTUAL, '
@@ -303,26 +313,28 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
     ]
 
     def runTest(self):
-        parent = self._qualified(self.parent_names[0])
-        parent_id = self._query(
-            "SELECT '{0}'::regclass::oid".format(parent))[0][0]
-        parent_columns = self._query(
-            "SELECT attname, pg_catalog.format_type(atttypid, NULL) "
-            "FROM pg_catalog.pg_attribute WHERE attrelid = {0}::oid "
-            "AND attnum > 0 AND NOT attisdropped ORDER BY attnum".format(
-                parent_id))
+        parents = [self._qualified(p) for p in self.parent_names]
+        parent_ids = [self._query(
+            "SELECT '{0}'::regclass::oid".format(p))[0][0] for p in parents]
         existing = self._child_columns()
 
-        # What the table dialog sends after the parent is added to
-        # 'Inherited from'.
-        data = {
-            'coll_inherits': [parent],
-            'columns': {'added': [
-                {'name': name, 'cltype': cltype, 'inheritedfrom': parent,
-                 'inheritedid': parent_id}
-                for name, cltype in parent_columns if name not in existing
-            ]}
-        }
+        # What the table dialog sends after the parents are added to
+        # 'Inherited from': each parent's columns that are not in the
+        # Columns tab yet.
+        added = []
+        for parent, parent_id in zip(parents, parent_ids):
+            for name, cltype in self._query(
+                    "SELECT attname, pg_catalog.format_type(atttypid, NULL) "
+                    "FROM pg_catalog.pg_attribute WHERE attrelid = {0}::oid "
+                    "AND attnum > 0 AND NOT attisdropped "
+                    "ORDER BY attnum".format(parent_id)):
+                if name not in existing:
+                    existing.append(name)
+                    added.append({'name': name, 'cltype': cltype,
+                                  'inheritedfrom': parent,
+                                  'inheritedid': parent_id})
+        data = {'coll_inherits': parents, 'columns': {'added': added}}
+        parent = parents[0]
 
         sql = self._get_msql(data)
         for text in self.expected_sql:
@@ -345,5 +357,6 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
         self.assertEqual(node['icon'], 'icon-table-inherits')
         self.assertEqual(self._query(
             "SELECT inhparent FROM pg_catalog.pg_inherits "
-            "WHERE inhrelid = {0}::oid".format(self.table_id)),
-            [(parent_id,)])
+            "WHERE inhrelid = {0}::oid ORDER BY inhseqno".format(
+                self.table_id)),
+            [(parent_id,) for parent_id in parent_ids])

@@ -1260,32 +1260,15 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # and not newly added tables in the list from client
         # so we will filter new tables here
         if 'coll_inherits' in data:
-            p_len = len(old_data['coll_inherits'])
-            c_len = len(data['coll_inherits'])
-            # If table(s) added
-            if c_len > p_len:
-                data['coll_inherits_added'] = list(
-                    set(data['coll_inherits']) -
-                    set(old_data['coll_inherits'])
-                )
-            # If table(s)removed
-            elif c_len < p_len:
-                data['coll_inherits_removed'] = list(
-                    set(old_data['coll_inherits']) -
-                    set(data['coll_inherits'])
-                )
-            # Safe side verification,In case it happens..
-            # If user removes and adds same number of table
-            # eg removed one table and added one new table
-            elif c_len == p_len:
-                data['coll_inherits_added'] = list(
-                    set(data['coll_inherits']) -
-                    set(old_data['coll_inherits'])
-                )
-                data['coll_inherits_removed'] = list(
-                    set(old_data['coll_inherits']) -
-                    set(data['coll_inherits'])
-                )
+            # Keep the order of the lists, as the parents are inherited
+            # in that order. A table can be added and another removed in
+            # the same change.
+            data['coll_inherits_added'] = [
+                t for t in data['coll_inherits']
+                if t not in old_data['coll_inherits']]
+            data['coll_inherits_removed'] = [
+                t for t in old_data['coll_inherits']
+                if t not in data['coll_inherits']]
 
     def _get_still_inherited_columns(self, scid, data):
         """
