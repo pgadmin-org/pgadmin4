@@ -33,7 +33,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 {% for col in inherit_columns %}
 {% if col.is_missing %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
-    ADD COLUMN {{conn|qtIdent(col.name)}} {{col.displaytypname}}{% if col.collspcname %} COLLATE {{col.collspcname}}{% endif %}{% if col.attnotnull %} NOT NULL{% endif %}{% if col.defval %} DEFAULT {{col.defval}}{% endif %}{% if col.genexpr %} GENERATED ALWAYS AS ({{col.genexpr}}) STORED{% endif %};
+    ADD COLUMN {{conn|qtIdent(col.name)}} {{col.displaytypname}}{% if col.collspcname %} COLLATE {{col.collspcname}}{% endif %}{% if col.attnotnull %} NOT NULL{% endif %}{% if col.defval %} DEFAULT {{col.defval}}{% endif %}{% if col.genexpr %} GENERATED ALWAYS AS ({{col.genexpr}}) {% if col.attgenerated == 'v' %}VIRTUAL{% else %}STORED{% endif %}{% endif %};
 {% else %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     ALTER COLUMN {{conn|qtIdent(col.name)}} SET NOT NULL;

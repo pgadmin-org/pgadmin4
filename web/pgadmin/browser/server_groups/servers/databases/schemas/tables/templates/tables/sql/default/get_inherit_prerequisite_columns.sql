@@ -1,18 +1,24 @@
 {### Columns of the given parents that the table must have before it can inherit from them: ###}
-{### the ones it does not have yet, and the ones it has without the NOT NULL a parent requires ###}
-SELECT name, displaytypname, collspcname, attnotnull, defval, genexpr, is_missing FROM (
+{### the ones it does not have yet, and the ones it has without the NOT NULL a parent requires. ###}
+{### A NOT NULL NO INHERIT (PostgreSQL 18+) is not required of the table. ###}
+SELECT name, displaytypname, collspcname, attnotnull, defval, genexpr, attgenerated, is_missing FROM (
     SELECT DISTINCT ON (a.attname) a.attname AS name,
         pg_catalog.format_type(a.atttypid, a.atttypmod) AS displaytypname,
         CASE WHEN a.attcollation <> ty.typcollation THEN
             pg_catalog.quote_ident(cn.nspname)||'.'||pg_catalog.quote_ident(co.collname)
         END AS collspcname,
-        pg_catalog.bool_or(a.attnotnull) OVER (PARTITION BY a.attname) AS attnotnull,
+        pg_catalog.bool_or(a.attnotnull AND NOT EXISTS (
+            SELECT 1 FROM pg_catalog.pg_constraint nc
+            WHERE nc.conrelid = a.attrelid AND nc.contype = 'n'
+                AND nc.connoinherit AND a.attnum = ANY(nc.conkey)
+        )) OVER (PARTITION BY a.attname) AS attnotnull,
         CASE WHEN a.attgenerated = '' THEN
             pg_catalog.pg_get_expr(def.adbin, def.adrelid)
         END AS defval,
-        CASE WHEN a.attgenerated = 's' THEN
+        CASE WHEN a.attgenerated <> '' THEN
             pg_catalog.pg_get_expr(def.adbin, def.adrelid)
         END AS genexpr,
+        a.attgenerated,
         ca.attname IS NULL AS is_missing, ca.attnotnull AS child_attnotnull,
         p.ord, a.attnum
     FROM

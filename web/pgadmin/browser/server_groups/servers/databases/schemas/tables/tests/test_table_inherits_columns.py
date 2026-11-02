@@ -40,6 +40,12 @@ class InheritsColumnsTestMixin:
     """Create the parents and the child table, and query the database."""
 
     def setUp(self):
+        min_version = getattr(self, 'min_version', None)
+        if min_version and \
+                self.server_information['server_version'] < min_version:
+            self.skipTest('Requires PostgreSQL {0} or later.'.format(
+                min_version // 10000))
+
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -181,6 +187,16 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
               expected_not_nulls=['code'],
               expected_checks=[],
               expected_icon='icon-table-inherits')),
+        ('A NOT NULL NO INHERIT parent leaves the table\'s NOT NULL',
+         dict(min_version=180000,
+              parents=['x integer NOT NULL NO INHERIT', 'x integer'],
+              child='x integer NOT NULL, own_col text',
+              expected_sql=['NO INHERIT'],
+              unexpected_sql=['DROP NOT NULL', 'DROP COLUMN'],
+              expected_columns=['own_col', 'x'],
+              expected_not_nulls=['x'],
+              expected_checks=[],
+              expected_icon='icon-table-inherits')),
     ]
 
     def _inherits_clause(self):
@@ -263,6 +279,27 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
               unexpected_sql=['cid', 'ADD CONSTRAINT'],
               expected_columns=['cid', 'id', 'name'],
               expected_checks=[])),
+        ('A virtual generated column is added as virtual',
+         dict(min_version=180000,
+              parents=['g integer GENERATED ALWAYS AS (n * 2) VIRTUAL, '
+                       'n integer'],
+              child='cid bigint',
+              expected_sql=['ADD COLUMN n integer;',
+                            'ADD COLUMN g integer '
+                            'GENERATED ALWAYS AS ((n * 2)) VIRTUAL;'],
+              unexpected_sql=['cid', 'STORED'],
+              expected_columns=['cid', 'g', 'n'],
+              expected_checks=[])),
+        ('A NOT NULL NO INHERIT is not required of the table',
+         dict(min_version=180000,
+              parents=['id integer NOT NULL NO INHERIT, '
+                       'code text NOT NULL NO INHERIT'],
+              child='id integer, cid bigint',
+              expected_sql=['ADD COLUMN code text;'],
+              unexpected_sql=['ALTER COLUMN id', 'NOT NULL', 'cid'],
+              expected_columns=['cid', 'code', 'id'],
+              expected_not_nulls=[],
+              expected_checks=[])),
     ]
 
     def runTest(self):
@@ -302,6 +339,9 @@ class TableAddInheritsColumnsTestCase(InheritsColumnsTestMixin,
         self.assertEqual(self._child_columns(),
                          sorted(self.expected_columns))
         self.assertEqual(self._child_checks(), self.expected_checks)
+        if hasattr(self, 'expected_not_nulls'):
+            self.assertEqual(self._child_not_nulls(),
+                             self.expected_not_nulls)
         self.assertEqual(node['icon'], 'icon-table-inherits')
         self.assertEqual(self._query(
             "SELECT inhparent FROM pg_catalog.pg_inherits "
