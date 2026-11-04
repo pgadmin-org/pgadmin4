@@ -76,4 +76,5 @@ urllib3==2.8.*;  python_version > '3.9'
 user-agents==2.2.0
 Werkzeug==3.1.*
 WTForms==3.1.*; python_version <= '3.9'
-WTForms==3.2.*; python_version > '3.9'
+WTForms==3.2.*; python_version > '3.9' and python_version < '3.11'
+WTForms==3.3.*; python_version >= '3.11'
