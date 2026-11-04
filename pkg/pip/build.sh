@@ -9,9 +9,10 @@
 #
 #########################################################################
 
-# Stop at the first failure. Without this a failed yarn install or bundle
-# still produced a wheel, just one with no JavaScript in it (#10712).
-set -e
+# Stop at the first failure, including one on the left of a pipe. Without this
+# a failed yarn install or bundle still produced a wheel, just one with no
+# JavaScript in it (#10712).
+set -eo pipefail
 
 # Runtime checks
 if [ ! -d runtime ] && [ ! -d web ]; then
@@ -80,8 +81,9 @@ do
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
-if [ ! -f ../pip-build/pgadmin4/pgadmin/static/js/generated/app.bundle.js ]; then
-    echo "ERROR: The JavaScript bundle is missing from the wheel tree."
+BUNDLE=../pip-build/pgadmin4/pgadmin/static/js/generated/app.bundle.js
+if [ ! -f "${BUNDLE}" ] || [ ! -s "${BUNDLE}" ]; then
+    echo "ERROR: The JavaScript bundle is missing or empty in the wheel tree."
     exit 1
 fi
 

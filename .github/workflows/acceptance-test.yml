@@ -435,5 +435,5 @@ jobs:
           # were installed alongside the code.
           pkg=$(/tmp/wheeltest/bin/python -c 'import pgadmin4; print(list(pgadmin4.__path__)[0])')
           for f in pgadmin/static/js/generated/app.bundle.js commit_hash sbom.json; do
-              [ -s "${pkg}/${f}" ] || { echo "The wheel is missing ${f}" >&2; exit 1; }
+              { [ -f "${pkg}/${f}" ] && [ -s "${pkg}/${f}" ]; } || { echo "The wheel is missing ${f}" >&2; exit 1; }
           done
