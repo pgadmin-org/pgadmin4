@@ -528,13 +528,20 @@ jobs:
               done
           }
 
-          # Up to two and a half hours: two sync intervals and some slack.
-          for attempt in $(seq 1 30); do
+          # Up to two and a half hours: two sync intervals and some slack. The
+          # limit is on elapsed time rather than on attempts, since a check can
+          # make ten requests of up to a minute each against a stalled mirror,
+          # and counting attempts would then run into the job's own timeout.
+          deadline=$((SECONDS + 150 * 60))
+          attempt=0
+          while [ "${SECONDS}" -lt "${deadline}" ]; do
+              attempt=$((attempt + 1))
               echo "Check ${attempt} of ${BASE_URL}"
               if complete; then
                   echo "The snapshot is being served."
                   exit 0
               fi
+              [ $((SECONDS + 300)) -lt "${deadline}" ] || break
               sleep 300
           done
           echo "The snapshot had not reached the mirrors after 150 minutes." >&2
