@@ -33,10 +33,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run-feature-tests-epas:
-    # Only run if the tests are enabled
-    # TODO: Figure out a way to test for the presence of the secrets instead
+  # Secrets cannot be tested in a job-level if, so look for them here.
+  # Dependabot and fork pull requests are not given them, and without this
+  # every EPAS job would start and then fail when it tries to install EPAS.
+  check-epas-secrets:
     if: vars.ENABLE_EPAS_TESTS == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - name: Check for the EPAS secrets
+        id: check
+        env:
+          # Set only for a pull request whose secrets GitHub withholds: one
+          # from a fork, or one Dependabot opened.
+          UNTRUSTED: ${{ github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.event.pull_request.user.login == 'dependabot[bot]') }}
+          EVENT: ${{ github.event_name }}
+          CLOUDSMITH_TOKEN: ${{ secrets.CLOUDSMITH_TOKEN }}
+        run: |
+          if [ -n "${CLOUDSMITH_TOKEN}" ]; then
+              echo "available=true" >> "$GITHUB_OUTPUT"
+          elif [ "${UNTRUSTED}" = "true" ]; then
+              echo "The EPAS secrets are not available to this run; skipping the EPAS tests."
+              echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+              # Anywhere else a missing secret is a configuration fault, and
+              # skipping would leave the run green with no EPAS coverage.
+              echo "The EPAS secrets are missing from a ${EVENT} run." >&2
+              exit 1
+          fi
+
+  run-feature-tests-epas:
+    needs: check-epas-secrets
+    if: needs.check-epas-secrets.outputs.available == 'true'
 
     strategy:
       fail-fast: false
