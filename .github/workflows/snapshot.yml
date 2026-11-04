@@ -534,15 +534,21 @@ jobs:
           # and counting attempts would then run into the job's own timeout.
           deadline=$((SECONDS + 150 * 60))
           attempt=0
-          while [ "${SECONDS}" -lt "${deadline}" ]; do
+          while :; do
               attempt=$((attempt + 1))
               echo "Check ${attempt} of ${BASE_URL}"
               if complete; then
                   echo "The snapshot is being served."
                   exit 0
               fi
-              [ $((SECONDS + 300)) -lt "${deadline}" ] || break
-              sleep 300
+              [ "${SECONDS}" -lt "${deadline}" ] || break
+              # The last wait is cut short, so that a final check still runs
+              # at the deadline rather than being skipped.
+              wait=$((deadline - SECONDS))
+              if [ "${wait}" -gt 300 ]; then
+                  wait=300
+              fi
+              sleep "${wait}"
           done
           echo "The snapshot had not reached the mirrors after 150 minutes." >&2
           exit 1
