@@ -478,8 +478,14 @@ UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 # What key should we look at in the upgrade data file?
 UPGRADE_CHECK_KEY = 'pgadmin4'
 
-# Which CA file should we use?
-# Default to cacert.pem in the same directory as config.py et al.
+# Which CA file should pgAdmin's own outbound HTTPS requests (upgrade check,
+# AI assistant, cloud deployment, OAuth2) verify against?
+# Default to cacert.pem in the same directory as config.py et al. If that file
+# does not exist, certifi's bundle is used instead, so a server with a
+# certificate from a private CA (such as a self-hosted Ollama) needs CA_FILE
+# pointing at a bundle that includes that CA. Set to None to use Python's
+# default CA store (normally the system store), except for OAuth2, which then
+# uses the requests library's own bundle.
 CA_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                        "cacert.pem")
 
