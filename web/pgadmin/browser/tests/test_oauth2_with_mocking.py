@@ -595,27 +595,39 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         Ensure that when PKCE parameters are configured, they are passed
         to the OAuth client registration as part of client_kwargs, and that
         the default client_kwargs is correctly included.
+
+        The default verify value is the CA bundle from get_ca_file(),
+        falling back to True when there is none.
         """
 
-        with patch(
-            'pgadmin.authenticate.oauth2.OAuth.register'
-        ) as mock_register:
-            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+        for ca_file, expected_verify in (
+            ('/path/to/ca-bundle.pem', '/path/to/ca-bundle.pem'),
+            (None, True),
+        ):
+            with patch(
+                'pgadmin.authenticate.oauth2.OAuth.register'
+            ) as mock_register, patch(
+                'pgadmin.authenticate.oauth2.get_ca_file',
+                return_value=ca_file
+            ):
+                from pgadmin.authenticate.oauth2 import \
+                    OAuth2Authentication
 
-            OAuth2Authentication()
+                OAuth2Authentication()
 
-            kwargs = self._get_register_kwargs(mock_register, 'keycloak-pkce')
-            client_kwargs = kwargs.get('client_kwargs', {})
+                kwargs = self._get_register_kwargs(
+                    mock_register, 'keycloak-pkce')
+                client_kwargs = kwargs.get('client_kwargs', {})
 
-            # Check that PKCE and default client_kwargs are included
-            self.assertEqual(
-                client_kwargs.get('code_challenge_method'), 'S256')
-            self.assertEqual(
-                client_kwargs.get('response_type'), 'code')
-            self.assertEqual(
-                client_kwargs.get('scope'), 'openid email profile')
-            self.assertEqual(
-                client_kwargs.get('verify'), True)
+                # Check that PKCE and default client_kwargs are included
+                self.assertEqual(
+                    client_kwargs.get('code_challenge_method'), 'S256')
+                self.assertEqual(
+                    client_kwargs.get('response_type'), 'code')
+                self.assertEqual(
+                    client_kwargs.get('scope'), 'openid email profile')
+                self.assertEqual(
+                    client_kwargs.get('verify'), expected_verify)
 
     def _test_public_client_pkce_registration(self):
         """Public clients without a secret must set token auth to none."""
