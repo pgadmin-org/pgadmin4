@@ -79,19 +79,21 @@ jobs:
       - name: Check for the EPAS secrets
         id: check
         env:
+          # Set only for a pull request whose secrets GitHub withholds: one
+          # from a fork, or one Dependabot opened.
+          UNTRUSTED: ${{ github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.event.pull_request.user.login == 'dependabot[bot]') }}
           EVENT: ${{ github.event_name }}
           CLOUDSMITH_TOKEN: ${{ secrets.CLOUDSMITH_TOKEN }}
           EDB_SBP_URL: ${{ secrets.EDB_SBP_URL }}
         run: |
           if [ -n "${CLOUDSMITH_TOKEN}" ] && [ -n "${EDB_SBP_URL}" ]; then
               echo "available=true" >> "$GITHUB_OUTPUT"
-          elif [ "${EVENT}" = "pull_request" ]; then
+          elif [ "${UNTRUSTED}" = "true" ]; then
               echo "The EPAS secrets are not available to this run; skipping the EPAS tests."
               echo "available=false" >> "$GITHUB_OUTPUT"
           else
-              # Only pull requests from forks and Dependabot go without the
-              # secrets. Anywhere else a missing one is a configuration fault,
-              # and skipping would leave master green with no EPAS coverage.
+              # Anywhere else a missing secret is a configuration fault, and
+              # skipping would leave the run green with no EPAS coverage.
               echo "The EPAS secrets are missing from a ${EVENT} run." >&2
               exit 1
           fi
