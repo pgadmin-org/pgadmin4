@@ -429,3 +429,11 @@ jobs:
           python3 -m venv /tmp/wheeltest
           /tmp/wheeltest/bin/pip install --quiet pgadmin4-*-py3-none-any.whl
           /tmp/wheeltest/bin/python -c 'import pgadmin4; print("imported", pgadmin4.__file__)'
+          # Importing proves nothing about the web interface: the 9.19 wheel
+          # imported fine and served 404s for its whole JavaScript bundle
+          # (#10712), so check that the bundle, the commit hash and the SBOM
+          # were installed alongside the code.
+          pkg=$(/tmp/wheeltest/bin/python -c 'import pgadmin4; print(list(pgadmin4.__path__)[0])')
+          for f in pgadmin/static/js/generated/app.bundle.js commit_hash sbom.json; do
+              [ -s "${pkg}/${f}" ] || { echo "The wheel is missing ${f}" >&2; exit 1; }
+          done

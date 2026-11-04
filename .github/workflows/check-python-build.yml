@@ -66,6 +66,19 @@ jobs:
           sudo apt update
           sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev
 
+      - name: Install syft
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/v1.52.0/install.sh | sh -s -- -b /usr/local/bin v1.52.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20.x'
+
+      # Corepack provisions the pinned Yarn from the packageManager field. The
+      # runner's global Yarn is 1.x, which refuses to run this project, and
+      # that is how the 9.19 wheel shipped without its JavaScript (#10712).
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install Python dependencies
         run: make install-python
 
