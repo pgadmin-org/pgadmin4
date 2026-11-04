@@ -3,10 +3,10 @@
 # Vars:
 #   ENABLE_EPAS_TESTS - Set to true to enable this test
 #
-# Secrets:
-#   EDB_REPO_USERNAME - Username for accessing EDB Repos 1.0
-#   EDB_REPO_PASSWORD - Password for accessing EDB Repos 1.0
-#   EDB_SBP_URL - URL to the EDB StackBuilder Plus catalog
+# Secrets (the tests are skipped when either is unavailable, as they are to
+# Dependabot and fork pull requests):
+#   CLOUDSMITH_TOKEN - Token for the EDB package repository (Linux)
+#   EDB_SBP_URL - URL to the EDB StackBuilder Plus catalog (Windows)
 
 name: Run Python tests on EPAS
 
@@ -19,6 +19,17 @@ on:
       # test, and check-translations already compiles them, which is the
       # check that would catch a malformed one.
       - '!web/pgadmin/translations/**'
+      # Nor the front end: these jobs never install or bundle the
+      # JavaScript, so a change to it, its tests or its build configuration
+      # cannot affect them. The feature tests cover it instead.
+      - '!web/pgadmin/**/static/**'
+      - '!web/regression/javascript/**'
+      - '!web/*.js'
+      - '!web/package.json'
+      - '!web/yarn.lock'
+      - '!web/.yarnrc.yml'
+      - '!web/babel.config.json'
+      - '!web/.eslintrc.js'
       - 'requirements.txt'
       - 'Makefile'
       - 'tools/setup-python-env.sh'
@@ -32,6 +43,17 @@ on:
       # test, and check-translations already compiles them, which is the
       # check that would catch a malformed one.
       - '!web/pgadmin/translations/**'
+      # Nor the front end: these jobs never install or bundle the
+      # JavaScript, so a change to it, its tests or its build configuration
+      # cannot affect them. The feature tests cover it instead.
+      - '!web/pgadmin/**/static/**'
+      - '!web/regression/javascript/**'
+      - '!web/*.js'
+      - '!web/package.json'
+      - '!web/yarn.lock'
+      - '!web/.yarnrc.yml'
+      - '!web/babel.config.json'
+      - '!web/.eslintrc.js'
       - 'requirements.txt'
       - 'Makefile'
       - 'tools/setup-python-env.sh'
@@ -45,10 +67,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run-python-tests-epas:
-    # Only run if the tests are enabled
-    # TODO: Figure out a way to test for the presence of the secrets instead
+  # Secrets cannot be tested in a job-level if, so look for them here.
+  # Dependabot and fork pull requests are not given them, and without this
+  # every EPAS job would start and then fail when it tries to install EPAS.
+  check-epas-secrets:
     if: vars.ENABLE_EPAS_TESTS == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - name: Check for the EPAS secrets
+        id: check
+        env:
+          CLOUDSMITH_TOKEN: ${{ secrets.CLOUDSMITH_TOKEN }}
+          EDB_SBP_URL: ${{ secrets.EDB_SBP_URL }}
+        run: |
+          if [ -n "${CLOUDSMITH_TOKEN}" ] && [ -n "${EDB_SBP_URL}" ]; then
+              echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+              echo "The EPAS secrets are not available to this run; skipping the EPAS tests."
+              echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  run-python-tests-epas:
+    needs: check-epas-secrets
+    if: needs.check-epas-secrets.outputs.available == 'true'
 
     strategy:
       fail-fast: false
