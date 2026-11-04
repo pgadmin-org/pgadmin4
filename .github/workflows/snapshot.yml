@@ -493,7 +493,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          fetch() { curl -fsS "${BASE_URL}/$1?mirror-check=$(date +%s)"; }
+          # Bounded, so that one stalled connection to a mirror cannot use up
+          # the job's time limit and leave no polls after it.
+          fetch() {
+              curl -fsS --connect-timeout 10 --max-time 60 \
+                  "${BASE_URL}/$1?mirror-check=$(date +%s)"
+          }
 
           complete() {
               local listing name
