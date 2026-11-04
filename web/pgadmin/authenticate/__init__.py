@@ -187,7 +187,10 @@ def _login():
         auth_obj = AuthSourceManager(form, copy.deepcopy(
             config.AUTHENTICATION_SOURCES))
 
-    session['auth_source_manager'] = None
+    # An authenticated user keeps their current source until the new login
+    # succeeds: every request reads it, and None would break them.
+    if not current_user.is_authenticated:
+        session['auth_source_manager'] = None
 
     # The internal account whose password Flask-Security checks: it is
     # looked up the same way, by email and ignoring case.
