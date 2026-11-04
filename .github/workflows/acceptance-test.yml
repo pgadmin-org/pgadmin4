@@ -12,9 +12,10 @@
 # wrong or the architecture is missing from Release, the install fails, which
 # is the point.
 #
-# It runs against a release candidate on the development server, which serves
-# its tree the moment it is written. The download server sits behind an hourly
-# sync to the mirrors, so testing there would mostly measure the sync.
+# It runs against each release candidate on the development server, which
+# serves its tree the moment it is written, and against each published nightly
+# snapshot on ftp.postgresql.org, where snapshot.yml first waits for the hourly
+# sync to the mirrors to deliver everything this test fetches.
 
 name: Acceptance test
 
