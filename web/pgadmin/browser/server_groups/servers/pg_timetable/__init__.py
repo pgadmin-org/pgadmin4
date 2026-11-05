@@ -57,7 +57,7 @@ def has_pgt_chain_access(conn):
     if not status:
         return False, res
     rows = res['rows']
-    return True, bool(rows and rows[0][0])
+    return True, bool(rows and rows[0]['has_priviledge'])
 
 
 class ChainModule(CollectionNodeModule):
