@@ -304,8 +304,6 @@ class Driver(BaseDriver):
                         manager.update(manager_source)
                         manager.pga_user = pga_user
                     else:
-                        manager._restore_connections()
-                        manager.update_session()
                         # Identity (host/port/db/user/service/tunnel)
                         # still matches, so the live connection is kept,
                         # but access-control-relevant metadata such as
@@ -318,13 +316,16 @@ class Driver(BaseDriver):
                         # exec command is only rebuilt when sharing, or
                         # the owner or server group it reports, changes,
                         # so its cached password survives ordinary
-                        # requests.
+                        # requests. This runs before the connections are
+                        # restored, since a reconnect may run the command.
                         if manager.shared != server_data.shared or \
                                 passexec_details_changed(
                                     manager.passexec, manager_source):
                             manager.shared = server_data.shared
                             manager.passexec = build_passexec(
                                 manager_source)
+                        manager._restore_connections()
+                        manager.update_session()
 
         managers['pinged'] = datetime.datetime.now()
         # The session is active again, so gc_timeout() should run the
