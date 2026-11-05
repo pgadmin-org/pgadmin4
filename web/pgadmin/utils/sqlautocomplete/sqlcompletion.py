@@ -148,7 +148,7 @@ def suggest_type(full_text, text_before_cursor):
     return suggest_based_on_last_token(stmt.last_token, stmt)
 
 
-named_query_regex = re.compile(r"^\s*\\ns\s+[A-z0-9\-]+\s+")
+named_query_regex = re.compile(r"^\s*\\ns\s+[A-Za-z0-9_\-]+\s+")
 
 
 def _strip_named_query(txt):
