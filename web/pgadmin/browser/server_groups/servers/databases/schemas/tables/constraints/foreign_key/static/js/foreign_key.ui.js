@@ -378,8 +378,7 @@ export default class ForeignKeySchema extends BaseUISchema {
               currColumns[idx].local_column = _.get(topState, tabColPath).name;
             }
           }
-        }
-        if(actionObj.type == SCHEMA_STATE_ACTIONS.ADD_ROW) {
+        } else if(actionObj.type == SCHEMA_STATE_ACTIONS.ADD_ROW) {
           // Set references value.
           obj.fkHeaderSchema.origData.references = null;
           obj.fkHeaderSchema.origData.references =
