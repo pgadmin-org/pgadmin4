@@ -165,7 +165,12 @@ def _count_failed_login(user):
 
 def _refuse_locked_account():
     flash(_locked_message(), MessageType.WARNING)
-    logout_user()
+    # Logging out releases the session's server connections, which needs a
+    # logged-in user. The session's user may be none, or this locked
+    # account, which is no longer authenticated: there is then no one to
+    # log out.
+    if current_user.is_authenticated:
+        logout_user()
     return redirect(pga_utils.get_safe_post_logout_redirect())
 
 
