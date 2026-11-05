@@ -1004,11 +1004,13 @@ def create_app(app_name=None):
                 return response
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
-        # to get the key again when login
+        # to get the key again when login. A session left by an older
+        # version may hold a None auth_source_manager: treat that as an
+        # unknown source.
         if config.SERVER_MODE and current_user.is_authenticated and \
             'auth_source_manager' in session and \
-            session['auth_source_manager']['current_source'] not in \
-            [KERBEROS, OAUTH2, WEBSERVER] and \
+            (session['auth_source_manager'] or {}).get('current_source') \
+            not in [KERBEROS, OAUTH2, WEBSERVER] and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()

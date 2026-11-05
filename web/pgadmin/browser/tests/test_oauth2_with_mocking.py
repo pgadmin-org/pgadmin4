@@ -205,6 +205,12 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={},
             id_token_claims=None,
         )),
+        ('OAuth2 Button While Logged In Keeps Auth Source', dict(
+            oauth2_provider='github',
+            kind='oauth2_button_while_logged_in',
+            profile={},
+            id_token_claims=None,
+        )),
         ('OAuth2 openid Scope Without Metadata URL Fails Fast', dict(
             oauth2_provider='oidc-no-metadata',
             kind='openid_without_metadata_url',
@@ -449,6 +455,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         elif self.kind == 'callback_login_failure_clears_logout_url':
             self._test_oauth2_callback_failure_clears_logout_url(
                 self.oauth2_provider)
+        elif self.kind == 'oauth2_button_while_logged_in':
+            self._test_oauth2_button_while_logged_in(self.oauth2_provider)
         elif self.kind == 'openid_without_metadata_url':
             self._test_openid_scope_without_metadata_url_fails_fast()
         else:
@@ -936,6 +944,43 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self.assertEqual(
                 sess.get('oauth2_current_client'), provider,
                 "Expected session['oauth2_current_client']=%r" % provider)
+
+    def _test_oauth2_button_while_logged_in(self, provider):
+        """A user logged in internally who submits the OAuth2 button keeps
+        their auth_source_manager until the new login succeeds: setting it
+        to None broke every following request (#10733).
+        """
+        from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+        app_config.AUTHENTICATION_SOURCES = [INTERNAL, OAUTH2]
+        utils.login_tester_account(self.tester)
+        with self.tester.session_transaction() as sess:
+            asm_before = sess.get('auth_source_manager')
+        self.assertIsNotNone(asm_before)
+        self.assertEqual(asm_before.get('current_source'), INTERNAL)
+
+        def _fake_authenticate(self, _form):
+            self.oauth2_current_client = provider
+            return False, redirect('https://example.com/')
+
+        # Post the form directly: tester.login() would replace the session
+        # cookie with a fresh one when it generates a CSRF token, logging
+        # the user out. The CSRF header is sent from tester.csrf_token.
+        with patch.object(
+            OAuth2Authentication, 'authenticate', new=_fake_authenticate
+        ):
+            res = self.tester.post(
+                '/authenticate/login',
+                data=dict(oauth2_button=provider)
+            )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.headers.get('Location'), 'https://example.com/')
+
+        with self.tester.session_transaction() as sess:
+            self.assertEqual(sess.get('auth_source_manager'), asm_before)
+
+        res = self.tester.get('/browser/')
+        self.assertEqual(res.status_code, 200)
 
     def _test_oauth2_callback_missing_provider_state(self):
         """OAuth2 callback must redirect gracefully when provider state is
