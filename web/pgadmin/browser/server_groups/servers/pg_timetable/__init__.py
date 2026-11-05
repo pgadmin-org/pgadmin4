@@ -190,8 +190,8 @@ class ChainView(PGChildNodeView):
                 return bad_request(errormsg=_(
                     "The pg_timetable schema was not found in the "
                     "maintenance database, or the current role does not "
-                    "have INSERT, SELECT and UPDATE privileges on "
-                    "timetable.chain."
+                    "have USAGE on it and INSERT, SELECT and UPDATE "
+                    "privileges on timetable.chain."
                 ))
 
             return f(self, *args, **kwargs)

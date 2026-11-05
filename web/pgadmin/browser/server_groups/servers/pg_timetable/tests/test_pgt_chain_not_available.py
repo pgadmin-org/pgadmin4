@@ -15,8 +15,8 @@ from . import utils as pgt_utils
 
 NOT_AVAILABLE_MSG = (
     "The pg_timetable schema was not found in the maintenance database, "
-    "or the current role does not have INSERT, SELECT and UPDATE "
-    "privileges on timetable.chain."
+    "or the current role does not have USAGE on it and INSERT, SELECT "
+    "and UPDATE privileges on timetable.chain."
 )
 ACCESS_CHECK = \
     'pgadmin.browser.server_groups.servers.pg_timetable.has_pgt_chain_access'
