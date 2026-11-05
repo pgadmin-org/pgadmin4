@@ -290,9 +290,11 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         'reasoning_success', 'reasoning_null', 'reasoning_exhausted',
         'partial_stream', 'malformed_errors', 'hostnames',
         'reasoning_content', 'responses_rejection', 'three_send_cap',
-        'http_fallback', 'responses_reasoning', 'debug_once')]
+        'http_fallback', 'responses_reasoning', 'debug_once',
+        'responses_model_param')]
 
     def runTest(self):
+        """RunTest."""
         from pgadmin.llm.providers import openai as module
         module._adaptive_cache.clear()
         try:
@@ -305,10 +307,12 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             module._adaptive_cache.clear()
 
     def _client(self, url='https://gateway.example/v1', model='test-model'):
+        """Client."""
         return OpenAIClient(api_key='test-key', api_url=url, model=model)
 
     def _error(self, param='max_tokens', code='unsupported_parameter',
                status=400, message='Unsupported parameter'):
+        """Error."""
         import io
         import urllib.error
         from pgadmin.llm.client import LLMClientError
@@ -319,16 +323,19 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
                                    'error', {}, io.BytesIO(body))))
 
     def _ok(self, reasoning=None, content='hello', finish='stop'):
+        """Ok."""
         return dict(choices=[dict(message=dict(content=content),
                                   finish_reason=finish)],
                     usage=dict(completion_tokens_details=dict(
                         reasoning_tokens=reasoning)))
 
     def _run(self, client, script, streaming, budget=500):
+        """Run."""
         from pgadmin.llm.models import Message
         calls = []
 
         def request(payload):
+            """Request."""
             calls.append((client._api_url, payload.copy()))
             item = script[len(calls) - 1]
             if isinstance(item, Exception):
@@ -336,6 +343,7 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             return item
 
         def stream(payload):
+            """Stream."""
             item = request(payload)
             if client._use_responses_api:
                 events = []
@@ -364,20 +372,24 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         return client.chat(messages, max_tokens=budget)
 
     def _budgets(self):
+        """Budgets."""
         return [next(p[k] for k in ('max_tokens', 'max_completion_tokens',
                                     'max_output_tokens') if k in p)
                 for _, p in self.calls]
 
     def _check_compatible_default(self, streaming):
+        """Check compatible default."""
         self._run(self._client(), [self._ok()], streaming)
         self.assertIn('max_tokens', self.calls[0][1])
 
     def _check_token_fallback(self, streaming):
+        """Check token fallback."""
         self._run(self._client(), [self._error(), self._ok()], streaming)
         self.assertIn('max_tokens', self.calls[0][1])
         self.assertIn('max_completion_tokens', self.calls[1][1])
 
     def _check_token_cache(self, streaming):
+        """Check token cache."""
         self._check_token_fallback(streaming)
         self._run(self._client(), [self._ok()], streaming)
         self.assertIn('max_completion_tokens', self.calls[0][1])
@@ -388,6 +400,7 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertIn('max_tokens', self.calls[0][1])
 
     def _check_unrelated_error(self, streaming):
+        """Check unrelated error."""
         from pgadmin.llm.client import LLMClientError
         error = self._error(param=None, message='not a chat model')
         with self.assertRaises(LLMClientError):
@@ -395,6 +408,7 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertEqual(len(self.calls), 1)
 
     def _check_structured_only(self, streaming):
+        """Check structured only."""
         from pgadmin.llm.client import LLMClientError
         for error in (self._error(param='other'),
                       self._error(status=500),
@@ -404,15 +418,18 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             self.assertEqual(len(self.calls), 1)
 
     def _route_error(self):
+        """Route error."""
         return self._error(
             param=None, status=404,
             message='This model is only supported in v1/responses')
 
     def _responses_ok(self):
+        """Responses ok."""
         return dict(status='completed', output=[dict(type='message',
                     content=[dict(type='output_text', text='hello')])])
 
     def _check_responses_cache(self, streaming):
+        """Check responses cache."""
         self._run(self._client(), [self._route_error(),
                                    self._responses_ok()], streaming)
         self.assertTrue(self.calls[-1][0].endswith('/responses'))
@@ -420,11 +437,13 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertTrue(self.calls[0][0].endswith('/responses'))
 
     def _check_retry_chain(self, streaming):
+        """Check retry chain."""
         self._run(self._client(), [self._error(), self._route_error(),
                                    self._responses_ok()], streaming)
         self.assertEqual(len(self.calls), 3)
 
     def _check_retry_cap(self, streaming):
+        """Check retry cap."""
         from pgadmin.llm.client import LLMClientError
         with self.assertRaises(LLMClientError):
             self._run(self._client(), [
@@ -432,28 +451,34 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertEqual(len(self.calls), 2)
 
     def _exhausted(self):
+        """Exhausted."""
         return self._ok(reasoning=10, content='', finish='length')
 
     def _check_reasoning_retry(self, streaming):
+        """Check reasoning retry."""
         self._run(self._client(), [self._error(), self._exhausted(),
                                    self._ok()], streaming)
         self.assertEqual(self._budgets(), [500, 500, 1500])
 
     def _check_reasoning_cache(self, streaming):
+        """Check reasoning cache."""
         self._check_reasoning_retry(streaming)
         self._run(self._client(), [self._ok()], streaming)
         self.assertEqual(self._budgets(), [1500])
 
     def _check_reasoning_success(self, streaming):
+        """Check reasoning success."""
         self._run(self._client(), [self._ok(reasoning=10)], streaming)
         self._run(self._client(), [self._ok()], streaming)
         self.assertEqual(self._budgets(), [1500])
 
     def _check_reasoning_null(self, streaming):
+        """Check reasoning null."""
         self._run(self._client(), [self._ok(reasoning=None)], streaming)
         self.assertEqual(self._budgets(), [500])
 
     def _check_reasoning_exhausted(self, streaming):
+        """Check reasoning exhausted."""
         from pgadmin.llm.client import LLMClientError
         with self.assertRaises(LLMClientError) as caught:
             self._run(self._client(), [self._exhausted(),
@@ -462,12 +487,14 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertEqual(self._budgets(), [500, 1500])
 
     def _check_partial_stream(self, streaming):
+        """Check partial stream."""
         from pgadmin.llm.client import LLMClientError
         from pgadmin.llm.models import Message
         client = self._client()
         calls = []
 
         def partial(payload):
+            """Partial."""
             calls.append(payload)
             yield 'hello'
             raise self._error()
@@ -480,6 +507,7 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertEqual(len(calls), 1)
 
     def _check_malformed_errors(self, streaming):
+        """Check malformed errors."""
         import io
         import urllib.error
         for body in (b'[]', b'{"error": []}', b'{"error": null}',
@@ -491,21 +519,24 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             self.assertEqual(error.http_status, 400)
 
     def _check_hostnames(self, streaming):
+        """Check hostnames."""
         self.assertTrue(OpenAIClient(
             api_url='https://api.openai.com.evil.example/v1').is_available())
         self.assertFalse(OpenAIClient(
             api_url='https://api.openai.com:443/v1').is_available())
 
     def _check_reasoning_content(self, streaming):
+        """Check reasoning content."""
         response = self._ok(content='', finish='length')
         response['choices'][0]['message']['reasoning_content'] = 'thinking'
         self._run(self._client(), [response, self._ok()], streaming)
         self.assertEqual(self._budgets(), [500, 1500])
 
     def _check_responses_rejection(self, streaming):
+        """Check responses rejection."""
         from pgadmin.llm.client import LLMClientError
         for error in (
-                self._error(param='model',
+                self._error(param='other',
                             message='Model only supported in v1/responses'),
                 self._error(
                     param=None, status=500,
@@ -515,6 +546,7 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             self.assertEqual(len(self.calls), 1)
 
     def _check_three_send_cap(self, streaming):
+        """Check three send cap."""
         from pgadmin.llm.client import LLMClientError
         with self.assertRaises(LLMClientError):
             self._run(self._client(), [self._error(), self._exhausted(),
@@ -534,6 +566,7 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
             pass
 
         def urlopen(request, **kwargs):
+            """Urlopen."""
             payload = json.loads(request.data)
             sent.append(payload)
             if len(sent) == 1:
@@ -572,7 +605,17 @@ class OpenAICompatibleServerTestCase(BaseTestGenerator):
         self.assertEqual(self._budgets(), [1500])
 
     def _check_debug_once(self, streaming):
+        """Check debug once."""
         from unittest.mock import patch
         with patch('pgadmin.llm.providers.openai._logger.debug') as debug:
             self._check_token_cache(streaming)
         debug.assert_called_once()
+
+    def _check_responses_model_param(self, streaming):
+        """Accept the official Responses-only model error shape."""
+        self._run(self._client(), [self._error(
+            param='model', code=None, status=404,
+            message='This model is only supported in v1/responses '
+                    'and not in v1/chat/completions.'),
+            self._responses_ok()], streaming)
+        self.assertTrue(self.calls[-1][0].endswith('/responses'))

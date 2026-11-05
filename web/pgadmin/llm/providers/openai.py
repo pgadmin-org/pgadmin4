@@ -234,7 +234,7 @@ class OpenAIClient(LLMClient):
         """Check if the error indicates we should use the Responses API."""
         detail = error.error
         return (getattr(detail, 'http_status', None) in (400, 404) and
-                not getattr(detail, 'param', None) and
+                getattr(detail, 'param', None) in (None, '', 'model') and
                 'only supported in' in detail.message.lower() and
                 'v1/responses' in detail.message.lower())
 
