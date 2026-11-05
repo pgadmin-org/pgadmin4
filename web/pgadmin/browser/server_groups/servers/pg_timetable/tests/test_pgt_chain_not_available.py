@@ -48,6 +48,7 @@ class PgtChainNotAvailableTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        """Connect to the server and set up the request data"""
         super().setUp()
         self.url = '/browser/pgt_chain/obj/'
         self.data = {'chain_name': 'test_chain_not_available', 'live': False}
@@ -62,6 +63,7 @@ class PgtChainNotAvailableTestCase(BaseTestGenerator):
                 self.skipTest('pg_timetable is installed on the server.')
 
     def _call_api(self):
+        """Call the chain API selected by the scenario"""
         if self.api == 'create':
             return pgt_utils.api_create(self)
         return pgt_utils.api_get(self, '')

@@ -82,6 +82,7 @@ define('pgadmin.node.pgt_chain', [
     });
   }
 
+  /* Whether the server tree item has a loaded pgTimeTable Chains child. */
   function hasPgtChainCollection(serverItem) {
     return (pgBrowser.tree.children(serverItem) || []).some(
       (child) => pgBrowser.tree.itemData(child)?._type === 'coll-pgt_chain'
