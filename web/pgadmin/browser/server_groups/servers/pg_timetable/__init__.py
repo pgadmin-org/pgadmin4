@@ -26,21 +26,18 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
 
 
+# Pass OIDs to the privilege functions so that a missing schema or table
+# makes the check false rather than raising an error.
 PGT_CHAIN_ACCESS_SQL = """
-SELECT
-    (
-      has_table_privilege('timetable.chain', 'INSERT') AND
-      has_table_privilege('timetable.chain', 'SELECT') AND
-      has_table_privilege('timetable.chain', 'UPDATE')
-    ) has_priviledge
-WHERE EXISTS(
-    SELECT has_schema_privilege('timetable', 'USAGE')
-    WHERE EXISTS(
-        SELECT cl.oid FROM pg_catalog.pg_class cl
-        LEFT JOIN pg_catalog.pg_namespace ns ON ns.oid=relnamespace
-        WHERE relname='chain' AND nspname='timetable'
-    )
-)
+SELECT EXISTS(
+    SELECT 1 FROM pg_catalog.pg_class cl
+    JOIN pg_catalog.pg_namespace ns ON ns.oid = cl.relnamespace
+    WHERE cl.relname = 'chain' AND ns.nspname = 'timetable' AND
+        has_schema_privilege(ns.oid, 'USAGE') AND
+        has_table_privilege(cl.oid, 'INSERT') AND
+        has_table_privilege(cl.oid, 'SELECT') AND
+        has_table_privilege(cl.oid, 'UPDATE')
+) has_priviledge
 """
 
 
@@ -48,7 +45,8 @@ def has_pgt_chain_access(conn):
     """
     Check whether the pg_timetable schema exists in the database conn is
     connected to (the server's maintenance database), and whether the
-    current role can INSERT, SELECT and UPDATE timetable.chain.
+    current role has USAGE on it and can INSERT, SELECT and UPDATE
+    timetable.chain.
 
     Returns a (status, result) tuple: on success, result is True or False;
     on failure, status is False and result holds the error message.
