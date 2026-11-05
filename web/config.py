@@ -1110,6 +1110,27 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 # last two identify the pgAdmin user; the host, port, username and database
 # are set by whoever edits the server, so commands must authorise on the
 # pgAdmin identity and treat the other four as untrusted input.
+#
+# These variables describe the server itself, and cannot be changed by a
+# user who does not own it:
+#
+#   PGADMIN_PASSEXEC_SHARED: 'true' if the server is shared and owned by
+#       another pgAdmin user, otherwise 'false' (including for the owner).
+#   PGADMIN_PASSEXEC_SERVER_ID: pgAdmin's numeric id for the server.
+#   PGADMIN_PASSEXEC_SERVER_OWNER and
+#   PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE: the pgAdmin user who owns
+#       the server, and how they authenticate.
+#   PGADMIN_PASSEXEC_SERVER_GROUP: the name of the owner's server group
+#       holding the server; for an OAuth2 user restricted by
+#       OAUTH2_SERVER_GROUP_CLAIM, this is the group that granted access.
+#
+# When PGADMIN_PASSEXEC_SHARED is 'true', only an administrator can have
+# shared the server, and only its owner can set its host and port, so a
+# command can rely on the host and port once it has checked that the owner
+# is one it trusts. Every user owns their own server groups and can give
+# them any name, so the group name proves nothing unless the owner is
+# checked too. PGADMIN_PASSEXEC_USERNAME remains untrusted on a shared
+# server, because each user sets their own.
 # Names may not start with "__". An empty dictionary (the default) turns the
 # feature off. This setting is applicable only for server mode.
 #

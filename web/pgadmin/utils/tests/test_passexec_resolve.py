@@ -85,6 +85,8 @@ class TestBuildPassexec(BaseTestGenerator):
     scenarios = [
         ('Builds a ServerPasswordExec for a non-owner',
          dict(test_method='test_builds')),
+        ('The owner of a shared server is not flagged as shared',
+         dict(test_method='test_owner_not_shared')),
         ('Unknown name returns None and warns',
          dict(test_method='test_unknown_name')),
         ('Server mode never uses free text',
@@ -102,7 +104,10 @@ class TestBuildPassexec(BaseTestGenerator):
 
     def _build(self, server, user=OTHER, row=None, server_mode=True,
                cmds=CMDS):
+        details = ('owner@example.com', 'internal', 'Production')
         with self.app.test_request_context(), \
+                patch('pgadmin.utils.passexec.server_passexec_details',
+                      return_value=details), \
                 patch('pgadmin.utils.passexec.config.SERVER_MODE',
                       server_mode), \
                 patch('pgadmin.utils.passexec.config.'
@@ -124,6 +129,21 @@ class TestBuildPassexec(BaseTestGenerator):
         self.assertEqual(res.env['PGADMIN_PASSEXEC_AUTH_SOURCE'], 'ldap')
         self.assertEqual(res.argv, ['/bin/get-pass'])
         self.assertEqual(res.name, 'vault')
+        self.assertEqual(res.env['PGADMIN_PASSEXEC_SHARED'], 'true')
+        self.assertEqual(res.env['PGADMIN_PASSEXEC_SERVER_ID'], '7')
+        self.assertEqual(res.env['PGADMIN_PASSEXEC_SERVER_OWNER'],
+                         'owner@example.com')
+        self.assertEqual(
+            res.env['PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE'],
+            'internal')
+        self.assertEqual(res.env['PGADMIN_PASSEXEC_SERVER_GROUP'],
+                         'Production')
+
+    def test_owner_not_shared(self):
+        # The owner of a shared server is not told it is shared with them.
+        res = self._build(_server(), user=OWNER)
+        self.assertEqual(res.env['PGADMIN_PASSEXEC_SHARED'], 'false')
+        self.assertEqual(res.env['PGADMIN_PASSEXEC_USERNAME'], 'owner_db')
 
     def test_unknown_name(self):
         server = _server(passexec_name='gone', user_id=2)

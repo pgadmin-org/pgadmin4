@@ -299,8 +299,25 @@ Use the fields in the *Advanced* tab to configure a connection:
   non-owner's own username on a shared server), ``PGADMIN_PASSEXEC_DATABASE``
   (the maintenance database), ``PGADMIN_PASSEXEC_PGADMIN_USER`` (the pgAdmin
   user making the connection) and ``PGADMIN_PASSEXEC_AUTH_SOURCE`` (how that
-  user authenticated to pgAdmin). The ``stdout`` of the command is used as the
-  SQL password.
+  user authenticated to pgAdmin). The following variables describe the server
+  definition itself:
+
+  * ``PGADMIN_PASSEXEC_SHARED`` is ``true`` if the server is shared and owned
+    by another pgAdmin user, and ``false`` otherwise, including when the user
+    making the connection owns a shared server.
+  * ``PGADMIN_PASSEXEC_SERVER_ID`` is the numeric id pgAdmin gave the server.
+  * ``PGADMIN_PASSEXEC_SERVER_OWNER`` and
+    ``PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE`` are the username of the
+    pgAdmin user who owns the server, and how that user authenticates.
+  * ``PGADMIN_PASSEXEC_SERVER_GROUP`` is the name of the owner's server group
+    that holds the server. A user who does not own a shared server can change
+    the group it appears in for them, but this variable always gives the
+    owner's group, which is the one checked against
+    ``OAUTH2_SERVER_GROUP_CLAIM`` (see :ref:`oauth2_server_group_claims`); for
+    an OAuth2 user restricted by that claim, it is therefore the group that
+    granted access to the server.
+
+  The ``stdout`` of the command is used as the SQL password.
 * Use the *Password exec expiration* field to specify a maximum age, in seconds,
   of the password generated with a *Password exec command*. In server mode, this field is
   enabled only when a named command is selected. If not specified,
@@ -345,6 +362,24 @@ Use the fields in the *Advanced* tab to configure a connection:
     not own the server sets their own username. Commands should therefore
     decide whether to issue a password based on the pgAdmin identity, and
     treat the other four variables as untrusted input.
+
+    The ``PGADMIN_PASSEXEC_SHARED``, ``PGADMIN_PASSEXEC_SERVER_ID``,
+    ``PGADMIN_PASSEXEC_SERVER_OWNER``,
+    ``PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE`` and
+    ``PGADMIN_PASSEXEC_SERVER_GROUP`` variables cannot be changed by a user
+    who does not own the server. When ``PGADMIN_PASSEXEC_SHARED`` is
+    ``true``, the server can only have been shared by an administrator, and
+    only its owner can change its host, port and maintenance database, so a
+    command that has checked that the owner is one it trusts can rely on
+    ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT`` and
+    ``PGADMIN_PASSEXEC_DATABASE``, and use them, the server id or the server
+    group to choose the password. ``PGADMIN_PASSEXEC_USERNAME`` is still set
+    by each user. Every user owns their own server groups and may give them
+    any name, including the name of an administrator's group, so the server
+    group proves nothing on its own: check ``PGADMIN_PASSEXEC_SHARED`` and
+    the owner as well. When ``PGADMIN_PASSEXEC_SHARED`` is ``false`` and the
+    owner is the user making the connection, every value was set by that
+    user.
 
 Click the *Post Connection SQL* tab to continue.
 
