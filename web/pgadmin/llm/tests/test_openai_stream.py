@@ -281,430 +281,298 @@ class OpenAIResponsesStreamToolCallTestCase(BaseTestGenerator):
 
 
 class OpenAICompatibleServerTestCase(BaseTestGenerator):
-    """Adaptive behaviour for OpenAI-compatible servers and reasoning models.
+    """Check adaptive requests using scripted transport, without API calls."""
 
-    Each scenario drives chat() with _make_request replaced by a script of
-    canned responses/errors, and asserts on the requests that would have
-    been sent. No network access is involved.
-    """
-
-    scenarios = [
-        ('Unsupported max_completion_tokens falls back to max_tokens', dict(
-            kind='token_fallback',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Token parameter fallback is remembered for new clients', dict(
-            kind='token_cache',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Custom host is never rerouted to the Responses API', dict(
-            kind='no_reroute',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Reasoning exhaustion retries with a tripled budget', dict(
-            kind='reasoning_retry',
-            api_url='http://localhost:1234/v1',
-            model='deepseek-r1',
-        )),
-        ('Lookalike hostname is treated as a custom provider', dict(
-            kind='host_check',
-            api_url='https://api.openai.com.evil.example/v1',
-            model='gpt-4o',
-        )),
-        ('Streaming falls back to max_tokens on unsupported parameter', dict(
-            kind='stream_token_fallback',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Structured error fields still trigger the fallback', dict(
-            kind='structured_token_fallback',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Reasoning budget is retried only once', dict(
-            kind='reasoning_retry_once',
-            api_url='http://localhost:1234/v1',
-            model='deepseek-r1',
-        )),
-        ('Streaming falls back on structured error fields', dict(
-            kind='stream_structured_fallback',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Malformed error bodies still produce a usable error', dict(
-            kind='malformed_error_body',
-            api_url='http://localhost:1234/v1',
-            model='glm-4',
-        )),
-        ('Reasoning exhaustion detected from usage details', dict(
-            kind='reasoning_from_usage',
-            api_url='http://localhost:1234/v1',
-            model='o3-mini',
-        )),
-        ('Streaming reasoning exhaustion retries with tripled budget', dict(
-            kind='stream_reasoning_retry',
-            api_url='http://localhost:1234/v1',
-            model='deepseek-r1',
-        )),
-        ('Default host with explicit port is still the official API', dict(
-            kind='explicit_port_host',
-            api_url='https://api.openai.com:443/v1',
-            model='gpt-4o',
-        )),
-    ]
+    scenarios = [(name, dict(check=name)) for name in (
+        'compatible_default', 'token_fallback', 'token_cache',
+        'unrelated_error', 'structured_only', 'responses_cache',
+        'retry_chain', 'retry_cap', 'reasoning_retry', 'reasoning_cache',
+        'reasoning_success', 'reasoning_null', 'reasoning_exhausted',
+        'partial_stream', 'malformed_errors', 'hostnames',
+        'reasoning_content', 'responses_rejection', 'three_send_cap',
+        'http_fallback', 'responses_reasoning', 'debug_once')]
 
     def runTest(self):
-        from pgadmin.llm.providers import openai as openai_module
+        from pgadmin.llm.providers import openai as module
+        module._adaptive_cache.clear()
+        try:
+            getattr(self, '_check_' + self.check)(False)
+            module._adaptive_cache.clear()
+            if self.check not in ('partial_stream', 'malformed_errors',
+                                  'hostnames'):
+                getattr(self, '_check_' + self.check)(True)
+        finally:
+            module._adaptive_cache.clear()
+
+    def _client(self, url='https://gateway.example/v1', model='test-model'):
+        return OpenAIClient(api_key='test-key', api_url=url, model=model)
+
+    def _error(self, param='max_tokens', code='unsupported_parameter',
+               status=400, message='Unsupported parameter'):
+        import io
+        import urllib.error
         from pgadmin.llm.client import LLMClientError
-        from pgadmin.llm.models import LLMError, Message
+        body = json.dumps({'error': dict(param=param, code=code,
+                                         message=message)}).encode()
+        return LLMClientError(self._client()._http_error_to_llm_error(
+            urllib.error.HTTPError('https://gateway.example', status,
+                                   'error', {}, io.BytesIO(body))))
 
-        openai_module._token_param_cache.clear()
+    def _ok(self, reasoning=None, content='hello', finish='stop'):
+        return dict(choices=[dict(message=dict(content=content),
+                                  finish_reason=finish)],
+                    usage=dict(completion_tokens_details=dict(
+                        reasoning_tokens=reasoning)))
 
-        def make_client():
-            return OpenAIClient(
-                api_key='test-key', model=self.model, api_url=self.api_url)
+    def _run(self, client, script, streaming, budget=500):
+        from pgadmin.llm.models import Message
+        calls = []
 
-        def ok_response(content='hello'):
-            return {
-                'choices': [{'message': {'content': content},
-                             'finish_reason': 'stop'}],
-                'usage': {'prompt_tokens': 1, 'completion_tokens': 1,
-                          'total_tokens': 2},
-                'model': self.model,
-            }
+        def request(payload):
+            calls.append((client._api_url, payload.copy()))
+            item = script[len(calls) - 1]
+            if isinstance(item, Exception):
+                raise item
+            return item
 
-        if self.kind == 'token_fallback':
-            client = make_client()
-            sent_params = []
+        def stream(payload):
+            item = request(payload)
+            if client._use_responses_api:
+                events = []
+                for output in item.get('output', []):
+                    for part in output.get('content', []):
+                        events.append(_sse(dict(
+                            type='response.output_text.delta',
+                            delta=part['text'])))
+                events.append(_sse(dict(type='response.completed',
+                                        response=item)))
+                yield from client._read_responses_stream(_FakeStream(events))
+            else:
+                choice = item['choices'][0]
+                yield from client._read_openai_stream(_FakeStream([
+                    _sse(dict(choices=[dict(
+                        delta=choice['message'],
+                        finish_reason=choice['finish_reason'])],
+                        usage=item.get('usage', {})))]))
 
-            def fake_request(payload):
-                sent_params.append(
-                    'max_completion_tokens'
-                    if 'max_completion_tokens' in payload else 'max_tokens')
-                if sent_params[-1] == 'max_completion_tokens':
-                    raise LLMClientError(LLMError(
-                        message="Unsupported parameter: "
-                                "'max_completion_tokens' is not supported "
-                                "with this model.",
-                        code='unsupported_parameter',
-                        provider='openai'))
-                return ok_response()
+        client._make_request = request
+        client._process_stream = stream
+        self.calls = calls
+        messages = [Message.user('hi')]
+        if streaming:
+            return list(client.chat_stream(messages, max_tokens=budget))
+        return client.chat(messages, max_tokens=budget)
 
-            client._make_request = fake_request
-            result = client.chat([Message(role='user', content='hi')])
-            self.assertEqual(
-                sent_params, ['max_completion_tokens', 'max_tokens'])
-            self.assertEqual(result.content, 'hello')
+    def _budgets(self):
+        return [next(p[k] for k in ('max_tokens', 'max_completion_tokens',
+                                    'max_output_tokens') if k in p)
+                for _, p in self.calls]
 
-        elif self.kind == 'token_cache':
-            # A new client for the same (server, model) pair must use the
-            # remembered parameter immediately, without another rejection.
-            openai_module._token_param_cache[
-                ('http://localhost:1234/v1', 'glm-4')] = 'max_tokens'
-            client = make_client()
-            sent_params = []
+    def _check_compatible_default(self, streaming):
+        self._run(self._client(), [self._ok()], streaming)
+        self.assertIn('max_tokens', self.calls[0][1])
 
-            def fake_request(payload):
-                sent_params.append(
-                    'max_completion_tokens'
-                    if 'max_completion_tokens' in payload else 'max_tokens')
-                return ok_response()
+    def _check_token_fallback(self, streaming):
+        self._run(self._client(), [self._error(), self._ok()], streaming)
+        self.assertIn('max_tokens', self.calls[0][1])
+        self.assertIn('max_completion_tokens', self.calls[1][1])
 
-            client._make_request = fake_request
-            result = client.chat([Message(role='user', content='hi')])
-            self.assertEqual(sent_params, ['max_tokens'])
-            self.assertEqual(result.content, 'hello')
+    def _check_token_cache(self, streaming):
+        self._check_token_fallback(streaming)
+        self._run(self._client(), [self._ok()], streaming)
+        self.assertIn('max_completion_tokens', self.calls[0][1])
+        self._run(self._client(model='other'), [self._ok()], streaming)
+        self.assertIn('max_tokens', self.calls[0][1])
+        self._run(self._client(url='https://other.example/v1'),
+                  [self._ok()], streaming)
+        self.assertIn('max_tokens', self.calls[0][1])
 
-        elif self.kind == 'no_reroute':
-            client = make_client()
-            urls = []
+    def _check_unrelated_error(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        error = self._error(param=None, message='not a chat model')
+        with self.assertRaises(LLMClientError):
+            self._run(self._client(), [error], streaming)
+        self.assertEqual(len(self.calls), 1)
 
-            def fake_request(payload):
-                urls.append(client._api_url)
-                raise LLMClientError(LLMError(
-                    message='This model requires the v1/responses endpoint',
-                    code='bad_request', provider='openai'))
-
-            client._make_request = fake_request
+    def _check_structured_only(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        for error in (self._error(param='other'),
+                      self._error(status=500),
+                      self._error(code='other')):
             with self.assertRaises(LLMClientError):
-                client.chat([Message(role='user', content='hi')])
-            self.assertEqual(
-                urls, ['http://localhost:1234/v1/chat/completions'])
+                self._run(self._client(), [error], streaming)
+            self.assertEqual(len(self.calls), 1)
 
-        elif self.kind == 'reasoning_retry':
-            client = make_client()
-            budgets = []
+    def _route_error(self):
+        return self._error(
+            param=None, status=404,
+            message='This model is only supported in v1/responses')
 
-            def fake_request(payload):
-                budgets.append(
-                    payload.get('max_completion_tokens') or
-                    payload.get('max_tokens'))
-                if len(budgets) == 1:
-                    return {
-                        'choices': [{'message': {
-                            'content': '',
-                            'reasoning_content': 'thinking...'},
-                            'finish_reason': 'length'}],
-                        'usage': {'prompt_tokens': 1, 'completion_tokens': 100,
-                                  'total_tokens': 101},
-                        'model': self.model,
-                    }
-                return ok_response('done')
+    def _responses_ok(self):
+        return dict(status='completed', output=[dict(type='message',
+                    content=[dict(type='output_text', text='hello')])])
 
-            client._make_request = fake_request
-            result = client.chat(
-                [Message(role='user', content='hi')], max_tokens=1000)
-            self.assertEqual(budgets, [1000, 3000])
-            self.assertEqual(result.content, 'done')
+    def _check_responses_cache(self, streaming):
+        self._run(self._client(), [self._route_error(),
+                                   self._responses_ok()], streaming)
+        self.assertTrue(self.calls[-1][0].endswith('/responses'))
+        self._run(self._client(), [self._responses_ok()], streaming)
+        self.assertTrue(self.calls[0][0].endswith('/responses'))
 
-        elif self.kind == 'stream_token_fallback':
-            client = make_client()
-            sent_params = []
+    def _check_retry_chain(self, streaming):
+        self._run(self._client(), [self._error(), self._route_error(),
+                                   self._responses_ok()], streaming)
+        self.assertEqual(len(self.calls), 3)
 
-            def fake_process_stream(payload):
-                sent_params.append(
-                    'max_completion_tokens'
-                    if 'max_completion_tokens' in payload else 'max_tokens')
-                self.assertTrue(payload.get('stream'))
-                if sent_params[-1] == 'max_completion_tokens':
-                    raise LLMClientError(LLMError(
-                        message="Unsupported parameter: "
-                                "'max_completion_tokens' is not supported "
-                                "with this model.",
-                        code='unsupported_parameter',
-                        provider='openai'))
-                yield 'chunk'
+    def _check_retry_cap(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        with self.assertRaises(LLMClientError):
+            self._run(self._client(), [
+                      self._error(), self._error()], streaming)
+        self.assertEqual(len(self.calls), 2)
 
-            client._process_stream = fake_process_stream
-            chunks = list(client.chat_stream(
-                [Message(role='user', content='hi')]))
-            self.assertEqual(
-                sent_params, ['max_completion_tokens', 'max_tokens'])
-            self.assertEqual(chunks, ['chunk'])
+    def _exhausted(self):
+        return self._ok(reasoning=10, content='', finish='length')
 
-        elif self.kind == 'structured_token_fallback':
-            # A server reporting the rejection only through structured
-            # error fields (generic message, code + parameter) must still
-            # trigger the fallback.
-            client = make_client()
-            sent_params = []
+    def _check_reasoning_retry(self, streaming):
+        self._run(self._client(), [self._error(), self._exhausted(),
+                                   self._ok()], streaming)
+        self.assertEqual(self._budgets(), [500, 500, 1500])
 
-            def fake_request(payload):
-                sent_params.append(
-                    'max_completion_tokens'
-                    if 'max_completion_tokens' in payload else 'max_tokens')
-                if sent_params[-1] == 'max_completion_tokens':
-                    raise LLMClientError(LLMError(
-                        message="Invalid request (parameter: "
-                                "'max_completion_tokens')",
-                        code='unsupported_parameter',
-                        provider='openai'))
-                return ok_response()
+    def _check_reasoning_cache(self, streaming):
+        self._check_reasoning_retry(streaming)
+        self._run(self._client(), [self._ok()], streaming)
+        self.assertEqual(self._budgets(), [1500])
 
-            client._make_request = fake_request
-            result = client.chat([Message(role='user', content='hi')])
-            self.assertEqual(
-                sent_params, ['max_completion_tokens', 'max_tokens'])
-            self.assertEqual(result.content, 'hello')
+    def _check_reasoning_success(self, streaming):
+        self._run(self._client(), [self._ok(reasoning=10)], streaming)
+        self._run(self._client(), [self._ok()], streaming)
+        self.assertEqual(self._budgets(), [1500])
 
-        elif self.kind == 'reasoning_retry_once':
-            # The tripled-budget retry happens once; a second exhausted
-            # response surfaces the budget error to the caller.
-            client = make_client()
-            budgets = []
+    def _check_reasoning_null(self, streaming):
+        self._run(self._client(), [self._ok(reasoning=None)], streaming)
+        self.assertEqual(self._budgets(), [500])
 
-            def fake_request(payload):
-                budgets.append(
-                    payload.get('max_completion_tokens') or
-                    payload.get('max_tokens'))
-                return {
-                    'choices': [{'message': {
-                        'content': '',
-                        'reasoning_content': 'thinking...'},
-                        'finish_reason': 'length'}],
-                    'usage': {'prompt_tokens': 1, 'completion_tokens': 100,
-                              'total_tokens': 101},
-                    'model': self.model,
-                }
+    def _check_reasoning_exhausted(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        with self.assertRaises(LLMClientError) as caught:
+            self._run(self._client(), [self._exhausted(),
+                                       self._exhausted()], streaming)
+        self.assertEqual(caught.exception.error.code, 'reasoning_budget')
+        self.assertEqual(self._budgets(), [500, 1500])
 
-            client._make_request = fake_request
-            with self.assertRaises(LLMClientError) as ctx:
-                client.chat(
-                    [Message(role='user', content='hi')], max_tokens=1000)
-            self.assertEqual(budgets, [1000, 3000])
-            self.assertEqual(ctx.exception.error.code, 'reasoning_budget')
+    def _check_partial_stream(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        from pgadmin.llm.models import Message
+        client = self._client()
+        calls = []
 
-        elif self.kind == 'stream_structured_fallback':
-            # Exercises the real _process_stream HTTP error branch: a
-            # streaming server reporting the rejection only through
-            # structured error fields must still trigger the fallback.
-            import io
-            import urllib.error
+        def partial(payload):
+            calls.append(payload)
+            yield 'hello'
+            raise self._error()
 
-            client = make_client()
-            calls = []
-            body = json.dumps({'error': {
-                'message': 'Invalid request',
-                'code': 'unsupported_parameter',
-                'param': 'max_completion_tokens'}}).encode('utf-8')
+        client._process_stream = partial
+        response = client.chat_stream([Message.user('hi')])
+        self.assertEqual(next(response), 'hello')
+        with self.assertRaises(LLMClientError):
+            next(response)
+        self.assertEqual(len(calls), 1)
 
-            def fake_urlopen(request, timeout=None, context=None):
-                payload = json.loads(request.data.decode('utf-8'))
-                calls.append(
-                    'max_completion_tokens'
-                    if 'max_completion_tokens' in payload else 'max_tokens')
-                if calls[-1] == 'max_completion_tokens':
-                    raise urllib.error.HTTPError(
-                        request.full_url, 400, 'Bad Request', {},
-                        io.BytesIO(body))
-                stream = _FakeStream([
-                    _sse({'choices': [{'index': 0, 'delta': {
-                        'role': 'assistant', 'content': 'hi'}}]}),
-                    _sse({'choices': [{'index': 0,
-                                       'finish_reason': 'stop',
-                                       'delta': {}}]}),
-                    'data: [DONE]',
-                ])
-                stream.close = lambda: None
-                return stream
+    def _check_malformed_errors(self, streaming):
+        import io
+        import urllib.error
+        for body in (b'[]', b'{"error": []}', b'{"error": null}',
+                     b'not json'):
+            error = self._client()._http_error_to_llm_error(
+                urllib.error.HTTPError('https://gateway.example', 400,
+                                       'error', {}, io.BytesIO(body)))
+            self.assertTrue(error.message)
+            self.assertEqual(error.http_status, 400)
 
-            original = openai_module.urlopen_no_redirect
-            openai_module.urlopen_no_redirect = fake_urlopen
-            try:
-                chunks = list(client.chat_stream(
-                    [Message(role='user', content='hi')]))
-            finally:
-                openai_module.urlopen_no_redirect = original
-            self.assertEqual(
-                calls, ['max_completion_tokens', 'max_tokens'])
-            self.assertIn('hi', chunks)
+    def _check_hostnames(self, streaming):
+        self.assertTrue(OpenAIClient(
+            api_url='https://api.openai.com.evil.example/v1').is_available())
+        self.assertFalse(OpenAIClient(
+            api_url='https://api.openai.com:443/v1').is_available())
 
-        elif self.kind == 'malformed_error_body':
-            import io
-            import urllib.error
+    def _check_reasoning_content(self, streaming):
+        response = self._ok(content='', finish='length')
+        response['choices'][0]['message']['reasoning_content'] = 'thinking'
+        self._run(self._client(), [response, self._ok()], streaming)
+        self.assertEqual(self._budgets(), [500, 1500])
 
-            client = make_client()
+    def _check_responses_rejection(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        for error in (
+                self._error(param='model',
+                            message='Model only supported in v1/responses'),
+                self._error(
+                    param=None, status=500,
+                    message='Model only supported in v1/responses')):
+            with self.assertRaises(LLMClientError):
+                self._run(self._client(), [error], streaming)
+            self.assertEqual(len(self.calls), 1)
 
-            def http_error(body):
-                return urllib.error.HTTPError(
-                    'http://localhost:1234/v1/chat/completions',
-                    400, 'Bad Request', {},
-                    io.BytesIO(body.encode('utf-8')))
+    def _check_three_send_cap(self, streaming):
+        from pgadmin.llm.client import LLMClientError
+        with self.assertRaises(LLMClientError):
+            self._run(self._client(), [self._error(), self._exhausted(),
+                                       self._route_error()], streaming)
+        self.assertEqual(len(self.calls), 3)
 
-            # error as a plain string
-            err = client._http_error_to_llm_error(
-                http_error('{"error": "invalid model"}'))
-            self.assertEqual(err.message, 'invalid model')
-            self.assertEqual(err.code, '400')
+    def _check_http_fallback(self, streaming):
+        """Exercise the real request and error parser on both transports."""
+        import io
+        import urllib.error
+        from unittest.mock import patch
+        from pgadmin.llm.models import Message
+        client = self._client()
+        sent = []
 
-            # JSON null body
-            err = client._http_error_to_llm_error(http_error('null'))
-            self.assertEqual(err.message, 'null')
+        class Response(io.BytesIO):
+            pass
 
-            # non-JSON body
-            err = client._http_error_to_llm_error(http_error('oops'))
-            self.assertEqual(err.message, 'oops')
+        def urlopen(request, **kwargs):
+            payload = json.loads(request.data)
+            sent.append(payload)
+            if len(sent) == 1:
+                body = json.dumps({'error': dict(
+                    param='max_tokens', code='unsupported_parameter',
+                    message='Unsupported')})
+                raise urllib.error.HTTPError(
+                    request.full_url, 400, 'Bad Request', {},
+                    io.BytesIO(body.encode()))
+            if streaming:
+                body = _sse(dict(choices=[dict(delta=dict(content='hello'),
+                                               finish_reason='stop')])) + '\n'
+            else:
+                body = json.dumps(self._ok())
+            return Response(body.encode())
 
-        elif self.kind == 'reasoning_from_usage':
-            # No reasoning_content in the message; the reasoning spend is
-            # only visible in usage.completion_tokens_details.
-            client = make_client()
-            budgets = []
+        with patch('pgadmin.llm.providers.openai.urlopen_no_redirect',
+                   side_effect=urlopen):
+            if streaming:
+                list(client.chat_stream([Message.user('hi')]))
+            else:
+                client.chat([Message.user('hi')])
+        self.assertIn('max_tokens', sent[0])
+        self.assertIn('max_completion_tokens', sent[1])
 
-            def fake_request(payload):
-                budgets.append(
-                    payload.get('max_completion_tokens') or
-                    payload.get('max_tokens'))
-                if len(budgets) == 1:
-                    return {
-                        'choices': [{'message': {'content': ''},
-                                     'finish_reason': 'length'}],
-                        'usage': {
-                            'prompt_tokens': 1, 'completion_tokens': 100,
-                            'total_tokens': 101,
-                            'completion_tokens_details': {
-                                'reasoning_tokens': 100}},
-                        'model': self.model,
-                    }
-                return ok_response('done')
+    def _check_responses_reasoning(self, streaming):
+        """Reasoning budgets also work after a Responses API reroute."""
+        exhausted = dict(
+            status='incomplete', output=[],
+            incomplete_details=dict(reason='max_output_tokens'),
+            usage=dict(output_tokens_details=dict(reasoning_tokens=10)))
+        self._run(self._client(), [self._route_error(), exhausted,
+                                   self._responses_ok()], streaming)
+        self.assertEqual(self._budgets(), [500, 500, 1500])
+        self._run(self._client(), [self._responses_ok()], streaming)
+        self.assertEqual(self._budgets(), [1500])
 
-            client._make_request = fake_request
-            result = client.chat(
-                [Message(role='user', content='hi')], max_tokens=1000)
-            self.assertEqual(budgets, [1000, 3000])
-            self.assertEqual(result.content, 'done')
-
-        elif self.kind == 'stream_reasoning_retry':
-            import io
-            import urllib.error  # noqa: F401
-
-            client = make_client()
-            budgets = []
-
-            exhausted_stream = _FakeStream([
-                _sse({'choices': [{'index': 0, 'delta': {
-                    'role': 'assistant',
-                    'reasoning_content': 'thinking...'}}]}),
-                _sse({'choices': [{'index': 0,
-                                   'finish_reason': 'length',
-                                   'delta': {}}],
-                      'usage': {
-                          'prompt_tokens': 1, 'completion_tokens': 100,
-                          'total_tokens': 101,
-                          'completion_tokens_details': {
-                              'reasoning_tokens': 100}}}),
-                'data: [DONE]',
-            ])
-            ok_stream = _FakeStream([
-                _sse({'choices': [{'index': 0, 'delta': {
-                    'role': 'assistant', 'content': 'hi'}}]}),
-                _sse({'choices': [{'index': 0,
-                                   'finish_reason': 'stop',
-                                   'delta': {}}]}),
-                'data: [DONE]',
-            ])
-            for s in (exhausted_stream, ok_stream):
-                s.close = lambda: None
-            streams = [exhausted_stream, ok_stream]
-
-            def fake_urlopen(request, timeout=None, context=None):
-                payload = json.loads(request.data.decode('utf-8'))
-                budgets.append(
-                    payload.get('max_completion_tokens') or
-                    payload.get('max_tokens'))
-                return streams[len(budgets) - 1]
-
-            original = openai_module.urlopen_no_redirect
-            openai_module.urlopen_no_redirect = fake_urlopen
-            try:
-                chunks = list(client.chat_stream(
-                    [Message(role='user', content='hi')], max_tokens=1000))
-            finally:
-                openai_module.urlopen_no_redirect = original
-            self.assertEqual(budgets, [1000, 3000])
-            self.assertIn('hi', chunks)
-
-        elif self.kind == 'explicit_port_host':
-            # An explicit default port must not make the official endpoint
-            # look like a custom provider.
-            self.assertTrue(make_client()._is_default_host)
-            self.assertFalse(
-                OpenAIClient(api_key=None, model='gpt-4o',
-                             api_url=self.api_url).is_available())
-            client = make_client()
-            err = LLMClientError(LLMError(
-                message='use v1/responses endpoint',
-                code='bad', provider='openai'))
-            self.assertTrue(client._should_use_responses_api(err))
-
-        elif self.kind == 'host_check':
-            # A hostname merely starting with api.openai.com must not be
-            # treated as the official endpoint.
-            self.assertTrue(make_client().is_available())
-            self.assertFalse(
-                OpenAIClient(api_key=None, model='gpt-4o').is_available())
-
-        openai_module._token_param_cache.clear()
+    def _check_debug_once(self, streaming):
+        from unittest.mock import patch
+        with patch('pgadmin.llm.providers.openai._logger.debug') as debug:
+            self._check_token_cache(streaming)
+        debug.assert_called_once()

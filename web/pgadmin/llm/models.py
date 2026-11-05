@@ -194,6 +194,8 @@ class LLMError:
     code: Optional[str] = None
     provider: Optional[str] = None
     retryable: bool = False
+    http_status: Optional[int] = None
+    param: Optional[str] = None
 
     def __str__(self) -> str:
         if self.code:
