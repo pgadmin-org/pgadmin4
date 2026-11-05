@@ -66,6 +66,9 @@ concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   run-python-tests-server-mode:
     runs-on: ubuntu-24.04

@@ -66,6 +66,9 @@ concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   # Secrets cannot be tested in a job-level if, so look for them here.
   # Dependabot and fork pull requests are not given them, and without this
