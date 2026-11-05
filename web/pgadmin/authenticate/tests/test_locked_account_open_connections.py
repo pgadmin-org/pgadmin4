@@ -8,12 +8,12 @@
 ##########################################################################
 
 """Verify that logging in to a locked account from a browser session that
-still holds open server connections shows the locked message, rather than
-an error from releasing the connections of a user who is not logged in.
+still holds open server connections shows the locked message, and logs the
+session out, releasing its connections, rather than failing with an error.
 
 The session's user is not authenticated: it is either the locked account
 itself, which Flask-Login no longer treats as authenticated, or no user at
-all. Logging out releases the session's connections, and that needs a
+all, while releasing a running Query Tool connection used to need a
 logged-in user.
 """
 
@@ -24,11 +24,14 @@ from unittest.mock import patch
 
 import config
 import flask
+from config import PG_DEFAULT_DRIVER
 
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.model import db, User
 from pgadmin.utils.constants import INTERNAL
+from pgadmin.utils.driver import get_driver
+from pgadmin.utils.driver.psycopg3.server_manager import ServerManager
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -111,3 +114,16 @@ class LockedAccountOpenConnectionsTestCase(BaseTestGenerator):
 
         self.assertEqual(response.status_code, 302, response.data[:300])
         self.assertTrue(any(LOCKED_MSG in m for m in flashed), flashed)
+
+        # The session no longer belongs to the locked account, so unlocking
+        # it does not log the session back in, and its connections are
+        # released.
+        with self.tester.session_transaction() as sess:
+            self.assertNotIn('_user_id', sess)
+        with self.app.app_context():
+            manager = get_driver(PG_DEFAULT_DRIVER).managers.get(sess.sid)
+        connected = [conn for mgr in (manager or {}).values()
+                     if isinstance(mgr, ServerManager)
+                     for conn in mgr.connections.values()
+                     if conn.connected()]
+        self.assertEqual(connected, [])
