@@ -223,6 +223,13 @@ class ServerManager(object):
             return int(int(self.sversion / 100) / 100)
         raise InternalServerError(self._INFORMATION_MSG)
 
+    def has_live_connection(self):
+        """
+        Whether any connection of this server is open: the Object
+        Explorer's, or one of a Query Tool or View/Edit Data tab.
+        """
+        return any(conn.connected() for conn in self.connections.values())
+
     def connection(self, **kwargs):
         database = kwargs.get('database', None)
         conn_id = kwargs.get('conn_id', None)

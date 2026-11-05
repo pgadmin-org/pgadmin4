@@ -1842,9 +1842,14 @@ class ServerNode(PGChildNodeView):
 
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        # Update the manager with the server details if not connected and
-        # the API call is not made from SQL Editor or View/Edit Data tool
-        if not manager.connection().connected() and not is_qt:
+        # Update the manager with the server details only if none of its
+        # connections is open and the API call is not made from SQL Editor
+        # or View/Edit Data tool. update() releases every connection of the
+        # server, including those of open Query Tool and View/Edit Data
+        # tabs: tabs restored at login connect before the Object Explorer
+        # does, and would be left polling a transaction without a
+        # connection ("Transaction status check failed.").
+        if not manager.has_live_connection() and not is_qt:
             manager.update(server)
         conn = manager.connection()
 
