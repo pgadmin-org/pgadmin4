@@ -1124,13 +1124,15 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 #       holding the server; for an OAuth2 user restricted by
 #       OAUTH2_SERVER_GROUP_CLAIM, this is the group that granted access.
 #
-# When PGADMIN_PASSEXEC_SHARED is 'true', only an administrator can have
-# shared the server, and only its owner can set its host and port, so a
-# command can rely on the host and port once it has checked that the owner
-# is one it trusts. Every user owns their own server groups and can give
-# them any name, so the group name proves nothing unless the owner is
-# checked too. PGADMIN_PASSEXEC_USERNAME remains untrusted on a shared
-# server, because each user sets their own.
+# PGADMIN_PASSEXEC_SHARED does not prove that the owner is an
+# administrator, because a server shared before sharing was restricted to
+# administrators may be owned by any user. Only the owner can set the host,
+# port and maintenance database, so a command can rely on them once it has
+# checked that the owner is one it trusts. Every user owns their own server
+# groups and can give them any name, so the group name proves nothing unless
+# the owner is checked too. PGADMIN_PASSEXEC_USERNAME remains untrusted on a
+# shared server, because each user sets their own.
+#
 # Names may not start with "__". An empty dictionary (the default) turns the
 # feature off. This setting is applicable only for server mode.
 #

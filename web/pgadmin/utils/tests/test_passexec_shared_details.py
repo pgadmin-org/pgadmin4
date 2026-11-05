@@ -19,7 +19,8 @@ from unittest.mock import MagicMock, patch
 from pgadmin.model import db, Server, ServerGroup, SharedServer, User
 from pgadmin.utils.constants import INTERNAL, OAUTH2
 from pgadmin.utils.driver.psycopg3 import Driver
-from pgadmin.utils.passexec import build_passexec
+from pgadmin.utils.passexec import build_passexec, \
+    passexec_details_changed
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -72,6 +73,7 @@ class TestPassexecSharedServerDetails(BaseTestGenerator):
                                   is_authenticated=True)
             self.shared_id = shared.id
             self.own_id = own.id
+            self.admin_group_id = admin_group.id
 
     def _add(self, obj):
         db.session.add(obj)
@@ -80,6 +82,9 @@ class TestPassexecSharedServerDetails(BaseTestGenerator):
         return obj
 
     def _env(self, sid):
+        return self._pexec(sid).env
+
+    def _pexec(self, sid):
         with self.app.test_request_context('/'), \
                 patch('pgadmin.utils.passexec.config.SERVER_MODE', True), \
                 patch('pgadmin.utils.passexec.config.'
@@ -91,7 +96,14 @@ class TestPassexecSharedServerDetails(BaseTestGenerator):
             # Build from what the connection manager would be built from:
             # for the shared server, the user's overlay.
             source = Driver._manager_source(Server.query.get(sid))
-            return build_passexec(source).env
+            return build_passexec(source)
+
+    def _changed(self, pexec, sid):
+        with self.app.test_request_context('/'), \
+                patch('pgadmin.utils.driver.psycopg3.current_user',
+                      self.user):
+            source = Driver._manager_source(Server.query.get(sid))
+            return passexec_details_changed(pexec, source)
 
     def runTest(self):
         env = self._env(self.shared_id)
@@ -119,6 +131,18 @@ class TestPassexecSharedServerDetails(BaseTestGenerator):
                          self.user.username)
         self.assertEqual(own['PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE'],
                          OAUTH2)
+
+        # A cached command is rebuilt once the owner renames the group,
+        # so it neither reports the old name nor keeps a password chosen
+        # for it.
+        pexec = self._pexec(self.shared_id)
+        self.assertFalse(self._changed(pexec, self.shared_id))
+        self.assertFalse(self._changed(None, self.shared_id))
+        with self.app.app_context():
+            group = db.session.get(ServerGroup, self.admin_group_id)
+            group.name = 'Renamed'
+            db.session.commit()
+        self.assertTrue(self._changed(pexec, self.shared_id))
 
     def tearDown(self):
         with self.app.app_context():

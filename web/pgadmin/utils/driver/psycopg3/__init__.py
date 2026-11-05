@@ -32,7 +32,8 @@ from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils import isolate_client_credential_files
 from pgadmin.utils.locker import ConnectionLocker, \
     REQUIRE_AUTH_MIN_LIBPQ, apply_kerberos_conn_params, libpq_version
-from pgadmin.utils.passexec import build_passexec
+from pgadmin.utils.passexec import build_passexec, \
+    passexec_details_changed
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
@@ -314,10 +315,13 @@ class Driver(BaseDriver):
                         # sharing/ownership changed via the same reused-id
                         # path could keep serving the previous owner's
                         # passexec to a new, non-owning user. The password
-                        # exec command is only rebuilt when sharing
-                        # changes, so its cached password survives
-                        # ordinary requests.
-                        if manager.shared != server_data.shared:
+                        # exec command is only rebuilt when sharing, or
+                        # the owner or server group it reports, changes,
+                        # so its cached password survives ordinary
+                        # requests.
+                        if manager.shared != server_data.shared or \
+                                passexec_details_changed(
+                                    manager.passexec, manager_source):
                             manager.shared = server_data.shared
                             manager.passexec = build_passexec(
                                 manager_source)

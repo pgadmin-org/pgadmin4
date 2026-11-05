@@ -279,6 +279,9 @@ class ServerPasswordExec(PasswordExec):
                          timeout)
         self.name = name
         self.argv = list(argv)
+        # Compared by passexec_details_changed() to spot a renamed group.
+        self.server_details = (server_owner, server_owner_auth_source,
+                               server_group)
         self.env = server_passexec_base_env()
         self.env.update({
             'PGADMIN_PASSEXEC_HOST': host or '',
@@ -382,6 +385,17 @@ def server_passexec_details(server):
         ServerGroup, ServerGroup.id == Server.servergroup_id
     ).filter(Server.id == server.id).first()
     return tuple(row) if row is not None else (None, None, None)
+
+
+def passexec_details_changed(pexec, server):
+    """True if pexec is a server-mode command built with an owner or
+    server group that no longer matches the server's row, for example
+    because the owner renamed the group or moved the server to another.
+    The connection manager then rebuilds it, which also drops a password
+    the command may have chosen for the old group."""
+    if not isinstance(pexec, ServerPasswordExec):
+        return False
+    return pexec.server_details != server_passexec_details(server)
 
 
 def build_passexec(server):

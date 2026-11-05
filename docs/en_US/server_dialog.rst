@@ -368,9 +368,12 @@ Use the fields in the *Advanced* tab to configure a connection:
     ``PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE`` and
     ``PGADMIN_PASSEXEC_SERVER_GROUP`` variables cannot be changed by a user
     who does not own the server. When ``PGADMIN_PASSEXEC_SHARED`` is
-    ``true``, the server can only have been shared by an administrator, and
-    only its owner can change its host, port and maintenance database, so a
-    command that has checked that the owner is one it trusts can rely on
+    ``true``, the server is shared and owned by another user. Only an
+    administrator can share a server, but a server shared before that
+    restriction was introduced may be owned by any user, so this flag is not
+    proof that the owner is an administrator. Only the owner can change the
+    host, port and maintenance database, so a command that has checked that
+    the owner is one it trusts can rely on
     ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT`` and
     ``PGADMIN_PASSEXEC_DATABASE``, and use them, the server id or the server
     group to choose the password. ``PGADMIN_PASSEXEC_USERNAME`` is still set
