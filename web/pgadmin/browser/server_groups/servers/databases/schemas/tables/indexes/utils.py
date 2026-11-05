@@ -12,6 +12,8 @@
 from flask import render_template
 from flask_babel import gettext
 from pgadmin.utils import unquote_ident
+from pgadmin.utils.driver import get_driver
+from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
 
@@ -128,6 +130,20 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
             'is_exp': row['is_exp'],
             'statistics': row['statistics']
         }
+
+        # Preserve any opclass options (e.g. gist_trgm_ops(siglen=32)) in
+        # the generated SQL. Only when creating SQL: the properties
+        # dialog expects the plain opclass name. #9625
+        if mode == 'create' and row['attoptions']:
+            # A default opclass has opcname=None, but the name must still
+            # be rendered for the options to survive.
+            opclass = row['opcname'] or row['opclassname']
+            if opclass:
+                cols_data['op_class'] = "{0}({1})".format(
+                    opclass, ', '.join(
+                        '{0}={1}'.format(k, v) for k, v in
+                        quote_catalog_options(conn, row['attoptions'])
+                    ))
 
         # ASC/DESC and NULLS works only with btree indexes
         if 'amname' in data and data['amname'] == 'btree':
@@ -296,6 +312,30 @@ def get_sql(conn, **kwargs):
     return sql, name
 
 
+def quote_catalog_options(conn, options):
+    """
+    Split 'name=value' strings from a catalog options array (reloptions,
+    attoptions) into (name, value) pairs that are safe to embed in SQL.
+
+    The catalog stores the values unquoted, so a value containing a quote,
+    space, comma or parenthesis would otherwise break (or inject into) the
+    generated DDL. Values are quoted as literals, which PostgreSQL accepts
+    for every option type, and names as identifiers, which is what the
+    grammar expects there; pg_get_indexdef() does the same.
+
+    :param conn: Connection object, needed for literal quoting
+    :param options: List of 'name=value' strings, or None
+    :return: List of (quoted name, quoted value) tuples
+    """
+    driver = get_driver(PG_DEFAULT_DRIVER)
+    quoted = []
+    for option in options or []:
+        key, _, value = option.partition('=')
+        quoted.append((driver.qtIdent(conn, key),
+                       driver.qtLiteral(value, conn)))
+    return quoted
+
+
 @get_template_path
 def get_reverse_engineered_sql(conn, **kwargs):
     """
@@ -334,11 +374,11 @@ def get_reverse_engineered_sql(conn, **kwargs):
     data['table'] = table
     data["storage_parameters"] = {}
 
-    storage_params = get_storage_params(data['amname'])
-
-    for param in storage_params:
-        if (param in data) and (data[param] is not None):
-            data["storage_parameters"].update({param: data[param]})
+    # Use the raw reloptions from the catalog so that every storage
+    # parameter is preserved, including ones pgAdmin doesn't know about
+    # (e.g. options of extension index access methods). #9625
+    for key, value in quote_catalog_options(conn, data.get('reloptions')):
+        data["storage_parameters"][key] = value
 
     # Add column details for current index
     data = get_column_details(conn, idx, data, 'create')
