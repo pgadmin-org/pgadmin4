@@ -702,7 +702,8 @@ class Connection(BaseConnection):
                 status = role
 
             if status is not None:
-                self.conn.close()
+                if self.conn:
+                    self.conn.close()
                 self.conn = None
                 current_app.logger.error(
                     "Connect to the database server (#{server_id}) for "
