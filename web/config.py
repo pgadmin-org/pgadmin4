@@ -1126,12 +1126,13 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 #
 # PGADMIN_PASSEXEC_SHARED does not prove that the owner is an
 # administrator, because a server shared before sharing was restricted to
-# administrators may be owned by any user. Only the owner can set the host,
-# port and maintenance database, so a command can rely on them once it has
-# checked that the owner is one it trusts. Every user owns their own server
-# groups and can give them any name, so the group name proves nothing unless
-# the owner is checked too. PGADMIN_PASSEXEC_USERNAME remains untrusted on a
-# shared server, because each user sets their own.
+# administrators may be owned by any user. On a shared server, the host,
+# port and maintenance database are taken from the owner's server, not from
+# the copy kept for each user, whilst PGADMIN_PASSEXEC_USERNAME is each
+# user's own. Every user owns their own server groups and can give them any
+# name, so the group name proves nothing unless the owner is checked too.
+# Commands should decide whether to issue a password based on the pgAdmin
+# user and the server owner.
 #
 # Names may not start with "__". An empty dictionary (the default) turns the
 # feature off. This setting is applicable only for server mode.

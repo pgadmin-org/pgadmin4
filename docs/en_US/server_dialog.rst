@@ -371,18 +371,17 @@ Use the fields in the *Advanced* tab to configure a connection:
     ``true``, the server is shared and owned by another user. Only an
     administrator can share a server, but a server shared before that
     restriction was introduced may be owned by any user, so this flag is not
-    proof that the owner is an administrator. Only the owner can change the
-    host, port and maintenance database, so a command that has checked that
-    the owner is one it trusts can rely on
+    proof that the owner is an administrator. On a shared server,
     ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT`` and
-    ``PGADMIN_PASSEXEC_DATABASE``, and use them, the server id or the server
-    group to choose the password. ``PGADMIN_PASSEXEC_USERNAME`` is still set
-    by each user. Every user owns their own server groups and may give them
-    any name, including the name of an administrator's group, so the server
-    group proves nothing on its own: check ``PGADMIN_PASSEXEC_SHARED`` and
-    the owner as well. When ``PGADMIN_PASSEXEC_SHARED`` is ``false`` and the
-    owner is the user making the connection, every value was set by that
-    user.
+    ``PGADMIN_PASSEXEC_DATABASE`` are taken from the owner's server, not from
+    the copy kept for each user, whilst ``PGADMIN_PASSEXEC_USERNAME`` is each
+    user's own. Every user owns their own server groups and may give them any
+    name, including the name of an administrator's group, so the server group
+    proves nothing on its own: check ``PGADMIN_PASSEXEC_SHARED`` and the owner
+    as well. Commands should decide whether to issue a password based on the
+    pgAdmin user and the server owner. When ``PGADMIN_PASSEXEC_SHARED`` is
+    ``false`` and the owner is the user making the connection, every value
+    was set by that user.
 
 Click the *Post Connection SQL* tab to continue.
 

@@ -293,7 +293,7 @@ class ServerPasswordExec(PasswordExec):
             # The values below come from the server's own row and its
             # owner, which a user who does not own the server cannot
             # change; see the SERVER_PASSEXEC_COMMANDS comment in
-            # config.py for which of them a command can rely on.
+            # config.py for what each of them means.
             'PGADMIN_PASSEXEC_SHARED': 'true' if shared else 'false',
             'PGADMIN_PASSEXEC_SERVER_ID':
                 str(server_id) if server_id is not None else '',
