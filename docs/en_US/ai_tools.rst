@@ -56,8 +56,8 @@ Select your preferred LLM provider from the dropdown:
 
 **OpenAI**
   Use GPT models from OpenAI, or any OpenAI-compatible API provider (e.g.,
-  LiteLLM, LM Studio, EXO, GLM (Z.ai), or other local inference
-  servers).
+  LiteLLM, LM Studio, EXO, hosted services such as GLM (Z.ai), or local
+  inference servers).
 
   * **API URL**: Custom API endpoint URL (leave empty for default: https://api.openai.com/v1). Include the ``/v1`` path prefix if required by your provider.
   * **API Key File**: Path to a file containing your OpenAI API key (obtain from https://platform.openai.com/). This path refers to the filesystem where the pgAdmin server is running (e.g., inside the container if using Docker). The ``~`` prefix is expanded to the home directory of the user running the pgAdmin server process. Optional when using a custom URL with a provider that does not require authentication.
