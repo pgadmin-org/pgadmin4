@@ -26,10 +26,13 @@ class TestPanelAIAvailability(BaseTestGenerator):
         for value in (True, False):
             with self.subTest(enabled=value):
                 enabled.return_value = value
-                response = self.tester.post('/sqleditor/panel/1', query_string={
-                    'sid': 1, 'title': 'Query Tool', 'selectedNodeInfo': '{}',
-                    'llm_enabled': str(not value).lower(),
-                })
+                response = self.tester.post(
+                    '/sqleditor/panel/1',
+                    query_string={
+                        'sid': 1, 'title': 'Query Tool',
+                        'selectedNodeInfo': '{}',
+                        'llm_enabled': str(not value).lower(),
+                    })
                 self.assertEqual(response.status_code, 200)
                 params = json.loads(render.call_args.kwargs['params'])
                 self.assertIs(params['llm_enabled'], value)
