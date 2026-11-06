@@ -66,7 +66,8 @@ Use the fields on the *AI* panel to configure your LLM provider:
 
 * Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
   the default OpenAI API (``https://api.openai.com/v1``). Set a custom URL to
-  use any OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO).
+  use any OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO,
+  GLM (Z.ai)).
   Include the ``/v1`` path prefix if required by your provider
   (e.g., ``http://localhost:1234/v1``).
 
@@ -101,8 +102,14 @@ Use the fields on the *AI* panel to configure your LLM provider:
 
 .. note:: You can also use the *OpenAI* provider with a custom API URL for any
    OpenAI-compatible endpoint, including Docker Model Runner, LM Studio, EXO,
-   and other local inference servers. This can be useful when you want to use
-   a provider that isn't explicitly listed but supports the OpenAI API format.
+   hosted services such as GLM (Z.ai), and other local inference servers. This
+   can be useful when you want to use a provider that isn't explicitly listed
+   but supports the OpenAI API format.
+
+.. note:: With the default allowlist enabled, an administrator must add any
+   API host not already in ``ALLOWED_LLM_API_URLS`` before pgAdmin can connect
+   to it. By default the list allows the OpenAI and Anthropic APIs and loopback
+   addresses on any port. An empty allowlist disables this restriction.
 
 The Browser Node
 ****************
