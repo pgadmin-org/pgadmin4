@@ -39,7 +39,7 @@ Flask-Security-Too==5.6.*; python_version <= '3.9'
 # semantics, so anything earlier in the 5.8 series would refuse all logins.
 # 5.8.3 fixes an open redirect in the default configuration
 # (GHSA-ccgp-pv8r-95wm).
-Flask-Security-Too>=5.8.3,<5.9; python_version > '3.9'
+Flask-Security-Too>=5.9.2,<5.10; python_version > '3.9'
 Flask-SocketIO==5.7.*
 Flask-SQLAlchemy==3.1.*
 Flask-WTF==1.2.*; python_version <= '3.9'
