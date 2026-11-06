@@ -9,6 +9,11 @@
 #
 #########################################################################
 
+# Stop at the first failure, including one on the left of a pipe. Without this
+# a failed yarn install or bundle still produced a wheel, just one with no
+# JavaScript in it (#10712).
+set -eo pipefail
+
 # Runtime checks
 if [ ! -d runtime ] && [ ! -d web ]; then
     echo This script must be run from the top-level directory of the source tree.
@@ -75,6 +80,12 @@ do
     # shellcheck disable=SC2164
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
+
+BUNDLE=../pip-build/pgadmin4/pgadmin/static/js/generated/app.bundle.js
+if [ ! -f "${BUNDLE}" ] || [ ! -s "${BUNDLE}" ]; then
+    echo "ERROR: The JavaScript bundle is missing or empty in the wheel tree."
+    exit 1
+fi
 
 # Remove the JavaScript build configuration from the tree we're shipping. None
 # of it is used at runtime (only the bundle under pgadmin/static/js/generated

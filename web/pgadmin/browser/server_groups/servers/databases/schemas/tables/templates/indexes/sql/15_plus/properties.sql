@@ -53,7 +53,8 @@ SELECT DISTINCT ON (cls.relname)
     substring(array_to_string(cls.reloptions, ',') FROM 'buffering=([a-z]*)') AS buffering,
     substring(array_to_string(cls.reloptions, ',') FROM 'fastupdate=([a-z]*)')::boolean AS fastupdate,
     substring(array_to_string(cls.reloptions, ',') FROM 'autosummarize=([a-z]*)')::boolean AS autosummarize,
-    substring(array_to_string(cls.reloptions, ',') FROM 'lists=([0-9]*)')::int AS lists
+    substring(array_to_string(cls.reloptions, ',') FROM 'lists=([0-9]*)')::int AS lists,
+    cls.reloptions
     {% if datlastsysoid %}
         , (cls.oid <= {{ datlastsysoid }}::oid) AS is_sys_idx
     {% endif %}

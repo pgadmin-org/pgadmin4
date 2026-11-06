@@ -22,6 +22,7 @@ from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc, \
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, bad_request, success_return
+from pgadmin.utils.tls import ca_file_env
 from .regions import AWS_REGIONS
 import json
 
@@ -100,8 +101,10 @@ def get_db_instances():
             errormsg=gettext('Session has not created yet.')
         )
 
-    if not eng_version or eng_version == '' or eng_version == 'undefined':
-        eng_version = '11.16'
+    # No version chosen yet: there is nothing to look up, and AWS rejects
+    # any hardcoded fallback once that version is retired.
+    if not eng_version or eng_version == 'undefined':
+        return make_json_response(data=[])
 
     res = rds_obj.get_available_db_instance_class(
         engine_version=eng_version)
@@ -365,6 +368,9 @@ def deploy_on_rds(data):
             env['AWS_DATABASE_PASSWORD'] = data[
                 'db_details']['db_password']
 
+        # pgacloud's own HTTPS requests (such as the public IP lookup)
+        # verify against the same CA bundle as pgAdmin.
+        env.update(ca_file_env())
         p.set_env_variables(None, env=env)
         p.update_server_id(p.id, sid)
         p.start()

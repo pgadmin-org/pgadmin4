@@ -12,9 +12,10 @@
 # wrong or the architecture is missing from Release, the install fails, which
 # is the point.
 #
-# It runs against a release candidate on the development server, which serves
-# its tree the moment it is written. The download server sits behind an hourly
-# sync to the mirrors, so testing there would mostly measure the sync.
+# It runs against each release candidate on the development server, which
+# serves its tree the moment it is written, and against each published nightly
+# snapshot on ftp.postgresql.org, where snapshot.yml first waits for the hourly
+# sync to the mirrors to deliver everything this test fetches.
 
 name: Acceptance test
 
@@ -335,7 +336,15 @@ jobs:
           # on the bundle, set by SetFile -a E in _create_dmg to hide the .app
           # extension in the window, and --strict rejects any xattr at all.
           echo "=== notarisation and Gatekeeper ==="
-          xcrun stapler validate "${app}"
+          # stapler looks the ticket up in Apple's CloudKit, and a dropped
+          # connection there fails the step with error 68, so it is retried.
+          # A genuinely broken ticket still fails all three attempts.
+          for attempt in 1 2 3; do
+              xcrun stapler validate "${app}" && break
+              [ "${attempt}" -lt 3 ] || exit 1
+              echo "stapler validate failed; retrying in $((attempt * 30))s"
+              sleep $((attempt * 30))
+          done
           spctl --assess --type execute --verbose=4 "${app}"
 
           echo "=== signature ==="
@@ -421,3 +430,11 @@ jobs:
           python3 -m venv /tmp/wheeltest
           /tmp/wheeltest/bin/pip install --quiet pgadmin4-*-py3-none-any.whl
           /tmp/wheeltest/bin/python -c 'import pgadmin4; print("imported", pgadmin4.__file__)'
+          # Importing proves nothing about the web interface: the 9.19 wheel
+          # imported fine and served 404s for its whole JavaScript bundle
+          # (#10712), so check that the bundle, the commit hash and the SBOM
+          # were installed alongside the code.
+          pkg=$(/tmp/wheeltest/bin/python -c 'import pgadmin4; print(list(pgadmin4.__path__)[0])')
+          for f in pgadmin/static/js/generated/app.bundle.js commit_hash sbom.json; do
+              { [ -f "${pkg}/${f}" ] && [ -s "${pkg}/${f}" ]; } || { echo "The wheel is missing ${f}" >&2; exit 1; }
+          done

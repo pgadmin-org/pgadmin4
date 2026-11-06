@@ -43,14 +43,38 @@ class AuthSourceGatingTestCase(BaseTestGenerator):
     # Pure registry-contract test - no Postgres server interaction needed, so
     # skip BaseTestGenerator.setUp's connect_server().
     def setUp(self):
+        import pgadmin.authenticate as auth_package
+
         self._orig_server_mode = config.SERVER_MODE
         self._orig_registry = dict(AuthSourceRegistry._registry or {})
         self._orig_objects = dict(AuthSourceRegistry._objects or {})
+        self._orig_modules = {
+            module: sys.modules.get(module) for module in EXTERNAL_MODULES}
+        self._orig_attrs = {
+            source: getattr(auth_package, source, None)
+            for source in EXTERNAL_SOURCES}
 
     def tearDown(self):
+        import pgadmin.authenticate as auth_package
+
         config.SERVER_MODE = self._orig_server_mode
         AuthSourceRegistry._registry = self._orig_registry
         AuthSourceRegistry._objects = self._orig_objects
+        # Put the original provider modules back too. The restored registry
+        # holds their classes, so leaving the re-imported modules in place
+        # would make later tests patch a different class from the one the
+        # application instantiates.
+        for module, orig in self._orig_modules.items():
+            if orig is None:
+                sys.modules.pop(module, None)
+            else:
+                sys.modules[module] = orig
+        for source, orig in self._orig_attrs.items():
+            if orig is None:
+                if hasattr(auth_package, source):
+                    delattr(auth_package, source)
+            else:
+                setattr(auth_package, source, orig)
 
     def _reset_registry(self):
         """Empty the registry and drop the external provider modules, so that

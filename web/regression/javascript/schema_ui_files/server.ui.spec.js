@@ -11,7 +11,7 @@
 import _ from 'lodash';
 import pgAdmin from 'sources/pgadmin';
 import current_user from 'pgadmin.user_management.current_user';
-import ServerSchema, { passexecForServerCopy, starfleetConnectionParams } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
+import ServerSchema, { passexecForServerCopy, sharingForServerCopy, starfleetConnectionParams } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('ServerSchema', ()=>{
@@ -235,6 +235,33 @@ describe('ServerSchema', ()=>{
           defaults[1]]});
       expect(f.depChange({id: 1, host: 'db-1.use2.pgedge.cloud', connection_params: defaults}))
         .toBeUndefined();
+    });
+  });
+
+  describe('sharingForServerCopy', ()=>{
+    it('clears the sharing of a copy made by a non-admin', ()=>{
+      let d = {name: 'x', shared: true, shared_username: 'someone'};
+      expect(sharingForServerCopy(d, {is_admin: false})).toBe(d);
+      expect(d.shared).toBe(false);
+      expect(d.shared_username).toBeNull();
+
+      d = {shared: true, shared_username: 'someone'};
+      sharingForServerCopy(d, undefined);
+      expect(d.shared).toBe(false);
+      expect(d.shared_username).toBeNull();
+    });
+
+    it('keeps the sharing of a copy made by an admin', ()=>{
+      let d = {name: 'x', shared: true, shared_username: 'someone'};
+      expect(sharingForServerCopy(d, {is_admin: true})).toBe(d);
+      expect(d.shared).toBe(true);
+      expect(d.shared_username).toBe('someone');
+    });
+
+    it('leaves a server that is not shared untouched', ()=>{
+      let d = {name: 'x', shared: false, shared_username: 'someone'};
+      sharingForServerCopy(d, {is_admin: false});
+      expect(d).toEqual({name: 'x', shared: false, shared_username: 'someone'});
     });
   });
 });

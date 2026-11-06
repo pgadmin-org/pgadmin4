@@ -1193,7 +1193,8 @@ class PgadminPage:
                         )
 
                     if tree_height - bottom_ele_location < 25:
-                        f_scroll = bottom_ele_location - 25
+                        # Reached the bottom, stop scrolling down.
+                        f_scroll = 0
                     else:
                         self.driver.execute_script(
                             self.js_executor_scrollintoview_arg, bottom_ele
@@ -1293,6 +1294,18 @@ class PgadminPage:
                 print(e)
                 attempt += 1
         return click_status
+
+    def click_enabled_menu_item(self, locator, timeout=20):
+        """
+        Click a menu item once it is enabled. The menus are refreshed
+        asynchronously after the selected node changes (e.g. when a
+        database gets connected), and clicking a disabled item is a no-op.
+        """
+        item = WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_element_located(locator))
+        WebDriverWait(self.driver, timeout).until(
+            lambda d: item.get_attribute('aria-disabled') != 'true')
+        item.click()
 
     def paste_values(self, el=None):
         """

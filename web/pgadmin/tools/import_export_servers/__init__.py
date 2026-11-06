@@ -18,14 +18,16 @@ from flask import Response, render_template, request
 from flask_babel import gettext as _
 from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
+from pgadmin.misc.file_manager import _open_read_target
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     unauthorized
 from pgadmin.model import ServerGroup, Server
-from pgadmin.utils import clear_database_servers, dump_database_servers,\
-    load_database_servers, validate_json_data, filename_with_file_manager_path
+from pgadmin.utils import dump_database_servers, \
+    load_database_servers, validate_json_data, \
+    filename_with_file_manager_path, get_file_manager_storage_dir
 from urllib.parse import unquote
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
@@ -118,7 +120,11 @@ def load_servers():
 
     if file_path and os.path.exists(file_path):
         try:
-            with open(file_path, 'r') as j:
+            # Don't follow a symbolic link swapped in at the leaf or a
+            # parent directory since the path was validated against the
+            # user's storage directory.
+            with _open_read_target(file_path,
+                                   get_file_manager_storage_dir()) as j:
                 data = json.loads(j.read())
 
                 # Validate the json file and data
@@ -189,11 +195,11 @@ def save():
         status, errmsg = \
             dump_database_servers(data['filename'], data['selected_sever_ids'])
     elif data['type'] == 'import':
-        # Clear all the existing servers
-        if 'replace_servers' in data and data['replace_servers']:
-            clear_database_servers()
-        status, errmsg = \
-            load_database_servers(data['filename'], data['selected_sever_ids'])
+        # The existing servers are cleared only once the file has been
+        # validated.
+        status, errmsg = load_database_servers(
+            data['filename'], data['selected_sever_ids'],
+            replace=bool(data.get('replace_servers')))
 
     if not status:
         return internal_server_error(errmsg)

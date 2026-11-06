@@ -189,6 +189,12 @@ CONNECTION_PARAM_FILE_PATHS = [
     'passfile', 'sslcert', 'sslkey', 'sslcrl'
 ]
 
+# Connection parameters naming a client credential file.  When one is not
+# given, libpq falls back to ~/.pgpass, ~/.postgresql/postgresql.crt or
+# ~/.postgresql/postgresql.key in the home directory of the account it runs
+# as, which in server mode is the pgAdmin service account, not the user.
+CONNECTION_PARAM_CREDENTIAL_FILES = ['passfile', 'sslcert', 'sslkey']
+
 # Connection parameters whose value is a directory selected through the
 # file manager, resolved in the same way but checked as a directory.
 CONNECTION_PARAM_DIR_PATHS = ['sslcrldir']
@@ -202,8 +208,9 @@ CONNECTION_PARAM_BOOLEANS = ['sslcompression', 'sslsni', 'gssdelegation']
 # src/interfaces/libpq/fe-connect.c; parameters that libpq offers no
 # environment variable for (keepalives and friends, sslpassword,
 # sslkeylogfile, fallback_application_name, replication) are absent, and
-# cannot be passed to a utility this way.  The service name is not stored
-# in the connection parameters, and is set separately.
+# cannot be passed to a utility this way.  The service name is not passed
+# from the connection parameters; the server's service is set separately
+# as PGSERVICE.
 CONNECTION_PARAM_ENV_VARS = {
     'application_name': 'PGAPPNAME',
     'channel_binding': 'PGCHANNELBINDING',

@@ -16,12 +16,13 @@ from pgadmin.model import db, Server
 from flask_babel import gettext
 from pgadmin.utils import get_server
 from pgadmin.utils.constants import IP_ADDRESS_STRING
+from pgadmin.utils.tls import get_ca_file
 
 
 def get_my_ip():
     """ Return the public IP of this host """
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    http = urllib3.PoolManager(cert_reqs='CERT_NONE')
+    http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
+                               ca_certs=get_ca_file())
     try:
         external_ip = http.request('GET', 'https://ifconfig.me/ip').data
     except Exception:

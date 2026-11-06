@@ -112,7 +112,10 @@ class SSHTunnelAllowAgentTestCase(BaseTestGenerator):
 
         # A request context, not just an app context: the failure path calls
         # gettext(), and pgAdmin's locale selector reads the request.
+        # Desktop mode: in server mode the agent is always disabled, see
+        # test_ssh_tunnel_isolation.py.
         with self.app.test_request_context(), \
+            patch.object(config, 'SERVER_MODE', False), \
             patch.object(server_manager, 'SSHTunnelForwarder', forwarder), \
             patch.object(server_manager, 'User', MagicMock()), \
             patch.object(server_manager, 'current_user', MagicMock()), \

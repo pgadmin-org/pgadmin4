@@ -15,6 +15,7 @@ from regression import parent_node_dict
 from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
+from psycopg.conninfo import conninfo_to_dict
 from unittest.mock import patch, MagicMock
 from config import PG_DEFAULT_DRIVER
 
@@ -576,13 +577,17 @@ class RestoreCreateJobTest(BaseTestGenerator):
         if ret_val is not None:
             self.skipTest(ret_val)
 
+    # These scenarios use made-up file names, so run without the server
+    # mode symbolic link protection (covered in test_restore_symlink_race).
+    @patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+           return_value=False)
     @patch('pgadmin.tools.restore.RestoreMessage')
     @patch('pgadmin.tools.restore.filename_with_file_manager_path')
     @patch('pgadmin.tools.restore.BatchProcess')
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, restore_message_mock):
+                filename_mock, restore_message_mock, gate_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username):
                 self.name = name
@@ -668,5 +673,10 @@ class RestoreCreateJobTest(BaseTestGenerator):
         if getattr(self, 'expected_dbname', None):
             _args = batch_process_mock.call_args_list[0][1]['args']
             self.assertIn('--dbname', _args)
-            self.assertEqual(_args[_args.index('--dbname') + 1],
-                             self.expected_dbname)
+            # In server mode the client credential files follow the
+            # database in the string; see utility_conninfo().
+            self.assertEqual(
+                {k: v for k, v in conninfo_to_dict(
+                    _args[_args.index('--dbname') + 1]).items()
+                 if k not in ('passfile', 'sslcert', 'sslkey')},
+                conninfo_to_dict(self.expected_dbname))

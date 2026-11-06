@@ -1011,6 +1011,8 @@ export function InputSelect({ref, cid, helpid, onChange, options, readonly = fal
       .then((res) => {
         /* If component unmounted, dont update state */
         if (!umounted) {
+          /* Clear any error left by an earlier failed load */
+          onError?.(null);
           optionsLoaded?.(res, value);
           /* Auto select if any option has key as selected */
           const flatRes = flattenSelectOptions(res || []);

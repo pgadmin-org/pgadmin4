@@ -108,6 +108,10 @@ class PSQLWindowsEOFBeforeExit(BaseTestGenerator):
                 psql.windows_platform(['psql', 'dbname=postgres'], sid,
                                       1024, 7)
 
+                # pywinpty drops argv[0] from the command line, so the
+                # executable must be repeated to give psql its own name.
+                pty_process.spawn.assert_called_once_with(
+                    ['psql', 'psql', 'dbname=postgres'], env={})
                 read_stdout.assert_called_once()
                 drain_stdout.assert_called_once_with(process, sid, 1024)
                 self.assertNotIn(sid, self.app.config['sessions'])

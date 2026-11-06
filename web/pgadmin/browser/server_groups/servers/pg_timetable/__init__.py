@@ -53,8 +53,10 @@ class ChainModule(CollectionNodeModule):
 
         status, res = conn.execute_scalar("""
 SELECT
-    has_table_privilege(
-      'timetable.chain', 'INSERT, SELECT, UPDATE'
+    (
+      has_table_privilege('timetable.chain', 'INSERT') AND
+      has_table_privilege('timetable.chain', 'SELECT') AND
+      has_table_privilege('timetable.chain', 'UPDATE')
     ) has_priviledge
 WHERE EXISTS(
     SELECT has_schema_privilege('timetable', 'USAGE')

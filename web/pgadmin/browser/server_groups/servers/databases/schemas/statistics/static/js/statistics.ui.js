@@ -147,7 +147,14 @@ export default class StatisticsSchema extends BaseUISchema {
         },
         helpMessage: gettext('Select at least two columns, or one column alongside an expression.'),
         // The columns chosen belong to the old table, whatever it changes to.
-        depChange: () => ({ columns: [] }),
+        // A field listens to its own changes too, so ignore those, else
+        // picking a column would immediately clear the selection.
+        depChange: (state, source) => {
+          const changed = source?.[source.length - 1];
+          if (changed === 'schema' || changed === 'table') {
+            return { columns: [] };
+          }
+        },
       },
       {
         id: 'stat_types',

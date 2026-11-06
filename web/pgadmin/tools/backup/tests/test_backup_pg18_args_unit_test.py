@@ -124,8 +124,10 @@ class BackupPG18ArgsTestCase(BaseTestGenerator):
         data = dict(format='custom', schemas=[], tables=[],
                     database='postgres', **self.data)
 
-        with patch('pgadmin.utils.driver.get_driver',
-                   return_value=MagicMock()):
+        # utility_conninfo() needs the application context.
+        with self.app.app_context(), \
+                patch('pgadmin.utils.driver.get_driver',
+                      return_value=MagicMock()):
             return _get_args_params_values(
                 data, MagicMock(), 'objects', 'test_backup_file', server,
                 manager)

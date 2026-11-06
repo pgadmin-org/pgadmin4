@@ -65,6 +65,17 @@ class TestStarfleetClient(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_params_encoded()
         self._test_https_required()
         self._test_bad_success_bodies()
+        self._test_default_pool_verifies()
+
+    def _test_default_pool_verifies(self):
+        # The default pool must verify, against the bundle it is given;
+        # pgAdmin passes config.CA_FILE or certifi's.
+        from pgacloud.utils.starfleet_api import StarfleetClient
+        pool = StarfleetClient(ca_certs='/path/to/ca.pem')._http
+        self.assertEqual(pool.connection_pool_kw['ca_certs'],
+                         '/path/to/ca.pem')
+        self.assertEqual(pool.connection_pool_kw['cert_reqs'],
+                         'CERT_REQUIRED')
 
     def _test_token_then_get(self):
         client, http = self._client([FakeResponse(200, TOKEN),
