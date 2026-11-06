@@ -4227,13 +4227,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^9.16.0":
-  version: 9.16.0
-  resolution: "@mui/x-date-pickers@npm:9.16.0"
+"@mui/x-date-pickers@npm:^9.17.0":
+  version: 9.17.0
+  resolution: "@mui/x-date-pickers@npm:9.17.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.7 || ^8.0.0"
     "@mui/utils": "npm:^9.5.0"
-    "@mui/x-internals": "npm:9.16.0"
+    "@mui/x-internals": "npm:9.17.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -4271,22 +4271,21 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/600473e139d910eaea0a45e8bee02c21cc0b2445fa5a53439330dadff56d752aa284a285cab354563a95eab15ea30d52c8e43c3c6e37f8130158d592fa7a3170
+  checksum: 10c0/8db5537dd2fcd9497785dc44b90efb6a363af04c03f2d55839331f42e72e74ad285b5b9aba550f98ae588a6d95b919a8c159323c3f7b6f5080627e7f938e62e1
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:9.16.0":
-  version: 9.16.0
-  resolution: "@mui/x-internals@npm:9.16.0"
+"@mui/x-internals@npm:9.17.0":
+  version: 9.17.0
+  resolution: "@mui/x-internals@npm:9.17.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.7 || ^8.0.0"
     "@base-ui/utils": "npm:^0.5.0"
     "@mui/utils": "npm:^9.5.0"
-    reselect: "npm:^5.3.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/0e6771e17bbdce3fd811e13323b770c8a9136ccc4eb549de7f3884e107d7e4ee712c30a89ba4db133fe0ab30d546da8d421ced838f2a2adeb7a4ece67dbe2237
+  checksum: 10c0/3a0104cb50bbf434e1b5e8af4b9a98954cf55951f9665af2a4e605b301c1dca1e8ed0fb19998fe733e4bf03ed871e0a3d4ef66507c8662e97aa0f2397057a2f4
   languageName: node
   linkType: hard
 
@@ -5082,25 +5081,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.105.1":
-  version: 5.105.1
-  resolution: "@tanstack/query-core@npm:5.105.1"
-  checksum: 10c0/2e13312a127e82a54024230ccb3e3644141cebb51719443767de39e90188f9b235b87abd2c0074addd02bf226f9eebf0371fc3e39577bbfaa19545cd4402b5de
+"@tanstack/query-core@npm:5.105.3":
+  version: 5.105.3
+  resolution: "@tanstack/query-core@npm:5.105.3"
+  checksum: 10c0/59593fd0409ac5ebe28569f1a66e642d17206d167266ddb34d2f815f2955fc8a73ca5255578fcc34d7fbdd817e18ddc5dfe33e0c73cad76d28979a1fe5916308
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.105.0":
-  version: 5.105.1
-  resolution: "@tanstack/react-query@npm:5.105.1"
+"@tanstack/react-query@npm:^5.105.3":
+  version: 5.105.3
+  resolution: "@tanstack/react-query@npm:5.105.3"
   dependencies:
-    "@tanstack/query-core": "npm:5.105.1"
+    "@tanstack/query-core": "npm:5.105.3"
   peerDependencies:
     "@types/react": ^18 || ^19
     react: ^18 || ^19
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/2cb228aa68476e743b3a39fc6e657aa6f8f8226427f3d92940feda671b147cd5ac417477f48eba670a360f1c563dc1f51c6a5dc2e43203d5d47f2b299a432a0b
+  checksum: 10c0/3819177ab4d0820d1b267131f81ba15fc45c082f2c238b6ec23f58012101f52874b514bda068b29a2e483536a9c136a631018367c4c0af9e7a1f08782dc2e310
   languageName: node
   linkType: hard
 
@@ -5129,15 +5128,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-virtual@npm:3.14.23":
-  version: 3.14.23
-  resolution: "@tanstack/react-virtual@npm:3.14.23"
+"@tanstack/react-virtual@npm:3.14.25":
+  version: 3.14.25
+  resolution: "@tanstack/react-virtual@npm:3.14.25"
   dependencies:
-    "@tanstack/virtual-core": "npm:3.19.8"
+    "@tanstack/virtual-core": "npm:3.19.10"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/cd39e337ba5d450be5cade885dd0a043ef9149abd95331c533b588a626573af4a48b0d4e78d2bcf36b4ffa1267921dfae7203dec8aa8aa7f128014accd2e4ff5
+  checksum: 10c0/ca59d705325ca528ede3843bd4cbc1b313b6ec5efe58214fd6c645aa1e9a3839394117552c757b9362f31609616e8a1656b5ce57d99d1f661b41561dad6a16e5
   languageName: node
   linkType: hard
 
@@ -5157,10 +5156,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/virtual-core@npm:3.19.8":
-  version: 3.19.8
-  resolution: "@tanstack/virtual-core@npm:3.19.8"
-  checksum: 10c0/eac7a1edd843d8c0f1b07343a7804ac393fb152cb046581331c1c912b7dc518f484c5bca69cae2637739f447cffc86f779b3f4ca7b227872ed7cd5dc8fe5d28b
+"@tanstack/virtual-core@npm:3.19.10":
+  version: 3.19.10
+  resolution: "@tanstack/virtual-core@npm:3.19.10"
+  checksum: 10c0/5b97a9aa44cba1fb04df3b0be3b06c5994e00e73bc2cf322a39fc1cc9314da8cf6a81e50b4280273fad8272ed6de0f0a7234ed66c5bdd91ae7a265d85bc0b8fa
   languageName: node
   linkType: hard
 
@@ -8874,10 +8873,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^17.13.0":
-  version: 17.13.0
-  resolution: "globals@npm:17.13.0"
-  checksum: 10c0/8371d9e4e5581640141b5cce70a098edd765d2e3ab063b14998e590698071e0afb4a4a6739ccfbdcbdeb2565c5553697ba07d95703c51039912cf341a7dba7a7
+"globals@npm:^17.14.0":
+  version: 17.14.0
+  resolution: "globals@npm:17.14.0"
+  checksum: 10c0/422d17c24e87170d4aa566b97a53339ae451c2f4d78512594a7ca951cdb939bc4a85c10071e6dcf77ca63de48713a77f2e71eb9214e44880233dff2090e92731
   languageName: node
   linkType: hard
 
@@ -9083,10 +9082,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hotkeys-js@npm:^4.0.8":
-  version: 4.0.8
-  resolution: "hotkeys-js@npm:4.0.8"
-  checksum: 10c0/a9cff7d76e4c4db7a1377b9f96d285ab71c8216bfb4b9526b736c09b5ca96556eb71dc697fc4cf31f5e90b0c9ee35bde760c0bd7d9571842d1c52849577f5dcb
+"hotkeys-js@npm:^4.0.12":
+  version: 4.0.12
+  resolution: "hotkeys-js@npm:4.0.12"
+  checksum: 10c0/6c61fecda85160808dd4fff1f887f94cd34681de1827dbc62fb2b4397d4d95f96f69364ae66fbca571cb03aff28443aa93d9b5c1309fdcd1b0ff415056771768
   languageName: node
   linkType: hard
 
@@ -11020,12 +11019,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:18.1.2":
-  version: 18.1.2
-  resolution: "marked@npm:18.1.2"
+"marked@npm:18.1.3":
+  version: 18.1.3
+  resolution: "marked@npm:18.1.3"
   bin:
     marked: bin/marked.js
-  checksum: 10c0/0e7312138d6cf866f59a28d2d97ab332ef1b6d1d09263306375a8e9c0e5a4ee892ff1e6ecb668a4959fab0c5f1008c3ddec16c861396fe7cce8f7810521484c9
+  checksum: 10c0/13e72a88c479f388f8c476f8fd50498740097f239091fcfc57d477ac1732c72c70261170029ef6f5029f48cda68663a4d2cd892041f588d95daf52caca02e1a2
   languageName: node
   linkType: hard
 
@@ -12748,12 +12747,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rechoir@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "rechoir@npm:0.8.0"
-  dependencies:
-    resolve: "npm:^1.20.0"
-  checksum: 10c0/1a30074124a22abbd5d44d802dac26407fa72a0a95f162aa5504ba8246bc5452f8b1a027b154d9bdbabcd8764920ff9333d934c46a8f17479c8912e92332f3ff
+"rechoir@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "rechoir@npm:1.0.0"
+  checksum: 10c0/ead38482b4017c51785d5826f9b79a56e2fb6021d4adbc2b13c6a8c748d59e5a45845972f2ce6ef412edd0722d8fa1bc17c77ca244525a97f2aebe51729dd947
   languageName: node
   linkType: hard
 
@@ -12922,7 +12919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.11":
+"resolve@npm:^1.19.0, resolve@npm:^1.22.11":
   version: 1.22.11
   resolution: "resolve@npm:1.22.11"
   dependencies:
@@ -12951,7 +12948,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.19.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.11#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.19.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.11#optional!builtin<compat/resolve>":
   version: 1.22.11
   resolution: "resolve@patch:resolve@npm%3A1.22.11#optional!builtin<compat/resolve>::version=1.22.11&hash=c3c19d"
   dependencies:
@@ -13023,15 +13020,15 @@ __metadata:
     "@fortawesome/fontawesome-free": "npm:7.3.1"
     "@mui/icons-material": "npm:^7.3.11"
     "@mui/material": "npm:^7.3.11"
-    "@mui/x-date-pickers": "npm:^9.16.0"
+    "@mui/x-date-pickers": "npm:^9.17.0"
     "@nozbe/microfuzz": "npm:^1.0.0"
     "@projectstorm/react-diagrams": "npm:^7.0.4"
     "@simonwep/pickr": "npm:~1.9.1"
     "@svgr/webpack": "npm:^8.1.0"
     "@szhsin/react-menu": "npm:^4.5.2"
-    "@tanstack/react-query": "npm:^5.105.0"
+    "@tanstack/react-query": "npm:^5.105.3"
     "@tanstack/react-table": "npm:^9.3.1"
-    "@tanstack/react-virtual": "npm:3.14.23"
+    "@tanstack/react-virtual": "npm:3.14.25"
     "@testing-library/dom": "npm:10.4.2"
     "@testing-library/jest-dom": "npm:^6.10.0"
     "@testing-library/react": "npm:16.3.3"
@@ -13066,8 +13063,8 @@ __metadata:
     eslint-plugin-jest: "npm:^29.17.0"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-unused-imports: "npm:^4.4.1"
-    globals: "npm:^17.13.0"
-    hotkeys-js: "npm:^4.0.8"
+    globals: "npm:^17.14.0"
+    hotkeys-js: "npm:^4.0.12"
     html-react-parser: "npm:^6.1.9"
     html-to-image: "npm:1.11.13"
     image-minimizer-webpack-plugin: "npm:^5.0.0"
@@ -13079,7 +13076,7 @@ __metadata:
     loader-utils: "npm:^3.3.1"
     lodash: "npm:4.*"
     lossless-json: "npm:^4.3.3"
-    marked: "npm:18.1.2"
+    marked: "npm:18.1.3"
     mini-css-extract-plugin: "npm:^2.10.2"
     moment: "npm:^2.31.0"
     notificar: "npm:^1.0.1"
@@ -13122,8 +13119,8 @@ __metadata:
     vanilla-jsoneditor: "npm:^3.13.0"
     webfonts-loader: "npm:^8.1.1"
     webpack: "npm:^5.112.2"
-    webpack-bundle-analyzer: "npm:^5.4.0"
-    webpack-cli: "npm:^7.2.3"
+    webpack-bundle-analyzer: "npm:^5.4.1"
+    webpack-cli: "npm:^7.3.1"
     wkx: "npm:^0.5.0"
     yarn-audit-html: "npm:7.3.2"
     zustand: "npm:^5.0.16"
@@ -14859,9 +14856,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-bundle-analyzer@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "webpack-bundle-analyzer@npm:5.4.0"
+"webpack-bundle-analyzer@npm:^5.4.1":
+  version: 5.4.1
+  resolution: "webpack-bundle-analyzer@npm:5.4.1"
   dependencies:
     "@discoveryjs/json-ext": "npm:^0.6.3"
     acorn: "npm:^8.0.4"
@@ -14875,23 +14872,22 @@ __metadata:
     ws: "npm:^8.19.0"
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
-  checksum: 10c0/9378e00bc8be067f695d68bbb92ca9f40c890d3efeb790c2323c476492bf93d5ab3aa2ea8f17d4ae4cad3a7c773c300ae3d6b3ed9522a5a54724e297606f88da
+  checksum: 10c0/95595874de4dec3a8dd0217aea5e01d5a015378ae1f9fc28a4b70353eb0ccb6ca117933e5b45b8df08ab8185c84eef275d2ef27ae80c728d86088c5b8ae8f371
   languageName: node
   linkType: hard
 
-"webpack-cli@npm:^7.2.3":
-  version: 7.2.3
-  resolution: "webpack-cli@npm:7.2.3"
+"webpack-cli@npm:^7.3.1":
+  version: 7.3.1
+  resolution: "webpack-cli@npm:7.3.1"
   dependencies:
     "@discoveryjs/json-ext": "npm:^1.1.0"
     commander: "npm:^14.0.3"
-    cross-spawn: "npm:^7.0.6"
     envinfo: "npm:^7.21.0"
-    import-local: "npm:^3.2.0"
     interpret: "npm:^3.1.1"
-    rechoir: "npm:^0.8.0"
+    rechoir: "npm:^1.0.0"
     webpack-merge: "npm:^6.0.1"
   peerDependencies:
+    "@bomb.sh/tab": ^0.0.22
     js-yaml: ^4.0.0 || ^5.0.0
     json5: ^2.2.3
     toml: ^3.0.0 || ^4.0.0 || ^5.0.0
@@ -14899,6 +14895,8 @@ __metadata:
     webpack-bundle-analyzer: ^4.0.0 || ^5.0.0
     webpack-dev-server: ^5.0.0 || ^6.0.0
   peerDependenciesMeta:
+    "@bomb.sh/tab":
+      optional: true
     js-yaml:
       optional: true
     json5:
@@ -14911,7 +14909,7 @@ __metadata:
       optional: true
   bin:
     webpack-cli: bin/cli.js
-  checksum: 10c0/f8f573c10ac4a3fbcace2ec5cb7ee68e227c4af1f5f551de0cc199f0e3580dbd51506769032fb402dfbc910d4a59ef7345484eff39b3eced805a6cf31a153577
+  checksum: 10c0/97cc3c47d910f8766b9e629ca43ffc255ae6db54ca07fc23378f885ec0e5c9f84be70b175f3eccb382f07e284693b61ca15e9f99e32cd0f7aa8c341110208bed
   languageName: node
   linkType: hard
 
