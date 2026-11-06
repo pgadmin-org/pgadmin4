@@ -228,7 +228,8 @@ class ServerManager(object):
         Whether any connection of this server is open: the Object
         Explorer's, or one of a Query Tool or View/Edit Data tab.
         """
-        return any(conn.connected() for conn in list(self.connections.values()))
+        return any(conn.connected()
+                   for conn in list(self.connections.values()))
 
     def connection(self, **kwargs):
         database = kwargs.get('database', None)
