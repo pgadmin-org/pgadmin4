@@ -78,6 +78,10 @@ class ChainModule(CollectionNodeModule):
         return servers.ServerModule.node_type
 
     def backend_supported(self, manager, **kwargs):
+        """
+        Show the pgTimeTable Chains collection only when pg_timetable is
+        usable by the current role in the server's maintenance database.
+        """
         if hasattr(self, 'show_node') and not self.show_node:
             return False
 
@@ -169,7 +173,10 @@ class ChainView(PGChildNodeView):
 
         @wraps(f)
         def wrap(self, *args, **kwargs):
-
+            """
+            Attach the connection details, and refuse the request with a
+            clear error when pg_timetable is not usable.
+            """
             self.manager = get_driver(
                 PG_DEFAULT_DRIVER
             ).connection_manager(
