@@ -84,3 +84,75 @@ describe('LayoutDocker.resetLayout', () => {
     expect(docker.saveLayout).toHaveBeenCalled();
   });
 });
+
+describe('LayoutDocker.close', () => {
+  let docker, panel;
+
+  // A minimal stand-in for rc-dock's DockLayout, removing tabs the way
+  // rc-dock does: if the active tab goes, the tab to its right is selected,
+  // or the first tab when there is none to the right.
+  const makeLayoutObj = () => ({
+    find: jest.fn((id) => {
+      if(id === panel.id) return panel;
+      return panel.tabs.find((t) => t.id === id) ?? null;
+    }),
+    updateTab: jest.fn((id) => {
+      panel.activeId = id;
+    }),
+    dockMove: jest.fn((tab, _target, direction) => {
+      if(direction !== 'remove') return;
+      const pos = panel.tabs.indexOf(tab);
+      panel.tabs.splice(pos, 1);
+      if(panel.activeId === tab.id && panel.tabs.length) {
+        panel.activeId = (panel.tabs[pos] ?? panel.tabs[0]).id;
+      }
+    }),
+  });
+
+  beforeEach(() => {
+    panel = {id: 'panel-1', activeId: null, tabs: []};
+    ['t1', 't2', 't3', 't4'].forEach((id) => {
+      panel.tabs.push({id, parent: panel, internal: {closable: true}});
+    });
+    docker = new LayoutDocker('Browser/Layout', {}, 'id-dashboard');
+    docker.layoutObj = makeLayoutObj();
+    jest.spyOn(docker.eventBus, 'fireEvent');
+  });
+
+  const tabIds = () => panel.tabs.map((t) => t.id);
+
+  it('selects the tab to the left when the active right-most tab is closed', () => {
+    panel.activeId = 't4';
+    docker.close('t4');
+
+    expect(tabIds()).toEqual(['t1', 't2', 't3']);
+    expect(panel.activeId).toBe('t3');
+    expect(docker.eventBus.fireEvent).toHaveBeenCalledWith('active', 't3');
+  });
+
+  it('selects the tab to the right when an active middle tab is closed', () => {
+    panel.activeId = 't2';
+    docker.close('t2');
+
+    expect(tabIds()).toEqual(['t1', 't3', 't4']);
+    expect(panel.activeId).toBe('t3');
+  });
+
+  it('keeps the current selection when an inactive tab is closed', () => {
+    panel.activeId = 't2';
+    docker.close('t4');
+
+    expect(tabIds()).toEqual(['t1', 't2', 't3']);
+    expect(panel.activeId).toBe('t2');
+    expect(docker.layoutObj.updateTab).not.toHaveBeenCalled();
+  });
+
+  it('closes the only tab without trying to select another', () => {
+    panel.tabs.splice(1);
+    panel.activeId = 't1';
+    docker.close('t1');
+
+    expect(tabIds()).toEqual([]);
+    expect(docker.layoutObj.updateTab).not.toHaveBeenCalled();
+  });
+});

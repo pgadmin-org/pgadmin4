@@ -332,7 +332,7 @@ def save_application_state():
         if 'connection_info' in data else None
     if (connection_info and 'open_file_name' in connection_info and
             connection_info['open_file_name']):
-        file_path = get_complete_file_path(connection_info['open_file_name'])
+        file_path = _get_open_file_path(connection_info['open_file_name'])
         connection_info['last_saved_file_hash'] = (
             get_last_saved_file_hash(file_path, trans_id))
 
@@ -354,6 +354,17 @@ def save_application_state():
         })
 
 
+def _get_open_file_path(open_file_name):
+    """
+    Resolve the file a tool has open, treating one outside the user's
+    storage directory as though it had been deleted.
+    """
+    try:
+        return get_complete_file_path(open_file_name)
+    except PermissionError:
+        return None
+
+
 def get_last_saved_file_hash(file_path, trans_id):
     result = db.session \
         .query(ApplicationState) \
@@ -369,7 +380,7 @@ def get_last_saved_file_hash(file_path, trans_id):
             file_hash_update_require = not connection_info['is_editor_dirty']
             last_saved_file_hash = connection_info['last_saved_file_hash']
 
-    if file_hash_update_require:
+    if file_hash_update_require and file_path:
         last_saved_file_hash = compute_md5_hash_file(file_path)
 
     return last_saved_file_hash
@@ -394,7 +405,7 @@ def get_application_state():
         connection_info = row.connection_info
         if (connection_info and 'open_file_name' in connection_info and
                 connection_info['open_file_name']):
-            file_path = get_complete_file_path(
+            file_path = _get_open_file_path(
                 connection_info['open_file_name'])
             file_deleted = False if file_path else True
             connection_info['file_deleted'] = file_deleted
@@ -438,7 +449,7 @@ def get_tool_data(trans_id):
         if (connection_info and 'open_file_name' in connection_info and
                 connection_info['open_file_name']):
             file_path = (
-                get_complete_file_path(connection_info['open_file_name']))
+                _get_open_file_path(connection_info['open_file_name']))
             file_deleted = False if file_path else True
             connection_info['file_deleted'] = file_deleted
 

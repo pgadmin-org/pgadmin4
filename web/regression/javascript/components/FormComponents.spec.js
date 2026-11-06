@@ -597,6 +597,23 @@ describe('FormComponents', ()=>{
       await waitFor(()=>expect(screen.getByText('PrOp3')).toBeInTheDocument(), {timeout: 500});
     });
 
+    it('clears a load error once a reload succeeds', async ()=>{
+      ctrlRerender({
+        options: ()=>Promise.reject(new Error('load failed')),
+        optionsReloadBasis: 'a',
+        value: 3,
+      });
+      await waitFor(()=>expect(screen.getByText('load failed')).toBeInTheDocument(), {timeout: 500});
+
+      ctrlRerender({
+        options: ()=>Promise.resolve([{label: 'PrOp3', value: 3}]),
+        optionsReloadBasis: 'b',
+        value: 3,
+      });
+      await waitFor(()=>expect(screen.getByText('PrOp3')).toBeInTheDocument(), {timeout: 500});
+      expect(screen.queryByText('load failed')).not.toBeInTheDocument();
+    });
+
     it('accessibility', ()=>{
       const input = ctrl.container.querySelectorAll('input')[1];
       expect(input.getAttribute('id')).toBe('inpCid');
@@ -736,6 +753,29 @@ describe('FormComponents', ()=>{
           <input />
         </ThemedFormInput>);
       expect(ctrl.container.querySelector('script')).toBeNull();
+    });
+
+    it('opens help message links in a new window', ()=>{
+      const ctrl = render(
+        <ThemedFormInput label="Field"
+          helpMessage={'See <a href="https://example.com/docs">the docs</a>.'}>
+          <input />
+        </ThemedFormInput>);
+      const link = ctrl.container.querySelector('a');
+      expect(link.getAttribute('href')).toBe('https://example.com/docs');
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('still strips unsafe links from help messages', ()=>{
+      const ctrl = render(
+        <ThemedFormInput label="Field"
+          helpMessage={'<a href="javascript:window.__xss=true">bad</a>'}>
+          <input />
+        </ThemedFormInput>);
+      const link = ctrl.container.querySelector('a');
+      expect(link.getAttribute('href')).toBeNull();
+      expect(link.getAttribute('target')).toBeNull();
     });
 
     it('preserves safe HTML formatting', ()=>{

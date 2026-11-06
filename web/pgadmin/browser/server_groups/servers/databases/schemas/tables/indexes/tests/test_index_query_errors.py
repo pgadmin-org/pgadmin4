@@ -40,6 +40,7 @@ class IndexQueryErrorsTestCase(BaseTestGenerator):
                       'HINT: original query hint')
         self.data = dict(name='test_index', amname='btree')
         self.column = dict(attdef='"id"', collnspname=None, opcname=None,
+                           opclassname='int4_ops', attoptions=None,
                            attnum=1, is_exp=False, statistics=-1,
                            options=['ASC', 'NULLS LAST'])
         self.conn.execute_dict.return_value = (True, {'rows': [self.data]})

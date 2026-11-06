@@ -137,8 +137,11 @@ describe('PartitionsSchema', ()=>{
   });
 
   it('create collection', async ()=>{
+    // Let the collection become the top schema, as the table dialog is in
+    // the product, rather than the partition schema being its own top with
+    // no session data.
     let schemaCollObj = new SchemaInColl(
-      schemaObj,[ 'is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder']
+      new PartitionsSchema(),[ 'is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder']
     );
     const {ctrl, user} = await getCreateView(schemaCollObj);
     /* Make sure you hit every corner */

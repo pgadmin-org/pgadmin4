@@ -150,8 +150,10 @@ class TestServerPasswordExecUnsetValues(BaseTestGenerator):
             pexec.get()
         env = mock_run.call_args[1]['env']
         for k in ('HOST', 'PORT', 'USERNAME', 'DATABASE', 'PGADMIN_USER',
-                  'AUTH_SOURCE'):
+                  'AUTH_SOURCE', 'SERVER_ID', 'SERVER_OWNER',
+                  'SERVER_OWNER_AUTH_SOURCE', 'SERVER_GROUP'):
             self.assertEqual(env['PGADMIN_PASSEXEC_' + k], '')
+        self.assertEqual(env['PGADMIN_PASSEXEC_SHARED'], 'false')
 
 
 class TestFreeTextRefusedInServerMode(BaseTestGenerator):

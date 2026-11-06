@@ -20,6 +20,27 @@ from flask import Response, current_app, session
 from pgadmin.utils.driver import get_driver
 
 
+def connect_as_transaction_user(conn, trans_obj):
+    """
+    (Re)connect a Query Tool connection as the user and role it was opened
+    with, either of which may be recorded without the other. When the
+    connection was changed to a different user or role, a bare connect()
+    would log in as the server's own user instead, so queries would silently
+    run as someone else. The password is never stored, so the
+    driver falls back to the connection's or server's saved password, and
+    the connection fails rather than switching user if that is not accepted.
+
+    :param conn: Connection to (re)connect.
+    :param trans_obj: Transaction (command) object for the Query Tool.
+    :return: (status, message) from Connection.connect().
+    """
+    user = getattr(trans_obj, 'conn_user', None)
+    role = getattr(trans_obj, 'conn_role', None)
+    if user or role:
+        return conn.connect(user=user, role=role, password=None)
+    return conn.connect()
+
+
 def query_tool_connection_check(trans_id):
     # This function will check if the query tool has the connection or not
     # if not then establishes the connection.
@@ -56,7 +77,7 @@ def query_tool_connection_check(trans_id):
                 **({"database": transaction_object.dbname} if hasattr(
                     transaction_object, 'dbname') else {}))
 
-        status, msg = conn.connect()
+        status, msg = connect_as_transaction_user(conn, transaction_object)
         if not status:
             current_app.logger.error(msg)
             return status, msg, None, None, None, None

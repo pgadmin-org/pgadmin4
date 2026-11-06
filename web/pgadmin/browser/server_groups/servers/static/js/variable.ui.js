@@ -107,6 +107,9 @@ export default class VariableSchema extends BaseUISchema {
           label: val,
           value: val
         }: val)),
+        /* The select keeps its loaded options until this changes, so switching
+        the name between two enum variables must force a reload. */
+        optionsReloadBasis: variable.value,
         controlProps: {
           placeholder: this.getPlaceHolderMsg(variable)
         }

@@ -21,7 +21,8 @@ from types import MethodType
 from collections import defaultdict
 from importlib import import_module
 
-from flask import Flask, abort, request, current_app, g, session, url_for
+from flask import Flask, Response, abort, request, current_app, g, \
+    session, url_for
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
 from flask_babel import Babel, gettext
@@ -40,8 +41,11 @@ from flask_wtf.csrf import CSRFError
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
+from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat, \
+    remove_inherited_libpq_credentials
 from pgadmin.utils.db_utils import normalize_database_uri
+from pgadmin.utils.locker import isolate_kerberos_credentials, \
+    warn_if_no_auth_refusal
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -181,6 +185,51 @@ def _find_blueprint():
 
 
 current_blueprint = LocalProxy(_find_blueprint)
+
+# Flask-Security's views whose submission is refused: see
+# refuse_flask_security_forms() in create_app().
+FLASK_SECURITY_FORM_ENDPOINTS = (
+    'security.login', 'security.verify', 'security.change_password',
+    'security.forgot_password', 'security.reset_password'
+)
+
+
+class PgAdminUserDatastore(SQLAlchemyUserDatastore):
+    def find_user(self, case_insensitive=False, **kwargs):
+        """Prefer the internal account when looking up by email or username.
+
+        Neither is unique on its own: accounts from several auth sources may
+        share them. Flask-Security looks the account up this way to check
+        the password at login and to validate a password recovery request,
+        both of which only make sense for an internal account, so find that
+        one if there is one, rather than whichever row comes first.
+
+        Ignoring case, several internal accounts may match too: prefer the
+        one matching exactly, then the oldest.
+
+        A missing email or username identifies no account. Compared to None,
+        the column matches every account without one, Flask-Security's own
+        lookup included, so none is looked up.
+        """
+        if len(kwargs) == 1 and next(iter(kwargs)) in ('email', 'username'):
+            attr, value = next(iter(kwargs.items()))
+            if value is None:
+                return None
+            column = getattr(self.user_model, attr)
+            if case_insensitive:
+                match = db.func.lower(column) == db.func.lower(value)
+            else:
+                match = column == value
+            user = self.user_model.query.filter(
+                match, self.user_model.auth_source == INTERNAL
+            ).order_by(
+                db.case((column == value, 0), else_=1),
+                self.user_model.id
+            ).first()
+            if user is not None:
+                return user
+        return super().find_user(case_insensitive=case_insensitive,
+                                 **kwargs)
 
 
 def _remember_authenticated_user():
@@ -327,6 +376,13 @@ def create_app(app_name=None):
     app.logger.info('Starting %s v%s...', config.APP_NAME, config.APP_VERSION)
     app.logger.info('########################################################')
     app.logger.debug("Python syspath: %s", sys.path)
+
+    # In server mode, libpq connects on behalf of pgAdmin users, so must not
+    # pick up a password or service from the service account's environment.
+    if config.SERVER_MODE is True:
+        remove_inherited_libpq_credentials(app.logger)
+        isolate_kerberos_credentials()
+        warn_if_no_auth_refusal(app.logger)
 
     ##########################################################################
     # Setup i18n
@@ -557,6 +613,9 @@ def create_app(app_name=None):
         from pgadmin.utils.passexec import server_passexec_startup
         server_passexec_startup(app, cli_mode)
 
+        from pgadmin.utils import check_non_admin_shared_servers
+        check_non_admin_shared_servers(app.logger, cli_mode)
+
     Mail(app)
 
     # Don't bother paths when running in cli mode
@@ -565,7 +624,7 @@ def create_app(app_name=None):
         paths.init_app()
 
     # Setup Flask-Security
-    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    user_datastore = PgAdminUserDatastore(db, User, Role)
     security = Security(None, user_datastore)
 
     ##########################################################################
@@ -874,6 +933,26 @@ def create_app(app_name=None):
                 errormsg=_("403 FORBIDDEN")
             )
 
+    @app.before_request
+    def refuse_flask_security_forms():
+        """
+        Flask-Security's own views log a user in, check, change and reset
+        passwords without pgAdmin's checks: failed login counting, the
+        account lock, internal accounts only, permissions, and re-encrypting
+        saved server passwords. pgAdmin does all of these through views of
+        its own (authenticate.login and browser.change_password,
+        forgot_password and reset_password), so refuse any submission to
+        Flask-Security's. A GET only renders a page: GET /login renders
+        pgAdmin's login page, whose form is posted to /authenticate/login.
+
+        The refusal is a plain response, not an error: anyone can send
+        such a request, and an error would be logged with a traceback.
+        """
+        if request.endpoint in FLASK_SECURITY_FORM_ENDPOINTS and \
+                request.method not in ('GET', 'HEAD', 'OPTIONS'):
+            return Response(status=405,
+                            headers={'Allow': 'GET, HEAD, OPTIONS'})
+
     ##########################################################################
     # Handle the desktop login
     ##########################################################################
@@ -925,11 +1004,13 @@ def create_app(app_name=None):
                 return response
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
-        # to get the key again when login
+        # to get the key again when login. A session left by an older
+        # version may hold a None auth_source_manager: treat that as an
+        # unknown source.
         if config.SERVER_MODE and current_user.is_authenticated and \
             'auth_source_manager' in session and \
-            session['auth_source_manager']['current_source'] not in \
-            [KERBEROS, OAUTH2, WEBSERVER] and \
+            (session['auth_source_manager'] or {}).get('current_source') \
+            not in [KERBEROS, OAUTH2, WEBSERVER] and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()

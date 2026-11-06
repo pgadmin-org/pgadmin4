@@ -211,6 +211,33 @@ export class Tree {
     }
   }
 
+  /*
+   * Move an item to its sorted position amongst its siblings after its
+   * label has changed, so that a renamed node lands where a reload would
+   * put it. The tree sorts on the item's file name, which is the escaped
+   * label it was loaded with (reduced to its base name, as on load), so
+   * that is updated first. Columns are left alone because they keep their
+   * attribute number order, and the item's resolved path is untouched
+   * because pgAdmin paths are built from ids. Returns true if the item was
+   * repositioned.
+   */
+  resortItem(item, label) {
+    const parent = item?.parent;
+    if (!parent?._children ||
+      item.getMetadata('data')?._type === 'column') {
+      return false;
+    }
+    const fileName = item.root.pathfx.basename(label);
+    const oldIndex = parent._children.indexOf(item);
+    if (oldIndex === -1 || item.fileName === fileName) {
+      return false;
+    }
+    item._fileName = fileName;
+    parent.unlinkItem(item, true);
+    parent.insertItem(item);
+    return parent._children.indexOf(item) !== oldIndex;
+  }
+
   async setInode(item) {
     if (item._children) item._children = null;
     await this.tree.closeDirectory(item);

@@ -305,16 +305,36 @@ export class FileManagerUtils {
   }
 
   async downloadFile(row, ss) {
-    let res = await this.api({
-      method: 'POST',
-      url: this.fileConnectorUrl,
-      responseType: 'blob',
-      data: {
-        'mode': 'download',
-        'path': row.Path,
-        'storage_folder': ss,
-      },
-    });
+    let res;
+    try {
+      res = await this.api({
+        method: 'POST',
+        url: this.fileConnectorUrl,
+        responseType: 'blob',
+        data: {
+          'mode': 'download',
+          'path': row.Path,
+          'storage_folder': ss,
+        },
+      });
+    } catch (error) {
+      // An error is sent as JSON but arrives as a Blob, since the request
+      // asks for one; read it back so the message can be shown.
+      if(error.response?.data instanceof Blob) {
+        try {
+          const text = await new Promise((resolve, reject)=>{
+            const reader = new FileReader();
+            reader.onload = ()=>resolve(reader.result);
+            reader.onerror = ()=>reject(reader.error);
+            reader.readAsText(error.response.data);
+          });
+          error.response.data = JSON.parse(text);
+        } catch {
+          /* Not JSON; leave it for the status text to be shown */
+        }
+      }
+      throw error;
+    }
     DownloadUtils.downloadBlob(res.data, res.headers.filename);
   }
 
@@ -362,6 +382,7 @@ export class FileManagerUtils {
       'path': path,
       'name': fileName,
       'mode': 'is_file_exist',
+      'storage_folder': this.storage_folder,
     });
     return Boolean(res.data.data.result.Code);
   }

@@ -182,7 +182,20 @@ export class LayoutDocker {
     if(panelData.internal?.manualClose && !force) {
       this.eventBus.fireEvent(LAYOUT_EVENTS.CLOSING, panelId);
     } else {
-      this.layoutObj.dockMove(panelData, null, 'remove');
+      // When the active tab is closed, rc-dock selects the tab to its right,
+      // or the first tab if there is none. Match browser behaviour instead,
+      // selecting the tab to the right or, failing that, the one to the left.
+      // The neighbour is activated before removal so that rc-dock leaves the
+      // selection alone and the saved layout records the right active tab.
+      const parentTabs = panelData.parent?.tabs ?? [];
+      const closedIdx = parentTabs.indexOf(panelData);
+      if(closedIdx >= 0 && panelData.parent.activeId == panelData.id) {
+        const nextTab = parentTabs[closedIdx + 1] ?? parentTabs[closedIdx - 1];
+        if(nextTab) {
+          this.focus(nextTab.id);
+        }
+      }
+      this.layoutObj.dockMove(this.find(panelId) ?? panelData, null, 'remove');
       // rc-dock is not firing the "active" event after a tab is removed
       // and another is focussed. here we try get the new active id and
       // manually fire the active event

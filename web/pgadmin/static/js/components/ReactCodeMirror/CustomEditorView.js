@@ -310,9 +310,12 @@ export default class CustomEditorView extends EditorView {
   }
 
   replaceSelection(newValue) {
+    const insert = this.state.toText(newValue);
     this.dispatch(this.state.changeByRange(range => ({
-      changes: { from: range.from, to: range.to, insert: newValue },
-      range: EditorSelection.range(range.from, range.to)
+      changes: { from: range.from, to: range.to, insert },
+      range: range.empty
+        ? EditorSelection.cursor(range.from + insert.length)
+        : EditorSelection.range(range.from, range.from + insert.length)
     })));
   }
 

@@ -260,7 +260,8 @@ class WebserverAuthentication(BaseAuthentication):
     def login(self, form):
         username = self.get_user()
         if username:
-            user = User.query.filter_by(username=username).first()
+            user = User.query.filter_by(username=username,
+                                        auth_source=WEBSERVER).first()
             if user is None:
                 current_app.logger.warning(
                     "Webserver auth: no User row matches the asserted "
@@ -288,7 +289,8 @@ class WebserverAuthentication(BaseAuthentication):
     def __auto_create_user(self, username, useremail):
         """Add the webserver user to the internal SQLite database."""
         if config.WEBSERVER_AUTO_CREATE_USER:
-            user = User.query.filter_by(username=username).first()
+            user = User.query.filter_by(username=username,
+                                        auth_source=WEBSERVER).first()
             if not user:
                 create_msg = ("Creating user {0} with email {1} "
                               "from auth source Webserver.")

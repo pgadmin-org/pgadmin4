@@ -89,6 +89,14 @@ Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
 Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
   value: 800
 });
+// @tanstack/virtual-core 3.19 sizes the scroll element from clientHeight
+// and clientWidth rather than the offset pair.
+Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
+  value: 800
+});
+Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+  value: 800
+});
 
 Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
   writable: true,

@@ -18,7 +18,6 @@ from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.ajax import make_json_response
 import config
-from pgadmin.model import User
 from user_agents import parse
 import platform
 import re
@@ -61,7 +60,7 @@ def index():
     info = {}
     # Get OS , NW.js, Browser details
     browser, os_details, electron_version = detect_browser(request)
-    admin = is_admin(current_user.email)
+    admin = current_user.has_role('Administrator')
 
     if electron_version:
         info['electron'] = electron_version
@@ -112,11 +111,6 @@ def index():
         data=info,
         status=200
     )
-
-
-def is_admin(load_user):
-    user = User.query.filter_by(email=load_user).first()
-    return user.has_role("Administrator")
 
 
 def detect_browser(request):

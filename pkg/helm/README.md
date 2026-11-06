@@ -39,6 +39,7 @@ The chart should dump its version and appVersion in the Chart.yaml file every re
 | `service.type` | Service type | `"ClusterIP"` |
 | `service.loadBalancerIP` | Load balancer IP (Only if service.type is LoadBalancer) | `""` |
 | `ingress.enabled` | Ingress resource creation | `false` |
+| `ingress.className` | Ingress class name (`spec.ingressClassName`); when empty, the field is not rendered and the cluster default IngressClass applies only if one is configured | `""` |
 | `ingress.hostname` | Ingress resource hostname | `"pgadmin4.local"` |
 | `ingress.tlsSecret` | Ingress tls secret name | `""` |
 | `httpRoute.enabled` | Gateway API HTTPRoute resource creation | `false` |

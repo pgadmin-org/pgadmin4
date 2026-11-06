@@ -52,10 +52,17 @@ to launch a password recovery utility.
 If you have forgotten the email associated with your account, please contact
 your administrator.
 
-Please note that your LDAP password cannot be recovered using this page. If
-you enter your LDAP username in the *Email Address/Username* field, and then
-enter your email to recover your password, an error message will be displayed
-asking you to contact the LDAP administrator to recover your LDAP password.
+Password recovery works only for accounts using the ``INTERNAL``
+authentication source, which are the only accounts whose password pgAdmin
+holds. Recovery looks up the email address you enter and acts on the ``INTERNAL``
+account that has it: if one exists, reset instructions are sent for that
+account. The password of an account authenticated against an external source
+(``LDAP``, ``OAUTH2``, ``KERBEROS`` or ``WEBSERVER``) cannot be recovered here,
+because it is held by that source; if the email belongs only to such an
+account, an error asks you to contact that source's administrator. See
+:ref:`Accounts from different authentication sources <auth_source_accounts>`.
+
+.. _avoiding_bruteforce:
 
 Avoiding a bruteforce attack
 ****************************

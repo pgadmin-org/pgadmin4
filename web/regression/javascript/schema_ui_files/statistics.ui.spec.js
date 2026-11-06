@@ -64,6 +64,17 @@ describe('StatisticsSchema', () => {
     expect(getTables).toHaveBeenCalledWith(16400);
   });
 
+  it('columns are kept when picked and cleared when the table context changes', () => {
+    const columns = schemaObj.baseFields.find((f) => f.id == 'columns');
+    const state = {columns: ['col1', 'col2']};
+
+    // A field listens to its own changes, which must not reset it.
+    expect(columns.depChange(state, ['columns'])).toBeUndefined();
+
+    expect(columns.depChange(state, ['schema'])).toEqual({columns: []});
+    expect(columns.depChange(state, ['table'])).toEqual({columns: []});
+  });
+
   it('name is required before PostgreSQL 16 and optional from 16', () => {
     const nameField = (obj) => obj.baseFields.find((f) => f.id == 'name');
 

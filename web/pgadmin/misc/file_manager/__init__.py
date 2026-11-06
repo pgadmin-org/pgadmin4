@@ -10,9 +10,11 @@
 """Implements File Manager"""
 
 import errno
+import io
 import os
 import os.path
 import secrets
+import stat
 import string
 import time
 from urllib.parse import unquote
@@ -25,7 +27,7 @@ import pathlib
 
 import json
 from flask import render_template, Response, session, request as req, \
-    url_for, current_app, send_from_directory
+    url_for, current_app, send_file
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
@@ -50,16 +52,144 @@ if _platform == "win32":
     file_root = ""
 
 
-def _open_upload_target(path):
-    """Open a file for writing, with leaf-symlink protection in server mode.
+def _openat_nofollow(dir_fd, name, flags, mode, path):
+    """Open `name` relative to `dir_fd` without following a symbolic link.
+    `path` is the full path, for error messages only."""
+    try:
+        return os.open(name, flags | os.O_NOFOLLOW | os.O_CLOEXEC, mode,
+                       dir_fd=dir_fd)
+    except NotADirectoryError:
+        # With O_DIRECTORY, Linux reports a symbolic link as ENOTDIR rather
+        # than ELOOP. Say what actually happened so callers can tell the
+        # refusal from a genuine error.
+        if stat.S_ISLNK(os.stat(name, dir_fd=dir_fd,
+                                follow_symlinks=False).st_mode):
+            raise OSError(errno.ELOOP, os.strerror(errno.ELOOP), path)
+        raise
 
-    Used by both the file upload endpoint and `save_file()` (Query Tool /
-    ERD save). Returns a binary write-mode file object.
 
-    In server mode the kernel will refuse to follow a symbolic link at the
-    leaf (CWE-61), closing the TOCTOU gap between `check_access_permission`
-    and the actual file write, and new files are created owner-only
-    (0o600).
+def _open_parent_beneath(root, path):
+    """Open the directory containing `path`, which must lie inside `root`,
+    without following a symbolic link anywhere below `root`.
+
+    Validating a path with `check_access_permission()` and then opening it
+    by name leaves a window in which any component of the path, the leaf or
+    a parent directory, can be swapped for a symbolic link that points
+    outside the storage directory (CWE-367 / CWE-61). Rather than check and
+    then trust the name, this opens `root` and walks down from it one
+    component at a time with O_NOFOLLOW, each open relative to the
+    descriptor of the directory above it, so the kernel refuses a symbolic
+    link (with ELOOP, or EMLINK on some BSDs) wherever it appears.
+
+    `root` itself is trusted and may be a symbolic link, since it is the
+    storage directory configured by the administrator. A symbolic link
+    inside the storage directory is refused even when it points elsewhere
+    inside it.
+
+    `path` is walked as written, not normalised first: a ".." goes back up
+    past a directory the walk has opened, so "link/.." opens "link" (and is
+    refused) rather than being collapsed in the text to a directory that
+    check_access_permission(), which resolves the link first, never named.
+    `path` must be written as `root` followed by its components; any other
+    path is refused. The walk never goes above `root`, so this holds for a
+    path that has not been through check_access_permission() too, but
+    callers pass the path that it returned.
+
+    Returns (descriptor of the parent directory, name of the leaf); the
+    caller must close the descriptor.
+    """
+    def denied():
+        return PermissionError(errno.EACCES, gettext("Access denied"), path)
+
+    def components(p):
+        if not os.path.isabs(p):
+            p = os.path.join(os.getcwd(), p)
+        return [c for c in p.split(os.sep) if c not in ('', os.curdir)]
+
+    if not root:
+        raise denied()
+    root_parts = components(root)
+    parts = components(path)
+    if parts[:len(root_parts)] != root_parts:
+        raise denied()
+    parts = parts[len(root_parts):]
+    if not parts or parts[-1] == os.pardir:
+        raise denied()
+
+    # Keep open only the ancestors a later ".." can still go back up to:
+    # after each directory, as many as there are ".." segments still to
+    # come, plus the current one. A path then holds at most two more
+    # descriptors than it has ".." segments (one more while the next
+    # directory is being opened), rather than one per directory.
+    # `depth` is how far below `root` the walk is, whether or not the
+    # descriptors of the directories above are still held.
+    dirs = parts[:-1]
+    pardirs_after = [0] * len(dirs)
+    remaining = 0
+    for i in range(len(dirs) - 1, -1, -1):
+        pardirs_after[i] = remaining
+        remaining += dirs[i] == os.pardir
+    fds = [os.open(os.path.realpath(root),
+                   os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)]
+    depth = 0
+    try:
+        for i, name in enumerate(dirs):
+            if name == os.pardir:
+                # Never above the storage directory.
+                if depth == 0:
+                    raise denied()
+                os.close(fds.pop())
+                depth -= 1
+                continue
+            fds.append(_openat_nofollow(fds[-1], name,
+                                        os.O_RDONLY | os.O_DIRECTORY, 0,
+                                        path))
+            depth += 1
+            while len(fds) > pardirs_after[i] + 1:
+                os.close(fds.pop(0))
+    except BaseException:
+        for fd in fds:
+            os.close(fd)
+        raise
+    for fd in fds[:-1]:
+        os.close(fd)
+    return fds[-1], parts[-1]
+
+
+def _open_beneath(root, path, flags, mode=0o777):
+    """Open `path`, which must lie inside `root`, without following a
+    symbolic link anywhere below `root` (see `_open_parent_beneath()`).
+    Returns a raw file descriptor."""
+    dir_fd, name = _open_parent_beneath(root, path)
+    try:
+        return _openat_nofollow(dir_fd, name, flags, mode, path)
+    except OSError as e:
+        # O_WRONLY | O_NONBLOCK on a FIFO with no reader fails with ENXIO
+        # ("Device not configured" on macOS, "No such device or address" on
+        # Linux); report it as what it means so the raw OS message, with its
+        # path, never reaches the client. Done here rather than in a single
+        # caller so every write path (upload, save_file, Export Servers and
+        # open_utility_file) is covered. A read open of a FIFO does not raise
+        # ENXIO; a non-regular file there is caught by the caller's S_ISREG
+        # check instead.
+        if e.errno == errno.ENXIO:
+            raise OSError(errno.EINVAL, gettext("Not a regular file"), path)
+        raise
+    finally:
+        os.close(dir_fd)
+
+
+def _open_upload_target(path, root):
+    """Open a file for writing, with symlink protection in server mode.
+
+    Used by the file upload endpoint, `save_file()` (Query Tool / ERD save)
+    and Export Servers, each of which has validated `path` against the
+    storage directory `root`. Returns a binary write-mode file object.
+
+    In server mode the file is opened by `_open_beneath()`, so a symbolic
+    link swapped in at the leaf or at any parent directory since the check
+    is refused rather than followed out of the storage directory, and new
+    files are created owner-only (0o600).
 
     In desktop mode there is no storage sandbox to escape, as
     `check_access_permission` is a no-op and the user may write anywhere
@@ -68,30 +198,175 @@ def _open_upload_target(path):
     filesystems (e.g. the xdg-document-portal FUSE mount used by Flatpak)
     return ELOOP for it even on regular files.
 
-    On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
-    residual leaf-component TOCTOU is mitigated by the absence of any
-    in-pgAdmin primitive that creates symlinks.
+    On Windows, O_NOFOLLOW and descriptor-relative opens are unavailable,
+    so the file is opened by name; the residual TOCTOU (a symbolic or hard
+    link swapped in after the check) is mitigated by the absence of any
+    in-pgAdmin primitive that creates either.
     """
-    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
-    mode = 0o666
     if _refuses_leaf_symlinks():
-        flags |= os.O_NOFOLLOW
-    if config.SERVER_MODE:
-        mode = 0o600
-    fd = os.open(path, flags, mode)
+        # Open non-blocking and accept only a regular file, so a FIFO planted
+        # at the path cannot hang the write waiting for a reader (a reader-less
+        # FIFO fails with ENXIO, which _open_beneath() translates), and a
+        # symbolic link is refused rather than followed. O_TRUNC is NOT used
+        # here: a hard link is truncated only after the link check below, so
+        # a second name for a file outside the storage directory is never
+        # emptied.
+        flags = os.O_WRONLY | os.O_CREAT | os.O_NONBLOCK
+        fd = _open_beneath(root, path, flags, 0o600)
+        try:
+            st = os.fstat(fd)
+            if not stat.S_ISREG(st.st_mode):
+                raise OSError(errno.EINVAL,
+                              gettext("Not a regular file"), path)
+            # A hard link is an ordinary file O_NOFOLLOW cannot detect;
+            # refuse a second name for the same inode. st_nlink == 0 means the
+            # file was unlinked between the open and here, which is refused
+            # too (and would make the "multiple hard links" wording wrong).
+            if st.st_nlink > 1:
+                raise OSError(errno.EPERM, gettext(
+                    "Refusing a file with multiple hard links"), path)
+            if st.st_nlink == 0:
+                raise OSError(errno.EPERM, gettext(
+                    "Refusing a file that was unlinked after opening"), path)
+            os.set_blocking(fd, True)
+            os.ftruncate(fd, 0)
+        except BaseException:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            raise
+    else:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+                     0o600 if config.SERVER_MODE else 0o666)
     return os.fdopen(fd, 'wb')
 
 
+def _open_read_target(path, root):
+    """Open a file for reading, with symlink protection in server mode.
+
+    The read-side counterpart of `_open_upload_target()`, for callers that
+    validate a path against the storage directory `root` and then open it,
+    so a symbolic link swapped in at the leaf or at a parent directory in
+    between cannot redirect the read outside the storage directory. Returns
+    a binary read-mode file object.
+
+    Only a regular file is accepted: the open is non-blocking so that a
+    FIFO at the path cannot hang the request waiting for a writer, and
+    anything that is not a regular file is refused with EINVAL. In desktop
+    mode symbolic links are followed, as there is no storage directory to
+    escape.
+    """
+    if not _refuses_leaf_symlinks():
+        nonblock = getattr(os, 'O_NONBLOCK', 0)
+        fd = os.open(path, os.O_RDONLY | nonblock | getattr(os, 'O_BINARY', 0))
+        try:
+            if not stat.S_ISREG(os.fstat(fd).st_mode):
+                raise OSError(errno.EINVAL, gettext("Not a regular file"),
+                              path)
+            if nonblock:
+                os.set_blocking(fd, True)
+        except BaseException:
+            os.close(fd)
+            raise
+        return os.fdopen(fd, 'rb')
+
+    fd = _open_beneath(root, path, os.O_RDONLY | os.O_NONBLOCK)
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            raise OSError(errno.EINVAL, gettext("Not a regular file"), path)
+        # A hard link is an ordinary file that O_NOFOLLOW cannot detect, so
+        # refuse a second name for the same inode, which could point at a
+        # file outside the storage directory. st_nlink == 0 means the file
+        # was unlinked after the open, which is refused too.
+        if st.st_nlink > 1:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file with multiple hard links"), path)
+        if st.st_nlink == 0:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file that was unlinked after opening"), path)
+        os.set_blocking(fd, True)
+    except BaseException:
+        os.close(fd)
+        raise
+    return os.fdopen(fd, 'rb')
+
+
+def _is_nofollow_refusal(e):
+    """True if the OSError `e` is the errno O_NOFOLLOW refuses a symbolic
+    link with: ELOOP, or EMLINK on the BSDs that use it. On Linux EMLINK is
+    only ever a real "too many links" error (e.g. renaming a directory into
+    one at its link limit), so it is not read as a refusal there."""
+    return e.errno == errno.ELOOP or (
+        e.errno == errno.EMLINK and not _platform.startswith('linux'))
+
+
+def _acts_beneath():
+    """True when `_remove_beneath()` and `_rename_beneath()` act relative
+    to directories opened by `_open_parent_beneath()`."""
+    return _refuses_leaf_symlinks() and \
+        {os.rmdir, os.unlink, os.rename} <= os.supports_dir_fd
+
+
+def _remove_beneath(path, root):
+    """Remove the file or empty directory `path`, which must lie inside
+    `root`, with the same protection as `_open_read_target()`: in server
+    mode a symbolic link swapped in for a parent directory since the check
+    is refused rather than followed, and a symbolic link at the leaf is
+    removed itself.
+    """
+    if not _acts_beneath():
+        if os.path.isdir(path):
+            os.rmdir(path)
+        else:
+            os.remove(path)
+        return
+
+    dir_fd, name = _open_parent_beneath(root, path)
+    try:
+        st = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+        if stat.S_ISDIR(st.st_mode):
+            os.rmdir(name, dir_fd=dir_fd)
+        else:
+            os.unlink(name, dir_fd=dir_fd)
+    finally:
+        os.close(dir_fd)
+
+
+def _rename_beneath(old, new, root):
+    """Rename `old` to `new`, which must both lie inside `root`, with the
+    same protection as `_remove_beneath()`. A symbolic link at either leaf
+    is renamed or replaced itself, never followed."""
+    if not _acts_beneath():
+        os.rename(old, new)
+        return
+
+    old_fd, old_name = _open_parent_beneath(root, old)
+    try:
+        new_fd, new_name = _open_parent_beneath(root, new)
+        try:
+            os.rename(old_name, new_name, src_dir_fd=old_fd,
+                      dst_dir_fd=new_fd)
+        finally:
+            os.close(new_fd)
+    finally:
+        os.close(old_fd)
+
+
 def _refuses_leaf_symlinks():
-    """True when `_open_upload_target()` opens with O_NOFOLLOW.
+    """True when `_open_upload_target()` and `_open_read_target()` open
+    through `_open_beneath()`, refusing symbolic links.
 
     Callers that translate ELOOP/EMLINK into a "refusing to write through
     a symbolic link" message must use this same condition, so that the
     message cannot drift from the behaviour: in desktop mode (or on
-    Windows, where O_NOFOLLOW does not exist) those errnos mean a genuine
-    filesystem problem, not a deliberate refusal.
+    Windows, where O_NOFOLLOW and descriptor-relative opens do not exist)
+    those errnos mean a genuine filesystem problem, not a deliberate
+    refusal.
     """
-    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW')
+    return config.SERVER_MODE and hasattr(os, 'O_NOFOLLOW') and \
+        hasattr(os, 'O_DIRECTORY') and os.open in os.supports_dir_fd
 
 
 MODULE_NAME = 'file_manager'
@@ -151,13 +426,23 @@ def is_folder_hidden(filepath):
         return os.path.basename(filepath).startswith('.')
 
 
-def read_file_generator(file, enc):
+def _open_text(file, root, **kwargs):
+    """Open `file` for reading as text. With a storage directory `root`, it
+    is opened with `_open_read_target()`, so a symbolic link swapped in
+    since the path was checked is not followed."""
+    if root is None:
+        return open(file, 'r', **kwargs)
+    return io.TextIOWrapper(_open_read_target(file, root), **kwargs)
+
+
+def read_file_generator(file, enc, root=None):
     """
     This will read the content of the file selected by user.
 
     Args:
         file: Path to the file to be read.
         enc: Initial encoding to attempt for reading the file.
+        root: The storage directory `file` was checked against, if any.
 
     Returns:
         Generator yielding 4MB chunks of the file content.
@@ -166,7 +451,8 @@ def read_file_generator(file, enc):
     errors = None
     if enc != 'latin-1':
         try:
-            with open(file, 'r', encoding=enc, newline='') as fileObj:
+            with _open_text(file, root, encoding=enc,
+                            newline='') as fileObj:
                 while True:
                     data = fileObj.read(4194304)
                     if not data:
@@ -196,7 +482,7 @@ def read_file_generator(file, enc):
     if errors is not None:
         open_kwargs['errors'] = errors
 
-    with open(file, 'r', **open_kwargs) as fileObj:
+    with _open_text(file, root, **open_kwargs) as fileObj:
         while True:
             # 4MB chunk (4 * 1024 * 1024 Bytes)
             data = fileObj.read(4194304)
@@ -417,33 +703,31 @@ def load_file():
         shared_storage=storage_folder)
 
     try:
-        Filemanager.check_access_permission(storage_manager_path, file_path)
+        checked_path = Filemanager.check_access_permission(
+            storage_manager_path, file_path)
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 
     if storage_manager_path:
-        # generate full path of file
-        file_path = os.path.join(
-            storage_manager_path,
-            file_path.lstrip('/').lstrip('\\')
-        )
+        # The full path of the file is the one that was checked.
+        file_path = checked_path
 
     (status, err_msg, is_binary,
      is_startswith_bom, enc) = Filemanager.check_file_for_bom_and_binary(
-        file_path
+        file_path, root=storage_manager_path
     )
 
     if not status:
-        return internal_server_error(
-            errormsg=gettext(err_msg)
-        )
+        # Already translated, or the operating system's own message.
+        return internal_server_error(errormsg=err_msg)
 
     if is_binary:
         return internal_server_error(
             errormsg=gettext("File type not supported")
         )
 
-    return Response(read_file_generator(file_path, enc), mimetype='text/plain')
+    return Response(read_file_generator(file_path, enc, storage_manager_path),
+                    mimetype='text/plain')
 
 
 @blueprint.route('/save_file/', methods=["PUT", "POST"],
@@ -481,15 +765,14 @@ def save_file():
     file_path = unquote(file_data['file_name'])
 
     try:
-        Filemanager.check_access_permission(storage_manager_path, file_path)
+        checked_path = Filemanager.check_access_permission(
+            storage_manager_path, file_path)
     except Exception as e:
         return internal_server_error(errormsg=str(e))
 
     if storage_manager_path is not None:
-        file_path = os.path.join(
-            storage_manager_path,
-            file_path.lstrip('/').lstrip('\\')
-        )
+        # The full path of the file is the one that was checked.
+        file_path = checked_path
 
     # Save in the encoding the file was loaded with, if it was loaded.
     enc = Filemanager.get_file_encoding(file_path)
@@ -505,7 +788,8 @@ def save_file():
 
     # write to file
     try:
-        with _open_upload_target(file_path) as output_file:
+        with _open_upload_target(file_path,
+                                 storage_manager_path) as output_file:
             output_file.write(file_content)
     except IOError as e:
         # O_NOFOLLOW makes the kernel refuse a leaf symlink with ELOOP
@@ -515,13 +799,15 @@ def save_file():
         # actually set, though: otherwise the errno is a real filesystem
         # error (a symlink loop, say) and the raw strerror is the truth.
         if _refuses_leaf_symlinks() and \
-                e.errno in (errno.ELOOP, errno.EMLINK):
+                _is_nofollow_refusal(e):
             return internal_server_error(errormsg=gettext(
                 "Refusing to write through a symbolic link."))
         err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
     except Exception as e:
-        err_msg = error_str.format(e.strerror)
+        # A non-OSError has no strerror; fall back to its string form so the
+        # handler itself never raises AttributeError (a 500).
+        err_msg = error_str.format(getattr(e, 'strerror', None) or str(e))
         return internal_server_error(errormsg=err_msg)
 
     # Record the encoding only once the file has actually been written in it.
@@ -565,12 +851,26 @@ class Filemanager():
         if len(last_dir) > 1 and \
                 (last_dir.endswith('/') or last_dir.endswith('\\')):
             last_dir = last_dir[:-1]
+
+        def exists_in_storage(path):
+            # A folder outside the storage directory counts as missing, so
+            # its existence is never tested or revealed.
+            # A remembered folder the path cannot even be resolved for
+            # (e.g. one with a NUL byte) counts as missing too.
+            try:
+                abs_path = Filemanager.check_access_permission(
+                    storage_dir, path)
+            except (OSError, ValueError):
+                return False
+            return os.path.exists(abs_path)
+
         while last_dir:
-            if os.path.exists(storage_dir or '' + last_dir):
+            if exists_in_storage(last_dir):
                 break
             index = max(last_dir.rfind('\\'), last_dir.rfind('/')) \
                 if _platform == 'win32' else last_dir.rfind('/')
-            last_dir = last_dir[0:index]
+            # Without a separator there is no parent left to try.
+            last_dir = last_dir[0:index] if index >= 0 else ''
 
         if _platform == 'win32':
             if not last_dir.endswith('\\'):
@@ -944,7 +1244,6 @@ class Filemanager():
         files_only = trans_data.get('files_only', '')
         supported_types = trans_data.get('supported_types', [])
 
-        orig_path = unquote(orig_path)
         try:
             files = Filemanager.get_files_in_path(
                 is_show_hidden_files, files_only, folders_only,
@@ -962,8 +1261,17 @@ class Filemanager():
 
     @staticmethod
     def check_access_permission(in_dir, path, skip_permission_check=False):
+        """Check that `path`, relative to the storage directory `in_dir`,
+        stays inside it in server mode, and return the absolute path that
+        was checked.
+
+        Callers must do the file operation on the returned path rather
+        than build their own from `in_dir` and `path`: any other way of
+        joining them can name a different file from the one checked.
+        """
+        abs_path = Filemanager.get_abs_path(in_dir, path)
         if not config.SERVER_MODE or skip_permission_check:
-            return
+            return abs_path
 
         in_dir = '' if in_dir is None else in_dir
         orig_path = Filemanager.get_abs_path(in_dir, path)
@@ -992,6 +1300,8 @@ class Filemanager():
             pathlib.Path(orig_path).relative_to(in_dir)
         except ValueError:
             raise PermissionError(gettext("Access denied ({0})").format(path))
+
+        return abs_path
 
     @staticmethod
     def get_abs_path(in_dir, path):
@@ -1075,9 +1385,6 @@ class Filemanager():
         else:
             the_dir = self.dir if self.dir is not None else ''
 
-        Filemanager.check_access_permission(the_dir, old)
-        Filemanager.check_access_permission(the_dir, new)
-
         # check if it's dir
         if old[-1] == '/':
             old = old[:-1]
@@ -1093,13 +1400,17 @@ class Filemanager():
         newname = new
         newpath = path + newname
 
-        # make system old path
-        oldpath_sys = "{0}{1}".format(the_dir, old)
-        newpath_sys = "{0}{1}".format(the_dir, newpath)
+        # Check the paths that are renamed: the new name is relative to the
+        # old one's directory, not to the storage directory.
+        oldpath_sys = Filemanager.check_access_permission(the_dir, old)
+        newpath_sys = Filemanager.check_access_permission(the_dir, newpath)
 
         try:
-            os.rename(oldpath_sys, newpath_sys)
+            _rename_beneath(oldpath_sys, newpath_sys, the_dir)
         except OSError as e:
+            if _acts_beneath() and _is_nofollow_refusal(e):
+                return internal_server_error(gettext(
+                    "Refusing to rename through a symbolic link."))
             return internal_server_error("{0} {1}".format(
                 gettext('There was an error renaming the file:'), e.strerror))
 
@@ -1120,16 +1431,20 @@ class Filemanager():
             the_dir = self.shared_dir
         else:
             the_dir = self.dir if self.dir is not None else ''
-        orig_path = "{0}{1}".format(the_dir, path)
+        orig_path = Filemanager.check_access_permission(the_dir, path)
 
-        Filemanager.check_access_permission(the_dir, path)
+        # The storage directory itself lies "inside" it for the check, but
+        # is not the user's to delete.
+        if config.SERVER_MODE and \
+                os.path.realpath(orig_path) == os.path.realpath(the_dir):
+            raise PermissionError(gettext("Access denied ({0})").format(path))
 
         try:
-            if os.path.isdir(orig_path):
-                os.rmdir(orig_path)
-            else:
-                os.remove(orig_path)
+            _remove_beneath(orig_path, the_dir)
         except OSError as e:
+            if _acts_beneath() and _is_nofollow_refusal(e):
+                return internal_server_error(gettext(
+                    "Refusing to delete through a symbolic link."))
             return internal_server_error("{0} {1}".format(
                 gettext('There was an error deleting the file:'), e.strerror))
 
@@ -1152,22 +1467,15 @@ class Filemanager():
 
             file_obj = req.files['newfile']
             file_name = file_obj.filename
-            orig_path = "{0}{1}".format(the_dir, path)
-            new_name = "{0}{1}".format(orig_path, file_name)
-
+            # Check the new file's path is inside the user's storage
+            # directory, and write to the path that was checked.
             try:
-                # Check the new file's resolved path is inside the user's
-                # storage directory. realpath() resolves symbolic links —
-                # abspath() alone leaves a CWE-61 escape window.
-                if config.SERVER_MODE:
-                    real_target = os.path.realpath(
-                        os.path.join(the_dir, new_name))
-                    real_in_dir = os.path.realpath(the_dir)
-                    pathlib.Path(real_target).relative_to(real_in_dir)
-            except ValueError:
+                new_name = Filemanager.check_access_permission(
+                    the_dir, "{0}{1}".format(path, file_name))
+            except PermissionError:
                 return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-            with _open_upload_target(new_name) as f:
+            with _open_upload_target(new_name, the_dir) as f:
                 while True:
                     # 4MB chunk (4 * 1024 * 1024 Bytes)
                     data = file_obj.read(4194304)
@@ -1180,24 +1488,27 @@ class Filemanager():
 
         return {
             'Path': path,
-            'Name': new_name,
+            # new_name is prefixed with the_dir (the user's absolute storage
+            # directory); return the storage-relative path instead so the
+            # response never leaks the real on-disk location.
+            'Name': "{0}{1}".format(path, file_name),
         }
 
     def is_file_exist(self, path, name):
         """
         Checks whether given file exists or not
         """
-        the_dir = self.dir if self.dir is not None else ''
+        if self.shared_dir:
+            the_dir = self.shared_dir
+        else:
+            the_dir = self.dir if self.dir is not None else ''
         code = 1
 
         name = unquote(name)
         path = unquote(path)
 
-        orig_path = "{0}{1}".format(the_dir, path)
-        Filemanager.check_access_permission(
+        new_name = Filemanager.check_access_permission(
             the_dir, "{}{}".format(path, name))
-
-        new_name = "{0}{1}".format(orig_path, name)
         if not os.path.exists(new_name):
             code = 0
 
@@ -1241,7 +1552,7 @@ class Filemanager():
             os.path.realpath(filename), default)
 
     @staticmethod
-    def check_file_for_bom_and_binary(filename, enc="utf-8"):
+    def check_file_for_bom_and_binary(filename, enc="utf-8", root=None):
         """
         This utility function will check if file is Binary file
         and/or if it startswith BOM character
@@ -1249,6 +1560,8 @@ class Filemanager():
         Args:
             filename: File
             enc: Encoding for the file
+            root: The storage directory `filename` was checked against, if
+                any; the file is then opened with `_open_read_target()`
 
         Returns:
             Status(Error?), Error message, Binary file flag,
@@ -1273,7 +1586,8 @@ class Filemanager():
         # read the file
         try:
 
-            with open(filename, 'rb') as f:
+            with (open(filename, 'rb') if root is None
+                  else _open_read_target(filename, root)) as f:
                 file_data = f.read(1024)
 
             # Check for BOM in file data
@@ -1296,14 +1610,18 @@ class Filemanager():
 
         except IOError as ex:
             # we don't want to expose real path of file
-            # so only show error message.
-            if ex.strerror == 'Permission denied':
-                return unauthorized(str(ex.strerror))
+            # so only show error message. Callers unpack the result, so
+            # report the failure in it rather than returning a response.
+            status = False
+            if root is not None and _refuses_leaf_symlinks() and \
+                    _is_nofollow_refusal(ex):
+                err_msg = gettext("Refusing to read through a symbolic link.")
             else:
-                return internal_server_error(str(ex.strerror))
+                err_msg = str(ex.strerror)
 
         except Exception as ex:
-            return internal_server_error(str(ex.strerror))
+            status = False
+            err_msg = str(getattr(ex, 'strerror', None) or ex)
 
         # Remove root storage path from error message
         # when running in Server mode
@@ -1326,11 +1644,14 @@ class Filemanager():
         else:
             user_dir = self.dir if self.dir is not None else ''
 
-        Filemanager.check_access_permission(user_dir, "{}{}".format(
+        # Check the folder that will be created: get_new_name() puts a
+        # separator between `path` and `name` that a check of the two
+        # joined as they are would not see.
+        Filemanager.check_access_permission(user_dir, "{}/{}".format(
             path, name))
-
         create_path, new_path, new_name = \
             self.get_new_name(user_dir, path, name)
+        create_path = Filemanager.check_access_permission(user_dir, new_path)
         try:
             os.mkdir(create_path)
         except OSError as e:
@@ -1357,27 +1678,42 @@ class Filemanager():
         else:
             the_dir = self.dir if self.dir is not None else ''
 
-        orig_path = "{0}{1}".format(the_dir, path)
-
-        Filemanager.check_access_permission(
-            the_dir, "{}{}".format(path, path)
-        )
+        # Open the path that was checked without following a symbolic link
+        # swapped in since the check.
+        orig_path = Filemanager.check_access_permission(the_dir, path)
 
         filename = os.path.basename(path)
-        if orig_path and len(orig_path) > 0:
-            dir_path = os.path.dirname(orig_path)
-        else:
-            dir_path = os.path.dirname(path)
+        try:
+            download_file = _open_read_target(orig_path, the_dir)
+        except FileNotFoundError:
+            return make_json_response(
+                status=404,
+                errormsg=gettext("'{0}' file does not exist.").format(path))
+        except OSError as e:
+            if _refuses_leaf_symlinks() and \
+                    _is_nofollow_refusal(e):
+                return internal_server_error(errormsg=gettext(
+                    "Refusing to read through a symbolic link."))
+            return internal_server_error(errormsg=e.strerror)
 
-        response = send_from_directory(dir_path, filename,
-                                       mimetype='application/octet-stream',
-                                       as_attachment=True)
+        # A file object gives send_file() no size or modification time, so
+        # set them from the descriptor; range requests are not offered.
+        st = os.fstat(download_file.fileno())
+        response = send_file(download_file,
+                             mimetype='application/octet-stream',
+                             as_attachment=True, download_name=filename,
+                             conditional=False, etag=False,
+                             last_modified=st.st_mtime)
+        response.content_length = st.st_size
         response.headers["filename"] = filename
 
         return response
 
     def permission(self, path=None):
-        the_dir = self.dir if self.dir is not None else ''
+        if self.shared_dir:
+            the_dir = self.shared_dir
+        else:
+            the_dir = self.dir if self.dir is not None else ''
         res = {'Code': 1}
         Filemanager.check_access_permission(the_dir, path)
         return res

@@ -50,8 +50,9 @@ on:
           "registries" is the other half: it skips the download server
           entirely and runs only the container re-tag and the chart push,
           so those can be exercised against a candidate tag without a
-          release. It does not upload to PyPI, there being no published
-          wheel to upload.
+          release. It does not upload to PyPI, so that a rehearsal cannot
+          publish a candidate's wheel. "pypi" runs only the PyPI upload,
+          for finishing a promotion whose upload failed.
         type: choice
         required: true
         default: release-directory
@@ -60,6 +61,7 @@ on:
           - files
           - everything
           - registries
+          - pypi
 
 concurrency:
   group: 'promote-release'
@@ -124,7 +126,7 @@ jobs:
     needs: check
     # Skipped entirely when only the registries are being exercised, so a
     # rehearsal of those never touches the download server.
-    if: ${{ inputs.scope != 'registries' }}
+    if: ${{ inputs.scope != 'registries' && inputs.scope != 'pypi' }}
     runs-on: [self-hosted, publish]
     environment: publishing
 
@@ -310,7 +312,8 @@ jobs:
     if: >-
       ${{ always()
           && needs.check.result == 'success'
-          && (inputs.scope == 'everything' || inputs.scope == 'registries')
+          && (inputs.scope == 'everything' || inputs.scope == 'registries'
+              || inputs.scope == 'pypi')
           && (needs.promote.result == 'success'
               || needs.promote.result == 'skipped') }}
     runs-on: ubuntu-24.04
@@ -341,6 +344,7 @@ jobs:
       # acceptance test ran against. imagetools works registry-side, so
       # nothing is pulled or pushed through this runner.
       - name: Publish the container
+        if: ${{ inputs.scope != 'pypi' }}
         env:
           LOCATION: ${{ inputs.location }}
           TAGS: ${{ inputs.container-tags }}
@@ -382,6 +386,7 @@ jobs:
       # the image would, oci://docker.io/dpage was an odd home for a chart in
       # the first place, and it needs no stored credential here.
       - name: Publish the Helm chart
+        if: ${{ inputs.scope != 'pypi' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -393,33 +398,35 @@ jobs:
           helm push pgadmin4-helm-*.tgz oci://ghcr.io/pgadmin-org
           helm registry logout ghcr.io
 
-      # Fetched from the published release rather than rebuilt, so what
-      # reaches PyPI is the file the acceptance test installed.
+      # Fetched from the candidate rather than rebuilt, so what reaches PyPI
+      # is the file the acceptance test installed. Not from the mirrors: they
+      # sync from the download server hourly, so the release is not there
+      # yet when this runs.
       - name: Collect the wheel
-        if: ${{ inputs.scope == 'everything' }}
+        if: ${{ inputs.scope == 'everything' || inputs.scope == 'pypi' }}
         env:
           VERSION: ${{ inputs.version }}
+          LOCATION: ${{ inputs.location }}
         run: |
           set -euo pipefail
           mkdir -p pypi-dist
-          BASE="https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v${VERSION}"
+          BASE="https://developer.pgadmin.org/builds/${LOCATION}"
           WHEEL="pgadmin4-${VERSION}-py3-none-any.whl"
-          curl -fsS -o "pypi-dist/${WHEEL}" "${BASE}/pip/${WHEEL}"
+          curl -fsS -o "pypi-dist/${WHEEL}" "${BASE}/${WHEEL}"
           # Beside the wheel rather than in pypi-dist, because everything in
           # that directory is uploaded and PyPI has not accepted detached
           # signatures since 2023.
-          curl -fsS -o "${WHEEL}.asc" "${BASE}/pip/${WHEEL}.asc"
+          curl -fsS -o "${WHEEL}.asc" "${BASE}/${WHEEL}.asc"
           ls -l pypi-dist
 
-      # The wheel arrives over TLS, which says it came from the mirror and
-      # nothing about what the mirror was given: the tree is replicated from
-      # our download server to machines we do not run, and the signature that
-      # has been sitting beside the file all along is the only thing that ties
-      # these bytes back to the key on the publishing server. Checking it
+      # The wheel arrives over TLS, which says which server sent it and
+      # nothing about how it got there, and the signature that has been
+      # sitting beside the file all along is the only thing that ties these
+      # bytes back to the signing key. Checking it
       # costs a second and turns the last hop of a release into something an
       # attacker cannot quietly alter.
       - name: Verify the wheel before uploading it
-        if: ${{ inputs.scope == 'everything' }}
+        if: ${{ inputs.scope == 'everything' || inputs.scope == 'pypi' }}
         env:
           VERSION: ${{ inputs.version }}
         run: |
@@ -441,7 +448,7 @@ jobs:
       # Trusted publishing: PyPI verifies this workflow's OIDC identity, so
       # there is no API token to hold, rotate or leak.
       - name: Upload to PyPI
-        if: ${{ inputs.scope == 'everything' }}
+        if: ${{ inputs.scope == 'everything' || inputs.scope == 'pypi' }}
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           packages-dir: pypi-dist

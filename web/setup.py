@@ -40,7 +40,7 @@ else:
 from pgadmin.model import db, Version, User, Role, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
-from pgadmin.utils import clear_database_servers, dump_database_servers, \
+from pgadmin.utils import dump_database_servers, \
     load_database_servers, _handle_error
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.setup import db_upgrade, create_app_data_directory
@@ -96,6 +96,9 @@ class ManageServers:
 
         try:
             app = create_app(config.APP_NAME + '-cli')
+            # Not the desktop runtime: client_files_isolated() reads this,
+            # but only pgAdmin4.py and a few other entry points set it.
+            app.PGADMIN_RUNTIME = False
             with app.test_request_context():
                 dump_database_servers(output_file, server, dump_user, True,
                                       auth_source)
@@ -123,11 +126,12 @@ class ManageServers:
 
         try:
             app = create_app(config.APP_NAME + '-cli')
+            # Not the desktop runtime: client_files_isolated() reads this,
+            # but only pgAdmin4.py and a few other entry points set it.
+            app.PGADMIN_RUNTIME = False
             with app.test_request_context():
-                if replace:
-                    clear_database_servers(load_user, True, auth_source)
                 load_database_servers(input_file, None, load_user, True,
-                                      auth_source)
+                                      auth_source, replace=replace)
         except Exception as e:
             print(str(e))
 
@@ -321,7 +325,7 @@ class ManageUsers:
     def add_user(email: str, password: str,
                  admin: Annotated[Optional[bool],
                                   typer.Option("--admin")] = False,
-                 role: Optional[str] = None,
+                 role: Optional[str] = 'User',
                  active: Annotated[Optional[bool],
                                    typer.Option("--active/--inactive")] = True,
                  console: Optional[bool] = True,
@@ -347,7 +351,7 @@ class ManageUsers:
                           email: Optional[str] = None,
                           admin: Annotated[Optional[bool],
                                            typer.Option("--admin")] = False,
-                          role: Optional[str] = None,
+                          role: Optional[str] = 'User',
                           active: Annotated[Optional[bool],
                                             typer.Option(
                                                 "--active/--inactive")] = True,
@@ -429,12 +433,14 @@ class ManageUsers:
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            rid = ManageRoles.get_role(data['role'])
-            if rid is None:
-                print("Role '{0}' does not exists.".format(data['role']))
-                exit()
+            # The role is only changed when --role or --admin is given.
+            if 'role' in data:
+                rid = ManageRoles.get_role(data['role'])
+                if rid is None:
+                    print("Role '{0}' does not exists.".format(data['role']))
+                    exit()
 
-            data['role'] = rid
+                data['role'] = rid
 
             uid = ManageUsers.get_user(username=email,
                                        auth_source=INTERNAL)
@@ -524,12 +530,14 @@ class ManageUsers:
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            rid = ManageRoles.get_role(data['role'])
-            if rid is None:
-                print("Role '{0}' does not exists.".format(data['role']))
-                exit()
+            # The role is only changed when --role or --admin is given.
+            if 'role' in data:
+                rid = ManageRoles.get_role(data['role'])
+                if rid is None:
+                    print("Role '{0}' does not exists.".format(data['role']))
+                    exit()
 
-            data['role'] = rid
+                data['role'] = rid
 
             uid = ManageUsers.get_user(username=username,
                                        auth_source=auth_source)
@@ -573,7 +581,7 @@ class ManageUsers:
             status, msg = create_user(data)
             if status:
                 _user = ManageUsers.get_users_from_db(
-                    username=data['email'],
+                    username=username,
                     auth_source=data['auth_source'],
                     console=console)
             else:

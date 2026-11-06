@@ -236,7 +236,8 @@ class TestRdsImportErrorHandling(
                 body = json.loads(route_resp.data)
                 self.assertEqual(body.get('data'), [])
 
-            with app.test_request_context('/rds/db_instances/'):
+            with app.test_request_context(
+                    '/rds/db_instances/?eng_version=18.6'):
                 session['aws'] = {
                     'secret': {
                         'access_key': 'AKIA_TEST',
@@ -248,3 +249,22 @@ class TestRdsImportErrorHandling(
                 self.assertEqual(route_resp.status_code, 200)
                 body = json.loads(route_resp.data)
                 self.assertEqual(body.get('data'), [])
+
+            # With no version chosen yet, AWS must not be asked at all:
+            # a hardcoded fallback version fails once AWS retires it.
+            with app.test_request_context('/rds/db_instances/'), \
+                    patch.object(rds_mod.RDS,
+                                 'get_available_db_instance_class') \
+                    as mock_lookup:
+                session['aws'] = {
+                    'secret': {
+                        'access_key': 'AKIA_TEST',
+                        'secret_access_key': 'SECRET_TEST',
+                        'region': 'us-east-1',
+                    }
+                }
+                route_resp = rds_mod.get_db_instances.__wrapped__()
+                self.assertEqual(route_resp.status_code, 200)
+                body = json.loads(route_resp.data)
+                self.assertEqual(body.get('data'), [])
+                mock_lookup.assert_not_called()

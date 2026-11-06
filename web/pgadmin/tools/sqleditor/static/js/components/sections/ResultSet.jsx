@@ -253,10 +253,20 @@ export class ResultSetUtils {
         }
       }
     } catch(e) {
+      /* After reconnecting, re-initialise the transaction and re-run the
+       * query. REINIT_QT_CONNECTION is handled by initializeQueryTool(password,
+       * explainObject, macroSQL, executeCursor, executeServerCursor, reexecute):
+       * executeServerCursor only resets the status bar's server cursor text
+       * (queryFinished sets it again if the re-run uses one), so it is false,
+       * and reexecute must be true or the Query Tool does not re-run. #10603
+       * The re-run rebuilds the query from the editor (or from macroSQL), so
+       * an external query without a macro, such as the toolbar's COMMIT or
+       * ROLLBACK, is not re-run: the editor's contents would run instead. */
+      const reexecute = !(flags.external && _.isEmpty(macroSQL));
       if(e?.response?.status == 428){
         connectServerModal(this.queryToolCtx.modal, e.response?.data?.result, async (passwordData)=>{
           await connectServer(this.api, this.queryToolCtx.modal, this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
-            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, true);
+            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, false, reexecute);
           });
         }, ()=>{
           /*This is intentional (SonarQube)*/
@@ -265,7 +275,7 @@ export class ResultSetUtils {
         let pgBrowser = window.pgAdmin.Browser;
         pgBrowser.set_master_password('', async (passwordData)=>{
           await connectServer(this.api, this.queryToolCtx.modal, this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
-            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, true);
+            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, false, reexecute);
           });
         }, ()=> {
           /*This is intentional (SonarQube)*/
