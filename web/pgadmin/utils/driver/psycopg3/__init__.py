@@ -29,7 +29,11 @@ from pgadmin.model import Server, SharedServer
 from pgadmin.utils.server_access import get_server, \
     get_user_server_query
 from pgadmin.utils.exception import ObjectGone
-from pgadmin.utils.passexec import build_passexec
+from pgadmin.utils import isolate_client_credential_files
+from pgadmin.utils.locker import ConnectionLocker, \
+    REQUIRE_AUTH_MIN_LIBPQ, apply_kerberos_conn_params, libpq_version
+from pgadmin.utils.passexec import build_passexec, \
+    passexec_details_changed
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
@@ -300,8 +304,6 @@ class Driver(BaseDriver):
                         manager.update(manager_source)
                         manager.pga_user = pga_user
                     else:
-                        manager._restore_connections()
-                        manager.update_session()
                         # Identity (host/port/db/user/service/tunnel)
                         # still matches, so the live connection is kept,
                         # but access-control-relevant metadata such as
@@ -311,13 +313,19 @@ class Driver(BaseDriver):
                         # sharing/ownership changed via the same reused-id
                         # path could keep serving the previous owner's
                         # passexec to a new, non-owning user. The password
-                        # exec command is only rebuilt when sharing
-                        # changes, so its cached password survives
-                        # ordinary requests.
-                        if manager.shared != server_data.shared:
+                        # exec command is only rebuilt when sharing, or
+                        # the owner or server group it reports, changes,
+                        # so its cached password survives ordinary
+                        # requests. This runs before the connections are
+                        # restored, since a reconnect may run the command.
+                        if manager.shared != server_data.shared or \
+                                passexec_details_changed(
+                                    manager.passexec, manager_source):
                             manager.shared = server_data.shared
                             manager.passexec = build_passexec(
                                 manager_source)
+                        manager._restore_connections()
+                        manager.update_session()
 
         managers['pinged'] = datetime.datetime.now()
         # The session is active again, so gc_timeout() should run the
@@ -398,7 +406,7 @@ class Driver(BaseDriver):
             return manager.connection(database=database, conn_id=conn_id,
                                       auto_reconnect=auto_reconnect)
         else:
-            return psycopg.Connection.connect(
+            params = dict(
                 host=kwargs['host'],
                 dbname=database,
                 user=kwargs['user'],
@@ -417,6 +425,19 @@ class Driver(BaseDriver):
                 sslcompression=True if kwargs[
                     'sslcompression'] else False
             )
+            # This connection never uses Kerberos, so libpq is told to
+            # refuse it.
+            apply_kerberos_conn_params(params, is_kerberos_conn=False)
+            params = isolate_client_credential_files(params)
+            if libpq_version() >= REQUIRE_AUTH_MIN_LIBPQ:
+                # GSSAPI and SSPI are refused before any credentials are
+                # used, so there is nothing for the lock to guard.
+                return psycopg.Connection.connect(**params)
+
+            # Under the lock, so that pgAdmin's environment does not hold
+            # another user's Kerberos credential cache meanwhile.
+            with ConnectionLocker():
+                return psycopg.Connection.connect(**params)
 
     def release_connection(self, sid, database=None, conn_id=None):
         """
@@ -424,6 +445,31 @@ class Driver(BaseDriver):
         session.
         """
         return self.connection_manager(sid).release(database, conn_id)
+
+    def rebind_session_managers(self, old_pga_user, new_pga_user):
+        """
+        Re-tag this browser session's connection managers after the
+        logged-in user's fs_uniquifier has been rotated (a password change),
+        so that _manager_is_stale/_saved_state_is_stale do not drop the
+        session's live connections. Only state built for old_pga_user is
+        re-tagged, so another user's state on this session stays stale.
+        Other sessions keep the old uniquifier, as they are being revoked.
+        """
+        if not old_pga_user or old_pga_user == new_pga_user:
+            return
+
+        for manager in self.managers.get(session.sid, {}).values():
+            if getattr(manager, 'pga_user', None) == old_pga_user:
+                manager.pga_user = new_pga_user
+
+        saved_managers = session.get('__pgsql_server_managers')
+        if saved_managers:
+            for saved in saved_managers.values():
+                if isinstance(saved, dict) and \
+                        saved.get('pga_user') == old_pga_user:
+                    saved['pga_user'] = new_pga_user
+            session['__pgsql_server_managers'] = saved_managers
+            session.force_write = True
 
     def delete_manager(self, sid):
         """

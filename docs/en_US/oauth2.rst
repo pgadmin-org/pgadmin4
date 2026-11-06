@@ -103,6 +103,32 @@ and secure.
     when they log out of pgAdmin. *{redirect_uri}* and *{id_token}* in the value are replaced with the pgAdmin
     URL and the user's ID token. Ex: *https://example.com/realms/master/protocol/openid-connect/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}* (for Keycloak)"
 
+Accounts
+========
+
+An OAuth2 user is only ever logged in to the OAuth2 account whose username is
+the one resolved from their identity. When *OAUTH2_USERNAME_CLAIM* is set, that
+claim is used, taken from the ID token if present and otherwise from the
+userinfo profile. When it is not set, an OIDC provider uses the first of
+``email``, ``preferred_username`` or ``sub`` that is present, and a non-OIDC
+provider uses the email address. The user is never logged in to an ``INTERNAL``
+or other account with the same username. If there is no such OAuth2 account and
+*OAUTH2_AUTO_CREATE_USER* is *False*, the login fails. When you provision an
+administrator account for an OAuth2-only deployment, give it the username your
+provider resolves to, which may not be the email address.
+
+The administrator account created when pgAdmin is first set up is an
+``INTERNAL`` account. If you use OAuth2 authentication only, create an OAuth2
+administrator account and deactivate the initial one:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-external-user user@example.com --auth-source oauth2 --admin
+    /path/to/python /path/to/setup.py update-user admin@example.com --inactive
+
+See :ref:`Accounts from different authentication sources
+<auth_source_accounts>` for more information.
+
 Redirect URL
 ============
 

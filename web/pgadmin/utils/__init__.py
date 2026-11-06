@@ -7,12 +7,15 @@
 #
 ##########################################################################
 
+import errno
 import os
+import stat
 import sys
 import json
 import subprocess
 import re
 from collections import defaultdict
+from functools import lru_cache
 from operator import attrgetter
 
 from pathlib import Path
@@ -28,7 +31,8 @@ from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
     MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL, \
     CONNECTION_PARAM_ENV_VARS, CONNECTION_PARAM_FILE_PATHS, \
-    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS
+    CONNECTION_PARAM_BOOLEANS, CONNECTION_PARAM_DIR_PATHS, \
+    CONNECTION_PARAM_CREDENTIAL_FILES
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
@@ -270,16 +274,27 @@ def get_directory_and_file_name(drivefilepath):
     return dir_name, file_name
 
 
-def get_complete_file_path(file, validate=True):
+def get_complete_file_path(file, validate=True, for_write=False):
     """
     Args:
         file: File returned by file manager
         validate: if True, return None unless the path names an existing
             file; pass False for a directory, or for a file that may not
             exist yet
+        for_write: set True when libpq will write the file (e.g.
+            sslkeylogfile) rather than read it. A write target must
+            additionally honour a shared storage directory that is
+            read-only for non-administrators, and must resolve its short
+            path on Windows even though the file does not exist yet.
 
     Returns:
          Full path for the file
+
+    Raises:
+        PermissionError: in server mode, if the path resolves to somewhere
+            outside the user's storage directory (or the named shared
+            storage directory), or names a read-only shared storage
+            directory when for_write is set
     """
     if not file:
         return None
@@ -290,24 +305,203 @@ def get_complete_file_path(file, validate=True):
             return file
         return file if os.path.isfile(file) else None
 
+    orig_file = file
+
     # get dir name and file name
     dir_name, file = get_directory_and_file_name(file)
 
     storage_dir = get_storage_directory(shared_storage=dir_name) if dir_name \
         else get_storage_directory()
-    if storage_dir:
-        file = os.path.join(
-            storage_dir,
-            file.lstrip('/').lstrip('\\')
-        )
-        if IS_WIN:
-            file = file.replace('\\', '/')
-            file = fs_short_path(file)
+
+    # Without a storage directory to anchor it, the path would be used
+    # exactly as given, so refuse it rather than let it name any file the
+    # pgAdmin service account can read.
+    if not storage_dir:
+        raise PermissionError(
+            gettext("Access denied ({0}): the storage directory it refers "
+                    "to could not be found.").format(orig_file))
+
+    # A write target (e.g. sslkeylogfile) must honour a shared storage
+    # directory that is read-only for non-administrators; get_storage_
+    # directory() itself does not enforce that flag, so a non-admin could
+    # otherwise create or append a file there.
+    if for_write and dir_name:
+        shared_dir = next(
+            (sdir for sdir in current_app.config['SHARED_STORAGE']
+             if sdir['name'] == dir_name), None)
+        if shared_dir and shared_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            raise PermissionError(
+                gettext("Access denied ({0}): the shared storage directory "
+                        "it names is read-only.").format(orig_file))
+
+    file = os.path.join(
+        storage_dir,
+        file.lstrip('/').lstrip('\\')
+    )
+
+    # The path is the user's to choose, and is used for things like the
+    # password file and SSL key libpq connects with, so it must not climb
+    # out of their storage directory with "..", an absolute path or a
+    # symbolic link. This mirrors Filemanager.check_access_permission().
+    try:
+        Path(os.path.realpath(file)).relative_to(
+            os.path.realpath(storage_dir))
+    except ValueError:
+        current_app.logger.warning(
+            'Refusing the path %r, which resolves outside the storage '
+            'directory.', orig_file)
+        raise PermissionError(
+            gettext("Access denied ({0}): the path resolves outside your "
+                    "storage directory, or outside the shared storage "
+                    "directory it names.").format(orig_file))
+
+    if IS_WIN:
+        file = file.replace('\\', '/')
+        short_path = fs_short_path(file)
+        # fs_short_path() returns an empty string on Windows when the file
+        # does not exist yet. For a write target (sslkeylogfile) that is
+        # the normal case, so fall back to the short path of the parent
+        # directory joined with the file name, instead of silently
+        # dropping the path.
+        if for_write and short_path == '':
+            base_name = os.path.basename(file)
+            dir_short_path = fs_short_path(os.path.dirname(file))
+            if dir_short_path != '':
+                short_path = os.path.join(dir_short_path, base_name)
+        file = short_path
 
     if validate:
         return file if os.path.isfile(file) else None
     else:
         return file
+
+
+# A path that libpq can never open: a name below a regular file fails with
+# ENOTDIR, which libpq treats exactly as it does a missing file, and no
+# user can create a directory in place of the file to change that.  This
+# relies on __file__ being a regular file; under zipimport or a frozen build
+# the open fails with ENOTDIR or ENOENT instead, which is still safe.
+NO_CLIENT_FILE = os.path.join(os.path.abspath(__file__), 'no-client-file')
+
+
+def client_files_isolated():
+    """
+    Whether connections are made on behalf of a user who must not use the
+    client files of the account pgAdmin runs as, which is so in server
+    mode.  The test is the one get_complete_file_path() uses.
+
+    PGADMIN_RUNTIME is set by the entry points that know they run as the
+    desktop runtime.  When it is missing (as in the setup.py CLI commands)
+    this is not the desktop runtime, so server mode still isolates: the
+    check fails closed.
+    """
+    return not (getattr(current_app, 'PGADMIN_RUNTIME', False) or
+                not current_app.config['SERVER_MODE'])
+
+
+def isolate_client_credential_files(params, names=None):
+    """
+    In server mode, set each client credential file parameter that has no
+    value to NO_CLIENT_FILE, so that libpq does not fall back to the
+    service account's own ~/.pgpass or client certificate and key.
+
+    Args:
+        params: a dict of connection parameters, updated in place
+        names: a dict mapping each parameter to the key to set in params,
+            such as its environment variable; the parameter names
+            themselves by default
+
+    Returns:
+        params
+    """
+    if client_files_isolated():
+        for param in CONNECTION_PARAM_CREDENTIAL_FILES:
+            key = names[param] if names else param
+            if not params.get(key):
+                params[key] = NO_CLIENT_FILE
+    return params
+
+
+class ServiceNotAllowed(PermissionError):
+    """A connection service that may not be used in server mode."""
+
+
+def service_allowed(service):
+    """
+    Whether a server may connect using the named libpq service.
+
+    The service is looked up in the service file of the account pgAdmin
+    runs as, whose entries can hold passwords and other credentials, so in
+    server mode only the services the administrator has listed in
+    SERVER_MODE_ALLOWED_SERVICES may be used. Any service may be used in
+    desktop mode.
+    """
+    if not service or not client_files_isolated():
+        return True
+    allowed = current_app.config.get('SERVER_MODE_ALLOWED_SERVICES') or []
+    if isinstance(allowed, str):
+        # A lone string would otherwise allow any substring of it.
+        allowed = [allowed]
+    return service in allowed
+
+
+def check_service_allowed(service):
+    """
+    Raise ServiceNotAllowed, with a message for the user and administrator,
+    if a server may not connect using the named libpq service.
+    """
+    if not service_allowed(service):
+        raise ServiceNotAllowed(gettext(
+            'The service "{0}" cannot be used in server mode because it is '
+            'not listed in SERVER_MODE_ALLOWED_SERVICES. Ask the pgAdmin '
+            'administrator to add it to that setting in the pgAdmin '
+            'configuration, or clear the service in the server\'s '
+            'properties.').format(service))
+
+
+def check_connection_params_allowed(params):
+    """
+    Raise ServiceNotAllowed if a server's connection parameters, as a dict,
+    name a service that may not be used, or, in server mode, a service file:
+    either would let the user read entries from a service file that is not
+    theirs.
+    """
+    if not params or not isinstance(params, dict):
+        return
+    check_service_allowed(params.get('service'))
+    if params.get('servicefile') and client_files_isolated():
+        raise ServiceNotAllowed(gettext(
+            'The servicefile connection parameter cannot be used in server '
+            'mode.'))
+
+
+# Variables the account pgAdmin runs as may have set that libpq would read
+# for every connection made without a value of its own: PGPASSWORD supplies
+# a password, and PGSERVICE selects a service file entry, which can hold
+# one. PGSERVICEFILE and PGSYSCONFDIR are kept, because they locate the
+# services listed in SERVER_MODE_ALLOWED_SERVICES, and only those can be
+# selected.
+INHERITED_LIBPQ_CREDENTIAL_VARS = ('PGPASSWORD', 'PGSERVICE')
+
+
+def remove_inherited_libpq_credentials(logger=None):
+    """
+    Remove INHERITED_LIBPQ_CREDENTIAL_VARS from pgAdmin's own environment,
+    so that in server mode neither libpq nor any process pgAdmin starts can
+    use them on behalf of a user.
+
+    Returns:
+        the names of the variables removed
+    """
+    removed = [var for var in INHERITED_LIBPQ_CREDENTIAL_VARS
+               if os.environ.pop(var, None) is not None]
+    if removed and logger is not None:
+        logger.warning(
+            'Ignoring %s in the environment: in server mode, connections '
+            'must not use the credentials of the account pgAdmin runs as.',
+            ', '.join(removed))
+    return removed
 
 
 def connection_param_bool_to_int(value):
@@ -325,6 +519,52 @@ def connection_param_bool_to_int(value):
     return 1 if value else 0
 
 
+@lru_cache(maxsize=1)
+def get_libpq_connection_keywords():
+    """
+    Return the set of connection-parameter keywords recognised by the
+    libpq that psycopg is linked against.
+
+    This is read from libpq itself rather than hard-coded, so it always
+    matches the installed version; a keyword unknown to this libpq is not
+    treated as valid, since make_conninfo() would reject it anyway.
+    """
+    from psycopg.pq import Conninfo
+    return frozenset(
+        defn.keyword.decode() for defn in Conninfo.get_defaults()
+    )
+
+
+def is_valid_connection_param_key(key):
+    """
+    Return True only if key is an exact libpq connection keyword.
+
+    psycopg's make_conninfo() quotes parameter values but not their keys,
+    so a key that smuggles its own "keyword=value" pairs (for example via
+    an '=' sign or embedded/leading/trailing whitespace) would reach libpq
+    as extra, unconfined connection directions. Accepting only exact libpq
+    keywords closes that injection.
+    """
+    return isinstance(key, str) and key in get_libpq_connection_keywords()
+
+
+def get_invalid_connection_param_key(connection_params):
+    """
+    Return the first key in connection_params that is not a valid libpq
+    keyword, or None if every key is valid (or there are no params).
+
+    Callers use this to refuse a server whose connection parameters carry
+    an injected key, before it is saved or used to build a connection
+    string.
+    """
+    if not connection_params or not isinstance(connection_params, dict):
+        return None
+    for key in connection_params:
+        if not is_valid_connection_param_key(key):
+            return key
+    return None
+
+
 def connection_params_to_env(connection_params):
     """
     Translate the connection parameters configured against a server into the
@@ -333,6 +573,11 @@ def connection_params_to_env(connection_params):
 
     Only the parameters libpq actually reads from the environment can be
     passed this way; anything else in connection_params is dropped.
+
+    libpq ranks the environment below a pg_service.conf entry, so in server
+    mode the credential files are also passed in the utility's --dbname
+    connection string (see utility_conninfo()); that copy is what beats a
+    service file entry, and these variables are kept as a second layer.
 
     Args:
         connection_params: the server's connection parameters, as a dict
@@ -343,7 +588,13 @@ def connection_params_to_env(connection_params):
     env = dict()
 
     if not connection_params or not isinstance(connection_params, dict):
-        return env
+        connection_params = dict()
+
+    # In server mode a file is passed on even if it does not exist yet,
+    # rather than dropped, because libpq would then use its default file in
+    # the service account's home directory instead.  The path is still
+    # confined to the user's storage directory.
+    validate = not client_files_isolated()
 
     for param, value in connection_params.items():
         env_var = CONNECTION_PARAM_ENV_VARS.get(param, None)
@@ -354,20 +605,182 @@ def connection_params_to_env(connection_params):
             # A directory, which the file check in get_complete_file_path()
             # would reject, so resolve it unvalidated and check it here.
             value = get_complete_file_path(value, validate=False)
-            value = value if value and os.path.isdir(value) else ''
+            value = value if value and (
+                not validate or os.path.isdir(value)) else ''
         elif param in CONNECTION_PARAM_FILE_PATHS or \
                 (param == 'sslrootcert' and value != 'system'):
-            # An unresolvable path is passed on as an empty value, matching
-            # what the connection string does, so that libpq reports the
-            # missing file rather than silently falling back to its default.
-            value = get_complete_file_path(value)
+            # An unresolvable path is passed on as an empty value, which
+            # libpq treats as unset, so it uses its default file; in server
+            # mode the credential files are set to NO_CLIENT_FILE below.
+            value = get_complete_file_path(value, validate=validate)
             value = '' if value is None else value
         elif param in CONNECTION_PARAM_BOOLEANS:
             value = connection_param_bool_to_int(value)
 
         env[env_var] = str(value)
 
-    return env
+    return isolate_client_credential_files(
+        env, names=CONNECTION_PARAM_ENV_VARS)
+
+
+def _fd_above_stdio(fd):
+    """Move `fd` to 3 or above, so it cannot collide with a child's stdio."""
+    if fd >= 3:
+        return fd
+    import fcntl
+    # On failure the caller still owns, and closes, the original.
+    new_fd = fcntl.fcntl(fd, fcntl.F_DUPFD_CLOEXEC, 3)
+    os.close(fd)
+    return new_fd
+
+
+def _dev_fd_reopens():
+    """True where opening /dev/fd/N gives a new open file description for
+    the same file (Linux), rather than a dup() of descriptor N that shares
+    its file offset (macOS and the BSDs)."""
+    return sys.platform.startswith('linux')
+
+
+def open_utility_file(path, for_write, is_directory=False, root=None):
+    """Open a user's file for an external utility (pg_dump, pg_restore,
+    psql) without following a symbolic link below the storage directory.
+
+    The path has already been checked against the user's storage directory
+    `root` (by default the one the file manager is using), but the utility
+    would open it by name later, so a symbolic link swapped in at the leaf
+    or a parent directory in between would redirect it outside. In server
+    mode, pgAdmin therefore opens the file itself, walking down from the
+    storage directory without following symbolic links (see
+    `_open_beneath()`), and the utility is given /dev/fd/N, inherited
+    through the background process (see BatchProcess.start()). Only a
+    regular file is accepted: the open is non-blocking so a FIFO cannot hang
+    the request.
+
+    A directory (directory-format backup/restore) cannot be handed over that
+    way, as the utility creates and opens the files inside it by name. It is
+    only checked here, in the same way, not to be or lie below a symbolic
+    link (and created 0o700 for a backup, as pg_dump would). Someone who can
+    write to the storage directory as pgAdmin's own OS user can still plant
+    symbolic links inside it.
+
+    Returns (path for the utility, descriptor or None). The caller must
+    close the descriptor once the process has been started. In desktop mode,
+    or where O_NOFOLLOW is unavailable, returns (path, None) unchanged; off
+    Linux, the file is checked as above but (path, None) is still returned.
+    """
+    from pgadmin.misc.file_manager import _refuses_leaf_symlinks, \
+        _open_beneath, _open_parent_beneath, _openat_nofollow
+    if not _refuses_leaf_symlinks():
+        return path, None
+    if root is None:
+        root = get_file_manager_storage_dir()
+
+    if is_directory:
+        dir_fd, name = _open_parent_beneath(root, path)
+        try:
+            if for_write:
+                try:
+                    os.mkdir(name, 0o700, dir_fd=dir_fd)
+                except FileExistsError:
+                    pass
+            os.close(_openat_nofollow(
+                dir_fd, name, os.O_RDONLY | os.O_DIRECTORY, 0, path))
+        finally:
+            os.close(dir_fd)
+        return path, None
+
+    flags = os.O_NONBLOCK
+    if for_write:
+        # O_TRUNC is applied only after the hard-link check below, so a
+        # second name for a file outside the storage directory is never
+        # emptied before we have refused it.
+        flags |= os.O_WRONLY | os.O_CREAT
+    else:
+        flags |= os.O_RDONLY
+    fd = _open_beneath(root, path, flags, 0o600)
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            raise OSError(errno.EINVAL,
+                          gettext("Not a regular file"), path)
+        # A hard link is an ordinary file O_NOFOLLOW cannot detect; refuse a
+        # second name for the same inode, which could be a file outside the
+        # storage directory. st_nlink == 0 means the file was unlinked after
+        # the open, which is refused too.
+        if st.st_nlink > 1:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file with multiple hard links"), path)
+        if st.st_nlink == 0:
+            raise OSError(errno.EPERM, gettext(
+                "Refusing a file that was unlinked after opening"), path)
+        if for_write:
+            os.ftruncate(fd, 0)
+        if not _dev_fd_reopens():
+            # Elsewhere, opening /dev/fd/N dup()s the descriptor, so the
+            # utility would share its file offset, which pg_restore cannot
+            # cope with (custom and tar archives are opened more than once
+            # and seeked, and parallel workers reopen them). The open above
+            # still refuses a symbolic link already present and creates or
+            # truncates the file safely, but the utility then reopens it by
+            # name, so a symbolic or hard link swapped in afterwards is
+            # followed.
+            os.close(fd)
+            return path, None
+        os.set_blocking(fd, True)
+        fd = _fd_above_stdio(fd)
+    except BaseException:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        raise
+    return '/dev/fd/{0}'.format(fd), fd
+
+
+def open_utility_file_or_error(path, for_write, is_directory=False):
+    """Call open_utility_file(), turning a failure into a bad request.
+
+    Returns (path for the utility, descriptor or None, error response or
+    None). The error never includes the file name, as that would reveal the
+    absolute path of the user's storage directory on the server.
+    """
+    from pgadmin.utils.ajax import bad_request
+    try:
+        utility_file, fd = open_utility_file(
+            path, for_write, is_directory=is_directory)
+    except OSError as e:
+        if _is_refused_leaf_symlink(e):
+            return None, None, bad_request(errormsg=gettext(
+                "Refusing to use a symbolic link."))
+        return None, None, bad_request(errormsg=e.strerror or str(e))
+    return utility_file, fd, None
+
+
+def get_file_manager_storage_dir():
+    """
+    Returns:
+        The storage directory the user's file manager is currently using
+        (their own, or the shared storage last selected), or None in
+        desktop mode. Raises PermissionError for a restricted shared
+        storage the user may not use.
+    """
+    try:
+        last_storage = Preferences.module('file_manager').preference(
+            'last_storage').get()
+    except Exception:
+        last_storage = MY_STORAGE
+
+    if last_storage != MY_STORAGE:
+        sel_dir_list = [sdir for sdir in current_app.config['SHARED_STORAGE']
+                        if sdir['name'] == last_storage]
+        selected_dir = sel_dir_list[0] if len(
+            sel_dir_list) == 1 else None
+
+        if selected_dir and selected_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            raise PermissionError(ACCESS_DENIED_MESSAGE)
+        return get_storage_directory(shared_storage=last_storage)
+    return get_storage_directory()
 
 
 def filename_with_file_manager_path(_file, create_file=False,
@@ -385,33 +798,20 @@ def filename_with_file_manager_path(_file, create_file=False,
 
     # retrieve storage directory path
     try:
-        last_storage = Preferences.module('file_manager').preference(
-            'last_storage').get()
-    except Exception:
-        last_storage = MY_STORAGE
-
-    if last_storage != MY_STORAGE:
-        sel_dir_list = [sdir for sdir in current_app.config['SHARED_STORAGE']
-                        if sdir['name'] == last_storage]
-        selected_dir = sel_dir_list[0] if len(
-            sel_dir_list) == 1 else None
-
-        if selected_dir and selected_dir['restricted_access'] and \
-                not current_user.has_role("Administrator"):
-            return make_json_response(success=0,
-                                      errormsg=ACCESS_DENIED_MESSAGE,
-                                      info='ACCESS_DENIED',
-                                      status=403)
-        storage_dir = get_storage_directory(
-            shared_storage=last_storage)
-    else:
-        storage_dir = get_storage_directory()
+        storage_dir = get_file_manager_storage_dir()
+    except PermissionError:
+        return make_json_response(success=0,
+                                  errormsg=ACCESS_DENIED_MESSAGE,
+                                  info='ACCESS_DENIED',
+                                  status=403)
 
     from pgadmin.misc.file_manager import Filemanager
-    Filemanager.check_access_permission(
+    checked_path = Filemanager.check_access_permission(
         storage_dir, _file, skip_permission_check)
     if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
+        # Use the path that was checked: joining storage_dir and _file any
+        # other way can name a different file.
+        _file = checked_path
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
@@ -431,11 +831,85 @@ def filename_with_file_manager_path(_file, create_file=False,
         return short_path
 
     if create_file:
-        # Touch the file to get the short path of the file on windows.
+        # Touch the file to get the short path of the file on windows. In
+        # server mode, don't follow a symbolic link below the storage
+        # directory: that would create the file wherever it points.
+        from pgadmin.misc.file_manager import _refuses_leaf_symlinks, \
+            _open_beneath
+        if _refuses_leaf_symlinks():
+            os.close(_open_beneath(
+                storage_dir, _file,
+                os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NONBLOCK,
+                0o600))
+            return short_filepath()
         with open(_file, 'a'):
             return short_filepath()
 
     return short_filepath()
+
+
+def _normalised_path(file):
+    """Resolve a path the way the utilities will be run from it: '..'
+    segments are collapsed as text first (abspath), then symlinks are
+    followed (realpath), and case is folded where the platform's
+    normcase does so (Windows).
+    """
+    return Path(os.path.normcase(os.path.realpath(os.path.abspath(file))))
+
+
+def _reserved_storage_dirs():
+    """Directories an ordinary, non-admin pgAdmin user can write files
+    into: the per-user STORAGE_DIR, and every configured SHARED_STORAGE
+    entry (whether or not it is marked restricted_access, since a
+    restricted entry is still writable by an Administrator, and the
+    binary-path guard has to hold for every account, not just
+    non-admins). None of these may ever be trusted as a source of
+    pg_dump/pg_restore/psql/pg_dumpall binaries (CWE-426).
+    """
+    dirs = []
+    # An empty STORAGE_DIR means the whole filesystem is exposed to users
+    # by design; realpath('') would resolve to the current working
+    # directory, so it must not be treated as a reserved directory.
+    if config.STORAGE_DIR:
+        dirs.append(_normalised_path(config.STORAGE_DIR))
+    for entry in getattr(config, 'SHARED_STORAGE', None) or []:
+        path = entry.get('path') if isinstance(entry, dict) else None
+        if path:
+            dirs.append(_normalised_path(path))
+    return dirs
+
+
+def is_reserved_storage_path(file):
+    """Return True if `file` is, or is nested under, one of the
+    directories returned by _reserved_storage_dirs().
+
+    '$DIR' is expanded first, as the utilities are run from the expanded
+    path, then the path is resolved so '..' segments, symlinks and case
+    differences cannot be used to reach a reserved directory by a
+    different spelling.
+    """
+    # An embedded NUL is not a usable path (and some Python versions
+    # raise ValueError on it): refuse it rather than guess.
+    if '\x00' in file:
+        return True
+    target = _normalised_path(replace_binary_path(file))
+    reserved_dirs = _reserved_storage_dirs()
+    if any(reserved == target or reserved in target.parents
+           for reserved in reserved_dirs):
+        return True
+
+    # normcase() does not fold case on macOS, whose filesystem is
+    # case-insensitive by default, so also compare the directories
+    # themselves: any existing ancestor of the target that is the same
+    # directory as a reserved one makes the target reserved.
+    for candidate in (target, *target.parents):
+        for reserved in reserved_dirs:
+            try:
+                if os.path.samefile(candidate, reserved):
+                    return True
+            except OSError:
+                continue
+    return False
 
 
 def does_utility_exist(file):
@@ -450,13 +924,12 @@ def does_utility_exist(file):
                             " Path in the Preferences")
         return error_msg
 
-    if Path(config.STORAGE_DIR) == Path(file) or \
-            Path(config.STORAGE_DIR) in Path(file).parents:
+    if is_reserved_storage_path(file):
         error_msg = gettext("Please correct the Binary Path in the "
-                            "Preferences. pgAdmin storage directory cannot "
-                            "be a utility binary directory.")
-
-    if not os.path.exists(file):
+                            "Preferences. pgAdmin storage and shared "
+                            "storage directories cannot be a utility "
+                            "binary directory.")
+    elif not os.path.exists(file):
         error_msg = gettext("'%s' file not found. Please correct the Binary"
                             " Path in the Preferences" % file)
     return error_msg
@@ -474,6 +947,12 @@ def get_server(sid, only_owned=False):
 
 def get_binary_path_versions(binary_path: str) -> dict:
     ret = {}
+    # Never run utilities from a directory users can write to (CWE-426).
+    if is_reserved_storage_path(binary_path):
+        current_app.logger.warning('Reserved storage path rejected as '
+                                   'binary path.')
+        return {utility: None for utility in UTILITIES_ARRAY}
+
     binary_path = os.path.abspath(
         replace_binary_path(binary_path)
     )
@@ -678,17 +1157,32 @@ def dump_database_servers(output_file, selected_servers,
     file_content = json.dumps(object_dict, indent=4)
     error_str = "Error: {0}"
     try:
-        with open(file_path, 'w') as output_file:
-            output_file.write(file_content)
+        if from_setup:
+            with open(file_path, 'w') as output_file:
+                output_file.write(file_content)
+        else:
+            # The path was validated against the user's storage directory
+            # above, so open it without following a symbolic link swapped
+            # in at the leaf or a parent directory since that check.
+            from pgadmin.misc.file_manager import _open_upload_target
+            with _open_upload_target(
+                    file_path, get_file_manager_storage_dir()) as output_file:
+                output_file.write(file_content.encode('utf-8'))
     except IOError as e:
+        if not from_setup and _is_refused_leaf_symlink(e):
+            return _handle_error(gettext(
+                "Refusing to write through a symbolic link."), from_setup)
         err_msg = error_str.format(e.strerror)
         return _handle_error(err_msg, from_setup)
     except Exception as e:
-        err_msg = error_str.format(e.strerror)
+        # A non-OSError has no strerror; fall back to its string form so this
+        # never raises AttributeError and returns a 500.
+        current_app.logger.exception(e)
+        err_msg = error_str.format(getattr(e, 'strerror', None) or str(e))
         return _handle_error(err_msg, from_setup)
 
     msg = gettext("Configuration for %s servers dumped to %s" %
-                  (servers_dumped, output_file.name))
+                  (servers_dumped, file_path))
     print(msg)
 
     return True, msg
@@ -701,22 +1195,26 @@ def validate_json_data(data, is_admin):
     :param is_admin:
     :return: error message if any
     """
-    skip_servers = []
     # Loop through the servers...
     if "Servers" not in data:
         return gettext("'Servers' attribute not found in the specified file.")
 
+    # Shared servers can only be imported by administrators. Prune them
+    # before validating, so that they are dropped even when the
+    # validation of the remaining servers fails.
+    if not is_admin:
+        skip_servers = [server for server, obj in data["Servers"].items()
+                        if obj.get("Shared") is True]
+        for server in skip_servers:
+            print("Won't import the server '%s' as it is shared " %
+                  data["Servers"][server].get("Name", server))
+            del data["Servers"][server]
+
     for server in data["Servers"]:
         obj = data["Servers"][server]
 
-        is_shared = obj.get("Shared", None)
-
-        # Check if server is shared.Won't import if user is non-admin
-        if is_shared and not is_admin:
-            print("Won't import the server '%s' as it is shared " %
-                  obj["Name"])
-            skip_servers.append(server)
-            continue
+        # Only the JSON value true means shared, anything else is not.
+        is_shared = obj.get("Shared") is True
 
         def check_attrib(attrib):
             if attrib not in obj:
@@ -771,9 +1269,55 @@ def validate_json_data(data, is_admin):
             return gettext("'Host' or 'Service' attribute not "
                            "found for server '%s'" % server)
 
-    for server in skip_servers:
-        del data["Servers"][server]
+        conn_params = obj.get("ConnectionParameters", None)
+        conn_params = dict(conn_params) \
+            if isinstance(conn_params, dict) else {}
+        if is_service_attrib_available:
+            conn_params['service'] = obj["Service"]
+        try:
+            check_connection_params_allowed(conn_params)
+        except ServiceNotAllowed as e:
+            return gettext("Server '%s': %s") % (server, e)
+
     return None
+
+
+def check_non_admin_shared_servers(logger, cli_mode=False):
+    """Server mode only: log a warning for each server that is shared by a
+    user who is not an administrator. Only administrators can share a
+    server now, but servers shared before that restriction stay shared
+    until they are un-shared. Read-only, and it never raises, so it cannot
+    block the startup. Credentials and host details are not logged.
+    Returns the number of servers found."""
+    if not config.SERVER_MODE or cli_mode:
+        return 0
+    try:
+        rows = db.session.query(Server.id, Server.name, Server.user_id) \
+            .filter(Server.shared.is_(True)).all()
+        found = 0
+        owner_is_admin = {}
+        for server_id, name, user_id in rows:
+            if user_id not in owner_is_admin:
+                owner = db.session.get(User, user_id)
+                owner_is_admin[user_id] = owner is not None and \
+                    owner.has_role('Administrator')
+            if owner_is_admin[user_id]:
+                continue
+            found += 1
+            logger.warning(
+                "Server %s ('%s') is shared by user %s, who is not an "
+                "administrator. The owner can un-share it with a PUT of "
+                "\"shared\": false through the API, or an administrator "
+                "can change its 'shared' column in the configuration "
+                "database.", server_id, name, user_id)
+        return found
+    except Exception as e:
+        try:
+            logger.warning("Unable to check for servers shared by "
+                           "non-administrators: %s", e)
+        except Exception:
+            pass
+        return 0
 
 
 def _load_server_passexec(new_server, obj):
@@ -799,8 +1343,11 @@ def _load_server_passexec(new_server, obj):
 
 def load_database_servers(input_file, selected_servers,
                           load_user=current_user, from_setup=False,
-                          auth_source=INTERNAL):
+                          auth_source=INTERNAL, replace=False):
     """Load server groups and servers.
+
+    :param replace: clear the user's existing servers once the file has
+        been validated, and just before the servers are loaded.
     """
     user = _does_user_exist(load_user, from_setup, auth_source)
     if user is None:
@@ -816,14 +1363,45 @@ def load_database_servers(input_file, selected_servers,
         return _handle_error(str(e), from_setup)
 
     try:
-        with open(file_path) as f:
-            data = json.load(f)
-    except json.decoder.JSONDecodeError as e:
-        return _handle_error(gettext("Error parsing input file %s: %s" %
-                             (file_path, e)), from_setup)
+        if from_setup:
+            with open(file_path) as f:
+                data = json.load(f)
+        else:
+            # As for the export, don't follow a symbolic link swapped in
+            # since the path was validated.
+            from pgadmin.misc.file_manager import _open_read_target
+            with _open_read_target(
+                    file_path, get_file_manager_storage_dir()) as f:
+                data = json.load(f)
+    except (json.decoder.JSONDecodeError, UnicodeDecodeError) as e:
+        # The absolute path is shown only for the setup.py CLI, where the
+        # administrator named the file; in server mode it would reveal the
+        # user's storage directory location on the server.
+        if from_setup:
+            return _handle_error(gettext("Error parsing input file %s: %s" %
+                                 (file_path, e)), from_setup)
+        return _handle_error(gettext("Error parsing the selected file: %s" %
+                             e), from_setup)
+    except OSError as e:
+        if not from_setup and _is_refused_leaf_symlink(e):
+            return _handle_error(gettext(
+                "Refusing to read through a symbolic link."), from_setup)
+        if from_setup:
+            return _handle_error(
+                gettext("Error reading input file %s: [%d] %s" %
+                        (file_path, e.errno, e.strerror)), from_setup)
+        return _handle_error(gettext("Error reading the selected file: "
+                             "[%d] %s" % (e.errno, e.strerror)), from_setup)
     except Exception as e:
-        return _handle_error(gettext("Error reading input file %s: [%d] %s" %
-                             (file_path, e.errno, e.strerror)), from_setup)
+        # A non-OSError (e.g. UnicodeDecodeError from a non-UTF-8 file) has no
+        # errno/strerror, so don't assume them here.
+        current_app.logger.exception(e)
+        if from_setup:
+            return _handle_error(
+                gettext("Error reading input file %s: %s" %
+                        (file_path, e)), from_setup)
+        return _handle_error(
+            gettext("Unable to read the selected file."), from_setup)
 
     f.close()
 
@@ -836,14 +1414,31 @@ def load_database_servers(input_file, selected_servers,
     groups = ServerGroup.query.filter_by(user_id=user_id)
 
     # Validate server data
-    error_msg = validate_json_data(data, user.has_role("Administrator"))
-    if error_msg is not None and from_setup:
-        print(ADD_SERVERS_MSG % (groups_added, servers_added))
+    is_admin = user.has_role("Administrator")
+    error_msg = validate_json_data(data, is_admin)
+    if error_msg is not None:
+        if from_setup:
+            print(ADD_SERVERS_MSG % (groups_added, servers_added))
         return _handle_error(error_msg, from_setup)
+
+    if replace:
+        # Clear the existing servers only once the file is known to be
+        # valid, so that a refused file does not lose the user's servers.
+        result = clear_database_servers(load_user, from_setup, auth_source)
+        if result is not None and result is not True:
+            return result
 
     for server in data["Servers"]:
         if selected_servers is None or str(server) in selected_servers:
             obj = data["Servers"][server]
+
+            # Defence in depth: only administrators can import shared
+            # servers. Checked before the group is created, so that no
+            # empty group is left behind.
+            if obj.get("Shared") is True and not is_admin:
+                print("Won't import the server '%s' as it is shared " %
+                      obj.get("Name", server))
+                continue
 
             # Get the group. Create if necessary
             group_id = next(
@@ -868,7 +1463,8 @@ def load_database_servers(input_file, selected_servers,
                 groups_added = groups_added + 1
                 groups = ServerGroup.query.filter_by(user_id=user_id)
 
-            is_shared = obj.get("Shared", None)
+            # Only the JSON value true means shared, as in validation.
+            is_shared = obj.get("Shared") is True
             username = obj.get("Username", None)
             shared_username = obj.get("SharedUsername", None)
             if is_shared and username is None:
@@ -913,6 +1509,20 @@ def load_database_servers(input_file, selected_servers,
 
                 new_server.connection_params = conn_param
 
+            # Refuse a key that is not an exact libpq keyword:
+            # make_conninfo() quotes values but not keys, so a key carrying
+            # its own "keyword=value" pairs would reach libpq as extra
+            # connection directions.
+            invalid_key = get_invalid_connection_param_key(
+                new_server.connection_params)
+            if invalid_key is not None:
+                if from_setup:
+                    print(ADD_SERVERS_MSG % (groups_added, servers_added))
+                return _handle_error(
+                    gettext(
+                        "Invalid connection parameter '%s' for server '%s'" %
+                        (invalid_key, new_server.name)), from_setup)
+
             new_server.bgcolor = obj.get("BGColor", None)
 
             new_server.fgcolor = obj.get("FGColor", None)
@@ -939,9 +1549,10 @@ def load_database_servers(input_file, selected_servers,
             new_server.tunnel_keep_alive = \
                 obj.get("TunnelKeepAlive", None)
 
-            new_server.shared = is_shared
+            new_server.shared = is_shared and is_admin
 
-            new_server.shared_username = shared_username
+            new_server.shared_username = \
+                shared_username if new_server.shared else None
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 
@@ -1031,6 +1642,15 @@ def _does_user_exist(user, from_setup, auth_source=INTERNAL):
             sys.exit(1)
 
     return new_user
+
+
+def _is_refused_leaf_symlink(e):
+    """True if `e` is the kernel refusing to follow a symbolic link because
+    the file was opened with O_NOFOLLOW (ELOOP, or EMLINK on some BSDs),
+    rather than a genuine filesystem error."""
+    from pgadmin.misc.file_manager import _refuses_leaf_symlinks, \
+        _is_nofollow_refusal
+    return _refuses_leaf_symlinks() and _is_nofollow_refusal(e)
 
 
 def _handle_error(error_msg, from_setup):
@@ -1188,3 +1808,48 @@ def database_conninfo(database):
     # build, and importing psycopg needs libpq.
     from psycopg.conninfo import make_conninfo
     return make_conninfo(dbname=database)
+
+
+def utility_connection_params(manager, server):
+    """
+    The connection parameters a utility connects with: the manager's copy,
+    which reflects the live connection, else the server's.  This is the
+    selection BatchProcess.set_env_variables() makes for the environment, so
+    that utility_conninfo() and the environment never name different files.
+
+    :param manager: The connection manager, or None.
+    :param server: The server row, or None.
+    :return: The connection parameters dict, or None.
+    """
+    if manager and manager.connection_params:
+        return manager.connection_params
+    if server and getattr(server, 'connection_params', None):
+        return server.connection_params
+    return None
+
+
+def utility_conninfo(database, connection_params):
+    """
+    The --dbname value for a utility: the database name (if given) plus, in
+    server mode, passfile/sslcert/sslkey (the user's own file or
+    NO_CLIENT_FILE), which libpq ranks above a pg_service.conf entry; the
+    PG* environment variables alone are ranked below it.
+
+    :param database: Name of the database to connect to, or None.
+    :param connection_params: The server's connection parameters.
+    :return: A connection string such as "dbname='my db' passfile='...'".
+    """
+    params = {} if database is None else {'dbname': database}
+    if client_files_isolated():
+        try:
+            env = connection_params_to_env(connection_params)
+        except PermissionError:
+            # A path escaping the storage directory: set_env_variables()
+            # raises this again, inside the caller's error handling.
+            env = {}
+        for param in CONNECTION_PARAM_CREDENTIAL_FILES:
+            params[param] = \
+                env.get(CONNECTION_PARAM_ENV_VARS[param]) or NO_CLIENT_FILE
+    # See database_conninfo() for why this is imported here.
+    from psycopg.conninfo import make_conninfo
+    return make_conninfo(**params)

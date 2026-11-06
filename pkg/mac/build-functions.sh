@@ -376,7 +376,9 @@ _complete_bundle() {
         yarn run webpacker 2>&1
         unset NODE_ENV NODE_OPTIONS
 
-        curl https://curl.se/ca/cacert.pem -o cacert.pem -s
+        # --fail: an HTTP error page saved as cacert.pem would break every
+        # outbound HTTPS request, where a missing file falls back to certifi.
+        curl --fail -sS https://curl.se/ca/cacert.pem -o cacert.pem || exit 1
     popd > /dev/null || exit
 
     # copy the web directory to the bundle as it is required by runtime

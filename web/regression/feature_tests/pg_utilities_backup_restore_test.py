@@ -178,9 +178,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.CSS_SELECTOR,
              NavMenuLocators.backup_obj_css))
 
-        backup_object = self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css)))
-        backup_object.click()
+        self.page.click_enabled_menu_item(
+            (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css))
 
         self.assertFalse(self.page.check_utility_error(),
                          'Binary path is not configured.')
@@ -216,9 +215,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             By.CSS_SELECTOR, NavMenuLocators.tools_menu_css)
         tools_menu.click()
 
-        restore_obj = self.page.find_by_css_selector(
-            NavMenuLocators.restore_obj_css)
-        restore_obj.click()
+        self.page.click_enabled_menu_item(
+            (By.CSS_SELECTOR, NavMenuLocators.restore_obj_css))
 
         self.assertFalse(self.page.check_utility_error(),
                          'Binary path is not configured.')

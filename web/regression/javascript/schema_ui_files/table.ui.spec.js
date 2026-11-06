@@ -14,6 +14,7 @@ import { getNodeTableSchema, LikeSchema } from '../../../pgadmin/browser/server_
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 import pgAdmin from '../fake_pgadmin';
+import { act, fireEvent, screen } from '@testing-library/react';
 
 function getFieldDepChange(schema, id) {
   return _.find(schema.fields, (f)=>f.id==id)?.depChange;
@@ -61,6 +62,40 @@ describe('TableSchema', () => {
   it('properties', async () => {
     await getPropertiesView(createTableSchemaObject(), getInitData);
   });
+
+  it.each([false, true])('adds a column before opening the foreign key editor (has foreign key: %s)', async (hasForeignKey)=>{
+    let tableSchema = createTableSchemaObject();
+    let foreignKeys = hasForeignKey ? [{
+      oid: 140392, name: 'fk_id', columns: [
+        {local_column: 'id', references: 180191, referenced: 'rid'},
+      ],
+    }] : [];
+    await getEditView(tableSchema, ()=>Promise.resolve({
+      oid: 140391, name: 'child', columns: [{name: 'id', attnum: 1}],
+      foreign_key: foreignKeys,
+    }));
+    let originalMappings = _.cloneDeep(tableSchema.sessData.foreign_key);
+    let header = tableSchema.constraintsObj.fkObj.fkHeaderSchema;
+    expect(header.state).toBeNull();
+
+    await act(async ()=>{
+      fireEvent.click(screen.getByRole('tab', {name: 'Columns'}));
+    });
+    const addButton = screen.getByRole('button', {name: 'Add row'});
+    const grid = addButton.closest('.DataGridView-grid');
+    await act(async ()=>{
+      fireEvent.click(addButton);
+    });
+
+    expect(tableSchema.sessData.columns).toHaveLength(2);
+    expect(grid.querySelectorAll('[data-test="data-table-row"]')).toHaveLength(2);
+    expect(tableSchema.sessData.foreign_key).toEqual(originalMappings);
+    expect(header.state).toBeNull();
+    await act(async ()=>{
+      fireEvent.click(screen.getByRole('tab', {name: 'General'}));
+    });
+    expect(screen.getByRole('textbox', {name: 'Name'})).toHaveValue('child');
+  }, 60000);
 
   it('storage parameters are shown in properties', () => {
     // Fill factor, toast tuple target and parallel workers are shown in

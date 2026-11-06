@@ -133,5 +133,51 @@ credentials is the responsibility of:
   of pgAdmin and protects against attackers who would otherwise reach the
   LDAP server through pgAdmin.
 
-See :ref:`Avoiding a bruteforce attack <login>` for the equivalent note
+See :ref:`Avoiding a bruteforce attack <avoiding_bruteforce>` for the equivalent note
 on the login page.
+
+Internal accounts
+*****************
+
+pgAdmin treats accounts from different authentication sources as separate
+accounts, even when they share a username. An LDAP user is only ever logged
+in to the LDAP account with that username, and never to an ``INTERNAL``
+account with the same name, so each account keeps its own role and
+settings.
+
+The administrator account created when pgAdmin is first set up always uses
+the ``INTERNAL`` authentication source. It remains in the pgAdmin database
+when *AUTHENTICATION_SOURCES* is set to *['ldap']*, although it can then no
+longer be used to log in. If you use LDAP authentication only, create an
+LDAP administrator account, for example:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-external-user ldapuser --auth-source ldap --admin
+
+and then deactivate the initial ``INTERNAL`` administrator account so that
+it cannot be used if internal authentication is enabled again later:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py update-user admin@example.com --inactive
+
+When both *internal* and *ldap* are listed in *AUTHENTICATION_SOURCES*, a
+username and password entered on the login page are tried against each source
+in turn, in the order they are listed, and the first source that accepts the
+password signs the user in; the sources listed after it are not tried. Every
+source listed before it is still tried, so the password is a failed attempt at
+each of those. If the same username exists as both an internal and an LDAP
+account, a wrong password sent to the directory is a failed LDAP bind that
+counts towards the directory's lockout, even when a source listed later (such
+as the internal account) then accepts the sign-in. pgAdmin's own lockout
+counter for the internal account increases only when the sign-in fails at every
+source. Avoid giving an internal and an LDAP account the same username.
+
+When *LDAP_DN_CASE_SENSITIVE* is off, names that differ only in case are the
+same login. Do not create two accounts whose usernames differ only in case;
+pgAdmin cannot tell which one a sign-in is for.
+
+See :ref:`Accounts from different authentication sources
+<auth_source_accounts>` and :ref:`User Management <user_management>` for more
+information on the ``setup.py`` user management commands.

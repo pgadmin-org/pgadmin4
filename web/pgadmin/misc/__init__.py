@@ -9,13 +9,12 @@
 
 """A blueprint module providing utility functions for the application."""
 
-import certifi
 from pgadmin.utils import driver
 from flask import request, current_app
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
-from pathlib import Path
-from pgadmin.utils import PgAdminModule, get_binary_path_versions
+from pgadmin.utils import PgAdminModule, get_binary_path_versions, \
+    is_reserved_storage_path
 from pgadmin.utils.constants import PREF_LABEL_USER_INTERFACE, \
     PREF_LABEL_FILE_DOWNLOADS
 from pgadmin.utils.csrf import pgCSRFProtect
@@ -31,8 +30,8 @@ import time
 import json
 import os
 import sys
-import ssl
 from urllib.request import urlopen
+from pgadmin.utils.tls import create_ssl_context
 from urllib.parse import unquote
 from pgadmin.settings import get_setting, store_setting
 import html
@@ -335,10 +334,10 @@ def validate_binary_path():
     if data != '':
         data = json.loads(data)
 
-    # Do not allow storage dir as utility path
+    # Do not allow the storage dir, or a shared storage dir, as the
+    # utility path (CWE-426: both are writable by ordinary users).
     if 'utility_path' in data and data['utility_path'] is not None and \
-        Path(config.STORAGE_DIR) != Path(data['utility_path']) and \
-            Path(config.STORAGE_DIR) not in Path(data['utility_path']).parents:
+            not is_reserved_storage_path(data['utility_path']):
         binary_versions = get_binary_path_versions(data['utility_path'])
         utilities = [
             {'utility': utility, 'version': version}
@@ -380,24 +379,8 @@ def upgrade_check():
             # Do not wait for more than 5 seconds.
             # It stuck on rendering the browser.html, while working in the
             # broken network.
-            if sys.version_info >= (
-                    3, 13):
-                # Use SSL context for Python 3.13+
-                if os.path.exists(config.CA_FILE):
-                    context = ssl.create_default_context(cafile=config.CA_FILE)
-                else:
-                    context = ssl.create_default_context(
-                        cafile=certifi.where()
-                    )
-
-                response = urlopen(url, data=data, timeout=5,
-                                   context=context)
-            elif os.path.exists(config.CA_FILE):
-                # Use cafile parameter for older versions
-                response = urlopen(url, data=data, timeout=5,
-                                   cafile=config.CA_FILE)
-            else:
-                response = urlopen(url, data, 5, cafile=certifi.where())
+            response = urlopen(url, data=data, timeout=5,
+                               context=create_ssl_context())
             current_app.logger.debug(
                 'Version check HTTP response code: %d' % response.getcode()
             )

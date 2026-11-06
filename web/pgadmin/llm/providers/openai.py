@@ -11,22 +11,11 @@
 
 import json
 import socket
-import ssl
 import urllib.request
 import urllib.error
 from collections.abc import Generator
 from typing import Optional, Union
 import uuid
-
-# Try to use certifi for proper SSL certificate handling
-try:
-    import certifi
-    SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
-except ImportError:
-    SSL_CONTEXT = ssl.create_default_context()
-
-# Enforce minimum TLS 1.2 to satisfy security requirements
-SSL_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1_2
 
 from pgadmin.llm.client import LLMClient, LLMClientError
 from pgadmin.llm.models import (
@@ -34,6 +23,10 @@ from pgadmin.llm.models import (
     Role, StopReason, Usage
 )
 from pgadmin.llm.utils import urlopen_no_redirect
+from pgadmin.utils.tls import create_ssl_context
+
+# Verifies against config.CA_FILE or certifi, with TLS 1.2 minimum.
+SSL_CONTEXT = create_ssl_context()
 
 
 # Default model if none specified

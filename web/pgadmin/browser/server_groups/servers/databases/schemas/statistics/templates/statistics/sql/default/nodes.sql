@@ -9,7 +9,13 @@ FROM pg_catalog.pg_statistic_ext s
         ON (des.objoid = s.oid AND des.classoid = 'pg_statistic_ext'::regclass)
 {### Without scid, as after an update that may have moved the object to ###}
 {### another schema, the object is looked up by its OID alone ###}
-WHERE {% if scid %}s.stxnamespace = {{scid}}::oid{% else %}true{% endif %}
+{### pgAdmin renders templates with trim_blocks, which removes the newline ###}
+{### after a block tag, so each condition below is its own line ending in  ###}
+{### plain text; otherwise the last one would run into ORDER BY            ###}
+WHERE true
+{% if scid %}
+    AND s.stxnamespace = {{scid}}::oid
+{% endif %}
 {% if stid %}
     AND s.oid = {{stid}}::oid
 {% endif %}

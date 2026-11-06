@@ -597,6 +597,23 @@ describe('FormComponents', ()=>{
       await waitFor(()=>expect(screen.getByText('PrOp3')).toBeInTheDocument(), {timeout: 500});
     });
 
+    it('clears a load error once a reload succeeds', async ()=>{
+      ctrlRerender({
+        options: ()=>Promise.reject(new Error('load failed')),
+        optionsReloadBasis: 'a',
+        value: 3,
+      });
+      await waitFor(()=>expect(screen.getByText('load failed')).toBeInTheDocument(), {timeout: 500});
+
+      ctrlRerender({
+        options: ()=>Promise.resolve([{label: 'PrOp3', value: 3}]),
+        optionsReloadBasis: 'b',
+        value: 3,
+      });
+      await waitFor(()=>expect(screen.getByText('PrOp3')).toBeInTheDocument(), {timeout: 500});
+      expect(screen.queryByText('load failed')).not.toBeInTheDocument();
+    });
+
     it('accessibility', ()=>{
       const input = ctrl.container.querySelectorAll('input')[1];
       expect(input.getAttribute('id')).toBe('inpCid');

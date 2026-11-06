@@ -15,6 +15,7 @@ from regression import parent_node_dict
 from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
+from psycopg.conninfo import conninfo_to_dict
 from unittest.mock import patch, MagicMock
 from config import PG_DEFAULT_DRIVER
 
@@ -115,6 +116,25 @@ class IEQueryParensBalancedTest(BaseTestGenerator):
         ('Unbalanced: scs=on backslash-quote RCE bypass (CVE)',
          dict(query="SELECT 'a\\') TO PROGRAM 'echo pwned' x'",
               expected=False)),
+        # CVE regression: the mirror image of the case above, in a
+        # double-quoted identifier. strtokx applies its escape
+        # character to whichever quote opened the token, so with
+        # standard_conforming_strings=off the \\" in "a\\"b" is an
+        # escaped quote to psql and the identifier runs on to the
+        # next quote, whereas the old parser closed the identifier
+        # at that quote, opened a second one, and so believed the
+        # ')' was quoted. psql sees it live, closes the wrapping
+        # \\copy (...) context and honours the TO PROGRAM clause,
+        # which popen()s before the backend ever rejects the SQL.
+        # An ordinary role can set scs=off on itself, so this needs
+        # no privileged database access.
+        ('Unbalanced: scs=off backslash-quote identifier bypass',
+         dict(query='SELECT "a\\"b"c) TO PROGRAM \'echo pwned\' x"',
+              expected=False)),
+        ('Rejected: backslash inside double-quoted identifier',
+         dict(query='SELECT "a\\b" FROM t', expected=False)),
+        ('Balanced: doubled quote inside identifier',
+         dict(query='SELECT "a""b)" FROM t', expected=True)),
     ]
 
     def runTest(self):
@@ -270,13 +290,17 @@ class IECreateJobInjectionTest(BaseTestGenerator):
         if ret_val is not None:
             self.skipTest(ret_val)
 
+    # These scenarios use made-up file names, so run without the server
+    # mode symbolic link protection (see test_import_export_symlink_race).
+    @patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+           return_value=False)
     @patch('pgadmin.tools.import_export.Server')
     @patch('pgadmin.tools.import_export.filename_with_file_manager_path')
     @patch('pgadmin.tools.import_export.BatchProcess')
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, server_mock):
+                filename_mock, server_mock, gate_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username,
                          maintenance_db):
@@ -1106,6 +1130,10 @@ class IECreateJobTest(BaseTestGenerator):
         if ret_val is not None:
             self.skipTest(ret_val)
 
+    # These scenarios use made-up file names, so run without the server
+    # mode symbolic link protection (see test_import_export_symlink_race).
+    @patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+           return_value=False)
     @patch('pgadmin.tools.import_export.Server')
     @patch('pgadmin.tools.import_export.IEMessage')
     @patch('pgadmin.tools.import_export.filename_with_file_manager_path')
@@ -1113,7 +1141,8 @@ class IECreateJobTest(BaseTestGenerator):
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, ie_message_mock, server_mock):
+                filename_mock, ie_message_mock, server_mock,
+                gate_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username,
                          maintenance_db):
@@ -1189,8 +1218,13 @@ class IECreateJobTest(BaseTestGenerator):
         if getattr(self, 'expected_dbname', None):
             args = batch_process_mock.call_args_list[0][1]['args']
             self.assertIn('--dbname', args)
-            self.assertEqual(args[args.index('--dbname') + 1],
-                             self.expected_dbname)
+            # In server mode the client credential files follow the
+            # database in the string; see utility_conninfo().
+            self.assertEqual(
+                {k: v for k, v in conninfo_to_dict(
+                    args[args.index('--dbname') + 1]).items()
+                 if k not in ('passfile', 'sslcert', 'sslkey')},
+                conninfo_to_dict(self.expected_dbname))
 
 
 class IECreateJobDatabaseRequiredTest(BaseTestGenerator):

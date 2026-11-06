@@ -103,6 +103,10 @@ serviceAccount:
 
 ingress:
   enabled: false
+  # IngressClass name to set as spec.ingressClassName. When empty, the field is
+  # not rendered, and the cluster default IngressClass applies only if one is
+  # configured.
+  className: ""
   hostname: pgadmin4.local
   annotations: {}
   # If set, enables TLS configuration in the Ingress resource.

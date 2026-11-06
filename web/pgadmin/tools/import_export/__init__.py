@@ -11,6 +11,7 @@
 
 import json
 import copy
+import os
 
 from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
@@ -19,7 +20,7 @@ from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
     does_utility_exist, get_server, filename_with_file_manager_path, \
-    database_conninfo
+    utility_conninfo, utility_connection_params, open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -266,6 +267,48 @@ _VALID_ON_ERROR = frozenset({'stop', 'ignore'})
 _VALID_LOG_VERBOSITY = frozenset({'default', 'verbose'})
 
 
+def _identifier_strings(value):
+    """The identifier strings columns_to_string() would feed to qtIdent()
+    for value, whatever JSON type it arrives as. A list yields its string
+    items and a dict its string keys (both are iterated by name), and a
+    bare string yields itself: columns_to_string() iterates a string
+    character by character, so a backslash anywhere in it still reaches
+    qtIdent().
+    """
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [n for n in value if isinstance(n, str)]
+    if isinstance(value, dict):
+        return [k for k in value if isinstance(k, str)]
+    return []
+
+
+def _identifier_has_unsafe_char(data):
+    """Whether any schema, table or column name in data contains a
+    backslash or a null byte.
+
+    These names are wrapped with qtIdent() and interpolated into psql's
+    \\copy command. qtIdent() doubles an embedded double quote but leaves
+    a backslash untouched, while psql's \\copy parser (strtokx) treats a
+    backslash inside a double-quoted identifier as an escape. A name
+    containing a backslash can therefore end the quoted identifier early
+    and break out of the command (CWE-78), the same class as the query
+    guarded by _is_query_parens_balanced(). A null byte can truncate the
+    C string so Python's validation and psql's parse disagree. pgAdmin
+    never needs to name an object containing either, so such a name is
+    rejected outright, as the query path does. The column lists reach the
+    \\copy command's FORCE_* options even for a query export, so they are
+    checked too.
+    """
+    names = _identifier_strings(data.get('schema')) + \
+        _identifier_strings(data.get('table'))
+    for key in ('columns', NOT_NULL_COLUMNS, NULL_COLUMNS,
+                'force_quote_columns'):
+        names += _identifier_strings(data.get(key))
+    return any('\\' in n or '\x00' in n for n in names)
+
+
 def _is_query_parens_balanced(query):
     """
     Check that parentheses are balanced in the query, matching the
@@ -282,18 +325,26 @@ def _is_query_parens_balanced(query):
     skip content inside those constructs either, or an attacker can
     hide an unbalanced ) inside them to bypass validation.
 
-    Backslash handling inside single-quoted strings is ambiguous:
-    psql treats \\ as a plain character when
+    Backslash handling inside a quoted token is ambiguous: psql
+    treats \\ as a plain character when
     standard_conforming_strings=on (the default since PG 9.1, and
     the default on every PostgreSQL version pgAdmin 4 supports), but
     as an escape character when scs=off or inside E'...' strings.
+    strtokx takes that escape character from the connection's scs
+    setting and applies it to whichever quote opened the token, so
+    the ambiguity affects double-quoted identifiers exactly as it
+    affects single-quoted strings.
+
     Silently picking one interpretation can let a crafted query be
-    accepted here while psql parses it differently (e.g. a \\'
-    that we treat as "still inside the string" while psql, under
-    the default scs=on, treats it as the string's closing quote,
-    exposing a real ')' immediately after). Rather than guess the
-    server's scs setting, we reject any query containing a
-    backslash inside a single-quoted string outright.
+    accepted here while psql parses it differently, in either
+    direction: a \\' that we treat as "still inside the string"
+    while psql, under the default scs=on, treats as the string's
+    closing quote, or a \\" that we treat as closing an identifier
+    while psql, under scs=off, treats as an escaped quote. Either
+    desynchronises our quote state from psql's and leaves a real ')'
+    exposed to close the wrapping \\copy (...) context. Rather than
+    guess the server's scs setting, we reject any query containing a
+    backslash inside a quoted token outright.
     """
     depth = 0
     i = 0
@@ -324,12 +375,19 @@ def _is_query_parens_balanced(query):
             i += 1
             continue
 
-        # Double-quoted identifier: skip to closing quote
-        # (handles "" escape sequences — matches strtokx behavior)
+        # Double-quoted identifier: skip to closing quote.
+        # Handles the "" escape sequence to match psql's strtokx.
+        # A bare backslash is rejected outright for the same reason
+        # as in a single-quoted string (see docstring): strtokx
+        # applies its escape character to whichever quote opened the
+        # token, so under standard_conforming_strings=off a \" is an
+        # escaped quote to psql but a closing quote to us.
         if ch == '"':
             i += 1
             while i < length:
-                if query[i] == '"':
+                if query[i] == '\\':
+                    return False  # ambiguous escape: reject
+                elif query[i] == '"':
                     if i + 1 < length and query[i + 1] == '"':
                         i += 2  # escaped quote
                     else:
@@ -429,9 +487,12 @@ def create_import_export_job(sid):
             _file = filename_with_file_manager_path(
                 data['filename'], not data['is_import'])
         except PermissionError as e:
-            return unauthorized(errormsg=str(e))
+            return unauthorized(errormsg=e.strerror or str(e))
         except Exception as e:
-            return bad_request(errormsg=str(e))
+            # str(e) would leak the user's absolute storage path; strerror is
+            # the reason without it, matching open_utility_file_or_error().
+            return bad_request(
+                errormsg=getattr(e, 'strerror', None) or str(e))
 
         if not _file:
             return bad_request(errormsg=_('Please specify a valid file.'))
@@ -476,6 +537,15 @@ def create_import_export_job(sid):
                 errormsg=_('Invalid log_verbosity value.')
             )
         data['log_verbosity'] = val.lower()
+
+    # A schema, table or column name is interpolated into psql's \copy
+    # command via qtIdent(), which does not escape a backslash; reject one
+    # outright to prevent breaking out of the command (CWE-78). See
+    # _identifier_has_unsafe_char().
+    if _identifier_has_unsafe_char(data):
+        return bad_request(
+            errormsg=_('A schema, table or column name must not contain a '
+                       'backslash or null byte.'))
 
     # Get required and other columns list
     cols = _get_formatted_column_list(data, 'columns', driver, conn)
@@ -529,8 +599,31 @@ def create_import_export_job(sid):
 
     # Never pass the user-supplied database name directly: see
     # database_conninfo() for why it is wrapped in a connection string.
-    args = ['--dbname', database_conninfo(data['database']),
+    args = ['--dbname',
+            utility_conninfo(data['database'],
+                             utility_connection_params(manager, server)),
             '--command', query]
+
+    # In server mode, open the file ourselves without following a leaf
+    # symbolic link and hand psql /dev/fd/N in the \copy command, so it
+    # cannot be tricked into using another file between the path check and
+    # its own open. The stored arguments and description keep the real name.
+    utility_file, fd, error = open_utility_file_or_error(
+        data['filename'], for_write=not data['is_import'])
+    if error:
+        return error
+
+    launch_args = args
+    if fd is not None:
+        try:
+            launch_query = render_template(
+                temp_path, conn=conn, data=dict(data, filename=utility_file),
+                columns=cols, not_null_columns=not_null_cols,
+                null_columns=null_cols, force_quote_columns=quote_cols)
+        except Exception:
+            os.close(fd)
+            raise
+        launch_args = ['--dbname', args[1], '--command', launch_query]
 
     try:
         io_params = {
@@ -566,11 +659,15 @@ def create_import_export_job(sid):
                 del env[key]
 
         p.set_env_variables(server, env=env)
-        p.start()
+        p.start(args=launch_args,
+                pass_fds=(fd,) if fd is not None else ())
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)
         return bad_request(errormsg=str(e))
+    finally:
+        if fd is not None:
+            os.close(fd)
 
     # Return response
     return make_json_response(

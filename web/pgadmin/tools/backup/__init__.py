@@ -8,6 +8,7 @@
 ##########################################################################
 """Implements Backup Utility"""
 
+import os
 import json
 import copy
 import functools
@@ -18,7 +19,9 @@ from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, does_utility_exist, get_server, \
-    filename_with_file_manager_path, database_conninfo
+    filename_with_file_manager_path, utility_conninfo, \
+    utility_connection_params, database_conninfo, client_files_isolated, \
+    open_utility_file_or_error
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -257,12 +260,23 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             args.append(val)
 
     if backup_obj_type != 'objects':
-        args.append('--database')
-        args.append(server.maintenance_db)
+        # Never pass the maintenance database name directly: pg_dumpall
+        # expands a --database value containing "=" into a connection
+        # string, whose keywords (passfile, sslcert, service, servicefile,
+        # host...) would override the connection settings pgAdmin sets, or
+        # select a service. See database_conninfo().
+        args.extend(['--database', database_conninfo(server.maintenance_db)])
+        if client_files_isolated():
+            # pg_dumpall's --database conninfo does not reach the pg_dump
+            # processes it starts, but its --dbname keywords do, so pass
+            # the client files this way too.
+            args.extend(['--dbname', utility_conninfo(
+                None, utility_connection_params(manager, server))])
     else:
         # Never pass the user-supplied database name directly: see
         # database_conninfo() for why it is wrapped in a connection string.
-        args.extend(['--dbname', database_conninfo(data['database'])])
+        args.extend(['--dbname', utility_conninfo(
+            data['database'], utility_connection_params(manager, server))])
 
     if backup_obj_type == 'globals':
         args.append('--globals-only')
@@ -466,9 +480,12 @@ def create_backup_objects_job(sid):
         backup_file = filename_with_file_manager_path(
             data['file'], (data.get('format', '') != 'directory'))
     except PermissionError as e:
-        return unauthorized(errormsg=str(e))
+        return unauthorized(errormsg=e.strerror or str(e))
     except Exception as e:
-        return bad_request(errormsg=str(e))
+        # str(e) would include the user's absolute storage path (e.g. the
+        # OSError from a symlinked parent directory); strerror is the reason
+        # without the path, matching open_utility_file_or_error().
+        return bad_request(errormsg=getattr(e, 'strerror', None) or str(e))
 
     # Fetch the server details like hostname, port, roles etc
     server = get_server(sid)
@@ -508,6 +525,23 @@ def create_backup_objects_job(sid):
     escaped_args = [
         escape_dquotes_process_arg(arg) for arg in args
     ]
+
+    # In server mode, open the target ourselves without following a leaf
+    # symbolic link and hand the utility /dev/fd/N, so it cannot be tricked
+    # into writing elsewhere between the path check and its own open. A
+    # directory (directory format) cannot be handed over that way; only the
+    # directory itself is checked, so a symbolic link planted inside it by
+    # someone who can write to the storage directory is still followed.
+    utility_file, fd, error = open_utility_file_or_error(
+        backup_file, for_write=True,
+        is_directory=data.get('format', '') == 'directory')
+    if error:
+        return error
+
+    # The file is the value of the --file option.
+    launch_args = list(escaped_args)
+    if fd is not None:
+        launch_args[escaped_args.index('--file') + 1] = utility_file
     try:
         bfile = data['file'].encode('utf-8') \
             if hasattr(data['file'], 'encode') else data['file']
@@ -532,7 +566,8 @@ def create_backup_objects_job(sid):
             )
 
         p.set_env_variables(server)
-        p.start()
+        p.start(args=launch_args,
+                pass_fds=(fd,) if fd is not None else ())
         jid = p.id
     except Exception as e:
         current_app.logger.exception(e)
@@ -541,6 +576,9 @@ def create_backup_objects_job(sid):
             success=0,
             errormsg=str(e)
         )
+    finally:
+        if fd is not None:
+            os.close(fd)
 
     # Return response
     return make_json_response(

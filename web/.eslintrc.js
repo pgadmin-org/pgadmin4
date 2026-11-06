@@ -8,10 +8,9 @@
 //////////////////////////////////////////////////////////////
 const globals = require('globals');
 const js = require('@eslint/js');
+const { fixupPluginRules } = require('@eslint/compat');
 const reactjs = require('eslint-plugin-react');
 const jest = require('eslint-plugin-jest');
-const babel = require('@babel/eslint-plugin');
-const babelParser = require('@babel/eslint-parser');
 const ts = require('typescript-eslint');
 const unusedImports = require('eslint-plugin-unused-imports');
 
@@ -32,18 +31,10 @@ module.exports = [
   {
     files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
     languageOptions: {
-      'parser': babelParser,
-      ecmaVersion: 2018,
+      ecmaVersion: 'latest',
       parserOptions: {
         'ecmaFeatures': {
           'jsx': true,
-        },
-        'requireConfigFile': false,
-        'babelOptions': {
-          'plugins': [
-            '@babel/plugin-syntax-jsx',
-            '@babel/plugin-transform-class-properties',
-          ],
         },
         ...reactjs.configs.recommended.parserOptions,
         ...reactjs.configs['jsx-runtime'].parserOptions,
@@ -62,11 +53,16 @@ module.exports = [
       },
     },
     'plugins': {
-      'react': reactjs,
-      '@babel': babel,
+      // eslint-plugin-react has no ESLint 10 release yet; fixupPluginRules
+      // restores the context methods (getFilename etc.) it still calls.
+      'react': fixupPluginRules(reactjs),
       'unused-imports': unusedImports,
     },
     'rules': {
+      // Added to eslint:recommended in ESLint 10; left off until the
+      // existing hits are cleaned up.
+      'no-useless-assignment': 'off',
+      'no-unassigned-vars': 'off',
       'indent': [
         'error',
         2,

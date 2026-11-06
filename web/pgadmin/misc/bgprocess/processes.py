@@ -25,14 +25,15 @@ import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN, \
-    connection_params_to_env
-from pgadmin.utils.constants import (KERBEROS, UTILITIES_ARRAY,
+    connection_params_to_env, utility_connection_params, check_service_allowed
+from pgadmin.utils.constants import (UTILITIES_ARRAY,
                                      BG_PROCESS_ERROR_MSGS)
-from pgadmin.utils.locker import ConnectionLocker
+from pgadmin.utils.locker import ConnectionLocker, kerberos_environ, \
+    kerberos_libpq_env
 from pgadmin.utils.preferences import Preferences
 
 from dateutil import parser
-from flask import current_app, session
+from flask import current_app
 from flask_babel import gettext as _
 from flask_security import current_user
 
@@ -97,7 +98,10 @@ class IProcessDesc(metaclass=ABCMeta):
                 # do nothing if bfile is not encoded.
                 pass
 
-            path = get_complete_file_path(process_file)
+            try:
+                path = get_complete_file_path(process_file)
+            except PermissionError:
+                path = None
             path = process_file if path is None else path
 
             if IS_WIN:
@@ -137,6 +141,7 @@ class BatchProcess:
             self.stdout = self.stderr = self.stime = self.etime = \
             self.ecode = self.manager_obj = None
         self.env = dict()
+        self.kerberos_conn = False
 
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
@@ -261,6 +266,10 @@ class BatchProcess:
         )
         db.session.add(j)
         db.session.commit()
+        # Process.pid is a string column: PostgreSQL does not compare it
+        # with an integer, so keep it as the string that was stored.
+        self._unstarted_pid = str(uid)
+        self._unstarted_uid = current_user.id
 
     def check_start_end_time(self):
         """
@@ -293,7 +302,14 @@ class BatchProcess:
 
         return interpreter if interpreter else 'python'
 
-    def start(self, cb=None):
+    def start(self, cb=None, args=None, pass_fds=()):
+        """Start the process.
+
+        `args`, when given, replaces the stored arguments for this launch
+        only: the stored ones are what the process details show, so a
+        caller passing a file as /dev/fd/N keeps the real path there.
+        `pass_fds` are descriptors the utility inherits (POSIX only).
+        """
         self.check_start_end_time()
 
         executor = file_quote(os.path.join(
@@ -303,7 +319,7 @@ class BatchProcess:
         interpreter = self._get_python_interpreter()
 
         cmd = [interpreter, executor, self.cmd]
-        cmd.extend(self.args)
+        cmd.extend(self.args if args is None else args)
 
         current_app.logger.info(
             "Executing the process executor with the arguments: %s",
@@ -319,11 +335,9 @@ class BatchProcess:
         env['PROCID'] = self.id
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
-        if config.SERVER_MODE and session and \
-                session.get('auth_source_manager', {}).get(
-                    'current_source') == KERBEROS and \
-                'KRB5CCNAME' in session:
-            env['KRB5CCNAME'] = session['KRB5CCNAME']
+        # A user who logged in with Kerberos has their own credentials;
+        # in server mode, no other user may have any.
+        env.update(kerberos_environ(self.kerberos_conn))
 
         if self.env:
             env.update(self.env)
@@ -336,6 +350,9 @@ class BatchProcess:
         if cb is not None:
             cb(env)
         if os.name == 'nt':
+            if pass_fds:
+                raise ValueError('pass_fds is not supported on Windows')
+
             DETACHED_PROCESS = 0x00000008
             from subprocess import CREATE_NEW_PROCESS_GROUP
 
@@ -361,11 +378,12 @@ class BatchProcess:
             # if in debug mode, wait for process to complete and
             # get the stdout and stderr of popen.
             if config.CONSOLE_LOG_LEVEL <= logging.DEBUG:
-                p = self.get_process_output(cmd, env)
+                p = self.get_process_output(cmd, env, pass_fds)
             else:
                 p = Popen(
                     cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
-                    start_new_session=True, env=env
+                    start_new_session=True, env=env,
+                    pass_fds=tuple(pass_fds)
                 )
 
         self.ecode = p.poll()
@@ -389,7 +407,7 @@ class BatchProcess:
             p.process_state = PROCESS_STARTED
             db.session.commit()
 
-    def get_process_output(self, cmd, env):
+    def get_process_output(self, cmd, env, pass_fds=()):
         """
         :param cmd:
         :param env:
@@ -397,7 +415,7 @@ class BatchProcess:
         """
         p = Popen(
             cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
-            start_new_session=True, env=env
+            start_new_session=True, env=env, pass_fds=tuple(pass_fds)
         )
 
         output, errors = p.communicate()
@@ -838,6 +856,43 @@ class BatchProcess:
         db.session.commit()
 
     def set_env_variables(self, server, **kwargs):
+        """
+        Set environment variables.
+
+        A job whose environment cannot be resolved (for instance because a
+        connection file path is refused) can never start, so its row and log
+        directory are removed rather than left in the Processes list.
+        """
+        try:
+            self._set_env_variables(server, **kwargs)
+        except Exception:
+            self._discard_unstarted()
+            raise
+        # The environment is resolved: this job is no longer "unstarted",
+        # so a later call can never remove the row of a running job.
+        self._unstarted_pid = None
+
+    def _discard_unstarted(self):
+        """Remove the row and log directory of a job that never started.
+        This must never raise, so as not to mask the original error."""
+        pid = getattr(self, '_unstarted_pid', None)
+        if pid is None:
+            return
+        self._unstarted_pid = None
+        try:
+            p = Process.query.filter_by(
+                pid=pid, user_id=self._unstarted_uid).first()
+            if p is not None:
+                db.session.delete(p)
+                db.session.commit()
+            if self.log_dir:
+                shutil.rmtree(self.log_dir, True)
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.warning(
+                'Could not discard the unstarted process %s: %s', pid, e)
+
+    def _set_env_variables(self, server, **kwargs):
         """Set environment variables"""
         # The connection parameters configured against the server are what
         # the utility must connect with, so pass every one of them that
@@ -846,11 +901,8 @@ class BatchProcess:
         # unpassed for years, leaving pg_dump and friends unable to connect
         # to a server that the object explorer was perfectly happy with.
         # Prefer the manager's copy, which reflects the live connection.
-        connection_params = None
-        if self.manager_obj and self.manager_obj.connection_params:
-            connection_params = self.manager_obj.connection_params
-        elif server and getattr(server, 'connection_params', None):
-            connection_params = server.connection_params
+        connection_params = utility_connection_params(
+            self.manager_obj, server)
 
         conn_env = connection_params_to_env(connection_params)
 
@@ -858,6 +910,13 @@ class BatchProcess:
         # caller, so the server's own address must not override it.
         if self.manager_obj and self.manager_obj.use_ssh_tunnel:
             conn_env.pop('PGHOSTADDR', None)
+
+        # Whether the server has Kerberos enabled decides if the utility may
+        # use Kerberos, and so which authentication libpq must refuse.
+        self.kerberos_conn = bool(getattr(
+            self.manager_obj if self.manager_obj else server,
+            'kerberos_conn', False))
+        kerberos_libpq_env(conn_env, self.kerberos_conn)
 
         self.env.update(conn_env)
 
@@ -869,11 +928,14 @@ class BatchProcess:
         else:
             service = server.service if server else None
         if service:
+            check_service_allowed(service)
             self.env['PGSERVICE'] = service
 
         if self.manager_obj:
-            # export password environment
-            self.manager_obj.export_password_env(self.id)
+            # Pass the password in this process's environment only, under
+            # its ID, which the process executor hands to the utility as
+            # PGPASSWORD.
+            self.manager_obj.export_password_env(self.env, self.id)
 
         if 'env' in kwargs:
             self.env.update(kwargs['env'])

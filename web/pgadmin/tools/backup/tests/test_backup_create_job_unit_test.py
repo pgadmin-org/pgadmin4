@@ -15,6 +15,7 @@ from regression import parent_node_dict
 from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
+from psycopg.conninfo import conninfo_to_dict
 from unittest.mock import patch, MagicMock
 from config import PG_DEFAULT_DRIVER
 
@@ -1362,6 +1363,52 @@ class BackupCreateJobTest(BaseTestGenerator):
                              "dbname=postgres'",
              expected_exit_code=[0, None]
          )),
+        ('When backup the server the maintenance database is passed '
+         'as a dbname connection string',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 verbose=True,
+                 type='server'
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[],
+             not_expected_cmd_opts=[],
+             expected_database=True,
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the globals the maintenance database is passed '
+         'as a dbname connection string',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 verbose=True,
+                 type='globals'
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--globals-only'],
+             not_expected_cmd_opts=[],
+             expected_database=True,
+             expected_exit_code=[0, None]
+         )),
         ('When backup the object with option - Do not save Row security '
          'policies, Data, Schema (>= v18)',
          dict(
@@ -1524,6 +1571,10 @@ class BackupCreateJobTest(BaseTestGenerator):
         if ret_val is not None:
             self.skipTest(ret_val)
 
+    # These scenarios use made-up file names, so run without the server
+    # mode symbolic link protection (covered in test_backup_symlink_race).
+    @patch('pgadmin.misc.file_manager._refuses_leaf_symlinks',
+           return_value=False)
     @patch('pgadmin.tools.backup.Server')
     @patch('pgadmin.tools.backup.BackupMessage')
     @patch('pgadmin.tools.backup.filename_with_file_manager_path')
@@ -1531,7 +1582,8 @@ class BackupCreateJobTest(BaseTestGenerator):
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, backup_message_mock, server_mock):
+                filename_mock, backup_message_mock, server_mock,
+                gate_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username,
                          maintenance_db):
@@ -1601,8 +1653,22 @@ class BackupCreateJobTest(BaseTestGenerator):
         if getattr(self, 'expected_dbname', None):
             args = batch_process_mock.call_args_list[0][1]['args']
             self.assertIn('--dbname', args)
-            self.assertEqual(args[args.index('--dbname') + 1],
-                             self.expected_dbname)
+            # In server mode the client credential files follow the
+            # database in the string; see utility_conninfo().
+            self.assertEqual(
+                {k: v for k, v in conninfo_to_dict(
+                    args[args.index('--dbname') + 1]).items()
+                 if k not in ('passfile', 'sslcert', 'sslkey')},
+                conninfo_to_dict(self.expected_dbname))
+        # Server and globals backups pass the maintenance database to
+        # --database, which pg_dumpall expands in the same way, so it must
+        # be a dbname connection string (see
+        # test_backup_maintenance_db_conninfo.py for hostile names).
+        if getattr(self, 'expected_database', None):
+            args = batch_process_mock.call_args_list[0][1]['args']
+            self.assertIn('--database', args)
+            self.assertTrue(
+                args[args.index('--database') + 1].startswith('dbname='))
 
 
 class BackupCreateJobDatabaseRequiredTest(BaseTestGenerator):

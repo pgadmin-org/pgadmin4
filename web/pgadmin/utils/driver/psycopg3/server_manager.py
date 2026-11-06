@@ -10,8 +10,8 @@
 """
 Implementation of ServerManager
 """
-import os
 import datetime
+import os
 import config
 import logging
 from flask import current_app, session
@@ -20,9 +20,13 @@ from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils import get_complete_file_path, \
-    connection_param_bool_to_int
+    connection_param_bool_to_int, is_valid_connection_param_key, \
+    client_files_isolated, isolate_client_credential_files, \
+    check_connection_params_allowed
 from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
 from pgadmin.utils.master_password import process_masterpass_disabled
+from pgadmin.utils.locker import KerberosNotAllowed, \
+    apply_kerberos_conn_params, check_kerberos_conn_params_unchanged
 from .connection import Connection
 from pgadmin.model import Server, User
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
@@ -30,7 +34,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import build_passexec
-from psycopg.conninfo import make_conninfo
+from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
@@ -119,7 +123,14 @@ class ServerManager(object):
         self.gss_authenticated = False
         self.gss_encrypted = False
         self.connection_params = server.connection_params
-        self.create_connection_string(self.db, self.user)
+        try:
+            self.create_connection_string(self.db, self.user)
+        except PermissionError:
+            # A file path that escapes the user's storage directory, or a
+            # connection parameter whose key is not a libpq keyword, is
+            # reported when a connection is attempted; it must not stop the
+            # server being listed, or edited to correct the value.
+            pass
         self.prepare_threshold = server.prepare_threshold
         self.post_connection_sql = server.post_connection_sql
 
@@ -555,7 +566,21 @@ WHERE db.oid = {0}""".format(did))
 
         return None
 
-    def export_password_env(self, env):
+    def export_password_env(self, env, name='PGPASSWORD'):
+        """
+        Put the server's password, if it has one, into env[name], where env
+        is the environment being built for a child process.
+
+        It must never go into os.environ: pgAdmin's own environment is
+        shared by every user's requests and copied into every process it
+        starts, so a password left there would be handed to other users'
+        utilities and psql sessions, and read by libpq for their
+        connections.
+
+        Returns:
+            False and an error message if the password cannot be
+            decrypted, otherwise None
+        """
         if self.password:
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
@@ -571,12 +596,11 @@ WHERE db.oid = {0}""".format(did))
                 )
                 # Fall back to passexec, as when no password is saved.
                 if self.passexec:
-                    os.environ[str(env)] = self.passexec.get()
+                    env[str(name)] = self.passexec.get()
                 return
-            os.environ[str(env)] = password
+            env[str(name)] = password
         elif self.passexec:
-            password = self.passexec.get()
-            os.environ[str(env)] = password
+            env[str(name)] = self.passexec.get()
 
     def create_ssh_tunnel(self, tunnel_password):
         """
@@ -623,36 +647,63 @@ WHERE db.oid = {0}""".format(did))
                 ssh_logger.setLevel(logging.DEBUG)
                 for h in current_app.logger.handlers:
                     ssh_logger.addHandler(h)
-            # Keep sshtunnel away from the agent whenever the user has
-            # configured a credential of their own (#9814). The identity file
-            # check uses the configured path, not the resolved one, so a
-            # missing key file is reported as a failure rather than silently
-            # authenticating with some other key from the agent. With no
-            # identity file or password configured the agent stays enabled,
-            # preserving the previous behaviour for anyone relying on
-            # "Prompt for Password?" or on the agent itself.
+            # In desktop mode the account pgAdmin runs as is the user, so
+            # sshtunnel keeps its defaults: the keys in ~/.ssh, ~/.ssh/config
+            # and the ssh-agent are all available, and the agent is only
+            # kept away when the user configured a credential of their own
+            # (#9814). In server mode that account is shared by every pgAdmin
+            # user, so none of its ambient credentials may be used: the
+            # tunnel authenticates only with the password or the identity
+            # file (inside the user's storage directory) the user supplied.
+            # Do not read ~/.ssh/id_*, ~/.ssh/config (IdentityFile, User,
+            # HostName, ProxyCommand) or the agent, and report a missing
+            # identity file as a failure instead of falling back to them.
+            server_mode = config.SERVER_MODE and \
+                not getattr(current_app, 'PGADMIN_RUNTIME', False)
+            isolation = {}
+            if server_mode:
+                isolation = dict(
+                    host_pkey_directories=[],
+                    ssh_config_file=os.devnull,
+                    allow_agent=False
+                )
+
             if self.tunnel_authentication == 1:
-                tunnel_identity_file = get_complete_file_path(
-                    self.tunnel_identity_file)
+                try:
+                    tunnel_identity_file = get_complete_file_path(
+                        self.tunnel_identity_file)
+                except PermissionError as e:
+                    return False, str(e)
+                if server_mode and tunnel_identity_file is None:
+                    return False, gettext(
+                        "The SSH tunnel identity file \"{0}\" could not be "
+                        "found. Specify an identity file located in your "
+                        "storage directory.").format(
+                            self.tunnel_identity_file or '')
+                if not server_mode:
+                    isolation = dict(
+                        allow_agent=not self.tunnel_identity_file)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_pkey=tunnel_identity_file,
                     ssh_private_key_password=tunnel_password,
-                    allow_agent=not self.tunnel_identity_file,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
-                    set_keepalive=int(self.tunnel_keep_alive)
+                    set_keepalive=int(self.tunnel_keep_alive),
+                    **isolation
                 )
             else:
+                if not server_mode:
+                    isolation = dict(allow_agent=not tunnel_password)
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
-                    allow_agent=not tunnel_password,
                     remote_bind_address=(self.host, self.port),
                     logger=ssh_logger,
-                    set_keepalive=int(self.tunnel_keep_alive)
+                    set_keepalive=int(self.tunnel_keep_alive),
+                    **isolation
                 )
             # flag tunnel threads in daemon mode to fix hang issue.
             self.tunnel_object.daemon_forward_servers = True
@@ -703,10 +754,15 @@ WHERE db.oid = {0}""".format(did))
 
         return value
 
-    def create_connection_string(self, database, user, password=None):
+    def create_connection_string(self, database, user, password=None,
+                                 for_utility=False):
         """
         This function is used to create connection string based on the
         parameters.
+
+        :param for_utility: the string is for a utility, such as psql, with
+            its own libpq, so parameters that only a newer libpq knows are
+            not added to it; they are in its environment instead.
         """
         dsn_args = dict()
         dsn_args['host'] = self.host
@@ -727,9 +783,32 @@ WHERE db.oid = {0}""".format(did))
             display_dsn_args['password'] = 'xxxxxxx'
             dsn_args['password'] = password
 
+        # A file path that escapes the user's storage directory is refused,
+        # but only once the display string below has been built.
+        path_error = None
+        # A connection parameter whose key is not an exact libpq keyword is
+        # refused the same way (see below).
+        key_error = None
+
+        # In server mode a file is passed on even if it does not exist yet,
+        # rather than dropped, because libpq would then use its default file
+        # in the service account's home directory instead.  The path is
+        # still confined to the user's storage directory.
+        validate = not client_files_isolated()
+
         # Loop through all the connection parameters set in the server dialog.
         if self.connection_params and isinstance(self.connection_params, dict):
             for key, value in self.connection_params.items():
+                # make_conninfo() quotes values but not keys, so a key that
+                # smuggles its own "keyword=value" pairs would reach libpq
+                # unconfined. Rows already in the database are never
+                # re-validated on save, so refuse any key that is not an
+                # exact libpq keyword here as well, and keep it out of both
+                # the connection string and its display copy.
+                if not is_valid_connection_param_key(key):
+                    key_error = key_error or key
+                    continue
+
                 with_complete_path = False
                 orig_value = value
                 # Getting complete file path if the key is one of the below.
@@ -737,7 +816,24 @@ WHERE db.oid = {0}""".format(did))
                            'sslcrldir'] or \
                         (key == 'sslrootcert' and value != 'system'):
                     with_complete_path = True
-                    value = get_complete_file_path(value)
+                    try:
+                        value = get_complete_file_path(
+                            value, validate=validate)
+                    except PermissionError as e:
+                        path_error = path_error or e
+                        value = None
+                elif key == 'sslkeylogfile':
+                    # libpq writes this file (it may not exist yet), so skip
+                    # the existence check, but still confine it to the user's
+                    # storage directory and refuse a read-only shared
+                    # storage directory (for_write).
+                    with_complete_path = True
+                    try:
+                        value = get_complete_file_path(
+                            value, validate=False, for_write=True)
+                    except PermissionError as e:
+                        path_error = path_error or e
+                        value = None
 
                 # If key is hostaddr and ssh tunnel is in use don't overwrite.
                 if key == 'hostaddr' and self.use_ssh_tunnel:
@@ -768,6 +864,66 @@ WHERE db.oid = {0}""".format(did))
             if k not in dsn_args:
                 dsn_args[k] = v
 
+        # In server mode, libpq must refuse GSSAPI and SSPI where this
+        # connection may not use Kerberos; the environment alone does not
+        # stop SSPI or gssproxy.
+        kerberos_error = None
+        for args in (dsn_args, display_dsn_args):
+            try:
+                apply_kerberos_conn_params(
+                    args, getattr(self, 'kerberos_conn', False),
+                    add_missing=not for_utility)
+            except KerberosNotAllowed as e:
+                kerberos_error = kerberos_error or e
+
+        isolate_client_credential_files(dsn_args)
+
+        # The server's service and a 'service' connection parameter are
+        # both looked up in the service account's service file, so both
+        # are checked. Only the server's service is passed to utilities
+        # (PGSERVICE, via BatchProcess.set_env_variables): 'service' is
+        # not in CONNECTION_PARAM_ENV_VARS, so a service set only as a
+        # connection parameter applies to pgAdmin's own connections.
+        # This is checked before building the display string, as a libpq
+        # that does not know an option such as servicefile would fail to
+        # build it.
+        check_connection_params_allowed(dsn_args)
+
         self.display_connection_string = make_conninfo(**display_dsn_args)
 
-        return make_conninfo(**dsn_args)
+        # Raised as PermissionError, like a refused path, so the same guard
+        # in __init__ defers it: a server with an invalid saved key can
+        # still be listed and edited to correct it, while an actual
+        # connection attempt is refused.
+        if key_error is not None:
+            raise PermissionError(
+                gettext(
+                    'Invalid connection parameter: {0}'
+                ).format(key_error)
+            )
+
+        if path_error is not None:
+            raise path_error
+
+        if kerberos_error is not None:
+            raise kerberos_error
+
+        conn_string = make_conninfo(**dsn_args)
+
+        # make_conninfo() quotes parameter values but not their keys, so a
+        # crafted key such as 'sslmode=prefer service' smuggles its own
+        # service= into the connection string and slips past the dict check
+        # above, which matches the exact key 'service'. Re-check the parsed
+        # final string, which is exactly what libpq will act on, so the
+        # allowlist holds regardless of how the parameters were serialised.
+        check_connection_params_allowed(conninfo_to_dict(conn_string))
+
+        # A crafted parameter key (make_conninfo() does not escape keys) can
+        # serialise its own require_auth/gssencmode/gsslib into the string,
+        # which libpq, or psql whose conninfo outranks PGREQUIREAUTH, would
+        # honour. Re-check the parsed final string so the forced values (or
+        # their absence, for a utility that gets them from the environment)
+        # are what libpq actually acts on, however the parameters were built.
+        check_kerberos_conn_params_unchanged(conn_string, dsn_args)
+
+        return conn_string

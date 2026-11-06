@@ -11,7 +11,6 @@
 
 import json
 import logging
-import ssl
 from flask import request
 from flask_babel import gettext
 from flask_security import permissions_required
@@ -25,16 +24,10 @@ import config
 from pgadmin.llm.utils import LLMApiError, urlopen_no_redirect
 from pgadmin.tools.user_management.PgAdminPermissions import \
     AllPermissionTypes
+from pgadmin.utils.tls import create_ssl_context
 
-# Try to use certifi for proper SSL certificate handling
-try:
-    import certifi
-    SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
-except ImportError:
-    SSL_CONTEXT = ssl.create_default_context()
-
-# Enforce minimum TLS 1.2 to satisfy security requirements
-SSL_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1_2
+# Verifies against config.CA_FILE or certifi, with TLS 1.2 minimum.
+SSL_CONTEXT = create_ssl_context()
 
 
 MODULE_NAME = 'llm'

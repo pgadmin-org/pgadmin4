@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeListById } from '../../../../static/js/node_ajax';
-import ServerSchema, { passexecForServerCopy } from './server.ui';
+import ServerSchema, { passexecForServerCopy, sharingForServerCopy } from './server.ui';
 import { showServerPassword, showChangeServerPassword, showNamedRestorePoint } from '../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../static/js/api_instance';
@@ -66,6 +66,9 @@ define('pgadmin.node.server', [
           d.shared_username = null;
           passexecForServerCopy(d);
         }
+        // Only an administrator can share a server, so the copy made by
+        // anyone else is not shared.
+        sharingForServerCopy(d, current_user);
         return d;
       },
       Init: function() {

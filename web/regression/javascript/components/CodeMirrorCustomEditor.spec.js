@@ -342,4 +342,46 @@ describe('CodeMirrorCustomEditorView', ()=>{
     expect(editor.state.doc.toString()).toEqual(
       'select 1;\nselect 2;\nselect 1;\nselect 2;\nselect 3;');
   });
+
+  describe('replaceSelection', ()=>{
+    it('keeps the replaced selection selected', ()=>{
+      cmRerender({value: 'select 1;'});
+      editor.dispatch({selection: {anchor: 0, head: 6}});
+
+      editor.replaceSelection('SELECT DISTINCT');
+
+      expect(editor.getValue()).toBe('SELECT DISTINCT 1;');
+      expect(editor.getSelection()).toBe('SELECT DISTINCT');
+    });
+
+    it('leaves the caret after the inserted text at a collapsed cursor', ()=>{
+      cmRerender({value: 'SELECT 1;'});
+      editor.dispatch({selection: {anchor: 9}});
+
+      editor.replaceSelection(' SELECT 2;');
+
+      expect(editor.getValue()).toBe('SELECT 1; SELECT 2;');
+      expect(editor.state.selection.main.empty).toBe(true);
+      expect(editor.state.selection.main.head).toBe(editor.getValue().length);
+    });
+
+    it('replaces a selection with shorter text without throwing', ()=>{
+      const query = 'SELECT * FROM public.actor;';
+      cmRerender({value: query});
+      editor.dispatch({selection: {anchor: 0, head: query.length}});
+
+      expect(()=>editor.replaceSelection('SELECT 1;')).not.toThrow();
+      expect(editor.getValue()).toBe('SELECT 1;');
+      expect(editor.getSelection()).toBe('SELECT 1;');
+    });
+
+    it('maps CRLF text to the document line separator', ()=>{
+      cmRerender({value: ''});
+
+      editor.replaceSelection('a\r\nb');
+
+      expect(editor.getValue()).toBe('a\nb');
+      expect(editor.state.selection.main.head).toBe(3);
+    });
+  });
 });

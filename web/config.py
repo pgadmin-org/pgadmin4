@@ -478,8 +478,14 @@ UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 # What key should we look at in the upgrade data file?
 UPGRADE_CHECK_KEY = 'pgadmin4'
 
-# Which CA file should we use?
-# Default to cacert.pem in the same directory as config.py et al.
+# Which CA file should pgAdmin's own outbound HTTPS requests (upgrade check,
+# AI assistant, cloud deployment, OAuth2) verify against?
+# Default to cacert.pem in the same directory as config.py et al. If that file
+# does not exist, certifi's bundle is used instead, so a server with a
+# certificate from a private CA (such as a self-hosted Ollama) needs CA_FILE
+# pointing at a bundle that includes that CA. Set to None to use Python's
+# default CA store (normally the system store), except for OAuth2, which then
+# uses the requests library's own bundle.
 CA_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                        "cacert.pem")
 
@@ -490,6 +496,10 @@ CHECK_SUPPORTED_BROWSER = True
 # Storage Manager storage url config settings
 # If user sets STORAGE_DIR to empty it will show all volumes if platform
 # is Windows, '/' if it is Linux, Mac or any other unix type system.
+#
+# WARNING: an empty STORAGE_DIR exposes the whole filesystem to users in
+# server mode, so the guard that stops the binary path from pointing into
+# the storage directories (CWE-426) cannot protect that configuration.
 
 # For example:
 # 1. STORAGE_DIR = get_drive("C") or get_drive() # return C:/ by default
@@ -1100,6 +1110,30 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 # last two identify the pgAdmin user; the host, port, username and database
 # are set by whoever edits the server, so commands must authorise on the
 # pgAdmin identity and treat the other four as untrusted input.
+#
+# These variables describe the server itself, and cannot be changed by a
+# user who does not own it:
+#
+#   PGADMIN_PASSEXEC_SHARED: 'true' if the server is shared and owned by
+#       another pgAdmin user, otherwise 'false' (including for the owner).
+#   PGADMIN_PASSEXEC_SERVER_ID: pgAdmin's numeric id for the server.
+#   PGADMIN_PASSEXEC_SERVER_OWNER and
+#   PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE: the pgAdmin user who owns
+#       the server, and how they authenticate.
+#   PGADMIN_PASSEXEC_SERVER_GROUP: the name of the owner's server group
+#       holding the server; for an OAuth2 user restricted by
+#       OAUTH2_SERVER_GROUP_CLAIM, this is the group that granted access.
+#
+# PGADMIN_PASSEXEC_SHARED does not prove that the owner is an
+# administrator, because a server shared before sharing was restricted to
+# administrators may be owned by any user. On a shared server, the host,
+# port and maintenance database are taken from the owner's server, not from
+# the copy kept for each user, whilst PGADMIN_PASSEXEC_USERNAME is each
+# user's own. Every user owns their own server groups and can give them any
+# name, so the group name proves nothing unless the owner is checked too.
+# Commands should decide whether to issue a password based on the pgAdmin
+# user and the server owner.
+#
 # Names may not start with "__". An empty dictionary (the default) turns the
 # feature off. This setting is applicable only for server mode.
 #
@@ -1127,6 +1161,26 @@ SERVER_PASSEXEC_COMMANDS = {}
 # not need. This setting is applicable only for server mode.
 #############################################################################
 SERVER_PASSEXEC_ENV_PASSTHROUGH = []
+
+#############################################################################
+# SERVER_MODE_ALLOWED_SERVICES lists the libpq service names that a server
+# may use in server mode, for example ['reporting']. Services are looked up
+# in the connection service file of the account pgAdmin runs as
+# (~/.pg_service.conf, or the file named by PGSERVICEFILE or found in
+# PGSYSCONFDIR), not in a file belonging to the pgAdmin user. A server set
+# to use any other service cannot be saved or connected to. An empty list
+# (the default) allows no services. This setting is applicable only for
+# server mode; any service may be used in desktop mode.
+#
+# WARNING: listing a service shares its credentials with every pgAdmin
+# user. Any user can connect using a listed service, including any
+# password, password file or client certificate its entry names, and can
+# override the entry's host to send that password to a server of their
+# own choosing. psql and the utilities also take the entry's require_auth,
+# gssencmode and gsslib in preference to the settings pgAdmin gives them
+# for Kerberos, so do not set those in a listed service.
+#############################################################################
+SERVER_MODE_ALLOWED_SERVICES = []
 
 #############################################################################
 # DEPRECATED and ignored: free-text password exec commands are never run in

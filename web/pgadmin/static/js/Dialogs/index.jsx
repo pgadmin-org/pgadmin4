@@ -263,7 +263,13 @@ export function showChangeUserPassword(url) {
           }).then((res)=>{
             resolve(res.data.info);
             onClose();
-            pgAdmin.Browser.notifier.success(res.data.info);
+            if (res.data.data?.passwords_cleared) {
+              // Not a plain success: some saved server passwords were lost,
+              // so keep the message until the user closes it.
+              pgAdmin.Browser.notifier.info(res.data.info, null);
+            } else {
+              pgAdmin.Browser.notifier.success(res.data.info);
+            }
           }).catch((err)=>{
             reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
@@ -271,6 +277,7 @@ export function showChangeUserPassword(url) {
       }}
       hasCsrfToken={true}
       showUser={false}
+      warnSessionLogout={true}
     />;
   },
   { isFullScreen: false, isResizeable: true, showFullScreen: false, isFullWidth: true,

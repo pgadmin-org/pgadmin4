@@ -563,9 +563,16 @@ REM and some of them are optional.
 
     SETLOCAL EnableDelayedExpansion
     SET "COMPONENTS="
-    FOR %%p IN (pgAdmin4.exe libpq.dll libcrypto-*-x64.dll libssl-*-x64.dll libintl-*.dll libiconv-*.dll liblz4.dll libzstd.dll zlib1.dll pg_dump.exe pg_dumpall.exe pg_restore.exe psql.exe kinit.exe krb5_64.dll comerr64.dll k5sprt64.dll gssapi64.dll krbcc64.dll ccapiserver.exe) DO (
-        FOR /F "delims=" %%f IN ('DIR /B "%BUILDROOT%\runtime\%%p" 2^>nul') DO SET "COMPONENTS=!COMPONENTS! "%BUILDROOT%\runtime\%%f""
+    REM FOR expands an item containing a wildcard against the current directory
+    REM and silently drops it when nothing matches there, so the loop must run
+    REM in the runtime directory for the versioned libraries to be found at
+    REM all. Plain names are passed through whether or not the file exists,
+    REM hence the IF EXIST for the optional ones.
+    PUSHD "%BUILDROOT%\runtime" || EXIT /B 1
+    FOR %%f IN (pgAdmin4.exe libpq.dll libcrypto-*-x64.dll libssl-*-x64.dll libintl-*.dll libiconv-*.dll liblz4.dll libzstd.dll zlib1.dll pg_dump.exe pg_dumpall.exe pg_restore.exe psql.exe kinit.exe krb5_64.dll comerr64.dll k5sprt64.dll gssapi64.dll krbcc64.dll ccapiserver.exe) DO (
+        IF EXIST "%%f" SET "COMPONENTS=!COMPONENTS! "%BUILDROOT%\runtime\%%f""
     )
+    POPD
     IF "!COMPONENTS!" == "" (
         ECHO.
         ECHO ************************************************************

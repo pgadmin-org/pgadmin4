@@ -1558,7 +1558,9 @@
         "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t.id, concat(t.a, ' x ', t.b) AS ab, (t.d)::text AS ds, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
-        "definition": "SELECT t.id, concat(t.a, ' x ', t.b) AS ab, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n)"
+        "definition": "SELECT t.id, concat(t.a, ' x ', t.b) AS ab, u.n FROM (VALUES (1, 'a', 'b', now()::date)) t(id, a, b, d) CROSS JOIN (VALUES (2)) u(n)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1578,7 +1580,9 @@
         "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, valid_from, name FROM (VALUES (1, now()::date, 'a')) t(id, valid_from, name); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
-        "definition": "SELECT id, valid_from FROM (VALUES (1, now()::date, 'a')) t(id, valid_from, name)"
+        "definition": "SELECT id, valid_from FROM (VALUES (1, now()::date, 'a')) t(id, valid_from, name)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
       },
       "mocking_required": false,
       "mock_data": {},
