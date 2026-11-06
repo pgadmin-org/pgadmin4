@@ -272,11 +272,16 @@ class ServerPasswordExec(PasswordExec):
 
     def __init__(self, name, argv, host, port, username, database,
                  pgadmin_user, auth_source, expiration_seconds=None,
-                 timeout=60):
+                 timeout=60, *, shared=False, server_id=None,
+                 server_owner=None, server_owner_auth_source=None,
+                 server_group=None):
         super().__init__(None, host, port, username, expiration_seconds,
                          timeout)
         self.name = name
         self.argv = list(argv)
+        # Compared by passexec_details_changed() to spot a renamed group.
+        self.server_details = (server_owner, server_owner_auth_source,
+                               server_group)
         self.env = server_passexec_base_env()
         self.env.update({
             'PGADMIN_PASSEXEC_HOST': host or '',
@@ -285,6 +290,17 @@ class ServerPasswordExec(PasswordExec):
             'PGADMIN_PASSEXEC_DATABASE': database or '',
             'PGADMIN_PASSEXEC_PGADMIN_USER': pgadmin_user or '',
             'PGADMIN_PASSEXEC_AUTH_SOURCE': auth_source or '',
+            # The values below come from the server's own row and its
+            # owner, which a user who does not own the server cannot
+            # change; see the SERVER_PASSEXEC_COMMANDS comment in
+            # config.py for what each of them means.
+            'PGADMIN_PASSEXEC_SHARED': 'true' if shared else 'false',
+            'PGADMIN_PASSEXEC_SERVER_ID':
+                str(server_id) if server_id is not None else '',
+            'PGADMIN_PASSEXEC_SERVER_OWNER': server_owner or '',
+            'PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE':
+                server_owner_auth_source or '',
+            'PGADMIN_PASSEXEC_SERVER_GROUP': server_group or '',
         })
 
     def get(self):
@@ -350,6 +366,38 @@ def resolve_server_passexec(server, user):
     return server.passexec_name, server.passexec_expiration, server.username
 
 
+def server_passexec_details(server):
+    """Return (owner username, owner auth source, server group name) for
+    the server, read from its own row in the configuration database.
+
+    The server passed in may be the overlay built for a user who does not
+    own a shared server, in which the server group is that user's own
+    (see ServerModule.get_shared_server_properties), so it is looked up
+    again by id: the owner's group is the one an OAuth2 server group
+    claim is checked against, and only the owner can rename it or move
+    the server out of it. Any value that cannot be found is None."""
+    from pgadmin.model import db, Server, ServerGroup, User
+    row = db.session.query(
+        User.username, User.auth_source, ServerGroup.name
+    ).select_from(Server).outerjoin(
+        User, User.id == Server.user_id
+    ).outerjoin(
+        ServerGroup, ServerGroup.id == Server.servergroup_id
+    ).filter(Server.id == server.id).first()
+    return tuple(row) if row is not None else (None, None, None)
+
+
+def passexec_details_changed(pexec, server):
+    """True if pexec is a server-mode command built with an owner or
+    server group that no longer matches the server's row, for example
+    because the owner renamed the group or moved the server to another.
+    The connection manager then rebuilds it, which also drops a password
+    the command may have chosen for the old group."""
+    if not isinstance(pexec, ServerPasswordExec):
+        return False
+    return pexec.server_details != server_passexec_details(server)
+
+
 def build_passexec(server):
     """Build the password exec object for a ServerManager, or None."""
     if not config.SERVER_MODE:
@@ -372,7 +420,11 @@ def build_passexec(server):
             'Server %s uses password exec command %r, which is not in '
             'SERVER_PASSEXEC_COMMANDS; ignoring it.', server.id, name)
         return None
+    owner, owner_auth_source, group = server_passexec_details(server)
     return ServerPasswordExec(
         name, argv, server.host, server.port, db_user,
         server.maintenance_db, current_user.username,
-        getattr(current_user, 'auth_source', None), expiration)
+        getattr(current_user, 'auth_source', None), expiration,
+        shared=bool(server.shared) and server.user_id != current_user.id,
+        server_id=server.id, server_owner=owner,
+        server_owner_auth_source=owner_auth_source, server_group=group)

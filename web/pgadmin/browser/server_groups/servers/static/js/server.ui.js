@@ -635,7 +635,7 @@ export default class ServerSchema extends BaseUISchema {
           });
           return {type: 'select', options: options};
         },
-        helpMessage: gettext('The command is chosen from those configured by the administrator. The server hostname, port, username and maintenance database, and your pgAdmin username and authentication source, are passed to it in the PGADMIN_PASSEXEC_* environment variables.')
+        helpMessage: gettext('The command is chosen from those configured by the administrator. The server hostname, port, username and maintenance database, your pgAdmin username and authentication source, and the server id, owner, server group and whether it is shared with you, are passed to it in the PGADMIN_PASSEXEC_* environment variables.')
       },
       {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
