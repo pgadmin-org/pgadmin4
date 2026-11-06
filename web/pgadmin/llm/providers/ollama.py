@@ -23,6 +23,11 @@ from pgadmin.llm.models import (
     Role, StopReason, Usage
 )
 from pgadmin.llm.utils import urlopen_no_redirect
+from pgadmin.utils.tls import create_ssl_context
+
+# Verifies against config.CA_FILE or certifi, with TLS 1.2 minimum, for an
+# Ollama server behind HTTPS.
+SSL_CONTEXT = create_ssl_context()
 
 
 # Default configuration
@@ -73,7 +78,8 @@ class OllamaClient(LLMClient):
         try:
             # Check if Ollama is running
             req = urllib.request.Request(f'{self._api_url}/api/tags')
-            with urlopen_no_redirect(req, timeout=5) as response:
+            with urlopen_no_redirect(req, timeout=5,
+                                     context=SSL_CONTEXT) as response:
                 data = json.loads(response.read().decode('utf-8'))
                 # Check if our model is available
                 models = [m.get('name', '') for m in data.get('models', [])]
@@ -216,7 +222,8 @@ class OllamaClient(LLMClient):
         )
 
         try:
-            with urlopen_no_redirect(request, timeout=300) as response:
+            with urlopen_no_redirect(request, timeout=300,
+                                     context=SSL_CONTEXT) as response:
                 return json.loads(response.read().decode('utf-8'))
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8')
@@ -349,7 +356,8 @@ class OllamaClient(LLMClient):
         )
 
         try:
-            response = urlopen_no_redirect(request, timeout=300)
+            response = urlopen_no_redirect(request, timeout=300,
+                                           context=SSL_CONTEXT)
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8')
             try:

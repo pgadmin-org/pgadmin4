@@ -26,6 +26,16 @@ import UniqueConstraintSchema from '../../../../../browser/server_groups/servers
 import PrimaryKeySchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui';
 import { boundingBoxFromPolygons } from '@projectstorm/geometry';
 
+/* Modifier keys as recorded by the canvas event bus, mapped to the matching
+ * flag on mouse events. */
+const MODIFIER_KEYS = {
+  shift: 'shiftKey',
+  control: 'ctrlKey',
+  alt: 'altKey',
+  meta: 'metaKey',
+};
+const MOUSE_EVENT_TYPES = ['mousedown', 'mousemove', 'mouseup', 'wheel'];
+
 export default class ERDCore {
   constructor() {
     this._cache = {};
@@ -38,7 +48,40 @@ export default class ERDCore {
   }
 
   createEngine(options) {
-    return createEngine(options);
+    let engine = createEngine(options);
+    this.releaseStaleModifierKeysOnMouseEvents(engine.getActionEventBus());
+    return engine;
+  }
+
+  /*
+   * The canvas event bus only learns that a key was released from its keyup
+   * event. If that never reaches the page (for example, Shift is released
+   * whilst focus is elsewhere), it believes Shift is still held and stays in
+   * the selecting state, where every drag draws a selection box, and tables
+   * can no longer be moved nor the canvas panned. Mouse events carry the real
+   * modifier state, so release any key the event says is no longer held
+   * before the event is handled.
+   */
+  releaseStaleModifierKeysOnMouseEvents(eventBus) {
+    const fireAction = eventBus.fireAction.bind(eventBus);
+    eventBus.fireAction = (actionEvent)=>{
+      const event = actionEvent?.event;
+      if(MOUSE_EVENT_TYPES.includes(event?.type)) {
+        for(const key of eventBus.getKeys()) {
+          if(MODIFIER_KEYS[key] && event[MODIFIER_KEYS[key]] === false) {
+            fireAction({
+              event: {
+                type: 'keyup',
+                key: key,
+                preventDefault: () => {/*This is intentional (SonarQube)*/},
+                stopPropagation: () => {/*This is intentional (SonarQube)*/},
+              },
+            });
+          }
+        }
+      }
+      fireAction(actionEvent);
+    };
   }
 
   initializeEngine() {

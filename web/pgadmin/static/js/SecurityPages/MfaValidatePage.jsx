@@ -17,9 +17,11 @@ import PropTypes from 'prop-types';
 function EmailValidateView({mfaView, sendEmailUrl, csrfHeader, csrfToken}) {
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
-  const [sentMessage, setSentMessage] = useState('');
+  // When re-rendered after an invalid code, the server sends the message for
+  // the code already sent, so that the user can enter it again.
+  const [sentMessage, setSentMessage] = useState(mfaView.sent_message ?? '');
   const [sending, setSending] = useState(false);
-  const [showResend, setShowResend] = useState(false);
+  const [showResend, setShowResend] = useState(Boolean(mfaView.sent_message));
 
   const showResendAfter = useDelayedCaller(()=>{
     setShowResend(true);

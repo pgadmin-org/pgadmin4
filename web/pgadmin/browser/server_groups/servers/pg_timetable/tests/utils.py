@@ -116,8 +116,10 @@ def is_pgtimetable_installed_on_server(self):
 
         SQL = """
         SELECT
-            has_table_privilege(
-              'timetable.chain', 'INSERT, SELECT, UPDATE'
+            (
+              has_table_privilege('timetable.chain', 'INSERT') AND
+              has_table_privilege('timetable.chain', 'SELECT') AND
+              has_table_privilege('timetable.chain', 'UPDATE')
             ) has_priviledge
         WHERE EXISTS(
             SELECT has_schema_privilege('timetable', 'USAGE')

@@ -33,6 +33,18 @@ Use the fields in the *General* tab to identify the server:
 * If the *Shared?* switch is moved to *Yes* then that server can be
   shared with all the other users. This option is available only to admin users.
   For more information on users see :ref:`User Management Dialog <user_management>`.
+  Sharing a server, whether in this dialog, through the API or by importing a
+  servers.json file, is restricted to users with the *Administrator* role.
+  Servers that were shared by non-administrator users before this restriction
+  was introduced remain shared until they are un-shared, so administrators
+  should audit them: look for servers with the shared flag set in the
+  configuration database whose owner does not have the *Administrator* role.
+  pgAdmin logs a warning for each such server when it starts in server mode.
+  Such a server can be un-shared by its owner through the server API (a PUT
+  request on the server with ``"shared": false``), or by an administrator
+  changing the ``shared`` column of the server record in the pgAdmin
+  configuration database. The *Shared?* switch in this dialog is shown only
+  to administrators, and only the owner of a server can change it.
   Users can access the shared servers with some restrictions - the following
   operations on shared servers are not permitted:
 
@@ -96,6 +108,17 @@ Use the fields in the *Connection* tab to configure a connection:
   see
   `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgservice.html>`_.
 
+  In server mode, services are read from the connection service file of the
+  account that pgAdmin runs as, so a server can use only a service that the
+  administrator has listed in the ``SERVER_MODE_ALLOWED_SERVICES`` setting
+  (see :ref:`config_py`), which is empty by default. A server that uses any
+  other service cannot be saved, and an existing one fails to connect with an
+  error naming the setting. Listing a service shares its credentials, such as
+  a password in its entry, with every pgAdmin user. The ``servicefile``
+  connection parameter cannot be used in server mode, and pgAdmin ignores any
+  ``PGPASSWORD`` or ``PGSERVICE`` environment variable set for the account it
+  runs as.
+
 Click the *Parameters* tab to continue.
 
 .. image:: images/server_parameters.png
@@ -118,6 +141,10 @@ Click on the *+* button to add a new parameter. Some of the parameters are:
   in seconds. Zero or not specified means wait indefinitely. It is not
   recommended to use a timeout of less than 2 seconds. By default it is set to
   10 seconds.
+* *Require authentication* (*require_auth*) field to specify the
+  authentication methods the server may use. In server mode, pgAdmin
+  refuses the GSSAPI and SSPI methods for a connection that may not use
+  Kerberos, as described in :ref:`kerberos`.
 * *SSL mode* field to select the type of SSL connection the server should use.
   For more information about using SSL encryption, see
   `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-ssl.html>`_.
@@ -156,6 +183,20 @@ icon that is located to the right of each of the following fields.
     means that administrators of the server may be able to access those files;
     appropriate caution should be taken before choosing to use this feature.
 
+.. note:: In Server mode, every connection file path (the *Password file*,
+    client certificate and key, root certificate, certificate revocation list,
+    CRL directory and SSL key log file) must resolve inside your storage
+    directory, or inside a *SHARED_STORAGE* entry (see :ref:`config_py`)
+    written as *Name:/path*. A path that leaves it through *..* or a symbolic
+    link is refused with an "Access denied (...): the path resolves outside
+    your storage directory..." message when connecting or starting a utility.
+    If you used a symbolic link in your storage directory to reach, for
+    example, */etc/pgadmin/certs*, configure that directory as a
+    *SHARED_STORAGE* entry instead (see :ref:`storage_manager`). Every pgAdmin
+    user can use a file in shared storage, so it should hold only shareable
+    files such as a root certificate or CRL, never a private key or a
+    *.pgpass* file.
+
 Click the *SSH Tunnel* tab to continue.
 
 .. image:: images/server_ssh_tunnel.png
@@ -186,6 +227,9 @@ not be able to connect directly.
 
 * If the SSH host is expecting a private key file for authentication, use the
   *Identity file* field to specify the location of the key file.
+  In server mode, pgAdmin does not use the private keys, ssh-agent or
+  ``~/.ssh/config`` of the account pgAdmin runs as; the identity file must be
+  located inside your storage directory.
 * If the SSH host is expecting a password of the user name or an identity file
   if being used, use the *Password* field to specify the password.
 * Check the box next to *Prompt for password?* to to have pgAdmin prompt for
@@ -255,8 +299,25 @@ Use the fields in the *Advanced* tab to configure a connection:
   non-owner's own username on a shared server), ``PGADMIN_PASSEXEC_DATABASE``
   (the maintenance database), ``PGADMIN_PASSEXEC_PGADMIN_USER`` (the pgAdmin
   user making the connection) and ``PGADMIN_PASSEXEC_AUTH_SOURCE`` (how that
-  user authenticated to pgAdmin). The ``stdout`` of the command is used as the
-  SQL password.
+  user authenticated to pgAdmin). The following variables describe the server
+  definition itself:
+
+  * ``PGADMIN_PASSEXEC_SHARED`` is ``true`` if the server is shared and owned
+    by another pgAdmin user, and ``false`` otherwise, including when the user
+    making the connection owns a shared server.
+  * ``PGADMIN_PASSEXEC_SERVER_ID`` is the numeric id pgAdmin gave the server.
+  * ``PGADMIN_PASSEXEC_SERVER_OWNER`` and
+    ``PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE`` are the username of the
+    pgAdmin user who owns the server, and how that user authenticates.
+  * ``PGADMIN_PASSEXEC_SERVER_GROUP`` is the name of the owner's server group
+    that holds the server. A user who does not own a shared server can change
+    the group it appears in for them, but this variable always gives the
+    owner's group, which is the one checked against
+    ``OAUTH2_SERVER_GROUP_CLAIM`` (see :ref:`oauth2_server_group_claims`); for
+    an OAuth2 user restricted by that claim, it is therefore the group that
+    granted access to the server.
+
+  The ``stdout`` of the command is used as the SQL password.
 * Use the *Password exec expiration* field to specify a maximum age, in seconds,
   of the password generated with a *Password exec command*. In server mode, this field is
   enabled only when a named command is selected. If not specified,
@@ -301,6 +362,26 @@ Use the fields in the *Advanced* tab to configure a connection:
     not own the server sets their own username. Commands should therefore
     decide whether to issue a password based on the pgAdmin identity, and
     treat the other four variables as untrusted input.
+
+    The ``PGADMIN_PASSEXEC_SHARED``, ``PGADMIN_PASSEXEC_SERVER_ID``,
+    ``PGADMIN_PASSEXEC_SERVER_OWNER``,
+    ``PGADMIN_PASSEXEC_SERVER_OWNER_AUTH_SOURCE`` and
+    ``PGADMIN_PASSEXEC_SERVER_GROUP`` variables cannot be changed by a user
+    who does not own the server. When ``PGADMIN_PASSEXEC_SHARED`` is
+    ``true``, the server is shared and owned by another user. Only an
+    administrator can share a server, but a server shared before that
+    restriction was introduced may be owned by any user, so this flag is not
+    proof that the owner is an administrator. On a shared server,
+    ``PGADMIN_PASSEXEC_HOST``, ``PGADMIN_PASSEXEC_PORT`` and
+    ``PGADMIN_PASSEXEC_DATABASE`` are taken from the owner's server, not from
+    the copy kept for each user, whilst ``PGADMIN_PASSEXEC_USERNAME`` is each
+    user's own. Every user owns their own server groups and may give them any
+    name, including the name of an administrator's group, so the server group
+    proves nothing on its own: check ``PGADMIN_PASSEXEC_SHARED`` and the owner
+    as well. Commands should decide whether to issue a password based on the
+    pgAdmin user and the server owner. When ``PGADMIN_PASSEXEC_SHARED`` is
+    ``false`` and the owner is the user making the connection, every value
+    was set by that user.
 
 Click the *Post Connection SQL* tab to continue.
 

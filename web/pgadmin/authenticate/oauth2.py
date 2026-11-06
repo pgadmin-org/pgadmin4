@@ -26,6 +26,7 @@ from pgadmin.utils.constants import OAUTH2, MessageType
 from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
     get_safe_post_logout_redirect
 from pgadmin.utils.csrf import pgCSRFProtect
+from pgadmin.utils.tls import get_ca_file
 from pgadmin.model import db
 
 OAUTH2_LOGOUT = 'oauth2.logout'
@@ -265,11 +266,15 @@ class OAuth2Authentication(BaseAuthentication):
                 oauth2_config['OAUTH2_NAME']] = oauth2_config
 
             # Build client_kwargs with defaults
+            verify = oauth2_config.get('OAUTH2_SSL_CERT_VERIFICATION', True)
+            if verify is True:
+                # Verify against the same CA bundle as pgAdmin's other
+                # outbound HTTPS requests.
+                verify = get_ca_file() or True
             client_kwargs = {
                 'scope': oauth2_config.get(
                     'OAUTH2_SCOPE', 'email profile'),
-                'verify': oauth2_config.get(
-                    'OAUTH2_SSL_CERT_VERIFICATION', True)
+                'verify': verify
             }
 
             pkce_method = oauth2_config.get('OAUTH2_CHALLENGE_METHOD')

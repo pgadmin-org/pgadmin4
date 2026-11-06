@@ -113,6 +113,17 @@ class TestsGeneratorRegistry(ABCMeta):
                                                      exclude_pkgs)
 
     @staticmethod
+    def _is_excluded(module_name, exclude_pkg):
+        """
+        Whether module_name is the excluded package or module, or is in
+        it: excluding browser.tests.test_login must not also exclude
+        browser.tests.test_login_something.
+        """
+        excluded = 'pgadmin.' + str(exclude_pkg)
+        return module_name == excluded or \
+            module_name.startswith(excluded + '.')
+
+    @staticmethod
     def _exclude_packages(all_modules, exclude_pkgs):
         """
         This function check for server mode test cases.
@@ -122,8 +133,8 @@ class TestsGeneratorRegistry(ABCMeta):
         for module_name in all_modules:
             try:
                 if "tests." in str(module_name) and not any(
-                    str(module_name).startswith(
-                        'pgadmin.' + str(exclude_pkg)
+                    TestsGeneratorRegistry._is_excluded(
+                        str(module_name), exclude_pkg
                     ) for exclude_pkg in exclude_pkgs
                 ):
                     import_module(module_name)

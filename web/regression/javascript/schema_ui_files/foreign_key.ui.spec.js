@@ -45,10 +45,13 @@ describe('ForeignKeySchema', ()=>{
   beforeAll(()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    schemaObj = getNodeForeignKeySchema({}, {}, {Nodes: {table: {}}});
   });
 
   beforeEach(()=>{
+    // A fresh schema per test, as each dialog gets in the product; the
+    // properties view mutates its fields (helpMessage), which would otherwise
+    // leak into the grid cells rendered by later tests.
+    schemaObj = getNodeForeignKeySchema({}, {}, {Nodes: {table: {}}});
     genericBeforeEach();
   });
 
@@ -174,6 +177,58 @@ describe('ForeignKeySchema', ()=>{
     });
 
 
+  });
+
+  it.each([false, true])('table column addition preserves mappings and header (initialized: %s)', (initialized)=>{
+    schemaObj.top = new TableSchema({}, null);
+    let state = {oid: 140391, columns: [
+      {local_column: 'id', references: 180191, referenced: 'rid'},
+      {local_column: 'other', references: 180191, referenced: 'other_id'},
+    ]};
+    let original = _.cloneDeep(state);
+    if(initialized) {
+      schemaObj.fkHeaderSchema.state = {
+        initData: {references: 180191, _disable_references: false},
+        data: {references: 190191},
+      };
+    }
+    let headerState = _.cloneDeep(schemaObj.fkHeaderSchema.state);
+
+    expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns'], null, {
+      type: SCHEMA_STATE_ACTIONS.ADD_ROW,
+      path: ['columns'],
+    })).toEqual({columns: original.columns});
+    expect(state).toEqual(original);
+    expect(schemaObj.fkHeaderSchema.state).toEqual(headerState);
+  });
+
+  it.each([false, true])('mapping addition captures the reference and locks the header (in table: %s)', (inTable)=>{
+    if(inTable) {
+      schemaObj.top = new TableSchema({}, null);
+    }
+    schemaObj.fkHeaderSchema.state = {
+      initData: {references: null, _disable_references: false},
+      data: {references: 180191},
+    };
+    let state = {columns: [{local_column: 'id', referenced: 'rid'}]};
+    let path = inTable ? ['foreign_key', 0, 'columns'] : ['columns'];
+
+    expect(getFieldDepChange(schemaObj, 'columns')(state, path, null, {
+      type: SCHEMA_STATE_ACTIONS.ADD_ROW,
+      path,
+    })).toEqual({columns: state.columns});
+    expect(schemaObj.fkHeaderSchema.origData).toEqual({
+      references: 180191, _disable_references: true,
+    });
+  });
+
+  it('table column addition is a no-op for a removed foreign key', ()=>{
+    schemaObj.top = new TableSchema({}, null);
+    expect(getFieldDepChange(schemaObj, 'columns')(undefined, ['columns'], null, {
+      type: SCHEMA_STATE_ACTIONS.ADD_ROW,
+      path: ['columns'],
+    })).toBeUndefined();
+    expect(schemaObj.fkHeaderSchema.state).toBeNull();
   });
 
   it('columns formatter', ()=>{

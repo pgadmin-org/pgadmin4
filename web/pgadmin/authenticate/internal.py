@@ -61,12 +61,23 @@ class BaseAuthentication(metaclass=AuthSourceRegistry):
 
         return True, None
 
+    def get_login_user(self, form):
+        """Return the account to log in once this source has authenticated
+        the user named in the form.
+
+        The same username may exist under several auth sources, so only the
+        account from this source is looked up. form.user is not used: it is
+        set by Flask-Security's validation, run for internal authentication,
+        to the account whose email was typed, whether or not its password
+        matched, so it may belong to another source or another user.
+        """
+        return User.query.filter_by(
+            username=form.data['email'],
+            auth_source=self.get_source_name()).first()
+
     def login(self, form):
         username = form.data['email']
-        user = getattr(form, 'user', None)
-
-        if user is None:
-            user = User.query.filter_by(username=username).first()
+        user = self.get_login_user(form)
 
         if user is None:
             current_app.logger.exception(
@@ -104,11 +115,17 @@ class InternalAuthentication(BaseAuthentication):
         submit = form.validate_on_submit()
         return submit, None
 
+    def get_login_user(self, form):
+        # Flask-Security verified the password against form.user, so log in
+        # that account or none, and only if it is an internal one.
+        user = getattr(form, 'user', None)
+        if user is not None and user.auth_source == INTERNAL:
+            return user
+        return None
+
     def authenticate(self, form):
-        username = form.data['email']
         if form.validate_on_submit():
-            user = getattr(form, 'user',
-                           User.query.filter_by(username=username).first())
+            user = getattr(form, 'user', None)
             if user and user.is_authenticated:
                 return True, None
         return False, self.messages('USER_DOES_NOT_EXIST')

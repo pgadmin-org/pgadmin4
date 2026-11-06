@@ -205,6 +205,12 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={},
             id_token_claims=None,
         )),
+        ('OAuth2 Button While Logged In Keeps Auth Source', dict(
+            oauth2_provider='github',
+            kind='oauth2_button_while_logged_in',
+            profile={},
+            id_token_claims=None,
+        )),
         ('OAuth2 openid Scope Without Metadata URL Fails Fast', dict(
             oauth2_provider='oidc-no-metadata',
             kind='openid_without_metadata_url',
@@ -449,6 +455,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         elif self.kind == 'callback_login_failure_clears_logout_url':
             self._test_oauth2_callback_failure_clears_logout_url(
                 self.oauth2_provider)
+        elif self.kind == 'oauth2_button_while_logged_in':
+            self._test_oauth2_button_while_logged_in(self.oauth2_provider)
         elif self.kind == 'openid_without_metadata_url':
             self._test_openid_scope_without_metadata_url_fails_fast()
         else:
@@ -595,27 +603,39 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         Ensure that when PKCE parameters are configured, they are passed
         to the OAuth client registration as part of client_kwargs, and that
         the default client_kwargs is correctly included.
+
+        The default verify value is the CA bundle from get_ca_file(),
+        falling back to True when there is none.
         """
 
-        with patch(
-            'pgadmin.authenticate.oauth2.OAuth.register'
-        ) as mock_register:
-            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+        for ca_file, expected_verify in (
+            ('/path/to/ca-bundle.pem', '/path/to/ca-bundle.pem'),
+            (None, True),
+        ):
+            with patch(
+                'pgadmin.authenticate.oauth2.OAuth.register'
+            ) as mock_register, patch(
+                'pgadmin.authenticate.oauth2.get_ca_file',
+                return_value=ca_file
+            ):
+                from pgadmin.authenticate.oauth2 import \
+                    OAuth2Authentication
 
-            OAuth2Authentication()
+                OAuth2Authentication()
 
-            kwargs = self._get_register_kwargs(mock_register, 'keycloak-pkce')
-            client_kwargs = kwargs.get('client_kwargs', {})
+                kwargs = self._get_register_kwargs(
+                    mock_register, 'keycloak-pkce')
+                client_kwargs = kwargs.get('client_kwargs', {})
 
-            # Check that PKCE and default client_kwargs are included
-            self.assertEqual(
-                client_kwargs.get('code_challenge_method'), 'S256')
-            self.assertEqual(
-                client_kwargs.get('response_type'), 'code')
-            self.assertEqual(
-                client_kwargs.get('scope'), 'openid email profile')
-            self.assertEqual(
-                client_kwargs.get('verify'), True)
+                # Check that PKCE and default client_kwargs are included
+                self.assertEqual(
+                    client_kwargs.get('code_challenge_method'), 'S256')
+                self.assertEqual(
+                    client_kwargs.get('response_type'), 'code')
+                self.assertEqual(
+                    client_kwargs.get('scope'), 'openid email profile')
+                self.assertEqual(
+                    client_kwargs.get('verify'), expected_verify)
 
     def _test_public_client_pkce_registration(self):
         """Public clients without a secret must set token auth to none."""
@@ -924,6 +944,43 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self.assertEqual(
                 sess.get('oauth2_current_client'), provider,
                 "Expected session['oauth2_current_client']=%r" % provider)
+
+    def _test_oauth2_button_while_logged_in(self, provider):
+        """A user logged in internally who submits the OAuth2 button keeps
+        their auth_source_manager until the new login succeeds: setting it
+        to None broke every following request (#10733).
+        """
+        from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+        app_config.AUTHENTICATION_SOURCES = [INTERNAL, OAUTH2]
+        utils.login_tester_account(self.tester)
+        with self.tester.session_transaction() as sess:
+            asm_before = sess.get('auth_source_manager')
+        self.assertIsNotNone(asm_before)
+        self.assertEqual(asm_before.get('current_source'), INTERNAL)
+
+        def _fake_authenticate(self, _form):
+            self.oauth2_current_client = provider
+            return False, redirect('https://example.com/')
+
+        # Post the form directly: tester.login() would replace the session
+        # cookie with a fresh one when it generates a CSRF token, logging
+        # the user out. The CSRF header is sent from tester.csrf_token.
+        with patch.object(
+            OAuth2Authentication, 'authenticate', new=_fake_authenticate
+        ):
+            res = self.tester.post(
+                '/authenticate/login',
+                data=dict(oauth2_button=provider)
+            )
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.headers.get('Location'), 'https://example.com/')
+
+        with self.tester.session_transaction() as sess:
+            self.assertEqual(sess.get('auth_source_manager'), asm_before)
+
+        res = self.tester.get('/browser/')
+        self.assertEqual(res.status_code, 200)
 
     def _test_oauth2_callback_missing_provider_state(self):
         """OAuth2 callback must redirect gracefully when provider state is

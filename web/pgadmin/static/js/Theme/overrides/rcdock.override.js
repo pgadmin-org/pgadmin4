@@ -34,6 +34,7 @@ export default function rcdockOverride(theme) {
       },
       '& .dock-panel': {
         border: 'none',
+        backgroundColor: theme.palette.background.default,
         '&.dragging': {
           opacity: 0.6,
         },

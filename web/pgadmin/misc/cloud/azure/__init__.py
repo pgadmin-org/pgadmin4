@@ -17,6 +17,7 @@ from pgadmin import make_json_response
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.text_sanitize import sanitize_external_text
 from pgadmin.user_login_check import pga_login_required
+from pgadmin.utils.tls import ca_file_env
 import json
 from flask import session, current_app, request
 from flask_login import current_user
@@ -99,6 +100,9 @@ def verify_credentials():
     if cached_state is None or auth_type_changed or tenant_changed:
         # Drop any stale state — these creds don't match the cached ones.
         session['azure'].pop('state', None)
+        # Also drop the device code from any earlier attempt, so the wizard
+        # does not show it in place of the one for this attempt.
+        session['azure'].pop('azure_auth_code', None)
         azure = Azure(
             interactive_browser_credential=interactive_browser_credential,
             tenant_id=tenant_id,
@@ -839,6 +843,9 @@ def deploy_on_azure(data):
             env['AZURE_DATABASE_PASSWORD'] = data[
                 'db_details']['db_password']
 
+        # pgacloud's own HTTPS requests (such as the public IP lookup)
+        # verify against the same CA bundle as pgAdmin.
+        env.update(ca_file_env())
         p.set_env_variables(None, env=env)
         p.update_server_id(p.id, sid)
         p.start()

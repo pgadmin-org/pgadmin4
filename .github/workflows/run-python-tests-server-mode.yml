@@ -21,6 +21,17 @@ on:
       # test, and check-translations already compiles them, which is the
       # check that would catch a malformed one.
       - '!web/pgadmin/translations/**'
+      # Nor the front end: these jobs never install or bundle the
+      # JavaScript, so a change to it, its tests or its build configuration
+      # cannot affect them. The feature tests cover it instead.
+      - '!web/pgadmin/**/static/**'
+      - '!web/regression/javascript/**'
+      - '!web/*.js'
+      - '!web/package.json'
+      - '!web/yarn.lock'
+      - '!web/.yarnrc.yml'
+      - '!web/babel.config.json'
+      - '!web/.eslintrc.js'
       - 'requirements.txt'
       - 'Makefile'
       - 'tools/setup-python-env.sh'
@@ -33,6 +44,17 @@ on:
       # test, and check-translations already compiles them, which is the
       # check that would catch a malformed one.
       - '!web/pgadmin/translations/**'
+      # Nor the front end: these jobs never install or bundle the
+      # JavaScript, so a change to it, its tests or its build configuration
+      # cannot affect them. The feature tests cover it instead.
+      - '!web/pgadmin/**/static/**'
+      - '!web/regression/javascript/**'
+      - '!web/*.js'
+      - '!web/package.json'
+      - '!web/yarn.lock'
+      - '!web/.yarnrc.yml'
+      - '!web/babel.config.json'
+      - '!web/.eslintrc.js'
       - 'requirements.txt'
       - 'Makefile'
       - 'tools/setup-python-env.sh'
@@ -43,6 +65,9 @@ on:
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   run-python-tests-server-mode:

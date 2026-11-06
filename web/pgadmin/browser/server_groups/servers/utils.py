@@ -20,6 +20,7 @@ from pgadmin.utils.constants import (
     RESTRICTION_TYPE_SQL)
 from pgadmin.utils.crypto import encrypt, decrypt
 from pgadmin.model import db, Server, SharedServer
+from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.server_access import get_user_server_query
 from flask import current_app
 from pgadmin.utils.master_password import set_masterpass_check_text
@@ -272,7 +273,8 @@ def _password_check(server, manager, old_key, new_key):
 
         password = encrypt(password, new_key)
         setattr(server, 'password', password)
-        manager.password = password
+        if manager is not None:
+            manager.password = password
 
 
 def migrate_passwords_from_os_secret_storage(servers, enc_key):
@@ -470,45 +472,103 @@ def migrate_saved_passwords(master_key, master_password):
     return passwords_migrated, error
 
 
-def __reencrpyt_server_password(server, old_key, new_key):
+def __reencrpyt_server_password(server, old_key, new_key,
+                                clear_undecryptable):
+    """Re-encrypt one server's saved passwords from old_key to new_key.
+
+    With clear_undecryptable, a saved password that cannot be decrypted with
+    old_key (decryption then yields bytes that fail to decode) is cleared
+    rather than raised, so the user re-enters it on the next connect. The
+    caller commits once for all servers. Returns True if any saved password
+    had to be cleared.
+    """
     from pgadmin.utils.driver import get_driver
     driver = get_driver(config.PG_DEFAULT_DRIVER)
 
-    manager = driver.connection_manager(server.id)
-    _password_check(server, manager, old_key, new_key)
+    # A SharedServer row has its own id; the connection manager is keyed by
+    # the id of the Server it shares (osid). The manager only holds copies
+    # of the saved passwords, so if there is none for this server the saved
+    # values are still re-encrypted.
+    try:
+        manager = driver.connection_manager(
+            server.osid if isinstance(server, SharedServer) else server.id)
+    except ObjectGone:
+        manager = None
+    cleared = False
 
-    if server.tunnel_password is not None:
-        tunnel_password = decrypt(server.tunnel_password, old_key)
-        if isinstance(tunnel_password, bytes):
-            tunnel_password = tunnel_password.decode()
+    try:
+        _password_check(server, manager, old_key, new_key)
+    except ValueError:
+        # A wrong key (UnicodeDecodeError) or corrupt value (binascii.Error).
+        if not clear_undecryptable:
+            raise
+        setattr(server, 'password', None)
+        setattr(server, 'save_password', 0)
+        if manager is not None:
+            manager.password = None
+        cleared = True
 
-        tunnel_password = encrypt(tunnel_password, new_key)
-        setattr(server, 'tunnel_password', tunnel_password)
-        manager.tunnel_password = tunnel_password
-    elif manager.tunnel_password is not None:
-        tunnel_password = decrypt(manager.tunnel_password, old_key)
+    try:
+        if server.tunnel_password is not None:
+            tunnel_password = decrypt(server.tunnel_password, old_key)
+            if isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
 
-        if isinstance(tunnel_password, bytes):
-            tunnel_password = tunnel_password.decode()
+            tunnel_password = encrypt(tunnel_password, new_key)
+            setattr(server, 'tunnel_password', tunnel_password)
+            if manager is not None:
+                manager.tunnel_password = tunnel_password
+        elif manager is not None and manager.tunnel_password is not None:
+            tunnel_password = decrypt(manager.tunnel_password, old_key)
 
-        tunnel_password = encrypt(tunnel_password, new_key)
-        manager.tunnel_password = tunnel_password
+            if isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
 
-    db.session.commit()
-    manager.update_session()
+            tunnel_password = encrypt(tunnel_password, new_key)
+            manager.tunnel_password = tunnel_password
+    except ValueError:
+        if not clear_undecryptable:
+            raise
+        setattr(server, 'tunnel_password', None)
+        if manager is not None:
+            manager.tunnel_password = None
+        cleared = True
+
+    if manager is not None:
+        manager.update_session()
+    return cleared
 
 
-def reencrpyt_server_passwords(user_id, old_key, new_key):
+def reencrpyt_server_passwords(user_id, old_key, new_key,
+                               clear_undecryptable=False):
     """
-    This function will decrypt the saved passwords in SQLite with old key
-    and then encrypt with new key
+    Decrypt the saved passwords in SQLite with old_key and re-encrypt with
+    new_key, committing once at the end.
+
+    With clear_undecryptable, a saved password that cannot be decrypted with
+    old_key is cleared (the user re-enters it on next connect) instead of
+    failing the whole operation. Only a login-password change asks for this:
+    its new password is already committed, and the old key is the one the
+    passwords should have been saved with. Other callers may pass the wrong
+    old key, and must not destroy passwords that the right key could still
+    decrypt, so they keep the error.
+
+    Returns the number of servers whose saved password was cleared.
     """
+    cleared = 0
     for server in Server.query.filter_by(user_id=user_id).all():
-        __reencrpyt_server_password(server, old_key, new_key)
+        if __reencrpyt_server_password(server, old_key, new_key,
+                                       clear_undecryptable):
+            cleared += 1
 
     # Ensure saved shared server passwords are re-encrypted.
     for server in SharedServer.query.filter_by(user_id=user_id).all():
-        __reencrpyt_server_password(server, old_key, new_key)
+        if __reencrpyt_server_password(server, old_key, new_key,
+                                       clear_undecryptable):
+            cleared += 1
+
+    db.session.commit()
+    return cleared
 
 
 def remove_saved_passwords(user_id):

@@ -60,7 +60,7 @@ Provide information about the new pgAdmin role in the row:
   specified in the *Email* field. This field is disabled if you select any
   authentication source except *internal*.
 * Re-enter the password in the *Confirm password* field. This field is disabled
-  if you select *ldap* as authentication source.
+  if you select any authentication source except *internal*.
 * *Locked* switch cannot be changed if is turned off. It can only be changed
   when the user is locked by trying unsuccessful login attempts. Turn off the
   switch if you want to unlock the account.
@@ -132,6 +132,56 @@ a role.
 
 
 
+.. _auth_source_accounts:
+
+Accounts from different authentication sources
+##############################################
+
+pgAdmin treats accounts from different authentication sources as separate
+accounts, even when they share a username or an email address. Each has its
+own role, settings and servers:
+
+* A user authenticated by LDAP, Kerberos, OAuth2 or webserver authentication
+  is only ever logged in to the account with their username *and* that
+  authentication source, never to an account from another source with the
+  same username. If there is no such account, and the source does not create
+  one automatically, the login fails; pgAdmin does not log the user in to an
+  account from another source instead.
+* An internal login is checked against, and logs in, only the ``INTERNAL``
+  account.
+* Only an ``INTERNAL`` account has a password, so *Forgotten your password?*
+  resets only the ``INTERNAL`` account with the email address given.
+
+The account-lockout setting *MAX_LOGIN_ATTEMPTS* applies only to ``INTERNAL``
+accounts. pgAdmin never locks an account from another authentication source;
+brute-force protection for those is the responsibility of the directory,
+identity provider or reverse proxy. When ``INTERNAL`` and another source are
+both enabled, a sign-in that fails overall and was tried against an
+``INTERNAL`` account with that username counts towards its lockout; the attempt
+that reaches the limit reports that the account is now locked. A locked
+``INTERNAL`` account stops only internal sign-in: a user of another source with
+the same username can still sign in. On a later sign-in with that username,
+pgAdmin discloses that the ``INTERNAL`` account is locked only when internal is
+the only source able to check the password; while another password source such
+as LDAP is also eligible, it shows a generic failure instead.
+
+The administrator account created when pgAdmin is first set up always uses the
+``INTERNAL`` authentication source. It remains in the pgAdmin database when
+*AUTHENTICATION_SOURCES* does not include *internal*, although it can then no
+longer be used to log in. If you use external authentication only, create an
+administrator account for that source, for example for LDAP:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-external-user ldapuser --auth-source ldap --admin
+
+and then deactivate the initial ``INTERNAL`` administrator account, so that it
+cannot be used if internal authentication is enabled again later:
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py update-user admin@example.com --inactive
+
 Using 'setup.py' command line script
 ####################################
 
@@ -146,7 +196,7 @@ Using 'setup.py' command line script
         without Python interpreter.
 
         Some of the examples:
-        pgadmin4-cli add-user user1@gmail.com password --role 1
+        pgadmin4-cli add-user user1@gmail.com password --role User
         pgadmin4-cli get-prefs
 
 Manage Users
@@ -156,7 +206,8 @@ Add User
 *********
 
 To add user, invoke ``setup.py`` with ``add-user`` command line option, followed by
-email and password. role and active will be optional fields.
+email and password. role and active will be optional fields. When no role is
+given, the user is created with the *User* role.
 
 .. code-block:: bash
 
@@ -166,7 +217,7 @@ email and password. role and active will be optional fields.
     # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password --admin
-    /path/to/python /path/to/setup.py add-user user1@gmail.com password --role Users
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --role User
 
     # to specify user's status
 
@@ -177,26 +228,28 @@ Add External User
 *****************
 
 To add external authentication user, invoke ``setup.py`` with ``add-external-user`` command line option,
-followed by email, password and authentication source. email, role and status will be optional fields.
+followed by username, and the authentication source with ``--auth-source`` (*oauth2* if it is not
+given). email, role and status will be optional fields. When no role is given,
+the user is created with the *User* role.
 
 .. code-block:: bash
 
-    /path/to/python /path/to/setup.py add-external-user user1@gmail.com ldap
+    /path/to/python /path/to/setup.py add-external-user user1@gmail.com --auth-source ldap
 
     # to specify an email:
 
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap --email user1@gmail.com
+    /path/to/python /path/to/setup.py add-external-user ldapuser --auth-source ldap --email user1@gmail.com
 
     # to specify a role, either you can use --admin for Administrator role or provide the
     # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --admin
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --role Users
+    /path/to/python /path/to/setup.py add-external-user ldapuser --auth-source ldap --admin
+    /path/to/python /path/to/setup.py add-external-user ldapuser --auth-source ldap --role User
 
     # to specify user's status
 
-    /path/to/python /path/to/setup.py add-external-user user1@gmail.com ldap --active
-    /path/to/python /path/to/setup.py add-external-user user1@gmail.com ldap --inactive
+    /path/to/python /path/to/setup.py add-external-user user1@gmail.com --auth-source ldap --active
+    /path/to/python /path/to/setup.py add-external-user user1@gmail.com --auth-source ldap --inactive
 
 Update User
 ***********
@@ -211,19 +264,20 @@ email address. password, role and active are updatable fields.
     # to specify a role, either you can use --admin for Administrator role or provide the
     # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role Users
+    /path/to/python /path/to/setup.py update-user user1@gmail.com --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com --role User
 
     # to specify user's status
 
-   /path/to/python /path/to/setup.py update-user user1@gmail.com password --active
-   /path/to/python /path/to/setup.py update-user user1@gmail.com password --inactive
+    /path/to/python /path/to/setup.py update-user user1@gmail.com --active
+    /path/to/python /path/to/setup.py update-user user1@gmail.com --inactive
 
 Update External User
 ********************
 
 To update the external user, invoke ``setup.py`` with ``update-external-user`` command line option,
-followed by username and auth source. email, password, role and active are updatable fields.
+followed by username, and the authentication source with ``--auth-source`` (*oauth2* if it is not
+given). email, role and active are updatable fields.
 
 .. code-block:: bash
 
@@ -234,19 +288,19 @@ followed by username and auth source. email, password, role and active are updat
     # to specify a role, either you can use --admin for Administrator role or provide the
     # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --role Users
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --admin
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --role User
 
     # to change user's status
 
-   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --active
-   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --inactive
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --active
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --inactive
 
 Delete User
 ***********
 
 To delete the user, invoke ``setup.py`` with ``delete-user`` command line option, followed by
-username and auth_source. For Internal users, email adress will be used instead of username. the option ``--yes`` is available to skip the confirmation prompt before deleting the user.
+username and auth_source. For Internal users, email address will be used instead of username. the option ``--yes`` is available to skip the confirmation prompt before deleting the user.
 
 .. code-block:: bash
 

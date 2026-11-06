@@ -20,6 +20,7 @@ from flask_babel import gettext as _
 from flask_security import roles_required, current_user
 from pgadmin.user_login_check import pga_login_required
 from flask_security.utils import hash_password
+from flask_security.views import _security
 from werkzeug.exceptions import InternalServerError
 
 import config
@@ -730,6 +731,14 @@ def update_user(uid, data):
     try:
         for k, v in new_data.items():
             setattr(usr, k, v)
+
+        # Changing a user's password (e.g. an administrator resetting it to
+        # recover a compromised account) must end that user's existing
+        # sessions. Rotate the fs_uniquifier so every session resolved via
+        # find_user(fs_uniquifier=...) stops authenticating (CWE-613). Only
+        # this user's row is touched, so other users are unaffected.
+        if 'password' in new_data:
+            _security.datastore.set_uniquifier(usr)
 
         db.session.commit()
     except Exception as e:

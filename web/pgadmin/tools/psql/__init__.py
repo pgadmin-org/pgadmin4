@@ -27,7 +27,8 @@ from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
-from pgadmin.utils import get_complete_file_path
+from pgadmin.utils import get_complete_file_path, does_utility_exist
+from pgadmin.utils.locker import kerberos_environ, kerberos_libpq_env
 from pgadmin.authenticate import socket_login_required, \
     socket_permissions_required
 from pgadmin.model import Server
@@ -167,16 +168,23 @@ def connect():
                  to=request.sid)
 
 
-def get_user_env():
-    env = os.environ
+def get_user_env(extra_env=None):
+    """
+    Return the environment for a psql process: a copy of pgAdmin's own,
+    which must not be changed because it is shared by every user, with the
+    user's psqlrc and history files in server mode, and extra_env.
+    """
+    env = os.environ.copy()
     if config.ENABLE_PSQL and config.SERVER_MODE:
         user_env = json.loads(os.environ[current_user.username])
         env['PSQLRC'] = user_env['PSQLRC']
         env['PSQL_HISTORY'] = user_env['PSQL_HISTORY']
+    if extra_env:
+        env.update(extra_env)
     return env
 
 
-def create_pty_terminal(connection_data, server_id):
+def create_pty_terminal(connection_data, server_id, env=None):
     # Create the pty terminal process, parent and fd are file descriptors
     # for parent and child.
     parent, fd = pty.openpty()
@@ -189,7 +197,7 @@ def create_pty_terminal(connection_data, server_id):
                              stdout=fd,
                              stderr=fd,
                              universal_newlines=True,
-                             env=get_user_env()
+                             env=get_user_env(env)
                              )
 
         app.config['sessions'][request.sid] = parent
@@ -304,12 +312,21 @@ def close_pty_process(process):
                 pass
 
 
-def windows_platform(connection_data, sid, max_read_bytes, server_id):
+def windows_platform(connection_data, sid, max_read_bytes, server_id,
+                     env=None):
     # Spawn psql directly rather than typing its command line into cmd.exe,
     # so that the user is not left at a shell prompt when psql exits, and
     # the connection string is never parsed by cmd.exe.
+    #
+    # pywinpty passes argv[0] to CreateProcess as the application name but
+    # builds the command line from argv[1:] alone, so psql would start with
+    # an empty argv[0] and fail with "could not find own program
+    # executable" (#10714). Repeat the executable so that it is also the
+    # first word of the command line.
     try:
-        process = PtyProcess.spawn(connection_data, env=get_user_env())
+        process = PtyProcess.spawn(
+            [connection_data[0]] + list(connection_data),
+            env=get_user_env(env))
     except Exception as e:
         # start_process has already registered this socket against the
         # server, so forget it again and show the error in the terminal.
@@ -378,13 +395,14 @@ def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
                 pass
 
 
-def pty_handel_io(connection_data, data, sid):
+def pty_handel_io(connection_data, data, sid, env=None):
     max_read_bytes = 1024 * 20
     if _platform == 'win32':
         windows_platform(connection_data, sid, max_read_bytes,
-                         int(data['sid']))
+                         int(data['sid']), env)
     else:
-        p, parent, fd = create_pty_terminal(connection_data, int(data['sid']))
+        p, parent, fd = create_pty_terminal(connection_data, int(data['sid']),
+                                            env)
         non_windows_platform(parent, p, fd, data, max_read_bytes, sid)
 
 
@@ -398,11 +416,12 @@ def start_process(data):
     """
     @copy_current_request_context
     def read_and_forward_pty_output(sid, data):
-        pty_handel_io(connection_data, data, sid)
+        pty_handel_io(connection_data, data, sid, psql_env)
 
     # Check user is authenticated and PSQL is enabled in config.
     if current_user.is_authenticated and config.ENABLE_PSQL:
         connection_data = []
+        psql_env = dict()
         connection_successful = False
         try:
             db = ''
@@ -413,20 +432,16 @@ def start_process(data):
 
             _, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
-            if psql_utility is None or not os.path.exists(psql_utility):
+            utility_error = does_utility_exist(psql_utility)
+            if utility_error:
                 sio.emit('pty-output',
                          {
-                             'result': gettext(
-                                 'PSQL utility not found. Specify the valid '
-                                 'binary path in the preferences for the '
-                                 'appropriate server version, or select '
-                                 '"Set as default" to use an existing binary '
-                                 'path.'),
+                             'result': utility_error,
                              'error': True},
                          namespace='/pty', room=request.sid)
                 return
             connection_data = get_connection_str(psql_utility, db,
-                                                 manager)
+                                                 manager, psql_env)
             connection_successful = True
         except Exception as e:
             # If any error raised during the start the PSQL emit error to UI.
@@ -497,17 +512,26 @@ def _get_connection(sid, data):
         raise
 
 
-def get_connection_str(psql_utility, db, manager):
+def get_connection_str(psql_utility, db, manager, env):
     """
     Get connection string(through connection dsn)
     :param psql_utility: PostgreSQL binary path.
     :param db: database name to connect specific db.
+    :param env: a dict to put the environment psql needs in, which is
+        the password and the Kerberos settings.
     :return: connection attribute list for PSQL connection.
     """
-    manager.export_password_env('PGPASSWORD')
+    manager.export_password_env(env, 'PGPASSWORD')
+    # Set explicitly, as pgAdmin's own environment holds another user's
+    # Kerberos credential cache whilst that user is connecting.
+    env.update(kerberos_environ(manager.kerberos_conn))
+    # psql has its own libpq, so tell it through its environment to refuse
+    # GSSAPI and SSPI where it may not use them.
+    kerberos_libpq_env(env, manager.kerberos_conn)
     database = db if db != '' else 'postgres'
     user = underscore_unescape(manager.user) if manager.user else None
-    conn_attr = manager.create_connection_string(database, user)
+    conn_attr = manager.create_connection_string(
+        database, user, for_utility=True)
 
     conn_attr_list = list()
     conn_attr_list.append(psql_utility)

@@ -15,6 +15,7 @@ from regression import parent_node_dict
 from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
+from psycopg.conninfo import conninfo_to_dict
 from unittest.mock import patch, MagicMock
 
 from config import PG_DEFAULT_DRIVER
@@ -972,5 +973,10 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
         if getattr(self, 'expected_dbname', None):
             _args = batch_process_mock.call_args_list[0][1]['args']
             self.assertIn('--dbname', _args)
-            self.assertEqual(_args[_args.index('--dbname') + 1],
-                             self.expected_dbname)
+            # In server mode the client credential files follow the
+            # database in the string; see utility_conninfo().
+            self.assertEqual(
+                {k: v for k, v in conninfo_to_dict(
+                    _args[_args.index('--dbname') + 1]).items()
+                 if k not in ('passfile', 'sslcert', 'sslkey')},
+                conninfo_to_dict(self.expected_dbname))

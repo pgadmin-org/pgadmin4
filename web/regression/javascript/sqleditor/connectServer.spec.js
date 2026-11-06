@@ -20,7 +20,7 @@ jest.mock('../../../pgadmin/static/js/Dialogs/ConnectServerContent', () => ({
 }));
 
 import url_for from 'sources/url_for';
-import { connectServer } from '../../../pgadmin/tools/sqleditor/static/js/components/connectServer';
+import { connectServer, ensureServerConnected } from '../../../pgadmin/tools/sqleditor/static/js/components/connectServer';
 
 /* Captures the props of each password prompt raised, so that a test can drive
  * the prompt by calling onOK or closeModal on it. */
@@ -115,5 +115,142 @@ describe('connectServer', ()=>{
     await connectServer(api, modal, 1, 'postgres', passwordFormData);
 
     expect(()=>modal.prompts[0].closeModal()).not.toThrow();
+  });
+});
+
+describe('ensureServerConnected', ()=>{
+  it('connects the server itself and resolves without prompting', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+    url_for.mockClear();
+
+    await expect(ensureServerConnected(api, modal, 1)).resolves.toEqual({connected: true});
+
+    /* Changing the Query Tool connection must connect the server, otherwise a
+     * disconnected server stays disconnected in the Object Explorer whilst the
+     * Query Tool reconnects (issue #8144). */
+    expect(url_for).toHaveBeenCalledWith('sqleditor.connect_server', {'sid': 1});
+    expect(modal.prompts).toHaveLength(0);
+  });
+
+  it('resolves once the password prompt is answered', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {status: 428, data: {result: 'need password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+    const promptCallback = jest.fn();
+
+    const result = ensureServerConnected(api, modal, 1, promptCallback);
+    await new Promise(process.nextTick);
+    expect(modal.prompts).toHaveLength(1);
+    expect(promptCallback).toHaveBeenLastCalledWith(false);
+
+    modal.prompts[0].onOK(passwordFormData);
+
+    await expect(result).resolves.toEqual({connected: true});
+    expect(promptCallback).toHaveBeenLastCalledWith(true);
+    expect(api).toHaveBeenLastCalledWith(expect.objectContaining({data: {password: 'secret'}}));
+  });
+
+  it('rejects with a cancelled error when the prompt is dismissed', async ()=>{
+    const api = jest.fn().mockRejectedValue({response: {status: 428, data: {result: 'need password'}}});
+    const modal = createFakeModal();
+
+    const result = ensureServerConnected(api, modal, 1);
+    await new Promise(process.nextTick);
+    modal.prompts[0].closeModal();
+
+    await expect(result).rejects.toMatchObject({cancelled: true});
+  });
+
+  it('prompts again when the supplied password is rejected', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {status: 428, data: {result: 'need password'}}})
+      .mockRejectedValueOnce({response: {status: 401, data: {result: 'wrong password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+
+    const result = ensureServerConnected(api, modal, 1);
+    await new Promise(process.nextTick);
+    modal.prompts[0].onOK(passwordFormData);
+    await new Promise(process.nextTick);
+
+    expect(modal.prompts).toHaveLength(2);
+    expect(modal.prompts[1].data).toBe('wrong password');
+    modal.prompts[1].onOK(passwordFormData);
+
+    await expect(result).resolves.toEqual({connected: true});
+  });
+
+  it('rejects with the server error, without prompting, for other failures', async ()=>{
+    const api = jest.fn().mockRejectedValue(
+      {response: {status: 410, data: {errormsg: 'Could not find the required server.'}}});
+    const modal = createFakeModal();
+
+    const error = await ensureServerConnected(api, modal, 1).catch((e)=>e);
+
+    expect(modal.prompts).toHaveLength(0);
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe('Could not find the required server.');
+    expect(error.cancelled).toBeUndefined();
+  });
+
+  it('sends no user or role unless asked to', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {}}});
+
+    await ensureServerConnected(api, createFakeModal(), 1);
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({data: null}));
+  });
+
+  it('sends the user and role of the connection being switched to', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {}}});
+
+    await ensureServerConnected(api, createFakeModal(), 1, undefined,
+      {user: 'jane', role: 'reporting'});
+
+    /* The backend only connects the server for its own user and role, so a
+     * connection made as anyone else is not held up by a prompt for the
+     * server's own user's password (issue #8144). */
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      data: {user: 'jane', role: 'reporting'},
+    }));
+  });
+
+  it('sends an empty role when the connection has none', async ()=>{
+    const api = jest.fn().mockResolvedValue({data: {data: {}}});
+
+    await ensureServerConnected(api, createFakeModal(), 1, undefined,
+      {user: 'postgres', role: undefined});
+
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({
+      data: {user: 'postgres', role: ''},
+    }));
+  });
+
+  it('keeps sending the user and role after a password prompt', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {status: 428, data: {result: 'need password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+
+    const result = ensureServerConnected(api, modal, 1, undefined,
+      {user: 'postgres', role: ''});
+    await new Promise(process.nextTick);
+    modal.prompts[0].onOK(passwordFormData);
+
+    await expect(result).resolves.toEqual({connected: true});
+    expect(api).toHaveBeenLastCalledWith(expect.objectContaining({
+      data: {password: 'secret', user: 'postgres', role: ''},
+    }));
+  });
+
+  it('passes on a failure that has no server response unchanged', async ()=>{
+    const networkError = new Error('Network Error');
+    const api = jest.fn().mockRejectedValue(networkError);
+    const modal = createFakeModal();
+
+    await expect(ensureServerConnected(api, modal, 1)).rejects.toBe(networkError);
+    expect(modal.prompts).toHaveLength(0);
   });
 });

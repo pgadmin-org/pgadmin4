@@ -10,6 +10,7 @@
 """Implement the Base class for Driver and Connection"""
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+from flask import current_app
 from .registry import DriverRegistry
 
 
@@ -44,7 +45,31 @@ class BaseDriver(metaclass=DriverRegistry):
     - Implement this function to release the connections assigned in the
       session, which has not been pinged from more than the idle timeout
       configuration.
+
+    Callbacks registered with register_session_gc_callback() are called
+    with the session id whenever gc_timeout() releases that session's
+    connections, so modules caching per-session state that holds those
+    connections can drop it.
     """
+
+    _session_gc_callbacks = []
+
+    @classmethod
+    def register_session_gc_callback(cls, callback):
+        """
+        Register callback(session_id) to be run when the connections of an
+        idle session are released by gc_timeout().
+        """
+        if callback not in BaseDriver._session_gc_callbacks:
+            BaseDriver._session_gc_callbacks.append(callback)
+
+    @staticmethod
+    def run_session_gc_callbacks(session_id):
+        for callback in BaseDriver._session_gc_callbacks:
+            try:
+                callback(session_id)
+            except Exception as e:
+                current_app.logger.exception(e)
 
     @property
     @abstractmethod

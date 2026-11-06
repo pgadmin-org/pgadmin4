@@ -63,6 +63,68 @@ describe('MfaValidatePage', ()=>{
     expect(ctrl.container.querySelector('input[name="mfa_method"]')).toHaveValue('email');
   });
 
+  it('email code input shown again after an invalid code', async ()=>{
+    let ctrl;
+    await act(async ()=>{
+      ctrl = await ctrlMount({
+        actionUrl: '/mfa/validate',
+        views: {
+          'email': {
+            id: 'email',
+            label: 'Email',
+            icon: '',
+            selected: true,
+            view: {
+              description: 'description',
+              otp_placeholder: 'otp_placeholder',
+              button_label: 'button_label',
+              button_label_sending: 'button_label_sending',
+              sent_message: 'sent_message',
+            }
+          },
+        },
+        logoutUrl: '/logout/url',
+        sendEmailUrl: '/send/email',
+        csrfHeader: 'csrfHeader',
+        csrfToken: 'csrfToken',
+      });
+    });
+    expect(ctrl.container.querySelector('[data-test="email-validate-view"]')).not.toBeNull();
+    expect(ctrl.container.textContent).toContain('sent_message');
+    expect(ctrl.container.querySelector('input[name="code"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('button[name="send_code"]')).toBeNull();
+    expect(ctrl.container.textContent).toContain('Send again');
+  });
+
+  it('email code input hidden until a code is sent', async ()=>{
+    let ctrl;
+    await act(async ()=>{
+      ctrl = await ctrlMount({
+        actionUrl: '/mfa/validate',
+        views: {
+          'email': {
+            id: 'email',
+            label: 'Email',
+            icon: '',
+            selected: true,
+            view: {
+              description: 'description',
+              otp_placeholder: 'otp_placeholder',
+              button_label: 'button_label',
+              button_label_sending: 'button_label_sending',
+            }
+          },
+        },
+        logoutUrl: '/logout/url',
+        sendEmailUrl: '/send/email',
+        csrfHeader: 'csrfHeader',
+        csrfToken: 'csrfToken',
+      });
+    });
+    expect(ctrl.container.querySelector('input[name="code"]')).toBeNull();
+    expect(ctrl.container.querySelector('button[name="send_code"]')).not.toBeNull();
+  });
+
   it('authenticator selected', async ()=>{
     let ctrl;
     await act(async ()=>{

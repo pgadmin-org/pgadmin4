@@ -86,13 +86,22 @@ class StartRunningQuery:
 
                 status, errmsg, _, _, _, response = \
                     query_tool_connection_check(trans_id)
-                # If database does not exist then show error msg
-                if not status:
-                    result = errmsg
                 # This is required for asking user to enter password
                 # when password is not saved for the server
                 if response is not None:
                     return response
+                # If the reconnect failed (e.g. the database no longer
+                # exists, or the user the connection was changed to cannot
+                # log in), show the error rather than running the query on
+                # the dead connection, which would only report it as lost.
+                if not status:
+                    return make_json_response(
+                        data={
+                            'status': False, 'result': errmsg,
+                            'can_edit': False, 'can_filter': False,
+                            'notifies': None,
+                        }
+                    )
             effective_sql_statement = apply_explain_plan_wrapper_if_needed(
                 manager, sql)
 

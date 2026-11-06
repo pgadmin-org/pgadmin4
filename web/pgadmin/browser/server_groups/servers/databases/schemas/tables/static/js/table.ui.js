@@ -894,17 +894,17 @@ export default class TableSchema extends BaseUISchema {
     },
     {
       id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
-      mode: ['create', 'edit'], min: 10, max: 100,
+      mode: ['properties', 'create', 'edit'], min: 10, max: 100,
       group: 'advanced',
       disabled: obj.isPartitioned,
     },{
       id: 'toast_tuple_target', label: gettext('Toast tuple target'), type: 'int',
-      mode: ['create', 'edit'], min: 128, min_version: 110000,
+      mode: ['properties', 'create', 'edit'], min: 128, min_version: 110000,
       group: 'advanced',
       disabled: obj.isPartitioned,
     },{
       id: 'parallel_workers', label: gettext('Parallel workers'), type: 'int',
-      mode: ['create', 'edit'], group: 'advanced', min_version: 90600,
+      mode: ['properties', 'create', 'edit'], group: 'advanced', min_version: 90600,
       disabled: obj.isPartitioned,
     },
     {

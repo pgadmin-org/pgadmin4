@@ -122,6 +122,23 @@ const StyledGrid = styled(Grid)(({theme}) => ({
   },
 }));
 
+/*
+ * Render the HTML in help messages and notes. DOMPurify drops the target
+ * attribute, so a link would otherwise navigate the pgAdmin page itself
+ * away (which, in the desktop app, prompts to quit). Open links in a new
+ * window instead.
+ */
+function parseHelpHTML(html) {
+  return HTMLReactParse(DOMPurify.sanitize(html || ''), {
+    replace: (node) => {
+      if (node.type === 'tag' && node.name === 'a' && node.attribs?.href) {
+        node.attribs.target = '_blank';
+        node.attribs.rel = 'noopener noreferrer';
+      }
+    },
+  });
+}
+
 /* Wrapper on any form component to add label, error indicator and help message */
 export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9, labelTooltip='', errorMessage='' }) {
 
@@ -140,7 +157,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
           <FormControl error={Boolean(error)} fullWidth>
             {React.cloneElement(children, { cid, helpid })}
           </FormControl>
-          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
+          <FormHelperText id={helpid} variant="outlined">{parseHelpHTML(helpMessage)}</FormHelperText>
         </StyledGrid>
       </>)
     );
@@ -164,7 +181,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
         <FormControl error={Boolean(error)} fullWidth>
           {React.cloneElement(children, { cid, helpid })}
         </FormControl>
-        <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(DOMPurify.sanitize(helpMessage || ''))}</FormHelperText>
+        <FormHelperText id={helpid} variant="outlined">{parseHelpHTML(helpMessage)}</FormHelperText>
         {errorMessage && <FormHelperText variant="outlined" error={true} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}><SafeMessage text={errorMessage} /></FormHelperText> }
       </Grid>
     </StyledGrid>
@@ -354,7 +371,8 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, e
     format: format.replace('xxx', timeZoneString),
     label: '',
     variant: 'inline',
-    ampm: controlProps.ampm ? controlProps.ampm : undefined,
+    // DatePicker has no clock and passes unknown props through to the DOM.
+    ampm: controlProps?.pickerType === 'Date' ? undefined : controlProps.ampm,
     disablePast: controlProps.disablePast || false,
     onChange: handleChange,
     slotProps: {textField: {placeholder:placeholder, error: error}}
@@ -993,6 +1011,8 @@ export function InputSelect({ref, cid, helpid, onChange, options, readonly = fal
       .then((res) => {
         /* If component unmounted, dont update state */
         if (!umounted) {
+          /* Clear any error left by an earlier failed load */
+          onError?.(null);
           optionsLoaded?.(res, value);
           /* Auto select if any option has key as selected */
           const flatRes = flattenSelectOptions(res || []);
@@ -1203,7 +1223,7 @@ export function FormNote({ text, className, controlProps }) {
       <Box className={className}>
         <Paper elevation={0} className={controlProps?.raw ? '' : 'Form-noteRoot'}>
           {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
-          <Box>{HTMLReactParse(DOMPurify.sanitize(text || ''))}</Box>
+          <Box>{parseHelpHTML(text)}</Box>
         </Paper>
       </Box>
     </Root>
