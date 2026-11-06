@@ -23,7 +23,7 @@ from pgadmin.utils import get_complete_file_path, \
     connection_param_bool_to_int, is_valid_connection_param_key, \
     client_files_isolated, isolate_client_credential_files, \
     check_connection_params_allowed
-from pgadmin.utils.crypto import decrypt
+from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
 from pgadmin.utils.master_password import process_masterpass_disabled
 from pgadmin.utils.locker import KerberosNotAllowed, \
     apply_kerberos_conn_params, check_kerberos_conn_params_unchanged
@@ -75,6 +75,7 @@ class ServerManager(object):
         self.server_cls = None
         self.password = None
         self.tunnel_password = None
+        self.saved_tunnel_password_discarded = False
 
         self.sid = server.id
         self.host = server.host
@@ -584,7 +585,20 @@ WHERE db.oid = {0}""".format(did))
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
                 return False, crypt_key
-            env[str(name)] = decrypt(self.password, crypt_key).decode()
+            try:
+                password = decrypt(self.password, crypt_key).decode()
+            except DECRYPT_ERRORS as e:
+                current_app.logger.warning(
+                    'Ignoring the saved password of the server (#{0}) as it '
+                    'could not be decrypted. Error: {1}'.format(
+                        self.sid, str(e)),
+                    exc_info=True
+                )
+                # Fall back to passexec, as when no password is saved.
+                if self.passexec:
+                    env[str(name)] = self.passexec.get()
+                return
+            env[str(name)] = password
         elif self.passexec:
             env[str(name)] = self.passexec.get()
 
@@ -610,10 +624,19 @@ WHERE db.oid = {0}""".format(did))
                 # password is in bytes, for python3 we need it in string
                 if isinstance(tunnel_password, bytes):
                     tunnel_password = tunnel_password.decode()
-            except Exception as e:
-                current_app.logger.exception(e)
-                return False, gettext("Failed to decrypt the SSH tunnel "
-                                      "password.\nError: {0}").format(str(e))
+            except DECRYPT_ERRORS as e:
+                # Same treatment as the server password: discard the
+                # undecryptable password and carry on, so that the user is
+                # prompted for it again when the tunnel fails to authenticate.
+                current_app.logger.warning(
+                    'Ignoring the saved SSH tunnel password of the server '
+                    '(#{0}) as it could not be decrypted. Error: {1}'.format(
+                        self.sid, str(e)),
+                    exc_info=True
+                )
+                self.tunnel_password = None
+                self.saved_tunnel_password_discarded = True
+                tunnel_password = None
 
         try:
             # If authentication method is 1 then it uses identity file
@@ -685,6 +708,7 @@ WHERE db.oid = {0}""".format(did))
             # flag tunnel threads in daemon mode to fix hang issue.
             self.tunnel_object.daemon_forward_servers = True
             self.tunnel_object.start()
+            self.saved_tunnel_password_discarded = False
             self.tunnel_created = True
         except (BaseSSHTunnelForwarderError, ValueError) as e:
             # sshtunnel raises a bare ValueError rather than one of its own
