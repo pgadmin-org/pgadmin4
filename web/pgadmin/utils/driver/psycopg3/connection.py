@@ -2002,6 +2002,12 @@ Failed to reset the connection to the server due to following error:
         if cancel_conn.__backend_pid == self.__backend_pid:
             password = getattr(self.manager, 'password', None)
             if password:
+                # Decrypting the password needs the logged-in user's key.
+                # Logging out a session whose user is not authenticated,
+                # such as a locked account, still releases its connections.
+                if not current_user.is_authenticated:
+                    return False, self.UNAUTHORIZED_REQUEST
+
                 # Fetch Logged in User Details.
                 user = User.query.filter_by(id=current_user.id).first()
                 if user is None:
