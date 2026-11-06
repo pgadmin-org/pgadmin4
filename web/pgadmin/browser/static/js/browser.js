@@ -1259,6 +1259,8 @@ define('pgadmin.browser', [
       }
 
       await this.tree.refresh(nodeItem);
+      // The refresh may have added or removed children that menus depend on.
+      this.enable_disable_menus();
       this.tree.toggleItemLoader(nodeItem, false);
       opts?.success?.();
     },

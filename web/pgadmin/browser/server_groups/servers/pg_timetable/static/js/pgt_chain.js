@@ -81,6 +81,22 @@ define('pgadmin.node.pgt_chain', [
       },
     });
   }
+
+  /* Whether the server tree item has a loaded pgTimeTable Chains child. */
+  function hasPgtChainCollection(serverItem) {
+    return (pgBrowser.tree.children(serverItem) || []).some(
+      (child) => pgBrowser.tree.itemData(child)?._type === 'coll-pgt_chain'
+    );
+  }
+
+  /* The server is selected (and its menus evaluated) before its children
+   * are loaded, so re-evaluate the menus once the collection appears. */
+  pgBrowser.Events.on('pgadmin-browser:tree:added', function (_item, data) {
+    if (data?._type === 'coll-pgt_chain') {
+      pgBrowser.enable_disable_menus();
+    }
+  });
+
   pgBrowser.add_menus([
     {
       name: 'create_pgt_chain_on_server',
@@ -92,6 +108,12 @@ define('pgadmin.node.pgt_chain', [
       priority: 4,
       label: gettext('pgTimeTable Chain...'),
       data: { action: 'create' },
+      /* The backend only adds the pgTimeTable Chains collection to a
+       * server when pg_timetable is usable in its maintenance database,
+       * so offer this menu only when that collection node is present. */
+      enable: function (node, item) {
+        return Boolean(node?.connected) && hasPgtChainCollection(item);
+      },
     },
     {
       name: 'create_pgt_chain_on_coll',
