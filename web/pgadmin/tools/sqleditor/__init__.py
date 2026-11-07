@@ -398,6 +398,8 @@ def panel(trans_id):
         trans_id: unique transaction id
     """
 
+    from pgadmin.llm.utils import is_llm_enabled
+
     params = None
     if request.args:
         params = {k: v for k, v in request.args.items()}
@@ -442,6 +444,7 @@ def panel(trans_id):
             params['user'] = underscore_escape(s.username)
         if 'role' not in params and s.role:
             params['role'] = underscore_escape(s.role)
+        params['llm_enabled'] = is_llm_enabled()
         params['layout'] = get_setting('SQLEditor/Layout')
         params['macros'] = get_user_macros()
         params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME

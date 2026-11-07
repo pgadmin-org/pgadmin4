@@ -11,6 +11,8 @@ import AIReport from './AIReport';
 import { AllPermissionTypes, BROWSER_PANELS } from '../../../browser/static/js/constants';
 import getApiInstance from '../../../static/js/api_instance';
 import MainMenuFactory from '../../../browser/static/js/MainMenuFactory';
+import usePreferences from '../../../preferences/static/js/store';
+import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
 
 // AI Reports Module
@@ -37,7 +39,15 @@ define([
 
       this.initialized = true;
 
-      // Check LLM status and only register menus if enabled
+      const getProvider = (state) => state.getPreferences('ai', 'default_provider')?.value;
+      let provider = getProvider(usePreferences.getState());
+      usePreferences.subscribe((state) => {
+        const nextProvider = getProvider(state);
+        if (provider !== nextProvider) {
+          provider = nextProvider;
+          this.checkLLMStatus();
+        }
+      });
       this.checkLLMStatus();
 
       return this;
@@ -167,27 +177,26 @@ define([
     },
 
     // Check if LLM is configured, register menus only if system-enabled
-    checkLLMStatus: function() {
-      const api = getApiInstance();
-      api.get(url_for('llm.status'))
-        .then((res) => {
-          if (res?.data?.success) {
-            this.llmEnabled = res.data.data?.enabled || false;
-            this.llmSystemEnabled = res.data.data?.system_enabled || false;
-          }
-          this.llmStatusChecked = true;
+    checkLLMStatus: async function() {
+      const request = getApiInstance().get(url_for('llm.status'));
+      this.statusRequest = request;
+      const res = await request.catch(() => null);
+      // An earlier save can finish after a newer one.
+      if (request !== this.statusRequest) return;
+      this.statusRequest = null;
+      const status = res?.data?.success ? res.data.data : null;
+      this.llmEnabled = Boolean(status?.enabled);
+      this.llmSystemEnabled = Boolean(status?.system_enabled);
+      this.llmStatusChecked = true;
+      pgAdmin.llm_enabled = this.llmEnabled;
 
-          // Only register menus if LLM is enabled at system level
-          if (this.llmSystemEnabled) {
-            this.registerMenus();
-            MainMenuFactory.createMainMenus();
-          }
-        })
-        .catch(() => {
-          this.llmEnabled = false;
-          this.llmSystemEnabled = false;
-          this.llmStatusChecked = true;
-        });
+      if (this.llmSystemEnabled && !this.menusRegistered) {
+        this.registerMenus();
+        this.menusRegistered = true;
+        MainMenuFactory.createMainMenus();
+      } else if (this.menusRegistered) {
+        MainMenuFactory.enableDisableMenus();
+      }
     },
 
     // Get the node type from tree item
