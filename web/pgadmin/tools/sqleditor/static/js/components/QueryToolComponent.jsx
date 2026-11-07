@@ -1132,6 +1132,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               layoutId="SQLEditor/Layout"
               savedLayout={params.layout}
               resetToTabPanel={PANELS.MESSAGES}
+              allowAddPanel
             />
             <StatusBar eol={qtState.eol} handleEndOfLineChange={handleEndOfLineChange}/>
           </Box>
