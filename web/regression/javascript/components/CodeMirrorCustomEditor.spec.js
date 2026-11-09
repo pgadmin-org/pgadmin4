@@ -11,9 +11,17 @@
 import { withTheme } from '../fake_theme';
 import CodeMirror from 'sources/components/ReactCodeMirror';
 import { syntaxTree } from '@codemirror/language';
+import { handleDrop } from 'sources/components/ReactCodeMirror/components/Editor';
+import {
+  handleOsFileDragOver,
+  handleEditorMouseUp,
+} from 'sources/components/ReactCodeMirror/sqlFileDrop';
 import { runScopeHandlers } from '@codemirror/view';
+import usePreferences from '../../../pgadmin/preferences/static/js/store';
+import pgAdmin from 'sources/pgadmin';
+import fakePgAdmin from '../fake_pgadmin';
 
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 describe('CodeMirrorCustomEditorView', ()=>{
   const ThemedCM = withTheme(CodeMirror);
@@ -384,4 +392,268 @@ describe('CodeMirrorCustomEditorView', ()=>{
       expect(editor.state.selection.main.head).toBe(3);
     });
   });
+  describe('SQL file drop preferences', ()=>{
+    let getPrefsSpy;
+
+    beforeEach(()=>{
+      getPrefsSpy = jest.spyOn(usePreferences.getState(), 'getPreferencesForModule');
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'replace' });
+      pgAdmin.Browser = fakePgAdmin.Browser;
+      pgAdmin.Browser.notifier.showModal = jest.fn();
+    });
+
+    afterEach(()=>{
+      getPrefsSpy?.mockRestore();
+    });
+
+    it('replaces editor content when a file is dropped', async ()=>{
+      cmRerender({value: 'select * from old_query;'});
+      const fileContent = 'select * from dropped_file;';
+      const file = new File([fileContent], 'test.sql', { type: 'text/plain' });
+      const event = {
+        dataTransfer: {
+          files: [file],
+          getData: jest.fn().mockReturnValue(''),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.stopPropagation).toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(editor.getValue()).toBe(fileContent);
+      });
+    });
+
+    it('replaces editor content when Files type is present without a FileList', ()=>{
+      cmRerender({value: 'select * from old_query;'});
+      const fileContent = 'select * from dropped_file;';
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(editor.getValue()).toBe(fileContent);
+    });
+
+    it('merges file content at the active caret when preference is merge', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
+      cmRerender({value: 'select  from t;'});
+      editor.dispatch({ selection: { anchor: 7, head: 7 } });
+      handleEditorMouseUp({}, editor);
+      const fileContent = 'public.actor';
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(editor.getValue()).toBe('select public.actor from t;');
+      expect(pgAdmin.Browser.notifier.showModal).not.toHaveBeenCalled();
+    });
+
+    it('merges at the clicked caret even if drag moved the selection to the start', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
+      cmRerender({value: 'select  from t;'});
+      editor.dispatch({ selection: { anchor: 7, head: 7 } });
+      handleEditorMouseUp({}, editor);
+      /* Chromium moves the contenteditable caret under the mouse while dragging. */
+      handleOsFileDragOver({
+        dataTransfer: { types: ['Files'], files: [] },
+        preventDefault: jest.fn(),
+      }, editor);
+      editor.dispatch({ selection: { anchor: 0, head: 0 } });
+      const fileContent = 'public.actor';
+      expect(handleDrop({
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      }, editor)).toBe(true);
+      expect(editor.getValue()).toBe('select public.actor from t;');
+    });
+
+    it('merges file content at caret near the end of the document', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
+      cmRerender({value: 'select 1;'});
+      const endPos = editor.state.doc.length;
+      editor.dispatch({ selection: { anchor: endPos, head: endPos } });
+      handleEditorMouseUp({}, editor);
+      const fileContent = '\nselect 2;';
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(editor.getValue()).toBe('select 1;' + fileContent);
+
+      editor.dispatch({ selection: { anchor: 7, head: 7 } });
+      handleEditorMouseUp({}, editor);
+      const secondEvent = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue('x'),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+      expect(handleDrop(secondEvent, editor)).toBe(true);
+      expect(editor.getValue()).toBe('select x1;' + fileContent);
+    });
+
+    it('merges Windows CRLF file content at end without selection RangeError', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
+      cmRerender({value: 'select 1;'});
+      const endPos = editor.state.doc.length;
+      editor.dispatch({ selection: { anchor: endPos, head: endPos } });
+      handleEditorMouseUp({}, editor);
+      /* CRLF string length > CodeMirror Text length — old code used
+       * pos + value.length and threw "Selection points outside of document". */
+      const fileContent = '\r\nselect 2;\r\nselect 3;';
+      expect(handleDrop({
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      }, editor)).toBe(true);
+      expect(editor.getValue()).toContain('select 1;');
+      expect(editor.getValue()).toContain('select 2;');
+      expect(editor.getValue()).toContain('select 3;');
+      expect(editor.state.selection.main.head).toBe(editor.state.doc.length);
+    });
+
+    it('asks what to do when preference is ask and editor has content', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'ask' });
+      cmRerender({value: 'select * from old_query;'});
+      const fileContent = 'select * from dropped_file;';
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(editor.getValue()).toBe('select * from old_query;');
+      expect(pgAdmin.Browser.notifier.showModal).toHaveBeenCalled();
+
+      const modalContent = pgAdmin.Browser.notifier.showModal.mock.calls[0][1];
+      const closeModal = jest.fn();
+      const content = modalContent(closeModal);
+      content.props.onReplace();
+      expect(editor.getValue()).toBe(fileContent);
+    });
+
+    it('applies merge when ask dialog merge is chosen', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'ask' });
+      cmRerender({value: 'select  from t;'});
+      editor.dispatch({ selection: { anchor: 7, head: 7 } });
+      handleEditorMouseUp({}, editor);
+      const fileContent = 'public.actor';
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      handleDrop(event, editor);
+      /* Modal focus must not change the merge position captured at drop. */
+      editor.dispatch({ selection: { anchor: 0, head: 0 } });
+      const modalContent = pgAdmin.Browser.notifier.showModal.mock.calls[0][1];
+      modalContent(jest.fn()).props.onMerge();
+      expect(editor.getValue()).toBe('select public.actor from t;');
+    });
+
+    it('replaces without asking when editor is empty even if preference is ask', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'ask' });
+      cmRerender({value: ''});
+      const fileContent = 'select * from dropped_file;';
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue(fileContent),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(pgAdmin.Browser.notifier.showModal).not.toHaveBeenCalled();
+      expect(editor.getValue()).toBe(fileContent);
+    });
+  });
+
+  it('inserts tree node text at drop position', ()=>{
+    cmRerender({value: 'select  from t;'});
+    const dropPos = 7;
+    const dropDetails = {
+      text: 'public.actor',
+      cur: { from: 12, to: 12 },
+    };
+    jest.spyOn(editor, 'posAtCoords').mockReturnValue(dropPos);
+    const event = {
+      dataTransfer: {
+        files: [],
+        getData: jest.fn().mockReturnValue(JSON.stringify(dropDetails)),
+      },
+      preventDefault: jest.fn(),
+      stopPropagation: jest.fn(),
+      clientX: 40,
+      clientY: 40,
+    };
+
+    handleDrop(event, editor);
+
+    expect(editor.getValue()).toBe('select public.actor from t;');
+  });
+
+  it('returns false for internal text drag so CodeMirror can handle it', ()=>{
+    const event = {
+      dataTransfer: {
+        files: [],
+        getData: jest.fn().mockReturnValue('plain selected text'),
+      },
+      preventDefault: jest.fn(),
+    };
+
+    expect(handleDrop(event, editor)).toBe(false);
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
+
 });

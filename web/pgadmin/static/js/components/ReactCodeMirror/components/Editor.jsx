@@ -17,6 +17,14 @@ import { checkTrojanSource } from 'sources/utils';
 import usePreferences from '../../../../../preferences/static/js/store';
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import {
+  handleOsFileDrop,
+  handleOsFileDragOver,
+  handleEditorBlur,
+  handleEditorMouseUp,
+  handleEditorKeyUp,
+  rememberCaretPos,
+} from '../sqlFileDrop';
 
 // Codemirror packages
 import {
@@ -29,7 +37,7 @@ import {
   EditorView,
   keymap,
 } from '@codemirror/view';
-import { EditorState, Compartment } from '@codemirror/state';
+import { EditorState, Compartment, Prec } from '@codemirror/state';
 import { history, defaultKeymap, historyKeymap, indentLess, indentMore, deleteCharBackwardStrict, copyLineDown } from '@codemirror/commands';
 import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import {
@@ -58,13 +66,29 @@ import plpgsqlFoldService from '../extensions/plpgsqlFoldService';
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 
-function handleDrop(e, editor) {
+/* Tree/object-explorer drops use mouse coords (imprecise for past-end). */
+function getDropPos(editor, event) {
+  const x = event?.clientX ?? event?.x;
+  const y = event?.clientY ?? event?.y;
+  if (typeof x === 'number' && typeof y === 'number') {
+    const pos = editor.posAtCoords({ x, y }, false);
+    if (typeof pos === 'number') {
+      return pos;
+    }
+  }
+  return editor.state.doc.length;
+}
+
+export function handleDrop(e, editor) {
+  if (handleOsFileDrop(e, editor)) {
+    return true;
+  }
+
   let dropDetails = null;
   try {
     dropDetails = JSON.parse(e.dataTransfer.getData('text'));
 
     /* Stop firefox from redirecting */
-
     if (e.preventDefault) {
       e.preventDefault();
     }
@@ -76,13 +100,20 @@ function handleDrop(e, editor) {
     return false;
   }
 
-  const dropPos = editor.posAtCoords({ x: e.x, y: e.y });
+  const dropPos = getDropPos(editor, e);
+  const insert = dropDetails.text || '';
+  const changes = editor.state.changes({ from: dropPos, to: dropPos, insert });
+  const insertAt = changes.mapPos(dropPos, -1);
+  const anchor = Math.min(insertAt + (dropDetails.cur?.from ?? 0), changes.newLength);
+  const head = Math.min(insertAt + (dropDetails.cur?.to ?? 0), changes.newLength);
   editor.dispatch({
-    changes: { from: dropPos, to: dropPos, insert: dropDetails.text || '' },
-    selection: { anchor: dropPos + dropDetails.cur.from, head: dropPos + dropDetails.cur.to }
+    changes,
+    selection: { anchor, head },
+    scrollIntoView: true,
   });
 
   editor.focus();
+  return true;
 }
 
 function calcFontSize(fontSize) {
@@ -150,10 +181,14 @@ const defaultExtensions = [
   PgSQL.language.data.of({
     autocomplete: false,
   }),
-  EditorView.domEventHandlers({
+  Prec.highest(EditorView.domEventHandlers({
     drop: handleDrop,
     paste: handlePaste,
-  }),
+    dragover: handleOsFileDragOver,
+    blur: handleEditorBlur,
+    mouseup: handleEditorMouseUp,
+    keyup: handleEditorKeyUp,
+  })),
   errorMarkerExtn(),
   indentService.of((context, pos) => {
     if(context.state.facet(indentNewLine)) {
@@ -215,6 +250,7 @@ export default function Editor({
           ].concat(keepHistory ? [history()] : [])),
           [EditorView.updateListener.of(function(update) {
             if(update.selectionSet) {
+              rememberCaretPos(update.view);
               onCursorActivity?.(update.view.getCursor(), update.view);
             }
             if(update.docChanged) {
