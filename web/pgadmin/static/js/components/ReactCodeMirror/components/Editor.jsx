@@ -66,7 +66,7 @@ import plpgsqlFoldService from '../extensions/plpgsqlFoldService';
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 
-/* Tree/object-explorer drops use mouse coords (imprecise for past-end). */
+/** Resolve drop insert position from mouse coords (fallback: document end). */
 function getDropPos(editor, event) {
   const x = event?.clientX ?? event?.x;
   const y = event?.clientY ?? event?.y;
@@ -79,6 +79,7 @@ function getDropPos(editor, event) {
   return editor.state.doc.length;
 }
 
+/** Handle OS file drops or tree/object-explorer text drops on the editor. */
 export function handleDrop(e, editor) {
   if (handleOsFileDrop(e, editor)) {
     return true;
@@ -254,6 +255,7 @@ export default function Editor({
               onCursorActivity?.(update.view.getCursor(), update.view);
             }
             if(update.docChanged) {
+              rememberCaretPos(update.view);
               onChange?.(update.view.getValue(), update.view);
             }
             if(breakpoint) {

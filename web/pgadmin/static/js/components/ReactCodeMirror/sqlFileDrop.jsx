@@ -18,10 +18,12 @@ import ConfirmFileDropContent from '../../Dialogs/ConfirmFileDropContent';
 const caretByView = new WeakMap();
 const dragActiveByView = new WeakMap();
 
+/** Return whether an OS file drag is active for the view. */
 function isDragActive(view) {
   return Boolean(view && dragActiveByView.get(view));
 }
 
+/** Mark or clear OS file-drag active state for the view. */
 function setDragActive(view, active) {
   if (!view) {
     return;
@@ -33,6 +35,7 @@ function setDragActive(view, active) {
   }
 }
 
+/** Store the view's caret unless an OS file drag is active. */
 export function rememberCaretPos(view) {
   if (!view || isDragActive(view)) {
     return;
@@ -40,6 +43,7 @@ export function rememberCaretPos(view) {
   caretByView.set(view, view.state.selection.main.head);
 }
 
+/** Resolve a clamped merge insert position from the remembered caret. */
 function getMergePos(editor) {
   const docLen = editor.state.doc.length;
   const pos = caretByView.has(editor)
@@ -54,6 +58,7 @@ function getMergePos(editor) {
   return pos;
 }
 
+/** Prevent default and stop propagation for an OS file drag/drop event. */
 function stopOsFileEvent(e) {
   if (e.preventDefault) {
     e.preventDefault();
@@ -63,6 +68,7 @@ function stopOsFileEvent(e) {
   }
 }
 
+/** Detect whether a DataTransfer carries OS file drop data. */
 export function hasOsFileDrop(dataTransfer) {
   if (!dataTransfer) {
     return false;
@@ -91,6 +97,7 @@ export function hasOsFileDrop(dataTransfer) {
   return Array.from(types).includes('Files');
 }
 
+/** Return the first File from a DataTransfer, if any. */
 function getDroppedFile(dataTransfer) {
   if (dataTransfer.files?.length > 0) {
     return dataTransfer.files[0];
@@ -106,6 +113,7 @@ function getDroppedFile(dataTransfer) {
   return null;
 }
 
+/** Read plain-text payload from a DataTransfer. */
 function getDroppedText(dataTransfer) {
   if (!dataTransfer?.getData) {
     return '';
@@ -116,6 +124,7 @@ function getDroppedText(dataTransfer) {
     || '';
 }
 
+/** Replace the editor contents with dropped file text. */
 function applyDroppedFileText(editor, text) {
   const value = text ?? '';
   editor.setValue(value);
@@ -124,6 +133,7 @@ function applyDroppedFileText(editor, text) {
   editor.focus();
 }
 
+/** Insert dropped file text at the remembered merge position. */
 function mergeDroppedFileText(editor, text, mergePos) {
   const value = text ?? '';
   const docLen = editor.state.doc.length;
@@ -144,11 +154,13 @@ function mergeDroppedFileText(editor, text, mergePos) {
   editor.focus();
 }
 
+/** Read the Query Tool SQL file-drop preference (replace/merge/ask). */
 function getSqlFileDropAction() {
   const prefs = usePreferences.getState().getPreferencesForModule('sqleditor');
   return prefs?.sql_file_drop_action || 'replace';
 }
 
+/** Apply a dropped SQL file using replace, merge, or ask preference. */
 function applyOsFileDrop(editor, text, mergePos) {
   const value = text ?? '';
   const editorEmpty = !editor.getValue();
@@ -175,22 +187,27 @@ function applyOsFileDrop(editor, text, mergePos) {
   applyDroppedFileText(editor, value);
 }
 
+/** Remember caret position when the editor loses focus. */
 export function handleEditorBlur(_e, view) {
   rememberCaretPos(view);
   return false;
 }
 
+/** Clear drag-active state and remember caret after mouseup. */
 export function handleEditorMouseUp(_e, view) {
   setDragActive(view, false);
   rememberCaretPos(view);
   return false;
 }
 
+/** Clear drag-active state and remember caret after keyup. */
 export function handleEditorKeyUp(_e, view) {
+  setDragActive(view, false);
   rememberCaretPos(view);
   return false;
 }
 
+/** Accept OS file dragover and freeze caret updates while dragging. */
 export function handleOsFileDragOver(e, view) {
   if (!hasOsFileDrop(e.dataTransfer)) {
     return false;
@@ -207,7 +224,10 @@ export function handleOsFileDragOver(e, view) {
   return true;
 }
 
-/* Returns true when the event was an OS file drop (handled or ignored). */
+/**
+ * Handle an OS file drop on the editor.
+ * @returns {boolean} true when the event was an OS file drop (handled or ignored).
+ */
 export function handleOsFileDrop(e, editor) {
   if (!hasOsFileDrop(e.dataTransfer)) {
     return false;
