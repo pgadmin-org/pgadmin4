@@ -250,7 +250,12 @@ export function handleOsFileDrop(e, editor) {
     };
     reader.readAsText(file);
   } else {
-    applyOsFileDrop(editor, getDroppedText(e.dataTransfer), mergePos);
+    const text = getDroppedText(e.dataTransfer);
+    if (!text) {
+      /* File-only transfer with no readable File/text — leave SQL unchanged. */
+      return true;
+    }
+    applyOsFileDrop(editor, text, mergePos);
   }
   return true;
 }

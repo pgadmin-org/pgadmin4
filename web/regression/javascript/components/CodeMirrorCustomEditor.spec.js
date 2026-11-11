@@ -446,6 +446,24 @@ describe('CodeMirrorCustomEditorView', ()=>{
       expect(editor.getValue()).toBe(fileContent);
     });
 
+    it('leaves editor unchanged when Files type has no File and no text payload', ()=>{
+      const existing = 'select * from old_query;';
+      cmRerender({value: existing});
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files'],
+          getData: jest.fn().mockReturnValue(''),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(editor.getValue()).toBe(existing);
+    });
+
     it('merges file content at the active caret when preference is merge', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
       cmRerender({value: 'select  from t;'});
