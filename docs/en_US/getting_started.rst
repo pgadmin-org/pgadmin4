@@ -80,6 +80,7 @@ You can search for objects in the database using the :ref:`Search objects <searc
    menu_bar
    toolbar
    tabbed_browser
+   dashboard
    tree_control
    preferences
    keyboard_shortcuts
