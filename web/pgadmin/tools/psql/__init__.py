@@ -318,15 +318,13 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id,
     # so that the user is not left at a shell prompt when psql exits, and
     # the connection string is never parsed by cmd.exe.
     #
-    # pywinpty passes argv[0] to CreateProcess as the application name but
-    # builds the command line from argv[1:] alone, so psql would start with
-    # an empty argv[0] and fail with "could not find own program
-    # executable" (#10714). Repeat the executable so that it is also the
-    # first word of the command line.
+    # pywinpty 3.1.2 and later put argv[0] on the command line themselves,
+    # quoted, so it is passed through unchanged. The 2.0.x series left it
+    # off, which is why the executable used to be repeated here (#10714);
+    # doing that now would make psql read its own path as the database name.
     try:
-        process = PtyProcess.spawn(
-            [connection_data[0]] + list(connection_data),
-            env=get_user_env(env))
+        process = PtyProcess.spawn(list(connection_data),
+                                   env=get_user_env(env))
     except Exception as e:
         # start_process has already registered this socket against the
         # server, so forget it again and show the error in the terminal.
