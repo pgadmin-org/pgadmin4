@@ -26,6 +26,8 @@ from pgadmin.utils import get_complete_file_path, \
     check_connection_params_allowed
 from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
 from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
+from pgadmin.utils.token_auth import get_token_auth_method, \
+    utility_password
 from pgadmin.utils.master_password import process_masterpass_disabled
 from pgadmin.utils.locker import KerberosNotAllowed, \
     apply_kerberos_conn_params, check_kerberos_conn_params_unchanged
@@ -63,6 +65,8 @@ class ServerManager(object):
     This class contains the information about the given server.
     And, acts as connection manager for that particular session.
     """
+    # How the server is authenticated; ServerManager.update() sets it.
+    auth_method = AUTH_METHOD_PASSWORD
     _INFORMATION_MSG = gettext("Information is not available.")
 
     def __init__(self, server):
@@ -600,10 +604,21 @@ WHERE db.oid = {0}""".format(did))
         utilities and psql sessions, and read by libpq for their
         connections.
 
+        A server with a token method has no password: a utility gets a new
+        token, when the method delivers it as the password (see
+        utility_password()). That needs the user's pgAdmin login, so it
+        raises OAuthTokenError when the token cannot be obtained.
+
         Returns:
             False and an error message if the password cannot be
             decrypted, otherwise None
         """
+        if get_token_auth_method(self.auth_method):
+            token = utility_password(self.auth_method, self.connection_params)
+            if token:
+                env[str(name)] = token
+            return None
+
         if self.password:
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:

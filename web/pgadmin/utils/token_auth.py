@@ -48,6 +48,8 @@ class OAuthBearerDelivery:
     implementation, and the hook installation checks both.
     """
 
+    utility_password = False
+
     def prepare(self):
         try:
             pg_oauth2.install_oauth_hook()
@@ -69,6 +71,8 @@ class PasswordDelivery:
     stored. It works with any libpq and psycopg implementation, so it has
     no version checks.
     """
+
+    utility_password = True
 
     def prepare(self):
         pass
@@ -160,19 +164,41 @@ def token_connection(auth_method, connection_params, password=None):
             'Unsupported server authentication method: {0}.'.format(
                 auth_method))
 
+    method.delivery.prepare()
+    token = _fresh_token(method, connection_params)
+    with method.delivery.scope(token):
+        yield method.delivery.password(token, password)
+
+
+def _fresh_token(method, connection_params):
+    """Ask the token provider of a method for a new token."""
     # Refuse before asking for a token, so that no token is requested for a
     # server it must not be sent to.
     error = method.check(connection_params or {}) if method.check else None
     if error:
         raise pg_oauth2.OAuthTokenError(error)
 
-    method.delivery.prepare()
     token = method.provider(connection_params or {})
     if not isinstance(token, str) or not token.strip() or '\0' in token:
         raise pg_oauth2.OAuthTokenError(
             'No access token is available for this server.')
-    with method.delivery.scope(token):
-        yield method.delivery.password(token, password)
+    return token
+
+
+def utility_password(auth_method, connection_params):
+    """The password for a utility process (backup, restore, maintenance,
+    psql) that connects to a server with a token method, else None.
+
+    A utility is a separate process, so only a token delivered as the
+    password reaches it: a new token for each process, in the environment of
+    that process alone. The OAUTHBEARER token reaches a connection through a
+    libpq hook of the process that opens it, which a utility cannot have.
+    Raises OAuthTokenError when the token cannot be obtained.
+    """
+    method = get_token_auth_method(auth_method)
+    if method is None or not method.delivery.utility_password:
+        return None
+    return _fresh_token(method, connection_params)
 
 
 def sign_in_again_response(server, errmsg):
