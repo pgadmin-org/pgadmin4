@@ -11,10 +11,14 @@
 import { withTheme } from '../fake_theme';
 import CodeMirror from 'sources/components/ReactCodeMirror';
 import { syntaxTree } from '@codemirror/language';
-import { handleDrop } from 'sources/components/ReactCodeMirror/components/Editor';
+import {
+  handleDrop,
+  handleExplorerDrop,
+} from 'sources/components/ReactCodeMirror/components/Editor';
 import {
   handleOsFileDragOver,
   handleEditorMouseUp,
+  handleOsFileDrop,
 } from 'sources/components/ReactCodeMirror/sqlFileDrop';
 import { runScopeHandlers } from '@codemirror/view';
 import usePreferences from '../../../pgadmin/preferences/static/js/store';
@@ -394,12 +398,16 @@ describe('CodeMirrorCustomEditorView', ()=>{
   });
   describe('SQL file drop preferences', ()=>{
     let getPrefsSpy;
+    const cmRerenderSql = (props)=>{
+      cmRerender({sqlFileDrop: true, ...props});
+    };
 
     beforeEach(()=>{
       getPrefsSpy = jest.spyOn(usePreferences.getState(), 'getPreferencesForModule');
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'replace' });
       pgAdmin.Browser = fakePgAdmin.Browser;
       pgAdmin.Browser.notifier.showModal = jest.fn();
+      cmRerenderSql({value: 'Init text'});
     });
 
     afterEach(()=>{
@@ -407,7 +415,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
     });
 
     it('replaces editor content when a file is dropped', async ()=>{
-      cmRerender({value: 'select * from old_query;'});
+      cmRerenderSql({value: 'select * from old_query;'});
       const fileContent = 'select * from dropped_file;';
       const file = new File([fileContent], 'test.sql', { type: 'text/plain' });
       const event = {
@@ -429,7 +437,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
     });
 
     it('replaces editor content when Files type is present without a FileList', ()=>{
-      cmRerender({value: 'select * from old_query;'});
+      cmRerenderSql({value: 'select * from old_query;'});
       const fileContent = 'select * from dropped_file;';
       const event = {
         dataTransfer: {
@@ -448,7 +456,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('leaves editor unchanged when Files type has no File and no text payload', ()=>{
       const existing = 'select * from old_query;';
-      cmRerender({value: existing});
+      cmRerenderSql({value: existing});
       const event = {
         dataTransfer: {
           files: [],
@@ -464,9 +472,77 @@ describe('CodeMirrorCustomEditorView', ()=>{
       expect(editor.getValue()).toBe(existing);
     });
 
+    it('leaves editor unchanged when dropped file content looks binary', async ()=>{
+      const existing = 'select * from old_query;';
+      cmRerenderSql({value: existing});
+      /* Two control chars — same heuristic as @codemirror/view handlers.drop. */
+      const binaryContent = 'PK\x00\x01binary-garbage';
+      const file = new File([binaryContent], 'archive.zip', { type: 'application/zip' });
+      const event = {
+        dataTransfer: {
+          files: [file],
+          getData: jest.fn().mockReturnValue(''),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      /* Wait until a parallel read finishes so onload has had a chance to run. */
+      await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = resolve;
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+      expect(editor.getValue()).toBe(existing);
+    });
+
+    it('leaves editor unchanged when Files text payload looks binary', ()=>{
+      const existing = 'select * from old_query;';
+      cmRerenderSql({value: existing});
+      const event = {
+        dataTransfer: {
+          files: [],
+          types: ['Files', 'text/plain'],
+          getData: jest.fn().mockReturnValue('x\x00\x01y'),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      expect(handleDrop(event, editor)).toBe(true);
+      expect(editor.getValue()).toBe(existing);
+    });
+
+    it('does not use preference replace path for explorer-only drops', ()=>{
+      getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'replace' });
+      cmRerender({value: 'select  from t;', sqlFileDrop: false});
+      const dropPos = 7;
+      const dropDetails = {
+        text: 'public.actor',
+        cur: { from: 12, to: 12 },
+      };
+      jest.spyOn(editor, 'posAtCoords').mockReturnValue(dropPos);
+      const event = {
+        dataTransfer: {
+          files: [],
+          getData: jest.fn().mockReturnValue(JSON.stringify(dropDetails)),
+        },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+        clientX: 40,
+        clientY: 40,
+      };
+
+      expect(handleExplorerDrop(event, editor)).toBe(true);
+      expect(editor.getValue()).toBe('select public.actor from t;');
+      expect(handleOsFileDrop(event, editor)).toBe(false);
+    });
+
     it('merges file content at the active caret when preference is merge', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
-      cmRerender({value: 'select  from t;'});
+      cmRerenderSql({value: 'select  from t;'});
       editor.dispatch({ selection: { anchor: 7, head: 7 } });
       handleEditorMouseUp({}, editor);
       const fileContent = 'public.actor';
@@ -487,7 +563,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('merges at the clicked caret even if drag moved the selection to the start', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
-      cmRerender({value: 'select  from t;'});
+      cmRerenderSql({value: 'select  from t;'});
       editor.dispatch({ selection: { anchor: 7, head: 7 } });
       handleEditorMouseUp({}, editor);
       /* Chromium moves the contenteditable caret under the mouse while dragging. */
@@ -511,7 +587,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('merges file content at caret near the end of the document', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
-      cmRerender({value: 'select 1;'});
+      cmRerenderSql({value: 'select 1;'});
       const endPos = editor.state.doc.length;
       editor.dispatch({ selection: { anchor: endPos, head: endPos } });
       handleEditorMouseUp({}, editor);
@@ -546,7 +622,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('merges Windows CRLF file content at end without selection RangeError', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'merge' });
-      cmRerender({value: 'select 1;'});
+      cmRerenderSql({value: 'select 1;'});
       const endPos = editor.state.doc.length;
       editor.dispatch({ selection: { anchor: endPos, head: endPos } });
       handleEditorMouseUp({}, editor);
@@ -570,7 +646,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('asks what to do when preference is ask and editor has content', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'ask' });
-      cmRerender({value: 'select * from old_query;'});
+      cmRerenderSql({value: 'select * from old_query;'});
       const fileContent = 'select * from dropped_file;';
       const event = {
         dataTransfer: {
@@ -595,7 +671,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('applies merge when ask dialog merge is chosen', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'ask' });
-      cmRerender({value: 'select  from t;'});
+      cmRerenderSql({value: 'select  from t;'});
       editor.dispatch({ selection: { anchor: 7, head: 7 } });
       handleEditorMouseUp({}, editor);
       const fileContent = 'public.actor';
@@ -619,7 +695,7 @@ describe('CodeMirrorCustomEditorView', ()=>{
 
     it('replaces without asking when editor is empty even if preference is ask', ()=>{
       getPrefsSpy.mockReturnValue({ sql_file_drop_action: 'ask' });
-      cmRerender({value: ''});
+      cmRerenderSql({value: ''});
       const fileContent = 'select * from dropped_file;';
       const event = {
         dataTransfer: {

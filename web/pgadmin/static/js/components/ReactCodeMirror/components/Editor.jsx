@@ -79,12 +79,8 @@ function getDropPos(editor, event) {
   return editor.state.doc.length;
 }
 
-/** Handle OS file drops or tree/object-explorer text drops on the editor. */
-export function handleDrop(e, editor) {
-  if (handleOsFileDrop(e, editor)) {
-    return true;
-  }
-
+/** Handle tree/object-explorer text drops on the editor. */
+export function handleExplorerDrop(e, editor) {
   let dropDetails = null;
   try {
     dropDetails = JSON.parse(e.dataTransfer.getData('text'));
@@ -115,6 +111,14 @@ export function handleDrop(e, editor) {
 
   editor.focus();
   return true;
+}
+
+/** Handle OS file drops or tree/object-explorer text drops on the editor. */
+export function handleDrop(e, editor) {
+  if (handleOsFileDrop(e, editor)) {
+    return true;
+  }
+  return handleExplorerDrop(e, editor);
 }
 
 function calcFontSize(fontSize) {
@@ -182,14 +186,6 @@ const defaultExtensions = [
   PgSQL.language.data.of({
     autocomplete: false,
   }),
-  Prec.highest(EditorView.domEventHandlers({
-    drop: handleDrop,
-    paste: handlePaste,
-    dragover: handleOsFileDragOver,
-    blur: handleEditorBlur,
-    mouseup: handleEditorMouseUp,
-    keyup: handleEditorKeyUp,
-  })),
   errorMarkerExtn(),
   indentService.of((context, pos) => {
     if(context.state.facet(indentNewLine)) {
@@ -209,7 +205,7 @@ export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly,
   disabled, autocomplete = false, autocompleteOnKeyPress, breakpoint = false, onBreakPointChange,
   showActiveLine=false, keepHistory = true, cid, helpid, labelledBy,
-  customKeyMap, language='pgsql'
+  customKeyMap, language='pgsql', sqlFileDrop = false
 }) {
   const checkIsMounted = useIsMounted();
 
@@ -232,8 +228,24 @@ export default function Editor({
   useEffect(() => {
     if (!checkIsMounted()) return;
     const osEOL = OS_EOL === 'crlf' ? '\r\n' : '\n';
+    /* Query Tool opt-in: preference-aware OS file drop. Other editors keep
+     * explorer drops only and leave OS files to CodeMirror's default handler. */
+    const dropEventHandlers = sqlFileDrop
+      ? Prec.highest(EditorView.domEventHandlers({
+        drop: handleDrop,
+        paste: handlePaste,
+        dragover: handleOsFileDragOver,
+        blur: handleEditorBlur,
+        mouseup: handleEditorMouseUp,
+        keyup: handleEditorKeyUp,
+      }))
+      : EditorView.domEventHandlers({
+        drop: handleExplorerDrop,
+        paste: handlePaste,
+      });
     const finalExtns = [
       ...defaultExtensions,
+      dropEventHandlers,
     ];
     if (finalOptions.lineNumbers) {
       finalExtns.push(lineNumbers());
@@ -251,11 +263,15 @@ export default function Editor({
           ].concat(keepHistory ? [history()] : [])),
           [EditorView.updateListener.of(function(update) {
             if(update.selectionSet) {
-              rememberCaretPos(update.view);
+              if (sqlFileDrop) {
+                rememberCaretPos(update.view);
+              }
               onCursorActivity?.(update.view.getCursor(), update.view);
             }
             if(update.docChanged) {
-              rememberCaretPos(update.view);
+              if (sqlFileDrop) {
+                rememberCaretPos(update.view);
+              }
               onChange?.(update.view.getValue(), update.view);
             }
             if(breakpoint) {
@@ -510,4 +526,5 @@ Editor.propTypes = {
   labelledBy: PropTypes.string,
   customKeyMap: PropTypes.array,
   language: PropTypes.string,
+  sqlFileDrop: PropTypes.bool,
 };

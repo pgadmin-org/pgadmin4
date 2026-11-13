@@ -235,8 +235,10 @@ def register_query_tool_preferences(self):
         help_str=gettext(
             'Controls what happens when a SQL file is dropped onto the '
             'Query Tool editor. Replace clears the editor and loads the '
-            'file. Merge inserts the file content at the current cursor '
-            'position. Ask prompts when the editor already has content.'
+            'file content. Merge inserts the file content at the current '
+            'cursor position. Ask prompts when the editor already has '
+            'content. Dropping a file does not change the file associated '
+            'with the tab; Save still targets the previously opened path.'
         )
     )
 

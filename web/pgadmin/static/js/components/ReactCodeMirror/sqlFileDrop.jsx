@@ -243,7 +243,12 @@ export function handleOsFileDrop(e, editor) {
   if (file) {
     const reader = new FileReader();
     reader.onload = () => {
-      applyOsFileDrop(editor, reader.result ?? '', mergePos);
+      const result = reader.result ?? '';
+      /* Match CodeMirror's built-in drop handler: skip binary-looking content. */
+      if (/[\x00-\x08\x0e-\x1f]{2}/.test(result)) {
+        return;
+      }
+      applyOsFileDrop(editor, result, mergePos);
     };
     reader.onerror = () => {
       setDragActive(editor, false);
@@ -253,6 +258,9 @@ export function handleOsFileDrop(e, editor) {
     const text = getDroppedText(e.dataTransfer);
     if (!text) {
       /* File-only transfer with no readable File/text — leave SQL unchanged. */
+      return true;
+    }
+    if (/[\x00-\x08\x0e-\x1f]{2}/.test(text)) {
       return true;
     }
     applyOsFileDrop(editor, text, mergePos);
