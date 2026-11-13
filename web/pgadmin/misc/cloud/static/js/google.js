@@ -49,8 +49,11 @@ export function GoogleCredentials(props) {
             }
           })
           .catch((error) => {
-            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error during authentication: ${error}`)]);
-            reject(new Error(gettext(`Error during authentication: ${error}`)));
+            const errmsg = error.response?.data?.errormsg ||
+              gettext(`Error during authentication: ${error}`);
+            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, errmsg]);
+            _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',false);
+            reject(new Error(errmsg));
           });
         });
       },
