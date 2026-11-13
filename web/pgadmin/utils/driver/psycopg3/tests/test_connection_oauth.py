@@ -187,13 +187,13 @@ class TestOAuthConnection(
 
                 install_hook = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token'
                     )
                 )
@@ -241,13 +241,13 @@ class TestOAuthConnection(
 
                 install_hook = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token',
                         side_effect=pg_oauth2.OAuthTokenError(
                             'No current pgAdmin OAuth access token'
@@ -298,13 +298,13 @@ class TestOAuthConnection(
 
                 install_hook = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token',
                         return_value='pgadmin-access-token'
                     )
@@ -359,13 +359,13 @@ class TestOAuthConnection(
 
                 install_hook = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token',
                         return_value='pgadmin-access-token'
                     )
@@ -418,13 +418,13 @@ class TestOAuthConnection(
 
                 stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token',
                         return_value='pgadmin-access-token'
                     )
@@ -474,13 +474,13 @@ class TestOAuthConnection(
 
                 install_hook = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token',
                         return_value='exchanged-token'
                     )
@@ -529,13 +529,13 @@ class TestOAuthConnection(
 
                 install_hook = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'install_oauth_hook'
                     )
                 )
                 get_token = stack.enter_context(
                     patch.object(
-                        connection_module,
+                        pg_oauth2,
                         'get_postgres_oauth_token'
                     )
                 )
@@ -559,8 +559,8 @@ class TestOAuthConnection(
         self.assertIs(connection.conn, pg_connection)
         connection._initialize.assert_called_once()
 
-    @patch.object(connection_module, 'install_oauth_hook')
-    @patch.object(connection_module, 'get_postgres_oauth_token')
+    @patch.object(pg_oauth2, 'install_oauth_hook')
+    @patch.object(pg_oauth2, 'get_postgres_oauth_token')
     @patch.object(connection_module.psycopg, 'connect')
     def case_reset_creates_connection_inside_token_context(
             self, psycopg_connect, get_token, install_hook):
@@ -616,8 +616,8 @@ class TestOAuthConnection(
             cursor_factory=connection_module.DictCursor,
         )
 
-    @patch.object(connection_module, 'install_oauth_hook')
-    @patch.object(connection_module, 'get_postgres_oauth_token')
+    @patch.object(pg_oauth2, 'install_oauth_hook')
+    @patch.object(pg_oauth2, 'get_postgres_oauth_token')
     @patch.object(connection_module.psycopg, 'connect')
     def case_cancel_creates_connection_inside_token_context(
             self, psycopg_connect, get_token, install_hook):
@@ -708,13 +708,13 @@ class TestOAuthConnection(
 
                         install_hook = stack.enter_context(
                             patch.object(
-                                connection_module,
+                                pg_oauth2,
                                 'install_oauth_hook',
                             )
                         )
                         get_token = stack.enter_context(
                             patch.object(
-                                connection_module,
+                                pg_oauth2,
                                 'get_postgres_oauth_token',
                                 side_effect=error_type(error_message),
                             )
