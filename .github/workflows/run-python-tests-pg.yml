@@ -236,8 +236,8 @@ jobs:
       - name: Install Python dependencies on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          SET LIB=C:\PostgreSQL\${{ matrix.pgver }}\lib;%LIB%
-          SET INCLUDE=C:\PostgreSQL\${{ matrix.pgver }}\include;%INCLUDE%
+          SET LIB=C:\PostgreSQL_custom\${{ matrix.pgver }}\lib;%LIB%
+          SET INCLUDE=C:\PostgreSQL_custom\${{ matrix.pgver }}\include;%INCLUDE%
           python -m venv venv
           call venv\Scripts\activate.bat
           python -m pip install --upgrade pip
@@ -377,7 +377,7 @@ jobs:
             @echo.      "tablespace_path": "C:\\PostgreSQL\\${{ matrix.pgver }}\\tablespaces",
             @echo.      "enabled": true,
             @echo.      "default_binary_paths": {
-            @echo.        "pg": "C:\\PostgreSQL\\${{ matrix.pgver }}\\bin",
+            @echo.        "pg": "C:\\PostgreSQL_custom\\${{ matrix.pgver }}\\bin",
             @echo.        "ppas": ""
             @echo.      }
             @echo.    }

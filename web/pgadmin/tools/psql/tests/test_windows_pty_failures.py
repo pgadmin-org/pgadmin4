@@ -93,6 +93,7 @@ class PSQLWindowsEOFBeforeExit(BaseTestGenerator):
 
         with self.app.test_request_context(), \
                 patch.object(psql, 'PtyProcess', pty_process, create=True), \
+                patch.object(psql, 'PYWINPTY_OMITS_ARGV0', False), \
                 patch.object(psql, 'set_term_size'), \
                 patch.object(psql, 'get_user_env', return_value={}), \
                 patch.object(psql, 'read_stdout',
@@ -108,10 +109,11 @@ class PSQLWindowsEOFBeforeExit(BaseTestGenerator):
                 psql.windows_platform(['psql', 'dbname=postgres'], sid,
                                       1024, 7)
 
-                # pywinpty drops argv[0] from the command line, so the
-                # executable must be repeated to give psql its own name.
+                # pywinpty 3.1.2+ puts argv[0] on the command line itself,
+                # so the executable must not be repeated.
                 pty_process.spawn.assert_called_once_with(
-                    ['psql', 'psql', 'dbname=postgres'], env={})
+                    ['psql', 'dbname=postgres'], env={},
+                    backend=psql.WINPTY_BACKEND)
                 read_stdout.assert_called_once()
                 drain_stdout.assert_called_once_with(process, sid, 1024)
                 self.assertNotIn(sid, self.app.config['sessions'])
@@ -204,3 +206,31 @@ class PSQLWindowsClosePtyProcess(BaseTestGenerator):
         finally:
             for sock in (fileobj, peer, server):
                 sock.close()
+
+
+class PSQLWindowsSpawnArgv(BaseTestGenerator):
+    """
+    pywinpty 3.1.2+ puts argv[0] on the command line itself, so it must be
+    passed through once; 2.0.x, still used on Python 3.9, leaves it off, so
+    it must be repeated.
+    """
+    scenarios = [
+        ('pywinpty 3.1.2 and later', dict(
+            omits_argv0=False,
+            expected=['psql', 'dbname=postgres'])),
+        ('pywinpty 2.0.x', dict(
+            omits_argv0=True,
+            expected=['psql', 'psql', 'dbname=postgres'])),
+    ]
+
+    def runTest(self):
+        pty_process = MagicMock()
+        argv = ['psql', 'dbname=postgres']
+        with patch.object(psql, 'PtyProcess', pty_process, create=True), \
+                patch.object(psql, 'PYWINPTY_OMITS_ARGV0', self.omits_argv0):
+            psql.spawn_windows_pty(argv, {})
+
+        pty_process.spawn.assert_called_once_with(
+            self.expected, env={}, backend=psql.WINPTY_BACKEND)
+        # The caller's list is left alone.
+        self.assertEqual(argv, ['psql', 'dbname=postgres'])

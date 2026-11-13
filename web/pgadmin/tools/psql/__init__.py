@@ -11,6 +11,7 @@ import os
 import select
 import struct
 import time
+from importlib import metadata
 
 import config
 import re
@@ -35,6 +36,10 @@ from pgadmin.model import Server
 from pgadmin.utils.server_access import get_server
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
+# pywinpty 2.0.x, the newest series that installs on Python 3.9, leaves
+# argv[0] off the command line; 3.1.2 and later put it there themselves.
+PYWINPTY_OMITS_ARGV0 = False
+
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
     # if not supporting
@@ -42,6 +47,12 @@ if _platform == 'win32':
         from winpty import PtyProcess
     except ImportError as error:
         config.ENABLE_PSQL = False
+    else:
+        try:
+            PYWINPTY_OMITS_ARGV0 = \
+                int(metadata.version('pywinpty').split('.')[0]) < 3
+        except (metadata.PackageNotFoundError, ValueError):
+            pass
 else:
     import fcntl
     import termios
@@ -111,7 +122,7 @@ def panel(trans_id):
             params['db'] = underscore_escape(data['db_name']) \
                 if 'db_name' in data else 'postgres'
             params['role'] = underscore_escape(data['role'])
-        set_env_variables(is_win=_platform == 'win32')
+        set_env_variables()
         return render_template("psql/index.html",
                                params=json.dumps(params))
     else:
@@ -121,11 +132,9 @@ def panel(trans_id):
             params=json.dumps(params))
 
 
-def set_env_variables(is_win=False):
+def set_env_variables():
     # Set TERM env for xterm.
     os.environ['TERM'] = 'xterm'
-    if is_win:
-        os.environ['PYWINPTY_BACKEND'] = '1'
     # If psql is enabled in server mode, set psqlrc and hist paths
     # to individual user storage.
     if config.ENABLE_PSQL and config.SERVER_MODE:
@@ -312,21 +321,35 @@ def close_pty_process(process):
                 pass
 
 
+# pywinpty's legacy WinPTY backend. ConPTY, its default, is 0.
+WINPTY_BACKEND = 1
+
+
+def spawn_windows_pty(argv, env):
+    """
+    Start argv in a Windows pseudo-terminal. This is shared with the tests
+    in tests/test_windows_pty_psql.py, which run a real psql through it, so
+    that a pywinpty upgrade that changes how it builds the command line is
+    caught in CI rather than by users.
+
+    pywinpty 3.1.2 and later put argv[0] on the command line themselves,
+    quoted, so it is passed through unchanged; repeating it would make psql
+    read its own path as the database name. The 2.0.x series, still used on
+    Python 3.9, leaves it off, so there the executable is repeated (#10714).
+    """
+    argv = list(argv)
+    if PYWINPTY_OMITS_ARGV0:
+        argv = argv[:1] + argv
+    return PtyProcess.spawn(argv, env=env, backend=WINPTY_BACKEND)
+
+
 def windows_platform(connection_data, sid, max_read_bytes, server_id,
                      env=None):
     # Spawn psql directly rather than typing its command line into cmd.exe,
     # so that the user is not left at a shell prompt when psql exits, and
     # the connection string is never parsed by cmd.exe.
-    #
-    # pywinpty passes argv[0] to CreateProcess as the application name but
-    # builds the command line from argv[1:] alone, so psql would start with
-    # an empty argv[0] and fail with "could not find own program
-    # executable" (#10714). Repeat the executable so that it is also the
-    # first word of the command line.
     try:
-        process = PtyProcess.spawn(
-            [connection_data[0]] + list(connection_data),
-            env=get_user_env(env))
+        process = spawn_windows_pty(connection_data, get_user_env(env))
     except Exception as e:
         # start_process has already registered this socket against the
         # server, so forget it again and show the error in the terminal.

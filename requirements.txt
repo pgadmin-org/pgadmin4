@@ -60,9 +60,12 @@ psycopg[c]==3.3.7; python_version >= '3.10'
 pyotp==2.*
 python-dateutil==2.*
 pytz==2026.*
-# pinned for https://github.com/andfoy/pywinpty/issues/545, which also holds
-# the bundled Python on 3.13 (see pkg/python-version.txt)
-pywinpty==2.0.*; sys_platform=="win32"
+# 3.1.0 and earlier drop argv[0] from the command line, and 3.1.1 does not
+# quote it, so a psql under C:\Program Files would not start. 3.x needs
+# Python 3.10, so 3.9 stays on 2.0.x, whose missing argv[0] the PSQL tool
+# puts back itself.
+pywinpty==2.0.*; sys_platform=="win32" and python_version < '3.10'
+pywinpty>=3.1.2,<3.2; sys_platform=="win32" and python_version >= '3.10'
 qrcode[pil]==8.*
 setuptools<82; python_version <= '3.9'
 setuptools==84.*; python_version > '3.9'
