@@ -48,6 +48,8 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.auth_method import AUTH_METHOD_OAUTH_DIRECT, \
+    AUTH_METHOD_OAUTH_EXCHANGE
 from pgadmin.utils.pg_oauth2 import (
     install_oauth_hook,
     get_postgres_oauth_token,
@@ -286,6 +288,13 @@ def _is_transaction_control(query):
 
     return bool(match) and \
         match.group().lower() in TRANSACTION_CONTROL_KEYWORDS
+
+
+# The pg_oauth2 token mode of each token method.
+_OAUTH_TOKEN_MODES = {
+    AUTH_METHOD_OAUTH_DIRECT: "direct",
+    AUTH_METHOD_OAUTH_EXCHANGE: "exchange",
+}
 
 
 class Connection(BaseConnection):
@@ -528,14 +537,15 @@ class Connection(BaseConnection):
         """
         Prepare OAuth credentials and scope them to a connection attempt.
 
-        Disabled mode temporarily clears any inherited OAuth token.
+        A server that does not use a token method temporarily clears any
+        inherited OAuth token.
         """
         connection_params = self.manager.connection_params or {}
-        mode = connection_params.get("oauth_pgadmin_token_mode", "disabled")
+        mode = _OAUTH_TOKEN_MODES.get(self.manager.auth_method)
 
         token = None
 
-        if mode != "disabled":
+        if mode is not None:
             try:
                 install_oauth_hook()
             except RuntimeError as exc:

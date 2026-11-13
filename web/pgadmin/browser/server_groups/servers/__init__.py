@@ -33,6 +33,8 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.passexec import normalise_passexec_name, \
     passexec_name_for_api, PASSEXEC_INHERIT
 from pgadmin.utils.master_password import get_crypt_key
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
+    check_auth_method, is_token_auth_method
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
@@ -66,8 +68,6 @@ SENSITIVE_CONN_KEYS = frozenset({
     'passfile', 'sslcert', 'sslkey',
     'sslrootcert', 'sslcrl', 'sslcrldir',
     'sslkeylogfile',
-    # Each user must explicitly enable use of their own login token.
-    'oauth_pgadmin_token_mode',
 })
 
 
@@ -346,7 +346,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.tunnel_prompt_password = sharedserver.tunnel_prompt_password
 
         # Apply each user's own connection parameters. For these keys,
-        # never inherit the owner's file paths or OAuth token mode.
+        # never inherit the owner's file paths.
         # Work on a copy: the dict may be a MutableDict still attached to
         # the owner's session-bound row, and mutating it in place would mark
         # that row dirty for the next commit.
@@ -358,7 +358,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 s_conn[key] = ss_conn[key]
             elif key in s_conn:
                 # No per-user value exists. Remove the owner's value
-                # so file paths and OAuth token mode are not inherited.
+                # so the owner's file paths are not inherited.
                 del s_conn[key]
         server.connection_params = s_conn
 
@@ -368,6 +368,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.password = sharedserver.password
         server.prepare_threshold = sharedserver.prepare_threshold
         server.kerberos_conn = sharedserver.kerberos_conn
+        # Each non-owner has their own server authentication method; the
+        # owner's is never inherited.
+        server.auth_method = sharedserver.auth_method
         # A SharedServer row created before tags were copied across has
         # NULL tags, which is not the same thing as a user who has
         # cleared every tag they had: the latter leaves an empty list.
@@ -588,8 +591,7 @@ class ServerModule(sg.ServerGroupPluginModule):
             user = User.query.filter_by(id=data.user_id).first()
 
             # Exclude per-user connection parameters from the owner's
-            # settings. Each user must configure their own file paths
-            # and explicitly enable use of their pgAdmin login token.
+            # settings. Each user must configure their own file paths.
             safe_conn_params = {}
             if data.connection_params:
                 safe_conn_params = {
@@ -631,6 +633,10 @@ class ServerModule(sg.ServerGroupPluginModule):
                 passexec_name=None,
                 passexec_expiration=None,
                 kerberos_conn=False,
+                # A non-owner opts in to a token method themselves, so that
+                # their login token is not sent to a host they did not
+                # choose.
+                auth_method=AUTH_METHOD_PASSWORD,
                 tags=data.tags,
                 post_connection_sql=None
             )
@@ -1043,6 +1049,7 @@ class ServerNode(PGChildNodeView):
             'shared': 'shared',
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
+            'auth_method': 'auth_method',
             'connection_params': 'connection_params',
             'prepare_threshold': 'prepare_threshold',
             'tags': 'tags',
@@ -1076,6 +1083,12 @@ class ServerNode(PGChildNodeView):
         service_err = check_service_data(data)
         if service_err:
             return forbidden(errmsg=service_err)
+
+        if 'auth_method' in data:
+            auth_method_err = check_auth_method(data['auth_method'])
+            if auth_method_err:
+                return make_json_response(
+                    success=0, status=400, errormsg=auth_method_err)
 
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
@@ -1387,6 +1400,7 @@ class ServerNode(PGChildNodeView):
             'tunnel_authentication': tunnel_authentication,
             'tunnel_keep_alive': tunnel_keep_alive,
             'kerberos_conn': bool(server.kerberos_conn),
+            'auth_method': server.auth_method or AUTH_METHOD_PASSWORD,
             'gss_authenticated': manager.gss_authenticated,
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
@@ -1450,6 +1464,14 @@ class ServerNode(PGChildNodeView):
         service_err = check_service_data(data)
         if service_err:
             return forbidden(errmsg=service_err)
+
+        # A missing or blank method means password.
+        auth_method = data.get('auth_method') or AUTH_METHOD_PASSWORD
+        auth_method_err = check_auth_method(auth_method)
+        if auth_method_err:
+            return make_json_response(
+                success=0, status=400, errormsg=auth_method_err)
+        token_auth = is_token_auth_method(auth_method)
 
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
@@ -1530,8 +1552,10 @@ class ServerNode(PGChildNodeView):
                 port=data.get('port'),
                 maintenance_db=data.get('db', None),
                 username=data.get('username'),
+                # The access token is the credential of a token method, so no
+                # password is saved for it.
                 save_password=1 if data.get('save_password', False) and
-                config.ALLOW_SAVE_PASSWORD else 0,
+                config.ALLOW_SAVE_PASSWORD and not token_auth else 0,
                 comment=data.get('comment', None),
                 role=data.get('role', None),
                 db_res=db_restriction,
@@ -1555,6 +1579,7 @@ class ServerNode(PGChildNodeView):
                 passexec_name=data.get('passexec_name', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
+                auth_method=auth_method,
                 connection_params=connection_params,
                 prepare_threshold=data.get('prepare_threshold', None),
                 tags=data.get('tags', None),
@@ -1579,7 +1604,10 @@ class ServerNode(PGChildNodeView):
                 password = None
                 passfile = None
                 tunnel_password = ''
-                if 'password' in data and data["password"] != '' and \
+                if token_auth:
+                    # The access token is the credential, not a password.
+                    pass
+                elif 'password' in data and data["password"] != '' and \
                         data["password"] is not None:
                     # login with password
                     have_password = True
@@ -1862,12 +1890,7 @@ class ServerNode(PGChildNodeView):
             manager.update(server)
         conn = manager.connection()
 
-        connection_params = manager.connection_params or {}
-
-        use_pgadmin_oauth = connection_params.get(
-            "oauth_pgadmin_token_mode",
-            "disabled",
-        ) in ("direct", "exchange")
+        use_pgadmin_oauth = is_token_auth_method(manager.auth_method)
 
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()

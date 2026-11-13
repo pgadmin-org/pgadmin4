@@ -130,7 +130,6 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
             self, mode, needs_tunnel_password, raises_exception):
         error_message = 'Test connection failure.'
         connection_params = {
-            'oauth_pgadmin_token_mode': mode,
             'oauth_client_id': 'postgres-cluster',
             'oauth_issuer': 'https://identity.example.test',
             'oauth_scope': 'openid',
@@ -146,6 +145,7 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
             password=None,
             save_password=False,
             kerberos_conn=False,
+            auth_method=mode,
             connection_params=connection_params,
             use_ssh_tunnel=1 if needs_tunnel_password else 0,
             tunnel_host='127.0.0.1',
@@ -166,6 +166,7 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
         manager.server_type = 'pg'
         manager.sversion = 180000
         manager.connection_params = dict(connection_params)
+        manager.auth_method = mode
         manager.tunnel_created = False
 
         connection = manager.connection.return_value
@@ -253,7 +254,7 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
         get_server.assert_called_once_with(server.id)
         connection.connect.assert_called_once()
 
-        use_pgadmin_oauth = mode in ('direct', 'exchange')
+        use_pgadmin_oauth = mode in ('oauth_direct', 'oauth_exchange')
 
         if use_pgadmin_oauth and not needs_tunnel_password:
             self.assertEqual(response.status_code, 400)
@@ -281,7 +282,7 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
             )
 
     def runTest(self):
-        for mode in ('disabled', 'direct', 'exchange'):
+        for mode in ('password', 'oauth_direct', 'oauth_exchange'):
             for needs_tunnel_password in (False, True):
                 for raises_exception in (False, True):
                     with self.subTest(

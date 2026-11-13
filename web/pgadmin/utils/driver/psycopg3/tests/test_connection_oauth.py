@@ -76,8 +76,12 @@ class TestOAuthConnection(
         manager.passexec = None
         manager.prepare_threshold = None
 
+        manager.auth_method = {
+            'disabled': 'password',
+            'direct': 'oauth_direct',
+            'exchange': 'oauth_exchange',
+        }[mode]
         manager.connection_params = {
-            'oauth_pgadmin_token_mode': mode,
             'oauth_issuer': ISSUER,
         }
 

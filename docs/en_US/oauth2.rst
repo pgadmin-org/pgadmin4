@@ -512,9 +512,10 @@ In this mode, user identity is retrieved only from the userinfo endpoint.
 Using a pgAdmin OAuth token with PostgreSQL
 -------------------------------------------
 
-Users signed in to pgAdmin through an OIDC provider can use
-``oauth_pgadmin_token_mode`` to supply an access token for PostgreSQL OAuth
-authentication. This uses an OAuth access token, not an OIDC ID token.
+Users signed in to pgAdmin through an OIDC provider can choose the
+*OAuth: pgAdmin login token* (``oauth_direct``) or *OAuth: token exchange*
+(``oauth_exchange``) authentication method for a server, to supply an access
+token for PostgreSQL OAuth authentication. This uses an OAuth access token, not an OIDC ID token.
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -529,17 +530,16 @@ Prerequisites
 Configure the connection
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the *Parameters* tab of the Server dialog, add *OAuth pgAdmin token mode*
-(``oauth_pgadmin_token_mode``). Select ``direct`` or ``exchange`` to enable
-this integration.
+In the *Connection* tab of the Server dialog, set *Authentication method* to
+*OAuth: pgAdmin login token* or *OAuth: token exchange*.
 
 .. note::
 
-   For shared servers, each user must explicitly enable
-   ``oauth_pgadmin_token_mode`` in their own server settings.
-   The owner's selection is not inherited.
+   For shared servers, each user must explicitly choose an OAuth
+   authentication method in their own server settings.
+   The owner's selection is not inherited; the default is *Password*.
 
-Both ``direct`` and ``exchange`` require ``oauth_client_id`` and
+Both OAuth methods require ``oauth_client_id`` and
 ``oauth_issuer``. The issuer must match the PostgreSQL OAuth configuration
 and the issuer used for the pgAdmin login token.
 
@@ -547,7 +547,7 @@ For example:
 
 .. code-block:: text
 
-   oauth_pgadmin_token_mode = exchange
+   Authentication method = OAuth: token exchange
    oauth_client_id = postgres-cluster-01
    oauth_issuer = https://identity.example.com/realms/postgres
 
@@ -560,10 +560,10 @@ and hostname verification, for example with ``sslmode=verify-full`` and a
 trusted root certificate. Database TLS settings are separate from those for
 the OIDC provider's HTTPS endpoints.
 
-Direct mode
-~~~~~~~~~~~
+Direct method
+~~~~~~~~~~~~~
 
-In ``direct`` mode, pgAdmin forwards the access token from the current user's
+With the *OAuth: pgAdmin login token* method, pgAdmin forwards the access token from the current user's
 login session to PostgreSQL. The database validator must accept its issuer,
 audience and scopes and authorize the requested database role. The audience
 depends on the OIDC provider's configuration; it is not necessarily the
@@ -577,10 +577,10 @@ pgAdmin OAuth client identifier.
    Prefer exchange mode when the OIDC provider can issue a token restricted
    to the target database.
 
-Exchange mode
-~~~~~~~~~~~~~
+Exchange method
+~~~~~~~~~~~~~~~
 
-In ``exchange`` mode, pgAdmin exchanges the login access token and supplies
+With the *OAuth: token exchange* method, pgAdmin exchanges the login access token and supplies
 the resulting token to PostgreSQL. If exchange fails, the connection attempt
 fails; pgAdmin does not fall back to direct mode.
 

@@ -68,6 +68,42 @@ export function sharingForServerCopy(d, user) {
   return d;
 }
 
+export const AUTH_METHOD_PASSWORD = 'password';
+export const AUTH_METHOD_OAUTH_DIRECT = 'oauth_direct';
+export const AUTH_METHOD_OAUTH_EXCHANGE = 'oauth_exchange';
+
+// Every method other than password authenticates with an access token.
+export function isTokenAuthMethod(authMethod) {
+  return Boolean(authMethod) && authMethod !== AUTH_METHOD_PASSWORD;
+}
+
+// The OAuth parameters only apply to the methods that send an OAuth token.
+const OAUTH_METHOD_PARAMS = [
+  'oauth_issuer', 'oauth_client_id', 'oauth_client_secret', 'oauth_scope',
+];
+
+export function isOAuthAuthMethod(authMethod) {
+  return [AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE]
+    .includes(authMethod);
+}
+
+// The connection parameters the server dialog offers for a server
+// authentication method: the OAuth ones only for an OAuth method.
+export function getConnectionParametersForAuthMethod(authMethod) {
+  return getConnectionParameters().filter(
+    (param)=>isOAuthAuthMethod(authMethod) ||
+      !OAUTH_METHOD_PARAMS.includes(param.value)
+  );
+}
+
+export function getAuthMethodOptions() {
+  return [
+    {label: gettext('Password'), value: AUTH_METHOD_PASSWORD},
+    {label: gettext('OAuth: pgAdmin login token'), value: AUTH_METHOD_OAUTH_DIRECT},
+    {label: gettext('OAuth: token exchange'), value: AUTH_METHOD_OAUTH_EXCHANGE},
+  ];
+}
+
 export function getConnectionParameters() {
   let conParams = [{
     'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
@@ -186,12 +222,6 @@ export function getConnectionParameters() {
   }, {
     'value': 'oauth_scope', 'label': gettext('OAuth scope'), 'vartype': 'string',
     'min_server_version': '18'
-  }, {
-    'value': 'oauth_pgadmin_token_mode',
-    'label': gettext('OAuth pgAdmin token mode'),
-    'vartype': 'enum',
-    'enumvals': ['disabled', 'direct', 'exchange'],
-    'min_server_version': '18'
   }];
 
   conParams.sort(function (a, b) {
@@ -237,6 +267,7 @@ export default class ServerSchema extends BaseUISchema {
       connect_now: true,
       password: undefined,
       save_password: false,
+      auth_method: AUTH_METHOD_PASSWORD,
       db_res: undefined,
       db_res_type: 'databases',
       passexec: undefined,
@@ -264,12 +295,18 @@ export default class ServerSchema extends BaseUISchema {
 
     this.serverGroupOptions = serverGroupOptions;
     this.paramSchema = new VariableSchema(getConnectionParameters(), null, null, ['name', 'keyword', 'value']);
+    // The variable types above cover every parameter, so a saved OAuth
+    // parameter keeps its value editor; the names offered for a new row
+    // follow the selected server authentication method.
+    this.authMethod = AUTH_METHOD_PASSWORD;
+    this.paramSchema.vnameOptions = ()=>getConnectionParametersForAuthMethod(this.authMethod);
     this.tagsSchema = new TagsSchema();
     this.userId = userId;
     _.bindAll(this, 'isShared');
   }
 
   initialise(state) {
+    this.authMethod = state.auth_method || AUTH_METHOD_PASSWORD;
     this.paramSchema.setAllReadOnly(this.isConnected(state));
   }
 
@@ -428,8 +465,24 @@ export default class ServerSchema extends BaseUISchema {
           }
         }
       },{
+        id: 'auth_method', label: gettext('Authentication method'), type: 'select',
+        group: gettext('Connection'), mode: ['properties', 'edit', 'create'],
+        options: getAuthMethodOptions(), controlProps: {allowClear: false},
+        readonly: obj.isConnected,
+        helpMessage: gettext('How pgAdmin authenticates to the server. The OAuth methods use your pgAdmin OAuth2 login and need PostgreSQL 18 or later.'),
+        depChange: (state)=>{
+          obj.authMethod = state.auth_method;
+          // Kerberos cannot be combined with a token method.
+          if (isTokenAuthMethod(state.auth_method) && state.kerberos_conn) {
+            return {kerberos_conn: false};
+          }
+        },
+      },{
         id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
-        group: gettext('Connection'), disabled: obj.isShared,
+        group: gettext('Connection'), deps: ['auth_method'],
+        disabled: function(state) {
+          return obj.isShared(state) || isTokenAuthMethod(state.auth_method);
+        },
       },{
         id: 'gss_authenticated', label: gettext('GSS authenticated?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
@@ -440,7 +493,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
         mode: ['create', 'edit'],
-        deps: ['kerberos_conn', 'save_password'],
+        deps: ['kerberos_conn', 'save_password', 'auth_method'],
         controlProps: {
           maxLength: null,
           autoComplete: 'new-password'
@@ -450,17 +503,20 @@ export default class ServerSchema extends BaseUISchema {
             return false;
           return state.connected || !state.save_password;
         },
-        disabled: function(state) {return state.kerberos_conn;},
+        disabled: function(state) {
+          return state.kerberos_conn || isTokenAuthMethod(state.auth_method);
+        },
         helpMessage: gettext('In edit mode the password field is enabled only if Save Password is set to true.')
       },{
         id: 'save_password', label: gettext('Save password?'),
         type: 'switch', group: gettext('Connection'), mode: ['create', 'edit'],
-        deps: ['kerberos_conn'],
+        deps: ['kerberos_conn', 'auth_method'],
         readonly: function(state) {
           return state.connected;
         },
         disabled: function(state) {
-          return !current_user.allow_save_password || state.kerberos_conn;
+          return !current_user.allow_save_password || state.kerberos_conn ||
+            isTokenAuthMethod(state.auth_method);
         },
       },{
         id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),

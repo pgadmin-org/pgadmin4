@@ -25,6 +25,7 @@ from pgadmin.utils import get_complete_file_path, \
     client_files_isolated, isolate_client_credential_files, \
     check_connection_params_allowed
 from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
 from pgadmin.utils.master_password import process_masterpass_disabled
 from pgadmin.utils.locker import KerberosNotAllowed, \
     apply_kerberos_conn_params, check_kerberos_conn_params_unchanged
@@ -133,6 +134,7 @@ class ServerManager(object):
             self.tunnel_keep_alive = 0
 
         self.kerberos_conn = server.kerberos_conn
+        self.auth_method = server.auth_method or AUTH_METHOD_PASSWORD
         self.gss_authenticated = False
         self.gss_encrypted = False
         self.connection_params = server.connection_params

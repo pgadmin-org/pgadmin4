@@ -11,7 +11,7 @@
 import _ from 'lodash';
 import pgAdmin from 'sources/pgadmin';
 import current_user from 'pgadmin.user_management.current_user';
-import ServerSchema, { passexecForServerCopy, sharingForServerCopy, starfleetConnectionParams } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
+import ServerSchema, { getConnectionParameters, passexecForServerCopy, sharingForServerCopy, starfleetConnectionParams } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('ServerSchema', ()=>{
@@ -235,6 +235,91 @@ describe('ServerSchema', ()=>{
           defaults[1]]});
       expect(f.depChange({id: 1, host: 'db-1.use2.pgedge.cloud', connection_params: defaults}))
         .toBeUndefined();
+    });
+  });
+
+  describe('server authentication method', ()=>{
+    const field = (schema, id) => _.find(schema.fields, (f)=>f.id==id);
+    const paramNames = (schema) => schema.paramSchema.vnameOptions().map((p)=>p.value);
+    let origUserId;
+
+    beforeEach(()=>{
+      origUserId = current_user.id;
+    });
+
+    afterEach(()=>{
+      current_user.id = origUserId;
+    });
+
+    it('defaults to password', ()=>{
+      expect(createSchemaObject().defaults.auth_method).toBe('password');
+    });
+
+    it('offers password and the two OAuth methods, and no Entra', ()=>{
+      let f = field(createSchemaObject(), 'auth_method');
+      expect(f.type).toBe('select');
+      expect(f.mode).toEqual(['properties', 'edit', 'create']);
+      expect(f.options.map((o)=>o.value)).toEqual(
+        ['password', 'oauth_direct', 'oauth_exchange']
+      );
+    });
+
+    it('offers the OAuth parameters only for an OAuth method', ()=>{
+      let schema = createSchemaObject();
+      let oauth = ['oauth_issuer', 'oauth_client_id', 'oauth_client_secret', 'oauth_scope'];
+      let depChange = field(schema, 'auth_method').depChange;
+
+      expect(paramNames(schema)).toContain('sslmode');
+      oauth.forEach((name)=>expect(paramNames(schema)).not.toContain(name));
+
+      depChange({auth_method: 'oauth_direct'});
+      oauth.forEach((name)=>expect(paramNames(schema)).toContain(name));
+      expect(paramNames(schema)).toContain('sslmode');
+
+      depChange({auth_method: 'oauth_exchange'});
+      oauth.forEach((name)=>expect(paramNames(schema)).toContain(name));
+
+      depChange({auth_method: 'password'});
+      oauth.forEach((name)=>expect(paramNames(schema)).not.toContain(name));
+    });
+
+    it('no longer has a token mode connection parameter', ()=>{
+      expect(getConnectionParameters().map((p)=>p.value))
+        .not.toContain('oauth_pgadmin_token_mode');
+    });
+
+    it('disables Kerberos while a token method is selected', ()=>{
+      let schema = createSchemaObject();
+      let kerberos = field(schema, 'kerberos_conn');
+      expect(kerberos.deps).toContain('auth_method');
+      expect(kerberos.disabled({auth_method: 'password'})).toBe(false);
+      expect(kerberos.disabled({})).toBe(false);
+      expect(kerberos.disabled({auth_method: 'oauth_direct'})).toBe(true);
+      expect(kerberos.disabled({auth_method: 'oauth_exchange'})).toBe(true);
+    });
+
+    it('turns Kerberos off when a token method is selected', ()=>{
+      let depChange = field(createSchemaObject(), 'auth_method').depChange;
+      expect(depChange({auth_method: 'oauth_direct', kerberos_conn: true}))
+        .toEqual({kerberos_conn: false});
+      expect(depChange({auth_method: 'password', kerberos_conn: true}))
+        .toBeUndefined();
+    });
+
+    it('lets a non-owner choose their own method', ()=>{
+      let schema = createSchemaObject();
+      current_user.id = 2;
+      schema.userId = 1;
+      let f = field(schema, 'auth_method');
+      expect(f.readonly({id: 5, shared: true})).toBe(false);
+      expect(field(schema, 'kerberos_conn').disabled({id: 5, shared: true, auth_method: 'password'})).toBe(true);
+    });
+
+    it('takes no database password for a token method', ()=>{
+      let schema = createSchemaObject();
+      expect(field(schema, 'password').disabled({auth_method: 'oauth_direct'})).toBe(true);
+      expect(field(schema, 'password').disabled({auth_method: 'password'})).toBeFalsy();
+      expect(field(schema, 'save_password').disabled({auth_method: 'oauth_exchange'})).toBe(true);
     });
   });
 

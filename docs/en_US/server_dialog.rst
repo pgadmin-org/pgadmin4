@@ -197,40 +197,43 @@ icon that is located to the right of each of the following fields.
     files such as a root certificate or CRL, never a private key or a
     *.pgpass* file.
 
-Use the *OAuth pgAdmin token mode* parameter
-(``oauth_pgadmin_token_mode``) to choose how pgAdmin supplies an OAuth access
-token when PostgreSQL requests OAuth authentication. This option is available
-for PostgreSQL 18 and later.
+Use the *Authentication method* field on the *Connection* tab to choose how
+pgAdmin authenticates to the server. The OAuth methods supply an OAuth access
+token when PostgreSQL requests OAuth authentication, and are available for
+PostgreSQL 18 and later.
 
-.. list-table:: OAuth pgAdmin token modes
+.. list-table:: Authentication methods
    :header-rows: 1
    :widths: 20 80
 
    * - Value
      - Behaviour
-   * - ``disabled``
-     - Do not supply a token from the pgAdmin login session. Other connection
-       and authentication settings continue to apply. This is the default.
-   * - ``direct``
+   * - Password
+     - Authenticate with a password, a password file or a service, as
+       configured for the server. This is the default. Kerberos is a
+       separate setting on the *Connection* tab.
+   * - OAuth: pgAdmin login token (``oauth_direct``)
      - Supply the OAuth access token obtained when the user signed in to
        pgAdmin directly to PostgreSQL.
-   * - ``exchange``
+   * - OAuth: token exchange (``oauth_exchange``)
      - Exchange the user's pgAdmin login access token at the OIDC provider's
        token endpoint and supply the returned token to PostgreSQL. Use this
        mode when the OIDC provider is configured to issue a token restricted
        to the target database.
 
-For both ``direct`` and ``exchange``, also add the following parameters:
+The OAuth parameters are offered in the *Parameters* tab only while one of the
+OAuth methods is selected. For both OAuth methods, add the following
+parameters:
 
 * ``oauth_issuer``: the expected OAuth issuer for the PostgreSQL connection.
   Use the issuer configured for the database and the corresponding pgAdmin
   login OIDC provider.
 * ``oauth_client_id``: the OAuth client identifier configured for the database
-  connection. In ``exchange`` mode, pgAdmin sends this value as the requested
+  connection. With *OAuth: token exchange*, pgAdmin sends this value as the requested
   ``audience`` and authenticates using the pgAdmin login OIDC client's
   credentials.
 
-For ``exchange`` mode, optionally set ``oauth_scope`` to a space-separated
+For *OAuth: token exchange*, optionally set ``oauth_scope`` to a space-separated
 list of scopes to request. If unset or blank, the OIDC provider determines
 the scopes. The exchange occurs before connecting to PostgreSQL and cannot
 use scopes advertised by the database server.
@@ -242,11 +245,19 @@ authentication on the PostgreSQL server.
 
 .. warning::
 
-   ``direct`` mode sends the access token obtained during pgAdmin login to
+   *OAuth: pgAdmin login token* sends the access token obtained during
+   pgAdmin login to
    the PostgreSQL server. The server operator may be able to reuse that token
    at other services that accept it. Use this mode only with trusted database
    servers and a deliberately compatible token audience and scope policy.
-   Prefer ``exchange`` with a database-specific token where supported.
+   Prefer *OAuth: token exchange* with a database-specific token where
+   supported.
+
+An OAuth method cannot be combined with Kerberos authentication: the
+*Kerberos authentication?* switch is disabled while an OAuth method is
+selected. No database password is used or saved for an OAuth method.
+For a shared server, each non-owner chooses their own authentication method,
+which defaults to *Password*; the owner's choice is not inherited.
 
 .. note::
 

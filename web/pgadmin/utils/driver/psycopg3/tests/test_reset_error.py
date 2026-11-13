@@ -36,6 +36,7 @@ class ResetConnectionTest(BaseTestGenerator):
     def runTest(self):
         manager = MagicMock(sid=1, kerberos_conn=False)
         manager.connection_params = {}
+        manager.auth_method = 'password'
         manager.create_connection_string.return_value = 'dbname=testdb'
         conn = Connection(manager, 'test-conn-id', 'testdb')
         pg_conn = MagicMock()

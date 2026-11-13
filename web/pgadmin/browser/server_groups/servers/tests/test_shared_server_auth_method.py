@@ -7,7 +7,8 @@
 #
 ##########################################################################
 
-"""Shared-server users must opt in to using their own OAuth login token."""
+"""A non-owner of a shared server chooses their own server authentication
+method; it is never copied from the owner."""
 
 import unittest
 from types import SimpleNamespace
@@ -17,29 +18,30 @@ from pgadmin.browser.server_groups import servers as servers_module
 from pgadmin.utils.route import BaseTestGenerator
 
 
-class SharedServerOAuthConsentTest(BaseTestGenerator):
+METHODS = ('password', 'oauth_direct', 'oauth_exchange')
+
+
+class SharedServerAuthMethodTest(BaseTestGenerator):
     scenarios = [
-        ('New shared user does not inherit ' + mode, {
+        ('New non-owner does not inherit ' + method, {
             'operation': 'create',
-            'owner_mode': mode,
-            'user_mode': None,
+            'owner_method': method,
+            'user_method': 'password',
         })
-        for mode in ('direct', 'exchange')
+        for method in METHODS
     ] + [
-        ('Owner {0}, shared user {1}'.format(owner_mode, user_mode), {
+        ('Owner {0}, non-owner {1}'.format(owner_method, user_method), {
             'operation': 'merge',
-            'owner_mode': owner_mode,
-            'user_mode': user_mode,
+            'owner_method': owner_method,
+            'user_method': user_method,
         })
-        for owner_mode, user_mode in (
-            ('direct', None),
-            ('exchange', None),
-            ('direct', 'disabled'),
-            ('exchange', 'disabled'),
-            ('disabled', 'direct'),
-            ('disabled', 'exchange'),
-            ('direct', 'exchange'),
-            ('exchange', 'direct'),
+        for owner_method, user_method in (
+            ('oauth_direct', 'password'),
+            ('oauth_exchange', 'password'),
+            ('password', 'oauth_direct'),
+            ('password', 'oauth_exchange'),
+            ('oauth_direct', 'oauth_exchange'),
+            ('oauth_exchange', 'oauth_direct'),
         )
     ]
 
@@ -78,8 +80,8 @@ class SharedServerOAuthConsentTest(BaseTestGenerator):
             maintenance_db='postgres',
             shared=True,
             shared_username='database-user',
+            auth_method=self.owner_method,
             connection_params={
-                'oauth_pgadmin_token_mode': self.owner_mode,
                 'oauth_client_id': 'postgres-cluster',
                 'oauth_issuer': 'https://identity.example.test',
                 'sslmode': 'verify-full',
@@ -90,39 +92,24 @@ class SharedServerOAuthConsentTest(BaseTestGenerator):
 
         if self.operation == 'create':
             shared = self._create_shared_server(owner)
-            self.assertNotIn(
-                'oauth_pgadmin_token_mode', shared.connection_params,
-            )
+            self.assertEqual(shared.auth_method, 'password')
         else:
             shared = servers_module.SharedServer(
                 osid=owner.id,
                 user_id=2,
-                connection_params=(
-                    {'oauth_pgadmin_token_mode': self.user_mode}
-                    if self.user_mode is not None else {}
-                ),
+                auth_method=self.user_method,
+                connection_params={},
             )
 
-        shared_snapshot = dict(shared.connection_params)
         result = servers_module.ServerModule.get_shared_server_properties(
             owner, shared,
         )
 
-        expected = dict(owner_snapshot)
-        if self.user_mode is None:
-            expected.pop('oauth_pgadmin_token_mode')
-        else:
-            expected['oauth_pgadmin_token_mode'] = self.user_mode
+        # The non-owner always sees their own method, never the owner's.
+        self.assertEqual(result.auth_method, self.user_method)
 
-        self.assertEqual(result.connection_params, expected)
-        self.assertEqual(
-            result.connection_params.get('oauth_pgadmin_token_mode',
-                                         'disabled'),
-            self.user_mode if self.user_mode is not None else 'disabled',
-        )
-
-        # The merge works on a copy, never on either user's stored dict.
+        # The OAuth parameters are ordinary connection parameters and are
+        # still shared with the non-owner.
+        self.assertEqual(result.connection_params, owner_snapshot)
         self.assertIsNot(result.connection_params, owner_params)
-        self.assertIsNot(result.connection_params, shared.connection_params)
         self.assertEqual(owner_params, owner_snapshot)
-        self.assertEqual(shared.connection_params, shared_snapshot)
