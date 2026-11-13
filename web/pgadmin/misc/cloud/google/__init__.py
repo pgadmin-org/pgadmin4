@@ -134,6 +134,16 @@ def verify_credentials():
                 'The client secret file is not a valid Google OAuth '
                 'client secret JSON file.'))
 
+        client_type = None
+        if isinstance(client_config, dict):
+            key = 'web' if 'web' in client_config else 'installed'
+            client_type = client_config.get(key)
+        if not isinstance(client_type, dict):
+            clear_google_session()
+            return bad_request(errormsg=_(
+                'The client secret file is not a valid Google OAuth '
+                'client secret JSON file.'))
+
         if 'google' not in session:
             session['google'] = {}
 

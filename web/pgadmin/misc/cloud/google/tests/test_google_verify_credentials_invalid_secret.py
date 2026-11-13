@@ -76,6 +76,17 @@ class TestGoogleClientSecret(_SkipServerSetUpMixin, BaseTestGenerator):
                                 error=UNREADABLE)),
         ('deeply nested JSON', dict(content=DEEP_JSON, input_kind='value',
                                     status=400, error=INVALID)),
+        ('non-object JSON', dict(content='1', input_kind='value',
+                                 status=400, error=INVALID)),
+        ('wrong-shaped installed key', dict(content='{"installed": 5}',
+                                            input_kind='value', status=400,
+                                            error=INVALID)),
+        ('wrong-shaped web key', dict(content='{"web": []}',
+                                      input_kind='value', status=400,
+                                      error=INVALID)),
+        ('falsy non-object web with object installed', dict(
+            content='{"web": 0, "installed": {"client_id": "i"}}',
+            input_kind='value', status=400, error=INVALID)),
         ('unreadable file', dict(content=INSTALLED, input_kind='value',
                                  open_error=PermissionError('denied'),
                                  status=400, error=UNREADABLE)),
@@ -226,6 +237,7 @@ class TestGoogleClientSecretClearsSession(_SkipServerSetUpMixin,
 
     scenarios = [
         ('invalid file', dict(content='SELECT 1;')),
+        ('wrong-shaped file', dict(content='1')),
         ('unreadable file', dict(open_error=PermissionError('denied'))),
     ]
 
