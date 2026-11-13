@@ -36,6 +36,8 @@ from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, AUTH_METHODS, \
+    check_kerberos_exclusive, is_valid_auth_method
 
 ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
@@ -1128,6 +1130,8 @@ def dump_database_servers(output_file, selected_servers,
                       server.tunnel_keep_alive)
             add_value(attr_dict, "KerberosAuthentication",
                       server.kerberos_conn),
+            add_value(attr_dict, "AuthMethod",
+                      server.auth_method or AUTH_METHOD_PASSWORD)
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
             add_value(attr_dict, "Tags", server.tags)
@@ -1278,6 +1282,18 @@ def validate_json_data(data, is_admin):
         if "Host" not in obj and not is_service_attrib_available:
             return gettext("'Host' or 'Service' attribute not "
                            "found for server '%s'" % server)
+
+        # A missing AuthMethod means password; an unknown one is an error,
+        # rather than silently importing as a password server.
+        auth_method = obj.get("AuthMethod", AUTH_METHOD_PASSWORD)
+        if not is_valid_auth_method(auth_method):
+            return gettext(
+                "Invalid AuthMethod '%s' for server '%s'. It must be one "
+                "of: %s." % (auth_method, server, ', '.join(AUTH_METHODS)))
+        errmsg = check_kerberos_exclusive(
+            auth_method, obj.get("KerberosAuthentication", None))
+        if errmsg:
+            return gettext("Server '%s': %s") % (server, errmsg)
 
         conn_params = obj.get("ConnectionParameters", None)
         conn_params = dict(conn_params) \
@@ -1565,6 +1581,9 @@ def load_database_servers(input_file, selected_servers,
                 shared_username if new_server.shared else None
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
+
+            new_server.auth_method = obj.get(
+                "AuthMethod", AUTH_METHOD_PASSWORD)
 
             new_server.tags = obj.get("Tags", None)
 

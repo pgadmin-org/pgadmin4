@@ -34,7 +34,7 @@ from pgadmin.utils.passexec import normalise_passexec_name, \
     passexec_name_for_api, PASSEXEC_INHERIT
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
-    check_auth_method, is_token_auth_method
+    check_auth_method, check_kerberos_exclusive, is_token_auth_method
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
@@ -1090,6 +1090,17 @@ class ServerNode(PGChildNodeView):
                 return make_json_response(
                     success=0, status=400, errormsg=auth_method_err)
 
+        # Kerberos and a token method are exclusive, whichever of the two
+        # this update changes.
+        if 'auth_method' in data or 'kerberos_conn' in data:
+            current = sharedserver or server
+            auth_method_err = check_kerberos_exclusive(
+                data.get('auth_method', current.auth_method),
+                data.get('kerberos_conn', current.kerberos_conn))
+            if auth_method_err:
+                return make_json_response(
+                    success=0, status=400, errormsg=auth_method_err)
+
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
 
@@ -1468,6 +1479,11 @@ class ServerNode(PGChildNodeView):
         # A missing or blank method means password.
         auth_method = data.get('auth_method') or AUTH_METHOD_PASSWORD
         auth_method_err = check_auth_method(auth_method)
+        if auth_method_err:
+            return make_json_response(
+                success=0, status=400, errormsg=auth_method_err)
+        auth_method_err = check_kerberos_exclusive(
+            auth_method, data.get('kerberos_conn', False))
         if auth_method_err:
             return make_json_response(
                 success=0, status=400, errormsg=auth_method_err)

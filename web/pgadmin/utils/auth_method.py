@@ -41,6 +41,18 @@ def is_token_auth_method(auth_method):
         auth_method != AUTH_METHOD_PASSWORD
 
 
+def check_kerberos_exclusive(auth_method, kerberos_conn):
+    """Return an error message when Kerberos is combined with a token
+    method, else None. A server never has two conflicting ways to
+    authenticate."""
+    if kerberos_conn and is_token_auth_method(auth_method):
+        return gettext(
+            'Kerberos authentication cannot be combined with the {0} '
+            'authentication method.'
+        ).format(auth_method)
+    return None
+
+
 def check_auth_method(auth_method):
     """Return an error message for an unknown method, else None."""
     if is_valid_auth_method(auth_method):
