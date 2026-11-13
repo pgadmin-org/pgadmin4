@@ -28,10 +28,14 @@ from collections import namedtuple
 from contextlib import contextmanager
 
 from pgadmin.utils import pg_oauth2
-from pgadmin.utils.auth_method import AUTH_METHOD_OAUTH_DIRECT, \
-    AUTH_METHOD_OAUTH_EXCHANGE, AUTH_METHOD_PASSWORD
+from pgadmin.utils.auth_method import AUTH_METHOD_ENTRA, \
+    AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE, \
+    AUTH_METHOD_PASSWORD, ENTRA_SSL_ERROR, is_entra_ssl_valid
 
-TokenAuthMethod = namedtuple('TokenAuthMethod', ['provider', 'delivery'])
+# check is optional: a callable taking the server's connection parameters
+# that returns an error message when the server must not be sent a token.
+TokenAuthMethod = namedtuple(
+    'TokenAuthMethod', ['provider', 'delivery', 'check'])
 
 
 class OAuthBearerDelivery:
@@ -96,11 +100,21 @@ def _exchange_provider(connection_params):
     )
 
 
+def _entra_provider(connection_params):
+    """A token for Azure Database for PostgreSQL, obtained On-Behalf-Of
+    the pgAdmin login."""
+    return pg_oauth2.get_entra_obo_token()
+
+
+def _entra_check(connection_params):
+    return None if is_entra_ssl_valid(connection_params) else ENTRA_SSL_ERROR
+
+
 _REGISTRY = {}
 
 
-def register_token_auth_method(name, provider, delivery):
-    _REGISTRY[name] = TokenAuthMethod(provider, delivery)
+def register_token_auth_method(name, provider, delivery, check=None):
+    _REGISTRY[name] = TokenAuthMethod(provider, delivery, check)
 
 
 def unregister_token_auth_method(name):
@@ -116,6 +130,8 @@ register_token_auth_method(
     AUTH_METHOD_OAUTH_DIRECT, _direct_provider, OAuthBearerDelivery())
 register_token_auth_method(
     AUTH_METHOD_OAUTH_EXCHANGE, _exchange_provider, OAuthBearerDelivery())
+register_token_auth_method(
+    AUTH_METHOD_ENTRA, _entra_provider, PasswordDelivery(), _entra_check)
 
 
 @contextmanager
@@ -142,6 +158,12 @@ def token_connection(auth_method, connection_params, password=None):
         raise pg_oauth2.OAuthTokenError(
             'Unsupported server authentication method: {0}.'.format(
                 auth_method))
+
+    # Refuse before asking for a token, so that no token is requested for a
+    # server it must not be sent to.
+    error = method.check(connection_params or {}) if method.check else None
+    if error:
+        raise pg_oauth2.OAuthTokenError(error)
 
     method.delivery.prepare()
     token = method.provider(connection_params or {})

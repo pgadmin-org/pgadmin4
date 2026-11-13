@@ -36,6 +36,7 @@ from typing import Any, Iterator, Optional
 from urllib.parse import urlsplit
 
 import requests
+import config
 from flask import has_request_context, session
 
 _install_lock = threading.Lock()
@@ -592,6 +593,27 @@ class OAuthTokenExchangeError(OAuthTokenError):
     """Token exchange failed; the connection must not proceed."""
 
 
+class OAuthSignInRequired(OAuthTokenError):
+    """The identity provider needs the user to sign in to pgAdmin again.
+
+    The login has expired, or the provider needs the user to do something
+    first (multi-factor authentication, a Conditional Access policy or
+    consent). Renewing the pgAdmin login lets the connection be retried.
+    """
+
+
+class OAuthExchangeSignInRequired(
+        OAuthSignInRequired, OAuthTokenExchangeError):
+    """Token exchange needs the user to sign in to pgAdmin again."""
+
+
+# Identity provider error codes that only a new sign-in can resolve.
+SIGN_IN_AGAIN_ERRORS = frozenset({
+    'interaction_required', 'invalid_grant', 'consent_required',
+    'login_required',
+})
+
+
 class OAuthRequestContextRequired(OAuthTokenError):
     """OAuth credentials require an authenticated request."""
 
@@ -781,18 +803,8 @@ def _get_pgadmin_oauth_token() -> Optional[str]:
     return access_token
 
 
-def _get_validated_oauth_client(oauth_issuer: Optional[str]):
-    """Return the login client, issuer-checked metadata and TLS setting."""
-    if (
-        not isinstance(oauth_issuer, str) or
-        not oauth_issuer.strip() or
-        "\0" in oauth_issuer
-    ):
-        raise OAuthTokenError(
-            "Set oauth_issuer to the issuer of the pgAdmin login "
-            "OIDC provider."
-        )
-
+def _get_login_client():
+    """Return the login client, its metadata and its TLS setting."""
     oauth_client = _get_current_oauth_client()
     client_kwargs = oauth_client.client_kwargs or {}
     verify_tls = client_kwargs.get("verify", True)
@@ -818,6 +830,23 @@ def _get_validated_oauth_client(oauth_issuer: Optional[str]):
         raise OAuthTokenError(
             "The pgAdmin login OIDC provider returned invalid metadata."
         )
+
+    return oauth_client, metadata, verify_tls
+
+
+def _get_validated_oauth_client(oauth_issuer: Optional[str]):
+    """Return the login client, issuer-checked metadata and TLS setting."""
+    if (
+        not isinstance(oauth_issuer, str) or
+        not oauth_issuer.strip() or
+        "\0" in oauth_issuer
+    ):
+        raise OAuthTokenError(
+            "Set oauth_issuer to the issuer of the pgAdmin login "
+            "OIDC provider."
+        )
+
+    oauth_client, metadata, verify_tls = _get_login_client()
 
     issuer = metadata.get("issuer")
     if not isinstance(issuer, str) or not issuer.strip():
@@ -879,6 +908,155 @@ def _get_token_exchange_auth(oauth_client, metadata):
         return client.client_auth(auth_method)
 
 
+def _get_token_endpoint(oauth_client, metadata, error_class):
+    """Return the HTTPS token endpoint of the login provider.
+
+    An explicitly configured token URL takes precedence over the
+    token_endpoint discovered through the provider metadata.
+    """
+    endpoint = (
+        oauth_client.access_token_url or
+        metadata.get("token_endpoint")
+    )
+
+    if not isinstance(endpoint, str) or not endpoint:
+        raise error_class(
+            "The OAuth provider has no token endpoint configured "
+            "or advertised in its metadata."
+        )
+
+    try:
+        parsed_endpoint = urlsplit(endpoint)
+        valid_endpoint = (
+            parsed_endpoint.scheme == "https" and
+            bool(parsed_endpoint.hostname) and
+            parsed_endpoint.username is None and
+            parsed_endpoint.password is None and
+            not parsed_endpoint.fragment
+        )
+    except ValueError:
+        valid_endpoint = False
+
+    if not valid_endpoint:
+        raise error_class(
+            "The OAuth provider token endpoint must be an HTTPS URL "
+            "without embedded credentials or a fragment."
+        )
+
+    return endpoint
+
+
+def _post_token_request(
+    endpoint, request_data, auth, verify_tls, what,
+    error_class, sign_in_class,
+) -> str:
+    """
+    Send a token request to the identity provider; return the access token.
+
+    This is the one HTTP client path of every token request that pgAdmin
+    makes on behalf of the user: token exchange and On-Behalf-Of. what
+    names the request in error messages. Raise error_class on failure, or
+    sign_in_class when only a new sign-in can resolve the provider's error.
+    Error messages carry only a short error identifier; never the provider
+    response, descriptions, or token values.
+    """
+    try:
+        response = requests.post(
+            endpoint,
+            data=request_data,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            auth=auth,
+            verify=verify_tls,
+            timeout=(5, 30),
+            allow_redirects=False,
+        )
+    except requests.exceptions.SSLError:
+        raise error_class(
+            "TLS verification failed when contacting the OAuth "
+            "token endpoint."
+        ) from None
+    except requests.exceptions.Timeout:
+        raise error_class(
+            "The request to the OAuth token endpoint timed out."
+        ) from None
+    except requests.exceptions.RequestException:
+        raise error_class(
+            "Could not contact the OAuth token endpoint."
+        ) from None
+
+    with response:
+        status_code = response.status_code
+
+        try:
+            token_data = response.json()
+        except ValueError:
+            token_data = None
+
+    has_oauth_error = (
+        isinstance(token_data, dict) and
+        "error" in token_data
+    )
+
+    if status_code != 200 or has_oauth_error:
+        error_code = (
+            token_data.get("error")
+            if isinstance(token_data, dict)
+            else None
+        )
+
+        if (
+            not isinstance(error_code, str) or
+            re.fullmatch(
+                r"[A-Za-z0-9_-]{1,64}",
+                error_code,
+            ) is None
+        ):
+            error_code = "unknown_error"
+
+        raise (
+            sign_in_class
+            if error_code in SIGN_IN_AGAIN_ERRORS else error_class
+        )(
+            "OAuth {0} failed (HTTP {1}, error={2}).".format(
+                what,
+                status_code,
+                error_code,
+            )
+        )
+
+    if not isinstance(token_data, dict):
+        raise error_class(
+            "The OAuth provider returned an invalid {0} "
+            "response.".format(what)
+        )
+
+    access_token = token_data.get("access_token")
+    token_type = token_data.get("token_type")
+
+    if (
+        not isinstance(access_token, str) or
+        not access_token.strip() or
+        "\0" in access_token
+    ):
+        raise error_class(
+            "The OAuth {0} response contains no valid "
+            "access token.".format(what)
+        )
+
+    if (
+        not isinstance(token_type, str) or
+        token_type.lower() != "bearer"
+    ):
+        raise error_class(
+            "The OAuth {0} response is not a bearer token.".format(what)
+        )
+
+    return access_token
+
+
 def _exchange_oauth_access_token(
     client_id: str,
     oauth_scope: Optional[str],
@@ -926,34 +1104,8 @@ def _exchange_oauth_access_token(
 
     exchange_auth = _get_token_exchange_auth(oauth_client, metadata)
 
-    endpoint = (
-        oauth_client.access_token_url or
-        metadata.get("token_endpoint")
-    )
-
-    if not isinstance(endpoint, str) or not endpoint:
-        raise OAuthTokenExchangeError(
-            "The OAuth provider has no token endpoint configured "
-            "or advertised in its metadata."
-        )
-
-    try:
-        parsed_endpoint = urlsplit(endpoint)
-        valid_endpoint = (
-            parsed_endpoint.scheme == "https" and
-            bool(parsed_endpoint.hostname) and
-            parsed_endpoint.username is None and
-            parsed_endpoint.password is None and
-            not parsed_endpoint.fragment
-        )
-    except ValueError:
-        valid_endpoint = False
-
-    if not valid_endpoint:
-        raise OAuthTokenExchangeError(
-            "The OAuth provider token endpoint must be an HTTPS URL "
-            "without embedded credentials or a fragment."
-        )
+    endpoint = _get_token_endpoint(
+        oauth_client, metadata, OAuthTokenExchangeError)
 
     subject_token = _get_pgadmin_oauth_token()
 
@@ -962,120 +1114,118 @@ def _exchange_oauth_access_token(
         not subject_token.strip() or
         "\0" in subject_token
     ):
-        raise OAuthTokenExchangeError(
+        raise OAuthExchangeSignInRequired(
             "No current pgAdmin OAuth access token is available. "
             "Sign in to pgAdmin again."
         )
 
-    try:
-        request_data = {
-            "audience": client_id,
-            "grant_type": (
-                "urn:ietf:params:oauth:grant-type:token-exchange"
-            ),
-            "subject_token": subject_token,
-            "subject_token_type": (
-                "urn:ietf:params:oauth:token-type:access_token"
-            ),
-        }
+    request_data = {
+        "audience": client_id,
+        "grant_type": (
+            "urn:ietf:params:oauth:grant-type:token-exchange"
+        ),
+        "subject_token": subject_token,
+        "subject_token_type": (
+            "urn:ietf:params:oauth:token-type:access_token"
+        ),
+    }
 
-        scope = (oauth_scope or "").strip()
-        if scope:
-            request_data["scope"] = scope
+    scope = (oauth_scope or "").strip()
+    if scope:
+        request_data["scope"] = scope
 
-        response = requests.post(
-            endpoint,
-            data=request_data,
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            auth=exchange_auth,
-            verify=verify_tls,
-            timeout=(5, 30),
-            allow_redirects=False,
-        )
-    except requests.exceptions.SSLError:
-        raise OAuthTokenExchangeError(
-            "TLS verification failed when contacting the OAuth "
-            "token endpoint."
-        ) from None
-    except requests.exceptions.Timeout:
-        raise OAuthTokenExchangeError(
-            "The request to the OAuth token endpoint timed out."
-        ) from None
-    except requests.exceptions.RequestException:
-        raise OAuthTokenExchangeError(
-            "Could not contact the OAuth token endpoint."
-        ) from None
-
-    with response:
-        status_code = response.status_code
-
-        try:
-            token_data = response.json()
-        except ValueError:
-            token_data = None
-
-    has_oauth_error = (
-        isinstance(token_data, dict) and
-        "error" in token_data
+    return _post_token_request(
+        endpoint, request_data, exchange_auth, verify_tls,
+        "token exchange", OAuthTokenExchangeError,
+        OAuthExchangeSignInRequired,
     )
 
-    if status_code != 200 or has_oauth_error:
-        error_code = (
-            token_data.get("error")
-            if isinstance(token_data, dict)
-            else None
+
+# The resource scope of Azure Database for PostgreSQL.
+ENTRA_POSTGRES_SCOPE = "https://ossrdbms-aad.database.windows.net/.default"
+
+# The OAUTH2_CONFIG key that lets a login provider offer Entra
+# On-Behalf-Of authentication to servers.
+ENTRA_OBO_ENABLED_KEY = "OAUTH2_ENTRA_OBO_ENABLED"
+
+
+def is_entra_obo_enabled() -> bool:
+    """
+    Whether the current user's login provider has Entra On-Behalf-Of
+    enabled. It needs server mode and an OAuth2 login, and is false for
+    every other kind of login.
+    """
+    if not config.SERVER_MODE or not has_request_context():
+        return False
+
+    provider_name = session.get("oauth2_provider")
+    if not isinstance(provider_name, str) or not provider_name:
+        return False
+
+    # Import lazily to avoid an import cycle during pgAdmin startup.
+    from pgadmin.authenticate import get_auth_sources
+    from pgadmin.utils.constants import OAUTH2
+
+    oauth_source = get_auth_sources(OAUTH2)
+    provider = (
+        getattr(oauth_source, "oauth2_config", None) or {}
+    ).get(provider_name) or {}
+
+    return provider.get(ENTRA_OBO_ENABLED_KEY) is True
+
+
+def get_entra_obo_token() -> str:
+    """
+    Return an access token for Azure Database for PostgreSQL, obtained
+    On-Behalf-Of the user's pgAdmin login.
+
+    It is a single jwt-bearer grant to the token endpoint of the login
+    provider's tenant. The login client's own credentials authenticate the
+    request, the user's login access token is the assertion and the Azure
+    PostgreSQL resource is the scope. The token is not stored anywhere.
+
+    Raise OAuthSignInRequired when only a new sign-in can resolve it.
+    """
+    if not has_request_context():
+        raise OAuthRequestContextRequired(
+            "Microsoft Entra authentication requires an authenticated "
+            "pgAdmin request. Reconnect through pgAdmin."
         )
 
-        # Include only a short error identifier. Never expose the
-        # provider response, descriptions, or token values.
-        if (
-            not isinstance(error_code, str) or
-            re.fullmatch(
-                r"[A-Za-z0-9_-]{1,64}",
-                error_code,
-            ) is None
-        ):
-            error_code = "unknown_error"
-
-        raise OAuthTokenExchangeError(
-            "OAuth token exchange failed "
-            "(HTTP {0}, error={1}).".format(
-                status_code,
-                error_code,
-            )
+    if not is_entra_obo_enabled():
+        raise OAuthTokenError(
+            "Microsoft Entra authentication is not enabled for your "
+            "pgAdmin login provider. An administrator must set {0} in "
+            "its OAUTH2_CONFIG entry.".format(ENTRA_OBO_ENABLED_KEY)
         )
 
-    if not isinstance(token_data, dict):
-        raise OAuthTokenExchangeError(
-            "The OAuth provider returned an invalid token exchange "
-            "response."
-        )
+    oauth_client, metadata, verify_tls = _get_login_client()
+    auth = _get_token_exchange_auth(oauth_client, metadata)
+    endpoint = _get_token_endpoint(oauth_client, metadata, OAuthTokenError)
 
-    access_token = token_data.get("access_token")
-    token_type = token_data.get("token_type")
+    assertion = _get_pgadmin_oauth_token()
 
     if (
-        not isinstance(access_token, str) or
-        not access_token.strip() or
-        "\0" in access_token
+        not isinstance(assertion, str) or
+        not assertion.strip() or
+        "\0" in assertion
     ):
-        raise OAuthTokenExchangeError(
-            "The OAuth token exchange response contains no valid "
-            "access token."
+        raise OAuthSignInRequired(
+            "No current pgAdmin OAuth access token is available. "
+            "Sign in to pgAdmin again."
         )
 
-    if (
-        not isinstance(token_type, str) or
-        token_type.lower() != "bearer"
-    ):
-        raise OAuthTokenExchangeError(
-            "The OAuth token exchange response is not a bearer token."
-        )
-
-    return access_token
+    return _post_token_request(
+        endpoint,
+        {
+            "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+            "assertion": assertion,
+            "scope": ENTRA_POSTGRES_SCOPE,
+            "requested_token_use": "on_behalf_of",
+        },
+        auth, verify_tls, "On-Behalf-Of token request",
+        OAuthTokenError, OAuthSignInRequired,
+    )
 
 
 def get_postgres_oauth_token(

@@ -48,7 +48,7 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.pg_oauth2 import OAuthTokenError
+from pgadmin.utils.pg_oauth2 import OAuthSignInRequired, OAuthTokenError
 from pgadmin.utils.token_auth import token_connection
 
 
@@ -413,6 +413,9 @@ class Connection(BaseConnection):
         self.reconnecting = False
         # Set when the saved password could not be decrypted and was dropped
         self.saved_password_discarded = False
+        # Set when the last attempt to open a connection failed because the
+        # user has to sign in to pgAdmin again (see OAuthSignInRequired).
+        self.sign_in_again = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
         self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
@@ -534,6 +537,7 @@ class Connection(BaseConnection):
             password)
 
     def connect(self, **kwargs):
+        self.sign_in_again = False
         if self.conn:
             if self.conn.closed:
                 self.conn = None
@@ -662,6 +666,7 @@ class Connection(BaseConnection):
                             )
                 except OAuthTokenError as exc:
                     manager.stop_ssh_tunnel()
+                    self.sign_in_again = isinstance(exc, OAuthSignInRequired)
                     current_app.logger.warning(
                         "Token authentication failed for server %s: %s",
                         manager.sid,
@@ -1951,6 +1956,7 @@ WHERE db.datname = current_database()""")
         except PermissionError as e:
             return False, str(e)
         except OAuthTokenError as exc:
+            self.sign_in_again = isinstance(exc, OAuthSignInRequired)
             current_app.logger.warning(
                 "Token authentication failed "
                 "while resetting the connection for server %s: %s",
@@ -2215,6 +2221,7 @@ Failed to reset the connection to the server due to following error:
                 status = False
                 msg = str(e)
             except OAuthTokenError as exc:
+                self.sign_in_again = isinstance(exc, OAuthSignInRequired)
                 status = False
                 msg = str(exc)
             except psycopg.Error as e:

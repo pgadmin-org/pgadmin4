@@ -21,6 +21,7 @@ from flask_babel import gettext
 AUTH_METHOD_PASSWORD = 'password'
 AUTH_METHOD_OAUTH_DIRECT = 'oauth_direct'
 AUTH_METHOD_OAUTH_EXCHANGE = 'oauth_exchange'
+AUTH_METHOD_ENTRA = 'entra'
 
 # The values the application accepts. They are stored as plain strings and
 # checked here rather than by a SQL enum, so a new method needs no migration.
@@ -28,6 +29,7 @@ AUTH_METHODS = (
     AUTH_METHOD_PASSWORD,
     AUTH_METHOD_OAUTH_DIRECT,
     AUTH_METHOD_OAUTH_EXCHANGE,
+    AUTH_METHOD_ENTRA,
 )
 
 
@@ -50,6 +52,33 @@ def check_kerberos_exclusive(auth_method, kerberos_conn):
             'Kerberos authentication cannot be combined with the {0} '
             'authentication method.'
         ).format(auth_method)
+    return None
+
+
+ENTRA_SSL_ERROR = (
+    'The entra authentication method requires the connection parameter '
+    'sslmode to be set to verify-full, so that the access token is only '
+    'sent to a server whose identity is verified.')
+
+
+def is_entra_ssl_valid(connection_params):
+    """True when the connection parameters make the server verify its
+    identity: the token is only sent to a server whose certificate and
+    host name are verified. The host name itself is not restricted, so
+    private endpoints with custom DNS work."""
+    return (connection_params or {}).get('sslmode') == 'verify-full'
+
+
+def check_entra_ssl(auth_method, connection_params):
+    """Return an error message when an ``entra`` server does not verify the
+    identity of the server it sends the token to, else None."""
+    if auth_method == AUTH_METHOD_ENTRA and \
+            not is_entra_ssl_valid(connection_params):
+        return gettext(
+            'The entra authentication method requires the connection '
+            'parameter sslmode to be set to verify-full, so that the '
+            'access token is only sent to a server whose identity is '
+            'verified.')
     return None
 
 
