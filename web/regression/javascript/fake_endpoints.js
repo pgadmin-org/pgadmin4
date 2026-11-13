@@ -9,6 +9,7 @@
 
 module.exports = {
   'static': '/base/pgadmin/static/<path:filename>',
+  'oauth2.renew': '/oauth2/renew',
   'sqleditor.poll': '/sqleditor/query_tool/poll/<path:trans_id>',
   'sqleditor.query_tool_start': '/sqleditor/query_tool/start/<path:trans_id>',
   'backup.create_server_job':  '/backup/job/<int:sid>',

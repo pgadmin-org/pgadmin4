@@ -50,6 +50,8 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.driver.abstract import BaseDriver
 from pgadmin.utils.crypto import encrypt
 from pgadmin.utils.master_password import get_crypt_key
+from pgadmin.utils.auth_method import is_token_auth_method
+from pgadmin.utils.token_auth import sign_in_again_response
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
 from pgadmin.browser.utils import underscore_escape
@@ -293,7 +295,11 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
             conn,**kwargs)
         if not status:
             current_app.logger.error(msg)
-            if is_ask_password:
+            if conn.sign_in_again is True:
+                return sign_in_again_response(server, msg)
+            # A token method has no database password to ask for.
+            if is_ask_password and not is_token_auth_method(
+                    server.auth_method):
                 return make_json_response(
                     success=0,
                     status=428,
@@ -324,11 +330,15 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     status, msg = default_conn.connect()
     if not status:
         current_app.logger.error(msg)
+        if default_conn.sign_in_again is True:
+            return sign_in_again_response(server, msg)
         return internal_server_error(errormsg=str(msg))
 
     status, msg = conn.connect()
     if not status:
         current_app.logger.error(msg)
+        if conn.sign_in_again is True:
+            return sign_in_again_response(server, msg)
         return internal_server_error(errormsg=str(msg))
     try:
         # if object type is partition then it is nothing but a table.
@@ -651,7 +661,11 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                 conn, **kwargs)
             if not status:
                 current_app.logger.error(msg)
-                if is_ask_password:
+                if conn.sign_in_again is True:
+                    return True, sign_in_again_response(server, msg), '', ''
+                # A token method has no database password to ask for.
+                if is_ask_password and not is_token_auth_method(
+                        server.auth_method):
                     return True, make_json_response(
                         success=0,
                         status=428,

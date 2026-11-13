@@ -28,6 +28,7 @@ from collections import namedtuple
 from contextlib import contextmanager
 
 from pgadmin.utils import pg_oauth2
+from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.auth_method import AUTH_METHOD_ENTRA, \
     AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE, \
     AUTH_METHOD_PASSWORD, ENTRA_SSL_ERROR, is_entra_ssl_valid
@@ -172,3 +173,22 @@ def token_connection(auth_method, connection_params, password=None):
             'No access token is available for this server.')
     with method.delivery.scope(token):
         yield method.delivery.password(token, password)
+
+
+def sign_in_again_response(server, errmsg):
+    """The connect response for a token that only a new sign-in can get.
+
+    The connect dialogs show it as "Sign in again", which renews the
+    pgAdmin login through the same OAuth2 provider, instead of asking for
+    a database password. It uses the status of a request for credentials,
+    which every connect dialog already treats as one.
+    """
+    return make_json_response(
+        success=0, status=428,
+        result={
+            'sid': server.id,
+            'server_label': server.name,
+            'username': server.username,
+            'errmsg': errmsg,
+            'sign_in_again': True,
+        })

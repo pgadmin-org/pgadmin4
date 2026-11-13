@@ -37,6 +37,7 @@ from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
     check_auth_method, check_entra_available, check_entra_ssl, \
     check_kerberos_exclusive, is_token_auth_method
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
+from pgadmin.utils.token_auth import sign_in_again_response
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
     (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
@@ -2058,8 +2059,9 @@ class ServerNode(PGChildNodeView):
             error_message = getattr(e, 'message', str(e))
 
             if use_pgadmin_oauth and not (
-                    prompt_tunnel_password or
-                    self._saved_tunnel_password_discarded(conn)):
+                    server.use_ssh_tunnel and (
+                        prompt_tunnel_password or
+                        self._saved_tunnel_password_discarded(conn))):
                 return make_json_response(
                     status=400,
                     success=0,
@@ -2085,9 +2087,13 @@ class ServerNode(PGChildNodeView):
             if errmsg.find('Ticket expired') != -1:
                 return internal_server_error(errmsg)
 
+            if conn.sign_in_again is True:
+                return sign_in_again_response(server, errmsg)
+
             if use_pgadmin_oauth and not (
-                    prompt_tunnel_password or
-                    self._saved_tunnel_password_discarded(conn)):
+                    server.use_ssh_tunnel and (
+                        prompt_tunnel_password or
+                        self._saved_tunnel_password_discarded(conn))):
                 return make_json_response(
                     status=400,
                     success=0,

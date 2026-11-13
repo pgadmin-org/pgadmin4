@@ -13,6 +13,7 @@ import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 import { FormFooterMessage, InputCheckbox, InputText, MESSAGE_TYPE } from '../components/FormComponents';
 import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
@@ -32,6 +33,45 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
     // it ticked when saving isn't allowed for this session.
     save_password: Boolean(data?.allow_save_password && data?.save_password),
   });
+
+  // "Sign in again": the identity provider needs the user to renew their
+  // pgAdmin login (multi-factor authentication, a Conditional Access policy,
+  // consent or an expired login). The renewal runs in a pop-up through the
+  // same OAuth2 provider; once it is done the connection is retried.
+  const [signInStatus, setSignInStatus] = useState('');
+  const [signingIn, setSigningIn] = useState(false);
+  const signInTimer = useRef(null);
+
+  useEffect(()=>()=>clearInterval(signInTimer.current), []);
+
+  const onSignInAgain = () => {
+    const popup = window.open(url_for('oauth2.renew'), 'pgadmin_sign_in_again',
+      'width=550,height=650,resizable=yes,scrollbars=yes');
+    if(!popup) {
+      setSignInStatus(gettext('The sign-in window was blocked. Allow pop-ups for pgAdmin and try again.'));
+      return;
+    }
+    setSigningIn(true);
+    setSignInStatus(gettext('Waiting for the sign-in to finish...'));
+
+    // The pop-up ends on a page of pgAdmin once the login is renewed. While
+    // it is at the identity provider its location is of another origin, and
+    // cannot be read.
+    const isRenewed = () => {
+      try {
+        return popup.location.pathname.endsWith('/oauth2/renewed');
+      } catch {
+        return false;
+      }
+    };
+    signInTimer.current = setInterval(()=>{
+      if(!popup.closed && !isRenewed()) return;
+      clearInterval(signInTimer.current);
+      if(!popup.closed) popup.close();
+      onOK?.(new FormData());
+      closeModal();
+    }, 500);
+  };
 
   const onTextChange = (e, id) => {
     let val = e;
@@ -105,6 +145,14 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
               onChange={(e)=>onTextChange(e.target.checked, 'save_password')} disabled={!data.allow_save_password} />
           </Box>
         </>}
+        {data.sign_in_again && <>
+          <Box>
+            <span style={{fontWeight: 'bold'}}>
+              {gettext('You need to sign in again to connect the server "%s".', data.server_label)}
+            </span>
+          </Box>
+          {signInStatus && <Box marginTop='12px'>{signInStatus}</Box>}
+        </>}
         <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={_.escape(data.errmsg)} closable={false} style={{
           position: 'unset', padding: '12px 0px 0px'
         }}/>
@@ -113,6 +161,8 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
+        {data.sign_in_again && <PrimaryButton data-test="sign-in-again" disabled={signingIn}
+          onClick={onSignInAgain}>{gettext('Sign in again')}</PrimaryButton>}
         {(data.prompt_password || data.prompt_tunnel_password) && <>
           <PrimaryButton ref={okBtnRef} data-test="save" startIcon={<CheckRoundedIcon />} onClick={()=>{
             let postFormData = new FormData();

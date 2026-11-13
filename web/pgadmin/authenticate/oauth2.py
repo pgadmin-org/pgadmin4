@@ -14,7 +14,8 @@ import os
 
 from authlib.integrations.flask_client import OAuth
 from flask import current_app, url_for, session, request, \
-    redirect, Flask, flash
+    redirect, Flask, flash, Response
+from markupsafe import escape
 from flask_babel import gettext
 from flask_security import login_user, current_user
 from flask_security.utils import logout_user
@@ -25,12 +26,16 @@ from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import OAUTH2, MessageType
 from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
     get_safe_post_logout_redirect
+from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.tls import get_ca_file
 from pgadmin.model import db
+from pgadmin.user_login_check import pga_login_required
 
 OAUTH2_LOGOUT = 'oauth2.logout'
 OAUTH2_AUTHORIZE = 'oauth2.authorize'
+OAUTH2_RENEW = 'oauth2.renew'
+OAUTH2_RENEWED = 'oauth2.renewed'
 
 # OAuth2 settings that legitimately live at the top level of the
 # configuration. Every other OAUTH2_* setting belongs *inside* an entry
@@ -145,7 +150,9 @@ class Oauth2Module(PgAdminModule):
 
     def get_exposed_url_endpoints(self):
         return [OAUTH2_AUTHORIZE,
-                OAUTH2_LOGOUT]
+                OAUTH2_LOGOUT,
+                OAUTH2_RENEW,
+                OAUTH2_RENEWED]
 
 
 def init_app(app):
@@ -182,10 +189,25 @@ def init_app(app):
         auth_obj.set_source(oauth2_source)
         auth_obj.set_current_source(oauth2_source.get_source_name())
 
+        # Set only by oauth_renew(): this callback renews the login of the
+        # user who is signed in, and must not switch to another user.
+        renew_user = session.pop('oauth2_renew_user', None)
+        pass_enc_key = session.get('pass_enc_key')
+
         status, msg = auth_obj.login()
+        if status and renew_user is not None and (
+                not current_user.is_authenticated or
+                current_user.id != renew_user):
+            status, msg = False, gettext(
+                'The login was renewed as a different user.')
         if status:
             session['auth_source_manager'] = auth_obj.as_dict()
             session.pop('oauth2_current_client', None)
+            if renew_user is not None:
+                # Keep the key of the connections the session holds.
+                if pass_enc_key is not None:
+                    session['pass_enc_key'] = pass_enc_key
+                return redirect(url_for(OAUTH2_RENEWED))
             return redirect(get_safe_post_login_redirect())
         session.pop('oauth2_current_client', None)
         # get_user_profile() may already have stored the provider's logout
@@ -194,6 +216,47 @@ def init_app(app):
         logout_user()
         flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
+
+    @blueprint.route('/renew', endpoint="renew", methods=['GET'])
+    @pga_login_required
+    def oauth_renew():
+        '''Renew the pgAdmin login through the OAuth2 provider the user
+        logged in with. The connect dialogs open it in a pop-up when the
+        identity provider needs the user to sign in again.'''
+        from pgadmin.authenticate import get_auth_sources
+        provider = session.get('oauth2_provider')
+        oauth2_source = get_auth_sources(OAUTH2)
+        client = getattr(oauth2_source, 'oauth2_clients', {}).get(
+            provider) if provider else None
+        if client is None:
+            return make_json_response(
+                success=0, status=400,
+                errormsg=gettext(
+                    'Your pgAdmin login did not use an OAuth2 provider '
+                    'that is still configured, so it cannot be renewed '
+                    'here. Log out of pgAdmin and log in again.'))
+
+        response = client.authorize_redirect(
+            url_for(OAUTH2_AUTHORIZE, _external=True))
+        # The /authorize callback reads the provider and the user to renew
+        # from the session.
+        session['oauth2_current_client'] = provider
+        session['oauth2_renew_user'] = current_user.id
+        return response
+
+    @blueprint.route('/renewed', endpoint="renewed", methods=['GET'])
+    @pga_login_required
+    def oauth_renewed():
+        '''Where the renewal pop-up ends: the dialog that opened it sees
+        this page and retries the connection.'''
+        return Response(
+            '<!DOCTYPE html><html><head><meta charset="utf-8">'
+            '<title>pgAdmin</title></head><body><p>{0}</p></body></html>'
+            .format(escape(gettext(
+                'Your pgAdmin login has been renewed. You can close this '
+                'window.'))),
+            mimetype='text/html',
+            headers={'Cache-Control': 'no-store'})
 
     @blueprint.route('/logout', endpoint="logout",
                      methods=['GET', 'POST'])
