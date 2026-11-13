@@ -198,9 +198,10 @@ icon that is located to the right of each of the following fields.
     *.pgpass* file.
 
 Use the *Authentication method* field on the *Connection* tab to choose how
-pgAdmin authenticates to the server. The OAuth methods supply an OAuth access
-token when PostgreSQL requests OAuth authentication, and are available for
-PostgreSQL 18 and later.
+pgAdmin authenticates to the server. Every method other than *Password* uses
+an access token from your pgAdmin OAuth2 login, so you need no separate
+database credential and no second sign-in. pgAdmin gets a new token for each
+new connection to the server and never stores it.
 
 .. list-table:: Authentication methods
    :header-rows: 1
@@ -220,6 +221,16 @@ PostgreSQL 18 and later.
        token endpoint and supply the returned token to PostgreSQL. Use this
        mode when the OIDC provider is configured to issue a token restricted
        to the target database.
+   * - Microsoft Entra ID (``entra``)
+     - Connect to Azure Database for PostgreSQL. pgAdmin asks Microsoft Entra
+       ID for a token for the database On-Behalf-Of your pgAdmin login, and
+       sends it to the server in place of a password. It works with any
+       PostgreSQL version and libpq. It is listed only in server mode, when you
+       logged in through an OAuth2 provider that an administrator enabled it
+       for; see :ref:`oauth2_entra`.
+
+The two OAuth methods supply the token when PostgreSQL requests OAuth
+authentication, and need PostgreSQL 18 or later and libpq 18 in pgAdmin.
 
 The OAuth parameters are offered in the *Parameters* tab only while one of the
 OAuth methods is selected. For both OAuth methods, add the following
@@ -253,11 +264,37 @@ authentication on the PostgreSQL server.
    Prefer *OAuth: token exchange* with a database-specific token where
    supported.
 
-An OAuth method cannot be combined with Kerberos authentication: the
-*Kerberos authentication?* switch is disabled while an OAuth method is
-selected. No database password is used or saved for an OAuth method.
+For *Microsoft Entra ID*, set the ``sslmode`` connection parameter to
+``verify-full``. pgAdmin sends the token as the password of the connection, so
+it refuses to save the server, to import it or to connect without that
+setting: the token is only sent to a server whose certificate and host name
+are verified. The host name itself is not restricted, so a private endpoint
+with its own DNS name works. Set the *Username* to your Microsoft Entra ID
+user name, or to the name of the Entra group or service principal that the
+database role belongs to.
+
+A token method cannot be combined with Kerberos authentication: the
+*Kerberos authentication?* switch is disabled while a token method is
+selected, and the servers API and a servers.json import refuse the
+combination. No database password is used or saved for a token method, and
+switching a server to one clears the password it had saved.
 For a shared server, each non-owner chooses their own authentication method,
-which defaults to *Password*; the owner's choice is not inherited.
+which defaults to *Password*; the owner's choice is not inherited, so your
+login token is never sent to a host you did not choose.
+
+If Microsoft Entra ID or another identity provider needs you to sign in again
+(for example for multi-factor authentication, a Conditional Access policy or
+consent, or because your login has expired), the dialog that connects the
+server, in the Object Explorer or the Query Tool, shows *Sign in again*
+instead of asking for a password. It renews your pgAdmin login in a pop-up
+through the same OAuth2 provider, and then connects the server. Allow pop-ups
+for pgAdmin if your browser blocks it.
+
+Backup, restore, maintenance, import/export and the PSQL tool connect with
+the server's ``sslmode`` and ``sslrootcert``. For *Microsoft Entra ID*, they
+also get a new token as the password of that process alone. The two OAuth
+methods cannot supply a token to a separate process, so these tools cannot
+connect to such a server.
 
 .. note::
 

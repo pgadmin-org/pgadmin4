@@ -983,7 +983,14 @@ OAUTH2_CONFIG = [
         # Example for keycloak:
         # 'OAUTH2_LOGOUT_URL':
         # 'https://example.com/realms/master/protocol/openid-connect/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}'
-        'OAUTH2_LOGOUT_URL': None
+        'OAUTH2_LOGOUT_URL': None,
+        # Set this variable to True, for a Microsoft Entra ID provider, to
+        # let the users who log in through it connect to Azure Database for
+        # PostgreSQL with the 'entra' server authentication method. pgAdmin
+        # then gets a database token On-Behalf-Of the user's login. It needs
+        # the pgAdmin app registration to expose its own API scope, which
+        # OAUTH2_SCOPE must include, and a client secret. Server mode only.
+        'OAUTH2_ENTRA_OBO_ENABLED': False
     }
 ]
 

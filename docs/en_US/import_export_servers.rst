@@ -148,12 +148,15 @@ is printed. ``PasswordExecExpiration`` is imported only together with a valid
 command name.
 
 ``AuthMethod`` is the server authentication method: ``password``,
-``oauth_direct`` or ``oauth_exchange``. A file without ``AuthMethod`` is
+``oauth_direct``, ``oauth_exchange`` or ``entra``. A file without ``AuthMethod`` is
 imported as ``password``, so files exported by earlier versions keep working.
 An unknown value is an error and nothing is imported. Kerberos cannot be
 combined with a token method: ``KerberosAuthentication`` must not be true for a
 server whose ``AuthMethod`` is not ``password``, and such a file is also
-refused.
+refused. A server whose ``AuthMethod`` is ``entra`` must have
+``"sslmode": "verify-full"`` in its ``ConnectionParameters``, or the file is
+refused. Whether the importing user may use ``entra`` is checked when they
+connect.
 
 The following example shows both a minimally defined and a fully defined server:
 

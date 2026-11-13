@@ -693,3 +693,110 @@ the login access token until it expires or enters the 30-second refresh
 window. Sign in to pgAdmin again before retrying the connection.
 Exchange mode requires client-secret authentication and does not support
 workload-identity clients.
+
+.. _oauth2_entra:
+
+Using Microsoft Entra ID with Azure Database for PostgreSQL
+-----------------------------------------------------------
+
+In server mode, users who log in to pgAdmin through Microsoft Entra ID can
+connect to Azure Database for PostgreSQL with the *Microsoft Entra ID*
+(``entra``) authentication method, without running the Azure CLI or pasting
+a token as a password. pgAdmin asks Microsoft Entra ID for a database token
+On-Behalf-Of the user, using the user's pgAdmin login, as described in
+Microsoft's
+`On-Behalf-Of flow <https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow>`_.
+The user signs in only once. There is no device code, no browser sign-in of
+its own, no token cache and no keyring, so it works in Docker and on headless
+servers. It is not available in desktop mode, or to users who log in in
+another way.
+
+Each connection gets a new token, which is sent to the server in place of a
+password and is never stored. The method needs any PostgreSQL and libpq
+version that Azure Database for PostgreSQL supports.
+
+Requirements
+~~~~~~~~~~~~
+
+The On-Behalf-Of grant exchanges an access token that was issued *to
+pgAdmin's own app registration*. Microsoft rejects an assertion whose audience
+is another application, such as Microsoft Graph, so the pgAdmin login must
+request an access token for pgAdmin itself. In the Microsoft Entra admin
+center, configure the app registration that pgAdmin uses to log in:
+
+* Under *Expose an API*, set the *Application ID URI* (for example
+  ``api://<client-id>``) and add a scope, for example ``access_as_user``,
+  that users can consent to.
+* Under *API permissions*, add the delegated permission *user_impersonation*
+  of *Azure Database for PostgreSQL* (the resource
+  ``https://ossrdbms-aad.database.windows.net``), and grant consent: either
+  administrator consent for the tenant, or let users consent when they log in.
+  Without consent, or when a Conditional Access policy such as multi-factor
+  authentication applies to the database, the connect dialog offers *Sign in
+  again*.
+* Under *Certificates & secrets*, create a client secret. pgAdmin
+  authenticates the grant with the client ID and secret of the login client
+  (``client_secret_basic`` or ``client_secret_post``), so a login that uses
+  workload identity (``OAUTH2_CLIENT_AUTH_METHOD="workload_identity"``) cannot
+  use this method.
+
+In the database, enable Microsoft Entra authentication and create the
+database role for the user, group or service principal, as described in the
+Azure documentation.
+
+Configuration
+~~~~~~~~~~~~~
+
+Configure the Microsoft Entra ID login as in the examples above. Include
+pgAdmin's own API scope in ``OAUTH2_SCOPE``, use the ``v2.0`` metadata URL of
+your tenant so that the token endpoint is the tenant's, and set
+``OAUTH2_ENTRA_OBO_ENABLED`` to ``True`` in that provider's entry:
+
+.. code-block:: python
+
+    OAUTH2_CONFIG = [{
+        'OAUTH2_NAME': 'microsoft',
+        'OAUTH2_DISPLAY_NAME': 'Microsoft',
+        'OAUTH2_CLIENT_ID': '<application (client) ID>',
+        'OAUTH2_CLIENT_SECRET': '<client secret>',
+        'OAUTH2_SERVER_METADATA_URL':
+            'https://login.microsoftonline.com/<tenant>/v2.0/.well-known/openid-configuration',
+        'OAUTH2_SCOPE': 'openid email profile api://<application (client) ID>/access_as_user',
+        'OAUTH2_ENTRA_OBO_ENABLED': True
+    }]
+
+``OAUTH2_ENTRA_OBO_ENABLED`` is a key of one ``OAUTH2_CONFIG`` entry and
+defaults to ``False``. *Microsoft Entra ID* is offered in the server dialog,
+and accepted by the servers API, only in server mode and only while the user's
+current login provider has it set.
+
+In the server dialog, choose *Microsoft Entra ID*, set the *Username* to the
+user name of the database role, and set the ``sslmode`` connection parameter
+to ``verify-full``. Use ``sslrootcert`` to name the certificate authority that
+signed the server's certificate, or ``system`` to use the trusted store of the
+system pgAdmin runs on. pgAdmin refuses to save, import or connect an
+``entra`` server without ``verify-full``, and does not restrict the host
+name, so a private endpoint with custom DNS works.
+
+Security considerations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* pgAdmin holds the client secret of the app registration, and with the
+  consent above can obtain a database token for any user who is logged in,
+  for as long as that login lasts. Protect the secret and the pgAdmin
+  session store accordingly, and limit who can log in to pgAdmin.
+* The token is the password of the connection, which is why the server's
+  identity must be verified. Never use it with a server whose certificate
+  you do not verify.
+* Tokens are not written to the logs or to error messages, and are not
+  saved: no database password is stored for an ``entra`` server, and
+  switching a server to the method clears the saved one.
+* Each non-owner of a shared server chooses their own authentication
+  method, which defaults to *Password*, so no user's login is used for a
+  server host they did not choose.
+* Backup, restore, maintenance, import/export and the PSQL tool get their
+  own new token for each process.
+* When the identity provider answers ``interaction_required`` or
+  ``invalid_grant``, or the login has expired, the connect dialog offers
+  *Sign in again*, which renews the pgAdmin login through the same provider
+  and retries the connection.
