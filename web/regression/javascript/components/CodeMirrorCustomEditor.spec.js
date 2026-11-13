@@ -398,8 +398,20 @@ describe('CodeMirrorCustomEditorView', ()=>{
   });
   describe('SQL file drop preferences', ()=>{
     let getPrefsSpy;
+    /* Remount so mount-time drop/caret handlers pick up sqlFileDrop wiring. */
     const cmRerenderSql = (props)=>{
-      cmRerender({sqlFileDrop: true, ...props});
+      cmInstance.unmount();
+      cmInstance = render(
+        <ThemedCM
+          value={'Init text'}
+          className="testClass"
+          currEditor={(obj) => {
+            editor = obj;
+          }}
+          sqlFileDrop={true}
+          {...props}
+        />
+      );
     };
 
     beforeEach(()=>{

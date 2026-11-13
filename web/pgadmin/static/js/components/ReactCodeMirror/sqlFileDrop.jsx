@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { EditorView } from '@codemirror/view';
 import { checkTrojanSource } from 'sources/utils';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
@@ -17,6 +18,13 @@ import ConfirmFileDropContent from '../../Dialogs/ConfirmFileDropContent';
  * drag. Track the last user caret per editor and freeze it while dragging. */
 const caretByView = new WeakMap();
 const dragActiveByView = new WeakMap();
+/* Only the latest OS file drop may apply; stale FileReader results are ignored. */
+const dropGenByView = new WeakMap();
+
+/** True when the editor must not accept dropped file content. */
+function isOsFileDropBlocked(editor) {
+  return editor.state.readOnly || !editor.state.facet(EditorView.editable);
+}
 
 /** Return whether an OS file drag is active for the view. */
 function isDragActive(view) {
@@ -225,6 +233,24 @@ export function handleOsFileDragOver(e, view) {
 }
 
 /**
+ * Match CodeMirror's built-in drop handler: treat content as binary when it
+ * contains two consecutive C0 controls (excluding tab/LF/CR).
+ * Uses char codes instead of a control-character regex (eslint no-control-regex).
+ */
+function looksBinary(text) {
+  for (let i = 0; i < text.length - 1; i++) {
+    const a = text.charCodeAt(i);
+    const b = text.charCodeAt(i + 1);
+    const aCtrl = (a <= 0x08) || (a >= 0x0e && a <= 0x1f);
+    const bCtrl = (b <= 0x08) || (b >= 0x0e && b <= 0x1f);
+    if (aCtrl && bCtrl) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Handle an OS file drop on the editor.
  * @returns {boolean} true when the event was an OS file drop (handled or ignored).
  */
@@ -232,8 +258,10 @@ export function handleOsFileDrop(e, editor) {
   if (!hasOsFileDrop(e.dataTransfer)) {
     return false;
   }
+  const dropGen = (dropGenByView.get(editor) || 0) + 1;
+  dropGenByView.set(editor, dropGen);
   stopOsFileEvent(e);
-  if (editor.state.readOnly) {
+  if (isOsFileDropBlocked(editor)) {
     setDragActive(editor, false);
     return true;
   }
@@ -243,9 +271,14 @@ export function handleOsFileDrop(e, editor) {
   if (file) {
     const reader = new FileReader();
     reader.onload = () => {
+      if (dropGenByView.get(editor) !== dropGen) {
+        return;
+      }
+      if (isOsFileDropBlocked(editor)) {
+        return;
+      }
       const result = reader.result ?? '';
-      /* Match CodeMirror's built-in drop handler: skip binary-looking content. */
-      if (/[\x00-\x08\x0e-\x1f]{2}/.test(result)) {
+      if (looksBinary(result)) {
         return;
       }
       applyOsFileDrop(editor, result, mergePos);
@@ -260,7 +293,7 @@ export function handleOsFileDrop(e, editor) {
       /* File-only transfer with no readable File/text — leave SQL unchanged. */
       return true;
     }
-    if (/[\x00-\x08\x0e-\x1f]{2}/.test(text)) {
+    if (looksBinary(text)) {
       return true;
     }
     applyOsFileDrop(editor, text, mergePos);
