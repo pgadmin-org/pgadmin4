@@ -208,6 +208,11 @@ def is_using_passfile(server, manager):
     )
 
 
+def bad_auth_method_response(errmsg):
+    """The response to a server authentication method that is refused."""
+    return make_json_response(success=0, status=400, errormsg=errmsg)
+
+
 def has_any(data, keys):
     """
     Checks any one of the keys present in the data given
@@ -1089,8 +1094,7 @@ class ServerNode(PGChildNodeView):
         if 'auth_method' in data:
             auth_method_err = check_auth_method(data['auth_method'])
             if auth_method_err:
-                return make_json_response(
-                    success=0, status=400, errormsg=auth_method_err)
+                return bad_auth_method_response(auth_method_err)
 
         # Kerberos and a token method are exclusive, whichever of the two
         # this update changes.
@@ -1100,8 +1104,7 @@ class ServerNode(PGChildNodeView):
                 data.get('auth_method', current.auth_method),
                 data.get('kerberos_conn', current.kerberos_conn))
             if auth_method_err:
-                return make_json_response(
-                    success=0, status=400, errormsg=auth_method_err)
+                return bad_auth_method_response(auth_method_err)
 
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
@@ -1109,11 +1112,10 @@ class ServerNode(PGChildNodeView):
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
 
-        auth_method_err = self._check_update_auth_method(
+        auth_method_err = self._check_update_auth_method_and_clear_password(
             data, sharedserver or server)
         if auth_method_err:
-            return make_json_response(
-                success=0, status=400, errormsg=auth_method_err)
+            return bad_auth_method_response(auth_method_err)
 
         # Refuse a key that is not an exact libpq keyword (see create()).
         # The merged parameters live in data['connection_params'] once
@@ -1207,10 +1209,37 @@ class ServerNode(PGChildNodeView):
             )
         )
 
+    def _connect_failed_response(
+            self, server, conn, errmsg, use_pgadmin_oauth,
+            prompt_tunnel_password):
+        """The response to a failed connect. A token method gets the error
+        itself, not a database password prompt, unless the SSH tunnel
+        password is still needed. A saved password that could not be
+        decrypted and was dropped is prompted for again."""
+        prompt_tunnel_password = (
+            prompt_tunnel_password or
+            self._saved_tunnel_password_discarded(conn))
+
+        if use_pgadmin_oauth and not (
+                server.use_ssh_tunnel and prompt_tunnel_password):
+            return make_json_response(
+                status=400, success=0, errormsg=errmsg)
+
+        return self.get_response_for_password(
+            server,
+            401,
+            not use_pgadmin_oauth and (
+                not server.save_password or
+                self._saved_password_discarded(conn)),
+            prompt_tunnel_password,
+            errmsg,
+        )
+
     @staticmethod
-    def _check_update_auth_method(data, current):
+    def _check_update_auth_method_and_clear_password(data, current):
         """Check an update against the server authentication method it
-        results in. Return an error message, or None.
+        results in, and clear the saved password when it is a token method.
+        Return an error message, or None.
 
         The entra method is checked when this update selects it, and its
         sslmode whenever this update changes either; an unrelated edit of
@@ -1519,15 +1548,11 @@ class ServerNode(PGChildNodeView):
 
         # A missing or blank method means password.
         auth_method = data.get('auth_method') or AUTH_METHOD_PASSWORD
-        auth_method_err = check_auth_method(auth_method)
+        auth_method_err = check_auth_method(auth_method) or \
+            check_kerberos_exclusive(
+                auth_method, data.get('kerberos_conn', False))
         if auth_method_err:
-            return make_json_response(
-                success=0, status=400, errormsg=auth_method_err)
-        auth_method_err = check_kerberos_exclusive(
-            auth_method, data.get('kerberos_conn', False))
-        if auth_method_err:
-            return make_json_response(
-                success=0, status=400, errormsg=auth_method_err)
+            return bad_auth_method_response(auth_method_err)
         token_auth = is_token_auth_method(auth_method)
 
         # Get enc key
@@ -1581,8 +1606,7 @@ class ServerNode(PGChildNodeView):
         auth_method_err = check_entra_available(auth_method) or \
             check_entra_ssl(auth_method, connection_params)
         if auth_method_err:
-            return make_json_response(
-                success=0, status=400, errormsg=auth_method_err)
+            return bad_auth_method_response(auth_method_err)
 
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):
@@ -2056,28 +2080,9 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
-            error_message = getattr(e, 'message', str(e))
-
-            if use_pgadmin_oauth and not (
-                    server.use_ssh_tunnel and (
-                        prompt_tunnel_password or
-                        self._saved_tunnel_password_discarded(conn))):
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=error_message,
-                )
-
-            return self.get_response_for_password(
-                server,
-                401,
-                not use_pgadmin_oauth and (
-                    not server.save_password or
-                    self._saved_password_discarded(conn)),
-                prompt_tunnel_password or
-                self._saved_tunnel_password_discarded(conn),
-                error_message,
-            )
+            return self._connect_failed_response(
+                server, conn, getattr(e, 'message', str(e)),
+                use_pgadmin_oauth, prompt_tunnel_password)
 
         if not status:
             current_app.logger.error(
@@ -2090,26 +2095,9 @@ class ServerNode(PGChildNodeView):
             if conn.sign_in_again is True:
                 return sign_in_again_response(server, errmsg)
 
-            if use_pgadmin_oauth and not (
-                    server.use_ssh_tunnel and (
-                        prompt_tunnel_password or
-                        self._saved_tunnel_password_discarded(conn))):
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=errmsg,
-                )
-
-            return self.get_response_for_password(
-                server,
-                401,
-                not use_pgadmin_oauth and (
-                    not server.save_password or
-                    self._saved_password_discarded(conn)),
-                prompt_tunnel_password or
-                self._saved_tunnel_password_discarded(conn),
-                errmsg,
-            )
+            return self._connect_failed_response(
+                server, conn, errmsg, use_pgadmin_oauth,
+                prompt_tunnel_password)
         else:
             # allow_save_password is false when the encryption key only
             # lasts for this session, so a password saved now couldn't be

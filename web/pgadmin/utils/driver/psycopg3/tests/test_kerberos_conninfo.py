@@ -221,7 +221,8 @@ class ConnectKerberosNotAllowedTestCase(BaseTestGenerator):
     def runTest(self):
         message = 'require_auth allows only GSSAPI or SSPI'
         manager = MagicMock(use_ssh_tunnel=0, kerberos_conn=False,
-                            passexec=None, password=None)
+                            passexec=None, password=None,
+                            auth_method='password')
         manager.get_connection_param_value.return_value = None
         manager.create_connection_string.side_effect = \
             KerberosNotAllowed(message)

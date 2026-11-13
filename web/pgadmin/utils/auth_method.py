@@ -35,6 +35,8 @@ AUTH_METHODS = (
 
 
 def is_valid_auth_method(auth_method):
+    """True when auth_method is one of the accepted server authentication
+    methods."""
     return auth_method in AUTH_METHODS
 
 
@@ -54,12 +56,6 @@ def check_kerberos_exclusive(auth_method, kerberos_conn):
             'authentication method.'
         ).format(auth_method)
     return None
-
-
-ENTRA_SSL_ERROR = (
-    'The entra authentication method requires the connection parameter '
-    'sslmode to be set to verify-full, so that the access token is only '
-    'sent to a server whose identity is verified.')
 
 
 def is_entra_ssl_valid(connection_params):

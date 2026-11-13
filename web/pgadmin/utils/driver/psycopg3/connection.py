@@ -523,18 +523,36 @@ class Connection(BaseConnection):
                 return False, '', None, True
         return False, '', password, False
 
-    def _token_connection(self, password):
+    def _open_physical_connection(self, password, database, user, open_):
         """
-        Scope the credentials of one physical connection.
+        Open one physical connection with the credentials of the server's
+        authentication method.
 
         Asks the token authentication registry for the token provider and
-        token delivery of the server's authentication method. Use it
-        around building the connection string and opening the connection;
-        it yields the password to use.
+        token delivery of the method, builds the connection string for
+        database and user with the password to use, and returns
+        open_(connection_string) while the credentials are in scope.
+        Raises OAuthTokenError when the token cannot be obtained.
         """
-        return token_connection(
-            self.manager.auth_method, self.manager.connection_params,
-            password)
+        manager = self.manager
+        with ConnectionLocker(manager.kerberos_conn):
+            with token_connection(
+                    manager.auth_method, manager.connection_params,
+                    password) as conn_password:
+                return open_(manager.create_connection_string(
+                    database, user, conn_password))
+
+    def _token_error_message(self, exc, action=''):
+        """
+        Record that a token error needs a new sign-in, if it does, log it
+        (without any token) and return the message to report. action,
+        when given, follows "Token authentication failed" in the log.
+        """
+        self.sign_in_again = isinstance(exc, OAuthSignInRequired)
+        current_app.logger.warning(
+            "Token authentication failed%s for server %s: %s",
+            action, self.manager.sid, exc)
+        return str(exc)
 
     def connect(self, **kwargs):
         self.sign_in_again = False
@@ -634,45 +652,36 @@ class Connection(BaseConnection):
                 if ssl_key_file_permission > 600:
                     os.chmod(ssl_key, 0o600)
 
-            with ConnectionLocker(manager.kerberos_conn):
-                try:
-                    with self._token_connection(password) as conn_password:
-                        # Create the connection string
-                        connection_string = manager.create_connection_string(
-                            database, user, conn_password)
+            def open_connection(connection_string):
+                if self.async_:
+                    autocommit = True
+                    if 'auto_commit' in kwargs:
+                        autocommit = kwargs['auto_commit']
 
-                        if self.async_:
-                            autocommit = True
-                            if 'auto_commit' in kwargs:
-                                autocommit = kwargs['auto_commit']
+                    async def connectdbserver():
+                        return await psycopg.AsyncConnection.connect(
+                            connection_string,
+                            cursor_factory=AsyncDictCursor,
+                            autocommit=autocommit,
+                            prepare_threshold=manager.prepare_threshold
+                        )
 
-                            async def connectdbserver():
-                                return await psycopg.AsyncConnection.connect(
-                                    connection_string,
-                                    cursor_factory=AsyncDictCursor,
-                                    autocommit=autocommit,
-                                    prepare_threshold=manager.prepare_threshold
-                                )
+                    async_conn = asyncio.run(connectdbserver())
+                    async_conn.server_cursor_factory = AsyncDictServerCursor
+                    return async_conn
 
-                            pg_conn = asyncio.run(connectdbserver())
-                            pg_conn.server_cursor_factory = (
-                                AsyncDictServerCursor
-                            )
-                        else:
-                            pg_conn = psycopg.Connection.connect(
-                                connection_string,
-                                cursor_factory=DictCursor,
-                                prepare_threshold=manager.prepare_threshold,
-                            )
-                except OAuthTokenError as exc:
-                    manager.stop_ssh_tunnel()
-                    self.sign_in_again = isinstance(exc, OAuthSignInRequired)
-                    current_app.logger.warning(
-                        "Token authentication failed for server %s: %s",
-                        manager.sid,
-                        exc,
-                    )
-                    return False, str(exc)
+                return psycopg.Connection.connect(
+                    connection_string,
+                    cursor_factory=DictCursor,
+                    prepare_threshold=manager.prepare_threshold,
+                )
+
+            try:
+                pg_conn = self._open_physical_connection(
+                    password, database, user, open_connection)
+            except OAuthTokenError as exc:
+                manager.stop_ssh_tunnel()
+                return False, self._token_error_message(exc)
 
         except PermissionError as e:
             # A connection file path that escapes the user's storage
@@ -1943,27 +1952,15 @@ WHERE db.datname = current_database()""")
             return False, return_value
 
         try:
-            with ConnectionLocker(manager.kerberos_conn):
-                with self._token_connection(password) as conn_password:
-                    # Create the connection string
-                    connection_string = manager.create_connection_string(
-                        self.db, manager.user, conn_password)
-
-                    pg_conn = psycopg.connect(
-                        connection_string,
-                        cursor_factory=DictCursor,
-                    )
+            pg_conn = self._open_physical_connection(
+                password, self.db, manager.user,
+                lambda connection_string: psycopg.connect(
+                    connection_string, cursor_factory=DictCursor))
         except PermissionError as e:
             return False, str(e)
         except OAuthTokenError as exc:
-            self.sign_in_again = isinstance(exc, OAuthSignInRequired)
-            current_app.logger.warning(
-                "Token authentication failed "
-                "while resetting the connection for server %s: %s",
-                manager.sid,
-                exc,
-            )
-            return False, str(exc)
+            return False, self._token_error_message(
+                exc, ' while resetting the connection')
         except psycopg.Error as e:
             if hasattr(e, 'pgerror'):
                 msg = e.pgerror
@@ -2199,16 +2196,10 @@ Failed to reset the connection to the server due to following error:
                     password = None
 
             try:
-                with ConnectionLocker(self.manager.kerberos_conn):
-                    with self._token_connection(password) as conn_password:
-                        connection_string = \
-                            self.manager.create_connection_string(
-                                self.db, self.manager.user, conn_password)
-
-                        pg_conn = psycopg.connect(
-                            connection_string,
-                            cursor_factory=DictCursor,
-                        )
+                pg_conn = self._open_physical_connection(
+                    password, self.db, self.manager.user,
+                    lambda connection_string: psycopg.connect(
+                        connection_string, cursor_factory=DictCursor))
 
                 # Get the cursor and run the query
                 cur = pg_conn.cursor()
@@ -2221,9 +2212,9 @@ Failed to reset the connection to the server due to following error:
                 status = False
                 msg = str(e)
             except OAuthTokenError as exc:
-                self.sign_in_again = isinstance(exc, OAuthSignInRequired)
                 status = False
-                msg = str(exc)
+                msg = self._token_error_message(
+                    exc, ' while cancelling the query')
             except psycopg.Error as e:
                 status = False
                 if hasattr(e, 'pgerror'):

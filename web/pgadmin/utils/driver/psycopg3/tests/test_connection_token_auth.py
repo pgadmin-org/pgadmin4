@@ -18,6 +18,7 @@ from contextlib import ExitStack
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from flask import Flask
+from flask_babel import Babel
 
 import pgadmin.utils.driver.psycopg3.connection as connection_module
 from pgadmin.utils import pg_oauth2, token_auth
@@ -67,6 +68,8 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         unittest.TestCase.setUp(self)
         self.app = Flask(__name__)
         self.app.config.update(SECRET_KEY='unit-test', TESTING=True)
+        # The checks of a method translate their error messages.
+        Babel(self.app)
         self.provider = _Provider()
         self.registered = []
 

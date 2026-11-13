@@ -31,7 +31,7 @@ from pgadmin.utils import pg_oauth2
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.auth_method import AUTH_METHOD_ENTRA, \
     AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE, \
-    AUTH_METHOD_PASSWORD, ENTRA_SSL_ERROR, is_entra_ssl_valid
+    AUTH_METHOD_PASSWORD, check_entra_ssl
 
 # check is optional: a callable taking the server's connection parameters
 # that returns an error message when the server must not be sent a token.
@@ -112,17 +112,27 @@ def _entra_provider(connection_params):
 
 
 def _entra_check(connection_params):
-    return None if is_entra_ssl_valid(connection_params) else ENTRA_SSL_ERROR
+    return check_entra_ssl(AUTH_METHOD_ENTRA, connection_params)
 
 
 _REGISTRY = {}
 
 
 def register_token_auth_method(name, provider, delivery, check=None):
+    """Register the token provider and token delivery of a server
+    authentication method, replacing any earlier registration of name.
+
+    provider is a callable taking the server's connection parameters and
+    returning an access token (or raising OAuthTokenError). delivery is an
+    object like OAuthBearerDelivery or PasswordDelivery. check is optional;
+    see TokenAuthMethod.
+    """
     _REGISTRY[name] = TokenAuthMethod(provider, delivery, check)
 
 
 def unregister_token_auth_method(name):
+    """Remove the registration of a server authentication method, if any.
+    A method that is not registered is refused at connect time."""
     _REGISTRY.pop(name, None)
 
 
