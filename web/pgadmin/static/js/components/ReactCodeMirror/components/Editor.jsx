@@ -17,6 +17,14 @@ import { checkTrojanSource } from 'sources/utils';
 import usePreferences from '../../../../../preferences/static/js/store';
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import {
+  handleOsFileDrop,
+  handleOsFileDragOver,
+  handleEditorBlur,
+  handleEditorMouseUp,
+  handleEditorKeyUp,
+  rememberCaretPos,
+} from '../sqlFileDrop';
 
 // Codemirror packages
 import {
@@ -29,7 +37,7 @@ import {
   EditorView,
   keymap,
 } from '@codemirror/view';
-import { EditorState, Compartment } from '@codemirror/state';
+import { EditorState, Compartment, Prec } from '@codemirror/state';
 import { history, defaultKeymap, historyKeymap, indentLess, indentMore, deleteCharBackwardStrict, copyLineDown } from '@codemirror/commands';
 import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import {
@@ -58,13 +66,26 @@ import plpgsqlFoldService from '../extensions/plpgsqlFoldService';
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 
-function handleDrop(e, editor) {
+/** Resolve drop insert position from mouse coords (fallback: document end). */
+function getDropPos(editor, event) {
+  const x = event?.clientX ?? event?.x;
+  const y = event?.clientY ?? event?.y;
+  if (typeof x === 'number' && typeof y === 'number') {
+    const pos = editor.posAtCoords({ x, y }, false);
+    if (typeof pos === 'number') {
+      return pos;
+    }
+  }
+  return editor.state.doc.length;
+}
+
+/** Handle tree/object-explorer text drops on the editor. */
+export function handleExplorerDrop(e, editor) {
   let dropDetails = null;
   try {
     dropDetails = JSON.parse(e.dataTransfer.getData('text'));
 
     /* Stop firefox from redirecting */
-
     if (e.preventDefault) {
       e.preventDefault();
     }
@@ -76,13 +97,28 @@ function handleDrop(e, editor) {
     return false;
   }
 
-  const dropPos = editor.posAtCoords({ x: e.x, y: e.y });
+  const dropPos = getDropPos(editor, e);
+  const insert = dropDetails.text || '';
+  const changes = editor.state.changes({ from: dropPos, to: dropPos, insert });
+  const insertAt = changes.mapPos(dropPos, -1);
+  const anchor = Math.min(insertAt + (dropDetails.cur?.from ?? 0), changes.newLength);
+  const head = Math.min(insertAt + (dropDetails.cur?.to ?? 0), changes.newLength);
   editor.dispatch({
-    changes: { from: dropPos, to: dropPos, insert: dropDetails.text || '' },
-    selection: { anchor: dropPos + dropDetails.cur.from, head: dropPos + dropDetails.cur.to }
+    changes,
+    selection: { anchor, head },
+    scrollIntoView: true,
   });
 
   editor.focus();
+  return true;
+}
+
+/** Handle OS file drops or tree/object-explorer text drops on the editor. */
+export function handleDrop(e, editor) {
+  if (handleOsFileDrop(e, editor)) {
+    return true;
+  }
+  return handleExplorerDrop(e, editor);
 }
 
 function calcFontSize(fontSize) {
@@ -150,10 +186,6 @@ const defaultExtensions = [
   PgSQL.language.data.of({
     autocomplete: false,
   }),
-  EditorView.domEventHandlers({
-    drop: handleDrop,
-    paste: handlePaste,
-  }),
   errorMarkerExtn(),
   indentService.of((context, pos) => {
     if(context.state.facet(indentNewLine)) {
@@ -173,7 +205,7 @@ export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly,
   disabled, autocomplete = false, autocompleteOnKeyPress, breakpoint = false, onBreakPointChange,
   showActiveLine=false, keepHistory = true, cid, helpid, labelledBy,
-  customKeyMap, language='pgsql'
+  customKeyMap, language='pgsql', sqlFileDrop = false
 }) {
   const checkIsMounted = useIsMounted();
 
@@ -196,8 +228,24 @@ export default function Editor({
   useEffect(() => {
     if (!checkIsMounted()) return;
     const osEOL = OS_EOL === 'crlf' ? '\r\n' : '\n';
+    /* Query Tool opt-in: preference-aware OS file drop. Other editors keep
+     * explorer drops only and leave OS files to CodeMirror's default handler. */
+    const dropEventHandlers = sqlFileDrop
+      ? Prec.highest(EditorView.domEventHandlers({
+        drop: handleDrop,
+        paste: handlePaste,
+        dragover: handleOsFileDragOver,
+        blur: handleEditorBlur,
+        mouseup: handleEditorMouseUp,
+        keyup: handleEditorKeyUp,
+      }))
+      : EditorView.domEventHandlers({
+        drop: handleExplorerDrop,
+        paste: handlePaste,
+      });
     const finalExtns = [
       ...defaultExtensions,
+      dropEventHandlers,
     ];
     if (finalOptions.lineNumbers) {
       finalExtns.push(lineNumbers());
@@ -215,9 +263,15 @@ export default function Editor({
           ].concat(keepHistory ? [history()] : [])),
           [EditorView.updateListener.of(function(update) {
             if(update.selectionSet) {
+              if (sqlFileDrop) {
+                rememberCaretPos(update.view);
+              }
               onCursorActivity?.(update.view.getCursor(), update.view);
             }
             if(update.docChanged) {
+              if (sqlFileDrop) {
+                rememberCaretPos(update.view);
+              }
               onChange?.(update.view.getValue(), update.view);
             }
             if(breakpoint) {
@@ -472,4 +526,5 @@ Editor.propTypes = {
   labelledBy: PropTypes.string,
   customKeyMap: PropTypes.array,
   language: PropTypes.string,
+  sqlFileDrop: PropTypes.bool,
 };

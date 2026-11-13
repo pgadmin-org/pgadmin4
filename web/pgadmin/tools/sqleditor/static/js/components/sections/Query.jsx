@@ -533,6 +533,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     customKeyMap={shortcutOverrideKeys}
     onTextSelect={onTextSelect}
     disabled={queryToolCtx.editor_disabled}
+    sqlFileDrop={true}
   />;
 }
 
