@@ -111,7 +111,7 @@ def panel(trans_id):
             params['db'] = underscore_escape(data['db_name']) \
                 if 'db_name' in data else 'postgres'
             params['role'] = underscore_escape(data['role'])
-        set_env_variables(is_win=_platform == 'win32')
+        set_env_variables()
         return render_template("psql/index.html",
                                params=json.dumps(params))
     else:
@@ -121,11 +121,9 @@ def panel(trans_id):
             params=json.dumps(params))
 
 
-def set_env_variables(is_win=False):
+def set_env_variables():
     # Set TERM env for xterm.
     os.environ['TERM'] = 'xterm'
-    if is_win:
-        os.environ['PYWINPTY_BACKEND'] = '1'
     # If psql is enabled in server mode, set psqlrc and hist paths
     # to individual user storage.
     if config.ENABLE_PSQL and config.SERVER_MODE:
@@ -312,19 +310,32 @@ def close_pty_process(process):
                 pass
 
 
+# pywinpty's legacy WinPTY backend. ConPTY, its default, is 0.
+WINPTY_BACKEND = 1
+
+
+def spawn_windows_pty(argv, env):
+    """
+    Start argv in a Windows pseudo-terminal. This is shared with the tests
+    in tests/test_windows_pty_psql.py, which run a real psql through it, so
+    that a pywinpty upgrade that changes how it builds the command line is
+    caught in CI rather than by users.
+
+    pywinpty 3.1.2 and later put argv[0] on the command line themselves,
+    quoted, so it is passed through unchanged. The 2.0.x series left it off,
+    which is why the executable used to be repeated here (#10714); doing
+    that now would make psql read its own path as the database name.
+    """
+    return PtyProcess.spawn(list(argv), env=env, backend=WINPTY_BACKEND)
+
+
 def windows_platform(connection_data, sid, max_read_bytes, server_id,
                      env=None):
     # Spawn psql directly rather than typing its command line into cmd.exe,
     # so that the user is not left at a shell prompt when psql exits, and
     # the connection string is never parsed by cmd.exe.
-    #
-    # pywinpty 3.1.2 and later put argv[0] on the command line themselves,
-    # quoted, so it is passed through unchanged. The 2.0.x series left it
-    # off, which is why the executable used to be repeated here (#10714);
-    # doing that now would make psql read its own path as the database name.
     try:
-        process = PtyProcess.spawn(list(connection_data),
-                                   env=get_user_env(env))
+        process = spawn_windows_pty(connection_data, get_user_env(env))
     except Exception as e:
         # start_process has already registered this socket against the
         # server, so forget it again and show the error in the terminal.

@@ -111,7 +111,8 @@ class PSQLWindowsEOFBeforeExit(BaseTestGenerator):
                 # pywinpty 3.1.2+ puts argv[0] on the command line itself,
                 # so the executable must not be repeated.
                 pty_process.spawn.assert_called_once_with(
-                    ['psql', 'dbname=postgres'], env={})
+                    ['psql', 'dbname=postgres'], env={},
+                    backend=psql.WINPTY_BACKEND)
                 read_stdout.assert_called_once()
                 drain_stdout.assert_called_once_with(process, sid, 1024)
                 self.assertNotIn(sid, self.app.config['sessions'])
