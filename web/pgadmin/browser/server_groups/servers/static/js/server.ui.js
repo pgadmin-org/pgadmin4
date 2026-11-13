@@ -97,6 +97,17 @@ export function getConnectionParametersForAuthMethod(authMethod) {
   );
 }
 
+// The saved connection parameter rows that apply to a server authentication
+// method: the OAuth ones only for an OAuth method. Returns the same array
+// when nothing is dropped.
+export function connectionParamsForAuthMethod(params, authMethod) {
+  if (isOAuthAuthMethod(authMethod) || !Array.isArray(params)) {
+    return params;
+  }
+  const kept = params.filter((p)=>!OAUTH_METHOD_PARAMS.includes(p.name));
+  return kept.length == params.length ? params : kept;
+}
+
 // Entra is listed only when the backend reports it available: server mode,
 // and the current login provider has On-Behalf-Of enabled.
 export function getAuthMethodOptions() {
@@ -314,6 +325,10 @@ export default class ServerSchema extends BaseUISchema {
 
   initialise(state) {
     this.authMethod = state.auth_method || AUTH_METHOD_PASSWORD;
+    // Saved OAuth parameters of a server that does not use them are neither
+    // shown nor sent.
+    state.connection_params = connectionParamsForAuthMethod(
+      state.connection_params, this.authMethod);
     this.paramSchema.setAllReadOnly(this.isConnected(state));
   }
 
@@ -479,9 +494,19 @@ export default class ServerSchema extends BaseUISchema {
         helpMessage: gettext('How pgAdmin authenticates to the server. The OAuth methods use your pgAdmin OAuth2 login; the OAuth methods other than Microsoft Entra ID need PostgreSQL 18 or later.'),
         depChange: (state)=>{
           obj.authMethod = state.auth_method;
+          const changes = {};
           // Kerberos cannot be combined with a token method.
           if (isTokenAuthMethod(state.auth_method) && state.kerberos_conn) {
-            return {kerberos_conn: false};
+            changes.kerberos_conn = false;
+          }
+          // The OAuth parameters only apply to the OAuth methods.
+          const params = connectionParamsForAuthMethod(
+            state.connection_params, state.auth_method);
+          if (params !== state.connection_params) {
+            changes.connection_params = params;
+          }
+          if (!_.isEmpty(changes)) {
+            return changes;
           }
         },
       },{

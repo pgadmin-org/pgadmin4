@@ -356,6 +356,37 @@ describe('ServerSchema', ()=>{
       oauth.forEach((name)=>expect(paramNames(schema)).not.toContain(name));
     });
 
+    describe('saved OAuth parameter rows', ()=>{
+      const row = (name, value)=>({name, value, keyword: name});
+      const saved = ()=>[
+        row('sslmode', 'verify-full'), row('oauth_issuer', 'https://idp'),
+        row('oauth_client_id', 'pg'), row('oauth_scope', 'openid'),
+      ];
+      const names = (params)=>params.map((p)=>p.name);
+
+      it('are dropped when a method that does not use them is selected', ()=>{
+        let depChange = field(createSchemaObject(), 'auth_method').depChange;
+        ['password', 'entra'].forEach((method)=>{
+          let change = depChange({auth_method: method, connection_params: saved()});
+          expect(names(change.connection_params)).toEqual(['sslmode']);
+        });
+        expect(depChange({auth_method: 'oauth_direct', connection_params: saved()}))
+          .toBeUndefined();
+      });
+
+      it('do not show when a server that does not use them is loaded', ()=>{
+        let schema = createSchemaObject();
+        ['password', 'entra'].forEach((method)=>{
+          let state = {auth_method: method, connection_params: saved()};
+          schema.initialise(state);
+          expect(names(state.connection_params)).toEqual(['sslmode']);
+        });
+        let state = {auth_method: 'oauth_exchange', connection_params: saved()};
+        schema.initialise(state);
+        expect(state.connection_params.length).toBe(4);
+      });
+    });
+
     it('no longer has a token mode connection parameter', ()=>{
       expect(getConnectionParameters().map((p)=>p.value))
         .not.toContain('oauth_pgadmin_token_mode');
