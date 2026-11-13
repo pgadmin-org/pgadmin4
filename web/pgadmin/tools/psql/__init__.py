@@ -11,6 +11,7 @@ import os
 import select
 import struct
 import time
+from importlib import metadata
 
 import config
 import re
@@ -35,6 +36,10 @@ from pgadmin.model import Server
 from pgadmin.utils.server_access import get_server
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
+# pywinpty 2.0.x, the newest series that installs on Python 3.9, leaves
+# argv[0] off the command line; 3.1.2 and later put it there themselves.
+PYWINPTY_OMITS_ARGV0 = False
+
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
     # if not supporting
@@ -42,6 +47,12 @@ if _platform == 'win32':
         from winpty import PtyProcess
     except ImportError as error:
         config.ENABLE_PSQL = False
+    else:
+        try:
+            PYWINPTY_OMITS_ARGV0 = \
+                int(metadata.version('pywinpty').split('.')[0]) < 3
+        except (metadata.PackageNotFoundError, ValueError):
+            pass
 else:
     import fcntl
     import termios
@@ -322,11 +333,14 @@ def spawn_windows_pty(argv, env):
     caught in CI rather than by users.
 
     pywinpty 3.1.2 and later put argv[0] on the command line themselves,
-    quoted, so it is passed through unchanged. The 2.0.x series left it off,
-    which is why the executable used to be repeated here (#10714); doing
-    that now would make psql read its own path as the database name.
+    quoted, so it is passed through unchanged; repeating it would make psql
+    read its own path as the database name. The 2.0.x series, still used on
+    Python 3.9, leaves it off, so there the executable is repeated (#10714).
     """
-    return PtyProcess.spawn(list(argv), env=env, backend=WINPTY_BACKEND)
+    argv = list(argv)
+    if PYWINPTY_OMITS_ARGV0:
+        argv = argv[:1] + argv
+    return PtyProcess.spawn(argv, env=env, backend=WINPTY_BACKEND)
 
 
 def windows_platform(connection_data, sid, max_read_bytes, server_id,

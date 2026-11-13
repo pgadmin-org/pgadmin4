@@ -238,10 +238,16 @@ class PSQLWindowsPtyTyping(PSQLWindowsPtyMixin, BaseTestGenerator):
         # The echo may be wrapped or redrawn, so count the characters
         # rather than looking for the whole string.
         before = session.output().count('x')
+        # Each write blocks, so a slow terminal can hold up the typing
+        # itself; the limit covers the typing as well as the echo.
+        start = time.monotonic()
         session.type("SELECT '" + 'x' * self.count)
-        taken = session.wait_for(
-            lambda out: out.count('x') - before >= self.count,
-            timeout=self.limit)
+        remaining = self.limit - (time.monotonic() - start)
+        taken = None
+        if remaining > 0:
+            taken = session.wait_for(
+                lambda out: out.count('x') - before >= self.count,
+                timeout=remaining)
         self.assertIsNotNone(
             taken,
             '{0} typed characters were not all echoed within {1} seconds. '
