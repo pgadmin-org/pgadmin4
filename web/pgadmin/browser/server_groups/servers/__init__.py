@@ -34,7 +34,8 @@ from pgadmin.utils.passexec import normalise_passexec_name, \
     passexec_name_for_api, PASSEXEC_INHERIT
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
-    check_auth_method, check_kerberos_exclusive, is_token_auth_method
+    check_auth_method, check_entra_available, check_entra_ssl, \
+    check_kerberos_exclusive, is_token_auth_method
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
@@ -1107,6 +1108,12 @@ class ServerNode(PGChildNodeView):
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
 
+        auth_method_err = self._check_update_auth_method(
+            data, sharedserver or server)
+        if auth_method_err:
+            return make_json_response(
+                success=0, status=400, errormsg=auth_method_err)
+
         # Refuse a key that is not an exact libpq keyword (see create()).
         # The merged parameters live in data['connection_params'] once
         # update_connection_parameter() has applied the deltas.
@@ -1200,6 +1207,39 @@ class ServerNode(PGChildNodeView):
         )
 
     @staticmethod
+    def _check_update_auth_method(data, current):
+        """Check an update against the server authentication method it
+        results in. Return an error message, or None.
+
+        The entra method is checked when this update selects it, and its
+        sslmode whenever this update changes either; an unrelated edit of
+        an entra server is never refused. No database password is kept for
+        a token method: the access token is the credential."""
+        auth_method = data.get('auth_method', current.auth_method)
+        if not is_token_auth_method(auth_method):
+            return None
+
+        if 'auth_method' in data:
+            err = check_entra_available(auth_method)
+            if err:
+                return err
+        if 'auth_method' in data or 'connection_params' in data:
+            # The merged parameters, once update_connection_parameter()
+            # has applied the deltas.
+            err = check_entra_ssl(
+                auth_method,
+                data['connection_params'] if 'connection_params' in data
+                else current.connection_params)
+            if err:
+                return err
+
+        if any(key in data for key in (
+                'auth_method', 'password', 'save_password')):
+            data['password'] = None
+            data['save_password'] = 0
+        return None
+
+    @staticmethod
     def _update_server_details(server, sharedserver,
                                config_param_map, arg, value):
         # '' is meaningful for a non-owner's passexec_name: it means
@@ -1237,7 +1277,7 @@ class ServerNode(PGChildNodeView):
                         arg in _owner_only_fields:
                     continue
                 value = data[arg]
-                if arg == 'password':
+                if arg == 'password' and data[arg] is not None:
                     value = encrypt(data[arg], crypt_key)
                 # sqlite3 do not have boolean type so we need to
                 # convert it manually to integer.
@@ -1537,6 +1577,12 @@ class ServerNode(PGChildNodeView):
                     'Invalid connection parameter: {0}').format(invalid_key)
             )
 
+        auth_method_err = check_entra_available(auth_method) or \
+            check_entra_ssl(auth_method, connection_params)
+        if auth_method_err:
+            return make_json_response(
+                success=0, status=400, errormsg=auth_method_err)
+
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):
             return make_json_response(
@@ -1644,7 +1690,7 @@ class ServerNode(PGChildNodeView):
                     tunnel_password=tunnel_password,
                     server_types=ServerType.types()
                 )
-                if not status:
+                if not status and conn.sign_in_again is not True:
                     db.session.delete(server)
                     db.session.commit()
                     return make_json_response(
@@ -1654,7 +1700,7 @@ class ServerNode(PGChildNodeView):
                             "Unable to connect to server:\n\n{}"
                         ).format(errmsg)
                     )
-                else:
+                elif status:
                     if 'save_password' in data and data['save_password'] and \
                             have_password and config.ALLOW_SAVE_PASSWORD:
                         setattr(server, 'password', password)

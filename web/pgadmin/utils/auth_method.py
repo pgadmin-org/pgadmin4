@@ -16,6 +16,7 @@ Kerberos is a separate setting on the server, not a server authentication
 method.
 """
 
+import config
 from flask_babel import gettext
 
 AUTH_METHOD_PASSWORD = 'password'
@@ -79,6 +80,26 @@ def check_entra_ssl(auth_method, connection_params):
             'parameter sslmode to be set to verify-full, so that the '
             'access token is only sent to a server whose identity is '
             'verified.')
+    return None
+
+
+def check_entra_available(auth_method):
+    """Return an error message when the ``entra`` method is not available to
+    the current user, else None. It needs server mode and a login through an
+    OAuth2 provider that has On-Behalf-Of enabled."""
+    if auth_method != AUTH_METHOD_ENTRA:
+        return None
+    # Import here: pg_oauth2 needs a Flask request to answer.
+    from pgadmin.utils.pg_oauth2 import is_entra_obo_enabled
+    if not config.SERVER_MODE:
+        return gettext(
+            'The entra authentication method is only available in server '
+            'mode.')
+    if not is_entra_obo_enabled():
+        return gettext(
+            'The entra authentication method is only available when you '
+            'are logged in through an OAuth2 provider that has '
+            'OAUTH2_ENTRA_OBO_ENABLED set.')
     return None
 
 

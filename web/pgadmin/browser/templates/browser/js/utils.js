@@ -73,6 +73,9 @@ define('pgadmin.browser.utils',
   pgAdmin['server_passexec_commands'] = {{ server_passexec_commands|tojson }};
 
   /* LLM/AI features enabled */
+  // Whether the server authentication method entra may be offered: server
+  // mode, and the login provider has On-Behalf-Of enabled.
+  pgAdmin['entra_obo_available'] = {{ entra_obo_available|tojson }};
   pgAdmin['llm_enabled'] = '{{llm_enabled}}' == 'True';
 
   // Define list of nodes on which Query tool option doesn't appears

@@ -70,6 +70,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE, \
 from pgadmin.authenticate import AuthSourceManager
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.utils.passexec import get_server_passexec_commands
+from pgadmin.utils.pg_oauth2 import is_entra_obo_enabled
 
 from pgadmin.user_login_check import pga_login_required
 
@@ -568,6 +569,7 @@ def utils():
             server_passexec_commands=sorted(get_server_passexec_commands())
             if config.SERVER_MODE else [],
             max_server_tags_allowed=config.MAX_SERVER_TAGS_ALLOWED,
+            entra_obo_available=is_entra_obo_enabled(),
             llm_enabled=is_llm_enabled(),
         ), 200)
     response.headers['Content-Type'] = MIMETYPE_APP_JS

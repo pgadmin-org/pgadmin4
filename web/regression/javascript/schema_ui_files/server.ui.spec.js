@@ -264,6 +264,79 @@ describe('ServerSchema', ()=>{
       );
     });
 
+    describe('Microsoft Entra ID', ()=>{
+      let origAvailable;
+
+      beforeEach(()=>{
+        origAvailable = pgAdmin.entra_obo_available;
+      });
+
+      afterEach(()=>{
+        pgAdmin.entra_obo_available = origAvailable;
+      });
+
+      it('is offered when the backend reports it available', ()=>{
+        pgAdmin.entra_obo_available = true;
+        let f = field(createSchemaObject(), 'auth_method');
+        expect(f.options.map((o)=>o.value)).toEqual(
+          ['password', 'oauth_direct', 'oauth_exchange', 'entra']
+        );
+        expect(f.options).toContainEqual({label: 'Microsoft Entra ID', value: 'entra'});
+      });
+
+      it('is not offered when the backend does not report it', ()=>{
+        [false, undefined].forEach((available)=>{
+          pgAdmin.entra_obo_available = available;
+          expect(field(createSchemaObject(), 'auth_method').options.map((o)=>o.value))
+            .not.toContain('entra');
+        });
+      });
+
+      it('takes no database password and no OAuth parameters', ()=>{
+        pgAdmin.entra_obo_available = true;
+        let schema = createSchemaObject();
+        expect(field(schema, 'password').disabled({auth_method: 'entra'})).toBe(true);
+        expect(field(schema, 'save_password').disabled({auth_method: 'entra'})).toBe(true);
+        field(schema, 'auth_method').depChange({auth_method: 'entra'});
+        ['oauth_issuer', 'oauth_client_id', 'oauth_client_secret', 'oauth_scope']
+          .forEach((name)=>expect(paramNames(schema)).not.toContain(name));
+      });
+
+      it('turns Kerberos off and disables it', ()=>{
+        pgAdmin.entra_obo_available = true;
+        let schema = createSchemaObject();
+        expect(field(schema, 'kerberos_conn').disabled({auth_method: 'entra'})).toBe(true);
+        expect(field(schema, 'auth_method').depChange({auth_method: 'entra', kerberos_conn: true}))
+          .toEqual({kerberos_conn: false});
+      });
+
+      it('requires sslmode verify-full', ()=>{
+        let schema = createSchemaObject();
+        let setError = jest.fn();
+        let state = {
+          gid: 1, host: 'pg.example.test', username: 'user@example.test', port: 5432,
+          auth_method: 'entra',
+        };
+
+        state.connection_params = [{name: 'sslmode', value: 'require', keyword: 'sslmode'}];
+        expect(schema.validate(state, setError)).toBe(true);
+        expect(setError).toHaveBeenCalledWith('auth_method', expect.stringContaining('verify-full'));
+
+        state.connection_params = [];
+        expect(schema.validate(state, setError)).toBe(true);
+
+        state.connection_params = [{name: 'sslmode', value: 'verify-full', keyword: 'sslmode'}];
+        setError.mockClear();
+        expect(schema.validate(state, setError)).toBe(false);
+        expect(setError).toHaveBeenCalledWith('auth_method', null);
+
+        // Any other method is left alone.
+        state.auth_method = 'password';
+        state.connection_params = [];
+        expect(schema.validate(state, setError)).toBe(false);
+      });
+    });
+
     it('offers the OAuth parameters only for an OAuth method', ()=>{
       let schema = createSchemaObject();
       let oauth = ['oauth_issuer', 'oauth_client_id', 'oauth_client_secret', 'oauth_scope'];

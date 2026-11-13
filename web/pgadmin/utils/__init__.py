@@ -37,7 +37,7 @@ from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
 from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, AUTH_METHODS, \
-    check_kerberos_exclusive, is_valid_auth_method
+    check_entra_ssl, check_kerberos_exclusive, is_valid_auth_method
 
 ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
@@ -1298,6 +1298,9 @@ def validate_json_data(data, is_admin):
         conn_params = obj.get("ConnectionParameters", None)
         conn_params = dict(conn_params) \
             if isinstance(conn_params, dict) else {}
+        errmsg = check_entra_ssl(auth_method, conn_params)
+        if errmsg:
+            return gettext("Server '%s': %s") % (server, errmsg)
         if is_service_attrib_available:
             conn_params['service'] = obj["Service"]
         try:

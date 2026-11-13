@@ -27,12 +27,14 @@ class TestAuthMethodExport(_ImportExportMixin, BaseTestGenerator):
         self._add_server('plain')
         self._add_server('direct', auth_method='oauth_direct')
         self._add_server('exchange', auth_method='oauth_exchange')
+        self._add_server('entra', auth_method='entra')
 
         dumped = self._dump()
 
         self.assertEqual(dumped['plain']['AuthMethod'], 'password')
         self.assertEqual(dumped['direct']['AuthMethod'], 'oauth_direct')
         self.assertEqual(dumped['exchange']['AuthMethod'], 'oauth_exchange')
+        self.assertEqual(dumped['entra']['AuthMethod'], 'entra')
 
 
 class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
@@ -44,6 +46,8 @@ class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
             {'Name': 'password', 'AuthMethod': 'password'},
             {'Name': 'direct', 'AuthMethod': 'oauth_direct'},
             {'Name': 'exchange', 'AuthMethod': 'oauth_exchange'},
+            {'Name': 'entra', 'AuthMethod': 'entra',
+             'ConnectionParameters': {'sslmode': 'verify-full'}},
             {'Name': 'kerberos', 'KerberosAuthentication': True},
             {'Name': 'kerberos-password', 'AuthMethod': 'password',
              'KerberosAuthentication': True},
@@ -53,11 +57,13 @@ class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
 
         self.assertEqual(
             {name: self._loaded(name).auth_method for name in (
-                'missing', 'password', 'direct', 'exchange', 'kerberos',
+                'missing', 'password', 'direct', 'exchange', 'entra',
+                'kerberos',
                 'kerberos-password', 'token-no-kerberos')},
             {'missing': 'password', 'password': 'password',
              'direct': 'oauth_direct', 'exchange': 'oauth_exchange',
-             'kerberos': 'password', 'kerberos-password': 'password',
+             'entra': 'entra', 'kerberos': 'password',
+             'kerberos-password': 'password',
              'token-no-kerberos': 'oauth_direct'})
         self.assertTrue(self._loaded('kerberos').kerberos_conn)
 
@@ -88,6 +94,16 @@ class TestAuthMethodImportRefused(_ImportExportMixin, BaseTestGenerator):
          dict(bad={'AuthMethod': 'OAuth_Direct'}, expect='OAuth_Direct')),
         ('Blank method',
          dict(bad={'AuthMethod': ''}, expect='AuthMethod')),
+        ('Entra without an SSL mode',
+         dict(bad={'AuthMethod': 'entra'}, expect='verify-full')),
+        ('Entra without SSL mode verify-full',
+         dict(bad={'AuthMethod': 'entra',
+                   'ConnectionParameters': {'sslmode': 'verify-ca'}},
+              expect='verify-full')),
+        ('Kerberos with entra',
+         dict(bad={'AuthMethod': 'entra', 'KerberosAuthentication': True,
+                   'ConnectionParameters': {'sslmode': 'verify-full'}},
+              expect='Kerberos')),
         ('Kerberos with oauth_direct',
          dict(bad={'AuthMethod': 'oauth_direct',
                    'KerberosAuthentication': True}, expect='Kerberos')),

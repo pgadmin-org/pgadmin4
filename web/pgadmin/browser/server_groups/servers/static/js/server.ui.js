@@ -71,6 +71,7 @@ export function sharingForServerCopy(d, user) {
 export const AUTH_METHOD_PASSWORD = 'password';
 export const AUTH_METHOD_OAUTH_DIRECT = 'oauth_direct';
 export const AUTH_METHOD_OAUTH_EXCHANGE = 'oauth_exchange';
+export const AUTH_METHOD_ENTRA = 'entra';
 
 // Every method other than password authenticates with an access token.
 export function isTokenAuthMethod(authMethod) {
@@ -96,12 +97,18 @@ export function getConnectionParametersForAuthMethod(authMethod) {
   );
 }
 
+// Entra is listed only when the backend reports it available: server mode,
+// and the current login provider has On-Behalf-Of enabled.
 export function getAuthMethodOptions() {
-  return [
+  const options = [
     {label: gettext('Password'), value: AUTH_METHOD_PASSWORD},
     {label: gettext('OAuth: pgAdmin login token'), value: AUTH_METHOD_OAUTH_DIRECT},
     {label: gettext('OAuth: token exchange'), value: AUTH_METHOD_OAUTH_EXCHANGE},
   ];
+  if (pgAdmin.entra_obo_available) {
+    options.push({label: gettext('Microsoft Entra ID'), value: AUTH_METHOD_ENTRA});
+  }
+  return options;
 }
 
 export function getConnectionParameters() {
@@ -469,7 +476,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('Connection'), mode: ['properties', 'edit', 'create'],
         options: getAuthMethodOptions(), controlProps: {allowClear: false},
         readonly: obj.isConnected,
-        helpMessage: gettext('How pgAdmin authenticates to the server. The OAuth methods use your pgAdmin OAuth2 login and need PostgreSQL 18 or later.'),
+        helpMessage: gettext('How pgAdmin authenticates to the server. The OAuth methods use your pgAdmin OAuth2 login; the OAuth methods other than Microsoft Entra ID need PostgreSQL 18 or later.'),
         depChange: (state)=>{
           obj.authMethod = state.auth_method;
           // Kerberos cannot be combined with a token method.
@@ -833,6 +840,17 @@ export default class ServerSchema extends BaseUISchema {
         setError('tunnel_keep_alive', null);
       }
     }
+
+    // The token of the entra method is only sent to a server whose identity
+    // is verified.
+    if (state.auth_method === AUTH_METHOD_ENTRA) {
+      const sslmode = _.find(state.connection_params, (p)=>p.name == 'sslmode');
+      if (sslmode?.value !== 'verify-full') {
+        setError('auth_method', gettext('The Microsoft Entra ID authentication method requires the connection parameter SSL mode to be verify-full.'));
+        return true;
+      }
+    }
+    setError('auth_method', null);
     return false;
   }
 }
