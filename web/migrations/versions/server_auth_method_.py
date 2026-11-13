@@ -10,7 +10,8 @@
 """Add auth_method to the server and sharedserver tables
 
 The server authentication method says how pgAdmin proves a database
-username's identity to a server: password, oauth_direct or oauth_exchange.
+username's identity to a server: password, oauth_direct, oauth_exchange
+or entra.
 Every existing server keeps authenticating with a password. The allowed
 values are checked by the application, not by the database.
 
