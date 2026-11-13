@@ -20,6 +20,8 @@ from contextlib import ExitStack
 
 from flask import Flask, session
 from pgadmin.utils import pg_oauth2
+from pgadmin.utils.auth_method import AUTH_METHOD_OAUTH_DIRECT, \
+    AUTH_METHOD_OAUTH_EXCHANGE
 
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client.apps import FlaskOAuth2App
@@ -1091,7 +1093,7 @@ class TestExchangeOAuthAccessToken(
 
         with self.app.test_request_context('/'):
             result = pg_oauth2.get_postgres_oauth_token(
-                'exchange', 'postgres-cluster', 'openid', ISSUER,
+                AUTH_METHOD_OAUTH_EXCHANGE, 'postgres-cluster', 'openid', ISSUER,
             )
 
         self.assertEqual(result, 'exchanged-access-token')
@@ -1134,7 +1136,7 @@ class TestExchangeOAuthAccessToken(
             with self.assertRaisesRegex(
                     pg_oauth2.OAuthTokenExchangeError, message):
                 pg_oauth2.get_postgres_oauth_token(
-                    'exchange', 'postgres-cluster', 'openid', ISSUER,
+                    AUTH_METHOD_OAUTH_EXCHANGE, 'postgres-cluster', 'openid', ISSUER,
                 )
 
         get_token.assert_not_called()
@@ -1478,7 +1480,7 @@ class TestExchangeOAuthAccessToken(
 
 class TestGetPostgresOAuthToken(
         _OAuthUnitTestMixin, BaseTestGenerator):
-    """Test selection of the PostgreSQL OAuth token source."""
+    """Test selection of the PostgreSQL OAuth token provider."""
 
     def setUp(self):
         self.app = Flask(__name__)
@@ -1516,12 +1518,13 @@ class TestGetPostgresOAuthToken(
         )
 
         # Leave issuer validation and the exchange implementation real.
-        for mode in ('direct', 'exchange'):
-            with self.subTest(mode=mode):
+        for method in (AUTH_METHOD_OAUTH_DIRECT,
+                       AUTH_METHOD_OAUTH_EXCHANGE):
+            with self.subTest(method=method):
                 with self.assertRaisesRegex(
                         pg_oauth2.OAuthTokenError, message):
                     pg_oauth2.get_postgres_oauth_token(
-                        mode, 'postgres-cluster', 'openid', issuer,
+                        method, 'postgres-cluster', 'openid', issuer,
                     )
 
         get_token.assert_not_called()
@@ -1561,9 +1564,9 @@ class TestGetPostgresOAuthToken(
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
         return_value='pgadmin-access-token'
     )
-    def case_direct_mode_returns_pgadmin_access_token(self, get_token):
+    def case_direct_returns_pgadmin_access_token(self, get_token):
         result = pg_oauth2.get_postgres_oauth_token(
-            'direct',
+            AUTH_METHOD_OAUTH_DIRECT,
             'postgres-cluster',
             None,
             ISSUER,
@@ -1576,11 +1579,11 @@ class TestGetPostgresOAuthToken(
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
         return_value=None
     )
-    def case_direct_mode_asks_to_sign_in_again_without_a_usable_token(
+    def case_direct_asks_to_sign_in_again_without_a_usable_token(
             self, get_token):
         with self.assertRaises(pg_oauth2.OAuthSignInRequired):
             pg_oauth2.get_postgres_oauth_token(
-                'direct',
+                AUTH_METHOD_OAUTH_DIRECT,
                 'postgres-cluster',
                 None,
                 ISSUER,
@@ -1590,13 +1593,13 @@ class TestGetPostgresOAuthToken(
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
         return_value=None
     )
-    def case_direct_mode_raises_when_pgadmin_token_is_missing(
+    def case_direct_raises_when_pgadmin_token_is_missing(
             self, get_token):
         with self.assertRaisesRegex(
                 pg_oauth2.OAuthTokenError,
                 'No current pgAdmin OAuth access token is available'):
             pg_oauth2.get_postgres_oauth_token(
-                'direct',
+                AUTH_METHOD_OAUTH_DIRECT,
                 'postgres-cluster',
                 None,
                 ISSUER,
@@ -1608,9 +1611,9 @@ class TestGetPostgresOAuthToken(
         'pgadmin.utils.pg_oauth2._exchange_oauth_access_token',
         return_value='exchanged-access-token'
     )
-    def case_exchange_mode_returns_exchanged_access_token(self, exchange):
+    def case_exchange_returns_exchanged_access_token(self, exchange):
         result = pg_oauth2.get_postgres_oauth_token(
-            'exchange',
+            AUTH_METHOD_OAUTH_EXCHANGE,
             'postgres-cluster',
             'openid',
             ISSUER,
@@ -1620,7 +1623,7 @@ class TestGetPostgresOAuthToken(
         exchange.assert_called_once_with('postgres-cluster', 'openid', ISSUER)
 
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def case_exchange_mode_requires_client_id(self, exchange):
+    def case_exchange_requires_client_id(self, exchange):
         invalid_client_ids = (
             None,
             '',
@@ -1634,7 +1637,7 @@ class TestGetPostgresOAuthToken(
                         pg_oauth2.OAuthTokenError,
                         'oauth_client_id'):
                     pg_oauth2.get_postgres_oauth_token(
-                        'exchange',
+                        AUTH_METHOD_OAUTH_EXCHANGE,
                         client_id,
                         'openid',
                         ISSUER,
@@ -1644,12 +1647,12 @@ class TestGetPostgresOAuthToken(
 
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def case_invalid_mode_raises_error(self, exchange, get_token):
+    def case_a_method_without_a_token_provider_raises_error(self, exchange, get_token):
         with self.assertRaisesRegex(
                 pg_oauth2.OAuthTokenError,
-                'Invalid pgAdmin OAuth token mode'):
+                'does not use an OAuth token'):
             pg_oauth2.get_postgres_oauth_token(
-                'invalid-mode',
+                'password',
                 'postgres-cluster',
                 'openid',
                 ISSUER,
@@ -1674,7 +1677,7 @@ class TestGetPostgresOAuthToken(
             with self.assertRaises(
                     pg_oauth2.OAuthTokenExchangeError) as raised:
                 pg_oauth2.get_postgres_oauth_token(
-                    'exchange',
+                    AUTH_METHOD_OAUTH_EXCHANGE,
                     'postgres-cluster',
                     'openid',
                     ISSUER,
@@ -1851,15 +1854,16 @@ class TestOAuthRequestContext(
 
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def case_token_modes_require_request_context(
+    def case_token_methods_require_request_context(
             self, exchange, get_token):
-        for mode in ('direct', 'exchange'):
-            with self.subTest(mode=mode):
+        for method in (AUTH_METHOD_OAUTH_DIRECT,
+                       AUTH_METHOD_OAUTH_EXCHANGE):
+            with self.subTest(method=method):
                 with self.assertRaisesRegex(
                         pg_oauth2.OAuthRequestContextRequired,
                         'authenticated pgAdmin request'):
                     pg_oauth2.get_postgres_oauth_token(
-                        mode,
+                        method,
                         'postgres-cluster',
                         'openid',
                         ISSUER,

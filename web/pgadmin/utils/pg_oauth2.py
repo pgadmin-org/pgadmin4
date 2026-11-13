@@ -40,6 +40,9 @@ import requests
 import config
 from flask import has_request_context, session
 
+from pgadmin.utils.auth_method import AUTH_METHOD_OAUTH_DIRECT, \
+    AUTH_METHOD_OAUTH_EXCHANGE
+
 _install_lock = threading.Lock()
 logger = logging.getLogger(__name__)
 
@@ -1247,12 +1250,12 @@ def get_entra_obo_token() -> str:
 
 
 def get_postgres_oauth_token(
-    mode: str,
+    auth_method: str,
     client_id: Optional[str],
     oauth_scope: Optional[str],
     oauth_issuer: Optional[str],
 ) -> str:
-    """Return a PostgreSQL OAuth token using the selected token mode."""
+    """Return a PostgreSQL OAuth token for a server authentication method."""
     if not has_request_context():
         logger.debug(
             "PostgreSQL OAuth token retrieval outside a request context.",
@@ -1263,7 +1266,7 @@ def get_postgres_oauth_token(
             "pgAdmin request. Reconnect through pgAdmin."
         )
 
-    if mode == "direct":
+    if auth_method == AUTH_METHOD_OAUTH_DIRECT:
         _get_validated_oauth_client(oauth_issuer)
         token = _get_pgadmin_oauth_token()
 
@@ -1279,7 +1282,7 @@ def get_postgres_oauth_token(
 
         return token
 
-    if mode == "exchange":
+    if auth_method == AUTH_METHOD_OAUTH_EXCHANGE:
         if (
             not isinstance(client_id, str) or
             not client_id.strip() or
@@ -1295,5 +1298,6 @@ def get_postgres_oauth_token(
         )
 
     raise OAuthTokenError(
-        'Invalid pgAdmin OAuth token mode "{0}".'.format(mode)
+        'Server authentication method "{0}" does not use an OAuth '
+        'token.'.format(auth_method)
     )

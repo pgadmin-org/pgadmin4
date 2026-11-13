@@ -88,7 +88,7 @@ class PasswordDelivery:
 def _direct_provider(connection_params):
     """The pgAdmin login token itself."""
     return pg_oauth2.get_postgres_oauth_token(
-        'direct',
+        AUTH_METHOD_OAUTH_DIRECT,
         connection_params.get('oauth_client_id'),
         connection_params.get('oauth_scope'),
         connection_params.get('oauth_issuer'),
@@ -98,7 +98,7 @@ def _direct_provider(connection_params):
 def _exchange_provider(connection_params):
     """A token exchange (RFC 8693) for a token scoped to the database."""
     return pg_oauth2.get_postgres_oauth_token(
-        'exchange',
+        AUTH_METHOD_OAUTH_EXCHANGE,
         connection_params.get('oauth_client_id'),
         connection_params.get('oauth_scope'),
         connection_params.get('oauth_issuer'),

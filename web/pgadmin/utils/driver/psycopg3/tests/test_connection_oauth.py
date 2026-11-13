@@ -18,6 +18,8 @@ import psycopg
 from flask import Flask
 
 from pgadmin.utils import pg_oauth2
+from pgadmin.utils.auth_method import AUTH_METHOD_OAUTH_DIRECT, \
+    AUTH_METHOD_OAUTH_EXCHANGE
 import pgadmin.utils.driver.psycopg3.connection as connection_module
 
 ISSUER = 'https://keycloak.example.test/realms/postgres'
@@ -60,7 +62,7 @@ class TestOAuthConnection(
         pg_oauth2._oauth_token.reset(self.token_handle)
 
     @staticmethod
-    def _make_manager(mode='disabled', client_id=None, oauth_scope=None):
+    def _make_manager(method='disabled', client_id=None, oauth_scope=None):
         manager = MagicMock()
 
         manager.sid = 1
@@ -78,9 +80,9 @@ class TestOAuthConnection(
 
         manager.auth_method = {
             'disabled': 'password',
-            'direct': 'oauth_direct',
-            'exchange': 'oauth_exchange',
-        }[mode]
+            'direct': AUTH_METHOD_OAUTH_DIRECT,
+            'exchange': AUTH_METHOD_OAUTH_EXCHANGE,
+        }[method]
         manager.connection_params = {
             'oauth_issuer': ISSUER,
         }
@@ -173,7 +175,7 @@ class TestOAuthConnection(
         Existing non-OAuth connections must not install the OAuth hook
         or access the pgAdmin OAuth session.
         """
-        manager = self._make_manager(mode='disabled')
+        manager = self._make_manager(method='disabled')
         connection = self._make_connection(manager)
         pg_connection = self._make_psycopg_connection()
 
@@ -232,7 +234,7 @@ class TestOAuthConnection(
         An OAuth-enabled server must fail clearly before calling
         Psycopg when the pgAdmin session has no access token.
         """
-        manager = self._make_manager(mode='direct')
+        manager = self._make_manager(method='direct')
         connection = self._make_connection(manager)
 
         with self.app.test_request_context('/'):
@@ -271,7 +273,8 @@ class TestOAuthConnection(
             'is available. Sign in to pgAdmin again.'
         )
 
-        get_token.assert_called_once_with('direct', None, None, ISSUER)
+        get_token.assert_called_once_with(
+            AUTH_METHOD_OAUTH_DIRECT, None, None, ISSUER)
         psycopg_connect.assert_not_called()
         connection._initialize.assert_not_called()
         manager.stop_ssh_tunnel.assert_called_once_with()
@@ -281,7 +284,7 @@ class TestOAuthConnection(
         The synchronous Psycopg connection must be created while the
         pgAdmin access token is present in the ContextVar.
         """
-        manager = self._make_manager(mode='direct')
+        manager = self._make_manager(method='direct')
         connection = self._make_connection(manager)
         pg_connection = self._make_psycopg_connection()
 
@@ -324,7 +327,8 @@ class TestOAuthConnection(
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         install_hook.assert_called_once_with()
-        get_token.assert_called_once_with('direct', None, None, ISSUER)
+        get_token.assert_called_once_with(
+            AUTH_METHOD_OAUTH_DIRECT, None, None, ISSUER)
         psycopg_connect.assert_called_once()
 
         connection._initialize.assert_called_once()
@@ -335,7 +339,7 @@ class TestOAuthConnection(
         The asynchronous Psycopg connection must inherit the token
         context while asyncio.run() executes the connection coroutine.
         """
-        manager = self._make_manager(mode='direct')
+        manager = self._make_manager(method='direct')
         connection = self._make_connection(
             manager,
             async_=True
@@ -385,7 +389,8 @@ class TestOAuthConnection(
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
         install_hook.assert_called_once_with()
-        get_token.assert_called_once_with('direct', None, None, ISSUER)
+        get_token.assert_called_once_with(
+            AUTH_METHOD_OAUTH_DIRECT, None, None, ISSUER)
         async_connect.assert_awaited_once()
 
         connection._initialize.assert_called_once()
@@ -400,7 +405,7 @@ class TestOAuthConnection(
         A Psycopg failure must not leave the failed connection's token
         available to later libpq callbacks.
         """
-        manager = self._make_manager(mode='direct')
+        manager = self._make_manager(method='direct')
         connection = self._make_connection(manager)
 
         def fail_inside_oauth_context(*args, **kwargs):
@@ -443,18 +448,19 @@ class TestOAuthConnection(
         self.assertIn('test connection failure', message)
         self.assertIsNone(pg_oauth2._oauth_token.get())
 
-        get_token.assert_called_once_with('direct', None, None, ISSUER)
+        get_token.assert_called_once_with(
+            AUTH_METHOD_OAUTH_DIRECT, None, None, ISSUER)
         psycopg_connect.assert_called_once()
         connection._initialize.assert_not_called()
         self.assertIsNone(connection.conn)
 
-    def case_exchange_mode_passes_client_id(self):
+    def case_exchange_passes_client_id(self):
         """
-        Token exchange mode must pass the configured OAuth client ID
+        Token exchange must pass the configured OAuth client ID
         when obtaining the PostgreSQL token.
         """
         manager = self._make_manager(
-            mode='exchange',
+            method='exchange',
             client_id='postgres-cluster',
             oauth_scope='openid',
         )
@@ -500,7 +506,7 @@ class TestOAuthConnection(
 
         install_hook.assert_called_once_with()
         get_token.assert_called_once_with(
-            'exchange',
+            AUTH_METHOD_OAUTH_EXCHANGE,
             'postgres-cluster',
             'openid',
             ISSUER,
@@ -565,7 +571,7 @@ class TestOAuthConnection(
     def case_reset_creates_connection_inside_token_context(
             self, psycopg_connect, get_token, install_hook):
         manager = self._make_manager(
-            mode='exchange',
+            method='exchange',
             client_id='postgres-cluster',
             oauth_scope='openid',
         )
@@ -606,7 +612,7 @@ class TestOAuthConnection(
 
         install_hook.assert_called_once_with()
         get_token.assert_called_once_with(
-            'exchange',
+            AUTH_METHOD_OAUTH_EXCHANGE,
             'postgres-cluster',
             'openid',
             ISSUER,
@@ -622,7 +628,7 @@ class TestOAuthConnection(
     def case_cancel_creates_connection_inside_token_context(
             self, psycopg_connect, get_token, install_hook):
         manager = self._make_manager(
-            mode='exchange',
+            method='exchange',
             client_id='postgres-cluster',
             oauth_scope='openid',
         )
@@ -662,7 +668,7 @@ class TestOAuthConnection(
 
         install_hook.assert_called_once_with()
         get_token.assert_called_once_with(
-            'exchange',
+            AUTH_METHOD_OAUTH_EXCHANGE,
             'postgres-cluster',
             'openid',
             ISSUER,
@@ -689,7 +695,7 @@ class TestOAuthConnection(
                     operation=operation,
                     error_type=error_type.__name__):
                 manager = self._make_manager(
-                    mode='exchange',
+                    method='exchange',
                     client_id='postgres-cluster',
                     oauth_scope='openid',
                 )
@@ -741,7 +747,7 @@ class TestOAuthConnection(
 
                 install_hook.assert_called_once_with()
                 get_token.assert_called_once_with(
-                    'exchange',
+                    AUTH_METHOD_OAUTH_EXCHANGE,
                     'postgres-cluster',
                     'openid',
                     ISSUER,
