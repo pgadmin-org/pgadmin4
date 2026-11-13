@@ -66,6 +66,8 @@ SENSITIVE_CONN_KEYS = frozenset({
     'passfile', 'sslcert', 'sslkey',
     'sslrootcert', 'sslcrl', 'sslcrldir',
     'sslkeylogfile',
+    # Each user must explicitly enable use of their own login token.
+    'oauth_pgadmin_token_mode',
 })
 
 
@@ -343,12 +345,11 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.tunnel_identity_file = sharedserver.tunnel_identity_file
         server.tunnel_prompt_password = sharedserver.tunnel_prompt_password
 
-        # Override per-user connection_params keys.  Use the
-        # SharedServer value whenever it is present, regardless of
-        # whether the owner's Server has the same key. Work on a copy:
-        # the dict may be a MutableDict still attached to the owner's
-        # session-bound row, and mutating it in place would mark that
-        # row dirty for the next commit.
+        # Apply each user's own connection parameters. For these keys,
+        # never inherit the owner's file paths or OAuth token mode.
+        # Work on a copy: the dict may be a MutableDict still attached to
+        # the owner's session-bound row, and mutating it in place would mark
+        # that row dirty for the next commit.
         s_conn = dict(getattr(server, 'connection_params', None) or {})
         ss_conn = getattr(sharedserver, 'connection_params',
                           None) or {}
@@ -356,8 +357,8 @@ class ServerModule(sg.ServerGroupPluginModule):
             if key in ss_conn:
                 s_conn[key] = ss_conn[key]
             elif key in s_conn:
-                # Owner has this key but non-owner doesn't —
-                # remove it so the owner's path doesn't leak.
+                # No per-user value exists. Remove the owner's value
+                # so file paths and OAuth token mode are not inherited.
                 del s_conn[key]
         server.connection_params = s_conn
 
@@ -586,9 +587,9 @@ class ServerModule(sg.ServerGroupPluginModule):
             db.session.rollback()
             user = User.query.filter_by(id=data.user_id).first()
 
-            # Strip owner's sensitive file paths from
-            # connection_params — each user should configure
-            # their own SSL/passfile paths.
+            # Exclude per-user connection parameters from the owner's
+            # settings. Each user must configure their own file paths
+            # and explicitly enable use of their pgAdmin login token.
             safe_conn_params = {}
             if data.connection_params:
                 safe_conn_params = {
@@ -1861,6 +1862,13 @@ class ServerNode(PGChildNodeView):
             manager.update(server)
         conn = manager.connection()
 
+        connection_params = manager.connection_params or {}
+
+        use_pgadmin_oauth = connection_params.get(
+            "oauth_pgadmin_token_mode",
+            "disabled",
+        ) in ("direct", "exchange")
+
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1889,8 +1897,13 @@ class ServerNode(PGChildNodeView):
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
-        if 'password' not in data and (server.kerberos_conn is False or
-                                       server.kerberos_conn is None):
+
+        if use_pgadmin_oauth:
+            # The pgAdmin OAuth bearer token is the database credential.
+            password = None
+            save_password = False
+        elif 'password' not in data and (server.kerberos_conn is False or
+                                         server.kerberos_conn is None):
 
             passfile_param = None
             if hasattr(server, 'connection_params') and \
@@ -1957,13 +1970,27 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
+            error_message = getattr(e, 'message', str(e))
+
+            if use_pgadmin_oauth and not (
+                    prompt_tunnel_password or
+                    self._saved_tunnel_password_discarded(conn)):
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=error_message,
+                )
+
             return self.get_response_for_password(
-                server, 401,
-                not server.save_password or self._saved_password_discarded(
-                    conn),
+                server,
+                401,
+                not use_pgadmin_oauth and (
+                    not server.save_password or
+                    self._saved_password_discarded(conn)),
                 prompt_tunnel_password or
                 self._saved_tunnel_password_discarded(conn),
-                getattr(e, 'message', str(e)))
+                error_message,
+            )
 
         if not status:
             current_app.logger.error(
@@ -1973,13 +2000,25 @@ class ServerNode(PGChildNodeView):
             if errmsg.find('Ticket expired') != -1:
                 return internal_server_error(errmsg)
 
+            if use_pgadmin_oauth and not (
+                    prompt_tunnel_password or
+                    self._saved_tunnel_password_discarded(conn)):
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=errmsg,
+                )
+
             return self.get_response_for_password(
-                server, 401,
-                not server.save_password or self._saved_password_discarded(
-                    conn),
+                server,
+                401,
+                not use_pgadmin_oauth and (
+                    not server.save_password or
+                    self._saved_password_discarded(conn)),
                 prompt_tunnel_password or
                 self._saved_tunnel_password_discarded(conn),
-                errmsg)
+                errmsg,
+            )
         else:
             # allow_save_password is false when the encryption key only
             # lasts for this session, so a password saved now couldn't be
