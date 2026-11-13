@@ -960,6 +960,20 @@ OAUTH2_CONFIG = [
         # },
         'OAUTH2_SERVER_GROUP_CLAIM': None,
         'OAUTH2_SERVER_GROUP_CLAIM_MAPPING': None,
+        # The claim used to set the pgAdmin role of the user at each login
+        # (ID token first, then userinfo). Requires
+        # OAUTH2_ROLE_CLAIM_MAPPING, which maps claim values to role names.
+        # The first entry whose value is in the claim wins, so list more
+        # privileged roles first; if none matches, the user gets the 'User'
+        # role. Roles assigned in the pgAdmin UI are overwritten at the next
+        # login.
+        # Example:
+        # 'OAUTH2_ROLE_CLAIM': 'groups',
+        # 'OAUTH2_ROLE_CLAIM_MAPPING': {
+        #     'pgadmin-admins': 'Administrator'
+        # },
+        'OAUTH2_ROLE_CLAIM': None,
+        'OAUTH2_ROLE_CLAIM_MAPPING': None,
         # Set this variable to False to disable SSL certificate verification
         # for OAuth2 provider.
         # This may need to set False, in case of self-signed certificates.

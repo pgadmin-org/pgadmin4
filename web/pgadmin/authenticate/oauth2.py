@@ -20,7 +20,7 @@ from flask_security import login_user, current_user
 from flask_security.utils import logout_user
 
 from pgadmin.authenticate.internal import BaseAuthentication
-from pgadmin.model import User
+from pgadmin.model import Role, User
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import OAUTH2, MessageType
 from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
@@ -656,6 +656,75 @@ class OAuth2Authentication(BaseAuthentication):
         # Remove duplicates, preserving order
         return list(dict.fromkeys(server_groups))
 
+    def _resolve_role_from_claims(self, profile_dict, id_token_claims):
+        """
+        Resolve the pgAdmin role of the user from provider claim
+        configuration.
+
+        Config keys (per provider):
+        - OAUTH2_ROLE_CLAIM: claim name to read
+        - OAUTH2_ROLE_CLAIM_MAPPING: dict mapping claim-value -> pgAdmin
+          role name. The first entry whose value is in the claim wins, so
+          more privileged roles should be listed first.
+
+        Claim values are matched exactly. Values that aren't strings are
+        ignored.
+
+        Returns:
+            str | None
+            - the role name to assign; 'User' if no mapping entry matches
+            - None when claim-based roles are not configured
+        """
+        provider = self.oauth2_config.get(self.oauth2_current_client) or {}
+        claim_name = provider.get('OAUTH2_ROLE_CLAIM')
+        if not claim_name:
+            return None
+
+        mapping = provider.get('OAUTH2_ROLE_CLAIM_MAPPING')
+        if not isinstance(mapping, dict) or not mapping:
+            current_app.logger.warning(
+                'OAUTH2_ROLE_CLAIM is set but OAUTH2_ROLE_CLAIM_MAPPING is '
+                'not a non-empty dictionary; user roles are not changed.')
+            return None
+
+        claim_values = id_token_claims.get(claim_name)
+        if claim_values is None:
+            claim_values = profile_dict.get(claim_name)
+        if claim_values is None:
+            claim_values = []
+        if not isinstance(claim_values, list):
+            claim_values = [claim_values]
+        claim_values = {v for v in claim_values if isinstance(v, str)}
+
+        for value, role_name in mapping.items():
+            if value in claim_values:
+                if not isinstance(role_name, str):
+                    current_app.logger.warning(
+                        f'OAUTH2_ROLE_CLAIM_MAPPING has a role that is not '
+                        f'a string for "{value}"; user roles are not '
+                        f'changed.')
+                    return None
+                return role_name
+        return 'User'
+
+    def _sync_user_role(self, user, role_name):
+        """Give the user the given role, replacing any other role."""
+        role = Role.query.filter_by(name=role_name).first()
+        if role is None:
+            current_app.logger.warning(
+                f'Role "{role_name}" from OAUTH2_ROLE_CLAIM_MAPPING does not '
+                f'exist; the role of user {user.username} is not changed.')
+            return
+
+        if [r.name for r in user.roles] == [role.name]:
+            return
+
+        user.roles = [role]
+        db.session.commit()
+        current_app.logger.info(
+            f'OAUTH2 user {user.username} was given the role "{role.name}" '
+            f'based on OAUTH2_ROLE_CLAIM.')
+
     def login(self, form):
         if not self.oauth2_current_client:
             error_msg = gettext('No OAuth2 provider available.')
@@ -798,10 +867,16 @@ class OAuth2Authentication(BaseAuthentication):
             session['oauth2_server_group_claims'] = \
                 oauth2_server_group_claims
 
+        role_name = self._resolve_role_from_claims(
+            profile_dict, id_token_claims
+        )
+
         user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
                 username=username, auth_source=OAUTH2).first()
+            if role_name is not None:
+                self._sync_user_role(user, role_name)
             current_app.login_manager.logout_view = \
                 OAuth2Authentication.LOGOUT_VIEW
             current_app.logger.info(
@@ -853,10 +928,11 @@ class OAuth2Authentication(BaseAuthentication):
                 username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
                 additional_claims = provider.get('OAUTH2_ADDITIONAL_CLAIMS')
                 server_group_claim = provider.get('OAUTH2_SERVER_GROUP_CLAIM')
+                role_claim = provider.get('OAUTH2_ROLE_CLAIM')
 
                 # If custom username claim, additional authorization
-                # claims, or server-group claims are configured, they may
-                # exist only in userinfo; don't skip userinfo unless ID
+                # claims, server-group or role claims are configured, they
+                # may exist only in userinfo; don't skip userinfo unless ID
                 # token has them.
                 needs_userinfo = False
                 if username_claim and username_claim not in id_token_claims:
@@ -870,6 +946,8 @@ class OAuth2Authentication(BaseAuthentication):
                         needs_userinfo = True
                 if (server_group_claim and
                         server_group_claim not in id_token_claims):
+                    needs_userinfo = True
+                if role_claim and role_claim not in id_token_claims:
                     needs_userinfo = True
 
             if has_sufficient_claims and not needs_userinfo:

@@ -95,6 +95,8 @@ and secure.
     "OAUTH2_ADDITIONAL_CLAIMS", "If a dictionary is provided, pgAdmin will check for a matching key and value on the **ID token first** (for OIDC providers), then fall back to the userinfo endpoint response. In case there is no match with the provided config, the user will receive an authorization error. Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
     "OAUTH2_SERVER_GROUP_CLAIM", "The name of a claim listing the server groups whose shared servers the user may access. If set, shared servers owned by other users are only visible and accessible if the name of their server group is in the claim. See :ref:`oauth2_server_group_claims` below."
     "OAUTH2_SERVER_GROUP_CLAIM_MAPPING", "An optional dictionary mapping values of the OAUTH2_SERVER_GROUP_CLAIM claim to a server group name or a list of server group names. Values without a mapping are used as server group names unchanged."
+    "OAUTH2_ROLE_CLAIM", "The name of a claim used to set the pgAdmin role of the user each time they log in. Requires OAUTH2_ROLE_CLAIM_MAPPING. See :ref:`oauth2_role_claims` below."
+    "OAUTH2_ROLE_CLAIM_MAPPING", "A dictionary mapping values of the OAUTH2_ROLE_CLAIM claim to pgAdmin role names. The first entry whose value is in the claim is used; if none matches, the user is given the *User* role."
     "OAUTH2_SSL_CERT_VERIFICATION", "Set this variable to False to disable SSL certificate verification for OAuth2 provider.
     This may need to set False, in case of self-signed certificates."
     "OAUTH2_CHALLENGE_METHOD", "Enable PKCE workflow. PKCE method name, only *S256* is supported"
@@ -433,6 +435,54 @@ Example:
         },
         # A user with the roles ['developer', 'Reporting'] can see shared
         # servers in the 'Staging' and 'Reporting' server groups.
+    }]
+
+.. _oauth2_role_claims:
+
+Assigning Roles with a Claim
+----------------------------
+
+**OAUTH2_ROLE_CLAIM** and **OAUTH2_ROLE_CLAIM_MAPPING** set the pgAdmin role
+of an OAuth2 user from a claim of the identity provider, such as a list of
+groups. When they are set:
+
+* The role is set each time the user logs in, including when the account is
+  first created by OAUTH2_AUTO_CREATE_USER.
+* The first entry of OAUTH2_ROLE_CLAIM_MAPPING whose value is in the claim
+  gives the role, so more privileged roles should be listed first.
+* If no entry matches, or the claim is missing, the user is given the *User*
+  role.
+* A role changed in the pgAdmin user management dialog is overwritten at the
+  user's next login.
+* If a mapped role does not exist, a warning is logged and the role of the
+  user is not changed.
+* Users who log in by other methods are not affected.
+
+The role claim does not decide who may log in. It is applied only after the
+login has been authorised, so use **OAUTH2_ADDITIONAL_CLAIMS** to refuse
+users who are in none of the expected groups.
+
+The claim is read from the ID token first, then from the userinfo endpoint
+response. Its value may be a string or a list of strings; values of any other
+type are ignored. Values are matched exactly.
+
+Since the identity provider decides who is an administrator, make sure that
+at least one administrator can still log in in another way, for example as an
+internal user, in case the claim is not returned as expected.
+
+Example:
+
+.. code-block:: python
+
+    OAUTH2_CONFIG = [{
+        # ... other config ...
+        'OAUTH2_ROLE_CLAIM': 'groups',
+        'OAUTH2_ROLE_CLAIM_MAPPING': {
+            'pgadmin-admins': 'Administrator',
+            'pgadmin-users': 'User'
+        },
+        # A user in the 'pgadmin-admins' group is an Administrator; every
+        # other OAuth2 user is given the User role.
     }]
 
 Legacy OAuth2 Configuration (Without OIDC)
