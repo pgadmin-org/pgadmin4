@@ -69,6 +69,7 @@ class EntraConnectionTest(TokenAuthConnectionTest):
         for name in (
             'case_the_obo_token_is_the_password',
             'case_the_obo_request_is_authenticated_by_pgadmin',
+            'case_the_obo_endpoint_comes_from_the_issuer_metadata',
             'case_every_connection_gets_a_new_obo_token',
             'case_the_server_must_verify_its_identity',
             'case_the_login_provider_must_enable_obo',
@@ -153,6 +154,16 @@ class EntraConnectionTest(TokenAuthConnectionTest):
         if isinstance(body, bytes):
             body = body.decode('utf-8')
         self.assertEqual(parse_qs(body)['assertion'], [LOGIN_TOKEN])
+
+    def case_the_obo_endpoint_comes_from_the_issuer_metadata(self):
+        # A configured access_token_url must not redirect the assertion.
+        self.client.access_token_url = 'https://other.example.test/token'
+        manager = self._manager()
+
+        status, message, *_ = self._run(manager)
+
+        self.assertTrue(status, message)
+        self.assertEqual(self.post.call_args[0][0], TOKEN_ENDPOINT)
 
     def case_every_connection_gets_a_new_obo_token(self):
         manager = self._manager()

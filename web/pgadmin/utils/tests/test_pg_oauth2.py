@@ -21,6 +21,7 @@ from contextlib import ExitStack
 from flask import Flask, session
 from pgadmin.utils import pg_oauth2
 
+from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client.apps import FlaskOAuth2App
 
 ISSUER = 'https://keycloak.example.test/realms/postgres'
@@ -512,6 +513,40 @@ class TestGetPgAdminOAuthToken(
                 grant_type='refresh_token',
                 refresh_token='refresh-token'
             )
+
+    @patch(
+        'pgadmin.utils.pg_oauth2._get_current_oauth_client'
+    )
+    def case_refresh_needing_a_new_login_asks_to_sign_in_again(
+            self, get_oauth_client):
+        for error in ('invalid_grant', 'interaction_required'):
+            with self.subTest(error=error):
+                oauth_client = self._make_oauth_client()
+                oauth_client.fetch_access_token.side_effect = OAuthError(
+                    error=error,
+                    description='refresh-token-value is revoked'
+                )
+                get_oauth_client.return_value = oauth_client
+
+                with self.app.test_request_context('/'):
+                    session['oauth2_token'] = {
+                        'access_token': 'expired-access-token',
+                        'refresh_token': 'refresh-token-value',
+                        'expires_at': 999,
+                        'token_type': 'Bearer',
+                    }
+                    session['oauth2_provider'] = self.PROVIDER_NAME
+
+                    with patch(
+                        'pgadmin.utils.pg_oauth2.time.time',
+                        return_value=1000
+                    ):
+                        with self.assertRaises(
+                                pg_oauth2.OAuthSignInRequired) as ctx:
+                            pg_oauth2._get_pgadmin_oauth_token()
+
+                self.assertNotIn('refresh-token-value', str(ctx.exception))
+                self.assertNotIn('expired-access-token', str(ctx.exception))
 
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
@@ -1536,6 +1571,20 @@ class TestGetPostgresOAuthToken(
 
         self.assertEqual(result, 'pgadmin-access-token')
         get_token.assert_called_once_with()
+
+    @patch(
+        'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',
+        return_value=None
+    )
+    def case_direct_mode_asks_to_sign_in_again_without_a_usable_token(
+            self, get_token):
+        with self.assertRaises(pg_oauth2.OAuthSignInRequired):
+            pg_oauth2.get_postgres_oauth_token(
+                'direct',
+                'postgres-cluster',
+                None,
+                ISSUER,
+            )
 
     @patch(
         'pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token',

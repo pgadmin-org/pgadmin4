@@ -28,6 +28,7 @@ import re
 import sys
 import threading
 import time
+from authlib.integrations.base_client import OAuthError
 from authlib.integrations.requests_client import OAuth2Session
 from collections.abc import Mapping
 from contextlib import contextmanager
@@ -747,6 +748,19 @@ def _refresh_pgadmin_oauth_token(
     except OAuthRefreshUnsupportedError:
         # Preserve the actionable message for the connection error handler.
         raise
+    except OAuthError as exc:
+        if exc.error in SIGN_IN_AGAIN_ERRORS:
+            # Only a new sign-in can resolve it. The message carries the
+            # error code alone, never the provider's description or tokens.
+            raise OAuthSignInRequired(
+                "The identity provider rejected the refresh of your "
+                "pgAdmin login (error={0}). Sign in to pgAdmin "
+                "again.".format(exc.error)
+            ) from None
+        logger.warning(
+            "Failed to refresh the pgAdmin OAuth access token."
+        )
+        return None
     except OAuthTokenError as exc:
         logger.warning(
             "Cannot refresh the pgAdmin OAuth access token: %s",
@@ -908,16 +922,17 @@ def _get_token_exchange_auth(oauth_client, metadata):
         return client.client_auth(auth_method)
 
 
-def _get_token_endpoint(oauth_client, metadata, error_class):
+def _get_token_endpoint(
+        oauth_client, metadata, error_class, from_metadata_only=False):
     """Return the HTTPS token endpoint of the login provider.
 
     An explicitly configured token URL takes precedence over the
-    token_endpoint discovered through the provider metadata.
+    token_endpoint discovered through the provider metadata, unless
+    from_metadata_only is set.
     """
-    endpoint = (
-        oauth_client.access_token_url or
-        metadata.get("token_endpoint")
-    )
+    endpoint = metadata.get("token_endpoint")
+    if not from_metadata_only:
+        endpoint = oauth_client.access_token_url or endpoint
 
     if not isinstance(endpoint, str) or not endpoint:
         raise error_class(
@@ -1201,7 +1216,10 @@ def get_entra_obo_token() -> str:
 
     oauth_client, metadata, verify_tls = _get_login_client()
     auth = _get_token_exchange_auth(oauth_client, metadata)
-    endpoint = _get_token_endpoint(oauth_client, metadata, OAuthTokenError)
+    # The tenant's token endpoint from the issuer metadata, not a
+    # configured access_token_url.
+    endpoint = _get_token_endpoint(
+        oauth_client, metadata, OAuthTokenError, from_metadata_only=True)
 
     assertion = _get_pgadmin_oauth_token()
 
@@ -1254,7 +1272,7 @@ def get_postgres_oauth_token(
             not token.strip() or
             "\0" in token
         ):
-            raise OAuthTokenError(
+            raise OAuthSignInRequired(
                 "No current pgAdmin OAuth access token is available. "
                 "Sign in to pgAdmin again."
             )
