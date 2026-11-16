@@ -3382,7 +3382,7 @@ def _parse_explain_analysis(response_text):
     Models are asked to return a bare JSON object, but some wrap it in a
     ```json fence, add text before or after it, or prefix it with a
     <think> block. Try the fenced block, then the whole response, then
-    the outermost {...} span.
+    each {...} object in the text.
 
     Only an object with at least one of the keys the prompt asks for is
     accepted, so an unrelated object, such as a plan node quoted in prose,
@@ -3409,11 +3409,6 @@ def _parse_explain_analysis(response_text):
 
     candidates.append(text)
 
-    start = text.find('{')
-    end = text.rfind('}')
-    if 0 <= start < end:
-        candidates.append(text[start:end + 1])
-
     for candidate in candidates:
         try:
             result = json.loads(candidate)
@@ -3422,6 +3417,22 @@ def _parse_explain_analysis(response_text):
         if isinstance(result, dict) and \
                 EXPLAIN_ANALYSIS_KEYS.intersection(result):
             return result
+
+    # Otherwise decode each {...} object in the text on its own, so an
+    # unrelated object before the analysis, such as a plan node quoted in
+    # prose, does not hide it.
+    decoder = json.JSONDecoder()
+    start = text.find('{')
+    while start != -1:
+        try:
+            result, end = decoder.raw_decode(text, start)
+        except json.JSONDecodeError:
+            start = text.find('{', start + 1)
+            continue
+        if isinstance(result, dict) and \
+                EXPLAIN_ANALYSIS_KEYS.intersection(result):
+            return result
+        start = text.find('{', end)
 
     return None
 

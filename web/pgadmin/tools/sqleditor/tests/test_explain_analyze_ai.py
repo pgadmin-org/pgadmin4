@@ -89,6 +89,18 @@ class ExplainAnalyzeAITestCase(BaseTestGenerator):
             expected_event='error',
             event_contains='token limit'
         )),
+        ('Explain AI - Plan Node In Prose Before Analysis', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            plan=[{'Plan': {'Node Type': 'Seq Scan'}}],
+            sql='SELECT * FROM users',
+            expected_error=False,
+            mock_response='The {"Node Type": "Seq Scan"} node reads every '
+                          'row.\n{"bottlenecks": [], "recommendations": [], '
+                          '"summary": "Add an index."}',
+            expected_event='complete',
+            event_contains='Add an index.'
+        )),
         ('Explain AI - JSON Surrounded By Text', dict(
             llm_enabled=True,
             valid_transaction=True,
@@ -251,6 +263,10 @@ class ExplainAnalysisParseTestCase(BaseTestGenerator):
         ('Parse - Plan Node Quoted In Prose', dict(
             text='The {"Node Type": "Seq Scan"} node reads every row.',
             expected=None)),
+        ('Parse - Plan Node In Prose Before Analysis', dict(
+            text='The {"Node Type": "Seq Scan"} node reads every row.\n'
+                 '{"summary": "ok"}',
+            expected={'summary': 'ok'})),
         ('Parse - Object Without Analysis Keys', dict(
             text='{"Node Type": "Seq Scan"}', expected=None)),
         ('Parse - Truncated JSON', dict(
