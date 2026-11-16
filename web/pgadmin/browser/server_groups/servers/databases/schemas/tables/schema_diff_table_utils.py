@@ -38,6 +38,15 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
                              'indkey', 'seqtypid', 'defseqrelid']
 
+    # 'serial_defval' keeps the nextval() default that reprojecting a
+    # column as SERIAL empties (#10292). It names the sequence with its
+    # schema, so it differs whenever schemas with different names are
+    # compared, even though the columns are the same. Whether a column is
+    # SERIAL is already compared through its type. It cannot go in
+    # column_keys_to_ignore, as compare_target_cols() deletes those keys,
+    # and the SQL for converting a column to SERIAL needs this one.
+    serial_keys_to_ignore = ['serial_defval']
+
     # 'conkey' and 'confkey' are attribute numbers, which differ between
     # databases whenever a column has been dropped from one of the tables,
     # even though the columns they name are the same. The columns are
@@ -55,8 +64,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     index_keys_to_ignore = ['indrelid', 'indclass']
 
     keys_to_ignore = table_keys_to_ignore + column_keys_to_ignore + \
-        constraint_keys_to_ignore + trigger_keys_to_ignore + \
-        index_keys_to_ignore
+        serial_keys_to_ignore + constraint_keys_to_ignore + \
+        trigger_keys_to_ignore + index_keys_to_ignore
 
     def compare(self, **kwargs):
         """
@@ -176,6 +185,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         return different
 
     @staticmethod
+    def _compared_column(column):
+        """
+        Return the properties of a column that decide whether it differs,
+        leaving out serial_keys_to_ignore. Those stay in the column itself
+        for generating the SQL.
+        """
+        return {key: value for key, value in column.items()
+                if key not in SchemaDiffTableCompare.serial_keys_to_ignore}
+
+    @staticmethod
     def compare_target_cols(source, target_cols, added, updated):
         """
         Compare target col with source.
@@ -198,7 +217,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 tmp = copy.deepcopy(item)
                 source['attnum'] = tmp['attnum']
 
-        if tmp and source != tmp:
+        compared = SchemaDiffTableCompare._compared_column
+        if tmp and compared(source) != compared(tmp):
             # check column level grants
             acl_dict = dict()
             if 'attacl' in source and 'attacl' in tmp and \
@@ -225,7 +245,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
             updated.append(source)
             target_cols.remove(tmp)
-        elif tmp and source == tmp:
+        elif tmp:
             target_cols.remove(tmp)
         elif tmp is None:
             added.append(source)
@@ -238,6 +258,22 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         """
         return [(col.get('local_column'), col.get('referenced'))
                 for col in foreign_key.get('columns', [])]
+
+    @staticmethod
+    def _fk_referenced_schema(foreign_key):
+        """
+        Return the schema of a foreign key's referenced table, or None when
+        it is the schema of the foreign key's own table.
+
+        Schemas with different names can be compared, so a foreign key to a
+        table in its own schema must compare equal on both sides even
+        though the schema names differ (#10762). A reference to any other
+        schema is still compared by name.
+        """
+        refnsp = foreign_key.get('refnsp')
+        if refnsp is not None and refnsp == foreign_key.get('fknsp'):
+            return None
+        return refnsp
 
     @staticmethod
     def table_constraint_comp(source_table, target_table):
@@ -295,9 +331,18 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     tmp_tar.pop('oid')
                         if tmp_tar and tmp_src != tmp_tar:
                             tmp_updated = copy.deepcopy(source)
+                            ref_schema = \
+                                SchemaDiffTableCompare._fk_referenced_schema
                             for key in non_editable_keys[constraint]:
-                                if key in tmp_updated and \
-                                        tmp_updated[key] != tmp_tar[key]:
+                                if key not in tmp_updated:
+                                    continue
+                                src_val = tmp_updated[key]
+                                tar_val = tmp_tar[key]
+                                if constraint == 'foreign_key' and \
+                                        key == 'refnsp':
+                                    src_val = ref_schema(tmp_updated)
+                                    tar_val = ref_schema(tmp_tar)
+                                if src_val != tar_val:
                                     added.append(source)
                                     deleted.append(tmp_updated)
                                     tmp_updated = None
