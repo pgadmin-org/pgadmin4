@@ -713,6 +713,14 @@ Use the fields on the *Options* panel to manage editor preferences.
 * When the *Open the file in a new tab?* switch is set to *True*, the
   editor will open the new file in new tab of the Query Tool.
 
+* Use the *On SQL file drop* drop-down to control what happens when a SQL
+  file is dropped onto the Query Tool editor. Choose *Always replace content*
+  to clear the editor and load the file content, *Always merge content* to
+  insert the file content at the current cursor position, or *Ask* to prompt
+  when the editor already has content. Dropping a file does not change the
+  file associated with the tab; Save still targets the previously opened
+  path.
+
 * When the *Prompt to commit/rollback active transactions?* switch is set to
   *True*, the editor will prompt the user to commit or rollback changes when
   exiting the Query Tool while the current transaction is not committed.
