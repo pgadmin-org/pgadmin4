@@ -3369,6 +3369,12 @@ def _nlq_sse_event(data: dict) -> bytes:
     return f"{padding}data: {json_data}\n\n".encode('utf-8')
 
 
+# The top-level keys the EXPLAIN analysis prompt asks the model for.
+EXPLAIN_ANALYSIS_KEYS = frozenset(
+    ('summary', 'bottlenecks', 'recommendations')
+)
+
+
 def _parse_explain_analysis(response_text):
     """
     Extract the JSON object from an EXPLAIN analysis LLM response.
@@ -3378,17 +3384,23 @@ def _parse_explain_analysis(response_text):
     <think> block. Try the fenced block, then the whole response, then
     the outermost {...} span.
 
+    Only an object with at least one of the keys the prompt asks for is
+    accepted, so an unrelated object, such as a plan node quoted in prose,
+    is not taken for the analysis.
+
     Args:
         response_text: The raw text returned by the LLM.
 
     Returns:
-        The parsed dict, or None if no JSON object could be parsed.
+        The parsed dict, or None if no analysis object could be parsed.
     """
     # Drop any reasoning block that local reasoning models put in the
-    # response content.
+    # response content. A block that is never closed (the model stopped
+    # whilst still reasoning) is dropped to the end of the text.
     text = re.sub(
         r'<think>.*?</think>', '', response_text or '', flags=re.DOTALL
-    ).strip()
+    )
+    text = re.sub(r'<think>.*', '', text, flags=re.DOTALL).strip()
     candidates = []
 
     fence_match = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
@@ -3407,7 +3419,8 @@ def _parse_explain_analysis(response_text):
             result = json.loads(candidate)
         except (json.JSONDecodeError, TypeError):
             continue
-        if isinstance(result, dict):
+        if isinstance(result, dict) and \
+                EXPLAIN_ANALYSIS_KEYS.intersection(result):
             return result
 
     return None

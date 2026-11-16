@@ -78,6 +78,17 @@ class ExplainAnalyzeAITestCase(BaseTestGenerator):
             expected_event='error',
             event_contains='token limit'
         )),
+        ('Explain AI - Unclosed Reasoning Block At Token Limit', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            plan=[{'Plan': {'Node Type': 'Seq Scan'}}],
+            sql='SELECT * FROM users',
+            expected_error=False,
+            mock_response='<think>\n{"summary": "draft"}\n',
+            mock_stop_reason='max_tokens',
+            expected_event='error',
+            event_contains='token limit'
+        )),
         ('Explain AI - JSON Surrounded By Text', dict(
             llm_enabled=True,
             valid_transaction=True,
@@ -235,6 +246,13 @@ class ExplainAnalysisParseTestCase(BaseTestGenerator):
         ('Parse - Reasoning Block', dict(
             text='<think>Check {the} scans</think>\n{"summary": "ok"}',
             expected={'summary': 'ok'})),
+        ('Parse - Unclosed Reasoning Block', dict(
+            text='<think>\n{"summary": "draft"}\n', expected=None)),
+        ('Parse - Plan Node Quoted In Prose', dict(
+            text='The {"Node Type": "Seq Scan"} node reads every row.',
+            expected=None)),
+        ('Parse - Object Without Analysis Keys', dict(
+            text='{"Node Type": "Seq Scan"}', expected=None)),
         ('Parse - Truncated JSON', dict(
             text='{"bottlenecks": [{"severity": "hi', expected=None)),
         ('Parse - Not An Object', dict(text='[1, 2]', expected=None)),
