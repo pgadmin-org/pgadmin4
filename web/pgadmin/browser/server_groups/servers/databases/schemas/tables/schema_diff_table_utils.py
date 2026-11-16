@@ -250,11 +250,11 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         different = {}
         non_editable_keys = {'primary_key': ['col_count',
                                              'condeferrable',
-                                             'condeffered',
+                                             'condeferred',
                                              'columns'],
                              'unique_constraint': ['col_count',
                                                    'condeferrable',
-                                                   'condeffered',
+                                                   'condeferred',
                                                    'columns',
                                                    'indnullsnotdistinct'],
                              'check_constraint': ['consrc'],
