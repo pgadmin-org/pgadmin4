@@ -29,6 +29,9 @@ import { FileManagerUtils } from '../../../../../../misc/file_manager/static/js/
 
 // Wait this long after the last keystroke before asking the server for
 // suggestions, so that fast typing does not flood it with catalog queries.
+// The delay is applied by CodeMirror (activateOnTypingDelay), which restarts
+// it on every keystroke but skips it for an explicit Ctrl+Space, including
+// one pressed while a typing delay is still pending.
 export const AUTOCOMPLETE_DEBOUNCE_MS = 300;
 
 export async function registerAutocomplete(editor, api, transId) {
@@ -41,49 +44,38 @@ export async function registerAutocomplete(editor, api, transId) {
       const fullSql = context.state.doc.toString();
       const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
       const controller = new AbortController();
-      let timer = null;
 
-      // CodeMirror aborts the query when the user keeps typing. Drop the
-      // pending request, or cancel the one in flight, instead of letting it
-      // run against the server for a result nobody will see.
+      // CodeMirror aborts the query when the user keeps typing. Cancel the
+      // request in flight instead of letting it run against the server for
+      // a result nobody will see.
       context.addEventListener('abort', () => {
-        clearTimeout(timer);
         controller.abort();
         resolve(null);
       }, {onDocChange: true});
 
-      const request = () => {
-        api.post(url, JSON.stringify([fullSql, sqlTillCur]), {signal: controller.signal})
-          .then((res) => {
-            onAvailable();
-            resolve({
-              from: word.from,
-              options: Object.keys(res.data.data.result).map((key)=>({
-                label: key, type: res.data.data.result[key].object_type
-              })),
-              validFor: (text, from)=>{
-                return text.startsWith(fullSql.slice(from));
-              }
-            });
-          })
-          .catch((err) => {
-            onAvailable();
-            if(controller.signal.aborted) {
-              resolve(null);
-              return;
+      api.post(url, JSON.stringify([fullSql, sqlTillCur]), {signal: controller.signal})
+        .then((res) => {
+          onAvailable();
+          resolve({
+            from: word.from,
+            options: Object.keys(res.data.data.result).map((key)=>({
+              label: key, type: res.data.data.result[key].object_type
+            })),
+            validFor: (text, from)=>{
+              return text.startsWith(fullSql.slice(from));
             }
-            reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
-      };
-
-      // An explicit request (Ctrl+Space) is answered right away.
-      if(context.explicit) {
-        request();
-      } else {
-        timer = setTimeout(request, AUTOCOMPLETE_DEBOUNCE_MS);
-      }
+        })
+        .catch((err) => {
+          onAvailable();
+          if(controller.signal.aborted) {
+            resolve(null);
+            return;
+          }
+          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
+        });
     });
-  });
+  }, {activateOnTypingDelay: AUTOCOMPLETE_DEBOUNCE_MS});
 }
 
 export default function Query({onTextSelect, setQtStatePartial}) {
