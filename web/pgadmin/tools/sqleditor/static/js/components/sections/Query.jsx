@@ -27,7 +27,11 @@ import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 import { FileManagerUtils } from '../../../../../../misc/file_manager/static/js/components/FileManager';
 
 
-async function registerAutocomplete(editor, api, transId) {
+// Wait this long after the last keystroke before asking the server for
+// suggestions, so that fast typing does not flood it with catalog queries.
+export const AUTOCOMPLETE_DEBOUNCE_MS = 300;
+
+export async function registerAutocomplete(editor, api, transId) {
   editor.registerAutocomplete((context, onAvailable)=>{
     return new Promise((resolve, reject)=>{
       const url = url_for('sqleditor.autocomplete', {
@@ -36,23 +40,48 @@ async function registerAutocomplete(editor, api, transId) {
       const word = context.matchBefore(/\w*/);
       const fullSql = context.state.doc.toString();
       const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
-      api.post(url, JSON.stringify([fullSql, sqlTillCur]))
-        .then((res) => {
-          onAvailable();
-          resolve({
-            from: word.from,
-            options: Object.keys(res.data.data.result).map((key)=>({
-              label: key, type: res.data.data.result[key].object_type
-            })),
-            validFor: (text, from)=>{
-              return text.startsWith(fullSql.slice(from));
+      const controller = new AbortController();
+      let timer = null;
+
+      // CodeMirror aborts the query when the user keeps typing. Drop the
+      // pending request, or cancel the one in flight, instead of letting it
+      // run against the server for a result nobody will see.
+      context.addEventListener('abort', () => {
+        clearTimeout(timer);
+        controller.abort();
+        resolve(null);
+      }, {onDocChange: true});
+
+      const request = () => {
+        api.post(url, JSON.stringify([fullSql, sqlTillCur]), {signal: controller.signal})
+          .then((res) => {
+            onAvailable();
+            resolve({
+              from: word.from,
+              options: Object.keys(res.data.data.result).map((key)=>({
+                label: key, type: res.data.data.result[key].object_type
+              })),
+              validFor: (text, from)=>{
+                return text.startsWith(fullSql.slice(from));
+              }
+            });
+          })
+          .catch((err) => {
+            onAvailable();
+            if(controller.signal.aborted) {
+              resolve(null);
+              return;
             }
+            reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
-        })
-        .catch((err) => {
-          onAvailable();
-          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-        });
+      };
+
+      // An explicit request (Ctrl+Space) is answered right away.
+      if(context.explicit) {
+        request();
+      } else {
+        timer = setTimeout(request, AUTOCOMPLETE_DEBOUNCE_MS);
+      }
     });
   });
 }
