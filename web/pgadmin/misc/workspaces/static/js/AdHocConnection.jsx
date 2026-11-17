@@ -27,12 +27,17 @@ import * as commonUtils from 'sources/utils';
 import * as showQueryTool from '../../../../tools/sqleditor/static/js/show_query_tool';
 import { getTitle, generateTitle } from '../../../../tools/sqleditor/static/js/sqleditor_title';
 import usePreferences from '../../../../preferences/static/js/store';
-import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { isEmptyString } from '../../../../static/js/validators';
 import { getRandomInt } from '../../../../static/js/utils';
 import { useWorkspace } from './WorkspaceProvider';
 
-class AdHocConnectionSchema extends BaseUISchema {
+// Connection parameters that decide which host a connection goes to. Without
+// the Manage Server permission the server always uses the registered server's
+// values for these, so they are not offered for editing.
+const ROUTING_PARAMS = ['host', 'hostaddr', 'port', 'service'];
+
+export class AdHocConnectionSchema extends BaseUISchema {
   constructor(connectExistingServer, pgAdmin, initValues={}) {
     super({
       sid: null,
@@ -59,7 +64,28 @@ class AdHocConnectionSchema extends BaseUISchema {
     this.api = getApiInstance();
     this.connectExistingServer = connectExistingServer;
     this.pgAdmin = pgAdmin;
-    this.paramSchema = new VariableSchema(getConnectionParameters, null, null, ['name', 'keyword', 'value']);
+    // Connecting to a server that is not registered needs Manage Server.
+    this.canRegisterServer = Boolean(
+      current_user.permissions?.includes(AllPermissionTypes.OBJECT_REGISTER_SERVER)
+    );
+    this.paramSchema = new VariableSchema(() => this.getConnectionParameterOptions(), null, null, ['name', 'keyword', 'value']);
+  }
+
+  getConnectionParameterOptions() {
+    const options = getConnectionParameters();
+    if(this.canRegisterServer) {
+      return options;
+    }
+    return options.filter((o) => !ROUTING_PARAMS.includes(o.value));
+  }
+
+  /* Drop the routing parameters from a registered server's parameters, so
+     they do not show up in the grid when the user cannot change them. */
+  withoutRoutingParams(params) {
+    if(this.canRegisterServer || !Array.isArray(params)) {
+      return params;
+    }
+    return params.filter((p) => !ROUTING_PARAMS.includes(p.name ?? p.keyword));
   }
 
   refreshServerList() {
@@ -147,7 +173,12 @@ class AdHocConnectionSchema extends BaseUISchema {
     let self = this;
     return [
       {
-        id: 'sid', label: gettext('Existing Server (Optional)'), deps: ['connected', 'connection_refresh'],
+        id: 'sid',
+        label: self.canRegisterServer ? gettext('Existing Server (Optional)') : gettext('Existing Server'),
+        helpMessage: self.canRegisterServer ? undefined : gettext(
+          'You do not have the Manage Server permission, so you can only connect to servers that are already registered.'
+        ),
+        deps: ['connected', 'connection_refresh'],
         type: (state) => ({
           type: 'select',
           options: () => self.getServerList(),
@@ -189,13 +220,13 @@ class AdHocConnectionSchema extends BaseUISchema {
                 selectedServer.connected = true;
                 resolve(() => ({ sid: sid, server_name:selectedServer?.label, host: selectedServer?.host,
                   port: selectedServer?.port, service: selectedServer?.service,
-                  connection_params: selectedServer?.connection_params, connected: true
+                  connection_params: self.withoutRoutingParams(selectedServer?.connection_params), connected: true
                 }));
               });
             } else {
               resolve(()=>({ sid: sid, server_name:selectedServer?.label, host: selectedServer?.host,
                 port: selectedServer?.port, service: selectedServer?.service,
-                connection_params: selectedServer?.connection_params, connected: true
+                connection_params: self.withoutRoutingParams(selectedServer?.connection_params), connected: true
               }));
             }
           });
@@ -204,15 +235,15 @@ class AdHocConnectionSchema extends BaseUISchema {
       {
         id: 'server_name', label: gettext('Server Name'), type: 'text', noEmpty: true,
         deps: ['sid', 'connected'],
-        disabled: (state) => state.sid,
+        disabled: (state) => !self.canRegisterServer || state.sid,
       }, {
         id: 'host', label: gettext('Host name/address'), type: 'text',
         deps: ['sid', 'connected'],
-        disabled: (state) => state.sid,
+        disabled: (state) => !self.canRegisterServer || state.sid,
       }, {
         id: 'port', label: gettext('Port'), type: 'int', min: 1, max: 65535,
         deps: ['sid', 'connected'],
-        disabled: (state) => state.sid,
+        disabled: (state) => !self.canRegisterServer || state.sid,
       },{
         id: 'did', label: gettext('Database'), deps: ['sid', 'connected'],
         type: (state) => {
@@ -276,7 +307,7 @@ class AdHocConnectionSchema extends BaseUISchema {
         }),
       },{
         id: 'service', label: gettext('Service'), type: 'text', deps: ['sid', 'connected'],
-        disabled: (state) => state.sid,
+        disabled: (state) => !self.canRegisterServer || state.sid,
       }, {
         id: 'connection_params', label: gettext('Connection Parameters'),
         type: 'collection',
@@ -292,6 +323,14 @@ class AdHocConnectionSchema extends BaseUISchema {
 
   validate(state, setError) {
     let errmsg = null;
+
+    if (!this.canRegisterServer) {
+      if (isEmptyString(state.sid)) {
+        setError('sid', gettext('Select a registered server. Connecting to a server that is not registered requires the Manage Server permission.'));
+        return true;
+      }
+      setError('sid', null);
+    }
 
     if (isEmptyString(state.service)) {
       errmsg = gettext('Either Host name or Service must be specified.');
