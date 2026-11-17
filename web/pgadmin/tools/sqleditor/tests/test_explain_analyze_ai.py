@@ -64,7 +64,54 @@ class ExplainAnalyzeAITestCase(BaseTestGenerator):
                     'sql': 'CREATE INDEX idx_users ON users (id);'
                 }],
                 'summary': 'Query could benefit from indexing.'
-            })
+            }),
+            expected_event='complete'
+        )),
+        ('Explain AI - Truncated At Token Limit', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            plan=[{'Plan': {'Node Type': 'Seq Scan'}}],
+            sql='SELECT * FROM users',
+            expected_error=False,
+            mock_response='{"bottlenecks": [{"severity": "high", "no',
+            mock_stop_reason='max_tokens',
+            expected_event='error',
+            event_contains='token limit'
+        )),
+        ('Explain AI - Unclosed Reasoning Block At Token Limit', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            plan=[{'Plan': {'Node Type': 'Seq Scan'}}],
+            sql='SELECT * FROM users',
+            expected_error=False,
+            mock_response='<think>\n{"summary": "draft"}\n',
+            mock_stop_reason='max_tokens',
+            expected_event='error',
+            event_contains='token limit'
+        )),
+        ('Explain AI - Plan Node In Prose Before Analysis', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            plan=[{'Plan': {'Node Type': 'Seq Scan'}}],
+            sql='SELECT * FROM users',
+            expected_error=False,
+            mock_response='The {"Node Type": "Seq Scan"} node reads every '
+                          'row.\n{"bottlenecks": [], "recommendations": [], '
+                          '"summary": "Add an index."}',
+            expected_event='complete',
+            event_contains='Add an index.'
+        )),
+        ('Explain AI - JSON Surrounded By Text', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            plan=[{'Plan': {'Node Type': 'Seq Scan'}}],
+            sql='SELECT * FROM users',
+            expected_error=False,
+            mock_response='Here is the analysis:\n'
+                          '{"bottlenecks": [], "recommendations": [], '
+                          '"summary": "Plan looks fine."}\nDone.',
+            expected_event='complete',
+            event_contains='Plan looks fine.'
         )),
     ]
 
@@ -115,6 +162,9 @@ class ExplainAnalyzeAITestCase(BaseTestGenerator):
         if hasattr(self, 'mock_response'):
             mock_response_obj = MagicMock()
             mock_response_obj.content = self.mock_response
+            from pgadmin.llm.models import StopReason
+            mock_response_obj.stop_reason = StopReason(
+                getattr(self, 'mock_stop_reason', 'end_turn'))
             mock_client = MagicMock()
             mock_client.chat.return_value = mock_response_obj
             mock_get_client = patch(
@@ -166,10 +216,73 @@ class ExplainAnalyzeAITestCase(BaseTestGenerator):
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('text/event-stream', response.content_type)
 
+                events = [
+                    json.loads(line[len('data: '):])
+                    for line in response.get_data(as_text=True).split('\n')
+                    if line.startswith('data: ')
+                ]
+                final = events[-1]
+                self.assertEqual(final['type'], self.expected_event)
+                if hasattr(self, 'event_contains'):
+                    self.assertIn(
+                        self.event_contains,
+                        final.get('message') or final.get('summary', '')
+                    )
+                if self.expected_event == 'complete':
+                    self.assertNotIn('{', final['summary'])
+
         finally:
             # Stop all patches
             for p in patches:
                 p.stop()
+
+    def tearDown(self):
+        pass
+
+
+class ExplainAnalysisParseTestCase(BaseTestGenerator):
+    """Test cases for extracting JSON from EXPLAIN analysis responses"""
+
+    scenarios = [
+        ('Parse - Bare JSON', dict(
+            text='{"summary": "ok"}', expected={'summary': 'ok'})),
+        ('Parse - JSON Fence', dict(
+            text='```json\n{"summary": "ok"}\n```',
+            expected={'summary': 'ok'})),
+        ('Parse - Plain Fence', dict(
+            text='```\n{"summary": "ok"}\n```',
+            expected={'summary': 'ok'})),
+        ('Parse - Leading And Trailing Text', dict(
+            text='Analysis:\n{"summary": "ok"}\nHope this helps.',
+            expected={'summary': 'ok'})),
+        ('Parse - Reasoning Block', dict(
+            text='<think>Check {the} scans</think>\n{"summary": "ok"}',
+            expected={'summary': 'ok'})),
+        ('Parse - Unclosed Reasoning Block', dict(
+            text='<think>\n{"summary": "draft"}\n', expected=None)),
+        ('Parse - Plan Node Quoted In Prose', dict(
+            text='The {"Node Type": "Seq Scan"} node reads every row.',
+            expected=None)),
+        ('Parse - Plan Node In Prose Before Analysis', dict(
+            text='The {"Node Type": "Seq Scan"} node reads every row.\n'
+                 '{"summary": "ok"}',
+            expected={'summary': 'ok'})),
+        ('Parse - Object Without Analysis Keys', dict(
+            text='{"Node Type": "Seq Scan"}', expected=None)),
+        ('Parse - Truncated JSON', dict(
+            text='{"bottlenecks": [{"severity": "hi', expected=None)),
+        ('Parse - Not An Object', dict(text='[1, 2]', expected=None)),
+        ('Parse - Empty', dict(text='', expected=None)),
+        ('Parse - None', dict(text=None, expected=None)),
+    ]
+
+    def setUp(self):
+        pass
+
+    def runTest(self):
+        """Test JSON extraction from LLM responses"""
+        from pgadmin.tools.sqleditor import _parse_explain_analysis
+        self.assertEqual(_parse_explain_analysis(self.text), self.expected)
 
     def tearDown(self):
         pass
