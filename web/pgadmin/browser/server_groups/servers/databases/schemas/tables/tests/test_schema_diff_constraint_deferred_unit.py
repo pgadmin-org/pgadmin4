@@ -16,6 +16,9 @@ differs must be dropped and recreated. The key was misspelled as
 'condeffered' in the list of keys that force this, so it never matched the
 'condeferred' key the properties query returns, and the difference was
 silently left in place.
+
+A recreated constraint must also keep its drop when the target has another
+constraint of the same kind that the source lacks.
 """
 
 import copy
@@ -50,6 +53,12 @@ class TestSchemaDiffConstraintDeferredUnit(BaseTestGenerator):
         ('A primary key with the same deferred state is not recreated',
          dict(constraint_type='primary_key', source_deferred=True,
               target_deferred=True, recreated=False)),
+        ('A recreated unique constraint keeps its drop alongside a '
+         'target-only unique constraint',
+         dict(constraint_type='unique_constraint', source_deferred=True,
+              target_deferred=False, recreated=True,
+              target_only=_constraint(oid=17460, name='orders_code_key',
+                                      columns=[{'column': 'code'}]))),
     ]
 
     def runTest(self):
@@ -57,14 +66,22 @@ class TestSchemaDiffConstraintDeferredUnit(BaseTestGenerator):
             _constraint(oid=16450, condeferred=self.source_deferred)]}
         target = {self.constraint_type: [
             _constraint(oid=17450, condeferred=self.target_deferred)]}
+        target_only = getattr(self, 'target_only', None)
+        if target_only:
+            target[self.constraint_type].append(target_only)
 
         diff = SchemaDiffTableCompare.table_constraint_comp(
             copy.deepcopy(source), copy.deepcopy(target))[
             self.constraint_type]
 
         if self.recreated:
-            self.assertEqual(len(diff['added']), 1)
-            self.assertEqual(len(diff['deleted']), 1)
+            self.assertEqual([c['name'] for c in diff['added']],
+                             ['orders_key'])
+            expected_deleted = ['orders_key']
+            if target_only:
+                expected_deleted.append(target_only['name'])
+            self.assertEqual([c['name'] for c in diff['deleted']],
+                             expected_deleted)
             self.assertEqual(diff['changed'], [])
         else:
             self.assertEqual(diff['added'], [])

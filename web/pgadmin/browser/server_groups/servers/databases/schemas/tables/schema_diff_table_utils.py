@@ -327,8 +327,10 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 different[constraint]['changed'] = updated
                 different[constraint]['deleted'] = deleted
 
+            # Keep the drops recorded above for recreated constraints, and
+            # add the constraints that are only in the target.
             if target_cols and len(target_cols) > 0:
-                different[constraint]['deleted'] = target_cols
+                different[constraint]['deleted'] = deleted + target_cols
 
         return different
 
