@@ -20,7 +20,7 @@ loop". That error was swallowed, so the Query Tool showed an empty or stale
 result ("Total rows: 0 of 10")."""
 
 import threading
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from psycopg import InterfaceError
 
@@ -34,9 +34,14 @@ class _FakeConnection:
 
 
 def _cursor_on(conn):
-    cur = AsyncDictCursor.__new__(AsyncDictCursor)
-    cur._conn = conn
-    return cur
+    """
+    Return an AsyncDictCursor whose connection property returns conn. The
+    cursor is not initialised, since these tests only need its connection.
+    """
+    patcher = patch.object(AsyncDictCursor, 'connection',
+                           new_callable=PropertyMock, return_value=conn)
+    patcher.start()
+    return patcher, AsyncDictCursor.__new__(AsyncDictCursor)
 
 
 def _held_by_another_thread(lock):
@@ -56,14 +61,14 @@ def _held_by_another_thread(lock):
 
 
 class AsyncCursorConnectionLockTest(BaseTestGenerator):
-    """Calls on cursors sharing a connection hold one lock per connection."""
+    """A cursor call holds its connection's lock, and only that one."""
 
     def runTest(self):
         conn, other_conn = _FakeConnection(), _FakeConnection()
-        cur1, cur2 = _cursor_on(conn), _cursor_on(conn)
+        patcher, cur = _cursor_on(conn)
+        self.addCleanup(patcher.stop)
 
-        self.assertIs(_connection_lock(cur1.connection),
-                      _connection_lock(cur2.connection))
+        self.assertIs(_connection_lock(conn), _connection_lock(conn))
         self.assertIsNot(_connection_lock(conn),
                          _connection_lock(other_conn))
 
@@ -76,7 +81,7 @@ class AsyncCursorConnectionLockTest(BaseTestGenerator):
                 _connection_lock(other_conn))
             return 'done'
 
-        self.assertEqual(cur2._run(probe()), 'done')
+        self.assertEqual(cur._run(probe()), 'done')
         # Whilst one cursor's call runs, no other thread can use the same
         # connection, but a different connection is unaffected.
         self.assertTrue(seen['same_conn'])
@@ -89,7 +94,8 @@ class AsyncCursorExecuteRuntimeErrorTest(BaseTestGenerator):
     """A RuntimeError from execute() is reported, not silently dropped."""
 
     def runTest(self):
-        cur = _cursor_on(_FakeConnection())
+        patcher, cur = _cursor_on(_FakeConnection())
+        self.addCleanup(patcher.stop)
 
         async def failing_execute(*args, **kwargs):
             raise RuntimeError('bound to a different event loop')
