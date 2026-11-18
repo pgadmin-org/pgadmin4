@@ -93,6 +93,8 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
          dict(test_method='test_fk_to_other_schema_not_recreated')),
         ('A foreign key referencing a different schema is recreated',
          dict(test_method='test_fk_to_different_schema_recreated')),
+        ('A foreign key to another schema is recreated referencing it',
+         dict(test_method='test_fk_to_other_schema_recreated')),
         ('A foreign key with a different referenced table is recreated',
          dict(test_method='test_fk_to_different_table_recreated')),
     ]
@@ -210,6 +212,21 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
 
         self.assertEqual(len(diff['added']), 1)
         self.assertEqual(len(diff['deleted']), 1)
+        # The source references its own schema, so the foreign key added to
+        # the target must reference the target's schema, not the table the
+        # source OID names.
+        self.assertEqual(diff['added'][0]['remote_schema'], 'novinator_prod')
+        self.assertNotIn('references', diff['added'][0]['columns'][0])
+
+    def test_fk_to_other_schema_recreated(self):
+        diff = self._compare_foreign_keys(
+            _foreign_key('app', refnsp='common_a'),
+            _foreign_key('app_prod', refnsp='common_b'))
+
+        self.assertEqual(len(diff['added']), 1)
+        self.assertEqual(len(diff['deleted']), 1)
+        self.assertEqual(diff['added'][0]['remote_schema'], 'common_a')
+        self.assertIn('references', diff['added'][0]['columns'][0])
 
     def test_fk_to_different_table_recreated(self):
         diff = self._compare_foreign_keys(

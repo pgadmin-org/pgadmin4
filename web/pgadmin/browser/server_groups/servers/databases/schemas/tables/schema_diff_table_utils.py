@@ -301,6 +301,29 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     SchemaDiffTableCompare._fk_referenced_schema(foreign_key)
 
     @staticmethod
+    def _fk_for_target(foreign_key, target_table):
+        """
+        Return a source foreign key that is to be added to the target table.
+
+        A foreign key to a table in its own schema must reference the
+        target table's schema. Its SQL would otherwise name the referenced
+        table's schema in the source, as get_sql() looks the referenced
+        table up by its OID in 'references'. That OID belongs to the source
+        database, so it is removed and the referenced schema set directly.
+        """
+        target_schema = target_table.get('schema')
+        if target_schema is None or \
+                SchemaDiffTableCompare._fk_referenced_schema(
+                    foreign_key) is not None:
+            return foreign_key
+
+        foreign_key = copy.deepcopy(foreign_key)
+        foreign_key['remote_schema'] = target_schema
+        for column in foreign_key.get('columns', []):
+            column.pop('references', None)
+        return foreign_key
+
+    @staticmethod
     def table_constraint_comp(source_table, target_table):
         """
         Table Constraint DDL comparison
@@ -396,6 +419,12 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 different[constraint]['added'] = added
                 different[constraint]['changed'] = updated
                 different[constraint]['deleted'] = deleted
+
+            if constraint == 'foreign_key' and \
+                    different[constraint].get('added'):
+                different[constraint]['added'] = [
+                    SchemaDiffTableCompare._fk_for_target(fk, target_table)
+                    for fk in different[constraint]['added']]
 
             # Keep the drops recorded above for recreated constraints, and
             # add the constraints that are only in the target.
