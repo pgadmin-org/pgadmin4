@@ -400,30 +400,18 @@ export class ResultSetUtils {
     }
   }
 
-  getWindowRows(fromRownum, toRownum) {
+  async getWindowRows(fromRownum, toRownum) {
     let url = url_for('sqleditor.fetch_window', {
       'trans_id': this.transId,
       'from_rownum': fromRownum,
       'to_rownum': toRownum,
     });
-    return this.api.get(url);
-  }
-
-  /*
-   * Get every row of the result set, for copying when the user has chosen to
-   * select all of them rather than just the current page. Rows outside the
-   * page are fetched from the server; the page itself comes from the grid so
-   * that it reflects what the user can see, including unsaved edits.
-   */
-  async getAllRows(columns, pageRows, pagination, totalRowCount) {
-    const res = await this.getWindowRows(1, totalRowCount);
-    const allRows = this.processRows(res.data.data.result, columns);
-    const pageStart = Math.max((pagination?.rows_from ?? 1) - 1, 0);
-    const pageEnd = pagination?.rows_to ?? 0;
-    if(pageEnd > pageStart) {
-      allRows.splice(pageStart, pageEnd - pageStart, ...pageRows);
+    const res = await this.api.get(url);
+    /* A failed fetch still returns HTTP 200, with the error in the result */
+    if(res.data?.data?.status != 'Success') {
+      throw new Error(res.data?.data?.result || gettext('Failed to fetch rows.'));
     }
-    return allRows;
+    return res;
   }
 
   stopExecution() {
@@ -1184,11 +1172,12 @@ export function ResultSet() {
 
   const fetchWindow = async (fromRownum, toRownum, callback)=>{
     let res = [];
+    let newRows;
     setLoaderText(gettext('Fetching rows...'));
     try {
       res = await rsu.current.getWindowRows(fromRownum, toRownum);
       resetSelectionAndChanges();
-      const newRows = rsu.current.processRows(res.data.data.result, columns);
+      newRows = rsu.current.processRows(res.data.data.result, columns);
       setRows([...newRows]);
       setQueryData((prev)=>({
         ...prev,
@@ -1208,7 +1197,7 @@ export function ResultSet() {
     } finally {
       setLoaderText('');
     }
-    callback?.();
+    callback?.(newRows);
   };
 
   useEffect(()=>{
@@ -1410,7 +1399,7 @@ export function ResultSet() {
     return [startColumnIdx, endColumnIdx, startRowIdx, endRowIdx];
   };
 
-  const copyDataFunc = async (withHeaders=false)=>{
+  const copyDataFunc = (withHeaders=false)=>{
     const queryToolPref = queryToolCtx.preferences.sqleditor;
     let copyData = new CopyData({
       quoting: queryToolPref.results_grid_quoting,
@@ -1419,19 +1408,18 @@ export function ResultSet() {
     });
     let copyRows=[], copyCols=[];
     if(allRowsSelect == 'ALL' && !queryToolCtx.server_cursor) {
-      /* Only the current page is loaded, so fetch the rest before copying */
-      setLoaderText(gettext('Fetching rows...'));
-      try {
-        copyRows = await rsu.current.getAllRows(columns, rows,
-          queryData?.pagination, queryData?.rows_affected);
-        copyCols = columns;
-      } catch (e) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, e, {
-          checkTransaction: true,
-        });
-      } finally {
-        setLoaderText('');
-      }
+      /*
+       * Only the current page is loaded, so load every row into the grid, as
+       * editing the page range would, then select and copy them all.
+       */
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, 1, queryData?.rows_affected, (allRows)=>{
+        if(!allRows?.length) {
+          return;
+        }
+        setSelectedRows(new Set(allRows.map(rowKeyGetter)));
+        copyData.copyRowsToCsv(allRows, columns, withHeaders);
+      });
+      return;
     } else if(selectedRows.size > 0) {
       copyCols = columns;
       copyRows = rows.filter((r)=>selectedRows.has(r[rsu.current.clientPK]));

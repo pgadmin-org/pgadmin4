@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 // With more rows than fit on a page, "Select All N Rows" selects the whole
-// result set, so Copy must stay available and copy every row rather than
-// only the page that happens to be loaded.
+// result set, so Copy must stay available, and loads every row to copy
+// rather than copying only the page that happens to be loaded.
 
 jest.mock('sources/url_for', () => ({
   __esModule: true,
@@ -99,28 +99,21 @@ describe('ResultSetToolbar Copy with all rows selected', () => {
   });
 });
 
-describe('ResultSetUtils.getAllRows', () => {
-  const columns = [{ key: 'id', pos: 0 }, { key: 'val', pos: 1 }];
-  const serverRows = [[1, 'a'], [2, 'b'], [3, 'c'], [4, 'd'], [5, 'e']];
-
-  const getAllRows = (pageRows, pagination, total = serverRows.length) => {
-    const rsu = new ResultSetUtils({}, {}, 1, true);
-    rsu.clientPK = '__temp_PK';
-    rsu.getWindowRows = jest.fn().mockResolvedValue({
-      data: { data: { result: serverRows } },
-    });
-    return rsu.getAllRows(columns, pageRows, pagination, total).then((rows) => ({ rows, rsu }));
+// Copy loads every row through fetch_window, which reports a failed fetch
+// with HTTP 200, so the failure must be raised rather than copied as no rows.
+describe('ResultSetUtils.getWindowRows', () => {
+  const getWindowRows = (data) => {
+    const rsu = new ResultSetUtils({ get: jest.fn().mockResolvedValue({ data: { data } }) }, {}, 1, true);
+    return rsu.getWindowRows(1, 2500);
   };
 
-  it('fetches every row from the server', async () => {
-    const { rows, rsu } = await getAllRows([], {});
-    expect(rsu.getWindowRows).toHaveBeenCalledWith(1, 5);
-    expect(rows.map((r) => r.val)).toEqual(['a', 'b', 'c', 'd', 'e']);
+  it('returns the response for a successful fetch', async () => {
+    const res = await getWindowRows({ status: 'Success', result: [[1]] });
+    expect(res.data.data.result).toEqual([[1]]);
   });
 
-  it('uses the grid rows for the loaded page, keeping unsaved edits', async () => {
-    const pageRows = [{ id: 3, val: 'edited' }, { id: 4, val: 'd' }, { id: 99, val: 'new' }];
-    const { rows } = await getAllRows(pageRows, { rows_from: 3, rows_to: 4 });
-    expect(rows.map((r) => r.val)).toEqual(['a', 'b', 'edited', 'd', 'new', 'e']);
+  it.each(['Error', 'NotConnected'])('rejects a fetch with status %s', async (status) => {
+    await expect(getWindowRows({ status, result: 'connection is busy' }))
+      .rejects.toThrow('connection is busy');
   });
 });
