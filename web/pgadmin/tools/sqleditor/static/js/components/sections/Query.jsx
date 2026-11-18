@@ -63,8 +63,12 @@ export async function registerAutocomplete(editor, api, transId) {
             options: Object.keys(res.data.data.result).map((key)=>({
               label: key, type: res.data.data.result[key].object_type
             })),
+            // Reuse these suggestions only while the user is still typing the
+            // same identifier. A separator such as "." starts a new context
+            // (public. needs the tables, not the names starting with p), so
+            // CodeMirror then asks the server again.
             validFor: (text, from)=>{
-              return text.startsWith(fullSql.slice(from));
+              return /^\w*$/.test(text) && text.startsWith(fullSql.slice(from));
             }
           });
         })

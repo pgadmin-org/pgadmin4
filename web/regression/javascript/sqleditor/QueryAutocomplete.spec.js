@@ -79,6 +79,17 @@ const pendingApi = () => ({
   })),
 });
 
+// An api whose requests are answered by hand, in the order they were sent.
+const deferredApi = () => {
+  const resolvers = [];
+  return {
+    resolvers,
+    post: jest.fn(() => new Promise((resolve) => {
+      resolvers.push((result) => resolve({data: {data: {result}}}));
+    })),
+  };
+};
+
 describe('Query autocomplete source', () => {
   it('asks CodeMirror to debounce typing by AUTOCOMPLETE_DEBOUNCE_MS', () => {
     const editor = {registerAutocomplete: jest.fn()};
@@ -238,5 +249,50 @@ describe('Query autocomplete in the editor', () => {
 
     view.dispatch({selection: {anchor: 0}});
     expect(signal.aborted).toBe(true);
+  });
+
+  it('asks again when typing crosses a token boundary before the response arrives', async () => {
+    const api = deferredApi();
+    createEditor(api);
+
+    // The request starts for "p" ...
+    type('select * from p');
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+
+    // ... and the user types on to "public." while it is still running.
+    for (const ch of 'ublic.') {
+      type(ch);
+      jest.advanceTimersByTime(20);
+    }
+    expect(api.post).toHaveBeenCalledTimes(1);
+
+    // The answer for "p" must not be reused for "public.": the suggestions
+    // for the schema's tables have to be requested.
+    api.resolvers[0]({pg_class: {object_type: 'table'}});
+    await Promise.resolve();
+    await Promise.resolve();
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(2);
+  });
+
+  it('reuses the response whilst typing continues within the same identifier', async () => {
+    const api = deferredApi();
+    createEditor(api);
+
+    type('select * from p');
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+
+    for (const ch of 'g_c') {
+      type(ch);
+      jest.advanceTimersByTime(20);
+    }
+
+    api.resolvers[0]({pg_class: {object_type: 'table'}});
+    await Promise.resolve();
+    await Promise.resolve();
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
   });
 });
