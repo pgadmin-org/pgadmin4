@@ -770,6 +770,9 @@ class TestDownloadResultFormats(BaseTestGenerator):
                                  self.expected_rows + 1)
 
         if self.max_fetches is not None:
+            # At least one fetch, so a patch that never saw the export
+            # cannot pass for one that took very few.
+            self.assertGreater(len(fetches), 0)
             self.assertLessEqual(len(fetches), self.max_fetches)
 
     def tearDown(self):
