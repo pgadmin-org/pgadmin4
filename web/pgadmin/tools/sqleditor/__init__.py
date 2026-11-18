@@ -84,6 +84,12 @@ from pgadmin.utils.driver.psycopg3.typecast import \
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
+# Rows fetched per batch when saving results to a file. Every fetch runs in a
+# fresh asyncio event loop, and on Windows each new loop opens a loopback TCP
+# socket pair, so ten-row batches meant tens of thousands of short-lived
+# sockets for a large result; that is the likely cause of downloads stalling
+# part-way through on Windows (#9915).
+DOWNLOAD_BATCH_SIZE = 2000
 sqleditor_close_session_lock = Lock()
 # SQLAutoComplete objects, keyed by _auto_complete_key(). Each one holds a
 # live connection belonging to the session that created it, so the key must
@@ -2274,7 +2280,8 @@ def start_query_download_tool(trans_id):
             sync_conn.execute_async(sql, server_cursor=trans_obj.server_cursor)
         # This returns generator of records.
         status, gen, conn_obj = \
-            sync_conn.execute_on_server_as_csv(records=10)
+            sync_conn.execute_on_server_as_csv(
+                records=DOWNLOAD_BATCH_SIZE)
 
         if trans_obj.server_cursor and query_commited:
             sync_conn.execute_void("COMMIT;")
