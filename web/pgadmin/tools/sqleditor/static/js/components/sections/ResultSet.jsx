@@ -409,6 +409,23 @@ export class ResultSetUtils {
     return this.api.get(url);
   }
 
+  /*
+   * Get every row of the result set, for copying when the user has chosen to
+   * select all of them rather than just the current page. Rows outside the
+   * page are fetched from the server; the page itself comes from the grid so
+   * that it reflects what the user can see, including unsaved edits.
+   */
+  async getAllRows(columns, pageRows, pagination, totalRowCount) {
+    const res = await this.getWindowRows(1, totalRowCount);
+    const allRows = this.processRows(res.data.data.result, columns);
+    const pageStart = Math.max((pagination?.rows_from ?? 1) - 1, 0);
+    const pageEnd = pagination?.rows_to ?? 0;
+    if(pageEnd > pageStart) {
+      allRows.splice(pageStart, pageEnd - pageStart, ...pageRows);
+    }
+    return allRows;
+  }
+
   stopExecution() {
     return this.api.post(
       url_for('sqleditor.cancel_transaction', {'trans_id': this.transId})
@@ -1393,7 +1410,7 @@ export function ResultSet() {
     return [startColumnIdx, endColumnIdx, startRowIdx, endRowIdx];
   };
 
-  const copyDataFunc = (withHeaders=false)=>{
+  const copyDataFunc = async (withHeaders=false)=>{
     const queryToolPref = queryToolCtx.preferences.sqleditor;
     let copyData = new CopyData({
       quoting: queryToolPref.results_grid_quoting,
@@ -1401,7 +1418,21 @@ export function ResultSet() {
       field_separator: queryToolPref.results_grid_field_separator,
     });
     let copyRows=[], copyCols=[];
-    if(selectedRows.size > 0) {
+    if(allRowsSelect == 'ALL' && !queryToolCtx.server_cursor) {
+      /* Only the current page is loaded, so fetch the rest before copying */
+      setLoaderText(gettext('Fetching rows...'));
+      try {
+        copyRows = await rsu.current.getAllRows(columns, rows,
+          queryData?.pagination, queryData?.rows_affected);
+        copyCols = columns;
+      } catch (e) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, e, {
+          checkTransaction: true,
+        });
+      } finally {
+        setLoaderText('');
+      }
+    } else if(selectedRows.size > 0) {
       copyCols = columns;
       copyRows = rows.filter((r)=>selectedRows.has(r[rsu.current.clientPK]));
     } else if(selectedColumns.size > 0) {
@@ -1480,7 +1511,7 @@ export function ResultSet() {
     return ()=>{
       eventBus.deregisterListener(QUERY_TOOL_EVENTS.COPY_DATA, copyDataFunc);
     };
-  }, [selectedRows, selectedColumns, columns, rows]);
+  }, [selectedRows, selectedColumns, columns, rows, allRowsSelect, queryData]);
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
