@@ -173,7 +173,15 @@ _.extend(pgBrowser.keyboardNavigation, {
     // so on) carry the same `dock-tab-active` class, so a search across the
     // whole tree can land on one of those and cycle a tool's inner tabs
     // instead of the workspace tabs it was asked to move between.
-    const topDockLayout = rootDock.querySelector('.dock-layout');
+    //
+    // In the workspace layout each workspace (Default, Query Tool, PSQL,
+    // Schema Diff) has a top-level dock layout of its own, with all but the
+    // current one hidden, so use the layout of the workspace being shown.
+    // The first dock layout in the DOM is always the Default workspace's,
+    // which would cycle the tabs of a hidden workspace instead.
+    const topDockLayout =
+      self._currentWorkspaceDocker()?.layoutObj?.getRootElement?.() ??
+      rootDock.querySelector('.dock-layout');
     if (!topDockLayout) return;
 
     const activeTabBtns = Array.from(
@@ -198,11 +206,18 @@ _.extend(pgBrowser.keyboardNavigation, {
       self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
     }
   },
+  // The layout docker of the workspace being shown. In the classic layout
+  // currentWorkspace stays at the default, and every workspace docker points
+  // at the default one anyway.
+  _currentWorkspaceDocker: function() {
+    const docker = pgAdmin.Browser.docker;
+    return docker?.[docker?.currentWorkspace] ?? docker?.default_workspace;
+  },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
     if(combo.key === shortcut_obj.close_tab_panel) {
       const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
       if (panelId) {
-        pgAdmin.Browser.docker.default_workspace.close(panelId);
+        this._currentWorkspaceDocker()?.close(panelId);
       }
     } else {
       if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
