@@ -22,6 +22,20 @@ import secrets
 import config
 from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
     import async_poll
+from pgadmin.utils.driver.psycopg3.cursor import AsyncDictCursor
+
+# Enough rows to need three fetched batches at the 2000-row batch size, the
+# last one partial. Every fetch runs in a fresh event loop (on Windows, one
+# that opens a loopback socket pair), so saving this many rows must take a
+# handful of fetches, not hundreds: three batches plus the empty fetch that
+# ends the stream. With ten-row batches, downloads of a couple of hundred
+# thousand rows stalled part-way through on Windows (#9915).
+MULTI_BATCH_ROWS = 4001
+MULTI_BATCH_FETCHES = 4
+MULTI_BATCH_SQL = (
+    'SELECT g as "A", g * 2 as "B", \'x\' as "C" '
+    'FROM generate_series(1, {0}) g'.format(MULTI_BATCH_ROWS)
+)
 
 
 class TestDownloadCSV(BaseTestGenerator):
@@ -309,16 +323,16 @@ class TestDownloadResultFormats(BaseTestGenerator):
                  expected_extension='.csv')
         ),
         (
-            # The exporter fetches ten rows at a time, and the codecs that
+            # The exporter fetches rows a batch at a time, and the codecs that
             # self-emit a BOM do so on every encode() call, so anything
             # spanning more than one chunk is where a BOM per chunk would
             # show up. A single row cannot catch that.
             'Download multi-chunk CSV as utf-16 has exactly one BOM',
             dict(data_format='csv', add_bom=True, encoding='utf-16',
                  expected_content_type='text/csv',
-                 expected_extension='.csv',
-                 sql='SELECT g as "A", g * 2 as "B", \'x\' as "C" '
-                     'FROM generate_series(1, 25) g')
+                 expected_extension='.csv', expected_rows=MULTI_BATCH_ROWS,
+                 max_fetches=MULTI_BATCH_FETCHES,
+                 sql=MULTI_BATCH_SQL)
         ),
         (
             # utf-8-sig self-emits a BOM too, so asking for one as well
@@ -361,17 +375,15 @@ class TestDownloadResultFormats(BaseTestGenerator):
             'Download multi-chunk results as JSON',
             dict(data_format='json', add_bom=False, encoding='utf-8',
                  expected_content_type='application/json',
-                 expected_extension='.json', expected_rows=25,
-                 sql='SELECT g as "A", g * 2 as "B", \'x\' as "C" '
-                     'FROM generate_series(1, 25) g')
+                 expected_extension='.json', expected_rows=MULTI_BATCH_ROWS,
+                 sql=MULTI_BATCH_SQL)
         ),
         (
             'Download multi-chunk results as XML',
             dict(data_format='xml', add_bom=False, encoding='utf-8',
                  expected_content_type='application/xml',
-                 expected_extension='.xml', expected_rows=25,
-                 sql='SELECT g as "A", g * 2 as "B", \'x\' as "C" '
-                     'FROM generate_series(1, 25) g')
+                 expected_extension='.xml', expected_rows=MULTI_BATCH_ROWS,
+                 sql=MULTI_BATCH_SQL)
         ),
         (
             # A bogus, non-existent codec must be rejected up front with a
@@ -510,6 +522,7 @@ class TestDownloadResultFormats(BaseTestGenerator):
     filename_override = None
     non_latin1_char = None
     expected_rows = None
+    max_fetches = None
 
     def setUp(self):
         self._db_name = 'download_results_fmt_' + str(
@@ -630,16 +643,30 @@ class TestDownloadResultFormats(BaseTestGenerator):
         self.app.logger.disabled = True
         filename = self.filename_override or \
             'test{0}'.format(self.expected_extension)
-        with patch('pgadmin.tools.sqleditor.blueprint.'
-                   'csv_add_bom.get', return_value=self.add_bom), \
-            patch('pgadmin.tools.sqleditor.blueprint.'
-                  'csv_output_encoding.get', return_value=self.encoding):
+        fetches = []
+        real_fetchmany = AsyncDictCursor.fetchmany
+
+        def counting_fetchmany(cur, *args, **kwargs):
+            fetches.append(1)
+            return real_fetchmany(cur, *args, **kwargs)
+
+        bom_patch = patch('pgadmin.tools.sqleditor.blueprint.'
+                          'csv_add_bom.get', return_value=self.add_bom)
+        encoding_patch = patch('pgadmin.tools.sqleditor.blueprint.'
+                               'csv_output_encoding.get',
+                               return_value=self.encoding)
+        fetch_patch = patch.object(AsyncDictCursor, 'fetchmany',
+                                   counting_fetchmany)
+        with bom_patch, encoding_patch, fetch_patch:
             response = self.tester.post(url, data={
                 "query": sql,
                 "filename": filename,
                 "format": self.data_format,
                 "query_commited": True,
             })
+            # The body is streamed, so the rows are only fetched as it is
+            # read; read it whilst the fetches are still being counted.
+            raw = response.data
         self.app.logger.disabled = False
 
         headers = dict(response.headers)
@@ -675,7 +702,6 @@ class TestDownloadResultFormats(BaseTestGenerator):
         else:
             self.assertIn('filename="{0}"'.format(filename), disposition)
 
-        raw = response.data
         if self.add_bom and canonical.startswith('utf'):
             # The output must carry exactly one BOM for the encoding, never
             # two (which happened when a BOM was hand-prepended for codecs
@@ -735,6 +761,13 @@ class TestDownloadResultFormats(BaseTestGenerator):
                 # silently dropping it or corrupting the row.
                 self.assertNotIn(self.non_latin1_char, body)
                 self.assertIn('?', body)
+            if self.expected_rows is not None:
+                # The header line plus one line per row.
+                self.assertEqual(len(body.splitlines()),
+                                 self.expected_rows + 1)
+
+        if self.max_fetches is not None:
+            self.assertLessEqual(len(fetches), self.max_fetches)
 
     def tearDown(self):
         # Closing the transaction and disconnecting belong here rather than
