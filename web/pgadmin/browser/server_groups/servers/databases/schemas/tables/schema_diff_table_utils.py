@@ -103,6 +103,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             target_tables = self.fetch_tables(**target_params,
                                               with_serial_cols=True)
 
+        self._add_fk_referenced_schema(source_tables)
+        self._add_fk_referenced_schema(target_tables)
+
         # If both the dict have no items then return None.
         if not (source_tables or target_tables) or (
                 len(source_tables) <= 0 and len(target_tables) <= 0):
@@ -274,6 +277,28 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         if refnsp is not None and refnsp == foreign_key.get('fknsp'):
             return None
         return refnsp
+
+    @staticmethod
+    def _add_fk_referenced_schema(tables):
+        """
+        Add 'referenced_schema' to each foreign key of the given tables,
+        holding _fk_referenced_schema() of it.
+
+        'refnsp', 'remote_schema' and 'references_table_name' are in
+        keys_to_ignore, so that a foreign key to a table in its own schema
+        does not make tables in schemas with different names compare as
+        different. Without this key, two foreign keys referencing tables of
+        the same name in different schemas would not be told apart, and the
+        tables would be reported as identical (#10786).
+        """
+        if not isinstance(tables, dict):
+            return
+        for table in tables.values():
+            if not isinstance(table, dict):
+                continue
+            for foreign_key in table.get('foreign_key', []):
+                foreign_key['referenced_schema'] = \
+                    SchemaDiffTableCompare._fk_referenced_schema(foreign_key)
 
     @staticmethod
     def table_constraint_comp(source_table, target_table):

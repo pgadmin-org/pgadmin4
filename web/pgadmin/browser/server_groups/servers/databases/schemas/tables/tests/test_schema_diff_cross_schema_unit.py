@@ -7,13 +7,15 @@
 #
 ##########################################################################
 
-"""Unit tests for comparing tables in schemas with different names (#10762).
+"""Unit tests for comparing tables in schemas with different names (#10762,
+#10786).
 
 A table's own schema name shows up in the nextval() default of a SERIAL
 column and in the referenced schema of a foreign key to a table in the
 same schema. When two schemas with different names are compared, neither
 may make otherwise identical tables compare as different, or make Schema
-Diff drop and recreate an identical foreign key.
+Diff drop and recreate an identical foreign key. A foreign key to a table
+in any other schema is still compared by that schema's name.
 """
 
 import copy
@@ -73,6 +75,13 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
     scenarios = [
         ('Tables differing only in their schema name are identical',
          dict(test_method='test_tables_identical')),
+        ('Tables with foreign keys to the same other schema are identical',
+         dict(test_method='test_tables_fk_to_other_schema_identical')),
+        ('Tables with foreign keys to different schemas are different',
+         dict(test_method='test_tables_fk_to_different_schema_different')),
+        ('Tables with foreign keys to their own schema and to the source '
+         'schema are different',
+         dict(test_method='test_tables_fk_to_source_schema_different')),
         ('A SERIAL column whose default names another schema is not '
          'reported as changed',
          dict(test_method='test_serial_column_not_changed')),
@@ -99,8 +108,42 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
         target = _table('novinator_prod', [_serial_column('novinator_prod')],
                         [_foreign_key('novinator_prod', oid=17420)])
 
-        self.assertTrue(are_dictionaries_identical(
-            source, target, SchemaDiffTableCompare.keys_to_ignore, False))
+        self.assertTrue(self._tables_identical(source, target))
+
+    def _tables_identical(self, source, target):
+        # As compare() does before comparing the tables.
+        SchemaDiffTableCompare._add_fk_referenced_schema(
+            {source['name']: source})
+        SchemaDiffTableCompare._add_fk_referenced_schema(
+            {target['name']: target})
+        # A difference is logged through current_app.
+        with self.app.app_context():
+            return are_dictionaries_identical(
+                source, target, SchemaDiffTableCompare.keys_to_ignore, False)
+
+    def test_tables_fk_to_other_schema_identical(self):
+        source = _table('app', [], [_foreign_key('app', refnsp='common')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='common')])
+
+        self.assertTrue(self._tables_identical(source, target))
+
+    def test_tables_fk_to_different_schema_different(self):
+        # The case from #10786: the referenced tables have the same name
+        # but are in different schemas.
+        source = _table('app', [], [_foreign_key('app', refnsp='common_a')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='common_b')])
+
+        self.assertFalse(self._tables_identical(source, target))
+
+    def test_tables_fk_to_source_schema_different(self):
+        # The target references the source's schema rather than its own.
+        source = _table('app', [], [_foreign_key('app')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='app')])
+
+        self.assertFalse(self._tables_identical(source, target))
 
     def test_serial_column_not_changed(self):
         source = _serial_column('novinator')
