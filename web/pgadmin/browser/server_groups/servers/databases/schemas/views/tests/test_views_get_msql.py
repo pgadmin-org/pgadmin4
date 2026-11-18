@@ -84,7 +84,11 @@ class ViewsGetMsqlTestCase(BaseTestGenerator):
             utils.assert_status_code(self, response)
 
             result = self.expected_data.get('test_result_data', {})
-            sql = json.loads(response.data.decode('utf-8'))['data']
+            body = json.loads(response.data.decode('utf-8'))
+            sql = body['data']
+            if 'del_sql' in result:
+                self.assertEqual(body['result']['del_sql'],
+                                 result['del_sql'])
             if 'sql_contains' in result:
                 self.assertIn(result['sql_contains'], sql)
             if 'sql_not_contains' in result:

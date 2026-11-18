@@ -139,21 +139,35 @@ export default function SchemaDialogView({
 
     const onSaved = closeOnSave === true ? () => props.onClose?.() : undefined;
 
-    if (!schema.warningText) {
-      save(schemaState.changes(true), onSaved);
+    const confirmAndSave = (warningText) => {
+      if (!warningText) {
+        save(schemaState.changes(true), onSaved);
+        return;
+      }
+
+      Notifier.confirm(
+        gettext('Warning'),
+        warningText,
+        () => { save(schemaState.changes(true), onSaved); },
+        () => {
+          setSaving(false);
+          setLoaderText('');
+          return true;
+        },
+      );
+    };
+
+    // A schema whose warning depends on the server's view of the changes
+    // provides getWarningText(), which may return a promise; any other
+    // schema sets warningText as it validates.
+    if (!schema.getWarningText) {
+      confirmAndSave(schema.warningText);
       return;
     }
 
-    Notifier.confirm(
-      gettext('Warning'),
-      schema.warningText,
-      () => { save(schemaState.changes(true), onSaved); },
-      () => {
-        setSaving(false);
-        setLoaderText('');
-        return true;
-      },
-    );
+    Promise.resolve(
+      schema.getWarningText(getForQueryParams(schemaState._changes))
+    ).then(confirmAndSave, () => confirmAndSave(schema.warningText));
   };
 
   const getSQLValue = () => {

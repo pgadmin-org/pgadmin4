@@ -284,6 +284,25 @@ describe('SchemaView', ()=>{
         expect(pgAdmin.Browser.notifier.alert).toHaveBeenCalledWith('Warning', 'some inform text');
       });
 
+      it('onSave click waits for getWarningText before confirming', async ()=>{
+        const schema = getSchema();
+        schema.getWarningText = jest.fn(()=>Promise.resolve('server warning'));
+        ctrl.unmount();
+        await ctrlMount({schema: schema, getInitData: ()=>Promise.resolve({})});
+        await simulateValidData();
+        onSave.mockClear();
+        confirmSpy.mockClear();
+        await user.click(ctrl.container.querySelector('button[data-test="Save"]'));
+        expect(schema.getWarningText).toHaveBeenCalledWith(
+          expect.objectContaining({field1: 'val1'}));
+        expect(confirmSpy.mock.calls[0][1]).toBe('server warning');
+        expect(onSave).not.toHaveBeenCalled();
+        await act(async ()=>{
+          confirmSpy.mock.calls[0][2]();
+        });
+        expect(onSave).toHaveBeenCalled();
+      });
+
       it('onHelp SQL', async ()=>{
         await user.click(ctrl.container.querySelector('[data-test="sql-help"]'));
         expect(onHelp).toHaveBeenCalledWith(true, true);
