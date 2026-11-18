@@ -45,13 +45,15 @@ export async function registerAutocomplete(editor, api, transId) {
       const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
       const controller = new AbortController();
 
-      // CodeMirror aborts the query when the user keeps typing. Cancel the
-      // request in flight instead of letting it run against the server for
-      // a result nobody will see.
+      // CodeMirror aborts the query when the completion is reset (Escape,
+      // the cursor moves away, the list is closed). Cancel the request in the
+      // browser. The server still runs it to the end. Typing does not abort
+      // it: CodeMirror keeps the running query and reuses its result through
+      // validFor, so a slow server is not sent a new request on every pause.
       context.addEventListener('abort', () => {
         controller.abort();
         resolve(null);
-      }, {onDocChange: true});
+      });
 
       api.post(url, JSON.stringify([fullSql, sqlTillCur]), {signal: controller.signal})
         .then((res) => {

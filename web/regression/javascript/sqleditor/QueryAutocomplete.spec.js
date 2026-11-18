@@ -119,12 +119,12 @@ describe('Query autocomplete source', () => {
     expect(onAvailable).toHaveBeenCalled();
   });
 
-  it('asks CodeMirror to abort the query when the document changes', () => {
+  it('does not ask CodeMirror to abort the query when the document changes', () => {
+    // Aborting on every keystroke would let a new request start on the next
+    // pause while the server is still busy with the previous one.
     const ctx = fakeContext({explicit: true});
     setup(apiReturning({}))(ctx, jest.fn());
-    expect(ctx.addEventListener).toHaveBeenCalledWith(
-      'abort', expect.any(Function), {onDocChange: true}
-    );
+    expect(ctx.addEventListener).toHaveBeenCalledWith('abort', expect.any(Function));
   });
 });
 
@@ -195,7 +195,7 @@ describe('Query autocomplete in the editor', () => {
     expect(api.post).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps debouncing typing after an explicit request', () => {
+  it('keeps the request in flight whilst typing continues after an explicit request', () => {
     const api = pendingApi();
     createEditor(api);
 
@@ -205,16 +205,38 @@ describe('Query autocomplete in the editor', () => {
     expect(api.post).toHaveBeenCalledTimes(1);
     const firstSignal = api.post.mock.calls[0][2].signal;
 
-    // Keep typing while that request is still pending: it is cancelled, and
-    // no new request is sent until typing pauses.
+    // Keep typing while that request is still pending: it is not cancelled
+    // and no second request is sent, however long the pauses are.
     for (const ch of 'elect') {
       type(ch);
-      jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS - 50);
+      jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS + 100);
     }
-    expect(firstSignal.aborted).toBe(true);
+    expect(firstSignal.aborted).toBe(false);
     expect(api.post).toHaveBeenCalledTimes(1);
+  });
 
-    jest.advanceTimersByTime(50);
-    expect(api.post).toHaveBeenCalledTimes(2);
+  it('sends one request whilst a slow server is still working, however long the user types', () => {
+    const api = pendingApi();
+    createEditor(api);
+
+    for (const ch of 'selectfromwhere') {
+      type(ch);
+      jest.advanceTimersByTime(400);
+    }
+    expect(api.post).toHaveBeenCalledTimes(1);
+  });
+
+  it('cancels the request in the browser when the cursor moves away', () => {
+    const api = pendingApi();
+    createEditor(api);
+
+    type('s');
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+    const signal = api.post.mock.calls[0][2].signal;
+    expect(signal.aborted).toBe(false);
+
+    view.dispatch({selection: {anchor: 0}});
+    expect(signal.aborted).toBe(true);
   });
 });
