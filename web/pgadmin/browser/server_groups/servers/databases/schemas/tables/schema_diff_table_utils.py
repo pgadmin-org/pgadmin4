@@ -305,17 +305,27 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         """
         Return a source foreign key that is to be added to the target table.
 
-        A foreign key to a table in its own schema must reference the
-        target table's schema. Its SQL would otherwise name the referenced
-        table's schema in the source, as get_sql() looks the referenced
-        table up by its OID in 'references'. That OID belongs to the source
-        database, so it is removed and the referenced schema set directly.
+        get_sql() looks the referenced table up by the OID in each column's
+        'references', but that OID belongs to the source database, and on
+        the target it may name another table or none at all. It is removed,
+        so that the referenced table is named by 'remote_schema' and
+        'remote_table', which hold its schema and name in the source. A
+        foreign key to a table in its own schema must reference the target
+        table's schema instead.
         """
-        target_schema = target_table.get('schema')
-        if target_schema is None or \
-                SchemaDiffTableCompare._fk_referenced_schema(
-                    foreign_key) is not None:
+        if foreign_key.get('remote_schema') is None or \
+                foreign_key.get('remote_table') is None:
             return foreign_key
+
+        foreign_key = copy.deepcopy(foreign_key)
+        target_schema = target_table.get('schema')
+        if target_schema is not None and \
+                SchemaDiffTableCompare._fk_referenced_schema(
+                    foreign_key) is None:
+            foreign_key['remote_schema'] = target_schema
+        for column in foreign_key.get('columns', []):
+            column.pop('references', None)
+        return foreign_key
 
         foreign_key = copy.deepcopy(foreign_key)
         foreign_key['remote_schema'] = target_schema

@@ -225,8 +225,9 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
 
         self.assertEqual(len(diff['added']), 1)
         self.assertEqual(len(diff['deleted']), 1)
+        # The referenced table is named, not looked up by its source OID.
         self.assertEqual(diff['added'][0]['remote_schema'], 'common_a')
-        self.assertIn('references', diff['added'][0]['columns'][0])
+        self.assertNotIn('references', diff['added'][0]['columns'][0])
 
     def test_fk_to_different_table_recreated(self):
         diff = self._compare_foreign_keys(
