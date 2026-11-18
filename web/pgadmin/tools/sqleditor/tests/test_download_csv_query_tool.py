@@ -657,17 +657,20 @@ class TestDownloadResultFormats(BaseTestGenerator):
                                return_value=self.encoding)
         fetch_patch = patch.object(AsyncDictCursor, 'fetchmany',
                                    counting_fetchmany)
-        with bom_patch, encoding_patch, fetch_patch:
-            response = self.tester.post(url, data={
-                "query": sql,
-                "filename": filename,
-                "format": self.data_format,
-                "query_commited": True,
-            })
-            # The body is streamed, so the rows are only fetched as it is
-            # read; read it whilst the fetches are still being counted.
-            raw = response.data
-        self.app.logger.disabled = False
+        try:
+            with bom_patch, encoding_patch, fetch_patch:
+                response = self.tester.post(url, data={
+                    "query": sql,
+                    "filename": filename,
+                    "format": self.data_format,
+                    "query_commited": True,
+                })
+                # The body is streamed, so the rows are only fetched as it
+                # is read; read it whilst the fetches are still being
+                # counted.
+                raw = response.data
+        finally:
+            self.app.logger.disabled = False
 
         headers = dict(response.headers)
 
