@@ -1693,6 +1693,70 @@ WHERE db.datname = current_database()""")
 
         return True, {'columns': columns, 'rows': rows}
 
+    def describe_result_columns(self, query):
+        """
+        Describe the columns a query's result would have without running
+        it. The query is sent to the server in a Parse message on the
+        unnamed prepared statement, so it is only parsed, analysed and
+        rewritten, and a Describe message then fetches the name, type OID
+        and type modifier of each result column.
+
+        This is only done on an idle synchronous connection that is not in
+        a transaction block, since a query that fails to parse would abort
+        an open transaction.
+
+        Args:
+            query: SQL query to describe.
+
+        Returns:
+            (True, [{'name', 'type_oid', 'typmod'}, ...]) on success, or
+            (False, error message) otherwise.
+        """
+        not_idle = gettext(
+            'The connection is not idle, so the query cannot be described.')
+        if self.async_ or not self.connected():
+            return False, not_idle
+
+        current_app.logger.log(
+            25,
+            "Describe by {pga_user} on "
+            "{db_user}@{db_host}/{db_name} #{server_id} - "
+            "{conn_id}:\n{query}".format(
+                pga_user=current_user.email,
+                db_user=self.conn.info.user,
+                db_host=self.conn.info.host,
+                db_name=self.conn.info.dbname,
+                server_id=self.manager.sid,
+                conn_id=self.conn_id,
+                query=query
+            )
+        )
+
+        ok = psycopg.pq.ExecStatus.COMMAND_OK
+        with self.conn.lock:
+            # Checked under the lock, so that no other request can open a
+            # transaction between the check and the Parse.
+            if self.conn.info.transaction_status != \
+                    psycopg.pq.TransactionStatus.IDLE:
+                return False, not_idle
+            pgconn = self.conn.pgconn
+            try:
+                res = pgconn.prepare(
+                    b'', query.encode(self.python_encoding))
+                if res.status == ok:
+                    res = pgconn.describe_prepared(b'')
+            except (psycopg.Error, UnicodeEncodeError) as e:
+                return False, str(e)
+            if res.status != ok:
+                return False, (res.error_message or b'').decode(
+                    self.python_encoding, 'replace').strip()
+
+            return True, [{
+                'name': res.fname(i).decode(self.python_encoding),
+                'type_oid': res.ftype(i),
+                'typmod': res.fmod(i)
+            } for i in range(res.nfields)]
+
     def async_fetchmany_2darray(self, records=2000,
                                 from_rownum=0, to_rownum=0,
                                 formatted_exception_msg=False):
