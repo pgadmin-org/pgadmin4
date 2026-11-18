@@ -139,16 +139,24 @@ export default function SchemaDialogView({
 
     const onSaved = closeOnSave === true ? () => props.onClose?.() : undefined;
 
+    // Taken now, so that what is saved is what the warning was decided for,
+    // even if the form changes whilst getWarningText() is pending.
+    const changeData = schemaState.changes(true);
+    const queryParams = getForQueryParams(schemaState._changes);
+
     const confirmAndSave = (warningText) => {
+      // The dialog may have been closed whilst the warning was pending.
+      if (!checkIsMounted()) return;
+
       if (!warningText) {
-        save(schemaState.changes(true), onSaved);
+        save(changeData, onSaved);
         return;
       }
 
       Notifier.confirm(
         gettext('Warning'),
         warningText,
-        () => { save(schemaState.changes(true), onSaved); },
+        () => { save(changeData, onSaved); },
         () => {
           setSaving(false);
           setLoaderText('');
@@ -166,7 +174,7 @@ export default function SchemaDialogView({
     }
 
     Promise.resolve(
-      schema.getWarningText(getForQueryParams(schemaState._changes))
+      schema.getWarningText(queryParams)
     ).then(confirmAndSave, () => confirmAndSave(schema.warningText));
   };
 

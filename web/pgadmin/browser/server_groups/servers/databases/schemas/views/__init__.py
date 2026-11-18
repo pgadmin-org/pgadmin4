@@ -1027,9 +1027,13 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         asked to describe the new query's result columns (without running
         it) and they are compared with the view's columns. Any change to a
         column's expression that keeps its name and type is then applied in
-        place. If the query cannot be described, for example because it has
-        a syntax error, this falls back to comparing the text before the
-        first FROM in the old and new definitions.
+        place. Describe reports a domain as its base type and does not
+        report collations, so where a view column is of a domain type or has
+        a non-default collation, or the new definition uses COLLATE, the
+        result cannot be trusted. In those cases, and when the query cannot
+        be described (for example because it has a syntax error), this falls
+        back to comparing the text before the first FROM in the old and new
+        definitions.
         vid: View Id.
         new_definition: the definition being saved.
         old_definition: the view's current definition.
@@ -1046,6 +1050,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
                 vid=vid))
         if status:
             old_cols = old_cols['rows']
+            status = not re.search(r'\bcollate\b', new_definition,
+                                   re.IGNORECASE) and \
+                not any(col['is_domain'] or col['has_collation']
+                        for col in old_cols)
+        if status:
             return len(new_cols) < len(old_cols) or any(
                 (old['name'], old['type_oid'], old['typmod']) !=
                 (new['name'], new['type_oid'], new['typmod'])

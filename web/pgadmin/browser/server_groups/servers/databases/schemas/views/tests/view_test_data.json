@@ -1687,6 +1687,52 @@
       }
     },
     {
+      "name": "Get view msql: Changing only the WHERE clause of a view with a domain column does not drop the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE DOMAIN %s.%s_d AS integer; CREATE OR REPLACE VIEW %s.%s AS SELECT n FROM (VALUES (1::%s.%s_d)) t(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT n FROM (VALUES (1::<schema_name>.<view_name>_d)) t(n) WHERE n > 0",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": false,
+          "sql_not_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Changing a column's collation drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t COLLATE \\\"C\\\" AS t FROM (VALUES ('a'::text)) v(t); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT t COLLATE \"POSIX\" AS t FROM (VALUES ('a'::text)) v(t)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
       "name": "Get view msql: A definition the server cannot parse falls back to comparing the text.",
       "url": "/browser/view/msql/",
       "is_positive_test": true,

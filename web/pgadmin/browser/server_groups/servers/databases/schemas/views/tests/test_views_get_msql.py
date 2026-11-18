@@ -76,7 +76,11 @@ class ViewsGetMsqlTestCase(BaseTestGenerator):
             url_encode_data = {"oid": self.view_id}
             for key in ('comment', 'definition'):
                 if key in self.data:
-                    url_encode_data[key] = self.data[key]
+                    # A definition may name objects created alongside the
+                    # view, whose names are only known at run time.
+                    url_encode_data[key] = self.data[key].replace(
+                        '<schema_name>', self.schema_name).replace(
+                        '<view_name>', self.view_name)
 
             response = views_utils.api_get_msql(self, url_encode_data)
 

@@ -1712,12 +1712,10 @@ WHERE db.datname = current_database()""")
             (True, [{'name', 'type_oid', 'typmod'}, ...]) on success, or
             (False, error message) otherwise.
         """
-        if self.async_ or not self.connected() or \
-                self.conn.info.transaction_status != \
-                psycopg.pq.TransactionStatus.IDLE:
-            return False, gettext(
-                'The connection is not idle, so the query cannot be '
-                'described.')
+        not_idle = gettext(
+            'The connection is not idle, so the query cannot be described.')
+        if self.async_ or not self.connected():
+            return False, not_idle
 
         current_app.logger.log(
             25,
@@ -1736,10 +1734,19 @@ WHERE db.datname = current_database()""")
 
         ok = psycopg.pq.ExecStatus.COMMAND_OK
         with self.conn.lock:
+            # Checked under the lock, so that no other request can open a
+            # transaction between the check and the Parse.
+            if self.conn.info.transaction_status != \
+                    psycopg.pq.TransactionStatus.IDLE:
+                return False, not_idle
             pgconn = self.conn.pgconn
-            res = pgconn.prepare(b'', query.encode(self.python_encoding))
-            if res.status == ok:
-                res = pgconn.describe_prepared(b'')
+            try:
+                res = pgconn.prepare(
+                    b'', query.encode(self.python_encoding))
+                if res.status == ok:
+                    res = pgconn.describe_prepared(b'')
+            except psycopg.Error as e:
+                return False, str(e)
             if res.status != ok:
                 return False, (res.error_message or b'').decode(
                     self.python_encoding, 'replace').strip()
