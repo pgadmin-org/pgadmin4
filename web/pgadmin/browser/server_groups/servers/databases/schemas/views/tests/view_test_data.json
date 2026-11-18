@@ -1733,6 +1733,29 @@
       }
     },
     {
+      "name": "Get view msql: Renaming a column with a non-default collation drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'x'::text COLLATE \\\"C\\\" AS a; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT 'x'::text COLLATE \"C\" AS b",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
       "name": "Get view msql: A definition the server cannot parse falls back to comparing the text.",
       "url": "/browser/view/msql/",
       "is_positive_test": true,

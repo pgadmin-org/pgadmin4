@@ -156,7 +156,7 @@ export default function SchemaDialogView({
       Notifier.confirm(
         gettext('Warning'),
         warningText,
-        () => { save(changeData, onSaved); },
+        () => { if (checkIsMounted()) save(changeData, onSaved); },
         () => {
           setSaving(false);
           setLoaderText('');
@@ -173,9 +173,10 @@ export default function SchemaDialogView({
       return;
     }
 
-    Promise.resolve(
-      schema.getWarningText(queryParams)
-    ).then(confirmAndSave, () => confirmAndSave(schema.warningText));
+    // Called inside then() so that a hook that throws is handled as well.
+    Promise.resolve()
+      .then(() => schema.getWarningText(queryParams))
+      .then(confirmAndSave, () => confirmAndSave(schema.warningText));
   };
 
   const getSQLValue = () => {

@@ -1745,7 +1745,7 @@ WHERE db.datname = current_database()""")
                     b'', query.encode(self.python_encoding))
                 if res.status == ok:
                     res = pgconn.describe_prepared(b'')
-            except psycopg.Error as e:
+            except (psycopg.Error, UnicodeEncodeError) as e:
                 return False, str(e)
             if res.status != ok:
                 return False, (res.error_message or b'').decode(

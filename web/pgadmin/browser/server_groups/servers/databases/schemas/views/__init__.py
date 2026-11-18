@@ -1050,14 +1050,19 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
                 vid=vid))
         if status:
             old_cols = old_cols['rows']
+            # Removed or renamed columns are certain, whatever the types.
+            if len(new_cols) < len(old_cols) or any(
+                    old['name'] != new['name']
+                    for old, new in zip(old_cols, new_cols)):
+                return True
             status = not re.search(r'\bcollate\b', new_definition,
                                    re.IGNORECASE) and \
                 not any(col['is_domain'] or col['has_collation']
                         for col in old_cols)
         if status:
-            return len(new_cols) < len(old_cols) or any(
-                (old['name'], old['type_oid'], old['typmod']) !=
-                (new['name'], new['type_oid'], new['typmod'])
+            return any(
+                (old['type_oid'], old['typmod']) !=
+                (new['type_oid'], new['typmod'])
                 for old, new in zip(old_cols, new_cols))
 
         new_def = ViewNode._split_definition(new_definition)
