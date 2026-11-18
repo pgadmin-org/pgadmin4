@@ -572,10 +572,15 @@ export class ResultSetUtils {
       cellType = 'oid';
       break;
     case 'json':
-    case 'json[]':
     case 'jsonb':
-    case 'jsonb[]':
       cellType = 'Json';
+      break;
+    case 'json[]':
+    case 'jsonb[]':
+      // These arrive as PostgreSQL array literals such as {"{\"a\": 1}"},
+      // which are not valid JSON, so edit them as text like every other
+      // array type rather than in the JSON editor (#9094).
+      cellType = 'string';
       break;
     case 'smallint':
     case 'smallint[]':
