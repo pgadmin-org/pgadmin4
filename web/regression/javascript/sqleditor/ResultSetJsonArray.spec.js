@@ -44,7 +44,12 @@ jest.mock('../../../pgadmin/tools/sqleditor/static/js/components/sections/GraphV
   GraphVisualiser: () => null,
 }));
 
+import { render, screen, fireEvent } from '@testing-library/react';
+import Theme from 'sources/Theme';
 import { ResultSetUtils } from '../../../pgadmin/tools/sqleditor/static/js/components/sections/ResultSet';
+import { TextEditor } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors';
+import { RowInfoContext } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid';
+import { PgAdminProvider } from '../../../pgadmin/static/js/PgAdminProvider';
 
 describe('ResultSetUtils.getFinalColumn JSON types', () => {
   const rsu = new ResultSetUtils({}, {}, 1, false);
@@ -62,5 +67,31 @@ describe('ResultSetUtils.getFinalColumn JSON types', () => {
     expect(col.cell).toBe(cell);
     expect(col.is_array).toBe(isArray);
     expect(col.can_edit).toBe(true);
+  });
+});
+
+describe('TextEditor with a json[] column', () => {
+  it('saves the edited array literal unchanged', () => {
+    const onRowChange = jest.fn();
+    const error = jest.fn();
+    const edited = '{"{\\"a\\": 2.50}",NULL}';
+    render(
+      <Theme>
+        <PgAdminProvider value={{ Browser: { notifier: { error } } }}>
+          <RowInfoContext.Provider value={{ getCellElement: () => null }}>
+            <TextEditor
+              row={{ c: '{"{\\"a\\": 1}"}' }}
+              column={{ key: 'c', idx: 0, can_edit: true, is_array: true }}
+              onRowChange={onRowChange}
+              onClose={jest.fn()}
+            />
+          </RowInfoContext.Provider>
+        </PgAdminProvider>
+      </Theme>
+    );
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: edited } });
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }));
+    expect(error).not.toHaveBeenCalled();
+    expect(onRowChange).toHaveBeenCalledWith({ c: edited }, true);
   });
 });
