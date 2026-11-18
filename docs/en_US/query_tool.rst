@@ -55,6 +55,13 @@ database node before using the Query Tool. However, with the introduction of the
 Workspace layout and Welcome page, users can seamlessly connect to any ad-hoc
 server, even if it is not registered in the Object Explorer.
 
+.. note::
+    Connecting to a server that is not registered in the Object Explorer
+    requires the *Manage Server* permission (see :ref:`user_management`). In
+    server mode, a user without it must select an *Existing Server*, and the
+    *Server Name*, *Host name/address*, *Port* and *Service* fields cannot
+    be changed.
+
 .. image:: images/query_tool_workspace.png
     :alt: Query tool workspace
     :align: center
