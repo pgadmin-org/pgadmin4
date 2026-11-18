@@ -14,6 +14,7 @@ import datetime
 import os
 import config
 import logging
+import warnings
 from flask import current_app, session
 from flask_security import current_user
 from flask_babel import gettext
@@ -37,7 +38,18 @@ from pgadmin.utils.passexec import build_passexec
 from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
 if config.SUPPORT_SSH_TUNNEL:
-    from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
+    # sshtunnel (all released 0.x versions) contains `return` inside a
+    # `finally` block in parse_ssh_config(). Python 3.14+ emits a
+    # SyntaxWarning for it at compile time, which pgAdmin logs on every
+    # startup. Silence only that exact warning, only for this import; the
+    # code itself is third-party and cannot be changed here.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            'ignore',
+            message=r"'return' in a 'finally' block",
+            category=SyntaxWarning)
+        from sshtunnel import SSHTunnelForwarder, \
+            BaseSSHTunnelForwarderError
 
 CONN_STRING = 'CONN:{0}'
 DB_STRING = 'DB:{0}'
