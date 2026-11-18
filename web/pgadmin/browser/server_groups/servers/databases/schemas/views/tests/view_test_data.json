@@ -1691,10 +1691,10 @@
       "url": "/browser/view/msql/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE DOMAIN %s.%s_d AS integer; CREATE OR REPLACE VIEW %s.%s AS SELECT n FROM (VALUES (1::%s.%s_d)) t(n); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE DOMAIN %s.%s_d AS integer; CREATE OR REPLACE VIEW %s.%s AS SELECT 1::%s.%s_d AS n; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
-        "definition": "SELECT n FROM (VALUES (1::<schema_name>.<view_name>_d)) t(n) WHERE n > 0",
+        "definition": "SELECT 1::<schema_name>.<view_name>_d AS n WHERE 1 > 0",
         "server_type": "pg",
         "skip_msg": "EPAS can change a view's columns without dropping it."
       },
