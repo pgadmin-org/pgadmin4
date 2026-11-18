@@ -172,7 +172,7 @@ msgstr "无法使用 Kerberos 认证，因为无法加载 GSSAPI 模块。"
 
 #: pgadmin/authenticate/kerberos.py:200
 msgid "Kerberos authentication failed."
-msgstr "Kerberos 身份验证失败。"
+msgstr "Kerberos 认证失败。"
 
 #: pgadmin/authenticate/kerberos.py:211
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
@@ -237,7 +237,7 @@ msgstr "登录会话已过期。请重试。"
 
 #: pgadmin/authenticate/oauth2.py:219
 msgid "You have been logged out."
-msgstr "您已退出登录。"
+msgstr "您已注销。"
 
 #: pgadmin/authenticate/oauth2.py:416
 #, python-format
@@ -709,7 +709,7 @@ msgstr "pgTimeTable 历史记录最大行数"
 msgid ""
 "The maximum number of history rows to show on the Statistics tab for "
 "pgTimeTable chains and tasks."
-msgstr "在“统计信息”标签页中显示的 pgTimeTable 任务链和任务历史记录的最大行数。"
+msgstr "在「统计信息」标签页中显示的 pgTimeTable 任务链和任务历史记录的最大行数。"
 
 #: pgadmin/browser/register_browser_preferences.py:146
 msgid "Process details/logs retention days"
@@ -9814,7 +9814,7 @@ msgstr ""
 msgid ""
 "The current user does not have permission to update the role. Users with "
 "ADMIN OPTION on this role may only manage its membership."
-msgstr "当前用户没有权限更新此角色。对此角色拥有 ADMIN OPTION 的用户只能管理其成员资格。"
+msgstr "当前用户没有权限更新此角色。对此角色拥有 ADMIN OPTION 的用户只能管理其成员关系。"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1352
 #, python-brace-format
@@ -10528,7 +10528,7 @@ msgid ""
 "group and whether it is shared with you, are passed to it in the "
 "PGADMIN_PASSEXEC_* environment variables."
 msgstr ""
-"请从管理员配置的命令中选择。服务器的主机名、端口、用户名和维护数据库，您的 pgAdmin 用户名和身份验证来源，以及服务器 "
+"请从管理员配置的命令中选择。服务器的主机名、端口、用户名和维护数据库，您的 pgAdmin 用户名和身份验证源，以及服务器 "
 "ID、所有者、服务器组和该服务器是否与您共享，都会通过 PGADMIN_PASSEXEC_* 环境变量传给该命令。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:638
@@ -10538,7 +10538,7 @@ msgid ""
 "pgAdmin username and authentication source, are passed to it in the "
 "PGADMIN_PASSEXEC_* environment variables."
 msgstr ""
-"请从管理员配置的命令中选择。服务器的主机名、端口、用户名、维护数据库，以及您的 pgAdmin 用户名和身份验证来源，都会通过 "
+"请从管理员配置的命令中选择。服务器的主机名、端口、用户名、维护数据库，以及您的 pgAdmin 用户名和身份验证源，都会通过 "
 "PGADMIN_PASSEXEC_* 环境变量传给该命令。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:641
@@ -13473,7 +13473,7 @@ msgstr "会话尚未创建。"
 msgid ""
 "Not authenticated to pgEdge Starfleet. Go back and verify your API client"
 " credentials."
-msgstr "pgEdge Starfleet 身份验证未通过。请返回并检查 API 客户端凭据。"
+msgstr "pgEdge Starfleet 认证失败。请返回并检查 API 客户端凭据。"
 
 #: pgadmin/misc/cloud/starfleet/__init__.py:128
 #: pgadmin/misc/cloud/starfleet/__init__.py:159
@@ -13565,7 +13565,7 @@ msgstr "部署云实例"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:335
 msgid "Select a cloud provider for the PostgreSQL database."
-msgstr "为 PostgreSQL 数据库选择云服务提供商。"
+msgstr "为 PostgreSQL 数据库选择云提供方。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:424
 msgid "Please review the details before creating the cloud instance."
@@ -13809,7 +13809,7 @@ msgstr "在不同的可用区（AZ）中创建备用实例，以提供数据冗�
 
 #: pgadmin/misc/cloud/static/js/azure.js:38
 msgid "Microsoft Azure authentication process is in progress. Please wait..."
-msgstr "正在进行 Microsoft Azure 身份验证，请稍候..."
+msgstr "正在进行 Microsoft Azure 认证，请稍候..."
 
 #: pgadmin/misc/cloud/static/js/azure.js:48
 #: pgadmin/misc/cloud/static/js/google.js:67
@@ -14032,7 +14032,7 @@ msgstr "清除云向导数据时出错：${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/google.js:32
 msgid "Google authentication process is in progress. Please wait..."
-msgstr "正在进行 Google 身份验证，请稍候..."
+msgstr "正在进行 Google 认证，请稍候..."
 
 #: pgadmin/misc/cloud/static/js/google.js:52
 #: pgadmin/misc/cloud/static/js/google.js:53
@@ -14062,7 +14062,7 @@ msgid ""
 "OAuth Clients</a> in the Google Cloud documentation for how to create "
 "one."
 msgstr ""
-"请选择包含客户端 ID、客户端密钥以及 Google 身份验证所需的其他 OAuth 2.0 参数的客户端密钥文件。创建方法请参阅 Google "
+"请选择包含客户端 ID、客户端密钥以及 Google 认证所需的其他 OAuth 2.0 参数的客户端密钥文件。创建方法请参阅 Google "
 "Cloud 文档中的<a "
 "href=\"https://support.google.com/cloud/answer/15549257?hl=en\">管理 OAuth "
 "客户端</a>。"
@@ -14164,11 +14164,11 @@ msgstr "最多允许 %s 个地址或地址范围。"
 #: pgadmin/misc/cloud/static/js/starfleet_schema.ui.js:33
 #, python-format
 msgid "\"%s\" is not a valid IPv4 address or CIDR range."
-msgstr "“%s”不是有效的 IPv4 地址或 CIDR 范围。"
+msgstr "「%s」不是有效的 IPv4 地址或 CIDR 范围。"
 
 #: pgadmin/misc/cloud/static/js/starfleet_schema.ui.js:46
 msgid "Auth ID"
-msgstr "身份验证 ID"
+msgstr "认证 ID"
 
 #: pgadmin/misc/cloud/static/js/starfleet_schema.ui.js:48
 msgid ""
@@ -14178,7 +14178,7 @@ msgstr "请在 pgEdge Starfleet 控制台的 Settings > API Clients（设置 > A
 
 #: pgadmin/misc/cloud/static/js/starfleet_schema.ui.js:51
 msgid "Auth secret"
-msgstr "身份验证密钥"
+msgstr "认证密钥"
 
 #: pgadmin/misc/cloud/static/js/starfleet_schema.ui.js:74
 msgid ""
@@ -14336,7 +14336,7 @@ msgstr "访问被拒绝（{0}）"
 
 #: pgadmin/misc/file_manager/__init__.py:1413
 msgid "Refusing to rename through a symbolic link."
-msgstr "禁止通过符号链接重命名。"
+msgstr "拒绝通过符号链接重命名。"
 
 #: pgadmin/misc/file_manager/__init__.py:1415
 msgid "There was an error renaming the file:"
@@ -14344,7 +14344,7 @@ msgstr "重命名文件时出错："
 
 #: pgadmin/misc/file_manager/__init__.py:1447
 msgid "Refusing to delete through a symbolic link."
-msgstr "禁止通过符号链接删除。"
+msgstr "拒绝通过符号链接删除。"
 
 #: pgadmin/misc/file_manager/__init__.py:1449
 msgid "There was an error deleting the file:"
@@ -14357,7 +14357,7 @@ msgstr "添加文件时出错："
 #: pgadmin/misc/file_manager/__init__.py:1618
 #: pgadmin/misc/file_manager/__init__.py:1696 pgadmin/utils/__init__.py:1388
 msgid "Refusing to read through a symbolic link."
-msgstr "禁止通过符号链接读取。"
+msgstr "拒绝通过符号链接读取。"
 
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:42
 msgid "Storage Manager..."
@@ -15018,7 +15018,7 @@ msgstr "<b></b> 拥有的共享服务器将被删除。是否要继续？"
 msgid ""
 "Changing your password will log you out of all your other active "
 "sessions. Do you want to continue?"
-msgstr "更改密码会使您的其他所有活动会话退出登录。是否继续？"
+msgstr "更改密码会注销您的其他所有活动会话。是否继续？"
 
 #: pgadmin/static/js/Dialogs/ChangePasswordContent.jsx:36
 msgid "Current Password"
@@ -18222,7 +18222,7 @@ msgstr "找不到必需的参数（query）。"
 #: pgadmin/tools/sqleditor/__init__.py:2312
 #, python-brace-format
 msgid "Unknown output encoding '{0}'."
-msgstr "未知的输出编码“{0}”。"
+msgstr "未知的输出编码「{0}」。"
 
 #: pgadmin/tools/sqleditor/__init__.py:2444
 msgid "No active result cursor."
@@ -19568,7 +19568,7 @@ msgid ""
 " associated with the tab; Save still targets the previously opened path."
 msgstr ""
 "设置将 SQL "
-"文件拖入查询工具编辑器时的行为。“始终替换内容”会清空编辑器并加载文件内容。“始终合并内容”会在当前光标位置插入文件内容。“询问”会在编辑器中已有内容时提示您选择。拖放文件不会更改标签页关联的文件，保存时仍会写入原先打开的文件。"
+"文件拖入查询工具编辑器时的行为。「始终替换内容」会清空编辑器并加载文件内容。「始终合并内容」会在当前光标位置插入文件内容。「询问」会在编辑器中已有内容时提示您选择。拖放文件不会更改标签页关联的文件，保存时仍会写入原先打开的文件。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:224
 msgid "Show View/Edit Data Promotion Warning?"
@@ -19679,14 +19679,14 @@ msgstr "结果复制字段分隔符"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:384
 msgid "Copy with headers?"
-msgstr "复制时包含列标题？"
+msgstr "带标题复制？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:386
 msgid ""
 "If set to True, the column headers are included by default when copying "
 "data from the results grid. This can still be toggled per-copy from the "
 "results grid copy menu."
-msgstr "启用后，从结果网格复制数据时默认包含列标题。仍可在结果网格的复制菜单中为单次复制更改此选项。"
+msgstr "启用后，从结果网格复制数据时默认包含列标题。仍可在结果网格的复制菜单中为单次复制选择是否带标题。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:394
 msgid "Columns sized by"
@@ -20245,7 +20245,7 @@ msgid ""
 "add it to that setting in the pgAdmin configuration, or clear the service"
 " in the server's properties."
 msgstr ""
-"服务器模式下无法使用服务“{0}”，因为它未列在 SERVER_MODE_ALLOWED_SERVICES 中。请让 pgAdmin 管理员在 "
+"服务器模式下无法使用服务「{0}」，因为它未列在 SERVER_MODE_ALLOWED_SERVICES 中。请让 pgAdmin 管理员在 "
 "pgAdmin 配置中将其加入该设置，或清除服务器属性中的服务。"
 
 #: pgadmin/utils/__init__.py:475
@@ -20254,7 +20254,7 @@ msgstr "服务器模式下无法使用 servicefile 连接参数。"
 
 #: pgadmin/utils/__init__.py:754
 msgid "Refusing to use a symbolic link."
-msgstr "禁止使用符号链接。"
+msgstr "拒绝使用符号链接。"
 
 #: pgadmin/utils/__init__.py:923
 msgid "Utility file not found. Please correct the Binary Path in the Preferences"
@@ -20264,7 +20264,7 @@ msgstr "未找到工具文件。请更正首选项中的二进制路径"
 msgid ""
 "Please correct the Binary Path in the Preferences. pgAdmin storage and "
 "shared storage directories cannot be a utility binary directory."
-msgstr "请在首选项中更正“二进制路径”。pgAdmin 存储目录和共享存储目录不能用作实用程序的二进制文件目录。"
+msgstr "请在首选项中更正「二进制路径」。pgAdmin 存储目录和共享存储目录不能用作实用程序的二进制文件目录。"
 
 #: pgadmin/utils/__init__.py:933
 #, python-format
@@ -20308,7 +20308,7 @@ msgstr "服务器“%s”中未找到“Host”或“Service”属性"
 #: pgadmin/utils/__init__.py:1280
 #, python-format
 msgid "Server '%s': %s"
-msgstr "服务器“%s”：%s"
+msgstr "服务器「%s」：%s"
 
 #: pgadmin/utils/__init__.py:1381
 #, python-format
@@ -20347,7 +20347,7 @@ msgstr "创建服务器组“%s”时出错：%s"
 #: pgadmin/utils/__init__.py:1523
 #, python-format
 msgid "Invalid connection parameter '%s' for server '%s'"
-msgstr "服务器“%s”的连接参数“%s”无效"
+msgstr "无效的连接参数「%s」（服务器「%s」）"
 
 #: pgadmin/utils/__init__.py:1579
 #, python-format
@@ -20508,9 +20508,9 @@ msgid ""
 "and a server that allows only SSPI cannot be used. Change require_auth in"
 " the properties of the server."
 msgstr ""
-"此服务器的“要求认证”（require_auth）参数仅允许 GSSAPI 或 SSPI 身份验证。在服务器模式下，只有使用 Kerberos"
-" 登录的用户才能连接仅允许 GSSAPI 的服务器，且连接时须启用 Kerberos 身份验证。无法使用仅允许 SSPI "
-"的服务器。请在服务器属性中更改 require_auth。"
+"此服务器的「要求认证」（require_auth）参数仅允许 GSSAPI 或 SSPI 认证。在服务器模式下，只有使用 Kerberos "
+"登录的用户才能连接仅允许 GSSAPI 的服务器，且连接时须启用 Kerberos 认证。无法使用仅允许 SSPI 的服务器。请在服务器属性中更改"
+" require_auth。"
 
 #: pgadmin/utils/locker.py:252
 #, python-brace-format
@@ -20689,7 +20689,7 @@ msgstr ""
 msgid ""
 "The SSH tunnel identity file \"{0}\" could not be found. Specify an "
 "identity file located in your storage directory."
-msgstr "找不到 SSH 隧道的身份文件“{0}”。请在您的存储目录中指定身份文件。"
+msgstr "找不到 SSH 隧道的身份文件「{0}」。请在您的存储目录中指定身份文件。"
 
 #: pgadmin/utils/driver/psycopg3/server_manager.py:696
 msgid ""
