@@ -217,12 +217,15 @@ describe('keyboardNavigation.bindRightPanel', () => {
       expect(tabs[activeIdx].id).toBe('rc-dock-tab-btn-id-schema-diff-1');
     });
 
-    it('closes the tab through the current workspace', () => {
+    // close_tab_panel takes the panel id from the button id rc-tabs gives
+    // it, whose counter can have any number of digits.
+    it.each([
+      'rc-tabs-1-tab-id-schema-diff-1',
+      'rc-tabs-10-tab-id-schema-diff-1',
+    ])('closes the tab through the current workspace (%s)', (btnId) => {
       focusTabSpy.mockRestore();
-      // close_tab_panel takes the panel id from the button id rc-tabs gives
-      // it, so use one of that shape here.
       schemaDiffLayout.querySelector('.dock-tab-active .dock-tab-btn').id =
-        'rc-tabs-1-tab-id-schema-diff-1';
+        btnId;
 
       pgAdmin.Browser.keyboardNavigation.bindRightPanel(
         new Event('keydown'), {key: shortcutObj.close_tab_panel});

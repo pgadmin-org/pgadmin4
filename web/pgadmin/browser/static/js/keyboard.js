@@ -215,7 +215,10 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
     if(combo.key === shortcut_obj.close_tab_panel) {
-      const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
+      // rc-tabs gives each tab button the id `rc-tabs-<n>-tab-<panel id>`,
+      // where <n> is a counter that soon runs past one digit.
+      const panelId = dockLayoutTabs[activeTabIdx].id
+        ?.replace(/^rc-tabs-[^-]+-tab-/, '');
       if (panelId) {
         this._currentWorkspaceDocker()?.close(panelId);
       }
