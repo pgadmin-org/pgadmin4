@@ -1917,10 +1917,12 @@ class ServerNode(PGChildNodeView):
             password = data['password'] if 'password' in data else None
             # The password-prompt dialog seeds its checkbox from the
             # server's current save_password setting (see
-            # get_response_for_password) and always sends its state, so
-            # this reflects the user's explicit choice -- including
-            # unchecking it for a server previously configured to save
-            # its password.
+            # get_response_for_password) and sends it only when the server
+            # reported that setting or the user ticked the box. So a value
+            # here is the user's explicit choice -- including unchecking it
+            # for a server previously configured to save its password --
+            # while a missing field means "unknown" and leaves any saved
+            # password alone.
             save_password_provided = 'save_password' in data
             save_password = str_to_bool(
                 data['save_password'] if save_password_provided else False)
@@ -1969,7 +1971,11 @@ class ServerNode(PGChildNodeView):
                 server, 401, not server.save_password,
                 prompt_tunnel_password, errmsg)
         else:
-            if save_password and config.ALLOW_SAVE_PASSWORD:
+            # allow_save_password is false when the encryption key only
+            # lasts for this session, so a password saved now couldn't be
+            # decrypted at the next login.
+            if save_password and config.ALLOW_SAVE_PASSWORD and \
+                    session.get('allow_save_password', False):
                 try:
                     # 1 is True in SQLite as no boolean type
                     if _is_non_owner(server):

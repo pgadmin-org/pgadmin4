@@ -28,8 +28,9 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
     password: '',
     // Seed the checkbox from the server's current setting so that, for a
     // server already configured to save its password, the checkbox
-    // reflects that instead of always defaulting to unchecked.
-    save_password: Boolean(data?.save_password),
+    // reflects that instead of always defaulting to unchecked. Never seed
+    // it ticked when saving isn't allowed for this session.
+    save_password: Boolean(data?.allow_save_password && data?.save_password),
   });
 
   const onTextChange = (e, id) => {
@@ -122,12 +123,14 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
             }
             if(data.prompt_password) {
               postFormData.append('password', formData.password);
-              // Send the checkbox state when the server told us the
-              // current setting (so an explicit uncheck is distinguishable
-              // from "field not sent"), or when the user ticked it. A
-              // prompt that doesn't report save_password must never send
-              // false, as that would clear an existing saved password.
-              if(data.save_password !== undefined || formData.save_password) {
+              // Send the checkbox state only when saving is allowed for this
+              // session, and then only when the server told us the current
+              // setting (so an explicit uncheck is distinguishable from
+              // "field not sent") or the user ticked it. A prompt that
+              // doesn't report save_password must never send false, as that
+              // would clear an existing saved password.
+              if(data.allow_save_password &&
+                (data.save_password !== undefined || formData.save_password)) {
                 postFormData.append('save_password', formData.save_password);
               }
             }

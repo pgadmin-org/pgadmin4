@@ -57,7 +57,8 @@ class TestPersistSavedPasswordSharedNonOwner(
     leaves the owner's Server row untouched."""
 
     def runTest(self):
-        owner_server = MagicMock(shared=True, user_id=1, servergroup_id=7)
+        owner_server = MagicMock(shared=True, user_id=1, servergroup_id=7,
+                                 save_password=0, password=b'owner-enc')
         shared_server = MagicMock()
         servers_mod = 'pgadmin.browser.server_groups.servers'
 
@@ -75,7 +76,8 @@ class TestPersistSavedPasswordSharedNonOwner(
                     self.assertEqual(shared_server.password, b'enc-pwd')
                     # The owner's own row must never be touched for a
                     # shared connection used by a non-owner.
-                    self.assertNotEqual(owner_server.password, b'enc-pwd')
+                    self.assertEqual(owner_server.save_password, 0)
+                    self.assertEqual(owner_server.password, b'owner-enc')
                     mock_db.session.commit.assert_called_once()
 
 
@@ -181,6 +183,10 @@ class TestCachePasswordSaveFlagHandling(
         ('Missing field leaves the saved password alone', dict(
             form={'password': 'pw'},
             expect_persist=False, expect_clear=False)),
+        ('Explicit true is ignored when saving is not allowed', dict(
+            form={'password': 'pw', 'save_password': 'true'},
+            allow_save_password=False,
+            expect_persist=False, expect_clear=False)),
     ]
 
     def runTest(self):
@@ -192,6 +198,9 @@ class TestCachePasswordSaveFlagHandling(
         with patch.object(sqleditor, 'request', mock_request), \
                 patch.object(sqleditor, 'current_app', MagicMock()), \
                 patch.object(sqleditor, 'ALLOW_SAVE_PASSWORD', True), \
+                patch.object(sqleditor, 'session', {
+                    'allow_save_password': getattr(
+                        self, 'allow_save_password', True)}), \
                 patch.object(sqleditor, 'get_crypt_key',
                              return_value=(True, 'key')), \
                 patch.object(sqleditor, '_password_is_valid',

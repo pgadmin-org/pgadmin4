@@ -3033,9 +3033,13 @@ def _cache_manager_password_from_request(manager, server=None):
         # the same "Save Password" opt-out handling in
         # browser.server_groups.servers.ServerNode.connect -- so
         # unchecking the box here doesn't leave a stale saved password.
-        if save_password:
+        # The session flag is false when the encryption key only lasts for
+        # this session (e.g. server mode with OAuth2/Kerberos/webserver auth
+        # and no master password); a password saved then couldn't be
+        # decrypted at the next login.
+        if save_password and session.get('allow_save_password', False):
             _persist_saved_password(server, enc_password)
-        elif save_password_provided:
+        elif save_password_provided and not save_password:
             _clear_saved_password(server)
     except Exception as e:
         current_app.logger.exception(e)

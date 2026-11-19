@@ -47,4 +47,10 @@ describe('ConnectServerContent save_password', () => {
     const formData = submit({}, {tick: true});
     expect(formData.get('save_password')).toBe('true');
   });
+
+  it('neither seeds nor sends save_password when saving is not allowed', () => {
+    const formData = submit({allow_save_password: false, save_password: true});
+    expect(screen.getByRole('checkbox').checked).toBe(false);
+    expect(formData.has('save_password')).toBe(false);
+  });
 });
