@@ -173,4 +173,65 @@ describe('keyboardNavigation.bindRightPanel', () => {
 
     expect(focusTabSpy).not.toHaveBeenCalled();
   });
+
+  /* In the workspace layout every workspace has a top-level dock layout of
+   * its own and only the current one is shown. The Default workspace's
+   * always comes first in the DOM, so with Schema Diff shown the shortcut
+   * must use the Schema Diff layout rather than the first one it finds. */
+  describe('with another workspace shown', () => {
+    const docker = pgAdmin.Browser.docker;
+    let schemaDiffLayout;
+
+    beforeEach(() => {
+      const {root} = buildLayout();
+      schemaDiffLayout = document.createElement('div');
+      schemaDiffLayout.className = 'dock-layout';
+      schemaDiffLayout.appendChild(panel([
+        tabBtn('id-schema-diff-1', true),
+        tabBtn('id-schema-diff-2', false),
+      ]));
+      root.appendChild(schemaDiffLayout);
+
+      docker.schema_diff_workspace = {
+        layoutObj: {getRootElement: () => schemaDiffLayout},
+        close: jest.fn(),
+      };
+      docker.currentWorkspace = 'schema_diff_workspace';
+    });
+
+    afterEach(() => {
+      delete docker.schema_diff_workspace;
+      delete docker.currentWorkspace;
+    });
+
+    it('cycles the tabs of the current workspace', () => {
+      pgAdmin.Browser.keyboardNavigation.bindRightPanel(
+        new Event('keydown'), {key: shortcutObj.tabbed_panel_forward});
+
+      expect(focusTabSpy).toHaveBeenCalled();
+      const [tabs, activeIdx] = focusTabSpy.mock.calls[0];
+      expect(tabs.map((tab) => tab.id)).toEqual([
+        'rc-dock-tab-btn-id-schema-diff-1',
+        'rc-dock-tab-btn-id-schema-diff-2',
+      ]);
+      expect(tabs[activeIdx].id).toBe('rc-dock-tab-btn-id-schema-diff-1');
+    });
+
+    // close_tab_panel takes the panel id from the button id rc-tabs gives
+    // it, whose counter can have any number of digits.
+    it.each([
+      'rc-tabs-1-tab-id-schema-diff-1',
+      'rc-tabs-10-tab-id-schema-diff-1',
+    ])('closes the tab through the current workspace (%s)', (btnId) => {
+      focusTabSpy.mockRestore();
+      schemaDiffLayout.querySelector('.dock-tab-active .dock-tab-btn').id =
+        btnId;
+
+      pgAdmin.Browser.keyboardNavigation.bindRightPanel(
+        new Event('keydown'), {key: shortcutObj.close_tab_panel});
+
+      expect(docker.schema_diff_workspace.close)
+        .toHaveBeenCalledWith('id-schema-diff-1');
+    });
+  });
 });
