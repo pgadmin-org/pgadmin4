@@ -8,7 +8,8 @@ SELECT
 	att.attstattarget, description, cs.relname AS sername,
 	ns.nspname AS serschema,
 	(SELECT count(1) FROM pg_catalog.pg_type t2 WHERE t2.typname=ty.typname) > 1 AS isdup,
-	indkey, coll.collname, nspc.nspname as collnspname , attoptions,
+	indkey, coll.collname, nspc.nspname as collnspname ,
+	NULLIF(ARRAY(SELECT o FROM pg_catalog.unnest(att.attoptions) AS o WHERE pg_catalog.left(o, 3) <> 'pg_'), '{}') AS attoptions,
 	-- Start pgAdmin4, added to save time on client side parsing
 	CASE WHEN length(coll.collname::text) > 0 AND length(nspc.nspname::text) > 0  THEN
 	  pg_catalog.concat(pg_catalog.quote_ident(nspc.nspname),'.',pg_catalog.quote_ident(coll.collname))

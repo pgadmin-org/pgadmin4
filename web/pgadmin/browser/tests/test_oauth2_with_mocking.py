@@ -11,6 +11,7 @@ import config as app_config
 from pgAdmin4 import app
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
+from regression.python_test_utils.user_utils import add_user
 from pgadmin.authenticate.registry import AuthSourceRegistry
 from unittest.mock import patch, MagicMock, mock_open
 from pgadmin.utils.constants import OAUTH2, INTERNAL
@@ -171,6 +172,76 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         ('OIDC get_user_profile Fetches Userinfo For Server Groups', dict(
             oauth2_provider='oidc-server-groups-direct',
             kind='oidc_get_user_profile_server_groups',
+            profile={},
+            id_token_claims=None,
+        )),
+        ('OIDC Role Claim Gives Mapped Role', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='login_success',
+            profile={'email': 'role-admin@example.com'},
+            id_token_claims={'groups': ['other', 'pgadmin-admins']},
+            expected_role='Administrator',
+        )),
+        ('OIDC Role Claim Single String', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='login_success',
+            profile={'email': 'role-string@example.com'},
+            id_token_claims={'groups': 'pgadmin-admins'},
+            expected_role='Administrator',
+        )),
+        ('OIDC Role Claim Without Match Gives User Role', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='login_success',
+            profile={'email': 'role-user@example.com'},
+            id_token_claims={'groups': ['other']},
+            expected_role='User',
+        )),
+        ('OIDC Role Claim First Mapping Entry Wins', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='login_success',
+            profile={'email': 'role-order@example.com'},
+            id_token_claims={'groups': ['pgadmin-users', 'pgadmin-admins']},
+            expected_role='Administrator',
+        )),
+        ('OIDC Role Claim From Userinfo', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='login_success',
+            profile={'email': 'role-userinfo@example.com',
+                     'groups': ['pgadmin-admins']},
+            id_token_claims={'sub': 'abc'},
+            expected_role='Administrator',
+        )),
+        ('OIDC Role Claim Unknown Role Keeps Role', dict(
+            oauth2_provider='oidc-role-claim-unknown-role',
+            kind='login_success',
+            profile={'email': 'role-unknown@example.com'},
+            id_token_claims={'groups': ['pgadmin-admins']},
+            preexisting_admin=True,
+            expected_role='Administrator',
+        )),
+        ('OIDC Role Claim Non-String Role Keeps Role', dict(
+            oauth2_provider='oidc-role-claim-invalid-role',
+            kind='login_success',
+            profile={'email': 'role-invalid@example.com'},
+            id_token_claims={'groups': ['pgadmin-admins']},
+            preexisting_admin=True,
+            expected_role='Administrator',
+        )),
+        ('OIDC Role Claim Does Not Let Unauthorised Users In', dict(
+            oauth2_provider='oidc-role-claim-additional-claims',
+            kind='role_claim_rejected_login',
+            profile={'email': 'role-rejected@example.com'},
+            id_token_claims={'groups': ['other']},
+        )),
+        ('OIDC Role Claim Removed At Next Login', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='role_claim_removed',
+            profile={'email': 'role-removed@example.com'},
+            id_token_claims=None,
+        )),
+        ('OIDC get_user_profile Fetches Userinfo For Role Claim', dict(
+            oauth2_provider='oidc-role-claim',
+            kind='oidc_get_user_profile_role_claim',
             profile={},
             id_token_claims=None,
         )),
@@ -399,6 +470,78 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                     'groups': ['group-a']
                 },
                 'OAUTH2_SERVER_GROUP_CLAIM': 'pgadmin_server_groups',
+            },
+            {
+                'OAUTH2_NAME': 'oidc-role-claim',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Role Claim',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_ROLE_CLAIM': 'groups',
+                'OAUTH2_ROLE_CLAIM_MAPPING': {
+                    'pgadmin-admins': 'Administrator',
+                    'pgadmin-users': 'User'
+                },
+            },
+            {
+                'OAUTH2_NAME': 'oidc-role-claim-unknown-role',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Role Claim Unknown Role',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_ROLE_CLAIM': 'groups',
+                'OAUTH2_ROLE_CLAIM_MAPPING': {
+                    'pgadmin-admins': 'No Such Role'
+                },
+            },
+            {
+                'OAUTH2_NAME': 'oidc-role-claim-invalid-role',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Role Claim Invalid Role',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_ROLE_CLAIM': 'groups',
+                'OAUTH2_ROLE_CLAIM_MAPPING': {
+                    'pgadmin-admins': ['Administrator']
+                },
+            },
+            {
+                'OAUTH2_NAME': 'oidc-role-claim-additional-claims',
+                'OAUTH2_DISPLAY_NAME': 'OIDC Role Claim With Claims',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL': 'https://oidc.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://oidc.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://oidc.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SERVER_METADATA_URL':
+                    'https://oidc.example/.well-known/openid-configuration',
+                'OAUTH2_ADDITIONAL_CLAIMS': {
+                    'groups': ['pgadmin-admins', 'pgadmin-users']
+                },
+                'OAUTH2_ROLE_CLAIM': 'groups',
+                'OAUTH2_ROLE_CLAIM_MAPPING': {
+                    'pgadmin-admins': 'Administrator'
+                },
             }
         ]
 
@@ -428,9 +571,25 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         elif self.kind == 'workload_identity_missing_token_file':
             self._test_workload_identity_missing_token_file_fails_fast()
         elif self.kind == 'login_success':
+            if getattr(self, 'preexisting_admin', False):
+                add_user(self, self.profile['email'], OAUTH2,
+                         role_name='Administrator')
             self._test_oauth2_login_success(
                 self.oauth2_provider, self.profile, self.id_token_claims,
-                getattr(self, 'expected_server_groups', None)
+                getattr(self, 'expected_server_groups', None),
+                getattr(self, 'expected_role', None)
+            )
+        elif self.kind == 'role_claim_rejected_login':
+            self._test_oauth2_role_claim_rejected_login(
+                self.oauth2_provider, self.profile, self.id_token_claims
+            )
+        elif self.kind == 'role_claim_removed':
+            self._test_oauth2_role_claim_removed(
+                self.oauth2_provider, self.profile
+            )
+        elif self.kind == 'oidc_get_user_profile_role_claim':
+            self._test_oidc_get_user_profile_role_claim_userinfo(
+                self.oauth2_provider
             )
         elif self.kind == 'login_failure':
             self._test_oauth2_login_failure(
@@ -515,9 +674,39 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                     str(e)
                 )
 
+    def _assert_oauth2_user_role(self, username, expected_role):
+        """Check that the OAuth2 user has exactly the expected role."""
+        from pgadmin.model import User
+        with self.app.app_context():
+            user = User.query.filter_by(
+                username=username, auth_source=OAUTH2).first()
+            self.assertIsNotNone(user)
+            self.assertEqual([r.name for r in user.roles], [expected_role])
+
+    def _test_oauth2_role_claim_rejected_login(
+            self, provider, profile, id_token_claims):
+        """The role claim does not decide who may log in: a user rejected
+        by OAUTH2_ADDITIONAL_CLAIMS is not created with the default role."""
+        from pgadmin.model import User
+        self._test_oauth2_login_failure(provider, profile, id_token_claims)
+        with self.app.app_context():
+            self.assertIsNone(User.query.filter_by(
+                username=profile['email'], auth_source=OAUTH2).first())
+
+    def _test_oauth2_role_claim_removed(self, provider, profile):
+        """A user who loses the claim value loses the role at next login."""
+        self._test_oauth2_login_success(
+            provider, profile, {'groups': ['pgadmin-admins']},
+            expected_role='Administrator'
+        )
+        self.tester.logout()
+        self._test_oauth2_login_success(
+            provider, profile, {'groups': []}, expected_role='User'
+        )
+
     def _test_oauth2_login_success(
             self, provider, profile, id_token_claims=None,
-            expected_server_groups=None
+            expected_server_groups=None, expected_role=None
     ):
         from pgadmin.authenticate.oauth2 import OAuth2Authentication
 
@@ -560,6 +749,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                     sess.get('oauth2_server_group_claims'),
                     expected_server_groups
                 )
+        if expected_role is not None:
+            self._assert_oauth2_user_role(profile['email'], expected_role)
 
     def _test_oauth2_login_failure(
             self, provider, profile, id_token_claims=None
@@ -758,6 +949,36 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile = oauth.get_user_profile()
             self.assertEqual(profile.get('pgadmin_server_groups'),
                              ['Reporting'])
+            client.get.assert_called_once()
+
+    def _test_oidc_get_user_profile_role_claim_userinfo(self, provider):
+        """The ID token has the standard claims but not the role claim, so
+        userinfo must still be fetched."""
+        from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+        with self.app.test_request_context('/'):
+            oauth = OAuth2Authentication()
+            oauth.oauth2_current_client = provider
+
+            client = MagicMock()
+            client.authorize_access_token = MagicMock(return_value={
+                'access_token': 't',
+                'id_token': 'mock.jwt.token',
+                'token_type': 'Bearer',
+                'userinfo': {'email': 'oidc@example.com', 'sub': 'abc'}
+            })
+
+            resp = MagicMock()
+            resp.raise_for_status = MagicMock()
+            resp.json = MagicMock(return_value={
+                'email': 'oidc@example.com',
+                'groups': ['pgadmin-admins']
+            })
+            client.get = MagicMock(return_value=resp)
+
+            OAuth2Authentication.oauth2_clients[provider] = client
+            profile = oauth.get_user_profile()
+            self.assertEqual(profile.get('groups'), ['pgadmin-admins'])
             client.get.assert_called_once()
 
     def _test_oidc_get_user_profile_calls_userinfo(self, provider):

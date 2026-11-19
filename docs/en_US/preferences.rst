@@ -66,7 +66,8 @@ Use the fields on the *AI* panel to configure your LLM provider:
 
 * Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
   the default OpenAI API (``https://api.openai.com/v1``). Set a custom URL to
-  use any OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO).
+  use any OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO,
+  GLM (Z.ai)).
   Include the ``/v1`` path prefix if required by your provider
   (e.g., ``http://localhost:1234/v1``).
 
@@ -101,8 +102,14 @@ Use the fields on the *AI* panel to configure your LLM provider:
 
 .. note:: You can also use the *OpenAI* provider with a custom API URL for any
    OpenAI-compatible endpoint, including Docker Model Runner, LM Studio, EXO,
-   and other local inference servers. This can be useful when you want to use
-   a provider that isn't explicitly listed but supports the OpenAI API format.
+   hosted services such as GLM (Z.ai), and other local inference servers. This
+   can be useful when you want to use a provider that isn't explicitly listed
+   but supports the OpenAI API format.
+
+.. note:: With the default allowlist enabled, an administrator must add any
+   API host not already in ``ALLOWED_LLM_API_URLS`` before pgAdmin can connect
+   to it. By default the list allows the OpenAI and Anthropic APIs and loopback
+   addresses on any port. An empty allowlist disables this restriction.
 
 The Browser Node
 ****************
@@ -705,6 +712,14 @@ Use the fields on the *Options* panel to manage editor preferences.
 
 * When the *Open the file in a new tab?* switch is set to *True*, the
   editor will open the new file in new tab of the Query Tool.
+
+* Use the *On SQL file drop* drop-down to control what happens when a SQL
+  file is dropped onto the Query Tool editor. Choose *Always replace content*
+  to clear the editor and load the file content, *Always merge content* to
+  insert the file content at the current cursor position, or *Ask* to prompt
+  when the editor already has content. Dropping a file does not change the
+  file associated with the tab; Save still targets the previously opened
+  path.
 
 * When the *Prompt to commit/rollback active transactions?* switch is set to
   *True*, the editor will prompt the user to commit or rollback changes when

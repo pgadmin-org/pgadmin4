@@ -740,7 +740,8 @@ class Connection(BaseConnection):
                 status = role
 
             if status is not None:
-                self.conn.close()
+                if self.conn:
+                    self.conn.close()
                 self.conn = None
                 current_app.logger.error(
                     "Connect to the database server (#{server_id}) for "
@@ -810,7 +811,8 @@ class Connection(BaseConnection):
         )
 
         if status is not None:
-            self.conn.close()
+            if self.conn:
+                self.conn.close()
             self.conn = None
 
             return False, status
@@ -823,7 +825,8 @@ class Connection(BaseConnection):
         status = self._execute(cur, "SELECT version()")
 
         if status is not None:
-            self.conn.close()
+            if self.conn:
+                self.conn.close()
             self.conn = None
             self.wasConnected = False
             current_app.logger.error(
@@ -2051,6 +2054,12 @@ Failed to reset the connection to the server due to following error:
         if cancel_conn.__backend_pid == self.__backend_pid:
             password = getattr(self.manager, 'password', None)
             if password:
+                # Decrypting the password needs the logged-in user's key.
+                # Logging out a session whose user is not authenticated,
+                # such as a locked account, still releases its connections.
+                if not current_user.is_authenticated:
+                    return False, self.UNAUTHORIZED_REQUEST
+
                 # Fetch Logged in User Details.
                 user = User.query.filter_by(id=current_user.id).first()
                 if user is None:

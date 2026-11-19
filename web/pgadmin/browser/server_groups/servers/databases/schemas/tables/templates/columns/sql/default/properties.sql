@@ -14,7 +14,7 @@ WITH INH_TABLES AS
     ORDER BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
     )
 SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
-		att.atttypmod, att.attacl, att.attnotnull, att.attoptions, att.attfdwoptions, att.attstattarget,
+		att.atttypmod, att.attacl, att.attnotnull, NULLIF(ARRAY(SELECT o FROM pg_catalog.unnest(att.attoptions) AS o WHERE pg_catalog.left(o, 3) <> 'pg_'), '{}') AS attoptions, att.attfdwoptions, att.attstattarget,
 		att.attstorage, att.attidentity,
 		pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS defval,
 		pg_catalog.format_type(ty.oid,NULL) AS typname,
