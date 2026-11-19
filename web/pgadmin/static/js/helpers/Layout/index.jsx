@@ -364,15 +364,16 @@ export class LayoutDocker {
     };
     collectActiveIds(this.layoutObj.getLayout().dockbox);
 
-    // Add each missing tab next to a sibling from its original panel group
+    // Add each missing tab next to a sibling from its original panel group,
+    // keeping the position it has in the default layout.
     missingNonClosableTabs.forEach((tab) => {
-      const siblingId = this.findSiblingTab(tab.id, flatDefault, flatCurrent);
-      if (siblingId) {
+      const sibling = this.findSiblingTab(tab.id, flatDefault, flatCurrent);
+      if (sibling) {
         this.openTab({
           id: tab.id,
           content: tab.content,
           ...tab.internal
-        }, siblingId, 'middle');
+        }, sibling.id, sibling.direction);
       } else if (this.resetToTabPanel) {
         // Fallback: add to the reset panel location
         this.openTab({
@@ -381,6 +382,9 @@ export class LayoutDocker {
           ...tab.internal
         }, this.resetToTabPanel, 'middle');
       }
+      // Track restored tabs so subsequent missing tabs can dock next to them
+      // instead of a stale sibling.
+      flatCurrent.push({id: tab.id});
     });
 
     // Restore the original active tabs so newly added tabs don't steal focus
@@ -407,9 +411,26 @@ export class LayoutDocker {
     const siblingIds = findPanelTabs(this.defaultLayout.dockbox, tabId);
     if (!siblingIds) return null;
 
-    // Find a sibling that exists in current layout
     const currentIds = flatCurrent.map(t => t.id);
-    return siblingIds.find(id => id !== tabId && currentIds.includes(id));
+    const tabIdx = siblingIds.indexOf(tabId);
+
+    // Prefer the nearest preceding sibling from the default layout and insert
+    // after it, so the added tab keeps its default position instead of
+    // landing before the sibling (e.g. first in the panel).
+    for (let i = tabIdx - 1; i >= 0; i--) {
+      if (currentIds.includes(siblingIds[i])) {
+        return {id: siblingIds[i], direction: 'after-tab'};
+      }
+    }
+
+    // No preceding sibling in the current layout: insert before the nearest
+    // following sibling that exists.
+    for (let i = tabIdx + 1; i < siblingIds.length; i++) {
+      if (currentIds.includes(siblingIds[i])) {
+        return {id: siblingIds[i], direction: 'middle'};
+      }
+    }
+    return null;
   }
 
   saveLayout(l) {

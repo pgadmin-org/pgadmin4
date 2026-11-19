@@ -267,6 +267,19 @@ _VALID_ON_ERROR = frozenset({'stop', 'ignore'})
 _VALID_LOG_VERBOSITY = frozenset({'default', 'verbose'})
 
 
+def _copy_filename_literal(filename):
+    """The file name as psql's \\copy expects it: wrapped in single quotes
+    with only an embedded single quote doubled.
+
+    psql parses the file name of \\copy itself, and that token has no
+    backslash escapes and no E'...' form. qtLiteral() must not be used for
+    it: for a value containing a backslash it returns an escape-string
+    literal, which psql reads as a file named "E" followed by text it
+    passes on to the server.
+    """
+    return "'" + filename.replace("'", "''") + "'"
+
+
 def _identifier_strings(value):
     """The identifier strings columns_to_string() would feed to qtIdent()
     for value, whatever JSON type it arrives as. A list yields its string
@@ -593,6 +606,8 @@ def create_import_export_job(sid):
     # Create the COPY FROM/TO  from template
     temp_path = 'import_export/sql/#{0}#/cmd.sql'.format(manager.version)
     query = render_template(temp_path, conn=conn, data=data, columns=cols,
+                            filename=_copy_filename_literal(
+                                data['filename']),
                             not_null_columns=not_null_cols,
                             null_columns=null_cols,
                             force_quote_columns=quote_cols)
@@ -618,6 +633,7 @@ def create_import_export_job(sid):
         try:
             launch_query = render_template(
                 temp_path, conn=conn, data=dict(data, filename=utility_file),
+                filename=_copy_filename_literal(utility_file),
                 columns=cols, not_null_columns=not_null_cols,
                 null_columns=null_cols, force_quote_columns=quote_cols)
         except Exception:

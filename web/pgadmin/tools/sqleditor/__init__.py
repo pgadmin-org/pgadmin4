@@ -401,6 +401,8 @@ def panel(trans_id):
         trans_id: unique transaction id
     """
 
+    from pgadmin.llm.utils import is_llm_enabled
+
     params = None
     if request.args:
         params = {k: v for k, v in request.args.items()}
@@ -445,6 +447,7 @@ def panel(trans_id):
             params['user'] = underscore_escape(s.username)
         if 'role' not in params and s.role:
             params['role'] = underscore_escape(s.role)
+        params['llm_enabled'] = is_llm_enabled()
         params['layout'] = get_setting('SQLEditor/Layout')
         params['macros'] = get_user_macros()
         params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
@@ -3483,6 +3486,74 @@ def _nlq_sse_event(data: dict) -> bytes:
     return f"{padding}data: {json_data}\n\n".encode('utf-8')
 
 
+# The top-level keys the EXPLAIN analysis prompt asks the model for.
+EXPLAIN_ANALYSIS_KEYS = frozenset(
+    ('summary', 'bottlenecks', 'recommendations')
+)
+
+
+def _parse_explain_analysis(response_text):
+    """
+    Extract the JSON object from an EXPLAIN analysis LLM response.
+
+    Models are asked to return a bare JSON object, but some wrap it in a
+    ```json fence, add text before or after it, or prefix it with a
+    <think> block. Try the fenced block, then the whole response, then
+    each {...} object in the text.
+
+    Only an object with at least one of the keys the prompt asks for is
+    accepted, so an unrelated object, such as a plan node quoted in prose,
+    is not taken for the analysis.
+
+    Args:
+        response_text: The raw text returned by the LLM.
+
+    Returns:
+        The parsed dict, or None if no analysis object could be parsed.
+    """
+    # Drop any reasoning block that local reasoning models put in the
+    # response content. A block that is never closed (the model stopped
+    # whilst still reasoning) is dropped to the end of the text.
+    text = re.sub(
+        r'<think>.*?</think>', '', response_text or '', flags=re.DOTALL
+    )
+    text = re.sub(r'<think>.*', '', text, flags=re.DOTALL).strip()
+    candidates = []
+
+    fence_match = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
+    if fence_match:
+        candidates.append(fence_match.group(1).strip())
+
+    candidates.append(text)
+
+    for candidate in candidates:
+        try:
+            result = json.loads(candidate)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(result, dict) and \
+                EXPLAIN_ANALYSIS_KEYS.intersection(result):
+            return result
+
+    # Otherwise decode each {...} object in the text on its own, so an
+    # unrelated object before the analysis, such as a plan node quoted in
+    # prose, does not hide it.
+    decoder = json.JSONDecoder()
+    start = text.find('{')
+    while start != -1:
+        try:
+            result, end = decoder.raw_decode(text, start)
+        except json.JSONDecodeError:
+            start = text.find('{', start + 1)
+            continue
+        if isinstance(result, dict) and \
+                EXPLAIN_ANALYSIS_KEYS.intersection(result):
+            return result
+        start = text.find('{', end)
+
+    return None
+
+
 @blueprint.route(
     '/explain/analyze/<int:trans_id>/stream',
     methods=["POST"],
@@ -3515,7 +3586,7 @@ def explain_analyze_stream(trans_id):
     from flask import stream_with_context
     from pgadmin.llm.utils import is_llm_enabled
     from pgadmin.llm.client import get_llm_client
-    from pgadmin.llm.models import Message
+    from pgadmin.llm.models import Message, StopReason
     from pgadmin.llm.prompts.explain import EXPLAIN_ANALYSIS_PROMPT
 
     # Check if LLM is configured
@@ -3558,10 +3629,12 @@ def explain_analyze_stream(trans_id):
                 'message': gettext('Analyzing query plan...')
             })
 
-            # Format the plan for the LLM
-            plan_json = json.dumps(plan_data, indent=2) if isinstance(
-                plan_data, (dict, list)
-            ) else str(plan_data)
+            # Format the plan for the LLM. Use compact JSON: indentation
+            # adds nothing for the model but, for deeply nested plans,
+            # can take up much of a local model's context window.
+            plan_json = json.dumps(
+                plan_data, separators=(',', ':')
+            ) if isinstance(plan_data, (dict, list)) else str(plan_data)
 
             # Build the user message with plan and SQL
             user_message = f"""Please analyze this PostgreSQL EXPLAIN plan:
@@ -3584,32 +3657,33 @@ optimization recommendations."""
                 messages=[Message.user(user_message)],
                 system_prompt=EXPLAIN_ANALYSIS_PROMPT
             )
-            response_text = response.content
+            response_text = response.content or ''
+            result = _parse_explain_analysis(response_text)
 
-            # Parse the response
-            bottlenecks = []
-            recommendations = []
-            summary = ''
+            if result is None and \
+                    response.stop_reason == StopReason.MAX_TOKENS:
+                # The model hit its output limit part-way through the
+                # JSON. Report it rather than showing the cut-off text.
+                yield _nlq_sse_event({
+                    'type': 'error',
+                    'message': gettext(
+                        'The AI response was cut off because it reached '
+                        'the model\'s token limit, so the analysis could '
+                        'not be read. Try a model with a larger context '
+                        'window or output limit, or analyze a smaller '
+                        'query.'
+                    )
+                })
+                return
 
-            # Try to extract JSON from the response
-            json_text = response_text.strip()
-
-            # Look for ```json ... ``` blocks
-            json_match = re.search(
-                r'```json\s*\n?(.*?)\n?```',
-                json_text,
-                re.DOTALL
-            )
-            if json_match:
-                json_text = json_match.group(1).strip()
-
-            try:
-                result = json.loads(json_text)
-                bottlenecks = result.get('bottlenecks', [])
-                recommendations = result.get('recommendations', [])
-                summary = result.get('summary', '')
-            except (json.JSONDecodeError, TypeError):
+            if result is not None:
+                bottlenecks = result.get('bottlenecks') or []
+                recommendations = result.get('recommendations') or []
+                summary = result.get('summary') or ''
+            else:
                 # If parsing fails, use the raw response as summary
+                bottlenecks = []
+                recommendations = []
                 summary = response_text.strip()
 
             # Send the final result

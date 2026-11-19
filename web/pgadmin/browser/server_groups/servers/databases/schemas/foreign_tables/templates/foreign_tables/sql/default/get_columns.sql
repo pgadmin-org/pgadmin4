@@ -13,7 +13,7 @@ WITH INH_TABLES AS
     GROUP BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
     ORDER BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
     )
-SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, att.atttypid, attfdwoptions,
+SELECT INH.inheritedfrom, INH.inheritedid, NULLIF(ARRAY(SELECT o FROM pg_catalog.unnest(att.attoptions) AS o WHERE pg_catalog.left(o, 3) <> 'pg_'), '{}') AS attoptions, att.atttypid, attfdwoptions,
     att.attname as name, att.attndims, att.atttypmod, pg_catalog.format_type(t.oid,NULL) AS cltype,
     att.attnotnull, att.attstorage, att.attstattarget, att.attnum, pg_catalog.format_type(t.oid, att.atttypmod) AS fulltype,
     t.typstorage AS defaultstorage,

@@ -21,9 +21,41 @@ from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.browser.server_groups import servers
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response, gone
+    make_response as ajax_response, gone, bad_request
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
+
+
+# Pass OIDs to the privilege functions so that a missing schema or table
+# makes the check false rather than raising an error.
+PGT_CHAIN_ACCESS_SQL = """
+SELECT EXISTS(
+    SELECT 1 FROM pg_catalog.pg_class cl
+    JOIN pg_catalog.pg_namespace ns ON ns.oid = cl.relnamespace
+    WHERE cl.relname = 'chain' AND ns.nspname = 'timetable' AND
+        has_schema_privilege(ns.oid, 'USAGE') AND
+        has_table_privilege(cl.oid, 'INSERT') AND
+        has_table_privilege(cl.oid, 'SELECT') AND
+        has_table_privilege(cl.oid, 'UPDATE')
+) has_priviledge
+"""
+
+
+def has_pgt_chain_access(conn):
+    """
+    Check whether the pg_timetable schema exists in the database conn is
+    connected to (the server's maintenance database), and whether the
+    current role has USAGE on it and can INSERT, SELECT and UPDATE
+    timetable.chain.
+
+    Returns a (status, result) tuple: on success, result is True or False;
+    on failure, status is False and result holds the error message.
+    """
+    status, res = conn.execute_2darray(PGT_CHAIN_ACCESS_SQL)
+    if not status:
+        return False, res
+    rows = res['rows']
+    return True, bool(rows and rows[0]['has_priviledge'])
 
 
 class ChainModule(CollectionNodeModule):
@@ -46,30 +78,15 @@ class ChainModule(CollectionNodeModule):
         return servers.ServerModule.node_type
 
     def backend_supported(self, manager, **kwargs):
+        """
+        Show the pgTimeTable Chains collection only when pg_timetable is
+        usable by the current role in the server's maintenance database.
+        """
         if hasattr(self, 'show_node') and not self.show_node:
             return False
 
-        conn = manager.connection()
-
-        status, res = conn.execute_scalar("""
-SELECT
-    (
-      has_table_privilege('timetable.chain', 'INSERT') AND
-      has_table_privilege('timetable.chain', 'SELECT') AND
-      has_table_privilege('timetable.chain', 'UPDATE')
-    ) has_priviledge
-WHERE EXISTS(
-    SELECT has_schema_privilege('timetable', 'USAGE')
-    WHERE EXISTS(
-        SELECT cl.oid FROM pg_catalog.pg_class cl
-        LEFT JOIN pg_catalog.pg_namespace ns ON ns.oid=relnamespace
-        WHERE relname='chain' AND nspname='timetable'
-    )
-)
-""")
-        if status and res:
-            return True
-        return False
+        status, res = has_pgt_chain_access(manager.connection())
+        return status and res
 
     @property
     def csssnippets(self):
@@ -156,7 +173,10 @@ class ChainView(PGChildNodeView):
 
         @wraps(f)
         def wrap(self, *args, **kwargs):
-
+            """
+            Attach the connection details, and refuse the request with a
+            clear error when pg_timetable is not usable.
+            """
             self.manager = get_driver(
                 PG_DEFAULT_DRIVER
             ).connection_manager(
@@ -166,6 +186,21 @@ class ChainView(PGChildNodeView):
 
             # Set the template path for the sql scripts.
             self.template_path = 'pgt_chain/sql/default'
+
+            # Without this check, a server whose maintenance database
+            # lacks the pg_timetable schema fails with a raw "relation
+            # timetable.chain does not exist" error and HTTP 500.
+            status, res = has_pgt_chain_access(self.conn)
+            if not status:
+                return internal_server_error(errormsg=res)
+            if not res:
+                return bad_request(errormsg=_(
+                    "The pg_timetable schema was not found in the "
+                    "maintenance database, or the current role does not "
+                    "have USAGE on it and INSERT, SELECT and UPDATE "
+                    "privileges on timetable.chain."
+                ))
+
             return f(self, *args, **kwargs)
         return wrap
 

@@ -109,18 +109,40 @@ def verify_credentials():
     error = None
     res_data = {}
 
-    client_secret_path = unquote(client_secret_path)
-    try:
-        client_secret_path = \
-            filename_with_file_manager_path(client_secret_path)
-    except PermissionError as e:
-        return unauthorized(errormsg=sanitize_external_text(str(e)))
-    except Exception as e:
-        return bad_request(errormsg=sanitize_external_text(str(e)))
+    client_secret_path = unquote(client_secret_path) \
+        if isinstance(client_secret_path, str) else None
+    if client_secret_path:
+        try:
+            client_secret_path = \
+                filename_with_file_manager_path(client_secret_path)
+        except PermissionError as e:
+            return unauthorized(errormsg=sanitize_external_text(str(e)))
+        except Exception as e:
+            return bad_request(errormsg=sanitize_external_text(str(e)))
 
     if client_secret_path and os.path.exists(client_secret_path):
-        with open(client_secret_path, 'r') as json_file:
-            client_config = json.load(json_file)
+        try:
+            with open(client_secret_path, 'r', encoding='utf-8') as json_file:
+                client_config = json.load(json_file)
+        except (FileNotFoundError, IsADirectoryError, PermissionError):
+            clear_google_session()
+            return bad_request(errormsg=_(
+                'The client secret file could not be read.'))
+        except (ValueError, RecursionError):
+            clear_google_session()
+            return bad_request(errormsg=_(
+                'The client secret file is not a valid Google OAuth '
+                'client secret JSON file.'))
+
+        client_type = None
+        if isinstance(client_config, dict):
+            key = 'web' if 'web' in client_config else 'installed'
+            client_type = client_config.get(key)
+        if not isinstance(client_type, dict):
+            clear_google_session()
+            return bad_request(errormsg=_(
+                'The client secret file is not a valid Google OAuth '
+                'client secret JSON file.'))
 
         if 'google' not in session:
             session['google'] = {}
