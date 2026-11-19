@@ -190,10 +190,12 @@ def is_using_passfile(server, manager):
     i.e. no password is saved or held for the session and the manager uses
     the server's passfile. The Change Password dialog (check_pgpass) and
     the change_password endpoint must agree on this, so both call it.
+    A saved password that could not be decrypted counts as not saved.
     """
     passfile = manager.get_connection_param_value('passfile')
+    discarded = getattr(manager, 'saved_password_discarded', False) is True
     return bool(
-        not server.password and not manager.password and
+        (not server.password or discarded) and not manager.password and
         hasattr(server, 'connection_params') and
         server.connection_params and
         'passfile' in server.connection_params and

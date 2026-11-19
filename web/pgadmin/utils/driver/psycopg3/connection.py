@@ -514,6 +514,7 @@ class Connection(BaseConnection):
                 self.password = None
                 manager.password = None
                 self.saved_password_discarded = True
+                manager.saved_password_discarded = True
                 return False, '', None, True
         return False, '', password, False
 
@@ -1820,9 +1821,9 @@ WHERE db.datname = current_database()""")
                         getattr(manager, 'sid', None), str(e)),
                     exc_info=True
                 )
-                # Recoverable: let reset() go on and try to connect without
-                # the password (e.g. through a passfile).
-                return False, '', None
+                # Recoverable: report success so reset() goes on and tries to
+                # connect without the password (e.g. through a passfile).
+                return True, '', None
         return True, '', password
 
     def reset(self):

@@ -76,6 +76,7 @@ class ServerManager(object):
         self.password = None
         self.tunnel_password = None
         self.saved_tunnel_password_discarded = False
+        self.saved_password_discarded = False
 
         self.sid = server.id
         self.host = server.host
