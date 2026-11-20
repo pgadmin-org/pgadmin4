@@ -20,7 +20,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
+    parse_priv_to_db, parse_seclabels_from_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -838,12 +838,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # Need to format security labels according to client js collection
         if 'securities' in data and data['securities'] is not None:
-            seclabels = []
-            for seclbls in data['securities']:
-                k, v = seclbls.split('=')
-                seclabels.append({'provider': k, 'label': v})
-
-            data['securities'] = seclabels
+            data['securities'] = parse_seclabels_from_db(
+                data['securities'])
 
         # We need to parse & convert ACL coming from database to json format
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),

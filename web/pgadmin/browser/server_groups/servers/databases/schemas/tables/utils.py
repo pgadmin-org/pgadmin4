@@ -23,7 +23,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader, parse_rule_definition, check_pgstattuple
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
+    parse_priv_to_db, parse_seclabels_from_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
@@ -185,12 +185,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         """
         # Need to format security labels according to client js collection
         if 'seclabels' in data and data['seclabels'] is not None:
-            seclabels = []
-            for seclbls in data['seclabels']:
-                k, v = seclbls.split('=')
-                seclabels.append({'provider': k, 'label': v})
-
-            data['seclabels'] = seclabels
+            data['seclabels'] = parse_seclabels_from_db(
+                data['seclabels'])
 
         # We need to parse & convert ACL coming from database to json format
         sql = render_template("/".join([self.table_template_path,

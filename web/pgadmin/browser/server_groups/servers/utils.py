@@ -36,6 +36,20 @@ def is_valid_ipaddress(address):
         return False
 
 
+def parse_seclabels_from_db(seclabels):
+    """
+    Common utility function to parse security labels retrieved from database.
+
+    Each entry is a "provider=label" string. The provider name never contains
+    an "=", but the label is free text and may, so split on the first one only.
+    """
+    result = []
+    for seclbls in seclabels:
+        provider, label = seclbls.split('=', 1)
+        result.append({'provider': provider, 'label': label})
+    return result
+
+
 def parse_priv_from_db(db_privileges):
     """
     Common utility function to parse privileges retrieved from database.
