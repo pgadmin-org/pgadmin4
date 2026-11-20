@@ -15,7 +15,7 @@ from flask import render_template, make_response, request, jsonify, current_app
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
+    parse_priv_to_db, parse_seclabels_from_db
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, gone
@@ -225,12 +225,8 @@ class TablespaceView(PGChildNodeView):
 
         # Need to format security labels according to client js collection
         if 'seclabels' in data and data['seclabels'] is not None:
-            seclabels = []
-            for seclbls in data['seclabels']:
-                k, v = seclbls.split('=')
-                seclabels.append({'provider': k, 'label': v})
-
-            data['seclabels'] = seclabels
+            data['seclabels'] = parse_seclabels_from_db(
+                data['seclabels'])
 
         # We need to parse & convert ACL coming from database to json format
         SQL = render_template(
