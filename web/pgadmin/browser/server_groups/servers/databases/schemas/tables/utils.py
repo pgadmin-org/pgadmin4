@@ -1270,23 +1270,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 t for t in old_data['coll_inherits']
                 if t not in data['coll_inherits']]
 
-    def _get_still_inherited_columns(self, scid, data):
-        """
-        Return the names of the columns still provided by the parents left
-        in 'Inherited from', or None if no parent is being removed.
-        """
-        if not data.get('coll_inherits_removed'):
-            return None
-
-        other_columns = []
-        if data.get('coll_inherits'):
-            is_error, errmsg = self._get_inherited_tables(scid, data,
-                                                          other_columns)
-            if is_error:
-                raise ExecuteError(errmsg)
-
-        return {c['name'] for c in other_columns}
-
     def _get_inherit_changes(self, tid, data):
         """
         Return what the table needs alongside INHERIT and NO INHERIT for the
@@ -1328,19 +1311,37 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         return changes
 
+    def _get_removed_parent_ids(self, scid, data):
+        """
+        Return the OIDs of the parents removed from 'Inherited from'.
+        """
+        if not data.get('coll_inherits_removed'):
+            return set()
+
+        sql = render_template("/".join([self.table_template_path,
+                                        'get_inherits.sql']),
+                              show_system_objects=False, scid=scid)
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            raise ExecuteError(rset)
+
+        return {row['oid'] for row in rset['rows']
+                if row['inherits'] in data['coll_inherits_removed']}
+
     def _check_for_column_delete(self, columns, data, column_sql,
-                                 still_inherited=None):
+                                 removed_parent_ids=frozenset()):
         # If column(s) is/are deleted
         if 'deleted' in columns:
             for c in columns['deleted']:
                 c['schema'] = data['schema']
                 c['table'] = data['name']
-                # Sql for drop column. NO INHERIT keeps the columns of a
-                # removed parent as local columns, so drop them as well,
-                # unless a remaining parent still provides them.
+                # Sql for drop column. NO INHERIT keeps a removed parent's
+                # columns as ordinary ones, which the table dialog keeps, so
+                # one of them is only deleted when the user deletes it. The
+                # deleted row comes from the original data, which still has
+                # it as inherited.
                 if c.get('inheritedfrom', None) is None or \
-                    (still_inherited is not None and
-                     c['name'] not in still_inherited):
+                        c.get('inheritedid', None) in removed_parent_ids:
                     column_sql += render_template("/".join(
                         [self.column_template_path, self._DELETE_SQL]),
                         data=c, conn=self.conn).strip('\n') + \
@@ -1706,7 +1707,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 # If column(s) is/are deleted
                 column_sql = self._check_for_column_delete(
                     columns, data, column_sql,
-                    self._get_still_inherited_columns(scid, data))
+                    self._get_removed_parent_ids(scid, data))
 
                 # If column(s) is/are changed
                 column_sql = self._check_for_column_update(columns, data,

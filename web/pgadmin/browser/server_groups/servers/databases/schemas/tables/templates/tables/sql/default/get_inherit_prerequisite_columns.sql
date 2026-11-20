@@ -22,7 +22,7 @@ SELECT name, displaytypname, collspcname, attnotnull, defval, genexpr, attgenera
         ca.attname IS NULL AS is_missing, ca.attnotnull AS child_attnotnull,
         p.ord, a.attnum
     FROM
-        pg_catalog.unnest(ARRAY[{% for val in parents %}{{val|qtLiteral(conn)}}::regclass::oid{% if not loop.last %}, {% endif %}{% endfor %}])
+        pg_catalog.unnest(ARRAY[{% for val in parents %}pg_catalog.to_regclass({{val|qtLiteral(conn)}})::oid{% if not loop.last %}, {% endif %}{% endfor %}])
             WITH ORDINALITY AS p(oid, ord)
     JOIN
         pg_catalog.pg_attribute a ON a.attrelid = p.oid AND a.attnum > 0 AND NOT a.attisdropped

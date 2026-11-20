@@ -3,7 +3,7 @@ SELECT name, definition FROM (
     SELECT DISTINCT ON (c.conname) c.conname AS name,
         pg_catalog.pg_get_constraintdef(c.oid, true) AS definition, p.ord
     FROM
-        pg_catalog.unnest(ARRAY[{% for val in parents %}{{val|qtLiteral(conn)}}::regclass::oid{% if not loop.last %}, {% endif %}{% endfor %}])
+        pg_catalog.unnest(ARRAY[{% for val in parents %}pg_catalog.to_regclass({{val|qtLiteral(conn)}})::oid{% if not loop.last %}, {% endif %}{% endfor %}])
             WITH ORDINALITY AS p(oid, ord)
     JOIN
         pg_catalog.pg_constraint c ON c.conrelid = p.oid

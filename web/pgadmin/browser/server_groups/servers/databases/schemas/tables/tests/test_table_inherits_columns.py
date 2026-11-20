@@ -9,10 +9,10 @@
 
 """Changing 'Inherited from' on an existing table (#10657).
 
-Removing a parent removes its columns from the table dialog's Columns tab,
-but NO INHERIT keeps them, and the parent's CHECK constraints and NOT NULL
-markings, on the child as local ones, so saving must drop them too, except
-the ones that a remaining parent still provides.
+Removing a parent keeps its columns on the table as ordinary columns, as
+NO INHERIT does, both in the table dialog's Columns tab and in the database.
+The parent's CHECK constraints and NOT NULL markings, which NO INHERIT also
+keeps, are dropped, except the ones that a remaining parent still provides.
 
 Adding a parent must first give the table the parent's columns (including
 generated ones, and with their defaults so existing rows get a value),
@@ -117,6 +117,12 @@ class InheritsColumnsTestMixin:
             "WHERE attrelid = {0}::oid AND attnum > 0 AND attnotnull "
             "AND NOT attisdropped ORDER BY attname".format(self.table_id))]
 
+    def _child_inherited_columns(self):
+        return [row[0] for row in self._query(
+            "SELECT attname FROM pg_catalog.pg_attribute "
+            "WHERE attrelid = {0}::oid AND attnum > 0 AND attinhcount > 0 "
+            "AND NOT attisdropped ORDER BY attname".format(self.table_id))]
+
     def _qualified(self, name):
         return '{0}.{1}'.format(self.schema_name, name)
 
@@ -140,43 +146,45 @@ class InheritsColumnsTestMixin:
 
 class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
                                          BaseTestGenerator):
-    """Remove the first parent of a table, sending the columns that the
-    table dialog removes from its Columns tab as deleted."""
+    """Remove the first parent of a table, sending the changes the table
+    dialog makes to its Columns tab: the parent's columns are kept as
+    ordinary columns, and only the ones the user then deletes are deleted."""
 
     scenarios = [
-        ('Columns of the only parent are dropped',
+        ('Columns of the only parent are kept as ordinary columns',
          dict(parents=['id integer, a_name text'],
               child='own_col text',
-              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS id;',
-                            'DROP COLUMN IF EXISTS a_name;'],
-              unexpected_sql=['own_col'],
-              expected_columns=['own_col'],
+              expected_sql=['NO INHERIT'],
+              unexpected_sql=['DROP COLUMN', 'ALTER COLUMN', 'own_col'],
+              expected_columns=['a_name', 'id', 'own_col'],
+              expected_inherited=[],
               expected_checks=[],
               expected_icon='icon-table')),
-        ('A column still provided by another parent is kept',
+        ('A column the table also declared is kept',
+         dict(parents=['id integer, CONSTRAINT id_pos CHECK (id > 0)'],
+              child='id integer, own_col text, '
+                    'CONSTRAINT id_pos CHECK (id > 0)',
+              expected_sql=['NO INHERIT',
+                            'DROP CONSTRAINT IF EXISTS id_pos;'],
+              unexpected_sql=['DROP COLUMN', 'own_col'],
+              expected_columns=['id', 'own_col'],
+              expected_inherited=[],
+              expected_checks=[],
+              expected_icon='icon-table')),
+        ('Removing one of two parents keeps the other one\'s CHECK',
          dict(parents=['id integer, a_name text, '
                        'CONSTRAINT id_pos CHECK (id > 0), '
                        'CONSTRAINT id_set CHECK (id <> 0)',
                        'id integer, b_name text, '
                        'CONSTRAINT id_set CHECK (id <> 0)'],
               child='own_col text',
-              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS a_name;',
+              expected_sql=['NO INHERIT',
                             'DROP CONSTRAINT IF EXISTS id_pos;'],
-              unexpected_sql=['DROP COLUMN IF EXISTS id;', 'b_name',
-                              'own_col', 'id_set'],
-              expected_columns=['id', 'b_name', 'own_col'],
+              unexpected_sql=['DROP COLUMN', 'b_name', 'own_col', 'id_set'],
+              expected_columns=['a_name', 'b_name', 'id', 'own_col'],
+              expected_inherited=['b_name', 'id'],
               expected_checks=['id_set'],
               expected_icon='icon-table-inherits')),
-        ('A CHECK constraint also defined on the table is dropped',
-         dict(parents=['id integer, CONSTRAINT id_pos CHECK (id > 0)'],
-              child='id integer, own_col text, '
-                    'CONSTRAINT id_pos CHECK (id > 0)',
-              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS id;',
-                            'DROP CONSTRAINT IF EXISTS id_pos;'],
-              unexpected_sql=['own_col'],
-              expected_columns=['own_col'],
-              expected_checks=[],
-              expected_icon='icon-table')),
         ('NOT NULL only required by the removed parent is dropped',
          dict(parents=['id integer NOT NULL, code text NOT NULL',
                        'id integer, code text NOT NULL'],
@@ -184,6 +192,7 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
               expected_sql=['NO INHERIT', 'ALTER COLUMN id DROP NOT NULL;'],
               unexpected_sql=['DROP COLUMN', 'ALTER COLUMN code'],
               expected_columns=['code', 'id', 'own_col'],
+              expected_inherited=['code', 'id'],
               expected_not_nulls=['code'],
               expected_checks=[],
               expected_icon='icon-table-inherits')),
@@ -194,9 +203,20 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
               expected_sql=['NO INHERIT'],
               unexpected_sql=['DROP NOT NULL', 'DROP COLUMN'],
               expected_columns=['own_col', 'x'],
+              expected_inherited=['x'],
               expected_not_nulls=['x'],
               expected_checks=[],
               expected_icon='icon-table-inherits')),
+        ('A kept column the user deletes is dropped',
+         dict(parents=['id integer, a_name text'],
+              child='own_col text',
+              user_deleted=['a_name'],
+              expected_sql=['NO INHERIT', 'DROP COLUMN IF EXISTS a_name;'],
+              unexpected_sql=['DROP COLUMN IF EXISTS id', 'own_col'],
+              expected_columns=['id', 'own_col'],
+              expected_inherited=[],
+              expected_checks=[],
+              expected_icon='icon-table')),
     ]
 
     def _inherits_clause(self):
@@ -214,13 +234,23 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
         properties = json.loads(response.data.decode('utf-8'))
 
         # What the table dialog sends after the first parent is removed
-        # from 'Inherited from'.
-        deleted = [c for c in properties['columns']
+        # from 'Inherited from': its columns lose their inheritance and are
+        # kept, and the ones the user deletes are sent from the original
+        # data, as the dialog does for every deleted row.
+        removed = [c for c in properties['columns']
                    if c.get('inheritedid') == removed_parent_id]
-        self.assertTrue(deleted)
+        self.assertTrue(removed)
+        user_deleted = getattr(self, 'user_deleted', [])
+        columns = {'changed': [
+            {'attnum': c['attnum'], 'inheritedfrom': None,
+             'inheritedfromtable': None, 'inheritedid': None}
+            for c in removed if c['name'] not in user_deleted]}
+        if user_deleted:
+            columns['deleted'] = [c for c in removed
+                                  if c['name'] in user_deleted]
         data = {
             'coll_inherits': properties['coll_inherits'][1:],
-            'columns': {'deleted': deleted}
+            'columns': columns
         }
 
         sql = self._get_msql(data)
@@ -232,6 +262,8 @@ class TableRemoveInheritsColumnsTestCase(InheritsColumnsTestMixin,
         node = self._put(data)
         self.assertEqual(self._child_columns(),
                          sorted(self.expected_columns))
+        self.assertEqual(self._child_inherited_columns(),
+                         self.expected_inherited)
         self.assertEqual(self._child_checks(), self.expected_checks)
         if hasattr(self, 'expected_not_nulls'):
             self.assertEqual(self._child_not_nulls(),

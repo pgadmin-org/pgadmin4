@@ -3,7 +3,7 @@
 {### A NOT NULL NO INHERIT (PostgreSQL 18+) on a parent never applied to the table. ###}
 {% macro PARENT_COLUMN(tables, not_null) %}
         SELECT 1 FROM pg_catalog.pg_attribute pa
-        WHERE pa.attrelid = ANY(ARRAY[{% for val in tables %}{{val|qtLiteral(conn)}}::regclass::oid{% if not loop.last %}, {% endif %}{% endfor %}]::pg_catalog.oid[])
+        WHERE pa.attrelid = ANY(ARRAY[{% for val in tables %}pg_catalog.to_regclass({{val|qtLiteral(conn)}})::oid{% if not loop.last %}, {% endif %}{% endfor %}]::pg_catalog.oid[])
             AND pa.attname = a.attname AND pa.attnum > 0 AND NOT pa.attisdropped
             {% if not_null %}AND pa.attnotnull AND NOT EXISTS (
                 SELECT 1 FROM pg_catalog.pg_constraint nc
