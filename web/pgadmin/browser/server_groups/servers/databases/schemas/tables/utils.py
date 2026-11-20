@@ -46,6 +46,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas. \
     tables.row_security_policies import \
     utils as row_security_policies_utils
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.exception import ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import VacuumSettings
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
@@ -1259,41 +1260,88 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # and not newly added tables in the list from client
         # so we will filter new tables here
         if 'coll_inherits' in data:
-            p_len = len(old_data['coll_inherits'])
-            c_len = len(data['coll_inherits'])
-            # If table(s) added
-            if c_len > p_len:
-                data['coll_inherits_added'] = list(
-                    set(data['coll_inherits']) -
-                    set(old_data['coll_inherits'])
-                )
-            # If table(s)removed
-            elif c_len < p_len:
-                data['coll_inherits_removed'] = list(
-                    set(old_data['coll_inherits']) -
-                    set(data['coll_inherits'])
-                )
-            # Safe side verification,In case it happens..
-            # If user removes and adds same number of table
-            # eg removed one table and added one new table
-            elif c_len == p_len:
-                data['coll_inherits_added'] = list(
-                    set(data['coll_inherits']) -
-                    set(old_data['coll_inherits'])
-                )
-                data['coll_inherits_removed'] = list(
-                    set(old_data['coll_inherits']) -
-                    set(data['coll_inherits'])
-                )
+            # Keep the order of the lists, as the parents are inherited
+            # in that order. A table can be added and another removed in
+            # the same change.
+            data['coll_inherits_added'] = [
+                t for t in data['coll_inherits']
+                if t not in old_data['coll_inherits']]
+            data['coll_inherits_removed'] = [
+                t for t in old_data['coll_inherits']
+                if t not in data['coll_inherits']]
 
-    def _check_for_column_delete(self, columns, data, column_sql):
+    def _get_inherit_changes(self, tid, data):
+        """
+        Return what the table needs alongside INHERIT and NO INHERIT for the
+        parents added to and removed from 'Inherited from':
+        - inherit_columns, inherit_checks: the columns (or their NOT NULL)
+          and CHECK constraints of the added parents that the table does
+          not have yet, as INHERIT fails unless it has them.
+        - uninherit_checks, uninherit_not_nulls: the CHECK constraints and
+          NOT NULL markings the table only has from the removed parents,
+          which NO INHERIT keeps on it.
+        """
+        changes = {'inherit_columns': [], 'inherit_checks': [],
+                   'uninherit_checks': [], 'uninherit_not_nulls': []}
+
+        def _fetch(template, **kwargs):
+            sql = render_template(
+                "/".join([self.table_template_path, template]),
+                tid=tid, conn=self.conn, **kwargs)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                raise ExecuteError(res)
+            return res['rows']
+
+        if data.get('coll_inherits_added'):
+            changes['inherit_columns'] = _fetch(
+                'get_inherit_prerequisite_columns.sql',
+                parents=data['coll_inherits_added'])
+            changes['inherit_checks'] = _fetch(
+                'get_inherit_prerequisite_checks.sql',
+                parents=data['coll_inherits_added'])
+
+        if data.get('coll_inherits_removed'):
+            for key, template in [
+                    ('uninherit_checks', 'get_uninherit_checks.sql'),
+                    ('uninherit_not_nulls', 'get_uninherit_not_nulls.sql')]:
+                changes[key] = _fetch(
+                    template, removed=data['coll_inherits_removed'],
+                    remaining=data.get('coll_inherits', []))
+
+        return changes
+
+    def _get_removed_parent_ids(self, scid, data):
+        """
+        Return the OIDs of the parents removed from 'Inherited from'.
+        """
+        if not data.get('coll_inherits_removed'):
+            return set()
+
+        sql = render_template("/".join([self.table_template_path,
+                                        'get_inherits.sql']),
+                              show_system_objects=False, scid=scid)
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            raise ExecuteError(rset)
+
+        return {row['oid'] for row in rset['rows']
+                if row['inherits'] in data['coll_inherits_removed']}
+
+    def _check_for_column_delete(self, columns, data, column_sql,
+                                 removed_parent_ids=frozenset()):
         # If column(s) is/are deleted
         if 'deleted' in columns:
             for c in columns['deleted']:
                 c['schema'] = data['schema']
                 c['table'] = data['name']
-                # Sql for drop column
-                if c.get('inheritedfrom', None) is None:
+                # Sql for drop column. NO INHERIT keeps a removed parent's
+                # columns as ordinary ones, which the table dialog keeps, so
+                # one of them is only deleted when the user deletes it. The
+                # deleted row comes from the original data, which still has
+                # it as inherited.
+                if c.get('inheritedfrom', None) is None or \
+                        c.get('inheritedid', None) in removed_parent_ids:
                     column_sql += render_template("/".join(
                         [self.column_template_path, self._DELETE_SQL]),
                         data=c, conn=self.conn).strip('\n') + \
@@ -1642,7 +1690,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             sql = render_template(
                 "/".join([self.table_template_path, self._UPDATE_SQL]),
-                o_data=old_data, data=data, conn=self.conn
+                o_data=old_data, data=data, conn=self.conn,
+                **self._get_inherit_changes(tid, data)
             )
             # Removes training new lines
             sql = sql.strip('\n') + self.double_newline
@@ -1656,8 +1705,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 column_sql = '\n'
 
                 # If column(s) is/are deleted
-                column_sql = self._check_for_column_delete(columns, data,
-                                                           column_sql)
+                column_sql = self._check_for_column_delete(
+                    columns, data, column_sql,
+                    self._get_removed_parent_ids(scid, data))
 
                 # If column(s) is/are changed
                 column_sql = self._check_for_column_update(columns, data,
@@ -1781,7 +1831,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 res['rows'][0]['is_sub_partitioned'] = is_partitioned
                 icon = self.get_partition_icon_css_class(res['rows'][0])
             else:
-                icon = self.get_icon_css_class(res['rows'][0])
+                # res holds the properties from before the update, which
+                # may have added or removed parents, so use the table's
+                # current inheritance for its icon.
+                sql = render_template(
+                    "/".join([self.table_template_path, self._NODES_SQL]),
+                    scid=rest['rows'][0]['scid'], tid=tid)
+                status, node_res = self.conn.execute_2darray(sql)
+                if not status:
+                    return internal_server_error(errormsg=node_res)
+                icon = self.get_icon_css_class(node_res['rows'][0])
 
             other_node_info = {}
             if 'description' in data:

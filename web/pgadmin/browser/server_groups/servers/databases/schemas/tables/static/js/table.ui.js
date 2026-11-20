@@ -699,8 +699,15 @@ export default class TableSchema extends BaseUISchema {
           }
           if(removeOid) {
             resolve((tmpstate)=>{
-              let finalCols = tmpstate.columns;
-              _.remove(tmpstate.columns, (col)=>col.inheritedid==removeOid);
+              // Columns added with the parent in this dialog are removed.
+              // The ones the table already has are kept as ordinary
+              // columns, as NO INHERIT keeps them on the table.
+              let finalCols = _.reject(tmpstate.columns, (col)=>(
+                col.inheritedid==removeOid && _.isUndefined(col.attnum)
+              )).map((col)=>(col.inheritedid==removeOid ? {
+                ...col, inheritedfrom: null, inheritedfromtable: null,
+                inheritedid: null,
+              } : col));
               obj.changeColumnOptions(finalCols);
               return {
                 adding_inherit_cols: false,
