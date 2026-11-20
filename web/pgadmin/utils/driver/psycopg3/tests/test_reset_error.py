@@ -28,6 +28,9 @@ class ResetConnectionTest(BaseTestGenerator):
          dict(decrypted=True, connect_error='boom')),
         ('A password that cannot be decrypted is not used',
          dict(decrypted=False, connect_error=None)),
+        ('A saved password that fails to decrypt is dropped and reset '
+         'still connects',
+         dict(decrypted=True, connect_error=None, decrypt_raises=True)),
     ]
 
     def runTest(self):
@@ -43,9 +46,27 @@ class ResetConnectionTest(BaseTestGenerator):
         decrypt = (True, '', 'secret') if self.decrypted else \
             (False, 'The master password is not set.', 'encrypted')
 
+        if getattr(self, 'decrypt_raises', False):
+            # Exercise the real _decrypt_password() with a failing decrypt().
+            manager.password = 'stale-ciphertext'
+            decrypt_patch = patch.object(
+                connection_module, 'decrypt',
+                side_effect=UnicodeDecodeError('utf-8', b'\xff', 0, 1, 'x'))
+            decrypt_patch.start()
+            self.addCleanup(decrypt_patch.stop)
+            for name, value in (
+                    ('User', MagicMock()), ('current_user', MagicMock()),
+                    ('get_crypt_key', MagicMock(return_value=(True, 'key')))):
+                p = patch.object(connection_module, name, value)
+                p.start()
+                self.addCleanup(p.stop)
+            decrypt = None
+
         with self.app.test_request_context(), \
-                patch.object(conn, '_decrypt_password',
-                             return_value=decrypt), \
+                patch.object(
+                    conn, '_decrypt_password',
+                    **({'return_value': decrypt} if decrypt else
+                       {'wraps': conn._decrypt_password})), \
                 patch.object(connection_module.psycopg, 'connect', connect), \
                 patch.object(self.app.logger, 'error') as log_error:
             status, msg = conn.reset()
@@ -56,8 +77,10 @@ class ResetConnectionTest(BaseTestGenerator):
             connect.assert_not_called()
             return
 
+        expected_password = None if getattr(self, 'decrypt_raises', False) \
+            else 'secret'
         manager.create_connection_string.assert_called_once_with(
-            'testdb', manager.user, 'secret')
+            'testdb', manager.user, expected_password)
         if self.connect_error:
             self.assertFalse(status)
             self.assertEqual(msg, self.connect_error)

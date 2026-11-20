@@ -190,10 +190,12 @@ def is_using_passfile(server, manager):
     i.e. no password is saved or held for the session and the manager uses
     the server's passfile. The Change Password dialog (check_pgpass) and
     the change_password endpoint must agree on this, so both call it.
+    A saved password that could not be decrypted counts as not saved.
     """
     passfile = manager.get_connection_param_value('passfile')
+    discarded = getattr(manager, 'saved_password_discarded', False) is True
     return bool(
-        not server.password and not manager.password and
+        (not server.password or discarded) and not manager.password and
         hasattr(server, 'connection_params') and
         server.connection_params and
         'passfile' in server.connection_params and
@@ -1941,7 +1943,11 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             return self.get_response_for_password(
-                server, 401, not server.save_password, prompt_tunnel_password,
+                server, 401,
+                not server.save_password or self._saved_password_discarded(
+                    conn),
+                prompt_tunnel_password or
+                self._saved_tunnel_password_discarded(conn),
                 getattr(e, 'message', str(e)))
 
         if not status:
@@ -1953,8 +1959,12 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errmsg)
 
             return self.get_response_for_password(
-                server, 401, not server.save_password,
-                prompt_tunnel_password, errmsg)
+                server, 401,
+                not server.save_password or self._saved_password_discarded(
+                    conn),
+                prompt_tunnel_password or
+                self._saved_tunnel_password_discarded(conn),
+                errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
@@ -2386,6 +2396,22 @@ class ServerNode(PGChildNodeView):
                 'Unable to fetch pgpass status'
             )
             return internal_server_error(errormsg=str(e))
+
+    @staticmethod
+    def _saved_password_discarded(conn):
+        """
+        Whether the saved server password was undecryptable and dropped, in
+        which case the user must be prompted even if a password is "saved".
+        """
+        return bool(getattr(conn, 'saved_password_discarded', False))
+
+    @staticmethod
+    def _saved_tunnel_password_discarded(conn):
+        """
+        Whether the saved SSH tunnel password was undecryptable and dropped.
+        """
+        manager = getattr(conn, 'manager', None)
+        return bool(getattr(manager, 'saved_tunnel_password_discarded', False))
 
     def get_response_for_password(self, server, status, prompt_password=False,
                                   prompt_tunnel_password=False, errmsg=None):
