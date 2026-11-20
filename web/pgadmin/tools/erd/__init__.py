@@ -607,6 +607,10 @@ def initialize_erd(trans_id, sgid, sid, did):
     try:
         conn = _get_connection(sid, did, trans_id, data.get('db_name', None))
     except ConnectionLost as e:
+        # Report the saved-password state so the password prompt's
+        # "Save Password" checkbox reflects the record that will be updated.
+        from pgadmin.tools.sqleditor import _get_save_password_target
+        erd_server = get_server(sid)
         return make_json_response(
             success=0,
             status=428,
@@ -615,6 +619,9 @@ def initialize_erd(trans_id, sgid, sid, did):
                     "server_type":data.get('server_type', None),
                     "errmsg": str(e),
                     "prompt_password": True,
+                    "save_password": bool(
+                        erd_server is not None and
+                        _get_save_password_target(erd_server).save_password),
                     "allow_save_password": True
                     if ALLOW_SAVE_PASSWORD and
                     session.get('allow_save_password', None) else False,

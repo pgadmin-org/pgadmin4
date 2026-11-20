@@ -27,6 +27,12 @@ class IsPasswordSaved(BaseTestGenerator):
 
     def runTest(self):
         """This function will execute the connect server APIs"""
+        # The browser's index page sets this flag at login, but the desktop
+        # mode test client never loads it, so set it the same way here.
+        with self.tester.session_transaction() as sess:
+            sess['allow_save_password'] = \
+                self.test_data.get('allow_save_password', True)
+
         response = self.tester.post(
             self.url + str(utils.SERVER_GROUP) + '/' + str(self.server_id),
             data=dict(
