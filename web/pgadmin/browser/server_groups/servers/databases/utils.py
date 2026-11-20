@@ -70,7 +70,9 @@ def parse_variables_from_db(db_variables):
         for row in db_variables:
             if 'setconfig' in row and row['setconfig'] is not None:
                 for d in row['setconfig']:
-                    var_name, var_value = d.split("=")
+                    # The value may contain equals in string, split on
+                    # first equals only
+                    var_name, var_value = d.split("=", 1)
                     var_dict = _check_var_type(var_value, var_name, row)
                     variables_lst.append(var_dict)
 
