@@ -120,15 +120,14 @@ def _get_sql_to_delete_constraints(data, constraint, sql, template_path, conn):
     :return:
     """
     if 'deleted' in constraint:
+        dropped_cols = set(data.get('columns_to_be_dropped') or [])
         for c in constraint['deleted']:
-            del_cols = []
-            if 'columns_to_be_dropped' in data:
-                del_cols = list(map(lambda x, y: x['column'] in y,
-                                    c['columns'],
-                                    data['columns_to_be_dropped'])
-                                )
+            constraint_cols = {
+                col['column'] for col in (c.get('columns') or [])
+            }
+            constraint_cols.update(c.get('include') or [])
 
-            if len(del_cols) == 0:
+            if not (constraint_cols & dropped_cols):
                 c['schema'] = data['schema']
                 c['table'] = data['name']
 
