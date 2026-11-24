@@ -88,7 +88,9 @@ _.extend(pgBrowser.keyboardNavigation, {
       }
     });
   },
-  //Sends the pressed keyboard shortcut from iframe to parent
+  // Sends the pressed keyboard shortcut from iframe to parent. Returns
+  // whether it was sent, which with checkShortcuts set means it is one of
+  // pgAdmin's own shortcuts.
   triggerIframeEventsBroadcast: function(event,checkShortcuts=false){
     const shortcut = {
       alt:event?.altKey,
@@ -100,9 +102,10 @@ _.extend(pgBrowser.keyboardNavigation, {
     };
     const currShortcutString = commonUtils.parseShortcutValue(shortcut);
     if (checkShortcuts && !this.shortcutsString.split(',').includes(currShortcutString)){
-      return;
+      return false;
     }
     this.iframeEventsChannel.postMessage(currShortcutString);
+    return true;
   },
   //listens to keyboard events and triggers the 'triggerIframeEventsBroadcast' for shortcuts
   setupIframeEventsBroadcast:function() {
@@ -173,14 +176,28 @@ _.extend(pgBrowser.keyboardNavigation, {
     // so on) carry the same `dock-tab-active` class, so a search across the
     // whole tree can land on one of those and cycle a tool's inner tabs
     // instead of the workspace tabs it was asked to move between.
-    const topDockLayout = rootDock.querySelector('.dock-layout');
+    //
+    // In the workspace layout each workspace (Default, Query Tool, PSQL,
+    // Schema Diff) has a top-level dock layout of its own, with all but the
+    // current one hidden, so use the layout of the workspace being shown.
+    // The first dock layout in the DOM is always the Default workspace's,
+    // which would cycle the tabs of a hidden workspace instead.
+    const topDockLayout =
+      self._currentWorkspaceDocker()?.layoutObj?.getRootElement?.() ??
+      rootDock.querySelector('.dock-layout');
     if (!topDockLayout) return;
 
     const activeTabBtns = Array.from(
       topDockLayout.querySelectorAll('.dock-tab.dock-tab-active .dock-tab-btn')
     ).filter(tab => tab.closest('.dock-layout') === topDockLayout);
+    // When the workspace is split into several tab-sets, use the one holding
+    // the keyboard focus rather than whichever comes first.
+    const focusedPanel = self._focusedPanel(topDockLayout);
+    const notExplorer = tab => !tab.id.includes('id-object-explorer');
     const activeTabBtn =
-      activeTabBtns.find(tab => !tab.id.includes('id-object-explorer')) ||
+      activeTabBtns.find(tab => notExplorer(tab) &&
+        tab.closest('.dock-panel') === focusedPanel) ||
+      activeTabBtns.find(notExplorer) ||
       activeTabBtns[0];
     if (!activeTabBtn) return;
 
@@ -193,16 +210,46 @@ _.extend(pgBrowser.keyboardNavigation, {
       .filter(tab => tab.closest('.dock-panel') === panel &&
         tab.closest('.dock-layout') === topDockLayout) : [];
 
-    if (dockLayoutTabs.length > 1) {
+    // Cycling needs a second tab to move to, but the last tab can be closed.
+    const minTabs = combo.key === shortcutObj.close_tab_panel ? 1 : 2;
+    if (dockLayoutTabs.length >= minTabs) {
       const activeTabIndex = dockLayoutTabs.indexOf(activeTabBtn);
       self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
     }
   },
+  // The tab-set (dock panel) of topDockLayout that holds the keyboard focus,
+  // or null when the focus is elsewhere.
+  _focusedPanel: function(topDockLayout) {
+    let elem = document.activeElement;
+    // Tool iframes are rendered in #layout-portal, outside the dock layout,
+    // and laid over a placeholder in their panel that names them in
+    // data-target, so find the panel through that placeholder.
+    if (elem?.tagName === 'IFRAME' && elem.id) {
+      elem = Array.from(topDockLayout.querySelectorAll('[data-target]'))
+        .find(el => el.dataset.target === elem.id) ?? elem;
+    }
+    // Step out of any tool's own nested dock layout to the workspace panel.
+    let panel = elem?.closest?.('.dock-panel');
+    while (panel && panel.closest('.dock-layout') !== topDockLayout) {
+      panel = panel.parentElement?.closest('.dock-panel');
+    }
+    return panel ?? null;
+  },
+  // The layout docker of the workspace being shown. In the classic layout
+  // currentWorkspace stays at the default, and every workspace docker points
+  // at the default one anyway.
+  _currentWorkspaceDocker: function() {
+    const docker = pgAdmin.Browser.docker;
+    return docker?.[docker?.currentWorkspace] ?? docker?.default_workspace;
+  },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
     if(combo.key === shortcut_obj.close_tab_panel) {
-      const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
+      // rc-tabs gives each tab button the id `rc-tabs-<n>-tab-<panel id>`,
+      // where <n> is a counter that soon runs past one digit.
+      const panelId = dockLayoutTabs[activeTabIdx].id
+        ?.replace(/^rc-tabs-[^-]+-tab-/, '');
       if (panelId) {
-        pgAdmin.Browser.docker.default_workspace.close(panelId);
+        this._currentWorkspaceDocker()?.close(panelId);
       }
     } else {
       if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;

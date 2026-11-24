@@ -76,7 +76,7 @@ function psql_socket_io(socket, is_enable, sid, db, server_type, fitAddon, term,
   });
 }
 
-function psql_terminal_io(term, socket, platform, pgAdmin) {
+export function psql_terminal_io(term, socket, platform, pgAdmin) {
   // Listen key press event from terminal and emit socket event.
   term.attachCustomKeyEventHandler(e => {
     e.stopPropagation();
@@ -89,8 +89,12 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
           pgAdmin.Browser.notifier.alert(gettext('Clipboard Write Permission Required'), gettext('To copy data from the PSQL terminal, clipboard write permission is required.'));
         }
       });
-    } else {
-      self.pgAdmin.Browser.keyboardNavigation.triggerIframeEventsBroadcast(e,true);
+    } else if (e.type == 'keydown' &&
+      self.pgAdmin.Browser.keyboardNavigation.triggerIframeEventsBroadcast(e,true)) {
+      // A pgAdmin shortcut such as Ctrl+Alt+PageDown has been passed to the
+      // main window, so stop xterm from also sending it to psql. Only keydown
+      // is passed on, as keyup would trigger the shortcut a second time.
+      return false;
     }
 
     return !(e.ctrlKey && platform == 'win32');
