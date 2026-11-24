@@ -7,16 +7,19 @@
 #
 ##########################################################################
 
-"""Unit tests for comparing tables in schemas with different names (#10762).
+"""Unit tests for comparing tables in schemas with different names (#10762,
+#10786).
 
 A table's own schema name shows up in the nextval() default of a SERIAL
 column and in the referenced schema of a foreign key to a table in the
 same schema. When two schemas with different names are compared, neither
 may make otherwise identical tables compare as different, or make Schema
-Diff drop and recreate an identical foreign key.
+Diff drop and recreate an identical foreign key. A foreign key to a table
+in any other schema is still compared by that schema's name.
 """
 
 import copy
+from unittest.mock import MagicMock, patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     schema_diff_table_utils import SchemaDiffTableCompare
@@ -73,6 +76,18 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
     scenarios = [
         ('Tables differing only in their schema name are identical',
          dict(test_method='test_tables_identical')),
+        ('Tables with foreign keys to the same other schema are identical',
+         dict(test_method='test_tables_fk_to_other_schema_identical')),
+        ('Tables with foreign keys to different schemas are different',
+         dict(test_method='test_tables_fk_to_different_schema_different')),
+        ('Tables with foreign keys to their own schema and to the source '
+         'schema are different',
+         dict(test_method='test_tables_fk_to_source_schema_different')),
+        ('Tables with a foreign key to the target schema and one to its '
+         'own schema are identical',
+         dict(test_method='test_tables_fk_to_target_schema_identical')),
+        ('compare() adds the referenced schema to every foreign key',
+         dict(test_method='test_compare_adds_referenced_schema')),
         ('A SERIAL column whose default names another schema is not '
          'reported as changed',
          dict(test_method='test_serial_column_not_changed')),
@@ -82,8 +97,12 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
          dict(test_method='test_fk_to_own_schema_not_recreated')),
         ('A foreign key to the same other schema is not recreated',
          dict(test_method='test_fk_to_other_schema_not_recreated')),
+        ('A foreign key to the target schema is not recreated',
+         dict(test_method='test_fk_to_target_schema_not_recreated')),
         ('A foreign key referencing a different schema is recreated',
          dict(test_method='test_fk_to_different_schema_recreated')),
+        ('A foreign key to another schema is recreated referencing it',
+         dict(test_method='test_fk_to_other_schema_recreated')),
         ('A foreign key with a different referenced table is recreated',
          dict(test_method='test_fk_to_different_table_recreated')),
     ]
@@ -99,8 +118,81 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
         target = _table('novinator_prod', [_serial_column('novinator_prod')],
                         [_foreign_key('novinator_prod', oid=17420)])
 
-        self.assertTrue(are_dictionaries_identical(
-            source, target, SchemaDiffTableCompare.keys_to_ignore, False))
+        self.assertTrue(self._tables_identical(source, target))
+
+    def _tables_identical(self, source, target):
+        # As compare() does before comparing the tables.
+        SchemaDiffTableCompare._add_fk_referenced_schema(
+            {source['name']: source}, target['schema'])
+        SchemaDiffTableCompare._add_fk_referenced_schema(
+            {target['name']: target})
+        # A difference is logged through current_app.
+        with self.app.app_context():
+            return are_dictionaries_identical(
+                source, target, SchemaDiffTableCompare.keys_to_ignore, False)
+
+    def test_tables_fk_to_other_schema_identical(self):
+        source = _table('app', [], [_foreign_key('app', refnsp='common')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='common')])
+
+        self.assertTrue(self._tables_identical(source, target))
+
+    def test_tables_fk_to_different_schema_different(self):
+        # The case from #10786: the referenced tables have the same name
+        # but are in different schemas.
+        source = _table('app', [], [_foreign_key('app', refnsp='common_a')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='common_b')])
+
+        self.assertFalse(self._tables_identical(source, target))
+
+    def test_tables_fk_to_source_schema_different(self):
+        # The target references the source's schema rather than its own.
+        source = _table('app', [], [_foreign_key('app')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='app')])
+
+        self.assertFalse(self._tables_identical(source, target))
+
+    def test_tables_fk_to_target_schema_identical(self):
+        # Adding the source's foreign key to the target makes it reference
+        # the target's own schema, so it must not stay different after
+        # synchronisation.
+        source = _table('app', [], [_foreign_key('app', refnsp='app_prod')])
+        target = _table('app_prod', [], [_foreign_key('app_prod')])
+
+        self.assertTrue(self._tables_identical(source, target))
+
+    def test_compare_adds_referenced_schema(self):
+        source = _table('app', [], [_foreign_key('app', refnsp='common_a'),
+                                    _foreign_key('app', name='fk_own')])
+        target = _table('app_prod', [],
+                        [_foreign_key('app_prod', refnsp='common_b')])
+        tables = {'sid1': {'t': source}, 'sid2': {'t': target}}
+
+        view = SchemaDiffTableCompare()
+        view.node_type = 'table'
+        view.blueprint = MagicMock()
+        view.get_schema = MagicMock(return_value=(True, 'app_prod'))
+        view.fetch_tables = MagicMock(
+            side_effect=lambda sid, **kwargs: tables[sid])
+
+        with patch('pgadmin.browser.server_groups.servers.databases.'
+                   'schemas.tables.schema_diff_table_utils.'
+                   'compare_dictionaries') as compare_dictionaries:
+            view.compare(source_sid='sid1', source_did=1, source_scid=1,
+                         target_sid='sid2', target_did=1, target_scid=2)
+
+        kwargs = compare_dictionaries.call_args.kwargs
+        self.assertEqual(
+            [fk['referenced_schema']
+             for fk in kwargs['source_dict']['t']['foreign_key']],
+            ['common_a', None])
+        self.assertEqual(
+            [fk['referenced_schema']
+             for fk in kwargs['target_dict']['t']['foreign_key']],
+            ['common_b'])
 
     def test_serial_column_not_changed(self):
         source = _serial_column('novinator')
@@ -158,6 +250,14 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
         self.assertEqual(diff['added'], [])
         self.assertEqual(diff['deleted'], [])
 
+    def test_fk_to_target_schema_not_recreated(self):
+        diff = self._compare_foreign_keys(
+            _foreign_key('app', refnsp='app_prod'),
+            _foreign_key('app_prod'))
+
+        self.assertEqual(diff['added'], [])
+        self.assertEqual(diff['deleted'], [])
+
     def test_fk_to_different_schema_recreated(self):
         # The target references a table in another schema, so it is not
         # the same foreign key, even though the table names match.
@@ -167,6 +267,22 @@ class TestSchemaDiffCrossSchemaUnit(BaseTestGenerator):
 
         self.assertEqual(len(diff['added']), 1)
         self.assertEqual(len(diff['deleted']), 1)
+        # The source references its own schema, so the foreign key added to
+        # the target must reference the target's schema, not the table the
+        # source OID names.
+        self.assertEqual(diff['added'][0]['remote_schema'], 'novinator_prod')
+        self.assertNotIn('references', diff['added'][0]['columns'][0])
+
+    def test_fk_to_other_schema_recreated(self):
+        diff = self._compare_foreign_keys(
+            _foreign_key('app', refnsp='common_a'),
+            _foreign_key('app_prod', refnsp='common_b'))
+
+        self.assertEqual(len(diff['added']), 1)
+        self.assertEqual(len(diff['deleted']), 1)
+        # The referenced table is named, not looked up by its source OID.
+        self.assertEqual(diff['added'][0]['remote_schema'], 'common_a')
+        self.assertNotIn('references', diff['added'][0]['columns'][0])
 
     def test_fk_to_different_table_recreated(self):
         diff = self._compare_foreign_keys(
