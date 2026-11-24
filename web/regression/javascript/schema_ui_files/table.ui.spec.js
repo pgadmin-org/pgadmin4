@@ -319,6 +319,38 @@ describe('TableSchema', () => {
         onRemoveAction(depChange, state, done);
       });
     });
+
+    it('remove a saved parent keeps its columns as ordinary columns', (done)=>{
+      let ownCol = {name: 'desc', attnum: 1};
+      let savedCol = {
+        name: 'id', attnum: 2, inheritedid: 140391,
+        inheritedfrom: 'public.table1', inheritedfromtable: 'public.table1',
+      };
+      let otherCol = {
+        name: 'code', attnum: 3, inheritedid: 140392,
+        inheritedfrom: 'public.table2', inheritedfromtable: 'public.table2',
+      };
+      let state = {columns: [ownCol, savedCol, otherCol], coll_inherits: ['table2']};
+      let deferredPromise = deferredDepChange(state, null, null, {
+        oldState: {
+          coll_inherits: ['table1', 'table2'],
+        },
+      });
+      deferredPromise.then((depChange)=>{
+        let finalCols = [ownCol, {
+          name: 'id', attnum: 2, inheritedid: null,
+          inheritedfrom: null, inheritedfromtable: null,
+        }, otherCol];
+        expect(depChange(state)).toEqual({
+          adding_inherit_cols: false,
+          columns: finalCols,
+        });
+        expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(finalCols);
+        // The original row is left as it was, for the change diff.
+        expect(savedCol.inheritedid).toBe(140391);
+        done();
+      });
+    });
   });
 
   it('depChange', () => {
