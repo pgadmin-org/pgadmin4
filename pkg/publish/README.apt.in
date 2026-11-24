@@ -19,10 +19,23 @@ To use this repository, run the following commands:
 #
 
 # Install the public key for the repository (if not done previously):
-curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
+curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor --yes -o /etc/apt/keyrings/packages-pgadmin-org.gpg
 
-# Create the repository configuration file:
-sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] @BASE_URL@/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt update'
+# Create the repository configuration file. The codename is read from
+# /etc/os-release, preferring UBUNTU_CODENAME, so this also works on
+# Ubuntu-based distributions such as Linux Mint:
+sudo tee /etc/apt/sources.list.d/pgadmin4.sources > /dev/null <<EOF
+Types: deb
+URIs: @BASE_URL@/apt/$(. /etc/os-release && echo ${UBUNTU_CODENAME:-$VERSION_CODENAME})
+Suites: pgadmin4
+Components: main
+Signed-By: /etc/apt/keyrings/packages-pgadmin-org.gpg
+EOF
+
+# Remove the file created by older versions of these instructions, so the
+# repository is not configured twice, then refresh the package lists:
+sudo rm -f /etc/apt/sources.list.d/pgadmin4.list
+sudo apt update
 
 #
 # Install pgAdmin

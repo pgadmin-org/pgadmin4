@@ -140,16 +140,28 @@ indexes.
 
 ## Repository Configuration
 
-pgAdmin repo configurations live in */etc/apt/sources.list.d/pgadmin4.list*. The
-file can be created with a command such as:
+If you have signed the repository, first install the key on the client. This
+is done as follows for the pgAdmin signing key; adjust the URL as needed for
+your own:
 
-    sudo sh -c 'echo "deb https://server.company.com/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt update'
+    curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor --yes -o /etc/apt/keyrings/packages-pgadmin-org.gpg
+
+pgAdmin repo configurations live in */etc/apt/sources.list.d/pgadmin4.sources*,
+in the deb822 format. The file can be created with a command such as:
+
+    sudo tee /etc/apt/sources.list.d/pgadmin4.sources > /dev/null <<EOF
+    Types: deb
+    URIs: https://repo.example.com/apt/$(. /etc/os-release && echo ${UBUNTU_CODENAME:-$VERSION_CODENAME})
+    Suites: pgadmin4
+    Components: main
+    Signed-By: /etc/apt/keyrings/packages-pgadmin-org.gpg
+    EOF
+    sudo rm -f /etc/apt/sources.list.d/pgadmin4.list
+    sudo apt update
 
 Assuming that <root> in the repository structure corresponds to
-https://server.company.com/apt/ from the client's perspective.
-
-If you have signed the repository, you'll also need to import the key on the
-client. This is done as follows for the pgAdmin signing key; adjust the URL as
-needed for your own:
-
-    curl http://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add
+https://repo.example.com/apt/ from the client's perspective. Omit the
+*Signed-By* line if the repository is not signed, and note that apt will then
+refuse to use it unless *Trusted: yes* is added. The *rm* removes any
+*pgadmin4.list* left by older instructions, so the repository is not
+configured twice.
