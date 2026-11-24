@@ -2267,6 +2267,16 @@ class ServerNode(PGChildNodeView):
 
             # Check against old password only if no pgpass file
             if not is_passfile:
+                # With no password held (e.g. trust, certificate or
+                # Kerberos authentication), there is nothing to verify
+                # the current password against.
+                if not manager.password:
+                    return bad_request(gettext(
+                        "The current password cannot be verified because "
+                        "no password is held for this connection. Use "
+                        "ALTER ROLE in the Query Tool to change it."
+                    ))
+
                 decrypted_password = decrypt(manager.password, crypt_key)
                 if isinstance(decrypted_password, bytes):
                     decrypted_password = decrypted_password.decode()

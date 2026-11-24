@@ -53,6 +53,9 @@ class DBPasswordChange(BaseTestGenerator):
                  ['connection_execute_scalar_return_value'])
 
         decrypt_mock.return_value = self.manager.password
+        if self.manager.password is None:
+            # The real decrypt() raises TypeError on None.
+            decrypt_mock.side_effect = TypeError
 
         class TestMockServer():
             def __init__(self, name, sid, password, passfile):
@@ -97,8 +100,13 @@ class DBPasswordChange(BaseTestGenerator):
         self.assertEqual(response.status_code,
                          self.expected_data['status_code'])
 
-        self.assertEqual(render_template_mock.called, True)
+        changed = self.expected_data['status_code'] == 200
+        self.assertEqual(render_template_mock.called, changed)
         self.assertEqual(self.manager.update_session.called,
                          self.expected_data['update_session'])
         self.assertEqual(
-            self.manager.connection().pq_encrypt_password_conn.called, True)
+            self.manager.connection().pq_encrypt_password_conn.called,
+            changed)
+        if not changed:
+            # Nothing to compare against, so decrypt() must not be reached.
+            self.assertFalse(decrypt_mock.called)
