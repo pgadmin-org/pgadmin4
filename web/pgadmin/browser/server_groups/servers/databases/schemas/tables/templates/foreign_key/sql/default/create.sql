@@ -16,7 +16,7 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.table) }}
  RESTRICT{% elif data.confdeltype  == 'c' %}
  CASCADE{% elif data.confdeltype  == 'n' %}
  SET NULL{% elif data.confdeltype  == 'd' %}
- SET DEFAULT{% endif %}{% endif %}
+ SET DEFAULT{% endif %}{% if data.confdeltype in ('n', 'd') and data.confdelsetcols %} ({% for col in data.confdelsetcols %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(col) }}{% endfor %}){% endif %}{% endif %}
 {% if data.condeferrable %}
 
     DEFERRABLE{% if data.condeferred %}
