@@ -47,6 +47,10 @@ class TestIsUsingPassfile(BaseTestGenerator):
             params={'passfile': PASSFILE},
             manager_passfile='/home/user/other.pgpass',
             expected=False)),
+        ('Saved password was undecryptable and discarded', dict(
+            server_password=b'stale', manager_password=None,
+            params={'passfile': PASSFILE}, manager_passfile=PASSFILE,
+            discarded=True, expected=True)),
     ]
 
     def runTest(self):
@@ -56,6 +60,7 @@ class TestIsUsingPassfile(BaseTestGenerator):
 
         manager = MagicMock()
         manager.password = self.manager_password
+        manager.saved_password_discarded = getattr(self, 'discarded', False)
         manager.get_connection_param_value.return_value = \
             self.manager_passfile
 

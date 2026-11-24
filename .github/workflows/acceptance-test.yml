@@ -93,15 +93,13 @@ jobs:
     container: ${{ matrix.image }}
 
     steps:
-      # Only what a user would already have or would obviously need. lsb-release
-      # is here because the README's own sources.list line calls lsb_release,
-      # and following the instruction is the test.
+      # Only what a user would already have or would obviously need.
       - name: Install the prerequisites
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends ca-certificates curl gnupg lsb-release
+          apt-get install -y --no-install-recommends ca-certificates curl gnupg
 
       - name: Follow the README
         env:
@@ -111,15 +109,20 @@ jobs:
           set -euo pipefail
 
           curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub \
-              | gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
+              | gpg --dearmor --yes -o /etc/apt/keyrings/packages-pgadmin-org.gpg
 
-          # Written by this shell rather than handed to `sh -c`, which
-          # re-parsed the expanded URL as source and was the one place in the
-          # pipeline where a caller-supplied value reached a shell.
-          CODENAME=$(lsb_release -cs)
-          echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] ${BASE_URL}/apt/${CODENAME} pgadmin4 main" \
-              > /etc/apt/sources.list.d/pgadmin4.list
-          cat /etc/apt/sources.list.d/pgadmin4.list
+          # Written by this shell rather than handed to `sh -c`, so the
+          # caller-supplied URL is only ever expanded as a value, never
+          # re-parsed as shell source.
+          cat > /etc/apt/sources.list.d/pgadmin4.sources <<EOF
+          Types: deb
+          URIs: ${BASE_URL}/apt/$(. /etc/os-release && echo ${UBUNTU_CODENAME:-$VERSION_CODENAME})
+          Suites: pgadmin4
+          Components: main
+          Signed-By: /etc/apt/keyrings/packages-pgadmin-org.gpg
+          EOF
+          rm -f /etc/apt/sources.list.d/pgadmin4.list
+          cat /etc/apt/sources.list.d/pgadmin4.sources
 
           # A repository apt will not verify makes this fail here, before any
           # package is considered.

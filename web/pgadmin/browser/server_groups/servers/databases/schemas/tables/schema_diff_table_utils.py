@@ -103,6 +103,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             target_tables = self.fetch_tables(**target_params,
                                               with_serial_cols=True)
 
+        self._add_fk_referenced_schema(source_tables, target_schema)
+        self._add_fk_referenced_schema(target_tables)
+
         # If both the dict have no items then return None.
         if not (source_tables or target_tables) or (
                 len(source_tables) <= 0 and len(target_tables) <= 0):
@@ -260,7 +263,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 for col in foreign_key.get('columns', [])]
 
     @staticmethod
-    def _fk_referenced_schema(foreign_key):
+    def _fk_referenced_schema(foreign_key, target_schema=None):
         """
         Return the schema of a foreign key's referenced table, or None when
         it is the schema of the foreign key's own table.
@@ -269,11 +272,68 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         table in its own schema must compare equal on both sides even
         though the schema names differ (#10762). A reference to any other
         schema is still compared by name.
+
+        For a source foreign key, target_schema is the target table's
+        schema. A reference to it is also returned as None, because adding
+        the foreign key to the target makes it a reference to the target
+        table's own schema, which must then compare equal to the source.
         """
         refnsp = foreign_key.get('refnsp')
-        if refnsp is not None and refnsp == foreign_key.get('fknsp'):
+        if refnsp is not None and (refnsp == foreign_key.get('fknsp') or
+                                   refnsp == target_schema):
             return None
         return refnsp
+
+    @staticmethod
+    def _add_fk_referenced_schema(tables, target_schema=None):
+        """
+        Add 'referenced_schema' to each foreign key of the given tables,
+        holding _fk_referenced_schema() of it. target_schema is the target
+        schema's name when the tables are the source's.
+
+        'refnsp', 'remote_schema' and 'references_table_name' are in
+        keys_to_ignore, so that a foreign key to a table in its own schema
+        does not make tables in schemas with different names compare as
+        different. Without this key, two foreign keys referencing tables of
+        the same name in different schemas would not be told apart, and the
+        tables would be reported as identical (#10786).
+        """
+        if not isinstance(tables, dict):
+            return
+        for table in tables.values():
+            if not isinstance(table, dict):
+                continue
+            for foreign_key in table.get('foreign_key', []):
+                foreign_key['referenced_schema'] = \
+                    SchemaDiffTableCompare._fk_referenced_schema(
+                        foreign_key, target_schema)
+
+    @staticmethod
+    def _fk_for_target(foreign_key, target_table):
+        """
+        Return a source foreign key that is to be added to the target table.
+
+        get_sql() looks the referenced table up by the OID in each column's
+        'references', but that OID belongs to the source database, and on
+        the target it may name another table or none at all. It is removed,
+        so that the referenced table is named by 'remote_schema' and
+        'remote_table', which hold its schema and name in the source. A
+        foreign key to a table in its own schema must reference the target
+        table's schema instead.
+        """
+        if foreign_key.get('remote_schema') is None or \
+                foreign_key.get('remote_table') is None:
+            return foreign_key
+
+        foreign_key = copy.deepcopy(foreign_key)
+        target_schema = target_table.get('schema')
+        if target_schema is not None and \
+                SchemaDiffTableCompare._fk_referenced_schema(
+                    foreign_key) is None:
+            foreign_key['remote_schema'] = target_schema
+        for column in foreign_key.get('columns', []):
+            column.pop('references', None)
+        return foreign_key
 
     @staticmethod
     def table_constraint_comp(source_table, target_table):
@@ -340,7 +400,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                 tar_val = tmp_tar[key]
                                 if constraint == 'foreign_key' and \
                                         key == 'refnsp':
-                                    src_val = ref_schema(tmp_updated)
+                                    src_val = ref_schema(
+                                        tmp_updated,
+                                        target_table.get('schema'))
                                     tar_val = ref_schema(tmp_tar)
                                 if src_val != tar_val:
                                     added.append(source)
@@ -371,6 +433,12 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 different[constraint]['added'] = added
                 different[constraint]['changed'] = updated
                 different[constraint]['deleted'] = deleted
+
+            if constraint == 'foreign_key' and \
+                    different[constraint].get('added'):
+                different[constraint]['added'] = [
+                    SchemaDiffTableCompare._fk_for_target(fk, target_table)
+                    for fk in different[constraint]['added']]
 
             # Keep the drops recorded above for recreated constraints, and
             # add the constraints that are only in the target.

@@ -10,6 +10,7 @@
 """This File Provides Cryptography."""
 
 import base64
+import binascii
 import hashlib
 import os
 
@@ -42,6 +43,14 @@ def encrypt(plaintext, key):
 
     return base64.b64encode(iv + encryptor.update(plaintext) +
                             encryptor.finalize())
+
+
+# Exceptions raised by decrypt() (or by decoding its result) when the
+# ciphertext is malformed or was encrypted with a different key. Anything else
+# (e.g. a TypeError from a missing key) is a programming error and should not
+# be swallowed. UnicodeDecodeError and binascii.Error are ValueError
+# subclasses, they are listed for clarity.
+DECRYPT_ERRORS = (UnicodeDecodeError, binascii.Error, ValueError)
 
 
 def decrypt(ciphertext, key):
