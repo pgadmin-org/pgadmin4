@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams,
-  getRandomInt, sprintf, CSVToArray } from 'sources/utils';
+  getRandomInt, sprintf, CSVToArray, registerPageHideHandler } from 'sources/utils';
 
 describe('getEpoch', function () {
   it('should return non zero', function () {
@@ -189,5 +189,37 @@ describe('CSVToArray', function() {
 
   it('multiline input containing single quotes', function() {
     expect(CSVToArray('\'hello \'\'a\nb\'\'\',\'c\'', ',', '\'')).toEqual([['hello \'a\nb\'','c']]);
+  });
+});
+
+describe('registerPageHideHandler', function() {
+  const pageEvent = (type, persisted)=>{
+    const e = new Event(type);
+    Object.defineProperty(e, 'persisted', {value: persisted});
+    return e;
+  };
+
+  it('runs the callback on pagehide until deregistered', function() {
+    const callback = jest.fn();
+    const deregister = registerPageHideHandler(callback, jest.fn());
+    window.dispatchEvent(pageEvent('pagehide', false));
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    deregister();
+    window.dispatchEvent(pageEvent('pagehide', false));
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('restores only a page brought back from the back/forward cache', function() {
+    const onRestore = jest.fn();
+    const deregister = registerPageHideHandler(jest.fn(), onRestore);
+    window.dispatchEvent(pageEvent('pageshow', false));
+    expect(onRestore).not.toHaveBeenCalled();
+    window.dispatchEvent(pageEvent('pageshow', true));
+    expect(onRestore).toHaveBeenCalledTimes(1);
+
+    deregister();
+    window.dispatchEvent(pageEvent('pageshow', true));
+    expect(onRestore).toHaveBeenCalledTimes(1);
   });
 });

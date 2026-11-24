@@ -22,6 +22,7 @@ import { Results } from './Results';
 import { SchemaDiffCompare } from './SchemaDiffCompare';
 import EventBus from '../../../../../static/js/helpers/EventBus';
 import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
+import { registerPageHideHandler } from '../../../../../static/js/utils';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
 
@@ -62,8 +63,6 @@ export default function SchemaDiffComponent({params}) {
     preferences_schema_diff: preferencesStore.getPreferencesForModule('schema_diff'),
   }), []);
 
-  registerUnload();
-
   const initializeSchemaDiff = ()=>{
     api.get(url_for('schema_diff.initialize', {
       'trans_id': params.transId})
@@ -73,8 +72,8 @@ export default function SchemaDiffComponent({params}) {
       });
   };
 
-  function registerUnload() {
-    window.addEventListener('unload', ()=>{
+  function registerCloseOnPageHide() {
+    return registerPageHideHandler(()=>{
       /* Using fetch with keepalive as the browser may
       cancel the axios request on tab close. keepalive will
       make sure the request is completed */
@@ -93,6 +92,7 @@ export default function SchemaDiffComponent({params}) {
 
   useEffect(()=>{
     initializeSchemaDiff();
+    return registerCloseOnPageHide();
   }, []);
 
   return (

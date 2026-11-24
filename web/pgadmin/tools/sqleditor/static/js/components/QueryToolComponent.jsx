@@ -24,7 +24,7 @@ import { Box } from '@mui/material';
 import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
 import gettext from 'sources/gettext';
 import NewConnectionDialog from './dialogs/NewConnectionDialog';
-import { evalFunc } from '../../../../../static/js/utils';
+import { evalFunc, registerPageHideHandler } from '../../../../../static/js/utils';
 import { Notifications } from './sections/Notifications';
 import MacrosDialog from './dialogs/MacrosDialog';
 import FilterDialog from './dialogs/FilterDialog';
@@ -592,7 +592,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         .then(()=>{/* Success */})
         .catch((err)=>console.error(err));
     };
-    window.addEventListener('unload', closeConn);
+    const deregisterPageHide = registerPageHideHandler(closeConn);
 
     const pushHistory = (h)=>{
       // Do not store query text if max lenght exceeds.
@@ -612,7 +612,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
     return ()=>{
       eventBus.current.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
-      window.removeEventListener('unload', closeConn);
+      deregisterPageHide();
     };
   }, [qtState.params.trans_id]);
 
