@@ -118,6 +118,37 @@ class TestManagerIsStaleChecksEachIdentityField(
                 "expected stale manager when %s changes" % field)
 
 
+class TestStaleChecksCompareAuthMethod(
+        _PureUnitTestSetupMixin, BaseTestGenerator):
+    """When the owner of a shared server changes its endpoint, each
+    non-owner's token method is turned back to password while the
+    endpoint fields the other checks compare may stay the same. A cached
+    manager or saved state carrying the token method is then stale, so
+    it does not go on requesting the user's token. A missing method
+    means password, so state saved before it was persisted still
+    restores for a password server."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        revoked = make_server_data(auth_method='password')
+
+        self.assertTrue(Driver._manager_is_stale(
+            make_manager(auth_method='entra'), revoked))
+        self.assertTrue(Driver._saved_state_is_stale(
+            make_saved_state(auth_method='entra'), revoked))
+
+        self.assertFalse(Driver._manager_is_stale(
+            make_manager(auth_method='password'), revoked))
+        self.assertFalse(Driver._manager_is_stale(
+            make_manager(auth_method='password'),
+            make_server_data(auth_method=None)))
+        self.assertFalse(Driver._saved_state_is_stale(
+            make_saved_state(), revoked))
+        self.assertTrue(Driver._saved_state_is_stale(
+            make_saved_state(), make_server_data(auth_method='entra')))
+
+
 class TestSavedStateIsStaleMatchesUnchanged(
         _PureUnitTestSetupMixin, BaseTestGenerator):
     """Serialized session state whose identity fields still match the

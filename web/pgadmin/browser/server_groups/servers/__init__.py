@@ -1186,8 +1186,12 @@ class ServerNode(PGChildNodeView):
         # When server is connected, we don't require to update the connection
         # manager. Because - we don't allow to change any of the parameters,
         # which will affect the connections.
+        # A non-owner's manager is built from their SharedServer overlay,
+        # not the owner's row, or it would take the owner's server
+        # authentication method and connection parameters.
         if not conn.connected():
-            manager.update(server)
+            manager.update(
+                get_driver(PG_DEFAULT_DRIVER)._manager_source(server))
 
         return jsonify(
             node=self.blueprint.generate_browser_node(

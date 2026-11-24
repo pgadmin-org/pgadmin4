@@ -38,6 +38,7 @@ from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
 from .server_manager import ServerManager
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
 
 connection_restore_lock = Lock()
 
@@ -188,6 +189,22 @@ class Driver(BaseDriver):
             else None
 
     @staticmethod
+    def _effective_auth_method(auth_method):
+        """
+        The server authentication method a ServerManager built with this
+        value would carry: a missing one means password, as it does in
+        ServerManager.update(). State saved before the method was
+        persisted has none, and is read as password.
+
+        The method is compared by _manager_is_stale and
+        _saved_state_is_stale because it changes without the endpoint
+        changing: when the owner of a shared server changes its endpoint,
+        every non-owner's token method is turned back to password, and a
+        cached manager must not go on requesting their token.
+        """
+        return auth_method or AUTH_METHOD_PASSWORD
+
+    @staticmethod
     def _saved_state_is_stale(saved, server_data, pga_user=None):
         """
         Same identity check as _manager_is_stale, applied to the
@@ -214,7 +231,10 @@ class Driver(BaseDriver):
             saved.get('user') != server_data.username or
             saved.get('service') != server_data.service or
             saved.get('tunnel_host') !=
-            Driver._effective_tunnel_host(server_data)
+            Driver._effective_tunnel_host(server_data) or
+            Driver._effective_auth_method(saved.get('auth_method')) !=
+            Driver._effective_auth_method(
+                getattr(server_data, 'auth_method', None))
         )
 
     @staticmethod
@@ -238,7 +258,12 @@ class Driver(BaseDriver):
             manager.db != server_data.maintenance_db or
             manager.user != server_data.username or
             manager.service != server_data.service or
-            manager.tunnel_host != Driver._effective_tunnel_host(server_data)
+            manager.tunnel_host !=
+            Driver._effective_tunnel_host(server_data) or
+            Driver._effective_auth_method(
+                getattr(manager, 'auth_method', None)) !=
+            Driver._effective_auth_method(
+                getattr(server_data, 'auth_method', None))
         )
 
     def connection_manager(self, sid=None):

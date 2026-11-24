@@ -61,6 +61,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             'case_a_password_server_never_asks_for_a_token',
             'case_an_unregistered_method_is_refused',
             'case_the_token_is_obtained_before_the_kerberos_lock',
+            'case_settings_changed_during_the_token_request_are_refused',
         ) for operation in OPERATIONS
     ]
 
@@ -261,6 +262,35 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         # The SSH tunnel does not outlive a connect that failed on a token.
         if self.operation in ('connect', 'async_connect'):
             manager.stop_ssh_tunnel.assert_called_once_with()
+
+    def case_settings_changed_during_the_token_request_are_refused(self):
+        # A manager.update() from another request while the token is being
+        # requested must not have the token sent to a destination that was
+        # never checked.
+        changes = (
+            ('host', 'elsewhere.example.com'),
+            ('connection_params', {'sslmode': 'verify-full',
+                                   'hostaddr': '192.0.2.1'}),
+            ('auth_method', 'password'),
+        )
+        for attr, value in changes:
+            manager = self._manager()
+
+            def provider(connection_params, manager=manager, attr=attr,
+                         value=value):
+                setattr(manager, attr, value)
+                return 'token-x'
+
+            self._register(token_auth.PasswordDelivery(), provider,
+                           name=METHOD + '_' + attr)
+            manager.auth_method = METHOD + '_' + attr
+
+            status, message, target, *_ = self._run(manager)
+
+            self.assertFalse(status, attr)
+            self.assertIn('settings changed', message, attr)
+            target.assert_not_called()
+            manager.create_connection_string.assert_not_called()
 
     def case_a_password_server_never_asks_for_a_token(self):
         manager = self._manager(auth_method='password')

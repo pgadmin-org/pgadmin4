@@ -63,6 +63,12 @@ class EntraDestinationTestCase(_AppMixin, BaseTestGenerator):
             host='db.example.com,/tmp', params={}, valid=False)),
         ('A socket host connection parameter', dict(
             host='db.example.com', params={'host': '/tmp'}, valid=False)),
+        ('A blank host connection parameter', dict(
+            host='db.example.com', params={'host': ''}, valid=False)),
+        ('A whitespace host connection parameter', dict(
+            host='db.example.com', params={'host': '  '}, valid=False)),
+        ('A null host connection parameter', dict(
+            host='db.example.com', params={'host': None}, valid=True)),
         ('An empty entry in a hostaddr list', dict(
             host='/tmp', params={'hostaddr': '10.0.0.4,'}, valid=False)),
     ]

@@ -197,6 +197,7 @@ class ServerManager(object):
         res['user'] = self.user
         res['service'] = self.service
         res['tunnel_host'] = self.tunnel_host
+        res['auth_method'] = self.auth_method
         res['pga_user'] = self.pga_user
 
         self._set_password(res)

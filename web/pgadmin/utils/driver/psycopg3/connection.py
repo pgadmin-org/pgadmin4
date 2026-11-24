@@ -13,6 +13,7 @@ It is a wrapper around the actual psycopg3 driver, and connection
 object.
 """
 
+import copy
 import os
 import re
 import secrets
@@ -50,6 +51,7 @@ from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.pg_oauth2 import OAuthSignInRequired, OAuthTokenError
 from pgadmin.utils.token_auth import connection_credentials
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -534,12 +536,28 @@ class Connection(BaseConnection):
         connection string for database and user with the password to use,
         and returns open_(connection_string) while the credentials are in
         scope. Raises OAuthTokenError when the token cannot be obtained.
+
+        The token was checked against the manager's method, host and
+        connection parameters as they were before the request, which may
+        take a while; the connection string is built from them as they
+        are under the lock. Should a manager.update() have changed them
+        in between, the connection is refused rather than send the token
+        to a destination that was not checked.
         """
         manager = self.manager
+        checked = (manager.auth_method, manager.host,
+                   copy.deepcopy(manager.connection_params))
         credentials = connection_credentials(
-            manager.auth_method, manager.connection_params, password,
-            manager.host)
+            checked[0], checked[2], password, checked[1])
         with ConnectionLocker(manager.kerberos_conn):
+            # As in connection_credentials(), any method but password
+            # carries a token.
+            if checked[0] not in (None, '', AUTH_METHOD_PASSWORD) and (
+                    manager.auth_method, manager.host,
+                    manager.connection_params) != checked:
+                raise OAuthTokenError(gettext(
+                    'The server settings changed while the connection was '
+                    'being opened; please connect again.'))
             with credentials.scope() as conn_password:
                 return open_(manager.create_connection_string(
                     database, user, conn_password))

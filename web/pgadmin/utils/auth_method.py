@@ -84,13 +84,21 @@ def is_entra_destination_valid(connection_params, host):
     either the server's or a host connection parameter, with no socket
     entry in it: with no host at all, libpq would use a service's host, an
     environment variable or its default socket, none of which this can
-    check. Private endpoints are allowed, as any TCP host name is."""
+    check. Private endpoints are allowed, as any TCP host name is.
+
+    A host connection parameter replaces the server's host in the
+    connection string even when it is blank (see
+    ServerManager.create_connection_string()), so a blank one is checked,
+    and refused, as itself; only a missing one falls back to the
+    server's host."""
     params = connection_params or {}
     hostaddr = str(params.get('hostaddr') or '')
     if hostaddr.strip():
         return all(entry.strip() for entry in hostaddr.split(','))
 
-    host = str(params.get('host') or host or '')
+    if params.get('host') is not None:
+        host = params['host']
+    host = str(host or '')
     entries = [entry.strip() for entry in host.split(',')]
     return bool(host.strip()) and all(
         entry and not is_unix_socket_host(entry) for entry in entries)
