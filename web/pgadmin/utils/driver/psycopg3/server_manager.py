@@ -614,7 +614,8 @@ WHERE db.oid = {0}""".format(did))
             decrypted, otherwise None
         """
         if get_token_auth_method(self.auth_method):
-            token = utility_password(self.auth_method, self.connection_params)
+            token = utility_password(
+                self.auth_method, self.connection_params, self.host)
             if token:
                 env[str(name)] = token
             return None

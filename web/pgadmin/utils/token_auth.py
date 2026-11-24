@@ -34,7 +34,8 @@ from pgadmin.utils.auth_method import AUTH_METHOD_ENTRA, \
     AUTH_METHOD_PASSWORD, check_entra_ssl
 
 # check is optional: a callable taking the server's connection parameters
-# that returns an error message when the server must not be sent a token.
+# and host that returns an error message when the server must not be sent a
+# token.
 TokenAuthMethod = namedtuple(
     'TokenAuthMethod', ['provider', 'delivery', 'check'])
 
@@ -111,8 +112,8 @@ def _entra_provider(connection_params):
     return pg_oauth2.get_entra_obo_token()
 
 
-def _entra_check(connection_params):
-    return check_entra_ssl(AUTH_METHOD_ENTRA, connection_params)
+def _entra_check(connection_params, host):
+    return check_entra_ssl(AUTH_METHOD_ENTRA, connection_params, host)
 
 
 _REGISTRY = {}
@@ -149,24 +150,47 @@ register_token_auth_method(
     AUTH_METHOD_ENTRA, _entra_provider, PasswordDelivery(), _entra_check)
 
 
-@contextmanager
-def token_connection(auth_method, connection_params, password=None):
-    """Scope the credentials of one physical connection.
+class ConnectionCredentials:
+    """The credentials of one physical connection, already obtained.
 
-    Use it around the code that builds the connection string and opens the
-    connection. It yields the password to put in the connection string: the
-    given one for a password server, the token for password delivery and
-    nothing for OAUTHBEARER, which gets the token through the libpq hook
-    while the block runs. A fresh token is requested on every call and is
-    gone when the block ends.
+    Use scope() around only the code that builds the connection string and
+    opens the connection. It yields the password to put in the connection
+    string: the given one for a password server, the token for password
+    delivery and nothing for OAUTHBEARER, which gets the token through the
+    libpq hook while the block runs.
+    """
+
+    def __init__(self, delivery, token, password):
+        self._delivery = delivery
+        self._token = token
+        self._password = password
+
+    @contextmanager
+    def scope(self):
+        if self._delivery is None:
+            # Never let a token scoped by an outer caller reach this
+            # connection.
+            with pg_oauth2.oauth_token_context(None):
+                yield self._password
+            return
+
+        with self._delivery.scope(self._token):
+            yield self._delivery.password(self._token, self._password)
+
+
+def connection_credentials(auth_method, connection_params, password=None,
+                           host=None):
+    """Obtain the credentials of one physical connection.
+
+    For a token method a fresh token is requested now, which may mean a
+    request to the identity provider, so call this before taking a lock
+    that other connections wait on. host is the server's host, which the
+    method's check may refuse.
 
     Raises OAuthTokenError when the token cannot be obtained.
     """
     if not auth_method or auth_method == AUTH_METHOD_PASSWORD:
-        # Never let a token scoped by an outer caller reach this connection.
-        with pg_oauth2.oauth_token_context(None):
-            yield password
-        return
+        return ConnectionCredentials(None, None, password)
 
     method = get_token_auth_method(auth_method)
     if method is None:
@@ -175,16 +199,30 @@ def token_connection(auth_method, connection_params, password=None):
                 auth_method))
 
     method.delivery.prepare()
-    token = _fresh_token(method, connection_params)
-    with method.delivery.scope(token):
-        yield method.delivery.password(token, password)
+    token = _fresh_token(method, connection_params, host)
+    return ConnectionCredentials(method.delivery, token, password)
 
 
-def _fresh_token(method, connection_params):
+@contextmanager
+def token_connection(auth_method, connection_params, password=None,
+                     host=None):
+    """Obtain the credentials of one physical connection and scope them.
+
+    A fresh token is requested on entry and is gone when the block ends.
+    See connection_credentials() and ConnectionCredentials.scope().
+    """
+    credentials = connection_credentials(
+        auth_method, connection_params, password, host)
+    with credentials.scope() as conn_password:
+        yield conn_password
+
+
+def _fresh_token(method, connection_params, host=None):
     """Ask the token provider of a method for a new token."""
     # Refuse before asking for a token, so that no token is requested for a
     # server it must not be sent to.
-    error = method.check(connection_params or {}) if method.check else None
+    error = method.check(connection_params or {}, host) \
+        if method.check else None
     if error:
         raise pg_oauth2.OAuthTokenError(error)
 
@@ -195,7 +233,7 @@ def _fresh_token(method, connection_params):
     return token
 
 
-def utility_password(auth_method, connection_params):
+def utility_password(auth_method, connection_params, host=None):
     """The password for a utility process (backup, restore, maintenance,
     psql) that connects to a server with a token method, else None.
 
@@ -208,7 +246,7 @@ def utility_password(auth_method, connection_params):
     method = get_token_auth_method(auth_method)
     if method is None or not method.delivery.utility_password:
         return None
-    return _fresh_token(method, connection_params)
+    return _fresh_token(method, connection_params, host)
 
 
 def sign_in_again_response(server, errmsg):

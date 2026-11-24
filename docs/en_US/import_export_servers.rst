@@ -154,8 +154,8 @@ An unknown value is an error and nothing is imported. Kerberos cannot be
 combined with a token method: ``KerberosAuthentication`` must not be true for a
 server whose ``AuthMethod`` is not ``password``, and such a file is also
 refused. A server whose ``AuthMethod`` is ``entra`` must have
-``"sslmode": "verify-full"`` in its ``ConnectionParameters``, or the file is
-refused. Whether the importing user may use ``entra`` is checked when they
+``"sslmode": "verify-full"`` in its ``ConnectionParameters`` and a TCP
+``Host``, not a Unix-domain socket, or the file is refused. Whether the importing user may use ``entra`` is checked when they
 connect.
 
 The following example shows both a minimally defined and a fully defined server:

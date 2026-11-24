@@ -58,6 +58,10 @@ PQAUTHDATA_OAUTH_BEARER_TOKEN = 1
 
 _OAUTH_REFRESH_LEEWAY_SECONDS = 30
 
+# Connect and read timeouts, in seconds, of every request pgAdmin makes to
+# an identity provider's token endpoint.
+_TOKEN_REQUEST_TIMEOUT = (5, 30)
+
 
 class PGoauthBearerRequest(ctypes.Structure):
     """
@@ -409,6 +413,13 @@ def _get_libpq() -> ctypes.CDLL:
     pq_get_auth_data_hook.argtypes = []
     pq_get_auth_data_hook.restype = ctypes.c_void_p
 
+    # Used by the hook to refuse a connection that is not protected.
+    # Both have been in libpq since PostgreSQL 12.
+    for name in ("PQsslInUse", "PQgssEncInUse"):
+        func = getattr(libpq, name)
+        func.argtypes = [ctypes.c_void_p]
+        func.restype = ctypes.c_int
+
     _libpq = libpq
 
     logger.info(
@@ -420,6 +431,26 @@ def _get_libpq() -> ctypes.CDLL:
     )
 
     return _libpq
+
+
+def _is_protected_connection(conn) -> bool:
+    """
+    Whether the connection libpq is authenticating is protected, so that a
+    bearer token may be sent over it: its traffic is encrypted with SSL or
+    with GSSAPI encryption.
+
+    A Unix-domain socket is never protected. libpq uses neither SSL nor
+    GSSAPI encryption over one, and nothing verifies who is listening on
+    it, so it fails this check too. Fails closed when libpq has not been
+    configured.
+    """
+    libpq = _libpq
+    if libpq is None or not conn:
+        return False
+    return (
+        libpq.PQsslInUse(conn) == 1 or
+        libpq.PQgssEncInUse(conn) == 1
+    )
 
 
 @_CLEANUP_HOOK
@@ -459,6 +490,16 @@ def _oauth_hook(authdata_type, conn, data):
             # This may be an unrelated OAuth connection made after the
             # process-global pgAdmin hook was installed.
             return _delegate_to_previous(authdata_type, conn, data)
+
+        if not _is_protected_connection(conn):
+            # The handshake is already done when libpq asks for a token,
+            # so the connection's encryption is known here.
+            logger.error(
+                "Refusing to send an OAuth bearer token over a connection "
+                "that is not encrypted with SSL or GSSAPI. Connect over "
+                "TCP with SSL."
+            )
+            return -1
 
         request = ctypes.cast(data, ctypes.POINTER(
             PGoauthBearerRequest)).contents
@@ -711,6 +752,8 @@ def _refresh_pgadmin_oauth_token(
         refreshed_token = oauth_client.fetch_access_token(
             grant_type="refresh_token",
             refresh_token=refresh_token,
+            # Authlib passes timeout on to the Requests session.
+            timeout=_TOKEN_REQUEST_TIMEOUT,
         )
 
         if not isinstance(refreshed_token, dict):
@@ -762,6 +805,12 @@ def _refresh_pgadmin_oauth_token(
             ) from None
         logger.warning(
             "Failed to refresh the pgAdmin OAuth access token."
+        )
+        return None
+    except requests.exceptions.Timeout:
+        logger.warning(
+            "The request to refresh the pgAdmin OAuth access token "
+            "timed out."
         )
         return None
     except OAuthTokenError as exc:
@@ -988,7 +1037,7 @@ def _post_token_request(
             },
             auth=auth,
             verify=verify_tls,
-            timeout=(5, 30),
+            timeout=_TOKEN_REQUEST_TIMEOUT,
             allow_redirects=False,
         )
     except requests.exceptions.SSLError:

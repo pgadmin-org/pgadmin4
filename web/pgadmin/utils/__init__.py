@@ -1298,7 +1298,7 @@ def validate_json_data(data, is_admin):
         conn_params = obj.get("ConnectionParameters", None)
         conn_params = dict(conn_params) \
             if isinstance(conn_params, dict) else {}
-        errmsg = check_entra_ssl(auth_method, conn_params)
+        errmsg = check_entra_ssl(auth_method, conn_params, obj.get("Host"))
         if errmsg:
             return gettext("Server '%s': %s") % (server, errmsg)
         if is_service_attrib_available:
@@ -1872,6 +1872,12 @@ def utility_conninfo(database, connection_params):
     :return: A connection string such as "dbname='my db' passfile='...'".
     """
     params = {} if database is None else {'dbname': database}
+    # A verify-full the server asks for always wins over a service entry,
+    # which outranks the PGSSLMODE the environment carries. The entra
+    # method requires it, so its token never reaches a server whose
+    # identity is not verified.
+    if (connection_params or {}).get('sslmode') == 'verify-full':
+        params['sslmode'] = 'verify-full'
     if client_files_isolated():
         try:
             env = connection_params_to_env(connection_params)

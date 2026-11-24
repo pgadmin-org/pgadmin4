@@ -75,6 +75,7 @@ class TestSetEnvVariablesToken(BaseTestGenerator):
             'sslmode': 'verify-full', 'sslrootcert': 'system'}
         manager.use_ssh_tunnel = False
         manager.service = None
+        manager.host = 'db.example.test'
         p.manager_obj = manager
         before = dict(os.environ)
         with self.app.app_context():

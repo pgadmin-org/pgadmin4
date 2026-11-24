@@ -66,11 +66,48 @@ def is_entra_ssl_valid(connection_params):
     return (connection_params or {}).get('sslmode') == 'verify-full'
 
 
-def check_entra_ssl(auth_method, connection_params):
+def is_unix_socket_host(host):
+    """True when a libpq host entry names a Unix-domain socket directory:
+    an absolute path, including a Windows one, or an abstract socket
+    (starting with @), as libpq reads them."""
+    return host.startswith(('/', '\\', '@')) or (
+        len(host) > 2 and host[0].isalpha() and host[1] == ':' and
+        host[2] in '/\\')
+
+
+def is_entra_destination_valid(connection_params, host):
+    """True when every destination libpq may try is reached over TCP.
+    libpq uses no SSL over a Unix-domain socket, whatever sslmode says, so
+    a socket would get the token without the server's identity verified.
+
+    A hostaddr is always TCP. Otherwise there must be an explicit host,
+    either the server's or a host connection parameter, with no socket
+    entry in it: with no host at all, libpq would use a service's host, an
+    environment variable or its default socket, none of which this can
+    check. Private endpoints are allowed, as any TCP host name is."""
+    params = connection_params or {}
+    hostaddr = str(params.get('hostaddr') or '')
+    if hostaddr.strip():
+        return all(entry.strip() for entry in hostaddr.split(','))
+
+    host = str(params.get('host') or host or '')
+    entries = [entry.strip() for entry in host.split(',')]
+    return bool(host.strip()) and all(
+        entry and not is_unix_socket_host(entry) for entry in entries)
+
+
+def check_entra_ssl(auth_method, connection_params, host):
     """Return an error message when an ``entra`` server does not verify the
-    identity of the server it sends the token to, else None."""
-    if auth_method == AUTH_METHOD_ENTRA and \
-            not is_entra_ssl_valid(connection_params):
+    identity of the server it sends the token to, else None. host is the
+    server's host."""
+    if auth_method != AUTH_METHOD_ENTRA:
+        return None
+    if not is_entra_destination_valid(connection_params, host):
+        return gettext(
+            'The entra authentication method requires a TCP host name or '
+            'address, so that the access token is not sent over a local '
+            'socket, where SSL is not used.')
+    if not is_entra_ssl_valid(connection_params):
         return gettext(
             'The entra authentication method requires the connection '
             'parameter sslmode to be set to verify-full, so that the '

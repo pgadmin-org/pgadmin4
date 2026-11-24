@@ -12,6 +12,8 @@
 import base64
 import ctypes
 import unittest
+
+import requests
 from urllib.parse import parse_qs
 from unittest.mock import MagicMock, Mock, patch, create_autospec
 from pgadmin.utils.route import BaseTestGenerator
@@ -132,7 +134,14 @@ class TestOAuthHook(
         )
         pg_oauth2._token_buffers.clear()
 
+        # The cases below deliver a token over a protected connection,
+        # unless they say otherwise.
+        self.protected = patch.object(
+            pg_oauth2, '_is_protected_connection', return_value=True)
+        self.is_protected = self.protected.start()
+
     def tearDown(self):
+        self.protected.stop()
         pg_oauth2._token_buffers.clear()
         pg_oauth2._token_buffers.update(
             self.previous_token_buffers
@@ -228,6 +237,30 @@ class TestOAuthHook(
         previous_hook.assert_not_called()
 
         # Keep the ctypes pointer alive for the whole test.
+        self.assertIsNotNone(request_pointer)
+
+    def case_unprotected_connection_is_refused_a_token(self):
+        """No token is handed to a connection that is not encrypted."""
+        previous_hook = Mock(return_value=51)
+        pg_oauth2._previous_hook = previous_hook
+        self.is_protected.return_value = False
+
+        request, request_pointer, data = self._make_request()
+
+        with pg_oauth2.oauth_token_context('test-access-token'):
+            result = pg_oauth2._oauth_hook(
+                pg_oauth2.PQAUTHDATA_OAUTH_BEARER_TOKEN,
+                None,
+                data
+            )
+
+        self.assertEqual(result, -1)
+        self.assertIsNone(request.token)
+        self.assertNotIn(
+            ctypes.addressof(request),
+            pg_oauth2._token_buffers
+        )
+        previous_hook.assert_not_called()
         self.assertIsNotNone(request_pointer)
 
     def case_cleanup_removes_retained_token_buffer(self):
@@ -482,7 +515,8 @@ class TestGetPgAdminOAuthToken(
 
             oauth_client.fetch_access_token.assert_called_once_with(
                 grant_type='refresh_token',
-                refresh_token='original-refresh-token'
+                refresh_token='original-refresh-token',
+                timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
             )
 
     @patch(
@@ -513,8 +547,39 @@ class TestGetPgAdminOAuthToken(
             self.assertIsNone(result)
             oauth_client.fetch_access_token.assert_called_once_with(
                 grant_type='refresh_token',
-                refresh_token='refresh-token'
+                refresh_token='refresh-token',
+                timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
             )
+
+    @patch(
+        'pgadmin.utils.pg_oauth2._get_current_oauth_client'
+    )
+    def case_refresh_timeout_returns_none(self, get_oauth_client):
+        """A refresh that times out is like any other failed refresh: the
+        token is unusable and the session keeps the old one."""
+        oauth_client = self._make_oauth_client()
+        oauth_client.fetch_access_token.side_effect = \
+            requests.exceptions.ReadTimeout('timed out')
+        get_oauth_client.return_value = oauth_client
+
+        with self.app.test_request_context('/'):
+            token = {
+                'access_token': 'expired-access-token',
+                'refresh_token': 'refresh-token',
+                'expires_at': 999,
+                'token_type': 'Bearer',
+            }
+            session['oauth2_token'] = dict(token)
+            session['oauth2_provider'] = self.PROVIDER_NAME
+
+            with patch(
+                'pgadmin.utils.pg_oauth2.time.time',
+                return_value=1000
+            ):
+                result = pg_oauth2._get_pgadmin_oauth_token()
+
+            self.assertIsNone(result)
+            self.assertEqual(session['oauth2_token'], token)
 
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
@@ -613,7 +678,8 @@ class TestGetPgAdminOAuthToken(
 
             oauth_client.fetch_access_token.assert_called_once_with(
                 grant_type='refresh_token',
-                refresh_token='original-refresh-token'
+                refresh_token='original-refresh-token',
+                timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
             )
 
     def case_returns_access_token_without_expiration(self):
@@ -679,7 +745,8 @@ class TestGetPgAdminOAuthToken(
 
             oauth_client.fetch_access_token.assert_called_once_with(
                 grant_type='refresh_token',
-                refresh_token='original-refresh-token'
+                refresh_token='original-refresh-token',
+                timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
             )
 
     def case_expired_token_without_provider_returns_none(self):
@@ -767,7 +834,8 @@ class TestGetPgAdminOAuthToken(
 
             oauth_client.fetch_access_token.assert_called_once_with(
                 grant_type='refresh_token',
-                refresh_token='original-refresh-token'
+                refresh_token='original-refresh-token',
+                timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
             )
 
     @patch(
@@ -810,7 +878,8 @@ class TestGetPgAdminOAuthToken(
 
             oauth_client.fetch_access_token.assert_called_once_with(
                 grant_type='refresh_token',
-                refresh_token='original-refresh-token'
+                refresh_token='original-refresh-token',
+                timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
             )
 
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
@@ -860,6 +929,7 @@ class TestGetPgAdminOAuthToken(
         oauth_client.fetch_access_token.assert_called_once_with(
             grant_type='refresh_token',
             refresh_token='original-refresh-token',
+            timeout=pg_oauth2._TOKEN_REQUEST_TIMEOUT,
         )
 
     @patch('pgadmin.utils.pg_oauth2._get_current_oauth_client')
@@ -2035,3 +2105,40 @@ class TestLibpqSelection(
             with self.subTest(version=version):
                 with self.assertRaisesRegex(RuntimeError, '18.x'):
                     pg_oauth2._check_oauth_libpq_version(version)
+
+
+class TestProtectedConnection(
+        _OAuthUnitTestMixin, BaseTestGenerator):
+    """A connection is protected when SSL or GSSAPI encryption is in use.
+    A Unix-domain socket has neither, so it is not."""
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.previous_libpq = pg_oauth2._libpq
+        self.libpq = Mock()
+        self.libpq.PQsslInUse.return_value = 0
+        self.libpq.PQgssEncInUse.return_value = 0
+        pg_oauth2._libpq = self.libpq
+
+    def tearDown(self):
+        pg_oauth2._libpq = self.previous_libpq
+
+    def case_ssl_is_protected(self):
+        self.libpq.PQsslInUse.return_value = 1
+        self.assertTrue(pg_oauth2._is_protected_connection(1234))
+        self.libpq.PQsslInUse.assert_called_once_with(1234)
+
+    def case_gssapi_encryption_is_protected(self):
+        self.libpq.PQgssEncInUse.return_value = 1
+        self.assertTrue(pg_oauth2._is_protected_connection(1234))
+
+    def case_unencrypted_or_socket_is_not_protected(self):
+        self.assertFalse(pg_oauth2._is_protected_connection(1234))
+
+    def case_unconfigured_libpq_fails_closed(self):
+        pg_oauth2._libpq = None
+        self.assertFalse(pg_oauth2._is_protected_connection(1234))
+
+    def case_missing_connection_fails_closed(self):
+        self.libpq.PQsslInUse.return_value = 1
+        self.assertFalse(pg_oauth2._is_protected_connection(None))

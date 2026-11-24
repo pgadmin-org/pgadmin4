@@ -1070,7 +1070,8 @@ class ServerNode(PGChildNodeView):
             'username': gettext('Username'),
             'comment': gettext('Comments'),
             'role': gettext('Role'),
-            'service': gettext('Service')
+            'service': gettext('Service'),
+            'auth_method': gettext('Authentication method')
         }
 
         data = request.form if request.form else json.loads(
@@ -1113,7 +1114,7 @@ class ServerNode(PGChildNodeView):
         self.update_connection_parameter(data, server, sharedserver)
 
         auth_method_err = self._check_update_auth_method_and_clear_password(
-            data, sharedserver or server)
+            data, sharedserver or server, server.host)
         if auth_method_err:
             return bad_auth_method_response(auth_method_err)
 
@@ -1159,6 +1160,9 @@ class ServerNode(PGChildNodeView):
 
         idx = self._set_valid_attr_value(gid, data, config_param_map, server,
                                          sharedserver)
+
+        if not _is_non_owner(server):
+            self._revoke_shared_token_auth(server, data)
 
         if idx == 0:
             return make_json_response(
@@ -1235,16 +1239,38 @@ class ServerNode(PGChildNodeView):
             errmsg,
         )
 
+    # The owner's settings that decide which endpoint a non-owner of a
+    # shared server connects to, and so where their token is sent.
+    ENDPOINT_FIELDS = ('host', 'port', 'connection_params')
+
+    @classmethod
+    def _revoke_shared_token_auth(cls, server, data):
+        """When the owner of a shared server changes the endpoint, turn
+        every non-owner's token method back to password, in the same
+        commit as the change. A non-owner's token is sent only to an
+        endpoint they chose; they opt in again to send it to the new one."""
+        if not server.shared or \
+                not any(key in data for key in cls.ENDPOINT_FIELDS):
+            return
+        SharedServer.query.filter(
+            SharedServer.osid == server.id,
+            SharedServer.auth_method != AUTH_METHOD_PASSWORD,
+        ).update({'auth_method': AUTH_METHOD_PASSWORD},
+                 synchronize_session=False)
+
     @staticmethod
-    def _check_update_auth_method_and_clear_password(data, current):
+    def _check_update_auth_method_and_clear_password(data, current,
+                                                     server_host=None):
         """Check an update against the server authentication method it
         results in, and clear the saved password when it is a token method.
         Return an error message, or None.
 
         The entra method is checked when this update selects it, and its
-        sslmode whenever this update changes either; an unrelated edit of
-        an entra server is never refused. No database password is kept for
-        a token method: the access token is the credential."""
+        destination and sslmode whenever this update changes any of them;
+        an unrelated edit of an entra server is never refused. server_host
+        is the host before this update: a non-owner's comes from the
+        owner's server. No database password is kept for a token method:
+        the access token is the credential."""
         auth_method = data.get('auth_method', current.auth_method)
         if not is_token_auth_method(auth_method):
             return None
@@ -1253,13 +1279,15 @@ class ServerNode(PGChildNodeView):
             err = check_entra_available(auth_method)
             if err:
                 return err
-        if 'auth_method' in data or 'connection_params' in data:
+        if any(key in data for key in (
+                'auth_method', 'connection_params', 'host')):
             # The merged parameters, once update_connection_parameter()
             # has applied the deltas.
             err = check_entra_ssl(
                 auth_method,
                 data['connection_params'] if 'connection_params' in data
-                else current.connection_params)
+                else current.connection_params,
+                data.get('host', server_host))
             if err:
                 return err
 
@@ -1332,7 +1360,7 @@ class ServerNode(PGChildNodeView):
 
         if connected:
             for arg in (
-                    'db', 'role', 'service'
+                    'db', 'role', 'service', 'auth_method'
             ):
                 if arg in data:
                     return forbidden(
@@ -1604,7 +1632,7 @@ class ServerNode(PGChildNodeView):
             )
 
         auth_method_err = check_entra_available(auth_method) or \
-            check_entra_ssl(auth_method, connection_params)
+            check_entra_ssl(auth_method, connection_params, data.get('host'))
         if auth_method_err:
             return bad_auth_method_response(auth_method_err)
 

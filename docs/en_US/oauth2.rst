@@ -538,6 +538,9 @@ In the *Connection* tab of the Server dialog, set *Authentication method* to
    For shared servers, each user must explicitly choose an OAuth
    authentication method in their own server settings.
    The owner's selection is not inherited; the default is *Password*.
+   When the owner changes the host, port or connection parameters of a
+   shared server, every other user's method is set back to *Password*,
+   so that their token is not sent to an endpoint they did not choose.
 
 Both OAuth methods require ``oauth_client_id`` and
 ``oauth_issuer``. The issuer must match the PostgreSQL OAuth configuration
@@ -559,6 +562,10 @@ Use a trusted database endpoint. For TCP connections, configure certificate
 and hostname verification, for example with ``sslmode=verify-full`` and a
 trusted root certificate. Database TLS settings are separate from those for
 the OIDC provider's HTTPS endpoints.
+
+pgAdmin hands the token to libpq only over a connection encrypted with SSL
+or GSSAPI. A connection over a Unix-domain socket is neither, so it is
+refused: connect over TCP with SSL.
 
 Direct method
 ~~~~~~~~~~~~~
@@ -776,7 +783,11 @@ to ``verify-full``. Use ``sslrootcert`` to name the certificate authority that
 signed the server's certificate, or ``system`` to use the trusted store of the
 system pgAdmin runs on. pgAdmin refuses to save, import or connect an
 ``entra`` server without ``verify-full``, and does not restrict the host
-name, so a private endpoint with custom DNS works.
+name, so a private endpoint with custom DNS works. The host must be a TCP
+host name or address, set on the server itself rather than left to a
+service: libpq uses no SSL over a Unix-domain socket. Backup, restore,
+maintenance and import/export keep ``verify-full`` even when a service file
+entry names another ``sslmode``.
 
 Security considerations
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -793,7 +804,8 @@ Security considerations
   switching a server to the method clears the saved one.
 * Each non-owner of a shared server chooses their own authentication
   method, which defaults to *Password*, so no user's login is used for a
-  server host they did not choose.
+  server host they did not choose. It is set back to *Password* when the
+  owner changes the server's host, port or connection parameters.
 * Backup, restore, maintenance, import/export and the PSQL tool get their
   own new token for each process.
 * When the identity provider answers ``interaction_required`` or

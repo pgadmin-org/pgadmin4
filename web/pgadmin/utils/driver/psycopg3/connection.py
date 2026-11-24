@@ -49,7 +49,7 @@ from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.pg_oauth2 import OAuthSignInRequired, OAuthTokenError
-from pgadmin.utils.token_auth import token_connection
+from pgadmin.utils.token_auth import connection_credentials
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -528,17 +528,19 @@ class Connection(BaseConnection):
         Open one physical connection with the credentials of the server's
         authentication method.
 
-        Asks the token authentication registry for the token provider and
-        token delivery of the method, builds the connection string for
-        database and user with the password to use, and returns
-        open_(connection_string) while the credentials are in scope.
-        Raises OAuthTokenError when the token cannot be obtained.
+        The credentials come from the token authentication registry and
+        are obtained before the Kerberos lock is taken, as a token may need
+        a request to the identity provider. Holding the lock, it builds the
+        connection string for database and user with the password to use,
+        and returns open_(connection_string) while the credentials are in
+        scope. Raises OAuthTokenError when the token cannot be obtained.
         """
         manager = self.manager
+        credentials = connection_credentials(
+            manager.auth_method, manager.connection_params, password,
+            manager.host)
         with ConnectionLocker(manager.kerberos_conn):
-            with token_connection(
-                    manager.auth_method, manager.connection_params,
-                    password) as conn_password:
+            with credentials.scope() as conn_password:
                 return open_(manager.create_connection_string(
                     database, user, conn_password))
 

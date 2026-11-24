@@ -60,6 +60,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             'case_token_errors_reach_no_server',
             'case_a_password_server_never_asks_for_a_token',
             'case_an_unregistered_method_is_refused',
+            'case_the_token_is_obtained_before_the_kerberos_lock',
         ) for operation in OPERATIONS
     ]
 
@@ -93,7 +94,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         manager.password = None
         return manager
 
-    def _run(self, manager):
+    def _run(self, manager, locker=None):
         """Run the operation; return status, message, the mock of the
         psycopg call it makes, the token context seen by that call and the
         connection."""
@@ -118,6 +119,10 @@ class TokenAuthConnectionTest(BaseTestGenerator):
 
         with self.app.test_request_context('/'), ExitStack() as stack:
             TestOAuthConnection._apply_common_patches(stack)
+            if locker is not None:
+                stack.enter_context(patch.object(
+                    connection_module, 'ConnectionLocker',
+                    return_value=locker))
             if self.operation == 'connect':
                 target = stack.enter_context(patch.object(
                     connection_module.psycopg.Connection, 'connect',
@@ -165,6 +170,38 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         # The provider got the server's connection parameters.
         self.assertEqual(self.provider.calls,
                          [{'sslmode': 'verify-full', 'x': '1'}])
+
+    def case_the_token_is_obtained_before_the_kerberos_lock(self):
+        # Getting a token may mean a request to the identity provider,
+        # which must not hold up the connections waiting on the lock; the
+        # token is only delivered inside it.
+        events = []
+
+        class Locker:
+            def __enter__(self):
+                events.append('lock')
+                return self
+
+            def __exit__(self, *exc):
+                events.append('unlock')
+
+        def provider(connection_params):
+            events.append('token')
+            return 'token-x'
+
+        def connection_string(database, user, password):
+            events.append(('connect', password))
+            return 'dbname=x'
+
+        self._register(token_auth.PasswordDelivery(), provider)
+        manager = self._manager()
+        manager.create_connection_string.side_effect = connection_string
+
+        status, message, _, _, _ = self._run(manager, locker=Locker())
+
+        self.assertTrue(status, message)
+        self.assertEqual(
+            events, ['token', 'lock', ('connect', 'token-x'), 'unlock'])
 
     def case_password_delivery_token_is_not_kept(self):
         self._register(token_auth.PasswordDelivery())
