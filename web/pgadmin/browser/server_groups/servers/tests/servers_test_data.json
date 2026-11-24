@@ -1270,6 +1270,44 @@
         "status_code": 200,
         "update_session": true
       }
+    },
+    {
+      "name": "Change password with no password held for the connection",
+      "url": "/browser/server/change_password/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "server_info": {
+          "sid": 1,
+          "name": "test_mock_server",
+          "username": "postgres",
+          "password": null,
+          "passfile": false
+        },
+        "user_info": {
+          "id": 1,
+          "username": "postgres",
+          "password": "1234"
+        },
+        "manager": {
+          "server_type": "pg",
+          "password": null,
+          "sversion": 150000,
+          "connection_execute_scalar_return_value": "(True, {'rows': []})"
+        }
+      },
+      "test_data": {
+        "form_data": {
+          "user_name": "my_postgres",
+          "password": "anything",
+          "newPassword": "my_postgres1",
+          "confirmPassword": "my_postgres1"
+        }
+      },
+      "expected_data": {
+        "status_code": 400,
+        "update_session": false
+      }
     }
   ]
 }
