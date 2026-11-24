@@ -348,3 +348,103 @@ describe('LayoutDocker.closeToTheRight', () => {
     expect(docker.layoutObj.dockMove).not.toHaveBeenCalled();
   });
 });
+
+const closingCalls = (docker, id) => docker.eventBus.fireEvent.mock.calls
+  .filter((call) => call[0] === 'closing' && call[1] === id);
+
+describe('LayoutDocker sequential close', () => {
+  let docker, panel;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    ({docker, panel} = createCloseablePanelDocker());
+    panel.tabs.forEach((t) => {
+      t.internal.manualClose = true;
+    });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  const tabIds = () => panel.tabs.map((t) => t.id);
+  const flushPaint = () => jest.advanceTimersByTimeAsync(32);
+
+  it('asks only the rightmost manual tab, after it is on screen', async () => {
+    panel.activeId = 't1';
+    docker.closeAll('t1');
+
+    expect(panel.activeId).toBe('t4');
+    expect(closingCalls(docker, 't4')).toHaveLength(0);
+    expect(closingCalls(docker, 't1')).toHaveLength(0);
+
+    await flushPaint();
+
+    expect(closingCalls(docker, 't4')).toHaveLength(1);
+    expect(closingCalls(docker, 't1')).toHaveLength(0);
+    expect(closingCalls(docker, 't3')).toHaveLength(0);
+  });
+
+  it('asks the next tab to the left only after the current one closes', async () => {
+    panel.activeId = 't1';
+    docker.closeAll('t1');
+    await flushPaint();
+
+    docker.close('t4', true);
+    expect(tabIds()).toEqual(['t1', 't2', 't3']);
+    expect(panel.activeId).toBe('t3');
+    expect(docker.eventBus.fireEvent).toHaveBeenCalledWith('active', 't3');
+    expect(closingCalls(docker, 't3')).toHaveLength(0);
+
+    await flushPaint();
+
+    expect(closingCalls(docker, 't3')).toHaveLength(1);
+    expect(closingCalls(docker, 't2')).toHaveLength(0);
+  });
+
+  it('keeps a cancelled tab open and asks the next one', async () => {
+    panel.activeId = 't1';
+    docker.closeAll('t1');
+    await flushPaint();
+
+    docker.retainTabInCloseQueue('t4');
+    expect(tabIds()).toEqual(['t1', 't2', 't3', 't4']);
+    expect(panel.activeId).toBe('t3');
+
+    await flushPaint();
+
+    expect(closingCalls(docker, 't4')).toHaveLength(1);
+    expect(closingCalls(docker, 't3')).toHaveLength(1);
+  });
+
+  it('focuses an inactive tab before asking it to close on its own', async () => {
+    panel.activeId = 't1';
+    docker.close('t4');
+
+    expect(panel.activeId).toBe('t4');
+    expect(tabIds()).toEqual(['t1', 't2', 't3', 't4']);
+    expect(closingCalls(docker, 't4')).toHaveLength(0);
+    expect(docker.layoutObj.dockMove).not.toHaveBeenCalled();
+
+    await flushPaint();
+
+    expect(closingCalls(docker, 't4')).toHaveLength(1);
+    expect(closingCalls(docker, 't1')).toHaveLength(0);
+  });
+
+  it('replaces an in-progress batch with the new one', async () => {
+    panel.activeId = 't1';
+    docker.closeAll('t1');
+    await flushPaint();
+    expect(closingCalls(docker, 't4')).toHaveLength(1);
+
+    docker.closeAll('t4', true);
+    expect(panel.activeId).toBe('t3');
+
+    await flushPaint();
+
+    expect(closingCalls(docker, 't4')).toHaveLength(1);
+    expect(closingCalls(docker, 't3')).toHaveLength(1);
+    expect(closingCalls(docker, 't1')).toHaveLength(0);
+  });
+});

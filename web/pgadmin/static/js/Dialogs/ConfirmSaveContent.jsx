@@ -19,11 +19,13 @@ export default function ConfirmSaveContent({closeModal, text, onDontSave, onSave
         }} >{gettext('Cancel')}</DefaultButton>
         <DefaultButton data-test="dont-save"  startIcon={<DeleteRoundedIcon />} onClick={()=>{
           onDontSave?.();
-          closeModal();
+          // 'proceed' keeps the dialog's onClose (Cancel, Escape, title X)
+          // from also running when the user chose to close the tab.
+          closeModal(undefined, 'proceed');
         }} >{gettext('Don\'t save')}</DefaultButton>
         <PrimaryButton data-test="save" startIcon={<CheckRoundedIcon />} onClick={()=>{
           onSave?.();
-          closeModal();
+          closeModal(undefined, 'proceed');
         }} autoFocus={true} >{gettext('Save')}</PrimaryButton>
       </ModalFooter>
     </ModalContent>

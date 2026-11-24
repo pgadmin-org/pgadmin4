@@ -18,11 +18,11 @@ export default function ConfirmTransactionContent({closeModal, text, onRollback,
         }} >{gettext('Cancel')}</DefaultButton>
         <PrimaryButton data-test="rollback" startIcon={<RollbackIcon />} onClick={()=>{
           onRollback?.();
-          closeModal();
+          closeModal(undefined, 'proceed');
         }} >{gettext('Rollback')}</PrimaryButton>
         <PrimaryButton data-test="commit" startIcon={<CommitIcon />} onClick={()=>{
           onCommit?.();
-          closeModal();
+          closeModal(undefined, 'proceed');
         }} autoFocus={true} >{gettext('Commit')}</PrimaryButton>
       </ModalFooter>
     </ModalContent>

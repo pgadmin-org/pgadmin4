@@ -180,22 +180,41 @@ export class LayoutDocker {
       return;
     }
     if(panelData.internal?.manualClose && !force) {
-      this.eventBus.fireEvent(LAYOUT_EVENTS.CLOSING, panelId);
+      // One tab from the open batch is already the one being asked.
+      // Any other close is a single tab: show its dialog, but do not
+      // take over the batch.
+      this._askToClose(panelId, this._closeBatch?.head === panelId);
     } else {
       // When the active tab is closed, rc-dock selects the tab to its right,
       // or the first tab if there is none. Match browser behaviour instead,
       // selecting the tab to the right or, failing that, the one to the left.
       // The neighbour is activated before removal so that rc-dock leaves the
       // selection alone and the saved layout records the right active tab.
+      // Closing the tab a batch is asking about moves to the next one in
+      // that batch instead.
       const parentTabs = panelData.parent?.tabs ?? [];
       const closedIdx = parentTabs.indexOf(panelData);
-      if(closedIdx >= 0 && panelData.parent.activeId == panelData.id) {
+      const wasBatchHead = this._closeBatch?.head === panelId;
+      const nextInBatch = wasBatchHead ? this._nextBatchId(panelId) : null;
+      if(nextInBatch) {
+        this.focus(nextInBatch);
+      } else if(closedIdx >= 0 && panelData.parent.activeId == panelData.id) {
         const nextTab = parentTabs[closedIdx + 1] ?? parentTabs[closedIdx - 1];
         if(nextTab) {
           this.focus(nextTab.id);
         }
       }
       this.layoutObj.dockMove(this.find(panelId) ?? panelData, null, 'remove');
+      if(this._closeBatch) {
+        this._closeBatch.ids = this._closeBatch.ids.filter((id)=>id !== panelId && this.find(id));
+        if(wasBatchHead) {
+          if(this._closeBatch.ids.length) {
+            this._presentNextInBatch();
+            return;
+          }
+          this._closeBatch = null;
+        }
+      }
       // rc-dock is not firing the "active" event after a tab is removed
       // and another is focussed. here we try get the new active id and
       // manually fire the active event
@@ -233,15 +252,120 @@ export class LayoutDocker {
 
   closeAll(panelId, exceptCurrent=false) {
     const tabs = this.getParentWithTabs(panelId)?.tabs ?? [];
-    tabs.filter((t)=>(t.internal?.closable && (exceptCurrent ? t.id!=panelId : true))).forEach((t)=>{
-      this.close(t.id);
-    });
+    this.closeTabs(tabs.filter((t)=>t.internal?.closable && (exceptCurrent ? t.id != panelId : true)));
   }
 
   closeToTheRight(panelId) {
-    this.getClosableTabsToTheRight(panelId).forEach((t)=>{
-      this.close(t.id);
+    this.closeTabs(this.getClosableTabsToTheRight(panelId));
+  }
+
+  // Tabs that close by themselves go immediately. Tabs that decide for
+  // themselves are asked one at a time, right to left, and only after the
+  // tab is on screen, so the save dialog is not opened in a hidden iframe.
+  // A new batch replaces one that is still in progress.
+  closeTabs(tabs) {
+    if(!tabs?.length) {
+      return;
+    }
+    const token = (this._batchToken = (this._batchToken || 0) + 1);
+    this._closeBatch = null;
+    const manualIds = [];
+    const immediateIds = [];
+    tabs.forEach((t)=>{
+      if(t.internal?.manualClose) {
+        manualIds.push(t.id);
+      } else {
+        immediateIds.push(t.id);
+      }
     });
+    immediateIds.forEach((id)=>this.close(id));
+    const ids = manualIds.filter((id)=>this.find(id));
+    if(!ids.length) {
+      return;
+    }
+    this._closeBatch = {token, ids, head: null, asked: null};
+    this._presentNextInBatch();
+  }
+
+  // The user kept this tab. Leave it open and ask the next one.
+  // Cancelling a single tab, outside a batch, only dismisses its dialog.
+  retainTabInCloseQueue(panelId) {
+    const batch = this._closeBatch;
+    if(!batch?.ids.includes(panelId)) {
+      return;
+    }
+    const wasHead = batch.head === panelId;
+    batch.ids = batch.ids.filter((id)=>id !== panelId);
+    batch.asked = null;
+    if(wasHead) {
+      this._presentNextInBatch();
+    }
+  }
+
+  _nextBatchId(excludingId) {
+    const ids = this._closeBatch?.ids;
+    if(!ids) {
+      return null;
+    }
+    for(let i = ids.length - 1; i >= 0; i--) {
+      if(ids[i] !== excludingId && this.find(ids[i])) {
+        return ids[i];
+      }
+    }
+    return null;
+  }
+
+  _presentNextInBatch() {
+    const batch = this._closeBatch;
+    if(!batch) {
+      return;
+    }
+    batch.ids = batch.ids.filter((id)=>this.find(id));
+    if(!batch.ids.length) {
+      this._closeBatch = null;
+      return;
+    }
+    batch.head = batch.ids[batch.ids.length - 1];
+    batch.asked = null;
+    this._askToClose(batch.head, true);
+  }
+
+  // inBatch waits until the tab has been painted, because its iframe is
+  // display:none until then. A single close of the already visible tab
+  // asks immediately.
+  _askToClose(panelId, inBatch=false) {
+    if(!this.find(panelId)) {
+      return;
+    }
+    const token = this._closeBatch?.token;
+    const alreadyVisible = this.isTabVisible(panelId);
+    if(!alreadyVisible) {
+      this.focus(panelId);
+    }
+    // close() focuses the next batch tab before removal, so it is already
+    // visible here. The tool still needs the active event to treat itself
+    // as on screen.
+    if(!alreadyVisible || inBatch) {
+      this.eventBus.fireEvent(LAYOUT_EVENTS.ACTIVE, panelId);
+    }
+    const fire = ()=>{
+      if(!this.find(panelId)) {
+        return;
+      }
+      if(inBatch) {
+        const batch = this._closeBatch;
+        if(!batch || batch.token !== token || batch.head !== panelId || batch.asked === panelId) {
+          return;
+        }
+        batch.asked = panelId;
+      }
+      this.eventBus.fireEvent(LAYOUT_EVENTS.CLOSING, panelId);
+    };
+    if(inBatch || !alreadyVisible) {
+      requestAnimationFrame(()=>requestAnimationFrame(fire));
+    } else {
+      fire();
+    }
   }
 
   focus(panelId) {

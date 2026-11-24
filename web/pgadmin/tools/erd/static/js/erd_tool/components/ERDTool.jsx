@@ -448,7 +448,10 @@ export default class ERDTool extends React.Component {
             bodyObj.onSaveDiagram(false, true);
           }}
         />
-      ), {id: 'id-erd-close-confirmation'});
+      ), {
+        id: 'id-erd-close-confirmation',
+        onClose: ()=>this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId),
+      });
       return false;
     } else {
       this.forceClose();

@@ -311,7 +311,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
             eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE);
           }}
         />
-      ), {id:modalId});
+      ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
     };
 
     const createKeyObjectFromShortcut = (pref)=>{

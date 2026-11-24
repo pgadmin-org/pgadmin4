@@ -1023,10 +1023,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
   }, []);
 
+  const keepTabInCloseBatch = useCallback(()=>{
+    qtPanelDocker.retainTabInCloseQueue?.(qtPanelId);
+  }, [qtPanelDocker, qtPanelId]);
+
   const queryToolContextValue = React.useMemo(()=>({
     docker: docker.current,
     api: api,
     modal: modal,
+    keepTabInCloseBatch: keepTabInCloseBatch,
     params: qtState.params,
     server_cursor: qtState.server_cursor,
     preferences: qtState.preferences,
@@ -1085,7 +1090,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     updateServerCursor: (state) => {
       setQtStatePartial(state);
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor, docker.current]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor, docker.current, keepTabInCloseBatch]);
 
 
   const queryToolConnContextValue = React.useMemo(()=>({

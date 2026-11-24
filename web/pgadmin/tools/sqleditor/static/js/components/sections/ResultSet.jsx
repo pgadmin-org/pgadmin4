@@ -1253,7 +1253,7 @@ export function ResultSet() {
           eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE);
         }}
       />
-    ), {id: modalId});
+    ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
   };
   useEffect(()=>{
     let isDirty = _.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted);

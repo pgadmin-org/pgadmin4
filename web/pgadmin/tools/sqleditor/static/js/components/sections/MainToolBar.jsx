@@ -417,7 +417,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
               eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
             }}
           />
-        ), {id: modalId});
+        ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
         return;
       } else {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
@@ -444,7 +444,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onCommitClick();
         }}
       />
-    ), {id: modalId});
+    ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
   };
   useEffect(()=>{
     if(isInTxn()) {
