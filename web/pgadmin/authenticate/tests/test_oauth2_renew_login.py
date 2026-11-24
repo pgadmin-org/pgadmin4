@@ -128,3 +128,39 @@ class RenewedLoginCallbackTestCase(BaseTestGenerator):
             page = self.tester.get('/oauth2/renewed')
             self.assertEqual(page.status_code, 200)
             self.assertIn(b'close this window', page.data)
+
+
+class RenewedLoginRaisesTestCase(BaseTestGenerator):
+    """A renewal whose login raises after replacing the key keeps the key
+    of the connections the session already holds."""
+
+    scenarios = [
+        ('Login raises during renewal', dict()),
+    ]
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        user = User.query.first()
+        with self.tester.session_transaction() as sess:
+            sess['oauth2_current_client'] = 'entra'
+            sess['oauth2_renew_user'] = user.id
+            sess['pass_enc_key'] = 'key-of-the-first-login'
+
+        def login():
+            from flask import session
+            session['pass_enc_key'] = 'access-token-of-the-renewed-login'
+            raise RuntimeError('userinfo endpoint failed')
+
+        manager = MagicMock()
+        manager.login.side_effect = login
+        with patch('pgadmin.authenticate.get_auth_sources',
+                   return_value=_source()), \
+                patch('pgadmin.authenticate.AuthSourceManager',
+                      return_value=manager):
+            response = self.tester.get('/oauth2/authorize')
+
+        self.assertEqual(response.status_code, 500)
+        with self.tester.session_transaction() as sess:
+            self.assertEqual(sess['pass_enc_key'], 'key-of-the-first-login')

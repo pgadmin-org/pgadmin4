@@ -194,7 +194,14 @@ def init_app(app):
         renew_user = session.pop('oauth2_renew_user', None)
         pass_enc_key = session.get('pass_enc_key')
 
-        status, msg = auth_obj.login()
+        try:
+            status, msg = auth_obj.login()
+        except Exception:
+            # login() replaces the key before it can fail; a renewal that
+            # fails must not leave the session's connections without it.
+            if renew_user is not None and pass_enc_key is not None:
+                session['pass_enc_key'] = pass_enc_key
+            raise
         if status and renew_user is not None and (
                 not current_user.is_authenticated or
                 current_user.id != renew_user):
