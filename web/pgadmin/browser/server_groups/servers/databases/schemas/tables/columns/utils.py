@@ -16,7 +16,7 @@ from pgadmin.utils.exception import ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
-    parse_priv_to_db
+    parse_priv_to_db, parse_seclabels_from_db
 from functools import wraps
 import re
 
@@ -144,12 +144,8 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # Need to format security labels according to client js collection
     if 'seclabels' in data and data['seclabels'] is not None:
-        seclabels = []
-        for seclbls in data['seclabels']:
-            k, v = seclbls.split('=')
-            seclabels.append({'provider': k, 'label': v})
-
-        data['seclabels'] = seclabels
+        data['seclabels'] = parse_seclabels_from_db(
+            data['seclabels'])
 
     # Get formatted Column Options
     if 'attfdwoptions' in data and data['attfdwoptions'] != '':
