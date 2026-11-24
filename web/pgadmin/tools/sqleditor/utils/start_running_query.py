@@ -195,8 +195,13 @@ class StartRunningQuery:
 
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
-
-        return ((trans_obj.server_cursor and trans_obj.auto_commit) or (
+        # A server cursor needs a transaction to live in, but the toolbar's
+        # COMMIT or ROLLBACK ends one rather than needing one: a BEGIN
+        # ahead of it would only raise a warning when a transaction is
+        # already open, and would leave its command tag, not the COMMIT's
+        # or ROLLBACK's, as the message poll() reports. #8991
+        return ((trans_obj.server_cursor and trans_obj.auto_commit and
+                 sql not in ('COMMIT;', 'ROLLBACK;')) or (
             not trans_obj.auto_commit and
             conn.transaction_status() == TX_STATUS_IDLE and
             is_begin_required(sql)

@@ -1490,7 +1490,15 @@ WHERE db.datname = current_database()""")
         # opposed to one whose ownership passes to self.__async_cursor.
         throwaway = None
 
-        if isinstance(cur, AsyncDictServerCursor):
+        # The cursor cached for the connection lasts only for the request
+        # that created it, so when the toolbar's COMMIT or ROLLBACK arrives
+        # in a request of its own, cur is a fresh plain cursor even though
+        # the async cursor is still the server-side cursor of the query
+        # before it. A transaction-control statement must displace that
+        # cursor too, for the reason given below. #8991
+        if isinstance(cur, AsyncDictServerCursor) or (
+                isinstance(self.__async_cursor, AsyncDictServerCursor) and
+                _is_transaction_control(query)):
             # A named/server-side cursor's execute() always runs the query
             # as `DECLARE ... CURSOR FOR <query>`, which cannot express a
             # transaction-control statement such as BEGIN/COMMIT/ROLLBACK.
