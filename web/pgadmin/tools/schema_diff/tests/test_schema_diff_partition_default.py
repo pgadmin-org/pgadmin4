@@ -29,6 +29,10 @@ done:
 * Hash-partitioned tables cannot have a DEFAULT partition at all, so no
   scaffolding one may be created for them, and the rows must still be
   copied into the rebuilt table.
+
+A partitioned table whose partitioning is the same on both sides must not
+be rebuilt at all (#10816), since the rebuild loses its foreign keys,
+triggers, policies and grants, and fails if another table references it.
 """
 
 import json
@@ -78,7 +82,7 @@ CREATE TABLE {0}.part_hash_p0 PARTITION OF {0}.part_hash
     FOR VALUES WITH (MODULUS 2, REMAINDER 0);
 CREATE TABLE {0}.part_hash_p1 PARTITION OF {0}.part_hash
     FOR VALUES WITH (MODULUS 2, REMAINDER 1);
-"""
+{1}"""
 
 # The target starts out with different partition bounds so that Schema Diff
 # has to rebuild both tables; the default-partition shape of each table
@@ -137,11 +141,49 @@ CREATE TABLE {0}.part_hash (
 ) PARTITION BY HASH (col1);
 
 CREATE TABLE {0}.part_hash_p0 PARTITION OF {0}.part_hash
-    FOR VALUES WITH (MODULUS 2, REMAINDER 0);
+    FOR VALUES WITH (MODULUS 3, REMAINDER 0);
 CREATE TABLE {0}.part_hash_p1 PARTITION OF {0}.part_hash
-    FOR VALUES WITH (MODULUS 2, REMAINDER 1);
+    FOR VALUES WITH (MODULUS 3, REMAINDER 1);
+CREATE TABLE {0}.part_hash_p2 PARTITION OF {0}.part_hash
+    FOR VALUES WITH (MODULUS 3, REMAINDER 2);
 
 INSERT INTO {0}.part_hash SELECT generate_series(1, 10);
+{1}
+INSERT INTO {0}.demo_customers VALUES (1);
+INSERT INTO {0}.demo_orders VALUES (1, 1, '2025-06-01');
+INSERT INTO {0}.demo_order_notes VALUES (1, 1, '2025-06-01');
+"""
+
+# Identical on both sides apart from the column comment added to the
+# source below, so the partitioning is the same and demo_orders must be
+# altered rather than rebuilt (#10816). demo_order_notes references
+# demo_orders, which made the rebuild fail outright.
+DDL_SAME_PARTITIONING = """
+CREATE TABLE {0}.demo_customers (id integer PRIMARY KEY);
+
+CREATE TABLE {0}.demo_orders (
+    id integer,
+    cust_id integer REFERENCES {0}.demo_customers,
+    created date,
+    PRIMARY KEY (id, created)
+) PARTITION BY RANGE (created);
+
+CREATE TABLE {0}.demo_orders_2025 PARTITION OF {0}.demo_orders
+    FOR VALUES FROM ('2025-01-01') TO ('2026-01-01');
+
+GRANT SELECT ON {0}.demo_orders TO PUBLIC;
+
+CREATE TABLE {0}.demo_order_notes (
+    id integer PRIMARY KEY,
+    order_id integer,
+    order_created date,
+    FOREIGN KEY (order_id, order_created)
+        REFERENCES {0}.demo_orders (id, created)
+);
+"""
+
+DDL_SOURCE_ONLY = """
+COMMENT ON COLUMN {0}.demo_orders.cust_id IS 'Customer';
 """
 
 
@@ -165,8 +207,12 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.server = parent_node_dict["server"][-1]["server"]
         self.server_id = parent_node_dict["server"][-1]["server_id"]
 
-        self.execute_sql(self.src_database, DDL_SOURCE.format(SCHEMA_NAME))
-        self.execute_sql(self.tar_database, DDL_TARGET.format(SCHEMA_NAME))
+        same_partitioning = DDL_SAME_PARTITIONING.format(SCHEMA_NAME)
+        self.execute_sql(self.src_database, DDL_SOURCE.format(
+            SCHEMA_NAME, same_partitioning +
+            DDL_SOURCE_ONLY.format(SCHEMA_NAME)))
+        self.execute_sql(self.tar_database, DDL_TARGET.format(
+            SCHEMA_NAME, same_partitioning))
 
     def execute_sql(self, db_name, sql):
         """
@@ -389,7 +435,8 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.assertEqual(
             self.count_partitions(self.tar_database, 'part_stray_rows'), 2)
 
-        # --- Hash-partitioned table whose source adds a column. ---
+        # --- Hash-partitioned table whose source adds a column and has
+        # a different modulus. ---
         part_hash = self.find_object(response_data, 'table', 'part_hash')
         self.assertEqual(part_hash['status'], 'Different')
         diff_ddl = part_hash['diff_ddl']
@@ -406,8 +453,31 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
             'Schema Diff lost rows while rebuilding a hash-partitioned '
             'table: {0}'.format(diff_ddl))
 
-        # Re-comparing must now report the bounds-only tables and the
-        # hash-partitioned table as identical.
+        # --- Same partitioning; only a column comment differs. ---
+        demo_orders = self.find_object(response_data, 'table',
+                                       'demo_orders')
+        self.assertEqual(demo_orders['status'], 'Different')
+        diff_ddl = demo_orders['diff_ddl']
+        self.assertNotIn(
+            'temp_partitioned_', diff_ddl,
+            'Schema Diff rebuilt a partitioned table whose partitioning '
+            'had not changed: {0}'.format(diff_ddl))
+        self.assertIn('COMMENT ON COLUMN', diff_ddl)
+
+        self.execute_sql(self.tar_database, diff_ddl)
+        self.assertEqual(
+            self.count_rows(self.tar_database, 'demo_orders'), 1)
+        self.assertEqual(
+            self.fetch_scalar(
+                self.tar_database,
+                "SELECT count(*) FROM pg_constraint "
+                "WHERE conrelid = '{0}.demo_orders'::regclass "
+                "AND contype = 'f'".format(SCHEMA_NAME)), 1,
+            'Schema Diff dropped the foreign key of a partitioned table: '
+            '{0}'.format(diff_ddl))
+
+        # Re-comparing must now report the bounds-only tables, the
+        # hash-partitioned table and demo_orders as identical.
         response_data = self.compare()
         self.assertEqual(
             self.find_object(response_data, 'table',
@@ -418,6 +488,9 @@ class SchemaDiffPartitionDefaultTestCase(BaseSocketTestGenerator):
         self.assertEqual(
             self.find_object(response_data, 'table',
                              'part_hash')['status'], 'Identical')
+        self.assertEqual(
+            self.find_object(response_data, 'table',
+                             'demo_orders')['status'], 'Identical')
         # part_stray_rows legitimately still differs from its source: the
         # target kept a default partition (holding the recovered
         # out-of-bounds row) that the source doesn't have. Preserving the

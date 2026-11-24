@@ -472,19 +472,31 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         pk_diff = self.table_constraint_comp(source, target)
         diff_dict.update(pk_diff)
 
-        # When both the source and target tables are partitioned, the
-        # 'partition' submodule branch below rebuilds the whole table
-        # (and every one of its partitions) from scratch, handling any
-        # added, removed or bound-changed partition itself. The generic
+        # When both the source and target tables are partitioned and
+        # their partitioning differs, the 'partition' submodule branch
+        # below rebuilds the whole table (and every one of its
+        # partitions) from scratch, handling any added, removed or
+        # bound-changed partition itself. The generic
         # partition add/remove handling in get_sql_from_table_diff (via
         # _check_for_partitions_in_sql) must not also run in that case:
         # it would detach/recreate the same partitions using their real
         # names ahead of the rebuild script, so the rebuild's row-copy
         # step (which reads from the original table) would miss rows
         # already detached out from under it, silently losing data.
-        if 'partitions' in diff_dict and \
-                source.get('is_partitioned') and target.get('is_partitioned'):
+        both_partitioned = bool(source.get('is_partitioned') and
+                                target.get('is_partitioned'))
+        if 'partitions' in diff_dict and both_partitioned:
             del diff_dict['partitions']
+
+        # The rebuild copies the table with LIKE ... INCLUDING ALL and
+        # drops the original, losing everything LIKE does not copy
+        # (foreign keys, triggers, policies, grants, comments) and failing
+        # outright if another table references it. Only rebuild when the
+        # partitioning itself differs; any other difference is handled by
+        # the ALTER statements generated for the table and its other
+        # submodules (#10816).
+        rebuild_partitions = both_partitioned and \
+            self._partitioning_differs(source, target)
 
         # Get the difference DDL/DML statements for table
         target_params['diff_data'] = diff_dict
@@ -502,10 +514,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 module_view = \
                     SchemaDiffRegistry.get_node_view(module.node_type)
 
-                if module.node_type == 'partition' and \
-                    ('is_partitioned' in source and source['is_partitioned'])\
-                        and ('is_partitioned' in target and
-                             target['is_partitioned']):
+                if module.node_type == 'partition' and rebuild_partitions:
                     target_ddl = module_view.ddl_compare(
                         target_params=target_params,
                         parent_source_data=source,
@@ -549,6 +558,29 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                         target_params, diff, **other_param)
 
         return diff
+
+    @staticmethod
+    def _partitioning_differs(source, target):
+        """
+        Return True if the partition scheme or the set of partitions
+        (names and bounds) of two partitioned tables differ.
+
+        :param source: Source table properties
+        :param target: Target table properties
+        :return: True if the partitioning differs
+        """
+        if source.get('partition_scheme') != target.get('partition_scheme'):
+            return True
+
+        def _partitions(table):
+            # A partition's OID differs between databases even when the
+            # partitions are the same, so leave it out of the comparison.
+            return sorted(
+                ({k: v for k, v in partition.items() if k != 'oid'}
+                 for partition in table.get('partitions') or []),
+                key=lambda partition: str(partition.get('partition_name')))
+
+        return _partitions(source) != _partitions(target)
 
     @staticmethod
     def _compare_source_only(added, module_view, source_params, target_params,
