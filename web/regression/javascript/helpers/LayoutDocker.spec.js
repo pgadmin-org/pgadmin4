@@ -184,13 +184,16 @@ describe('LayoutDocker.resetLayout', () => {
   });
 });
 
-describe('LayoutDocker.close', () => {
-  let docker, panel;
-
-  // A minimal stand-in for rc-dock's DockLayout, removing tabs the way
-  // rc-dock does: if the active tab goes, the tab to its right is selected,
-  // or the first tab when there is none to the right.
-  const makeLayoutObj = () => ({
+// A minimal stand-in for rc-dock's DockLayout, removing tabs the way
+// rc-dock does: if the active tab goes, the tab to its right is selected,
+// or the first tab when there is none to the right.
+const createCloseablePanelDocker = () => {
+  const panel = {id: 'panel-1', activeId: null, tabs: []};
+  ['t1', 't2', 't3', 't4'].forEach((id) => {
+    panel.tabs.push({id, parent: panel, internal: {closable: true}});
+  });
+  const docker = new LayoutDocker('Browser/Layout', {}, 'id-dashboard');
+  docker.layoutObj = {
     find: jest.fn((id) => {
       if(id === panel.id) return panel;
       return panel.tabs.find((t) => t.id === id) ?? null;
@@ -206,16 +209,16 @@ describe('LayoutDocker.close', () => {
         panel.activeId = (panel.tabs[pos] ?? panel.tabs[0]).id;
       }
     }),
-  });
+  };
+  jest.spyOn(docker.eventBus, 'fireEvent');
+  return {docker, panel};
+};
+
+describe('LayoutDocker.close', () => {
+  let docker, panel;
 
   beforeEach(() => {
-    panel = {id: 'panel-1', activeId: null, tabs: []};
-    ['t1', 't2', 't3', 't4'].forEach((id) => {
-      panel.tabs.push({id, parent: panel, internal: {closable: true}});
-    });
-    docker = new LayoutDocker('Browser/Layout', {}, 'id-dashboard');
-    docker.layoutObj = makeLayoutObj();
-    jest.spyOn(docker.eventBus, 'fireEvent');
+    ({docker, panel} = createCloseablePanelDocker());
   });
 
   const tabIds = () => panel.tabs.map((t) => t.id);
@@ -253,5 +256,95 @@ describe('LayoutDocker.close', () => {
 
     expect(tabIds()).toEqual([]);
     expect(docker.layoutObj.updateTab).not.toHaveBeenCalled();
+  });
+});
+
+describe('LayoutDocker.closeAll', () => {
+  let docker, panel;
+
+  beforeEach(() => {
+    ({docker, panel} = createCloseablePanelDocker());
+  });
+
+  const tabIds = () => panel.tabs.map((t) => t.id);
+
+  it('closes every closable tab except the current one', () => {
+    panel.tabs[0].internal.closable = false;
+    panel.activeId = 't2';
+    docker.closeAll('t2', true);
+
+    expect(tabIds()).toEqual(['t1', 't2']);
+    expect(panel.activeId).toBe('t2');
+  });
+
+  it('does nothing when the tab does not exist', () => {
+    panel.activeId = 't2';
+    docker.closeAll('missing');
+
+    expect(tabIds()).toEqual(['t1', 't2', 't3', 't4']);
+    expect(docker.layoutObj.dockMove).not.toHaveBeenCalled();
+  });
+});
+
+describe('LayoutDocker.closeToTheRight', () => {
+  let docker, panel;
+
+  beforeEach(() => {
+    ({docker, panel} = createCloseablePanelDocker());
+  });
+
+  const tabIds = () => panel.tabs.map((t) => t.id);
+
+  it('closes only the closable tabs to the right of the current tab', () => {
+    panel.activeId = 't2';
+    docker.closeToTheRight('t2');
+
+    expect(tabIds()).toEqual(['t1', 't2']);
+    expect(panel.activeId).toBe('t2');
+  });
+
+  it('keeps the active tab when it is to the left of the closed tabs', () => {
+    panel.activeId = 't1';
+    docker.closeToTheRight('t2');
+
+    expect(tabIds()).toEqual(['t1', 't2']);
+    expect(panel.activeId).toBe('t1');
+    expect(docker.layoutObj.updateTab).not.toHaveBeenCalled();
+  });
+
+  it('selects the origin tab when the active tab is to the right', () => {
+    panel.activeId = 't4';
+    docker.closeToTheRight('t2');
+
+    expect(tabIds()).toEqual(['t1', 't2']);
+    expect(panel.activeId).toBe('t2');
+    expect(docker.eventBus.fireEvent).toHaveBeenCalledWith('active', 't2');
+  });
+
+  it('leaves non-closable tabs to the right in place', () => {
+    panel.tabs[2].internal.closable = false;
+    panel.activeId = 't1';
+    docker.closeToTheRight('t1');
+
+    expect(tabIds()).toEqual(['t1', 't3']);
+    expect(panel.activeId).toBe('t1');
+  });
+
+  it('does nothing when the current tab is the right-most', () => {
+    panel.activeId = 't4';
+    docker.closeToTheRight('t4');
+
+    expect(tabIds()).toEqual(['t1', 't2', 't3', 't4']);
+    expect(panel.activeId).toBe('t4');
+    expect(docker.layoutObj.dockMove).not.toHaveBeenCalled();
+  });
+
+  it('does nothing when the tab does not exist', () => {
+    panel.activeId = 't2';
+    docker.closeToTheRight('missing');
+
+    expect(tabIds()).toEqual(['t1', 't2', 't3', 't4']);
+    expect(panel.activeId).toBe('t2');
+    expect(docker.layoutObj.dockMove).not.toHaveBeenCalled();
   });
 });

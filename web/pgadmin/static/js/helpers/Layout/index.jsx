@@ -206,16 +206,42 @@ export class LayoutDocker {
     }
   }
 
-  closeAll(panelId, exceptCurrent=false) {
+  // A tab id resolves to its group; a group id is returned as itself.
+  getParentWithTabs(panelId) {
     let parentData = this.find(panelId);
+    if(!parentData) {
+      return null;
+    }
     if(_.isUndefined(parentData.tabs)) {
       parentData = parentData.parent;
     }
-    if(parentData?.tabs) {
-      parentData.tabs.filter((t)=>(t.internal?.closable && (exceptCurrent ? t.id!=panelId : true))).forEach((t)=>{
-        this.close(t.id);
-      });
+    return parentData?.tabs ? parentData : null;
+  }
+
+  getClosableTabsToTheRight(panelId) {
+    const parentData = this.getParentWithTabs(panelId);
+    if(!parentData) {
+      return [];
     }
+    const idx = parentData.tabs.findIndex((t)=>t.id == panelId);
+    if(idx < 0) {
+      return [];
+    }
+    // slice() copies the tail: close() removes tabs and would shift the list.
+    return parentData.tabs.slice(idx + 1).filter((t)=>t.internal?.closable);
+  }
+
+  closeAll(panelId, exceptCurrent=false) {
+    const tabs = this.getParentWithTabs(panelId)?.tabs ?? [];
+    tabs.filter((t)=>(t.internal?.closable && (exceptCurrent ? t.id!=panelId : true))).forEach((t)=>{
+      this.close(t.id);
+    });
+  }
+
+  closeToTheRight(panelId) {
+    this.getClosableTabsToTheRight(panelId).forEach((t)=>{
+      this.close(t.id);
+    });
   }
 
   focus(panelId) {
@@ -670,6 +696,14 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
             label: gettext('Close Others'),
             callback: ()=>{
               layoutDockerObj.closeAll(panelId, true);
+            }
+          });
+        }
+        if(layoutDockerObj.getClosableTabsToTheRight(panelId).length) {
+          ret.push({
+            label: gettext('Close to the Right'),
+            callback: ()=>{
+              layoutDockerObj.closeToTheRight(panelId);
             }
           });
         }
