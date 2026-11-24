@@ -425,7 +425,7 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
             <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
               shortcut={queryToolPref.btn_add_row} disabled={!canInsert} onClick={addRow} />
             <PgIconButton title={gettext('Copy')} icon={<FileCopyRoundedIcon />}
-              shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']||allRowsSelect=='ALL'} onClick={copyData} />
+              shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']||(allRowsSelect=='ALL' && queryToolCtx.server_cursor)} onClick={copyData} />
             <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
             <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}

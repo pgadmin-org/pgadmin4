@@ -52,6 +52,8 @@ export class ResultSetUtils {
     this.hasQueryCommitted = false;
     this.queryToolCtx = queryToolCtx;
     this.setLoaderText = null;
+    /* Counts executions, so a fetch can tell whether its result was replaced */
+    this.executionCount = 0;
   }
 
   static generateURLReconnectionFlag(baseUrl, transId, shouldReconnect) {
@@ -195,6 +197,7 @@ export class ResultSetUtils {
   async startExecution(query, explainObject, macroSQL, onIncorrectSQL, flags={
     isQueryTool: true, external: false, reconnect: false, executeCursor: false, refreshData: false,
   }) {
+    this.executionCount++;
     let startTime = new Date();
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, '');
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_START,
@@ -400,13 +403,23 @@ export class ResultSetUtils {
     }
   }
 
-  getWindowRows(fromRownum, toRownum) {
+  async getWindowRows(fromRownum, toRownum) {
     let url = url_for('sqleditor.fetch_window', {
       'trans_id': this.transId,
       'from_rownum': fromRownum,
       'to_rownum': toRownum,
     });
-    return this.api.get(url);
+    const executionCount = this.executionCount;
+    const res = await this.api.get(url);
+    /* Another query ran whilst fetching, so these rows are no longer shown */
+    if(executionCount != this.executionCount) {
+      return null;
+    }
+    /* A failed fetch still returns HTTP 200, with the error in the result */
+    if(res.data?.data?.status != 'Success') {
+      throw new Error(res.data?.data?.result || gettext('Failed to fetch rows.'));
+    }
+    return res;
   }
 
   stopExecution() {
@@ -1172,11 +1185,18 @@ export function ResultSet() {
 
   const fetchWindow = async (fromRownum, toRownum, callback)=>{
     let res = [];
+    let newRows;
+    let stale = false;
     setLoaderText(gettext('Fetching rows...'));
     try {
       res = await rsu.current.getWindowRows(fromRownum, toRownum);
+      if(!res) {
+        /* A newer result owns the grid and its loader, so leave both alone */
+        stale = true;
+        return;
+      }
       resetSelectionAndChanges();
-      const newRows = rsu.current.processRows(res.data.data.result, columns);
+      newRows = rsu.current.processRows(res.data.data.result, columns);
       setRows([...newRows]);
       setQueryData((prev)=>({
         ...prev,
@@ -1194,9 +1214,11 @@ export function ResultSet() {
         }
       );
     } finally {
-      setLoaderText('');
+      if(!stale) {
+        setLoaderText('');
+      }
     }
-    callback?.();
+    callback?.(newRows);
   };
 
   useEffect(()=>{
@@ -1406,7 +1428,20 @@ export function ResultSet() {
       field_separator: queryToolPref.results_grid_field_separator,
     });
     let copyRows=[], copyCols=[];
-    if(selectedRows.size > 0) {
+    if(allRowsSelect == 'ALL' && !queryToolCtx.server_cursor) {
+      /*
+       * Only the current page is loaded, so load every row into the grid, as
+       * editing the page range would, then select and copy them all.
+       */
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, 1, queryData?.rows_affected, (allRows)=>{
+        if(!allRows?.length) {
+          return;
+        }
+        setSelectedRows(new Set(allRows.map(rowKeyGetter)));
+        copyData.copyRowsToCsv(allRows, columns, withHeaders);
+      });
+      return;
+    } else if(selectedRows.size > 0) {
       copyCols = columns;
       copyRows = rows.filter((r)=>selectedRows.has(r[rsu.current.clientPK]));
     } else if(selectedColumns.size > 0) {
@@ -1485,7 +1520,7 @@ export function ResultSet() {
     return ()=>{
       eventBus.deregisterListener(QUERY_TOOL_EVENTS.COPY_DATA, copyDataFunc);
     };
-  }, [selectedRows, selectedColumns, columns, rows]);
+  }, [selectedRows, selectedColumns, columns, rows, allRowsSelect, queryData]);
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
