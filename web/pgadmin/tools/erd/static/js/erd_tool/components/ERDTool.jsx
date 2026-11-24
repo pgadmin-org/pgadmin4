@@ -749,7 +749,15 @@ export default class ERDTool extends React.Component {
         'dialog_title': 'Save File',
         'btn_primary': 'Save',
       };
-      this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
+      let fileSelected = false;
+      this.props.pgAdmin.Tools.FileManager.show(params, (fileName)=>{
+        fileSelected = true;
+        this.saveFile(fileName);
+      }, ()=>{
+        if(fileSelected) return;
+        this.closeOnSave = false;
+        this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
+      }, this.context);
     } else if (closeOnSave) {
       this.closeOnSave = false;
       this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
