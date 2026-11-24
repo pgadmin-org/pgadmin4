@@ -52,6 +52,8 @@ export class ResultSetUtils {
     this.hasQueryCommitted = false;
     this.queryToolCtx = queryToolCtx;
     this.setLoaderText = null;
+    /* Counts executions, so a fetch can tell whether its result was replaced */
+    this.executionCount = 0;
   }
 
   static generateURLReconnectionFlag(baseUrl, transId, shouldReconnect) {
@@ -195,6 +197,7 @@ export class ResultSetUtils {
   async startExecution(query, explainObject, macroSQL, onIncorrectSQL, flags={
     isQueryTool: true, external: false, reconnect: false, executeCursor: false, refreshData: false,
   }) {
+    this.executionCount++;
     let startTime = new Date();
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, '');
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_START,
@@ -406,7 +409,12 @@ export class ResultSetUtils {
       'from_rownum': fromRownum,
       'to_rownum': toRownum,
     });
+    const executionCount = this.executionCount;
     const res = await this.api.get(url);
+    /* Another query ran whilst fetching, so these rows are no longer shown */
+    if(executionCount != this.executionCount) {
+      return null;
+    }
     /* A failed fetch still returns HTTP 200, with the error in the result */
     if(res.data?.data?.status != 'Success') {
       throw new Error(res.data?.data?.result || gettext('Failed to fetch rows.'));
@@ -1173,9 +1181,15 @@ export function ResultSet() {
   const fetchWindow = async (fromRownum, toRownum, callback)=>{
     let res = [];
     let newRows;
+    let stale = false;
     setLoaderText(gettext('Fetching rows...'));
     try {
       res = await rsu.current.getWindowRows(fromRownum, toRownum);
+      if(!res) {
+        /* A newer result owns the grid and its loader, so leave both alone */
+        stale = true;
+        return;
+      }
       resetSelectionAndChanges();
       newRows = rsu.current.processRows(res.data.data.result, columns);
       setRows([...newRows]);
@@ -1195,7 +1209,9 @@ export function ResultSet() {
         }
       );
     } finally {
-      setLoaderText('');
+      if(!stale) {
+        setLoaderText('');
+      }
     }
     callback?.(newRows);
   };

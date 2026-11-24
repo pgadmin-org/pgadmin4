@@ -116,4 +116,15 @@ describe('ResultSetUtils.getWindowRows', () => {
     await expect(getWindowRows({ status, result: 'connection is busy' }))
       .rejects.toThrow('connection is busy');
   });
+
+  it('discards rows for a result replaced by a query run whilst fetching', async () => {
+    let respond;
+    const api = { get: jest.fn(() => new Promise((resolve) => { respond = resolve; })) };
+    const rsu = new ResultSetUtils(api, {}, 1, true);
+    const pending = rsu.getWindowRows(1, 2500);
+    // startExecution counts each query it runs.
+    rsu.executionCount++;
+    respond({ data: { data: { status: 'Success', result: [[1]] } } });
+    await expect(pending).resolves.toBeNull();
+  });
 });
