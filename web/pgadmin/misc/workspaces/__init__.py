@@ -27,8 +27,50 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import (
     disconnect_from_all_servers, delete_adhoc_servers)
 from pgadmin.tools.psql import get_open_psql_connections
+from pgadmin.tools.user_management.PgAdminPermissions import \
+    AllPermissionTypes
 
 MODULE_NAME = 'workspace'
+
+# Connection parameters that decide which host the connection goes to. They
+# override the server's own host/port/service when the connection string is
+# built, so a user without the Manage Server permission must not be able to
+# set or drop them on a clone of a registered server.
+ROUTING_CONNECTION_PARAMS = ('host', 'hostaddr', 'port', 'service')
+
+
+def _routing_preserved_params(requested, stored):
+    """
+    Return the connection parameters for a clone made by a user who may not
+    register servers: the requested ones, with the routing parameters taken
+    from the source server's stored parameters.
+
+    The request may repeat a stored routing parameter, but not set or change
+    one; None is returned in that case.
+    """
+    requested = requested if isinstance(requested, dict) else {}
+    stored = stored if isinstance(stored, dict) else {}
+
+    for key in ROUTING_CONNECTION_PARAMS:
+        value = requested.get(key)
+        if value not in (None, '') and str(value) != str(stored.get(key)):
+            return None
+
+    params = {k: v for k, v in requested.items()
+              if k not in ROUTING_CONNECTION_PARAMS}
+    params.update({k: stored[k] for k in ROUTING_CONNECTION_PARAMS
+                   if stored.get(k) is not None})
+    return params
+
+
+def _not_registered_error():
+    return make_json_response(
+        success=0,
+        status=403,
+        errormsg=gettext(
+            'You do not have permission to connect to a server that is not '
+            'already registered.')
+    )
 
 
 class WorkspaceModule(PgAdminModule):
@@ -152,6 +194,15 @@ def adhoc_connect_server():
     new_server_name = data.get('server_name', None)
     new_service = data.get('service', None)
 
+    can_register_server = current_user.has_permission(
+        AllPermissionTypes.object_register_server)
+
+    # An earlier ad hoc row may have been created while the user still had
+    # the Manage Server permission, for a host that is not registered.
+    # Without the permission only registered servers are reused; a new
+    # connection goes through the checks below instead.
+    reusable = {} if can_register_server else {'is_adhoc': 0}
+
     try:
         server = None
         if config.CONFIG_DATABASE_URI is not None and \
@@ -164,7 +215,8 @@ def adhoc_connect_server():
                                              name=new_server_name,
                                              role=new_role,
                                              service=new_service,
-                                             user_id=current_user.id
+                                             user_id=current_user.id,
+                                             **reusable
                                              ).all()
 
             # If found matching servers then compare the connection_params as
@@ -183,7 +235,8 @@ def adhoc_connect_server():
                 role=new_role,
                 service=new_service,
                 connection_params=connection_params,
-                user_id=current_user.id
+                user_id=current_user.id,
+                **reusable
             ).first()
 
         # If server is none then no server with the above combination is found.
@@ -196,6 +249,17 @@ def adhoc_connect_server():
                     return bad_request(gettext(
                         "Could not find the required server."
                     ))
+
+                # Without the Manage Server permission the clone must reach
+                # the same destination as the source: keep the source's
+                # stored routing parameters (replacing the stored
+                # connection_params below would otherwise drop them) and
+                # refuse a request that tries to change them.
+                if not can_register_server:
+                    connection_params = _routing_preserved_params(
+                        connection_params, server.connection_params)
+                    if connection_params is None:
+                        return _not_registered_error()
 
                 # Clone the server object
                 server = server.clone()
@@ -227,6 +291,12 @@ def adhoc_connect_server():
                 db.session.add(server)
                 db.session.commit()
             else:
+                # Connecting to an arbitrary host that is not already known
+                # to the user is equivalent to registering a new server, so
+                # it requires the same permission as the Object Explorer.
+                if not can_register_server:
+                    return _not_registered_error()
+
                 server = Server(
                     user_id=current_user.id,
                     servergroup_id=data.get('gid', 1),
