@@ -46,7 +46,7 @@ from sqlalchemy.orm import object_session
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
-from pgadmin.utils import get_complete_file_path, \
+from pgadmin.utils import get_complete_file_path, str_to_bool, \
     get_invalid_connection_param_key, ServiceNotAllowed, \
     check_connection_params_allowed
 from pgadmin.settings.utils import with_object_filters
@@ -1838,6 +1838,12 @@ class ServerNode(PGChildNodeView):
         passfile = None
         tunnel_password = None
         save_password = False
+        # Distinguishes "the caller explicitly said false" from "the
+        # caller didn't mention save_password at all" -- only the former
+        # should clear an existing saved credential (see the success
+        # branch below); legacy callers that omit the field must not have
+        # a saved password silently wiped out from under them.
+        save_password_provided = False
         save_tunnel_password = False
         prompt_password = False
         prompt_tunnel_password = False
@@ -1911,8 +1917,17 @@ class ServerNode(PGChildNodeView):
                 password = conn_passwd or server.password
         else:
             password = data['password'] if 'password' in data else None
-            save_password = data['save_password']\
-                if 'save_password' in data else False
+            # The password-prompt dialog seeds its checkbox from the
+            # server's current save_password setting (see
+            # get_response_for_password) and sends it only when the server
+            # reported that setting or the user ticked the box. So a value
+            # here is the user's explicit choice -- including unchecking it
+            # for a server previously configured to save its password --
+            # while a missing field means "unknown" and leaves any saved
+            # password alone.
+            save_password_provided = 'save_password' in data
+            save_password = str_to_bool(
+                data['save_password'] if save_password_provided else False)
 
             try:
                 # Encrypt the password before saving with user's login
@@ -1966,11 +1981,21 @@ class ServerNode(PGChildNodeView):
                 self._saved_tunnel_password_discarded(conn),
                 errmsg)
         else:
-            if save_password and config.ALLOW_SAVE_PASSWORD:
+            # allow_save_password is false when the encryption key only
+            # lasts for this session, so a password saved now couldn't be
+            # decrypted at the next login.
+            if save_password and config.ALLOW_SAVE_PASSWORD and \
+                    session.get('allow_save_password', False):
                 try:
                     # 1 is True in SQLite as no boolean type
                     if _is_non_owner(server):
                         setattr(shared_server, 'save_password', 1)
+                        # `server` is a detached overlay (see
+                        # get_shared_server_properties) built before this
+                        # write, so it won't pick up the SharedServer
+                        # change on its own -- keep it in sync since the
+                        # connect response below reports its state.
+                        server.save_password = 1
                     else:
                         setattr(server, 'save_password', 1)
 
@@ -1984,6 +2009,28 @@ class ServerNode(PGChildNodeView):
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
+                    current_app.logger.exception(e)
+                    manager.release(database=server.maintenance_db)
+                    conn = None
+
+                    return internal_server_error(errormsg=str(e))
+            elif save_password_provided and not save_password and \
+                    server.save_password and config.ALLOW_SAVE_PASSWORD:
+                # The user explicitly unticked "Save Password" on a server
+                # that had one saved -- clear it instead of leaving the
+                # now-stale credential and flag in place.
+                try:
+                    if _is_non_owner(server):
+                        setattr(shared_server, 'save_password', 0)
+                        setattr(shared_server, 'password', None)
+                        # Keep the detached overlay in sync -- see the
+                        # comment in the save_password branch above.
+                        server.save_password = 0
+                    else:
+                        setattr(server, 'save_password', 0)
+                        setattr(server, 'password', None)
+                    db.session.commit()
+                except Exception as e:
                     current_app.logger.exception(e)
                     manager.release(database=server.maintenance_db)
                     conn = None
@@ -2428,6 +2475,7 @@ class ServerNode(PGChildNodeView):
                 "service": server.service,
                 "prompt_tunnel_password": prompt_tunnel_password,
                 "prompt_password": prompt_password,
+                "save_password": bool(server.save_password),
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and
@@ -2450,6 +2498,7 @@ class ServerNode(PGChildNodeView):
                 "errmsg": errmsg,
                 "service": server.service,
                 "prompt_password": True,
+                "save_password": bool(server.save_password),
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and

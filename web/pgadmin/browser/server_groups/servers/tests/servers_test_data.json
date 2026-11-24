@@ -295,6 +295,21 @@
         "status_code": 200,
         "message": "Server connected."
       }
+    },
+    {
+      "name": "Connect server with 'save password' when saving is not allowed",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "test_data": {
+        "is_password_saved": false,
+        "allow_save_password": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "message": "Server connected."
+      }
     }
   ],
   "get_server": [
