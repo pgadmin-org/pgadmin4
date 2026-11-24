@@ -750,6 +750,9 @@ export default class ERDTool extends React.Component {
         'btn_primary': 'Save',
       };
       this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
+    } else if (closeOnSave) {
+      this.closeOnSave = false;
+      this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
     }
   }
 
@@ -774,6 +777,10 @@ export default class ERDTool extends React.Component {
     }).catch((err)=>{
       this.setLoading(null);
       this.handleAxiosCatch(err);
+      if(this.closeOnSave) {
+        this.closeOnSave = false;
+        this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
+      }
     });
   }
 

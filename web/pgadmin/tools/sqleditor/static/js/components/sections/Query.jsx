@@ -306,6 +306,8 @@ export default function Query({onTextSelect, setQtStatePartial}) {
             eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, (_f, success)=>{
               if(success) {
                 eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
+              } else {
+                queryToolCtx.keepTabInCloseBatch();
               }
             }, true);
             eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE);

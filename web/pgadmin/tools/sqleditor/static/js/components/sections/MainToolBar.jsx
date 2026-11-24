@@ -402,6 +402,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, (success)=>{
       if(success) {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
+      } else {
+        queryToolCtx.keepTabInCloseBatch();
       }
     }, true);
   };
