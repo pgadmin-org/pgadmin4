@@ -23,13 +23,14 @@ import url_for from 'sources/url_for';
 import { connectServer, ensureServerConnected } from '../../../pgadmin/tools/sqleditor/static/js/components/connectServer';
 
 /* Captures the props of each password prompt raised, so that a test can drive
- * the prompt by calling onOK or closeModal on it. */
+ * the prompt by calling onOK or closeModal on it. As in ModalProvider, closing
+ * the dialog runs its onClose, whether it was answered or dismissed. */
 function createFakeModal() {
   const prompts = [];
   return {
     prompts,
-    showModal: (_title, content)=>{
-      prompts.push(content(()=>{/* closeModal */}).props);
+    showModal: (_title, content, options)=>{
+      prompts.push(content(()=>options?.onClose?.()).props);
     },
   };
 }
@@ -106,6 +107,26 @@ describe('connectServer', ()=>{
     expect(cancelCallback).toHaveBeenCalledTimes(1);
     expect(connectCallback).not.toHaveBeenCalled();
     expect(promptCallback).toHaveBeenLastCalledWith(false);
+  });
+
+  it('does not invoke the cancel callback when the prompt is answered', async ()=>{
+    const api = jest.fn()
+      .mockRejectedValueOnce({response: {data: {result: 'need password'}}})
+      .mockResolvedValueOnce({data: {data: {connected: true}}});
+    const modal = createFakeModal();
+    const connectCallback = jest.fn();
+    const cancelCallback = jest.fn();
+
+    await connectServer(api, modal, 1, 'postgres', passwordFormData, connectCallback,
+      cancelCallback);
+
+    /* OK closes the dialog, which runs its onClose too; treating that as a
+     * cancellation abandoned a Query Tool connection change after the
+     * password had been entered (issue #8144). */
+    await modal.prompts[0].onOK(passwordFormData);
+
+    expect(cancelCallback).not.toHaveBeenCalled();
+    expect(connectCallback).toHaveBeenCalledWith({connected: true});
   });
 
   it('tolerates the optional callbacks being omitted', async ()=>{
