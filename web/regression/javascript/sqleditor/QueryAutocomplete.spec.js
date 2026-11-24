@@ -37,7 +37,7 @@ jest.mock('../../../pgadmin/settings/static/ApplicationStateProvider', () => ({
 }));
 
 import { EditorState } from '@codemirror/state';
-import { startCompletion } from '@codemirror/autocomplete';
+import { startCompletion, acceptCompletion } from '@codemirror/autocomplete';
 import CustomEditorView from 'sources/components/ReactCodeMirror/CustomEditorView';
 import { autoCompleteCompartment } from 'sources/components/ReactCodeMirror/extensions/extraStates';
 import {
@@ -280,6 +280,51 @@ describe('Query autocomplete in the editor', () => {
     const api = deferredApi();
     createEditor(api);
 
+    type('select * from p');
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+
+    for (const ch of 'g_c') {
+      type(ch);
+      jest.advanceTimersByTime(20);
+    }
+
+    api.resolvers[0]({pg_class: {object_type: 'table'}});
+    await Promise.resolve();
+    await Promise.resolve();
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a $ typed before the response arrives as part of the identifier', async () => {
+    const api = deferredApi();
+    createEditor(api);
+
+    type('select * from p');
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+
+    // PostgreSQL allows $ inside an identifier, so "p$" is still one word.
+    type('$');
+    jest.advanceTimersByTime(20);
+
+    api.resolvers[0]({'p$table': {object_type: 'table'}});
+    await Promise.resolve();
+    await Promise.resolve();
+    jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
+    expect(api.post).toHaveBeenCalledTimes(1);
+
+    acceptCompletion(view);
+    expect(view.state.doc.toString()).toBe('select * from p$table');
+  });
+
+  it('reuses the response when text follows the cursor', async () => {
+    const api = deferredApi();
+    createEditor(api);
+
+    // Something else follows the cursor, as in most real scripts.
+    view.dispatch({changes: {from: 0, insert: '\nselect 1;'}});
+    view.dispatch({selection: {anchor: 0}});
     type('select * from p');
     jest.advanceTimersByTime(AUTOCOMPLETE_DEBOUNCE_MS);
     expect(api.post).toHaveBeenCalledTimes(1);

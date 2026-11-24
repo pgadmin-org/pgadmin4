@@ -40,7 +40,7 @@ export async function registerAutocomplete(editor, api, transId) {
       const url = url_for('sqleditor.autocomplete', {
         'trans_id': transId,
       });
-      const word = context.matchBefore(/\w*/);
+      const word = context.matchBefore(/[\w$]*/);
       const fullSql = context.state.doc.toString();
       const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
       const controller = new AbortController();
@@ -68,7 +68,7 @@ export async function registerAutocomplete(editor, api, transId) {
             // (public. needs the tables, not the names starting with p), so
             // CodeMirror then asks the server again.
             validFor: (text, from)=>{
-              return /^\w*$/.test(text) && text.startsWith(fullSql.slice(from));
+              return /^[\w$]*$/.test(text) && text.startsWith(word.text);
             }
           });
         })
