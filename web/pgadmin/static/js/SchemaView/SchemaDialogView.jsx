@@ -139,21 +139,44 @@ export default function SchemaDialogView({
 
     const onSaved = closeOnSave === true ? () => props.onClose?.() : undefined;
 
-    if (!schema.warningText) {
-      save(schemaState.changes(true), onSaved);
+    // Taken now, so that what is saved is what the warning was decided for,
+    // even if the form changes whilst getWarningText() is pending.
+    const changeData = schemaState.changes(true);
+    const queryParams = getForQueryParams(schemaState._changes);
+
+    const confirmAndSave = (warningText) => {
+      // The dialog may have been closed whilst the warning was pending.
+      if (!checkIsMounted()) return;
+
+      if (!warningText) {
+        save(changeData, onSaved);
+        return;
+      }
+
+      Notifier.confirm(
+        gettext('Warning'),
+        warningText,
+        () => { if (checkIsMounted()) save(changeData, onSaved); },
+        () => {
+          setSaving(false);
+          setLoaderText('');
+          return true;
+        },
+      );
+    };
+
+    // A schema whose warning depends on the server's view of the changes
+    // provides getWarningText(), which may return a promise; any other
+    // schema sets warningText as it validates.
+    if (!schema.getWarningText) {
+      confirmAndSave(schema.warningText);
       return;
     }
 
-    Notifier.confirm(
-      gettext('Warning'),
-      schema.warningText,
-      () => { save(schemaState.changes(true), onSaved); },
-      () => {
-        setSaving(false);
-        setLoaderText('');
-        return true;
-      },
-    );
+    // Called inside then() so that a hook that throws is handled as well.
+    Promise.resolve()
+      .then(() => schema.getWarningText(queryParams))
+      .then(confirmAndSave, () => confirmAndSave(schema.warningText));
   };
 
   const getSQLValue = () => {
