@@ -14,15 +14,37 @@ result.
 """
 
 import asyncio
+import threading
+import weakref
 from collections import OrderedDict
 from flask import g, current_app
 from psycopg import (Cursor as _cursor, AsyncCursor as _async_cursor,
-                     AsyncServerCursor as _async_server_cursor)
+                     AsyncServerCursor as _async_server_cursor,
+                     InterfaceError)
 from psycopg.rows import dict_row, tuple_row
 from psycopg._encodings import py_codecs as encodings
 from .encoding import configure_driver_encodings
 
 configure_driver_encodings(encodings)
+
+# One lock per psycopg AsyncConnection, shared by every thread that drives it
+# through AsyncDictCursor. Each call runs in its own event loop (asyncio.run),
+# but psycopg guards the connection with an asyncio.Lock, which only works
+# within a single loop: if two threads use the same connection at once, the
+# lock binds to one thread's loop and is left with a waiter that never wakes,
+# after which every execute() on that connection fails with "is bound to a
+# different event loop". Serialising the calls here means the asyncio.Lock is
+# never contended. See #7155.
+_conn_locks = weakref.WeakKeyDictionary()
+_conn_locks_guard = threading.Lock()
+
+
+def _connection_lock(conn):
+    with _conn_locks_guard:
+        lock = _conn_locks.get(conn)
+        if lock is None:
+            lock = _conn_locks[conn] = threading.RLock()
+        return lock
 
 
 class _WrapperColumn(object):
@@ -227,6 +249,15 @@ class AsyncDictCursor(_async_cursor):
         _async_cursor.__init__(self, *args, row_factory=dict_row)
         self.cursor = _async_cursor
 
+    def _run(self, coro):
+        """
+        Run the coroutine to completion in a new event loop, holding the
+        connection's thread lock so no other thread uses the connection
+        until it finishes.
+        """
+        with _connection_lock(self.connection):
+            return asyncio.run(coro)
+
     def _dict_tuple(self, tup):
         """
         Transform the tuple into a dictionary object.
@@ -287,11 +318,15 @@ class AsyncDictCursor(_async_cursor):
         for ``psycopg.AsyncCursor`` when used via ``AsyncConnection.execute``.
         """
         try:
-            return asyncio.run(
+            return self._run(
                 self._execute(query, params, prepare=prepare, binary=binary)
             )
         except RuntimeError as e:
+            # Report the failure as a driver error rather than returning
+            # as though the query ran, which left the caller reading the
+            # previous (or no) result.
             current_app.logger.exception(e)
+            raise InterfaceError(str(e)) from e
 
     async def _execute(self, query, params=None, *,
                        prepare=None, binary=None):
@@ -322,7 +357,7 @@ class AsyncDictCursor(_async_cursor):
         """
         Close the cursor.
         """
-        asyncio.run(self._close_cursor())
+        self._run(self._close_cursor())
 
     def fetchmany(self, size=None, _tupples=False):
         """
@@ -330,7 +365,7 @@ class AsyncDictCursor(_async_cursor):
         """
         self._odt_desc = None
         self.row_factory = tuple_row
-        res = asyncio.run(self._fetchmany(size))
+        res = self._run(self._fetchmany(size))
         if not _tupples and res is not None:
             res = [self._dict_tuple(t) for t in res]
 
@@ -355,7 +390,7 @@ class AsyncDictCursor(_async_cursor):
         """
         self._odt_desc = None
         self.row_factory = tuple_row
-        res = asyncio.run(self._fetchall())
+        res = self._run(self._fetchall())
         if not _tupples and res is not None:
             res = [self._dict_tuple(t) for t in res]
 
@@ -373,7 +408,7 @@ class AsyncDictCursor(_async_cursor):
         Execute function
         """
         self.row_factory = tuple_row
-        res = asyncio.run(self._fetchone())
+        res = self._run(self._fetchone())
         self.row_factory = dict_row
         return res
 
@@ -383,8 +418,9 @@ class AsyncDictCursor(_async_cursor):
         """
         self._odt_desc = None
         self.row_factory = tuple_row
-        asyncio.run(self._scrollcur(from_rownum, "absolute"))
-        res = asyncio.run(self._fetchmany(to_rownum - from_rownum + 1))
+        with _connection_lock(self.connection):
+            self._run(self._scrollcur(from_rownum, "absolute"))
+            res = self._run(self._fetchmany(to_rownum - from_rownum + 1))
         if not _tupples and res is not None:
             res = [self._dict_tuple(t) for t in res]
 
@@ -401,7 +437,7 @@ class AsyncDictCursor(_async_cursor):
         """
         Fetch all tuples as ordered dictionary list.
         """
-        return asyncio.run(self._scrollcur(position, mode))
+        return self._run(self._scrollcur(position, mode))
 
     def get_rowcount(self):
         if self.pgresult:
