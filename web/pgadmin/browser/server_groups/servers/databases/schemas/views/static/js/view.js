@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
+import { getNodeListByName, generateNodeUrl } from '../../../../../../../static/js/node_ajax';
+import getApiInstance from '../../../../../../../../static/js/api_instance';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import ViewSchema from './view.ui';
 
@@ -102,6 +103,15 @@ define('pgadmin.node.view', [
           {
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+            // Ask the server whether saving these changes will drop and
+            // re-create the view.
+            willDropView: (changes)=>{
+              const node = pgBrowser.Nodes['view'];
+              return getApiInstance().get(
+                generateNodeUrl.call(node, treeNodeInfo, 'msql', itemNodeData, true, node.url_jump_after_node),
+                {params: changes}
+              ).then((res)=>res.data.result.del_sql);
+            },
           },
           {
             owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,

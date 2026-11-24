@@ -779,8 +779,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         if sql == '':
             sql = "--modified SQL"
 
+        # The dialog asks for this before saving, to warn when the view
+        # will be dropped and created again.
         return make_json_response(
             data=sql,
+            result={'del_sql': bool(data.get('del_sql'))},
             status=200
         )
 
@@ -1014,6 +1017,59 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
             segments.extend(pieces[1:])
         return segments
 
+    def _needs_recreate(self, vid, new_definition, old_definition):
+        """
+        Decide whether a new definition can be applied with CREATE OR
+        REPLACE VIEW, or whether the view has to be dropped and created
+        again. CREATE OR REPLACE VIEW needs the new query to return the
+        view's existing columns with the same names and types in the same
+        order, although it may add columns at the end, so the server is
+        asked to describe the new query's result columns (without running
+        it) and they are compared with the view's columns. Any change to a
+        column's expression that keeps its name and type is then applied in
+        place. Describe reports a domain as its base type and does not
+        report collations, so where a view column is of a domain type or has
+        a non-default collation, or the new definition uses COLLATE, the
+        result cannot be trusted. In those cases, and when the query cannot
+        be described (for example because it has a syntax error), this falls
+        back to comparing the text before the first FROM in the old and new
+        definitions.
+        vid: View Id.
+        new_definition: the definition being saved.
+        old_definition: the view's current definition.
+        """
+        new_definition = (new_definition or '').strip().rstrip(';')
+        if new_definition == (old_definition or '').strip().rstrip(';'):
+            return False
+
+        status, new_cols = self.conn.describe_result_columns(new_definition)
+        if status:
+            status, old_cols = self.conn.execute_dict(render_template(
+                "/".join([self.template_path,
+                          self._SQL_PREFIX + 'result_columns.sql']),
+                vid=vid))
+        if status:
+            old_cols = old_cols['rows']
+            # Removed or renamed columns are certain, whatever the types.
+            if len(new_cols) < len(old_cols) or any(
+                    old['name'] != new['name']
+                    for old, new in zip(old_cols, new_cols)):
+                return True
+            status = not re.search(r'\bcollate\b', new_definition,
+                                   re.IGNORECASE) and \
+                not any(col['is_domain'] or col['has_collation']
+                        for col in old_cols)
+        if status:
+            return any(
+                (old['type_oid'], old['typmod']) !=
+                (new['type_oid'], new['typmod'])
+                for old, new in zip(old_cols, new_cols))
+
+        new_def = ViewNode._split_definition(new_definition)
+        old_def = ViewNode._split_definition(old_definition)
+        return (len(old_def) > 1 or len(new_def) > 1) and \
+            old_def[0] != new_def[0] and old_def[0] not in new_def[0]
+
     def _get_definition_data(self, vid, data, old_data, res, acls):
         """
         Check and process definition data.
@@ -1027,15 +1083,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         if not retun False with error msg empty('')
         """
         if 'definition' in data and self.manager.server_type == 'pg':
-            new_def = ViewNode._split_definition(data['definition'])
-            old_def = ViewNode._split_definition(
-                res['rows'][0]['definition'])
-            if 'definition' in data and (
-                len(old_def) > 1 or len(new_def) > 1
-            ) and (
-                old_def[0] != new_def[0] and
-                old_def[0] not in new_def[0]
-            ):
+            if self._needs_recreate(vid, data['definition'],
+                                    res['rows'][0]['definition']):
                 data['del_sql'] = True
 
                 # If we drop and recreate the view, the

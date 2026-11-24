@@ -1595,6 +1595,190 @@
       }
     },
     {
+      "name": "Get view msql: Changing a column's expression but not its name or type does not drop the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, COALESCE((a - b) / a * q * 100::numeric, 0::numeric) AS margin FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT id, COALESCE((a - b)::numeric / NULLIF(a::numeric, 0) * q * 100::numeric, 0::numeric)::numeric AS margin FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": false,
+          "sql_not_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Adding a column at the end does not drop the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, COALESCE((a - b) / a * q * 100::numeric, 0::numeric) AS margin FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT id, COALESCE((a - b) / a * q * 100::numeric, 0::numeric) AS margin, q FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": false,
+          "sql_not_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Changing a column's type drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, COALESCE((a - b) / a * q * 100::numeric, 0::numeric) AS margin FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT id, COALESCE((a - b) / a * q * 100::numeric, 0::numeric)::text AS margin FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Changing a column's type in the FROM clause drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id FROM (VALUES (1)) t(id); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT id FROM (VALUES ('a'::text)) t(id)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Changing only the WHERE clause of a view with a domain column does not drop the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE DOMAIN %s.%s_d AS integer; CREATE OR REPLACE VIEW %s.%s AS SELECT 1::%s.%s_d AS n; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT 1::<schema_name>.<view_name>_d AS n WHERE 1 > 0",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": false,
+          "sql_not_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Changing a column's collation drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT t COLLATE \\\"C\\\" AS t FROM (VALUES ('a'::text)) v(t); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT t COLLATE \"POSIX\" AS t FROM (VALUES ('a'::text)) v(t)",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: Renaming a column with a non-default collation drops the view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'x'::text COLLATE \\\"C\\\" AS a; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT 'x'::text COLLATE \"C\" AS b",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
+      "name": "Get view msql: A definition the server cannot parse falls back to comparing the text.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT id, COALESCE((a - b) / a * q * 100::numeric, 0::numeric) AS margin FROM (VALUES (1, 10::numeric, 5::numeric, 2::numeric)) t(id, a, b, q); ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "definition": "SELECT id, margin FROM no_such_relation_9720",
+        "server_type": "pg",
+        "skip_msg": "EPAS can change a view's columns without dropping it."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "del_sql": true,
+          "sql_contains": "DROP VIEW"
+        }
+      }
+    },
+    {
       "name": "Get view msql: With Non-existing view.",
       "url": "/browser/view/msql/",
       "is_positive_test": false,
