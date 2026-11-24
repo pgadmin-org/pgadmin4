@@ -25,8 +25,9 @@ class TestServerCursorTransactionControl(BaseTestGenerator):
     rather than the previous query's columns. #8991
     """
     scenarios = [
-        ('Commit after a query', dict(sql='COMMIT;', tag='COMMIT')),
-        ('Rollback after a query', dict(sql='ROLLBACK;', tag='ROLLBACK')),
+        ('Commit after a query', dict(steps=['COMMIT'])),
+        ('Rollback after a query', dict(steps=['ROLLBACK'])),
+        ('Rollback after a commit', dict(steps=['COMMIT', 'ROLLBACK'])),
     ]
 
     def setUp(self):
@@ -70,12 +71,16 @@ class TestServerCursorTransactionControl(BaseTestGenerator):
         self.assertEqual(data['status'], 'Success')
         self.assertIsNotNone(data['colinfo'])
 
-        data = self._run(self.sql)
-        self.assertEqual(data['status'], 'Success')
-        self.assertIsNone(data['colinfo'])
-        self.assertEqual(data['result'], self.tag)
-        # The transaction the server cursor lived in has ended.
-        self.assertEqual(data['transaction_status'], 0)
+        # Each statement is sent as the toolbar's button sends it.
+        for tag in self.steps:
+            data = self._run(tag + ';')
+            self.assertEqual(data['status'], 'Success')
+            self.assertIsNone(data['colinfo'])
+            # The command tag comes last, after any warning such as the
+            # one for a ROLLBACK with no transaction in progress.
+            self.assertEqual(data['result'].splitlines()[-1], tag)
+            # The transaction the server cursor lived in has ended.
+            self.assertEqual(data['transaction_status'], 0)
 
         # The next query still runs under, and reports, a server cursor.
         data = self._run('SELECT 2 AS b')

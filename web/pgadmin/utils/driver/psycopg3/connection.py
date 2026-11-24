@@ -397,6 +397,9 @@ class Connection(BaseConnection):
         self.auto_reconnect = auto_reconnect
         self.async_ = async_
         self.__async_cursor = None
+        # The throwaway cursor execute_void() last made the async cursor
+        # in place of a server-side one, if any.
+        self.__transaction_control_cursor = None
         self.__async_query_id = None
         self.__async_query_error = None
         self.__backend_pid = None
@@ -1495,10 +1498,15 @@ WHERE db.datname = current_database()""")
         # in a request of its own, cur is a fresh plain cursor even though
         # the async cursor is still the server-side cursor of the query
         # before it. A transaction-control statement must displace that
-        # cursor too, for the reason given below. #8991
+        # cursor too, for the reason given below, and likewise the cursor
+        # an earlier one put in its place, or a ROLLBACK after a COMMIT
+        # would be reported as the COMMIT. #8991
         if isinstance(cur, AsyncDictServerCursor) or (
-                isinstance(self.__async_cursor, AsyncDictServerCursor) and
-                _is_transaction_control(query)):
+                _is_transaction_control(query) and (
+                    isinstance(self.__async_cursor, AsyncDictServerCursor) or
+                    (self.__async_cursor is not None and
+                     self.__async_cursor is
+                     self.__transaction_control_cursor))):
             # A named/server-side cursor's execute() always runs the query
             # as `DECLARE ... CURSOR FOR <query>`, which cannot express a
             # transaction-control statement such as BEGIN/COMMIT/ROLLBACK.
@@ -1532,6 +1540,7 @@ WHERE db.datname = current_database()""")
                 # poll() reads from it, and release_async_cursor() or the
                 # next query replaces it.
                 self.__async_cursor = cur
+                self.__transaction_control_cursor = cur
                 self.column_info = None
                 self.row_count = 0
             else:
