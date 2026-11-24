@@ -19,23 +19,34 @@ export function connectionCancelledError() {
   return error;
 }
 
+/* cancelCallback runs once, and only if the prompt is dismissed (Cancel, the
+ * close button or Escape). The modal's onClose also fires when OK closes the
+ * dialog, so it must not cancel a prompt that has already been answered. */
 export function connectServerModal(modal, modalData, connectCallback, cancelCallback) {
+  let answered = false;
+  const cancel = ()=>{
+    if(!answered) {
+      answered = true;
+      cancelCallback?.();
+    }
+  };
   modal.showModal(gettext('Connect to server'), (closeModal)=>{
     return (
       <ConnectServerContent
         closeModal={()=>{
-          cancelCallback?.();
+          cancel();
           closeModal();
         }}
         data={modalData}
         onOK={(formData)=>{
+          answered = true;
           connectCallback(Object.fromEntries(formData));
           closeModal();
         }}
       />
     );
   }, {
-    onClose: cancelCallback,
+    onClose: cancel,
   });
 }
 
