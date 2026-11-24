@@ -174,6 +174,101 @@ describe('keyboardNavigation.bindRightPanel', () => {
     expect(focusTabSpy).not.toHaveBeenCalled();
   });
 
+  it('closes the last tab of a tab-set', () => {
+    focusTabSpy.mockRestore();
+    const {root, workspacePanel} = buildLayout();
+    workspacePanel.remove();
+    const topLayout = root.querySelector('.dock-layout');
+    const onlyTab = tabBtn('id-schema-diff-1', true);
+    onlyTab.firstChild.id = 'rc-tabs-3-tab-id-schema-diff-1';
+    topLayout.appendChild(panel([onlyTab]));
+    const docker = pgAdmin.Browser.docker;
+    const savedDefault = docker.default_workspace;
+    docker.default_workspace = {close: jest.fn()};
+
+    try {
+      pgAdmin.Browser.keyboardNavigation.bindRightPanel(
+        new Event('keydown'), {key: shortcutObj.close_tab_panel});
+      expect(docker.default_workspace.close)
+        .toHaveBeenCalledWith('id-schema-diff-1');
+    } finally {
+      docker.default_workspace = savedDefault;
+    }
+  });
+
+  /* A workspace split into two tab-sets must cycle the one holding the
+   * keyboard focus. Tool iframes live in #layout-portal outside the dock
+   * layout, so focus in one is traced back through its placeholder. */
+  describe('with the workspace split', () => {
+    let secondPanel;
+
+    beforeEach(() => {
+      const {root} = buildLayout();
+      secondPanel = panel([
+        tabBtn('id-psql-1', true),
+        tabBtn('id-psql-2', false),
+      ]);
+      root.querySelector('.dock-layout').appendChild(secondPanel);
+    });
+
+    const cycledIds = () => {
+      pgAdmin.Browser.keyboardNavigation.bindRightPanel(
+        new Event('keydown'), {key: shortcutObj.tabbed_panel_forward});
+      expect(focusTabSpy).toHaveBeenCalled();
+      return focusTabSpy.mock.calls[0][0].map((tab) => tab.id);
+    };
+
+    it('uses the first tab-set when the focus is elsewhere', () => {
+      expect(cycledIds()).toContain('rc-dock-tab-btn-id-dashboard');
+    });
+
+    it('uses the tab-set holding the focus', () => {
+      const input = document.createElement('input');
+      secondPanel.appendChild(input);
+      input.focus();
+
+      expect(cycledIds()).toEqual([
+        'rc-dock-tab-btn-id-psql-1',
+        'rc-dock-tab-btn-id-psql-2',
+      ]);
+    });
+
+    it('finds the tab-set of a focused tool iframe', () => {
+      const placeholder = document.createElement('div');
+      placeholder.dataset.target = 'id-psql-1-frame';
+      secondPanel.appendChild(placeholder);
+      const portal = document.createElement('div');
+      portal.id = 'layout-portal';
+      const iframe = document.createElement('iframe');
+      iframe.id = 'id-psql-1-frame';
+      portal.appendChild(iframe);
+      document.body.appendChild(portal);
+      iframe.focus();
+      expect(document.activeElement).toBe(iframe);
+
+      expect(cycledIds()).toEqual([
+        'rc-dock-tab-btn-id-psql-1',
+        'rc-dock-tab-btn-id-psql-2',
+      ]);
+    });
+
+    it('steps out of a tool\'s nested dock layout', () => {
+      const innerLayout = document.createElement('div');
+      innerLayout.className = 'dock-layout';
+      const innerPanel = panel([tabBtn('id-psql-output', true)]);
+      const input = document.createElement('input');
+      innerPanel.appendChild(input);
+      innerLayout.appendChild(innerPanel);
+      secondPanel.appendChild(innerLayout);
+      input.focus();
+
+      expect(cycledIds()).toEqual([
+        'rc-dock-tab-btn-id-psql-1',
+        'rc-dock-tab-btn-id-psql-2',
+      ]);
+    });
+  });
+
   /* In the workspace layout every workspace has a top-level dock layout of
    * its own and only the current one is shown. The Default workspace's
    * always comes first in the DOM, so with Schema Diff shown the shortcut
