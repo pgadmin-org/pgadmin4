@@ -95,13 +95,45 @@ EOF
   chmod 755 "${DESKTOPROOT}/DEBIAN/postinst"
 fi
 
+# The shared libraries the Electron binary is linked against (its DT_NEEDED
+# entries, less the libffmpeg.so it bundles), so that the desktop package
+# starts on a minimal install that has no other GUI application. Packages
+# renamed by the 64-bit time_t transition are listed as "new | old" so the
+# same package installs on Debian 12 and Ubuntu 22.04 as well as on Debian 13
+# and Ubuntu 24.04 onwards. Re-check with readelf -d when bumping Electron.
+ELECTRON_DEPENDS="libasound2t64 | libasound2, \
+libatk-bridge2.0-0t64 | libatk-bridge2.0-0, \
+libatk1.0-0t64 | libatk1.0-0, \
+libatspi2.0-0t64 | libatspi2.0-0, \
+libc6, \
+libcairo2, \
+libcups2t64 | libcups2, \
+libdbus-1-3, \
+libexpat1, \
+libgbm1, \
+libgcc-s1, \
+libglib2.0-0t64 | libglib2.0-0, \
+libgtk-3-0t64 | libgtk-3-0, \
+libnspr4, \
+libnss3, \
+libpango-1.0-0, \
+libudev1, \
+libx11-6, \
+libxcb1, \
+libxcomposite1, \
+libxdamage1, \
+libxext6, \
+libxfixes3, \
+libxkbcommon0, \
+libxrandr2"
+
 cat << EOF > "${DESKTOPROOT}/DEBIAN/control"
 Package: ${APP_NAME}-desktop
 Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
 Section: database
 Priority: optional
-Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils, python-dbus | python3-dbus
+Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils, python-dbus | python3-dbus, ${ELECTRON_DEPENDS}
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 EOF

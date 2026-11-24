@@ -95,6 +95,44 @@ rpmbuild --define "pga_build_root ${BUILDROOT}" -bb "${BUILDROOT}/server.spec"
 # Create the Redhat packaging stuffs for the desktop
 echo "Creating the desktop package..."
 
+# Automatic dependency generation is turned off below, so list the shared
+# libraries the Electron binary is linked against (its DT_NEEDED entries, less
+# the libffmpeg.so it bundles) by soname, so that the desktop package starts on
+# a minimal install. Electron only ships 64-bit Linux builds. Re-check with
+# readelf -d when bumping Electron.
+ELECTRON_REQUIRES="libasound.so.2()(64bit), \
+libatk-1.0.so.0()(64bit), \
+libatk-bridge-2.0.so.0()(64bit), \
+libatspi.so.0()(64bit), \
+libc.so.6()(64bit), \
+libcairo.so.2()(64bit), \
+libcups.so.2()(64bit), \
+libdbus-1.so.3()(64bit), \
+libdl.so.2()(64bit), \
+libexpat.so.1()(64bit), \
+libgbm.so.1()(64bit), \
+libgcc_s.so.1()(64bit), \
+libgio-2.0.so.0()(64bit), \
+libglib-2.0.so.0()(64bit), \
+libgobject-2.0.so.0()(64bit), \
+libgtk-3.so.0()(64bit), \
+libm.so.6()(64bit), \
+libnspr4.so()(64bit), \
+libnss3.so()(64bit), \
+libnssutil3.so()(64bit), \
+libpango-1.0.so.0()(64bit), \
+libpthread.so.0()(64bit), \
+libsmime3.so()(64bit), \
+libudev.so.1()(64bit), \
+libX11.so.6()(64bit), \
+libxcb.so.1()(64bit), \
+libXcomposite.so.1()(64bit), \
+libXdamage.so.1()(64bit), \
+libXext.so.6()(64bit), \
+libXfixes.so.3()(64bit), \
+libxkbcommon.so.0()(64bit), \
+libXrandr.so.2()(64bit)"
+
 cat << EOF > "${BUILDROOT}/desktop.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
@@ -109,7 +147,7 @@ Release:	1%{?dist}
 Summary:	The desktop user interface for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
-Requires:	${APP_NAME}-server = ${RPM_VERSION}, libatomic, xdg-utils
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, libatomic, xdg-utils, ${ELECTRON_REQUIRES}
 
 %description
 The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
