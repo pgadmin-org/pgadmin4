@@ -725,3 +725,31 @@ if (!Math.ceil10) {
     return decimalAdjust('ceil', value, exp);
   };
 }
+
+/*
+ * Run callback when this document goes away: its browser tab is closed, it
+ * navigates elsewhere, or the tool's iframe is removed from the pgAdmin layout
+ * when its tab is closed. Chrome no longer runs 'unload' handlers by default,
+ * but Chrome and Firefox both fire 'pagehide' in all of these cases.
+ *
+ * 'pagehide' also fires when the page is put into the back/forward cache. The
+ * callback has released the server-side state by then, so a page restored
+ * from that cache is reloaded rather than left using a closed session.
+ *
+ * onRestore replaces the reload, for tests. Returns a function that removes
+ * the listeners.
+ */
+export function registerPageHideHandler(callback,
+  onRestore=()=>window.location.reload()) {
+  const onPageShow = (e)=>{
+    if(e.persisted) {
+      onRestore();
+    }
+  };
+  window.addEventListener('pagehide', callback);
+  window.addEventListener('pageshow', onPageShow);
+  return ()=>{
+    window.removeEventListener('pagehide', callback);
+    window.removeEventListener('pageshow', onPageShow);
+  };
+}

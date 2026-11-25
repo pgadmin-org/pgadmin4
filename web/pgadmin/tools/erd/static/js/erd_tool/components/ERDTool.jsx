@@ -30,6 +30,7 @@ import { Box } from '@mui/material';
 import EventBus from '../../../../../../static/js/helpers/EventBus';
 import { ERD_EVENTS } from '../ERDConstants';
 import getApiInstance, { callFetch, parseApiError } from '../../../../../../static/js/api_instance';
+import { registerPageHideHandler } from '../../../../../../static/js/utils';
 import { openSocket, socketApiGet } from '../../../../../../static/js/socket_instance';
 import { LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import usePreferences from '../../../../../../preferences/static/js/store';
@@ -339,6 +340,10 @@ export default class ERDTool extends React.Component {
     this.context.alert(gettext('Error'), parseApiError(err));
   }
 
+  componentWillUnmount() {
+    this.deregisterPageHide?.();
+  }
+
   async componentDidMount() {
     this.setLoading(gettext('Preparing...'));
     this.registerEvents();
@@ -374,7 +379,7 @@ export default class ERDTool extends React.Component {
       }
     });
 
-    window.addEventListener('unload', ()=>{
+    this.deregisterPageHide = registerPageHideHandler(()=>{
       /* Using fetch with keepalive as the browser may
       cancel the axios request on tab close. keepalive will
       make sure the request is completed */

@@ -18,6 +18,7 @@ import Loader from 'sources/components/Loader';
 import Layout, { LayoutDocker } from '../../../../../static/js/helpers/Layout';
 import EventBus from '../../../../../static/js/helpers/EventBus';
 import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
+import { registerPageHideHandler } from '../../../../../static/js/utils';
 
 import { PANELS, DEBUGGER_EVENTS, MENUS } from '../DebuggerConstants';
 import { retrieveNodeName } from '../../../../sqleditor/static/js/show_view_data';
@@ -378,11 +379,21 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
         .then(()=>{/* Success */})
         .catch((err)=>console.error(err));
     };
-    window.addEventListener('unload', closeConn);
-
-    return ()=>{
-      window.removeEventListener('unload', closeConn);
+    /* A page restored from the back/forward cache cannot be reloaded like the
+    other tools, because closeConn has already removed the debugging session
+    that the server needs to render it. Ask for the debugger to be restarted. */
+    const onRestore = ()=>{
+      pgAdmin.Browser.notifier.alertText(
+        gettext('Debugger Error'),
+        gettext('The debugging session was closed when this page was left. Please start the debugger again.'),
+        ()=>{
+          if (panelId) {
+            panelDocker.close(panelId, true);
+          }
+        }
+      );
     };
+    return registerPageHideHandler(closeConn, onRestore);
   }, []);
 
   const triggerClearBreakpoint = () => {
