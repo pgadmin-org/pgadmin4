@@ -86,6 +86,7 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_user_session_client()
         self._test_clear_revokes()
         self._test_deploy_user()
+        self._test_deploy_user_start_fails()
         self._test_deploy_user_not_signed_in()
 
     def _verify(self, routes, mint_error=None):
@@ -378,15 +379,20 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
                 self.assertIsNone(left)
         self.assertNotIn('<iframe', body['data']['message'])
 
-        # Any other OAuth error ends the sign-in; a network error keeps it
-        # for the next poll.
-        for error, kept in ((Auth0Error('invalid_grant', 'bad', 400), False),
-                            (StarfleetError('timed out'), True)):
-            auth0 = MagicMock()
-            auth0.poll_device_code.side_effect = error
-            resp, _, left, _ = self._poll(auth0, pending, 1010.0)
-            self.assertEqual(resp.status_code, 400)
-            self.assertEqual(left is not None, kept)
+        # Any other OAuth error ends the sign-in.
+        auth0 = MagicMock()
+        auth0.poll_device_code.side_effect = Auth0Error(
+            'invalid_grant', 'bad', 400)
+        resp, _, left, _ = self._poll(auth0, pending, 1010.0)
+        self.assertEqual(resp.status_code, 400)
+        self.assertIsNone(left)
+
+        # A network error keeps it, and the wizard keeps polling.
+        auth0.poll_device_code.side_effect = StarfleetError('timed out')
+        with patch.object(self.app.logger, 'warning'):
+            resp, body, left, _ = self._poll(auth0, pending, 1010.0)
+        self.assertEqual(body['data'], {'status': 'pending', 'interval': 5})
+        self.assertEqual(left['next_poll_at'], 1015.0)
 
     def _test_signin_poll_complete(self):
         from pgadmin.misc.cloud import starfleet as sf
@@ -497,7 +503,7 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         auth0.revoke.assert_called_once_with('r1')
         warn.assert_called_once()
 
-    def _deploy_user(self, state):
+    def _deploy_user(self, state, start_error=None):
         from flask import session
         from pgadmin.misc.cloud import starfleet as sf
         data = {
@@ -508,6 +514,7 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
             'db_details': {'gid': 1}}
         process = MagicMock()
         process.id = 'job-1'
+        process.start.side_effect = start_error
         with self.app.test_request_context('/'), \
                 patch.object(sf, '_auth0_app', return_value=AUTH0_APP), \
                 patch.object(sf, '_create_server', return_value=42) as cs, \
@@ -540,6 +547,16 @@ class TestStarfleetBlueprint(_SkipServerSetUpMixin, BaseTestGenerator):
         self.assertNotIn('refresh_token', sess)
         self.assertNotIn('refresh_token', jobs['job-1'])
         self.assertEqual(jobs['job-1']['access_token'], 'a1')
+
+    def _test_deploy_user_start_fails(self):
+        # The session keeps the refresh token, so clearing it revokes it.
+        status, _, _, _, sess, jobs = self._deploy_user({
+            'auth': 'user', 'access_token': 'a1', 'refresh_token': 'r1',
+            'expires_at': 5000.0, 'tenant_ids': ['T-1'],
+            'tenant_id': 'T-1'}, start_error=RuntimeError('no'))
+        self.assertFalse(status)
+        self.assertEqual(sess['refresh_token'], 'r1')
+        self.assertEqual(jobs, {})
 
     def _test_deploy_user_not_signed_in(self):
         status, cs, bp, _, _, _ = self._deploy_user(

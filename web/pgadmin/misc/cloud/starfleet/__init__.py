@@ -322,11 +322,15 @@ def signin_poll():
         session.force_write = True
         return _signin_status('pending', interval=pending['interval'])
     except StarfleetError as e:
-        # Possibly transient, so keep the code and let the wizard retry.
+        # Possibly transient, so keep the code and carry on polling; its
+        # expiry still ends the sign-in.
+        current_app.logger.warning(
+            'Could not check the pgEdge sign-in: %s',
+            sanitize_external_text(str(e)))
         pending = dict(pending, next_poll_at=now + pending['interval'])
         session[SIGNIN_KEY] = pending
         session.force_write = True
-        return _error(e)
+        return _signin_status('pending', interval=pending['interval'])
 
     session.pop(SIGNIN_KEY, None)
     claims = token_claims(tokens['access_token'])
@@ -512,8 +516,10 @@ def deploy_on_starfleet(data):
             **ca_file_env(),
         })
         p.update_server_id(p.id, sid)
-        _keep_token_for_job(p.id)
         p.start()
+        # Only once the job exists: if it did not start, the session keeps
+        # the refresh token, so clearing the session still revokes it.
+        _keep_token_for_job(p.id)
         return True, p, {'label': inst['name'], 'sid': sid}
     except Exception as e:
         current_app.logger.exception(e)
