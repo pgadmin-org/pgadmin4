@@ -359,6 +359,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                                     'columns'],
                              'foreign_key': ['condeferrable', 'condeferred',
                                              'confupdtype', 'confdeltype',
+                                             'confdelsetcols',
                                              'confmatchtype', 'convalidated',
                                              'conislocal', 'refnsp', 'reftab']
                              }
