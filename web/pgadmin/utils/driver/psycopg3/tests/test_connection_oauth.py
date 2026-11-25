@@ -625,8 +625,10 @@ class TestOAuthConnection(
     @patch.object(pg_oauth2, 'install_oauth_hook')
     @patch.object(pg_oauth2, 'get_postgres_oauth_token')
     @patch.object(connection_module.psycopg, 'connect')
-    def case_cancel_creates_connection_inside_token_context(
+    def case_cancel_requests_no_token(
             self, psycopg_connect, get_token, install_hook):
+        # libpq's cancel request carries no credentials, so cancelling
+        # neither requests a token nor opens a connection.
         manager = self._make_manager(
             method='exchange',
             client_id='postgres-cluster',
@@ -635,59 +637,27 @@ class TestOAuthConnection(
         connection = self._make_connection(manager)
 
         connection._Connection__backend_pid = 12345
+        connection.conn = self._make_psycopg_connection()
         manager.connection.return_value = connection
-
-        pg_connection = self._make_psycopg_connection()
-        get_token.return_value = 'exchanged-token'
-
-        def connect_with_token(*args, **kwargs):
-            self.assertEqual(
-                pg_oauth2._oauth_token.get(),
-                'exchanged-token',
-            )
-            return pg_connection
-
-        psycopg_connect.side_effect = connect_with_token
 
         with self.app.test_request_context('/'):
             with ExitStack() as stack:
                 self._apply_common_patches(stack)
-
-                with pg_oauth2.oauth_token_context('outer-token'):
-                    status, message = connection.cancel_transaction(
-                        connection.conn_id,
-                    )
-
-                    self.assertEqual(
-                        pg_oauth2._oauth_token.get(),
-                        'outer-token',
-                    )
+                status, message = connection.cancel_transaction(
+                    connection.conn_id,
+                )
 
         self.assertTrue(status, message)
-        self.assertIsNone(pg_oauth2._oauth_token.get())
-
-        install_hook.assert_called_once_with()
-        get_token.assert_called_once_with(
-            AUTH_METHOD_OAUTH_EXCHANGE,
-            'postgres-cluster',
-            'openid',
-            ISSUER,
-        )
-        psycopg_connect.assert_called_once_with(
-            manager.create_connection_string.return_value,
-            cursor_factory=connection_module.DictCursor,
-        )
-        pg_connection.cursor.return_value.execute.assert_called_once_with(
-            'SELECT pg_cancel_backend(12345);',
-        )
-        pg_connection.close.assert_called_once_with()
+        connection.conn.cancel.assert_called_once_with()
+        install_hook.assert_not_called()
+        get_token.assert_not_called()
+        psycopg_connect.assert_not_called()
+        manager.create_connection_string.assert_not_called()
 
     def case_auxiliary_connections_handle_oauth_token_errors(self):
         cases = (
             ('reset', pg_oauth2.OAuthTokenError),
             ('reset', pg_oauth2.OAuthRequestContextRequired),
-            ('cancel', pg_oauth2.OAuthTokenError),
-            ('cancel', pg_oauth2.OAuthRequestContextRequired),
         )
 
         for operation, error_type in cases:
@@ -732,14 +702,7 @@ class TestOAuthConnection(
                             )
                         )
 
-                        if operation == 'reset':
-                            status, message = connection.reset()
-                        else:
-                            status, message = (
-                                connection.cancel_transaction(
-                                    connection.conn_id,
-                                )
-                            )
+                        status, message = connection.reset()
 
                 self.assertFalse(status)
                 self.assertEqual(message, error_message)

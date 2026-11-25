@@ -77,7 +77,7 @@ class EntraConnectionTest(TokenAuthConnectionTest):
             'case_an_expired_login_asks_to_sign_in_again',
             'case_other_identity_provider_errors_do_not_ask_to_sign_in',
             'case_no_token_reaches_an_error_message',
-        ) for operation in ('connect', 'async_connect', 'reset', 'cancel')
+        ) for operation in ('connect', 'async_connect', 'reset')
     ]
 
     def setUp(self):

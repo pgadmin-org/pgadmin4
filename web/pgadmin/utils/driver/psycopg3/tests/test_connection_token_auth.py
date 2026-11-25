@@ -9,9 +9,9 @@
 
 """The driver asks the token authentication registry for the server's
 token provider and token delivery wherever it opens a physical connection:
-connect, async connect, reset and cancel. A token delivered as the password
-is used for that connection only and does not depend on libpq 18 or on the
-psycopg implementation."""
+connect, async connect and reset. A token delivered as the password is used
+for that connection only and does not depend on libpq 18 or on the psycopg
+implementation. Cancelling a query asks for no token at all."""
 
 import unittest
 from contextlib import ExitStack
@@ -28,7 +28,7 @@ from pgadmin.utils.route import BaseTestGenerator
 
 METHOD = 'test_password_token'
 LIBPQ_ERROR = 'This test libpq is not version 18.'
-OPERATIONS = ('connect', 'async_connect', 'reset', 'cancel')
+OPERATIONS = ('connect', 'async_connect', 'reset')
 
 
 class _Provider:
@@ -309,6 +309,71 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         self.assertFalse(status)
         self.assertIn('unregistered_method', message)
         target.assert_not_called()
+
+
+class TokenCancelTest(BaseTestGenerator):
+    """A token method cancels a query with libpq's cancel request, which
+    carries no credentials, so no token is requested; this holds when a
+    stale manager, such as a non-owner's after the owner of a shared server
+    changed its endpoint, is released with a query running."""
+
+    scenarios = [
+        ('cancel', dict(release=False, error=None)),
+        ('cancel failure', dict(release=False, error='cancel refused')),
+        ('release of a stale manager', dict(release=True, error=None)),
+    ]
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.app = Flask(__name__)
+        self.app.config.update(SECRET_KEY='unit-test', TESTING=True)
+        Babel(self.app)
+        self.provider = _Provider()
+        token_auth.register_token_auth_method(
+            METHOD, self.provider, token_auth.PasswordDelivery())
+
+    def tearDown(self):
+        token_auth.unregister_token_auth_method(METHOD)
+
+    def runTest(self):
+        from pgadmin.utils.driver.psycopg3.server_manager import \
+            ServerManager
+        manager = ServerManager.__new__(ServerManager)
+        manager.auth_method = METHOD
+        manager.connection_params = {'sslmode': 'verify-full'}
+        manager.password = None
+        manager.stop_ssh_tunnel = MagicMock()
+        manager.update_session = MagicMock()
+        manager.create_connection_string = MagicMock()
+
+        connection = TestOAuthConnection._make_connection(manager)
+        connection.conn_id = 'CONN:query'
+        connection._Connection__backend_pid = 12345
+        connection._release = MagicMock()
+        pg = TestOAuthConnection._make_psycopg_connection()
+        if self.error:
+            pg.cancel.side_effect = connection_module.psycopg.Error(
+                self.error)
+        connection.conn = pg
+        manager.connection = MagicMock(return_value=connection)
+        manager.connections = {connection.conn_id: connection}
+
+        with self.app.test_request_context('/'), ExitStack() as stack:
+            TestOAuthConnection._apply_common_patches(stack)
+            connect = stack.enter_context(patch.object(
+                connection_module.psycopg, 'connect'))
+            if self.release:
+                manager.release()
+                connection._release.assert_called_once_with()
+            else:
+                status, message = connection.cancel_transaction('query')
+                self.assertEqual(status, self.error is None)
+                self.assertEqual(message, self.error or '')
+
+        pg.cancel.assert_called_once_with()
+        self.assertEqual(self.provider.calls, [])
+        connect.assert_not_called()
+        manager.create_connection_string.assert_not_called()
 
 
 class TokenAuthRegistryTest(BaseTestGenerator):

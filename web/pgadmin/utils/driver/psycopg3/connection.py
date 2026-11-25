@@ -2185,6 +2185,22 @@ Failed to reset the connection to the server due to following error:
         status = True
         msg = ''
 
+        # A token method cancels with libpq's cancel request, which carries
+        # only the backend's cancel key: no token is requested or sent to
+        # cancel a query, even by a manager whose settings are stale and
+        # being released (see Driver.connection_manager()).
+        if cancel_conn.__backend_pid == self.__backend_pid and \
+                self.manager.auth_method not in (
+                    None, '', AUTH_METHOD_PASSWORD):
+            if cancel_conn.conn is None or cancel_conn.conn.closed:
+                return False, gettext(
+                    "Not connected to the database server.")
+            try:
+                cancel_conn.conn.cancel()
+            except psycopg.Error as e:
+                return False, str(e)
+            return True, ''
+
         # if backend pid is same then create a new connection
         # to cancel the query and release it.
         if cancel_conn.__backend_pid == self.__backend_pid:
