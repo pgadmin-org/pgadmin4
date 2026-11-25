@@ -15,6 +15,8 @@ from unittest.mock import MagicMock, patch
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.utils import \
     parse_seclabels_from_db
+from pgadmin.browser.server_groups.servers.databases.utils import \
+    parse_sec_labels_from_db
 
 COLUMN_UTILS = ('pgadmin.browser.server_groups.servers.databases.schemas.'
                 'tables.columns.utils')
@@ -30,6 +32,10 @@ class TestParseSecLabelsFromDb(BaseTestGenerator):
          dict(test_method='test_label_with_equals')),
         ('Empty label',
          dict(test_method='test_empty_label')),
+        ('Label spanning several lines',
+         dict(test_method='test_multiline_label')),
+        ('Database, domain, function and foreign table parser',
+         dict(test_method='test_sec_labels_wrapper')),
         ('Several labels keep their order',
          dict(test_method='test_several_labels')),
         ('No labels',
@@ -63,6 +69,26 @@ class TestParseSecLabelsFromDb(BaseTestGenerator):
     def test_empty_label(self):
         self.assertEqual(parse_seclabels_from_db(['anon=']),
                          [{'provider': 'anon', 'label': ''}])
+
+    def test_multiline_label(self):
+        # A later line containing "=" must not move the split, and a
+        # trailing newline must survive.
+        self.assertEqual(
+            parse_seclabels_from_db([
+                'demo=line one\nline two',
+                'demo=a\nb=c',
+                'demo=trailing\n']),
+            [{'provider': 'demo', 'label': 'line one\nline two'},
+             {'provider': 'demo', 'label': 'a\nb=c'},
+             {'provider': 'demo', 'label': 'trailing\n'}])
+
+    def test_sec_labels_wrapper(self):
+        self.assertEqual(
+            parse_sec_labels_from_db(['demo=a\nb=c', 'anon=x=y']),
+            {'seclabels': [{'provider': 'demo', 'label': 'a\nb=c'},
+                           {'provider': 'anon', 'label': 'x=y'}]})
+        self.assertEqual(parse_sec_labels_from_db(None),
+                         {'seclabels': []})
 
     def test_several_labels(self):
         self.assertEqual(

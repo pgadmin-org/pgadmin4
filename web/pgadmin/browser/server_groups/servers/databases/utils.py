@@ -9,6 +9,9 @@
 
 """Database helper utilities"""
 
+from pgadmin.browser.server_groups.servers.utils import \
+    parse_seclabels_from_db
+
 
 def parse_sec_labels_from_db(db_sec_labels):
     """
@@ -22,18 +25,9 @@ def parse_sec_labels_from_db(db_sec_labels):
             {'seclabels': [{'provider': 'provider_name', 'label':
             'label'},...]}
     """
-    sec_lbls = []
-
-    if db_sec_labels is not None:
-        for sec in db_sec_labels:
-            import re
-            sec = re.search(r'([^=]+)=(.*$)', sec)
-            sec_lbls.append({
-                'provider': sec.group(1),
-                'label': sec.group(2)
-            })
-
-    return {"seclabels": sec_lbls}
+    # Use the shared parser, which splits on the first "=" only, so a label
+    # containing "=" or a newline keeps its provider and its full text.
+    return {"seclabels": parse_seclabels_from_db(db_sec_labels or [])}
 
 
 def parse_variables_from_db(db_variables):
