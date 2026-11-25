@@ -881,6 +881,24 @@ AZURE_CREDENTIAL_CACHE_DIR = os.path.join(DATA_DIR, 'azurecredentialcache')
 
 STARFLEET_API_URL = 'https://api.pgedge.com'
 
+# The Auth0 applications used for "Sign in with pgEdge" in the deployment
+# wizard, keyed by STARFLEET_API_URL. Sign-in uses the OAuth 2.0 device
+# authorization grant, so the application must allow that grant. The
+# option is offered only when STARFLEET_API_URL has an entry here; API
+# client credentials can always be used instead.
+STARFLEET_AUTH0_APPS = {
+    'https://api.pgedge.com': {
+        'domain': 'auth.pgedge.com',
+        'audience': 'https://api.pgedge.com',
+        'client_id': 'SCexy9LhkGBmBGrBeH2K9jeapuKb6kQb',
+    },
+    'https://devapi.pgedge.com': {
+        'domain': 'devauth.pgedge.com',
+        'audience': 'https://devapi.pgedge.com',
+        'client_id': 'ZHg4rTGZCCZf1DpaWdj2agAm7aDRvCUj',
+    },
+}
+
 ##########################################################################
 # OAuth2 Configuration
 ##########################################################################

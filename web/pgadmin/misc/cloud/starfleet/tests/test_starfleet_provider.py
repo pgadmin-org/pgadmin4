@@ -103,6 +103,9 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
         self._test_api_error(starfleet)
         self._test_poll_errors(starfleet)
         self._test_malformed_create(starfleet)
+        self._test_user_signin_client(starfleet)
+        self._test_user_signin_refresh(starfleet)
+        self._test_user_signin_revoked(starfleet)
 
     def _test_managed_success(self, starfleet):
         prov, args = _parse(starfleet, MANAGED_ARGS)
@@ -260,3 +263,66 @@ class TestStarfleetProvider(_SkipServerSetUpMixin, BaseTestGenerator):
             self.assertEqual(code, 1)
             self.assertIn('Unexpected response from pgEdge Starfleet', err)
             self.assertNotIn('"instance"', out)
+
+    def _user_provider(self, starfleet, refresh=True):
+        env = {'STARFLEET_ACCESS_TOKEN': 'a1',
+               'STARFLEET_TOKEN_EXPIRES_AT': '5000.0',
+               'STARFLEET_TENANT_ID': 'T-1',
+               'STARFLEET_API_URL': 'https://api.example.com'}
+        if refresh:
+            env.update({'STARFLEET_REFRESH_TOKEN': 'r1',
+                        'STARFLEET_AUTH0_DOMAIN': 'auth.example.com',
+                        'STARFLEET_AUTH0_CLIENT_ID': 'app-id'})
+        with patch.dict(os.environ, env, clear=True):
+            return _parse(starfleet, MANAGED_ARGS)
+
+    def _test_user_signin_client(self, starfleet):
+        for refresh in (True, False):
+            prov, _ = self._user_provider(starfleet, refresh)
+            client = prov._client()
+            self.assertEqual((client.token, client.expires_at,
+                              client.tenant_id),
+                             ('a1', 5000.0, 'T-1'))
+            self.assertEqual(client._can_mint(), refresh)
+        # API client credentials win when both are present.
+        with patch.dict(os.environ, {'STARFLEET_CLIENT_ID': 'cid',
+                                     'STARFLEET_CLIENT_SECRET': 'sec',
+                                     'STARFLEET_ACCESS_TOKEN': 'a1'},
+                        clear=True):
+            prov, _ = _parse(starfleet, MANAGED_ARGS)
+        self.assertIsNone(prov._client().tenant_id)
+
+    def _test_user_signin_refresh(self, starfleet):
+        prov, _ = self._user_provider(starfleet)
+        with patch.object(starfleet.Auth0Client, 'refresh', side_effect=[
+                {'access_token': 'a2', 'refresh_token': 'r2',
+                 'expires_in': 600},
+                {'access_token': 'a3', 'refresh_token': None,
+                 'expires_in': 600}]) as refresh:
+            self.assertEqual(prov._refresh(), ('a2', 600))
+            self.assertEqual(prov._refresh(), ('a3', 600))
+        # Auth0 rotates the refresh token; the newest one is used next.
+        self.assertEqual([c.args[0] for c in refresh.call_args_list],
+                         ['r1', 'r2'])
+        self.assertEqual(prov._refresh_token, 'r2')
+
+    def _test_user_signin_revoked(self, starfleet):
+        from utils.starfleet_api import StarfleetError
+        # The refresh token is revoked when the job ends, however it ends,
+        # and a failure to revoke does not change the job's outcome.
+        for statuses, revoke_error, expected in (
+                (['available'], None, 0),
+                (['failed'], None, 1),
+                (['available'], StarfleetError('r1 refused'), 0)):
+            prov, args = self._user_provider(starfleet)
+            with patch.object(starfleet.Auth0Client, 'revoke',
+                              side_effect=revoke_error) as revoke:
+                code, out, err = _run(prov, args, FakeClient(statuses))
+            self.assertEqual(code, expected)
+            revoke.assert_called_once_with('r1')
+            self.assertNotIn('r1', out)
+        # Without a refresh token there is nothing to revoke.
+        prov, args = self._user_provider(starfleet, refresh=False)
+        with patch.object(starfleet.Auth0Client, 'revoke') as revoke:
+            _run(prov, args, FakeClient(['available']))
+        revoke.assert_not_called()

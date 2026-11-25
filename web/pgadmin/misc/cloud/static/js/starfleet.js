@@ -17,8 +17,10 @@ import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
 import {
   StarfleetCredSchema, StarfleetInstanceSchema, StarfleetDatabaseSchema,
-  isValidStarfleetName, parseAllowlist,
+  isValidStarfleetName, parseAllowlist, AUTH_USER,
 } from './starfleet_schema.ui';
+import { CloudWizardEventsContext } from './CloudWizard';
+import { MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 
 function loadOptions(props, name, endpoint) {
   return getNodeAjaxOptions(name, pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
@@ -28,12 +30,106 @@ function loadOptions(props, name, endpoint) {
   });
 }
 
+function errorMessage(error, fallback) {
+  return error?.response?.data?.errormsg || error?.message || fallback;
+}
+
+// Sign in with the device authorization grant: start it, hand the code to
+// onCode, then poll pgAdmin (which makes at most one token request per
+// call) at the interval it gives until the sign-in ends. Resolves to the
+// signed-in tenants, or to null if isCancelled() turns true first.
+export function signInToStarfleet(onCode, isCancelled = ()=>false) {
+  const api = getApiInstance();
+  return api.post(url_for('starfleet.signin_start')).then((res)=>{
+    const code = res.data.data;
+    onCode(code);
+    return new Promise((resolve, reject)=>{
+      const poll = (interval)=>{
+        setTimeout(()=>{
+          if (isCancelled()) {
+            resolve(null);
+            return;
+          }
+          api.post(url_for('starfleet.signin_poll')).then((r)=>{
+            if (isCancelled()) {
+              resolve(null);
+              return;
+            }
+            const data = r.data.data;
+            if (data.status == 'pending') {
+              poll(data.interval || interval);
+            } else if (data.status == 'complete') {
+              resolve(data);
+            } else {
+              reject(new Error(data.message));
+            }
+          }).catch(reject);
+        }, (interval || 5) * 1000);
+      };
+      poll(code.interval);
+    });
+  });
+}
+
+// Check the credentials step before moving on: the API client's
+// credentials, or the tenant chosen for a user sign-in.
+export function verifyStarfleetCredentials(cred) {
+  if (cred.auth_method == AUTH_USER) {
+    return getApiInstance().post(url_for('starfleet.select_tenant'),
+      {tenant_id: cred.tenant_id});
+  }
+  return getApiInstance().post(url_for('starfleet.verify_credentials'), {
+    cloud: 'starfleet',
+    secret: {client_id: cred.client_id, client_secret: cred.client_secret},
+  });
+}
+
+// What the deployment request carries: a user sign-in's tokens stay on
+// the server, so only the API client's credentials are ever sent.
+export function starfleetSecret(cred) {
+  if (cred.auth_method == AUTH_USER) return {auth_method: AUTH_USER};
+  return {auth_method: 'api_client', client_id: cred.client_id,
+    client_secret: cred.client_secret};
+}
+
 export function StarfleetCredentials(props) {
   const [credSchema, setCredSchema] = React.useState();
+  const eventBus = React.useContext(CloudWizardEventsContext);
 
-  React.useMemo(() => {
-    setCredSchema(new StarfleetCredSchema());
+  React.useEffect(() => {
+    let cancelled = false;
+    const isCancelled = ()=>cancelled;
+    const setMessage = (msg)=>{
+      if (!cancelled) eventBus?.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', msg);
+    };
+    const build = (userSignin)=>{
+      if (cancelled) return;
+      setCredSchema(new StarfleetCredSchema({
+        userSignin,
+        signIn: (onCode)=>{
+          setMessage(['', '']);
+          return signInToStarfleet(onCode, isCancelled).then((result)=>{
+            if (result) {
+              setMessage([MESSAGE_TYPE.SUCCESS, gettext('Signed in. Click the Next button to proceed.')]);
+            }
+            return result;
+          }).catch((error)=>{
+            setMessage([MESSAGE_TYPE.ERROR, errorMessage(error,
+              gettext('Error while signing in to pgEdge Starfleet.'))]);
+            throw error;
+          });
+        },
+      }));
+    };
+    getApiInstance().get(url_for('starfleet.signin_options'))
+      .then((res)=>build(Boolean(res.data?.data?.user_signin)))
+      .catch(()=>build(false));
+    return ()=>{ cancelled = true; };
   }, [props.cloudProvider]);
+
+  // SchemaView takes its initial data from the first schema it is given,
+  // so wait to learn whether user sign-in is available.
+  if (!credSchema) return null;
 
   return <SchemaView
     formType={'dialog'}
@@ -147,6 +243,9 @@ StarfleetDatabaseDetails.propTypes = {
 
 // Validation functions
 export function validateStarfleetStep1(cred) {
+  if (cred.auth_method == AUTH_USER) {
+    return !cred.is_signed_in || isEmptyString(cred.tenant_id);
+  }
   return isEmptyString(cred.client_id) || isEmptyString(cred.client_secret);
 }
 

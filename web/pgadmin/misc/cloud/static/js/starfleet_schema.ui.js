@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
+import _ from 'lodash';
 
 const MAX_ALLOWLIST = 50;
 const IPV4_OCTET = '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
@@ -35,23 +36,124 @@ export function parseAllowlist(text) {
   return {cidrs, error: null};
 }
 
+export const AUTH_USER = 'user';
+export const AUTH_API_CLIENT = 'api_client';
+
+// The note shown whilst a sign-in waits for the user, and once it is done.
+export function signInNote(state) {
+  if (state.is_signed_in) {
+    return gettext('Signed in to pgEdge Starfleet.');
+  }
+  if (!state.user_code) return '';
+  const url = state.verification_uri_complete || state.verification_uri;
+  const link = `<a href="${_.escape(url)}" target="_blank" rel="noopener noreferrer">${_.escape(url)}</a>`;
+  return gettext('Open %s in a web browser on any device, sign in with your pgEdge account, and check that the page shows the code <strong>%s</strong> before confirming it. Only confirm a code that you requested yourself.',
+    link, _.escape(state.user_code));
+}
+
 export class StarfleetCredSchema extends BaseUISchema {
-  constructor(initValues = {}) {
-    super({client_id: '', client_secret: '', ...initValues});
+  // fieldOptions.userSignin says whether user sign-in is available, and
+  // fieldOptions.signIn(onCode) runs one, resolving to its result.
+  constructor(fieldOptions = {}, initValues = {}) {
+    super({
+      auth_method: fieldOptions.userSignin ? AUTH_USER : AUTH_API_CLIENT,
+      client_id: '', client_secret: '',
+      is_signing_in: false, is_signed_in: false,
+      user_code: '', verification_uri: '', verification_uri_complete: '',
+      tenants: [], tenant_id: '',
+      ...initValues,
+    });
+    this.fieldOptions = {...fieldOptions};
+  }
+
+  setData(data) {
+    const schemaState = this.state;
+    if (!schemaState) return;
+    // Through the schema state, so that the fields depending on these
+    // values are re-evaluated.
+    Object.entries(data).forEach(([key, value]) => {
+      schemaState.setUnpreparedData([key], value);
+    });
+  }
+
+  signIn() {
+    this.setData({is_signing_in: true, is_signed_in: false, user_code: '',
+      verification_uri: '', verification_uri_complete: '', tenants: [],
+      tenant_id: ''});
+    return this.fieldOptions.signIn((code)=>{
+      this.setData({
+        user_code: code.user_code,
+        verification_uri: code.verification_uri,
+        verification_uri_complete: code.verification_uri_complete || '',
+      });
+    }).then((result)=>{
+      if (!result) return;
+      this.setData({is_signing_in: false, is_signed_in: true,
+        user_code: '', tenants: result.tenants || [],
+        tenant_id: result.tenant_id || ''});
+    }).catch(()=>{
+      this.setData({is_signing_in: false, user_code: ''});
+    });
   }
 
   get baseFields() {
+    const isUser = (state)=>state.auth_method == AUTH_USER;
     return [
       {
-        id: 'client_id', label: gettext('Auth ID'), type: 'text',
+        id: 'auth_method', label: gettext('Authenticate with'), type: 'toggle',
         mode: ['create'], noEmpty: true,
+        options: [
+          {label: gettext('Sign in with pgEdge'), value: AUTH_USER},
+          {label: gettext('API client credentials'), value: AUTH_API_CLIENT},
+        ],
+        visible: ()=>Boolean(this.fieldOptions.userSignin),
+        disabled: (state)=>state.is_signing_in,
+        helpMessage: gettext('Sign in with your pgEdge account in a web browser, or use the credentials of a pgEdge Starfleet API client.'),
+      },
+      {
+        id: 'signin_btn', mode: ['create'], type: 'button',
+        deps: ['auth_method', 'is_signing_in'],
+        btnName: gettext('Sign in'),
+        visible: isUser,
+        disabled: (state)=>state.is_signing_in,
+        onClick: ()=>{
+          // After the click has been handled, as Azure's sign-in does.
+          setTimeout(()=>this.signIn(), 0);
+        },
+      },
+      {
+        id: 'signin_note', mode: ['create'],
+        deps: ['auth_method', 'user_code', 'is_signed_in'],
+        type: (state)=>({type: 'note', text: signInNote(state)}),
+        visible: (state)=>isUser(state) && Boolean(signInNote(state)),
+        controlProps: {raw: true},
+      },
+      {
+        id: 'tenant_id', label: gettext('Tenant'), mode: ['create'],
+        deps: ['auth_method', 'tenants', 'is_signed_in'],
+        type: (state)=>({type: 'select', options: state.tenants || [],
+          controlProps: {allowClear: false}}),
+        visible: (state)=>isUser(state) && state.is_signed_in &&
+          (state.tenants || []).length > 1,
+        helpMessage: gettext('The pgEdge Starfleet tenant to create the database in.'),
+      },
+      {
+        id: 'client_id', label: gettext('Auth ID'), type: 'text',
+        mode: ['create'], deps: ['auth_method'],
+        visible: (state)=>!isUser(state),
         helpMessage: gettext('Create an API client in the pgEdge Starfleet console under Settings > API Clients.'),
       },
       {
         id: 'client_secret', label: gettext('Auth secret'), type: 'password',
-        mode: ['create'], noEmpty: true,
+        mode: ['create'], deps: ['auth_method'],
+        visible: (state)=>!isUser(state),
         controlProps: { autoComplete: 'new-password' },
       },
+      // Sign-in state that the wizard reads from the changed data.
+      ...['is_signing_in', 'is_signed_in', 'user_code', 'verification_uri',
+        'verification_uri_complete', 'tenants'].map((id)=>({
+        id, mode: ['create'], visible: false, type: '',
+      })),
     ];
   }
 }
