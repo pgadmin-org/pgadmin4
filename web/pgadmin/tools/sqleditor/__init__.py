@@ -273,6 +273,14 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
             status=410, success=0,
             errormsg=gettext("Could not find the required server.")
         )
+    if server.shared and server.user_id != current_user.id:
+        # A non-owner connects with their own method and password, as in
+        # _init_sqleditor(). Import here to avoid circular dependency.
+        from pgadmin.browser.server_groups.servers import ServerModule
+        shared_server = ServerModule.get_shared_server(server, sgid)
+        if shared_server is not None:
+            server = ServerModule.get_shared_server_properties(
+                server, shared_server)
     if kwargs.get('password', None) is None:
         kwargs['encpass'] = server.password
     else:
@@ -703,6 +711,11 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                                                 else {"did": did}))
                 status, msg, is_ask_password, user, _, _ = _connect(
                     conn_ac, **kwargs)
+                # Each physical connection gets its own token, so this one
+                # can need a new sign-in although the first did not.
+                if not status and conn_ac.sign_in_again is True:
+                    current_app.logger.error(msg)
+                    return True, sign_in_again_response(server, msg), '', ''
 
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
         current_app.logger.error(e)

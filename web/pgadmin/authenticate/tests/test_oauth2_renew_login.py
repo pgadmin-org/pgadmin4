@@ -164,3 +164,5 @@ class RenewedLoginRaisesTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 500)
         with self.tester.session_transaction() as sess:
             self.assertEqual(sess['pass_enc_key'], 'key-of-the-first-login')
+            # A second outstanding callback finds no provider context.
+            self.assertNotIn('oauth2_current_client', sess)

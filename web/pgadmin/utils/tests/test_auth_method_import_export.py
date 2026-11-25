@@ -48,6 +48,9 @@ class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
             {'Name': 'exchange', 'AuthMethod': 'oauth_exchange'},
             {'Name': 'entra', 'AuthMethod': 'entra',
              'ConnectionParameters': {'sslmode': 'verify-full'}},
+            # The format before ConnectionParameters.
+            {'Name': 'entra-legacy', 'AuthMethod': 'entra',
+             'SSLMode': 'verify-full'},
             {'Name': 'kerberos', 'KerberosAuthentication': True},
             {'Name': 'kerberos-password', 'AuthMethod': 'password',
              'KerberosAuthentication': True},
@@ -66,6 +69,9 @@ class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
              'kerberos-password': 'password',
              'token-no-kerberos': 'oauth_direct'})
         self.assertTrue(self._loaded('kerberos').kerberos_conn)
+        legacy = self._loaded('entra-legacy')
+        self.assertEqual(legacy.auth_method, 'entra')
+        self.assertEqual(legacy.connection_params['sslmode'], 'verify-full')
 
 
 class TestAuthMethodRoundTrip(_ImportExportMixin, BaseTestGenerator):
@@ -99,6 +105,9 @@ class TestAuthMethodImportRefused(_ImportExportMixin, BaseTestGenerator):
         ('Entra without SSL mode verify-full',
          dict(bad={'AuthMethod': 'entra',
                    'ConnectionParameters': {'sslmode': 'verify-ca'}},
+              expect='verify-full')),
+        ('Entra with a legacy SSLMode below verify-full',
+         dict(bad={'AuthMethod': 'entra', 'SSLMode': 'prefer'},
               expect='verify-full')),
         ('Entra over a Unix-domain socket',
          dict(bad={'AuthMethod': 'entra', 'Host': '/var/run/postgresql',

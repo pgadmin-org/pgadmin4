@@ -171,7 +171,9 @@ def init_app(app):
         # OAuth2 provider name and re-look-up the auth-source from
         # current_app's registry.
         from pgadmin.authenticate import AuthSourceManager, get_auth_sources
-        oauth2_client = session.get('oauth2_current_client')
+        # Consumed here, so a callback that fails before login() returns
+        # leaves no provider context for another outstanding callback.
+        oauth2_client = session.pop('oauth2_current_client', None)
         if not oauth2_client:
             current_app.logger.warning(
                 "OAuth2 callback received without provider context; "
@@ -209,14 +211,12 @@ def init_app(app):
                 'The login was renewed as a different user.')
         if status:
             session['auth_source_manager'] = auth_obj.as_dict()
-            session.pop('oauth2_current_client', None)
             if renew_user is not None:
                 # Keep the key of the connections the session holds.
                 if pass_enc_key is not None:
                     session['pass_enc_key'] = pass_enc_key
                 return redirect(url_for(OAUTH2_RENEWED))
             return redirect(get_safe_post_login_redirect())
-        session.pop('oauth2_current_client', None)
         # get_user_profile() may already have stored the provider's logout
         # URL before the login failed; don't leave it for a later logout.
         session.pop('oauth2_logout_url', None)

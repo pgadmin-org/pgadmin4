@@ -712,7 +712,9 @@ def _refresh_pgadmin_oauth_token(
 
     Return the refreshed access token, or None when refreshing is not
     possible. Raise OAuthRefreshUnsupportedError when workload-identity
-    client authentication is configured.
+    client authentication is configured, OAuthSignInRequired when only a
+    new sign-in can resolve the provider's error, and OAuthTokenError when
+    the provider cannot be reached.
     """
     refresh_token = token_data.get("refresh_token")
 
@@ -807,12 +809,16 @@ def _refresh_pgadmin_oauth_token(
             "Failed to refresh the pgAdmin OAuth access token."
         )
         return None
-    except requests.exceptions.Timeout:
-        logger.warning(
+    except requests.exceptions.RequestException as exc:
+        # The provider could not be reached: the login may still refresh
+        # once it can, so this is no reason to sign in again.
+        raise OAuthTokenError(
             "The request to refresh the pgAdmin OAuth access token "
-            "timed out."
-        )
-        return None
+            "{0}. Retry the connection.".format(
+                "timed out"
+                if isinstance(exc, requests.exceptions.Timeout)
+                else "failed")
+        ) from None
     except OAuthTokenError as exc:
         logger.warning(
             "Cannot refresh the pgAdmin OAuth access token: %s",
@@ -831,7 +837,8 @@ def _get_pgadmin_oauth_token() -> Optional[str]:
     Return the current pgAdmin OAuth access token.
 
     Refresh the token when it is expired or close to expiration.
-    Return None when no usable token is available.
+    Return None when no usable token is available. Raise OAuthTokenError
+    when the provider cannot be reached to refresh it.
     """
     try:
         token_data = session.get("oauth2_token")
@@ -1174,7 +1181,12 @@ def _exchange_oauth_access_token(
     endpoint = _get_token_endpoint(
         oauth_client, metadata, OAuthTokenExchangeError)
 
-    subject_token = _get_pgadmin_oauth_token()
+    try:
+        subject_token = _get_pgadmin_oauth_token()
+    except OAuthSignInRequired:
+        raise
+    except OAuthTokenError as exc:
+        raise OAuthTokenExchangeError(str(exc)) from None
 
     if (
         not isinstance(subject_token, str) or

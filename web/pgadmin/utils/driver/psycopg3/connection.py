@@ -51,7 +51,8 @@ from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.pg_oauth2 import OAuthSignInRequired, OAuthTokenError
 from pgadmin.utils.token_auth import connection_credentials
-from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
+    is_token_auth_method
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -635,8 +636,10 @@ class Connection(BaseConnection):
         # If no password credential is found then connect request might come
         # from Query tool, ViewData grid, debugger, etc. In that case, fall
         # back to using the password returned from manager.passexec.
+        # A token method takes no password, so its command is not run.
         passfile = manager.get_connection_param_value('passfile')
-        if not password and not encpass and manager.passexec:
+        if not password and not encpass and manager.passexec and \
+                not is_token_auth_method(manager.auth_method):
             if not passfile:
                 password = manager.passexec.get()
             else:

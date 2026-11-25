@@ -79,6 +79,23 @@ def _is_non_owner(server):
     return server.shared and server.user_id != current_user.id
 
 
+def shared_connection_params(owner_params, own_params):
+    """The connection parameters a non-owner of a shared server connects
+    with: the owner's, but each user's own SENSITIVE_CONN_KEYS, never the
+    owner's file paths. Returns a new dict."""
+    # A copy: owner_params may be a MutableDict still attached to the
+    # owner's session-bound row, and mutating it in place would mark that
+    # row dirty for the next commit.
+    params = dict(owner_params or {})
+    own_params = own_params or {}
+    for key in SENSITIVE_CONN_KEYS:
+        if key in own_params:
+            params[key] = own_params[key]
+        else:
+            params.pop(key, None)
+    return params
+
+
 def prepare_sharing_data(data, server=None):
     """Refuse a create or update payload sent to the servers API that would
     share a server unless it comes from an administrator, matching the
@@ -354,20 +371,9 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         # Apply each user's own connection parameters. For these keys,
         # never inherit the owner's file paths.
-        # Work on a copy: the dict may be a MutableDict still attached to
-        # the owner's session-bound row, and mutating it in place would mark
-        # that row dirty for the next commit.
-        s_conn = dict(getattr(server, 'connection_params', None) or {})
-        ss_conn = getattr(sharedserver, 'connection_params',
-                          None) or {}
-        for key in SENSITIVE_CONN_KEYS:
-            if key in ss_conn:
-                s_conn[key] = ss_conn[key]
-            elif key in s_conn:
-                # No per-user value exists. Remove the owner's value
-                # so the owner's file paths are not inherited.
-                del s_conn[key]
-        server.connection_params = s_conn
+        server.connection_params = shared_connection_params(
+            getattr(server, 'connection_params', None),
+            getattr(sharedserver, 'connection_params', None))
 
         server.servergroup_id = sharedserver.servergroup_id
         server.username = sharedserver.username
@@ -1113,8 +1119,17 @@ class ServerNode(PGChildNodeView):
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
 
+        # A non-owner connects with the owner's parameters but their own
+        # sensitive ones (see get_shared_server_properties()), so check
+        # those, not the non-sensitive keys their own row keeps.
+        effective_params = None
+        if sharedserver is not None and _is_non_owner(server):
+            effective_params = shared_connection_params(
+                server.connection_params,
+                data['connection_params'] if 'connection_params' in data
+                else sharedserver.connection_params)
         auth_method_err = self._check_update_auth_method_and_clear_password(
-            data, sharedserver or server, server.host)
+            data, sharedserver or server, server.host, effective_params)
         if auth_method_err:
             return bad_auth_method_response(auth_method_err)
 
@@ -1264,7 +1279,8 @@ class ServerNode(PGChildNodeView):
 
     @staticmethod
     def _check_update_auth_method_and_clear_password(data, current,
-                                                     server_host=None):
+                                                     server_host=None,
+                                                     effective_params=None):
         """Check an update against the server authentication method it
         results in, and clear the saved password when it is a token method.
         Return an error message, or None.
@@ -1273,7 +1289,8 @@ class ServerNode(PGChildNodeView):
         destination and sslmode whenever this update changes any of them;
         an unrelated edit of an entra server is never refused. server_host
         is the host before this update: a non-owner's comes from the
-        owner's server. No database password is kept for a token method:
+        owner's server, as do the effective_params they connect with,
+        when given. No database password is kept for a token method:
         the access token is the credential."""
         auth_method = data.get('auth_method', current.auth_method)
         if not is_token_auth_method(auth_method):
@@ -1287,10 +1304,12 @@ class ServerNode(PGChildNodeView):
                 'auth_method', 'connection_params', 'host')):
             # The merged parameters, once update_connection_parameter()
             # has applied the deltas.
+            if effective_params is None:
+                effective_params = data['connection_params'] \
+                    if 'connection_params' in data \
+                    else current.connection_params
             err = check_entra_ssl(
-                auth_method,
-                data['connection_params'] if 'connection_params' in data
-                else current.connection_params,
+                auth_method, effective_params,
                 data.get('host', server_host))
             if err:
                 return err
@@ -1711,6 +1730,9 @@ class ServerNode(PGChildNodeView):
             manager = None
             replication_type = None
             tunnel_password_saved = False
+            # The server is kept, and the browser connects it to offer
+            # "Sign in again".
+            sign_in_again = False
 
             if 'connect_now' in data and data['connect_now']:
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
@@ -1747,6 +1769,7 @@ class ServerNode(PGChildNodeView):
                     tunnel_password=tunnel_password,
                     server_types=ServerType.types()
                 )
+                sign_in_again = not status and conn.sign_in_again is True
                 if not status and conn.sign_in_again is not True:
                     db.session.delete(server)
                     db.session.commit()
@@ -1799,7 +1822,8 @@ class ServerNode(PGChildNodeView):
                     is_password_saved=bool(server.save_password),
                     is_tunnel_password_saved=tunnel_password_saved,
                     user_id=server.user_id,
-                    tags=data.get('tags', None)
+                    tags=data.get('tags', None),
+                    sign_in_again=sign_in_again
                 )
             )
 

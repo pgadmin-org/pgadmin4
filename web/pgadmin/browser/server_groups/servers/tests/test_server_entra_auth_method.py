@@ -310,6 +310,8 @@ class EntraSignInAgainOnCreateTestCase(BaseTestGenerator):
             node = json.loads(response.data.decode('utf-8'))['node']
             self.server_id = node['_id']
             self.assertFalse(node['connected'])
+            # The browser connects the new server to offer "Sign in again".
+            self.assertTrue(node['sign_in_again'])
         with self.app.app_context():
             self.assertEqual(
                 Server.query.filter_by(name=data['name']).count(),

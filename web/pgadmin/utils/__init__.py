@@ -1202,6 +1202,23 @@ def dump_database_servers(output_file, selected_servers,
     return True, msg
 
 
+def _imported_connection_params(obj):
+    """The connection parameters of an imported server, as it is loaded:
+    its ConnectionParameters, or those of the format before them."""
+    if 'ConnectionParameters' in obj:
+        return obj.get("ConnectionParameters", None)
+    conn_param = dict()
+    for item in ['HostAddr', 'SSLMode', 'PassFile', 'SSLCert',
+                 'SSLKey', 'SSLRootCert', 'SSLCrl', 'Timeout',
+                 'SSLCompression']:
+        if item in obj:
+            key = item.lower()
+            if item == 'Timeout':
+                key = 'connect_timeout'
+            conn_param[key] = obj.get(item)
+    return conn_param
+
+
 def validate_json_data(data, is_admin):
     """
     Used internally by load_servers to validate servers data.
@@ -1295,7 +1312,8 @@ def validate_json_data(data, is_admin):
         if errmsg:
             return gettext("Server '%s': %s") % (server, errmsg)
 
-        conn_params = obj.get("ConnectionParameters", None)
+        # The parameters as loaded, so a legacy SSLMode is checked too.
+        conn_params = _imported_connection_params(obj)
         conn_params = dict(conn_params) \
             if isinstance(conn_params, dict) else {}
         errmsg = check_entra_ssl(auth_method, conn_params, obj.get("Host"))
@@ -1520,23 +1538,7 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.db_res_type = obj.get("DBRestrictionType", None)
 
-            if 'ConnectionParameters' in obj:
-                new_server.connection_params = \
-                    obj.get("ConnectionParameters", None)
-            else:
-                # JSON file format is old before introduction of the
-                # connection parameters.
-                conn_param = dict()
-                for item in ['HostAddr', 'SSLMode', 'PassFile', 'SSLCert',
-                             'SSLKey', 'SSLRootCert', 'SSLCrl', 'Timeout',
-                             'SSLCompression']:
-                    if item in obj:
-                        key = item.lower()
-                        if item == 'Timeout':
-                            key = 'connect_timeout'
-                        conn_param[key] = obj.get(item)
-
-                new_server.connection_params = conn_param
+            new_server.connection_params = _imported_connection_params(obj)
 
             # Refuse a key that is not an exact libpq keyword:
             # make_conninfo() quotes values but not keys, so a key carrying

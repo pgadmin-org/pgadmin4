@@ -892,6 +892,12 @@ WHERE db.oid = {0}""".format(did))
                 if key == 'hostaddr' and self.use_ssh_tunnel:
                     continue
 
+                # A token method has no database password: a stored one
+                # must not replace the token it delivers as the password.
+                if key == 'password' and \
+                        get_token_auth_method(self.auth_method):
+                    continue
+
                 # Convert boolean connection parameters to integer for
                 # libpq compatibility
                 if key in ('sslcompression', 'sslsni'):

@@ -299,8 +299,9 @@ connect to such a server.
 
 .. note::
 
-   This integration requires the libpq loaded by pgAdmin to be version 18.x,
-   independently of the PostgreSQL server version. Supported Psycopg
+   The two OAuth methods, ``oauth_direct`` and ``oauth_exchange``, require
+   the libpq loaded by pgAdmin to be version 18.x, independently of the
+   PostgreSQL server version; ``entra`` does not. Supported Psycopg
    implementations, OIDC provider requirements, TLS settings and reconnect
    limitations are described in :ref:`oauth2_postgresql`.
 

@@ -334,6 +334,42 @@ class TestOAuthConnection(
         connection._initialize.assert_called_once()
         self.assertIs(connection.conn, pg_connection)
 
+    def case_token_method_does_not_run_the_password_command(self):
+        """
+        A token method takes no password, so a password command the
+        server still has is not run and cannot block the token.
+        """
+        manager = self._make_manager(method='direct')
+        manager.passexec = MagicMock()
+        manager.passexec.get.side_effect = RuntimeError('command failed')
+        connection = self._make_connection(manager)
+
+        with self.app.test_request_context('/'):
+            with ExitStack() as stack:
+                self._apply_common_patches(stack)
+                stack.enter_context(
+                    patch.object(pg_oauth2, 'install_oauth_hook'))
+                stack.enter_context(
+                    patch.object(
+                        pg_oauth2,
+                        'get_postgres_oauth_token',
+                        return_value='pgadmin-access-token'
+                    )
+                )
+                stack.enter_context(
+                    patch.object(
+                        connection_module.psycopg.Connection,
+                        'connect',
+                        return_value=self._make_psycopg_connection()
+                    )
+                )
+
+                status, message = connection.connect()
+
+        self.assertTrue(status)
+        self.assertIsNone(message)
+        manager.passexec.get.assert_not_called()
+
     def case_async_connection_is_created_inside_token_context(self):
         """
         The asynchronous Psycopg connection must inherit the token

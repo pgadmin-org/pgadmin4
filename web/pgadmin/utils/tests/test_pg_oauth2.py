@@ -554,32 +554,37 @@ class TestGetPgAdminOAuthToken(
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
     )
-    def case_refresh_timeout_returns_none(self, get_oauth_client):
-        """A refresh that times out is like any other failed refresh: the
-        token is unusable and the session keeps the old one."""
-        oauth_client = self._make_oauth_client()
-        oauth_client.fetch_access_token.side_effect = \
-            requests.exceptions.ReadTimeout('timed out')
-        get_oauth_client.return_value = oauth_client
+    def case_unreachable_refresh_is_retryable(self, get_oauth_client):
+        """A refresh that cannot reach the provider raises a token error
+        that is no sign-in request: the login may still refresh once the
+        provider is reachable. The session keeps the old token."""
+        for exc in (requests.exceptions.ReadTimeout('timed out'),
+                    requests.exceptions.ConnectionError('refused')):
+            with self.subTest(exc=type(exc).__name__):
+                oauth_client = self._make_oauth_client()
+                oauth_client.fetch_access_token.side_effect = exc
+                get_oauth_client.return_value = oauth_client
 
-        with self.app.test_request_context('/'):
-            token = {
-                'access_token': 'expired-access-token',
-                'refresh_token': 'refresh-token',
-                'expires_at': 999,
-                'token_type': 'Bearer',
-            }
-            session['oauth2_token'] = dict(token)
-            session['oauth2_provider'] = self.PROVIDER_NAME
+                with self.app.test_request_context('/'):
+                    token = {
+                        'access_token': 'expired-access-token',
+                        'refresh_token': 'refresh-token',
+                        'expires_at': 999,
+                        'token_type': 'Bearer',
+                    }
+                    session['oauth2_token'] = dict(token)
+                    session['oauth2_provider'] = self.PROVIDER_NAME
 
-            with patch(
-                'pgadmin.utils.pg_oauth2.time.time',
-                return_value=1000
-            ):
-                result = pg_oauth2._get_pgadmin_oauth_token()
+                    with patch(
+                        'pgadmin.utils.pg_oauth2.time.time',
+                        return_value=1000
+                    ), self.assertRaises(
+                            pg_oauth2.OAuthTokenError) as ctx:
+                        pg_oauth2._get_pgadmin_oauth_token()
 
-            self.assertIsNone(result)
-            self.assertEqual(session['oauth2_token'], token)
+                    self.assertNotIsInstance(
+                        ctx.exception, pg_oauth2.OAuthSignInRequired)
+                    self.assertEqual(session['oauth2_token'], token)
 
     @patch(
         'pgadmin.utils.pg_oauth2._get_current_oauth_client'
@@ -1366,8 +1371,9 @@ class TestExchangeOAuthAccessToken(
         )
 
         with self.app.test_request_context('/'):
+            # The driver asks to sign in again only for OAuthSignInRequired.
             with self.assertRaisesRegex(
-                    pg_oauth2.OAuthTokenExchangeError,
+                    pg_oauth2.OAuthExchangeSignInRequired,
                     'invalid_grant'):
                 pg_oauth2._exchange_oauth_access_token(
                     'postgres-cluster',
