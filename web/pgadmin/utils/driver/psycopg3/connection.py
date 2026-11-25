@@ -539,10 +539,11 @@ class Connection(BaseConnection):
 
         The token was checked against the manager's method, host and
         connection parameters as they were before the request, which may
-        take a while; the connection string is built from them as they
-        are under the lock. Should a manager.update() have changed them
-        in between, the connection is refused rather than send the token
-        to a destination that was not checked.
+        take a while. Should a manager.update() have changed them in
+        between, the connection is refused rather than send the token to
+        a destination that was not checked. The manager's settings lock
+        is held from that comparison until the connection string is
+        built, so no update() can come between them.
         """
         manager = self.manager
         checked = (manager.auth_method, manager.host,
@@ -550,17 +551,21 @@ class Connection(BaseConnection):
         credentials = connection_credentials(
             checked[0], checked[2], password, checked[1])
         with ConnectionLocker(manager.kerberos_conn):
-            # As in connection_credentials(), any method but password
-            # carries a token.
-            if checked[0] not in (None, '', AUTH_METHOD_PASSWORD) and (
-                    manager.auth_method, manager.host,
-                    manager.connection_params) != checked:
-                raise OAuthTokenError(gettext(
-                    'The server settings changed while the connection was '
-                    'being opened; please connect again.'))
             with credentials.scope() as conn_password:
-                return open_(manager.create_connection_string(
-                    database, user, conn_password))
+                with manager.settings_lock:
+                    # As in connection_credentials(), any method but
+                    # password carries a token.
+                    if checked[0] not in (
+                            None, '', AUTH_METHOD_PASSWORD) and (
+                            manager.auth_method, manager.host,
+                            manager.connection_params) != checked:
+                        raise OAuthTokenError(gettext(
+                            'The server settings changed while the '
+                            'connection was being opened; please connect '
+                            'again.'))
+                    connection_string = manager.create_connection_string(
+                        database, user, conn_password)
+                return open_(connection_string)
 
     def _token_error_message(self, exc, action=''):
         """

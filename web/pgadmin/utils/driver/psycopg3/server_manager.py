@@ -12,6 +12,7 @@ Implementation of ServerManager
 """
 import datetime
 import os
+import threading
 import config
 import logging
 import warnings
@@ -69,6 +70,17 @@ class ServerManager(object):
     auth_method = AUTH_METHOD_PASSWORD
     _INFORMATION_MSG = gettext("Information is not available.")
 
+    def __new__(cls, *args, **kwargs):
+        manager = super().__new__(cls)
+        # Held by update() while it changes the settings, and by a token
+        # connection while it checks them and builds its connection
+        # string, so the string names the destination that was checked.
+        # It is made here, not in __init__(), so that a manager made
+        # without __init__() has it as well. Nothing else is locked while
+        # it is held.
+        manager.settings_lock = threading.Lock()
+        return manager
+
     def __init__(self, server):
         self.connections = dict()
         self.local_bind_host = '127.0.0.1'
@@ -86,72 +98,73 @@ class ServerManager(object):
         assert (server is not None)
         assert (isinstance(server, Server))
 
-        self.ver = None
-        self.sversion = None
-        self.server_type = None
-        self.server_cls = None
-        self.password = None
-        self.tunnel_password = None
-        self.saved_tunnel_password_discarded = False
-        self.saved_password_discarded = False
-
-        self.sid = server.id
-        self.host = server.host
-        self.port = server.port
-        self.db = server.maintenance_db
-        self.shared = server.shared
-        self.did = None
-        self.user = server.username
-        self.password = server.password
-        self.role = server.role
-        self.pinged = datetime.datetime.now()
-        self.db_info = dict()
-        self.server_types = None
-        self.db_res = server.db_res
-        self.db_res_type = server.db_res_type
-        self.name = server.name
-        self.passexec = build_passexec(server)
-        self.service = server.service
-
-        if config.SUPPORT_SSH_TUNNEL:
-            self.use_ssh_tunnel = server.use_ssh_tunnel
-            self.tunnel_host = server.tunnel_host
-            self.tunnel_port = \
-                22 if server.tunnel_port is None else server.tunnel_port
-            self.tunnel_username = server.tunnel_username
-            self.tunnel_authentication = 0 \
-                if server.tunnel_authentication is None \
-                else server.tunnel_authentication
-            self.tunnel_identity_file = server.tunnel_identity_file
-            self.tunnel_prompt_password = server.tunnel_prompt_password
-            self.tunnel_password = server.tunnel_password
-            self.tunnel_keep_alive = server.tunnel_keep_alive
-        else:
-            self.use_ssh_tunnel = 0
-            self.tunnel_host = None
-            self.tunnel_port = 22
-            self.tunnel_username = None
-            self.tunnel_authentication = None
-            self.tunnel_identity_file = None
-            self.tunnel_prompt_password = 0
+        with self.settings_lock:
+            self.ver = None
+            self.sversion = None
+            self.server_type = None
+            self.server_cls = None
+            self.password = None
             self.tunnel_password = None
-            self.tunnel_keep_alive = 0
+            self.saved_tunnel_password_discarded = False
+            self.saved_password_discarded = False
 
-        self.kerberos_conn = server.kerberos_conn
-        self.auth_method = server.auth_method or AUTH_METHOD_PASSWORD
-        self.gss_authenticated = False
-        self.gss_encrypted = False
-        self.connection_params = server.connection_params
-        try:
-            self.create_connection_string(self.db, self.user)
-        except PermissionError:
-            # A file path that escapes the user's storage directory, or a
-            # connection parameter whose key is not a libpq keyword, is
-            # reported when a connection is attempted; it must not stop the
-            # server being listed, or edited to correct the value.
-            pass
-        self.prepare_threshold = server.prepare_threshold
-        self.post_connection_sql = server.post_connection_sql
+            self.sid = server.id
+            self.host = server.host
+            self.port = server.port
+            self.db = server.maintenance_db
+            self.shared = server.shared
+            self.did = None
+            self.user = server.username
+            self.password = server.password
+            self.role = server.role
+            self.pinged = datetime.datetime.now()
+            self.db_info = dict()
+            self.server_types = None
+            self.db_res = server.db_res
+            self.db_res_type = server.db_res_type
+            self.name = server.name
+            self.passexec = build_passexec(server)
+            self.service = server.service
+
+            if config.SUPPORT_SSH_TUNNEL:
+                self.use_ssh_tunnel = server.use_ssh_tunnel
+                self.tunnel_host = server.tunnel_host
+                self.tunnel_port = \
+                    22 if server.tunnel_port is None else server.tunnel_port
+                self.tunnel_username = server.tunnel_username
+                self.tunnel_authentication = 0 \
+                    if server.tunnel_authentication is None \
+                    else server.tunnel_authentication
+                self.tunnel_identity_file = server.tunnel_identity_file
+                self.tunnel_prompt_password = server.tunnel_prompt_password
+                self.tunnel_password = server.tunnel_password
+                self.tunnel_keep_alive = server.tunnel_keep_alive
+            else:
+                self.use_ssh_tunnel = 0
+                self.tunnel_host = None
+                self.tunnel_port = 22
+                self.tunnel_username = None
+                self.tunnel_authentication = None
+                self.tunnel_identity_file = None
+                self.tunnel_prompt_password = 0
+                self.tunnel_password = None
+                self.tunnel_keep_alive = 0
+
+            self.kerberos_conn = server.kerberos_conn
+            self.auth_method = server.auth_method or AUTH_METHOD_PASSWORD
+            self.gss_authenticated = False
+            self.gss_encrypted = False
+            self.connection_params = server.connection_params
+            try:
+                self.create_connection_string(self.db, self.user)
+            except PermissionError:
+                # A file path that escapes the user's storage directory, or a
+                # connection parameter whose key is not a libpq keyword, is
+                # reported when a connection is attempted; it must not stop the
+                # server being listed, or edited to correct the value.
+                pass
+            self.prepare_threshold = server.prepare_threshold
+            self.post_connection_sql = server.post_connection_sql
 
         for con in self.connections:
             self.connections[con]._release()

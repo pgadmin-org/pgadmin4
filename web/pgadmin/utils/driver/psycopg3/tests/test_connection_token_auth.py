@@ -13,6 +13,7 @@ connect, async connect and reset. A token delivered as the password is used
 for that connection only and does not depend on libpq 18 or on the psycopg
 implementation. Cancelling a query asks for no token at all."""
 
+import threading
 import unittest
 from contextlib import ExitStack
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -62,6 +63,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             'case_an_unregistered_method_is_refused',
             'case_the_token_is_obtained_before_the_kerberos_lock',
             'case_settings_changed_during_the_token_request_are_refused',
+            'case_no_update_comes_between_the_check_and_the_build',
         ) for operation in OPERATIONS
     ]
 
@@ -292,6 +294,39 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             target.assert_not_called()
             manager.create_connection_string.assert_not_called()
 
+    def case_no_update_comes_between_the_check_and_the_build(self):
+        # A manager.update() that starts once the settings were compared
+        # waits until the connection string is built, so the string names
+        # the host that was checked.
+        self._register(token_auth.PasswordDelivery())
+        manager = self._manager()
+        manager.host = 'db.example.com'
+        manager.settings_lock = threading.Lock()
+        built = []
+        updates = []
+
+        def update():
+            with manager.settings_lock:
+                manager.host = 'elsewhere.example.com'
+
+        def connection_string(database, user, password):
+            thread = threading.Thread(target=update)
+            thread.start()
+            thread.join(0.2)
+            updates.append(thread)
+            built.append((thread.is_alive(), manager.host))
+            return 'dbname=x'
+
+        manager.create_connection_string.side_effect = connection_string
+
+        status, message, *_ = self._run(manager)
+        for thread in updates:
+            thread.join()
+
+        self.assertTrue(status, message)
+        self.assertEqual(built, [(True, 'db.example.com')])
+        self.assertEqual(manager.host, 'elsewhere.example.com')
+
     def case_a_password_server_never_asks_for_a_token(self):
         manager = self._manager(auth_method='password')
 
@@ -374,6 +409,45 @@ class TokenCancelTest(BaseTestGenerator):
         self.assertEqual(self.provider.calls, [])
         connect.assert_not_called()
         manager.create_connection_string.assert_not_called()
+
+
+class UpdateTakesTheSettingsLockTest(BaseTestGenerator):
+    """ServerManager.update() changes the settings only while it holds
+    the settings lock, which a token connection holds from checking them
+    until its connection string is built."""
+
+    scenarios = [('update', dict())]
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        from pgadmin.model import Server
+        from pgadmin.utils.driver.psycopg3 import server_manager
+        manager = server_manager.ServerManager.__new__(
+            server_manager.ServerManager)
+        manager.connections = {}
+        server = Server(
+            id=7, user_id=1, servergroup_id=1, name='s',
+            host='new.example.com', port=5432, maintenance_db='postgres',
+            username='u', shared=False, auth_method=METHOD,
+            connection_params={'sslmode': 'verify-full'})
+
+        with patch.object(server_manager.ServerManager,
+                          'create_connection_string'), \
+                patch.object(server_manager.ServerManager,
+                             'update_session'), \
+                patch.object(server_manager, 'build_passexec'):
+            with manager.settings_lock:
+                thread = threading.Thread(
+                    target=manager.update, args=(server,))
+                thread.start()
+                thread.join(0.2)
+                self.assertTrue(thread.is_alive())
+                self.assertIsNone(getattr(manager, 'host', None))
+            thread.join()
+
+        self.assertEqual(manager.host, 'new.example.com')
 
 
 class TokenAuthRegistryTest(BaseTestGenerator):
