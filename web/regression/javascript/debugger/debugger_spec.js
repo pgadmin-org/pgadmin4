@@ -49,7 +49,7 @@ describe('Debugger Component', () => {
     networkMock = new MockAdapter(axios);
   });
 
-  it('DebuggerInit Indirect', async () => {
+  const renderIndirectDebugger = async () => {
     params.directDebugger.debug_type = 1;
     networkMock.onPost(url_for('debugger.start_listener', {'trans_id': params.transId})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':true,'result':2}});
     networkMock.onGet(url_for('debugger.messages', {'trans_id': params.transId})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':'Success','result':'10'}});
@@ -70,6 +70,22 @@ describe('Debugger Component', () => {
         </Theme>
       );
     });
+  };
+
+  it('DebuggerInit Indirect', async () => {
+    await renderIndirectDebugger();
+  });
+
+  it('asks for a restart when restored from the back/forward cache', async () => {
+    await renderIndirectDebugger();
+    const alertText = jest.spyOn(pgAdmin.Browser.notifier, 'alertText');
+
+    const e = new Event('pageshow');
+    Object.defineProperty(e, 'persisted', {value: true});
+    window.dispatchEvent(e);
+    expect(alertText).toHaveBeenCalledWith('Debugger Error',
+      expect.stringContaining('debugging session was closed'), expect.any(Function));
+    alertText.mockRestore();
   });
 });
 
