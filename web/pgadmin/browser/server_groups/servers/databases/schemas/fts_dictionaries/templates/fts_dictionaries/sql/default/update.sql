@@ -12,34 +12,34 @@ ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(o_da
 {% if'changed' in data.options %}
 {% for opt in data.options.changed %}
 ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    ({{opt.option}}={{opt.value}});
+    ({{ conn|qtIdent(opt.option) }} = {{ opt.value|qtLiteral(conn) }});
 
 {% endfor %}
 {% endif %}
 {% if'added' in data.options%}
 {% for opt in data.options.added %}
 ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    ({{opt.option}}={{opt.value}});
+    ({{ conn|qtIdent(opt.option) }} = {{ opt.value|qtLiteral(conn) }});
 
 {% endfor %}
 {% endif %}
 {% if'deleted' in data.options%}
 {% for opt in data.options.deleted %}
 ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    ({{opt.option}});
+    ({{ conn|qtIdent(opt.option) }});
 
 {% endfor %}
 {% endif %}
 {% endif %}
 {% if 'owner' in data and data.owner != o_data.owner %}
 ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    OWNER TO {{data.owner}};
+    OWNER TO {{ conn|qtIdent(data.owner) }};
 
 {% endif %}
 {% if 'schema' in data and data.schema != o_data.schema %}
 {% set schema = data.schema%}
 ALTER TEXT SEARCH DICTIONARY {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    SET SCHEMA {{data.schema}};
+    SET SCHEMA {{ conn|qtIdent(data.schema) }};
 
 {% endif %}
 {% if 'description' in data and data.description != o_data.description %}

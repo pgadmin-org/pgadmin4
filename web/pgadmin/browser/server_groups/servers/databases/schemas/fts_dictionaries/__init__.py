@@ -868,7 +868,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
                               data=res['rows'][0],
-                              conn=self.conn, is_displaying=True)
+                              conn=self.conn)
 
         sql_header = """-- Text Search Dictionary: {0}.{1}\n\n""".format(
             res['rows'][0]['schema'], res['rows'][0]['name'])
