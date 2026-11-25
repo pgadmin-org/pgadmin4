@@ -460,6 +460,7 @@ export default class RestoreSchema extends BaseUISchema {
           type: 'file',
           controlProps: {
             dialogType: state.format == 'directory' ? 'select_folder' : 'select_file',
+            dialogPurpose: 'backup',
             supportedTypes: ['*', 'backup', 'sql', 'patch'],
             dialogTitle: 'Select file',
           }

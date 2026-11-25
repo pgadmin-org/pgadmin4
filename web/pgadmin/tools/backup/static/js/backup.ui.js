@@ -606,6 +606,7 @@ export default class BackupSchema extends BaseUISchema {
       disabled: false,
       controlProps: {
         dialogType: 'create_file',
+        dialogPurpose: 'backup',
         supportedTypes: ['*', 'sql', 'backup'],
         dialogTitle: 'Select file',
       },

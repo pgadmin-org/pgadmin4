@@ -715,6 +715,7 @@ export default class ERDTool extends React.Component {
     const params = {
       'supported_types': ['*','pgerd'], // file types allowed
       'dialog_type': 'select_file', // open select file dialog
+      'purpose': 'erd',
     };
     this.props.pgAdmin.Tools.FileManager.show(params, this.openFile.bind(this), null, this.context);
   }
@@ -750,6 +751,7 @@ export default class ERDTool extends React.Component {
         'dialog_type': 'create_file',
         'dialog_title': 'Save File',
         'btn_primary': 'Save',
+        'purpose': 'erd',
       };
       this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
     }

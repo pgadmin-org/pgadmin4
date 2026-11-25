@@ -545,34 +545,61 @@ function notifyUpdateInstalled() {
 
 // Native file dialogs don't reliably remember the last used directory across
 // calls, so we track it ourselves and use it as the default when the caller
-// hasn't asked for a specific location.
-async function withLastVisitedDirectory(options) {
+// hasn't asked for a specific location. Callers may pass a purpose (e.g.
+// 'backup' or 'erd') so that each kind of dialog remembers its own directory;
+// a purpose with nothing saved yet falls back to the last directory used by
+// any dialog.
+function isValidDialogPurpose(purpose) {
+  return typeof purpose === 'string' && /^[a-z][a-z0-9_]*$/.test(purpose);
+}
+
+async function isExistingDirectory(dirPath) {
+  if (!dirPath) {
+    return false;
+  }
+  try {
+    const stats = await fs.promises.stat(dirPath);
+    return stats.isDirectory();
+  } catch {
+    // Remembered directory no longer exists (e.g. removable/network drive).
+    return false;
+  }
+}
+
+async function withLastVisitedDirectory(options, purpose) {
   if (options.defaultPath) {
     return options;
   }
-  const lastVisitedDirectory = configStore.get('lastVisitedDirectory');
-  if (!lastVisitedDirectory) {
-    return options;
+  const candidates = [];
+  if (isValidDialogPurpose(purpose)) {
+    candidates.push(configStore.get('lastVisitedDirectories')?.[purpose]);
   }
-  try {
-    const stats = await fs.promises.stat(lastVisitedDirectory);
-    if (stats.isDirectory()) {
-      return { ...options, defaultPath: lastVisitedDirectory };
+  candidates.push(configStore.get('lastVisitedDirectory'));
+  for (const candidate of candidates) {
+    if (await isExistingDirectory(candidate)) {
+      return { ...options, defaultPath: candidate };
     }
-  } catch {
-    // Remembered directory no longer exists (e.g. removable/network drive) - fall through.
   }
   return options;
 }
 
-function rememberVisitedDirectory(options, result) {
+function rememberVisitedDirectory(options, result, purpose) {
   const chosenPath = result.filePath || result.filePaths?.[0];
   if (!chosenPath) {
     return;
   }
   const isDirectory = options.properties?.includes('openDirectory');
+  const visitedDirectory = isDirectory ? chosenPath : path.dirname(chosenPath);
   try {
-    configStore.set('lastVisitedDirectory', isDirectory ? chosenPath : path.dirname(chosenPath));
+    configStore.set('lastVisitedDirectory', visitedDirectory);
+    if (isValidDialogPurpose(purpose)) {
+      // Set the whole map rather than a dotted key path, so a purpose can never
+      // be interpreted as a nested property path by the store.
+      configStore.set('lastVisitedDirectories', {
+        ...configStore.get('lastVisitedDirectories'),
+        [purpose]: visitedDirectory,
+      });
+    }
   } catch (error) {
     try {
       misc.writeServerLog(`Error remembering last visited directory: ${error}`);
@@ -583,17 +610,17 @@ function rememberVisitedDirectory(options, result) {
 }
 
 // setup preload events.
-ipcMain.handle('showOpenDialog', async (e, options) => {
-  const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options));
+ipcMain.handle('showOpenDialog', async (e, options, purpose) => {
+  const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options, purpose));
   if (!result.canceled) {
-    rememberVisitedDirectory(options, result);
+    rememberVisitedDirectory(options, result, purpose);
   }
   return result;
 });
-ipcMain.handle('showSaveDialog', async (e, options) => {
-  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options));
+ipcMain.handle('showSaveDialog', async (e, options, purpose) => {
+  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), await withLastVisitedDirectory(options, purpose));
   if (!result.canceled) {
-    rememberVisitedDirectory(options, result);
+    rememberVisitedDirectory(options, result, purpose);
   }
   return result;
 });

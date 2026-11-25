@@ -219,7 +219,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['edit', 'create'],
       disabled: obj.isSSL,
       controlProps: {
-        dialogType: 'select_file', supportedTypes: ['*'],
+        dialogType: 'select_file', dialogPurpose: 'certificates', supportedTypes: ['*'],
       },
       deps: ['sslmode'],
     },
@@ -228,7 +228,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['edit', 'create'],
       disabled: obj.isSSL,
       controlProps: {
-        dialogType: 'select_file', supportedTypes: ['*'],
+        dialogType: 'select_file', dialogPurpose: 'certificates', supportedTypes: ['*'],
       },
       deps: ['sslmode'],
     },{
@@ -236,7 +236,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['edit', 'create'],
       disabled: obj.isSSL,
       controlProps: {
-        dialogType: 'select_file', supportedTypes: ['*'],
+        dialogType: 'select_file', dialogPurpose: 'certificates', supportedTypes: ['*'],
       },
       deps: ['sslmode'],
     },{
@@ -244,7 +244,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['edit', 'create'],
       disabled: obj.isSSL,
       controlProps: {
-        dialogType: 'select_file', supportedTypes: ['*'],
+        dialogType: 'select_file', dialogPurpose: 'certificates', supportedTypes: ['*'],
       },
       deps: ['sslmode'],
     },

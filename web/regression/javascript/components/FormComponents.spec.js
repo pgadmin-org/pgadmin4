@@ -169,6 +169,19 @@ describe('FormComponents', ()=>{
       expect(onChange).toHaveBeenCalledWith('selected/file');
     });
 
+    it('file select passes the dialog purpose', ()=>{
+      ctrlRerender({
+        controlProps: {
+          dialogType: 'create_file', dialogPurpose: 'backup', supportedTypes: ['*'],
+        },
+      });
+      fireEvent.click(screen.getByRole('button'));
+      expect(showFileManager.showFileManager).toHaveBeenLastCalledWith(
+        expect.objectContaining({dialog_type: 'create_file', purpose: 'backup'}),
+        expect.any(Function),
+      );
+    });
+
     it('accessibility', ()=>{
       onAccessibility();
     });

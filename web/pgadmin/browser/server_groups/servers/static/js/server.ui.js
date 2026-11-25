@@ -513,7 +513,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'file',
         group: gettext('SSH Tunnel'), mode: ['properties', 'edit', 'create'],
         controlProps: {
-          dialogType: 'select_file', supportedTypes: ['*'],
+          dialogType: 'select_file', dialogPurpose: 'ssh_identity', supportedTypes: ['*'],
         },
         deps: ['tunnel_authentication', 'use_ssh_tunnel'],
         depChange: (state)=>{

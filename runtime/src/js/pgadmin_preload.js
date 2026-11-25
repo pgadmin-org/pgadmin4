@@ -21,8 +21,8 @@ contextBridge.exposeInMainWorld('electronUI', {
   setMenuItems: (menu, menuItems) => {
     ipcRenderer.send('set-menu-items', menu, menuItems);
   },
-  showOpenDialog: (options) => ipcRenderer.invoke('showOpenDialog', options),
-  showSaveDialog: (options) => ipcRenderer.invoke('showSaveDialog', options),
+  showOpenDialog: (options, purpose) => ipcRenderer.invoke('showOpenDialog', options, purpose),
+  showSaveDialog: (options, purpose) => ipcRenderer.invoke('showSaveDialog', options, purpose),
   log: (text)=> ipcRenderer.send('log', text),
   reloadApp: ()=>{ipcRenderer.send('reloadApp');},
   // Download related functions

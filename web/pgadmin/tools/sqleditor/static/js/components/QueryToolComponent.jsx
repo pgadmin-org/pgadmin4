@@ -698,6 +698,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         let fileParams = {
           'supported_types': ['sql', '*'], // file types allowed
           'dialog_type': 'open_file', // open select file dialog
+          'purpose': 'query_tool',
         };
         if(openInNewTab){
           pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
@@ -718,6 +719,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             'dialog_type': 'create_file',
             'dialog_title': 'Save File',
             'btn_primary': 'Save',
+            'purpose': 'query_tool',
           };
           pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
             eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
