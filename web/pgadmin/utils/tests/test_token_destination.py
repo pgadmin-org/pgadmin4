@@ -68,7 +68,7 @@ class EntraDestinationTestCase(_AppMixin, BaseTestGenerator):
         ('A whitespace host connection parameter', dict(
             host='db.example.com', params={'host': '  '}, valid=False)),
         ('A null host connection parameter', dict(
-            host='db.example.com', params={'host': None}, valid=True)),
+            host='db.example.com', params={'host': None}, valid=False)),
         ('An empty entry in a hostaddr list', dict(
             host='/tmp', params={'hostaddr': '10.0.0.4,'}, valid=False)),
     ]
@@ -85,6 +85,36 @@ class EntraDestinationTestCase(_AppMixin, BaseTestGenerator):
             self.assertIsNone(err)
         else:
             self.assertIn('TCP', err)
+
+
+class HostOverrideConninfoTestCase(_AppMixin, BaseTestGenerator):
+    """A host connection parameter that is present replaces the server's
+    host in the connection string, so the check refuses whatever libpq
+    would then fall back to."""
+
+    scenarios = [
+        ('A null host connection parameter', dict(override=None)),
+        ('A blank host connection parameter', dict(override='')),
+    ]
+
+    def runTest(self):
+        from pgadmin.utils.driver.psycopg3.server_manager import \
+            ServerManager
+        manager = ServerManager.__new__(ServerManager)
+        manager.host = 'db.example.com'
+        manager.port = 5432
+        manager.use_ssh_tunnel = False
+        manager.service = None
+        manager.connection_params = dict(VERIFY_FULL, host=self.override)
+
+        with self.app.test_request_context('/'):
+            conninfo = conninfo_to_dict(
+                manager.create_connection_string('postgres', 'alice'))
+
+        # No TCP host reaches libpq, and the check agrees.
+        self.assertFalse(conninfo.get('host'))
+        self.assertFalse(is_entra_destination_valid(
+            manager.connection_params, manager.host))
 
 
 class EntraCheckTestCase(_AppMixin, BaseTestGenerator):

@@ -87,16 +87,16 @@ def is_entra_destination_valid(connection_params, host):
     check. Private endpoints are allowed, as any TCP host name is.
 
     A host connection parameter replaces the server's host in the
-    connection string even when it is blank (see
-    ServerManager.create_connection_string()), so a blank one is checked,
-    and refused, as itself; only a missing one falls back to the
-    server's host."""
+    connection string even when it is blank or None (see
+    ServerManager.create_connection_string(); make_conninfo() then leaves
+    a None out), so a present one is checked, and refused, as itself;
+    only a missing one falls back to the server's host."""
     params = connection_params or {}
     hostaddr = str(params.get('hostaddr') or '')
     if hostaddr.strip():
         return all(entry.strip() for entry in hostaddr.split(','))
 
-    if params.get('host') is not None:
+    if 'host' in params:
         host = params['host']
     host = str(host or '')
     entries = [entry.strip() for entry in host.split(',')]
