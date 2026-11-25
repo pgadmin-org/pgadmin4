@@ -94,6 +94,21 @@ function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
   }
 }
 
+// Choosing a file closes the dialog, and that close is reported as a cancel.
+// Only a real cancel should keep the tab in the close batch.
+export function showSaveFileDialog(show, fileParams, modal, onFile, onCancel) {
+  let fileSelected = false;
+  show(fileParams, (fileName)=>{
+    fileSelected = true;
+    onFile(fileName);
+  }, ()=>{
+    if(fileSelected) {
+      return;
+    }
+    onCancel?.();
+  }, modal);
+}
+
 const FIXED_PREF = {
   indent: {
     'control': false,
@@ -709,7 +724,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           }, null, modal);
         }
       }],
-      [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false)=>{
+      [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false, onCancel)=>{
         if(!isSaveAs && qtState.current_file) {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, qtState.current_file);
         } else {
@@ -719,9 +734,18 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             'dialog_title': 'Save File',
             'btn_primary': 'Save',
           };
-          pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
-          }, null, modal);
+          showSaveFileDialog(
+            (...args)=>pgAdmin.Tools.FileManager.show(...args),
+            fileParams,
+            modal,
+            (fileName)=>{
+              eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
+            },
+            ()=>{
+              onCancel?.();
+              qtPanelDocker.retainTabInCloseQueue?.(qtPanelId);
+            },
+          );
         }
       }],
       [QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileDone],
