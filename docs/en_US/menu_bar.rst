@@ -82,6 +82,9 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Connect Server*            | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Copy Connection URL*       | Click to copy a connection URL for the currently selected database to the clipboard.                                     |
+|                             | The password is never included. See :ref:`Tree Control <tree_control>` for details.                                      |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Copy Server...*            | Click to copy the currently selected server.                                                                             |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |

@@ -15,6 +15,8 @@ import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 import { AllPermissionTypes } from '../../../../../static/js/constants';
+import { copyToClipboard } from '../../../../../../static/js/clipboard';
+import { buildConnectionURL } from './connection_url';
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for',
@@ -127,6 +129,10 @@ define('pgadmin.node.database', [
             return node.allowConn;
           },
           permission: AllPermissionTypes.TOOLS_ERD_TOOL,
+        },{
+          name: 'copy_connection_url', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'copy_connection_url',
+          priority: 6, label: gettext('Copy Connection URL'),
         }]);
 
         _.bindAll(this, 'connection_lost');
@@ -290,6 +296,41 @@ define('pgadmin.node.database', [
             i = input.item || t.selected(),
             d = i ? t.itemData(i) : undefined;
           pgAdmin.Tools.ERD.showErdTool(d, i, true);
+        },
+
+        /* Copy a libpq connection URI for the database to the clipboard */
+        copy_connection_url: function(args) {
+          let input = args || {},
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i ? t.itemData(i) : undefined;
+
+          if (!d) return false;
+
+          // The tree node does not carry everything the URL needs (the
+          // service and connection parameters, for instance), so the server's
+          // properties are fetched; they need no connection to the server.
+          let treeData = t.getTreeNodeHierarchy(i),
+            url = pgBrowser.Nodes['server'].generate_url(
+              i, 'obj', treeData['server'], true
+            );
+
+          getApiInstance().get(url)
+            .then(({data: server})=>copyToClipboard(
+              buildConnectionURL(server, d.label)
+            ))
+            .then((copied)=>{
+              if (copied) {
+                pgAdmin.Browser.notifier.success(
+                  gettext('Connection URL copied to the clipboard.')
+                );
+              }
+            })
+            .catch((error)=>{
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+            });
+
+          return false;
         },
 
         /* Connect the database (if not connected), before opening this node */

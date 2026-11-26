@@ -42,6 +42,8 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Connect Server...*       | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.            |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| *Copy Connection URL*     | Click to copy a connection URL for the currently selected database to the clipboard (see below).                          |
++---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Create*                  | Click to access a context menu that provides context-sensitive selections.                                                |
 |                           | Your selection opens a *Create* dialog for creating a new object.                                                         |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
@@ -75,6 +77,30 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *View Data*               | Use the *View Data* option to access the data stored in a selected table with the *Data Output* tab of the *Query Tool*.  |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
+
+The *Copy Connection URL* option on a database node copies a
+`libpq connection URI <https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING-URIS>`_
+of the form ``postgresql://user@host:port/dbname``, built from the server's
+configured *Host name/address*, *Port* and *Username* and the name of the
+database, with each part percent-encoded. libpq-based clients such as *psql*
+accept it, as do many drivers and libraries, including *dj-database-url* for
+Django. The password is never included in the URL. The server's *Service*, if
+set, and its *Connection Parameters* are added as query parameters (for
+example ``?sslmode=require&connect_timeout=10``), except for:
+
+* an *SSL mode* of *prefer*, which is libpq's default;
+* parameters that hold a secret, such as *SSL password* or *OAuth client
+  secret*;
+* parameters that name a file, such as *Password file*, *Client certificate*,
+  *Client certificate key* or *Root certificate* (unless it is ``system``),
+  since the path refers to the machine pgAdmin runs on.
+
+For a server connected through an SSH tunnel, the URL uses the host and port
+configured for the server, not the local end of the tunnel that pgAdmin
+creates, so it works only from a machine that can reach the database server
+directly or through a tunnel of its own. Likewise, a URL that names a service
+works only where that service is defined in the client's own connection
+service file.
 
 The context-sensitive menus associated with *Tables* and nested *Table* nodes provides additional display options (options appear in alphabetical order):
 
