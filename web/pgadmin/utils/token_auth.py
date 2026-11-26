@@ -31,7 +31,7 @@ from pgadmin.utils import pg_oauth2
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.auth_method import AUTH_METHOD_ENTRA, \
     AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE, \
-    AUTH_METHOD_PASSWORD, check_entra_ssl
+    AUTH_METHOD_PASSWORD, check_token_ssl
 
 # check is optional: a callable taking the server's connection parameters
 # and host that returns an error message when the server must not be sent a
@@ -112,8 +112,11 @@ def _entra_provider(connection_params):
     return pg_oauth2.get_entra_obo_token()
 
 
-def _entra_check(connection_params, host):
-    return check_entra_ssl(AUTH_METHOD_ENTRA, connection_params, host)
+def _ssl_check(auth_method):
+    """The check of a token method: its token only goes over TCP to a
+    server whose identity is verified."""
+    return lambda connection_params, host: check_token_ssl(
+        auth_method, connection_params, host)
 
 
 _REGISTRY = {}
@@ -143,11 +146,14 @@ def get_token_auth_method(name):
 
 
 register_token_auth_method(
-    AUTH_METHOD_OAUTH_DIRECT, _direct_provider, OAuthBearerDelivery())
+    AUTH_METHOD_OAUTH_DIRECT, _direct_provider, OAuthBearerDelivery(),
+    _ssl_check(AUTH_METHOD_OAUTH_DIRECT))
 register_token_auth_method(
-    AUTH_METHOD_OAUTH_EXCHANGE, _exchange_provider, OAuthBearerDelivery())
+    AUTH_METHOD_OAUTH_EXCHANGE, _exchange_provider, OAuthBearerDelivery(),
+    _ssl_check(AUTH_METHOD_OAUTH_EXCHANGE))
 register_token_auth_method(
-    AUTH_METHOD_ENTRA, _entra_provider, PasswordDelivery(), _entra_check)
+    AUTH_METHOD_ENTRA, _entra_provider, PasswordDelivery(),
+    _ssl_check(AUTH_METHOD_ENTRA))
 
 
 class ConnectionCredentials:

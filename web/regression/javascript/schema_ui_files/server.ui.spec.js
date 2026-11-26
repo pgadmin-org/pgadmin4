@@ -330,7 +330,16 @@ describe('ServerSchema', ()=>{
         expect(schema.validate(state, setError)).toBe(false);
         expect(setError).toHaveBeenCalledWith('auth_method', null);
 
-        // Any other method is left alone.
+        // So does every token method.
+        ['oauth_direct', 'oauth_exchange'].forEach((method)=>{
+          state.auth_method = method;
+          state.connection_params = [{name: 'sslmode', value: 'require', keyword: 'sslmode'}];
+          setError.mockClear();
+          expect(schema.validate(state, setError)).toBe(true);
+          expect(setError).toHaveBeenCalledWith('auth_method', expect.stringContaining('verify-full'));
+        });
+
+        // Password is left alone.
         state.auth_method = 'password';
         state.connection_params = [];
         expect(schema.validate(state, setError)).toBe(false);

@@ -558,14 +558,13 @@ Replace the example values with those configured for your deployment. Set
 the *Username* field to the database role authorized by the server's OAuth
 configuration.
 
-Use a trusted database endpoint. For TCP connections, configure certificate
-and hostname verification, for example with ``sslmode=verify-full`` and a
-trusted root certificate. Database TLS settings are separate from those for
-the OIDC provider's HTTPS endpoints.
-
-pgAdmin hands the token to libpq only over a connection encrypted with SSL
-or GSSAPI. A connection over a Unix-domain socket is neither, so it is
-refused: connect over TCP with SSL.
+Use a trusted database endpoint. pgAdmin refuses to save, import or connect
+an OAuth server unless its ``sslmode`` connection parameter is
+``verify-full`` and its host is a TCP host name or address, not a Unix-domain
+socket, so the token is only sent to a server whose certificate and host name
+are verified. Use ``sslrootcert`` to name a trusted root certificate.
+Database TLS settings are separate from those for the OIDC provider's HTTPS
+endpoints.
 
 Direct method
 ~~~~~~~~~~~~~

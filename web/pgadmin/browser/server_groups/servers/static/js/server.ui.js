@@ -876,12 +876,11 @@ export default class ServerSchema extends BaseUISchema {
       }
     }
 
-    // The token of the entra method is only sent to a server whose identity
-    // is verified.
-    if (state.auth_method === AUTH_METHOD_ENTRA) {
+    // A token is only sent to a server whose identity is verified.
+    if (isTokenAuthMethod(state.auth_method)) {
       const sslmode = _.find(state.connection_params, (p)=>p.name == 'sslmode');
       if (sslmode?.value !== 'verify-full') {
-        setError('auth_method', gettext('The Microsoft Entra ID authentication method requires the connection parameter SSL mode to be verify-full.'));
+        setError('auth_method', gettext('This authentication method requires the connection parameter SSL mode to be verify-full.'));
         return true;
       }
     }

@@ -58,7 +58,7 @@ def check_kerberos_exclusive(auth_method, kerberos_conn):
     return None
 
 
-def is_entra_ssl_valid(connection_params):
+def is_token_ssl_valid(connection_params):
     """True when the connection parameters make the server verify its
     identity: the token is only sent to a server whose certificate and
     host name are verified. The host name itself is not restricted, so
@@ -75,7 +75,7 @@ def is_unix_socket_host(host):
         host[2] in '/\\')
 
 
-def is_entra_destination_valid(connection_params, host):
+def is_token_destination_valid(connection_params, host):
     """True when every destination libpq may try is reached over TCP.
     libpq uses no SSL over a Unix-domain socket, whatever sslmode says, so
     a socket would get the token without the server's identity verified.
@@ -104,23 +104,23 @@ def is_entra_destination_valid(connection_params, host):
         entry and not is_unix_socket_host(entry) for entry in entries)
 
 
-def check_entra_ssl(auth_method, connection_params, host):
-    """Return an error message when an ``entra`` server does not verify the
-    identity of the server it sends the token to, else None. host is the
-    server's host."""
-    if auth_method != AUTH_METHOD_ENTRA:
+def check_token_ssl(auth_method, connection_params, host):
+    """Return an error message when a token method's server does not verify
+    the identity of the server it sends the token to, else None. host is
+    the server's host."""
+    if not is_token_auth_method(auth_method):
         return None
-    if not is_entra_destination_valid(connection_params, host):
+    if not is_token_destination_valid(connection_params, host):
         return gettext(
-            'The entra authentication method requires a TCP host name or '
+            'The {0} authentication method requires a TCP host name or '
             'address, so that the access token is not sent over a local '
-            'socket, where SSL is not used.')
-    if not is_entra_ssl_valid(connection_params):
+            'socket, where SSL is not used.').format(auth_method)
+    if not is_token_ssl_valid(connection_params):
         return gettext(
-            'The entra authentication method requires the connection '
+            'The {0} authentication method requires the connection '
             'parameter sslmode to be set to verify-full, so that the '
             'access token is only sent to a server whose identity is '
-            'verified.')
+            'verified.').format(auth_method)
     return None
 
 

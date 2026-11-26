@@ -96,7 +96,8 @@ class ServerKerberosExclusivityTestCase(BaseTestGenerator):
             'role': None,
             'connect_now': False,
             'connection_params': [
-                {'name': 'sslmode', 'value': 'prefer', 'keyword': 'sslmode'}
+                {'name': 'sslmode', 'value': 'verify-full',
+                 'keyword': 'sslmode'}
             ],
         }
         data.update(self.create)

@@ -35,7 +35,7 @@ from pgadmin.utils.passexec import normalise_passexec_name, \
     passexec_name_for_api, PASSEXEC_INHERIT
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
-    check_auth_method, check_entra_available, check_entra_ssl, \
+    check_auth_method, check_entra_available, check_token_ssl, \
     check_kerberos_exclusive, is_token_auth_method
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.utils.token_auth import sign_in_again_response
@@ -1369,9 +1369,9 @@ class ServerNode(PGChildNodeView):
         results in, and clear the saved password when it is a token method.
         Return an error message, or None.
 
-        The entra method is checked when this update selects it, and its
+        A token method is checked when this update selects it, and its
         destination and sslmode whenever this update changes any of them;
-        an unrelated edit of an entra server is never refused. server_host
+        an unrelated edit of a token server is never refused. server_host
         is the host before this update: a non-owner's comes from the
         owner's server, as do the effective_params they connect with,
         when given. No database password is kept for a token method:
@@ -1392,7 +1392,7 @@ class ServerNode(PGChildNodeView):
                 effective_params = data['connection_params'] \
                     if 'connection_params' in data \
                     else current.connection_params
-            err = check_entra_ssl(
+            err = check_token_ssl(
                 auth_method, effective_params,
                 data.get('host', server_host))
             if err:
@@ -1742,7 +1742,7 @@ class ServerNode(PGChildNodeView):
             )
 
         auth_method_err = check_entra_available(auth_method) or \
-            check_entra_ssl(auth_method, connection_params, data.get('host'))
+            check_token_ssl(auth_method, connection_params, data.get('host'))
         if auth_method_err:
             return bad_auth_method_response(auth_method_err)
 

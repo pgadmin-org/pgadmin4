@@ -83,8 +83,10 @@ class TestOAuthConnection(
             'direct': AUTH_METHOD_OAUTH_DIRECT,
             'exchange': AUTH_METHOD_OAUTH_EXCHANGE,
         }[method]
+        manager.host = 'database.example.test'
         manager.connection_params = {
             'oauth_issuer': ISSUER,
+            'sslmode': 'verify-full',
         }
 
         if client_id is not None:

@@ -264,13 +264,15 @@ authentication on the PostgreSQL server.
    Prefer *OAuth: token exchange* with a database-specific token where
    supported.
 
-For *Microsoft Entra ID*, set the ``sslmode`` connection parameter to
-``verify-full``. pgAdmin sends the token as the password of the connection, so
-it refuses to save the server, to import it or to connect without that
-setting: the token is only sent to a server whose certificate and host name
-are verified. The host name itself is not restricted, so a private endpoint
-with its own DNS name works, but it must be a TCP host name or address, not
-a Unix-domain socket, over which libpq uses no SSL. Set the *Username* to your Microsoft Entra ID
+For every token method, set the ``sslmode`` connection parameter to
+``verify-full``. pgAdmin refuses to save the server, to import it or to
+connect without that setting: the token is only sent to a server whose
+certificate and host name are verified. The host name itself is not
+restricted, so a private endpoint with its own DNS name works, but it must be
+a TCP host name or address, not a Unix-domain socket, over which libpq uses
+no SSL.
+
+For *Microsoft Entra ID*, set the *Username* to your Microsoft Entra ID
 user name, or to the name of the Entra group or service principal that the
 database role belongs to.
 

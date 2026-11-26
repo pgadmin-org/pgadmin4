@@ -95,7 +95,7 @@ class UpdateCheckedEndpointTest(BaseTestGenerator):
                              return_value=None), \
                 patch.object(servers_module, 'check_entra_available',
                              return_value=None), \
-                patch.object(servers_module, 'check_entra_ssl',
+                patch.object(servers_module, 'check_token_ssl',
                              return_value=None), \
                 patch.object(ServerNode, '_owner_endpoint_unchanged',
                              return_value=True), \

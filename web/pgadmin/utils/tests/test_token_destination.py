@@ -22,7 +22,8 @@ from psycopg.conninfo import conninfo_to_dict
 
 from pgadmin.utils import utility_conninfo
 from pgadmin.utils.auth_method import AUTH_METHOD_ENTRA, \
-    AUTH_METHOD_PASSWORD, check_entra_ssl, is_entra_destination_valid, \
+    AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE, \
+    AUTH_METHOD_PASSWORD, check_token_ssl, is_token_destination_valid, \
     is_unix_socket_host
 from pgadmin.utils.route import BaseTestGenerator
 
@@ -39,7 +40,7 @@ class _AppMixin:
         Babel(self.app)
 
 
-class EntraDestinationTestCase(_AppMixin, BaseTestGenerator):
+class TokenDestinationTestCase(_AppMixin, BaseTestGenerator):
     """Every destination libpq may try must be TCP."""
 
     scenarios = [
@@ -75,10 +76,10 @@ class EntraDestinationTestCase(_AppMixin, BaseTestGenerator):
 
     def runTest(self):
         self.assertEqual(
-            is_entra_destination_valid(self.params, self.host), self.valid)
+            is_token_destination_valid(self.params, self.host), self.valid)
 
         with self.app.app_context():
-            err = check_entra_ssl(
+            err = check_token_ssl(
                 AUTH_METHOD_ENTRA, dict(self.params, **VERIFY_FULL),
                 self.host)
         if self.valid:
@@ -113,22 +114,48 @@ class HostOverrideConninfoTestCase(_AppMixin, BaseTestGenerator):
 
         # No TCP host reaches libpq, and the check agrees.
         self.assertFalse(conninfo.get('host'))
-        self.assertFalse(is_entra_destination_valid(
+        self.assertFalse(is_token_destination_valid(
             manager.connection_params, manager.host))
 
 
-class EntraCheckTestCase(_AppMixin, BaseTestGenerator):
+class TokenCheckTestCase(_AppMixin, BaseTestGenerator):
     """A TCP destination still needs verify-full; other methods are not
     checked."""
 
     def runTest(self):
         with self.app.app_context():
-            self.assertIn('verify-full', check_entra_ssl(
+            self.assertIn('verify-full', check_token_ssl(
                 AUTH_METHOD_ENTRA, {'sslmode': 'require'}, 'db.example.com'))
-            self.assertIsNone(check_entra_ssl(
+            self.assertIsNone(check_token_ssl(
                 AUTH_METHOD_PASSWORD, {}, '/tmp'))
         self.assertFalse(is_unix_socket_host('db.example.com'))
         self.assertFalse(is_unix_socket_host('c'))
+
+
+class TokenMethodSslTestCase(_AppMixin, BaseTestGenerator):
+    """Every token method sends its token only over TCP to a server whose
+    identity is verified."""
+
+    scenarios = [
+        (f'{method}: {case}', dict(method=method, host=host, params=params,
+                                   refused=refused))
+        for method in (AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE,
+                       AUTH_METHOD_ENTRA)
+        for case, host, params, refused in (
+            ('verify-full over TCP', 'db.example.com', VERIFY_FULL, None),
+            ('require', 'db.example.com', {'sslmode': 'require'},
+             'verify-full'),
+            ('a socket', '/tmp', VERIFY_FULL, 'TCP'),
+        )
+    ]
+
+    def runTest(self):
+        with self.app.app_context():
+            err = check_token_ssl(self.method, self.params, self.host)
+        if self.refused is None:
+            self.assertIsNone(err)
+        else:
+            self.assertIn(self.refused, err)
 
 
 class UtilityConninfoVerifyFullTestCase(_AppMixin, BaseTestGenerator):

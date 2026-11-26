@@ -803,7 +803,8 @@ class TokenAuthRegistryTest(BaseTestGenerator):
 
         # A token is the credential, so any password is dropped: replaced
         # by the token in place of a password, and not sent with OAUTHBEARER.
-        params = {'oauth_issuer': 'https://idp.example.test'}
+        params = {'oauth_issuer': 'https://idp.example.test',
+                  'sslmode': 'verify-full'}
         token_auth.register_token_auth_method(
             'plugin_password', lambda p: 'tok', token_auth.PasswordDelivery())
         try:
@@ -816,7 +817,8 @@ class TokenAuthRegistryTest(BaseTestGenerator):
                 patch.object(pg_oauth2, 'get_postgres_oauth_token',
                              return_value='tok'):
             with token_auth.token_connection(
-                    'oauth_direct', params, 'saved') as password:
+                    'oauth_direct', params, 'saved',
+                    'db.example.test') as password:
                 self.assertIsNone(password)
                 self.assertEqual(pg_oauth2._oauth_token.get(), 'tok')
         with token_auth.token_connection(

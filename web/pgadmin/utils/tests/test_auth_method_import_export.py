@@ -44,8 +44,10 @@ class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
         self._load([
             {'Name': 'missing'},
             {'Name': 'password', 'AuthMethod': 'password'},
-            {'Name': 'direct', 'AuthMethod': 'oauth_direct'},
-            {'Name': 'exchange', 'AuthMethod': 'oauth_exchange'},
+            {'Name': 'direct', 'AuthMethod': 'oauth_direct',
+             'ConnectionParameters': {'sslmode': 'verify-full'}},
+            {'Name': 'exchange', 'AuthMethod': 'oauth_exchange',
+             'ConnectionParameters': {'sslmode': 'verify-full'}},
             {'Name': 'entra', 'AuthMethod': 'entra',
              'ConnectionParameters': {'sslmode': 'verify-full'}},
             # The format before ConnectionParameters.
@@ -55,7 +57,8 @@ class TestAuthMethodImport(_ImportExportMixin, BaseTestGenerator):
             {'Name': 'kerberos-password', 'AuthMethod': 'password',
              'KerberosAuthentication': True},
             {'Name': 'token-no-kerberos', 'AuthMethod': 'oauth_direct',
-             'KerberosAuthentication': False},
+             'KerberosAuthentication': False,
+             'ConnectionParameters': {'sslmode': 'verify-full'}},
         ])
 
         self.assertEqual(
@@ -78,7 +81,8 @@ class TestAuthMethodRoundTrip(_ImportExportMixin, BaseTestGenerator):
     """A method survives export and import."""
 
     def runTest(self):
-        self._add_server('direct', auth_method='oauth_direct')
+        self._add_server('direct', auth_method='oauth_direct',
+                         connection_params={'sslmode': 'verify-full'})
         dumped = self._dump()
         self._cleanup()
 
@@ -119,10 +123,18 @@ class TestAuthMethodImportRefused(_ImportExportMixin, BaseTestGenerator):
               expect='Kerberos')),
         ('Kerberos with oauth_direct',
          dict(bad={'AuthMethod': 'oauth_direct',
-                   'KerberosAuthentication': True}, expect='Kerberos')),
+                   'KerberosAuthentication': True,
+                   'ConnectionParameters': {'sslmode': 'verify-full'}},
+              expect='Kerberos')),
         ('Kerberos with oauth_exchange',
          dict(bad={'AuthMethod': 'oauth_exchange',
-                   'KerberosAuthentication': True}, expect='Kerberos')),
+                   'KerberosAuthentication': True,
+                   'ConnectionParameters': {'sslmode': 'verify-full'}},
+              expect='Kerberos')),
+        ('oauth_direct without SSL mode verify-full',
+         dict(bad={'AuthMethod': 'oauth_direct',
+                   'ConnectionParameters': {'sslmode': 'require'}},
+              expect='verify-full')),
     ]
 
     def runTest(self):
