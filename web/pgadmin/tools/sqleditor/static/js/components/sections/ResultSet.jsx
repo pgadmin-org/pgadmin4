@@ -1426,6 +1426,7 @@ export function ResultSet() {
       quoting: queryToolPref.results_grid_quoting,
       quote_char: queryToolPref.results_grid_quote_char,
       field_separator: queryToolPref.results_grid_field_separator,
+      quote_single_cell: queryToolPref.results_grid_quote_single_cell,
     });
     let copyRows=[], copyCols=[];
     if(allRowsSelect == 'ALL' && !queryToolCtx.server_cursor) {

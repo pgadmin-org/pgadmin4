@@ -17,6 +17,7 @@ export default class CopyData {
       field_separator: '\t',
       quote_char: '"',
       quoting: 'strings',
+      quote_single_cell: false,
       ...options,
     };
   }
@@ -29,7 +30,9 @@ export default class CopyData {
   }
 
   copyRowsToCsv(rows=[], columns=[], withHeaders=false) {
-    const isSingleCell = rows.length === 1 && columns.length === 1 && !withHeaders;
+    /* A single cell is copied unquoted unless the user has opted in. */
+    const isSingleCell = rows.length === 1 && columns.length === 1 && !withHeaders
+      && !this.CSVOptions.quote_single_cell;
     let csvRows = rows.reduce((prevCsvRows, currRow)=>{
       let csvRow = columns.reduce((prevCsvCols, column)=>{
         prevCsvCols.push(this.csvCell(currRow[column.key], column, false, isSingleCell));
