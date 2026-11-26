@@ -335,7 +335,10 @@ function Dashboard({
   const [refresh, setRefresh] = useState(false);
   const [activeOnly, setActiveOnly] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
-  const activityFetchInFlight = useRef(false);
+  /* Every activity request, manual or automatic, takes the next id and
+   * counts as pending until it settles. Only the latest request may update
+   * the State tab, and a poll never starts while any request is pending. */
+  const activityRequests = useRef({latest: 0, pending: 0});
   const currentActivityUrl = useRef(null);
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
   const [ldid, setLdid] = useState(0);
@@ -902,12 +905,20 @@ function Dashboard({
         setSsMsg(gettext('Loading logs...'));
         setDashData([]);
         if (mainTabVal == 1 || mainTabVal == 2 || mainTabVal == 3) {
-          if (mainTabVal == 1) activityFetchInFlight.current = true;
+          let activityReqId = null;
+          if (mainTabVal == 1) {
+            activityRequests.current.pending++;
+            activityReqId = ++activityRequests.current.latest;
+          }
           api({
             url: url,
             type: 'GET',
           })
             .then((res) => {
+              if (activityReqId !== null &&
+                activityReqId !== activityRequests.current.latest) {
+                return;
+              }
               if (res?.data?.['logs_disabled']) {
                 setSsMsg(gettext('Please enable logging to view the server logs, or check if the log file is in place.'));
               } else {
@@ -923,7 +934,7 @@ function Dashboard({
               setMsg(gettext('Failed to retrieve data from the server.'));
             })
             .finally(() => {
-              if (mainTabVal == 1) activityFetchInFlight.current = false;
+              if (activityReqId !== null) activityRequests.current.pending--;
             });
         }
         else if (mainTabVal == 4) {
@@ -966,19 +977,24 @@ function Dashboard({
    * flash empty or lose its scroll position on every poll. */
   useInterval(() => {
     const url = currentActivityUrl.current;
-    if (!url || activityFetchInFlight.current) return;
-    activityFetchInFlight.current = true;
+    if (!url || activityRequests.current.pending > 0) return;
+    activityRequests.current.pending++;
+    const reqId = ++activityRequests.current.latest;
+    /* Ignore the outcome if a newer activity request has started, or the
+     * user has moved to another node or tab. */
+    const isCurrent = () => (
+      reqId === activityRequests.current.latest &&
+      currentActivityUrl.current === url
+    );
     api({
       url: url,
       type: 'GET',
     })
       .then((res) => {
-        // Drop the response if the user has moved to another node or tab.
-        if (currentActivityUrl.current === url) {
-          setDashData(parseData(res.data));
-        }
+        if (isCurrent()) setDashData(parseData(res.data));
       })
       .catch((error) => {
+        if (!isCurrent()) return;
         // Stop polling rather than raising the same alert on every tick.
         setAutoRefresh(false);
         pgAdmin.Browser.notifier.alertText(
@@ -987,7 +1003,7 @@ function Dashboard({
         );
       })
       .finally(() => {
-        activityFetchInFlight.current = false;
+        activityRequests.current.pending--;
       });
   }, getSessionsAutoRefreshDelay({
     autoRefresh: autoRefresh,
