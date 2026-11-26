@@ -157,6 +157,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       condeferred: undefined,
       confmatchtype: false,
       convalidated: undefined,
+      conenforced: true,
       columns: undefined,
       confupdtype: 'a',
       confdeltype: 'a',
@@ -242,9 +243,17 @@ export default class ForeignKeySchema extends BaseUISchema {
         {label: 'SIMPLE', value: false},
       ], readonly: obj.isReadonly,
     },{
+      id: 'conenforced', label: gettext('Enforced?'),
+      type: 'switch', group: gettext('Definition'), min_version: 180000,
+    },{
       id: 'convalidated', label: gettext('Validated?'),
       type: 'switch', group: gettext('Definition'),
+      deps: ['conenforced'],
       readonly: (state)=>{
+        // A NOT ENFORCED foreign key cannot be validated.
+        if(state.conenforced === false) {
+          return true;
+        }
         if(!obj.isNew(state)) {
           let origData = {};
           if(obj.inTable && obj.top) {
@@ -258,6 +267,11 @@ export default class ForeignKeySchema extends BaseUISchema {
           return origData.convalidated;
         }
         return false;
+      },
+      depChange: (state)=>{
+        if(state.conenforced === false) {
+          return {convalidated: false};
+        }
       },
     },{
       id: 'autoindex', label: gettext('Auto FK index?'),

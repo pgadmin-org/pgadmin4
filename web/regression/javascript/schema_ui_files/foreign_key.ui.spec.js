@@ -222,6 +222,17 @@ describe('ForeignKeySchema', ()=>{
     });
   });
 
+  it('a foreign key that is not enforced cannot be validated', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='convalidated');
+
+    expect(field.depChange({conenforced: false, convalidated: true})).toEqual({
+      convalidated: false,
+    });
+    expect(field.depChange({conenforced: true})).toBeUndefined();
+    expect(field.readonly({conenforced: false})).toBe(true);
+    expect(field.readonly({conenforced: true})).toBe(false);
+  });
+
   it('table column addition is a no-op for a removed foreign key', ()=>{
     schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(undefined, ['columns'], null, {

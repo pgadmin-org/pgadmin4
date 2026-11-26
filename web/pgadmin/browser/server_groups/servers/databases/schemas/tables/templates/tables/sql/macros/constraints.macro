@@ -44,7 +44,8 @@
 {% macro CHECK(conn, check_data) -%}
 {% for data in check_data %}{% if loop.index !=1 %},{% endif %}
 
-    {% if data.name %}CONSTRAINT {{ conn|qtIdent(data.name) }} {% endif%}CHECK ({{ data.consrc }}){% if data.convalidated %}
+    {% if data.name %}CONSTRAINT {{ conn|qtIdent(data.name) }} {% endif%}CHECK ({{ data.consrc }}){% if data.conenforced is defined and not data.conenforced %}
+ NOT ENFORCED{% elif data.convalidated %}
  NOT VALID{% endif %}{% if data.connoinherit %} NO INHERIT{% endif %}
 {% endfor %}
 {%- endmacro %}
@@ -74,7 +75,9 @@
         DEFERRABLE{% if data.condeferred %}
  INITIALLY DEFERRED{% endif%}
 {% endif%}
-{% if not data.convalidated %}
+{% if data.conenforced is defined and not data.conenforced %}
+
+        NOT ENFORCED{% elif not data.convalidated %}
 
         NOT VALID{% endif%}
 {% endfor %}

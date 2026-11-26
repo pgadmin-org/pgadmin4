@@ -1,0 +1,465 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create First Table for Foreign Key",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_first_table",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "customer_id",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default",
+        "primary_key": [
+          {
+            "columns": [
+              {
+                "column": "id"
+              }
+            ],
+            "include": []
+          }
+        ]
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Second Table for Foreign Key",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_second_table",
+        "columns": [
+          {
+            "name": "item_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "so_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "product_id",
+            "cltype": "integer"
+          },
+          {
+            "name": "qty",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default",
+        "primary_key": [
+          {
+            "columns": [
+              {
+                "column": "item_id"
+              },
+              {
+                "column": "so_id"
+              }
+            ],
+            "include": []
+          }
+        ]
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint with all options",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Test Comment",
+        "condeferrable": true,
+        "condeferred": true,
+        "confmatchtype": true,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": true,
+        "coveringindex": "fki_FKey_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "create_foreign_key_with_all_options.sql",
+      "expected_msql_file": "create_foreign_key_with_all_options_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "alter",
+      "name": "Alter name, comment and validate option",
+      "endpoint": "NODE-foreign_key.obj_id",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql_id",
+      "data": {
+        "name": "FKey1_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Test Comment Update",
+        "convalidated": true
+      },
+      "expected_sql_file": "alter_name_comment_validation.sql",
+      "expected_msql_file": "alter_name_comment_validation_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint with match type simple",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_simple.sql",
+      "expected_msql_file": "create_foreign_key_simple_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint with RESTRICT action",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "r",
+        "confdeltype": "r",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_restrict.sql",
+      "expected_msql_file": "create_foreign_key_restrict_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint with CASCADE action",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "c",
+        "confdeltype": "c",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_cascade.sql",
+      "expected_msql_file": "create_foreign_key_cascade_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint with SET NULL action",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "n",
+        "confdeltype": "n",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_setnull.sql",
+      "expected_msql_file": "create_foreign_key_setnull_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint with SET DEFAULT action",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "d",
+        "confdeltype": "d",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_setdefault.sql",
+      "expected_msql_file": "create_foreign_key_setdefault_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint that is not enforced",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_enforced",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "conenforced": false,
+        "columns": [
+          {
+            "local_column": "so_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_not_enforced.sql",
+      "expected_msql_file": "create_foreign_key_not_enforced_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "alter",
+      "name": "Alter Foreign Key Constraint to enforced",
+      "endpoint": "NODE-foreign_key.obj_id",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql_id",
+      "data": {
+        "conenforced": true,
+        "convalidated": true
+      },
+      "expected_sql_file": "alter_foreign_key_enforced.sql",
+      "expected_msql_file": "alter_foreign_key_enforced_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Foreign Key Constraint to not enforced",
+      "endpoint": "NODE-foreign_key.obj_id",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql_id",
+      "data": {
+        "conenforced": false,
+        "convalidated": false
+      },
+      "expected_sql_file": "create_foreign_key_not_enforced.sql",
+      "expected_msql_file": "alter_foreign_key_not_enforced_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key that is not enforced",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_enforced"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop First Table",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_first_table"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Second Table",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_second_table"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with a Foreign Key and a Check Constraint that are not enforced",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_not_enforced_table",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer"
+          },
+          {
+            "name": "ref_id",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default",
+        "foreign_key": [
+          {
+            "name": "fk_not_enforced",
+            "condeferrable": false,
+            "condeferred": false,
+            "confmatchtype": false,
+            "convalidated": false,
+            "conenforced": false,
+            "columns": [
+              {
+                "local_column": "ref_id",
+                "references": "<test_first_table>",
+                "referenced": "id"
+              }
+            ],
+            "confupdtype": "a",
+            "confdeltype": "a",
+            "autoindex": false,
+            "coveringindex": ""
+          }
+        ],
+        "check_constraint": [
+          {
+            "name": "chk_not_enforced",
+            "consrc": "id > 0",
+            "connoinherit": false,
+            "convalidated": true,
+            "conenforced": false
+          }
+        ]
+      },
+      "expected_sql_file": "create_table_not_enforced.sql",
+      "preprocess_data": true,
+      "store_object_id": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Table with constraints that are not enforced",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_not_enforced_table"
+      }
+    }
+  ]
+}
