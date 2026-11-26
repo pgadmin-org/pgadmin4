@@ -49,3 +49,20 @@ FROM
     pg_catalog.pg_stat_replication sa
 WHERE
     (SELECT r.rolsuper OR r.oid = sa.usesysid  FROM pg_catalog.pg_roles r WHERE r.rolname = current_user)
+{% if can_read_wal_dir %}
+UNION
+SELECT
+    null AS "PID",
+    null AS {{ conn|qtIdent(_('User')) }},
+    '' AS {{ conn|qtIdent(_('Database')) }},
+    null AS {{ conn|qtIdent(_('Backend start')) }},
+    null AS {{ conn|qtIdent(_('Client')) }},
+    {{ _('WAL directory')|qtLiteral(conn) }} AS {{ conn|qtIdent(_('Application')) }},
+    null AS {{ conn|qtIdent(_('Wait event type')) }},
+    null AS {{ conn|qtIdent(_('Wait event name')) }},
+    pg_catalog.format({{ _('%s (%s files)')|qtLiteral(conn) }}, pg_catalog.pg_size_pretty(pg_catalog.sum(w.size)), pg_catalog.count(*)) AS {{ conn|qtIdent(_('Query')) }},
+    null AS {{ conn|qtIdent(_('Query start')) }},
+    null AS {{ conn|qtIdent(_('Xact start')) }}
+FROM
+    pg_catalog.pg_ls_waldir() w
+{% endif %}
