@@ -104,10 +104,11 @@ function ShowDataOutputQueryPopup({query}) {
           icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
           title={isCopied ? gettext('Copied!') : gettext('Copy SQL')}
           onMouseDown={(e)=>e.preventDefault()}
-          onClick={()=>{
-            copyToClipboard(query || '');
-            setIsCopied(true);
-            revertCopied(1500);
+          onClick={async ()=>{
+            if(await copyToClipboard(query || '')) {
+              setIsCopied(true);
+              revertCopied(1500);
+            }
           }}
         />
         <CodeMirror

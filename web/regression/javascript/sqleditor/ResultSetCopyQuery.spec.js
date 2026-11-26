@@ -39,7 +39,7 @@ jest.mock('../../../pgadmin/static/js/clipboard', () => ({
   copyToClipboard: jest.fn(),
 }));
 
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, act } from '@testing-library/react';
 import Theme from 'sources/Theme';
 import { copyToClipboard } from '../../../pgadmin/static/js/clipboard';
 import { QueryToolContext, QueryToolEventsContext } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx';
@@ -70,16 +70,30 @@ describe('ResultSetToolbar SQL query popup', () => {
     );
   };
 
-  it('copies the query without moving the focus off the SQL button', () => {
+  const openPopup = () => {
     const { container } = renderToolbar();
     fireEvent.click(container.querySelector('#sql-query'));
+    return document.body.querySelector('button[data-label="Copy SQL"]');
+  };
 
-    const copyBtn = document.body.querySelector('button[data-label="Copy SQL"]');
+  it('copies the query without moving the focus off the SQL button', async () => {
+    copyToClipboard.mockResolvedValue(true);
+    const copyBtn = openPopup();
     expect(copyBtn).not.toBeNull();
     expect(fireEvent.mouseDown(copyBtn)).toBe(false);
-    fireEvent.click(copyBtn);
+    await act(async () => { fireEvent.click(copyBtn); });
 
     expect(copyToClipboard).toHaveBeenCalledWith(query);
     expect(screen.getByText(query)).toBeInTheDocument();
+    expect(document.body.querySelector('button[data-label="Copied!"]')).not.toBeNull();
+  });
+
+  it('does not report success when the clipboard write fails', async () => {
+    copyToClipboard.mockResolvedValue(false);
+    const copyBtn = openPopup();
+    await act(async () => { fireEvent.click(copyBtn); });
+
+    expect(document.body.querySelector('button[data-label="Copy SQL"]')).not.toBeNull();
+    expect(document.body.querySelector('button[data-label="Copied!"]')).toBeNull();
   });
 });
