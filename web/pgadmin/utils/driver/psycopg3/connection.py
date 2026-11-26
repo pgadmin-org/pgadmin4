@@ -393,6 +393,9 @@ class Connection(BaseConnection):
     CURSOR_NOT_FOUND = \
         gettext("Cursor could not be found for the async connection.")
     ARGS_STR = "{0}#{1}"
+    # Set by manager.update() when it takes this connection out of the
+    # manager's map; such a connection is never published again.
+    superseded = False
 
     def __init__(self, manager, conn_id, db, **kwargs):
         assert (manager is not None)
@@ -594,7 +597,8 @@ class Connection(BaseConnection):
         """
         Call publish(), which makes pg_conn this connection's, while no
         manager.update() has run since checked, the settings pg_conn was
-        opened with, and return None. When one ran while it opened, close
+        opened with, nor superseded this connection, and return None.
+        When one ran while it opened, or superseded it, close
         pg_conn (an AsyncConnection when is_async) instead and return the
         message to report: any update(), whatever it changed, released
         only the connections it found published, so this one would stay
@@ -603,7 +607,8 @@ class Connection(BaseConnection):
         that comes after them finds the connection published.
         """
         with self.manager.settings_lock:
-            if self.manager.settings_generation == checked[3]:
+            if not self.superseded and \
+                    self.manager.settings_generation == checked[3]:
                 publish()
                 return None
         if is_async:

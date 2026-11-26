@@ -81,8 +81,9 @@ class ServerManager(object):
         # it is held.
         manager.settings_lock = threading.Lock()
         # Counts the update() calls, each of which releases every
-        # connection it finds published, so a connection opened while one
-        # ran is not published (see Connection._publish_unless_superseded).
+        # connection it finds published and marks every connection of its
+        # map superseded, so a connection opened while one ran is not
+        # published (see Connection._publish_unless_superseded).
         manager.settings_generation = 0
         return manager
 
@@ -171,13 +172,17 @@ class ServerManager(object):
                 pass
             self.prepare_threshold = server.prepare_threshold
             self.post_connection_sql = server.post_connection_sql
+            # Taken from the map while the lock is held, so a connection
+            # registered or opened while they are released is either in
+            # the new map or superseded, never published outside it.
+            released, self.connections = self.connections, dict()
+            for con in released.values():
+                con.superseded = True
 
-        for con in self.connections:
-            self.connections[con]._release()
+        for con in released.values():
+            con._release()
 
         self.update_session()
-
-        self.connections = dict()
 
     def _set_password(self, res):
         """

@@ -97,6 +97,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             'case_settings_changed_during_the_token_request_are_refused',
             'case_a_method_changed_while_a_password_attempt_waits_is_refused',
             'case_a_connection_opened_during_an_update_is_not_published',
+            'case_a_connection_opened_while_update_releases_is_not_published',
             'case_no_update_comes_between_the_check_and_the_build',
         ) for operation in OPERATIONS
     ]
@@ -132,10 +133,11 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         manager.settings_generation = 0
         return manager
 
-    def _run(self, manager, locker=None):
+    def _run(self, manager, locker=None, start=None):
         """Run the operation; return status, message, the mock of the
         psycopg call it makes, the token context seen by that call and the
-        connection."""
+        connection. start, when given, is called with the connection and a
+        function that runs the operation, and calls that function."""
         async_ = self.operation == 'async_connect'
         connection = TestOAuthConnection._make_connection(
             manager, async_=async_)
@@ -178,13 +180,19 @@ class TokenAuthConnectionTest(BaseTestGenerator):
                     connection_module.psycopg, 'connect',
                     side_effect=record))
 
-            if self.operation in ('connect', 'async_connect'):
-                status, message = connection.connect()
-            elif self.operation == 'reset':
-                status, message = connection.reset()
-            else:
-                status, message = connection.cancel_transaction(
-                    connection.conn_id)
+            result = []
+
+            def go():
+                if self.operation in ('connect', 'async_connect'):
+                    result.append(connection.connect())
+                elif self.operation == 'reset':
+                    result.append(connection.reset())
+                else:
+                    result.append(connection.cancel_transaction(
+                        connection.conn_id))
+
+            (start or (lambda _, run: run()))(connection, go)
+            status, message = result[0]
 
         self.assertIsNone(pg_oauth2._oauth_token.get())
         return status, message, target, seen, connection
@@ -413,6 +421,38 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             self.assertFalse(connection.wasConnected, case)
             token_auth.unregister_token_auth_method(METHOD)
             self.registered.remove(METHOD)
+
+    def case_a_connection_opened_while_update_releases_is_not_published(self):
+        # The real update() releases the connections of its map once it
+        # gave up the settings lock; a connection of that map that opens
+        # then has the new generation, but is not published outside it.
+        from pgadmin.model import Server
+        from pgadmin.utils.driver.psycopg3 import server_manager
+        self._register(token_auth.PasswordDelivery())
+        manager = self._manager()
+        manager.settings_lock = threading.Lock()
+        server = Server(
+            id=7, user_id=1, servergroup_id=1, name='s',
+            host='db.example.com', port=5432, maintenance_db='postgres',
+            username='u', shared=False, auth_method=METHOD,
+            connection_params=manager.connection_params)
+
+        def start(connection, go):
+            manager.connections = {connection.conn_id: connection}
+            connection._release = MagicMock(side_effect=go)
+            with patch.object(server_manager, 'build_passexec'):
+                server_manager.ServerManager.update(manager, server)
+            self.assertEqual(manager.connections, {})
+            connection._release.assert_called_once_with()
+
+        status, message, _, seen, connection = self._run(
+            manager, start=start)
+
+        self.assertEqual(manager.settings_generation, 1)
+        self.assertFalse(status)
+        self.assertIn('settings changed', message)
+        seen['pg'].close.assert_called_once_with()
+        self.assertIsNone(connection.conn)
 
     def case_no_update_comes_between_the_check_and_the_build(self):
         # A manager.update() that starts once the settings were compared
