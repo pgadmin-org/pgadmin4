@@ -236,7 +236,7 @@ export default function ImportExportServers({onClose}) {
         <WizardStep stepId={1} className='ImportExportServers-noOverflow'>
           <Box className='ImportExportServers-boxText'>{gettext('Select the Server Groups/Servers to import/export:')}</Box>
           <Box className='ImportExportServers-treeContainer'>
-            <CheckBoxTree treeData={serverData} getSelectedServers={(selServers) => {
+            <CheckBoxTree treeData={serverData} showSelectAll getSelectedServers={(selServers) => {
               setSelectedServers(selServers);
             }}/>
           </Box>

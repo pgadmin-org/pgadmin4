@@ -10,6 +10,8 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import CheckboxTree from 'react-checkbox-tree';
+import { Checkbox, FormControlLabel } from '@mui/material';
+import gettext from 'sources/gettext';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
@@ -20,6 +22,19 @@ import PropTypes from 'prop-types';
 
 const StyledDiv = styled('div')(({theme}) => ({
   height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  '& .CheckBoxTree-selectAll': {
+    marginLeft: 0,
+    marginRight: 0,
+    paddingBottom: '5px',
+    '& .MuiCheckbox-root': {
+      padding: '0 4px 0 0'
+    },
+    '& .MuiFormControlLabel-label': {
+      fontSize: '0.815rem'
+    }
+  },
   '& .rct-collapse, .rct-checkbox': {
     padding: 0
   },
@@ -27,7 +42,9 @@ const StyledDiv = styled('div')(({theme}) => ({
     padding: '0 0 0 10px'
   },
   '& .react-checkbox-tree': {
-    height: '97%',
+    flexGrow: 1,
+    minHeight: 0,
+    marginBottom: '5px',
     fontSize: '0.815rem',
     overflow: 'auto',
     ...theme.mixins.panelBorder
@@ -40,9 +57,19 @@ const StyledDiv = styled('div')(({theme}) => ({
   }
 }));
 
-export default function CheckBoxTree({treeData, ...props}) {
+// react-checkbox-tree reports only checked leaf values, as strings.
+function getLeafValues(nodes) {
+  return (nodes ?? []).flatMap((node) => (
+    node.children?.length ? getLeafValues(node.children) : [String(node.value)]
+  ));
+}
+
+export default function CheckBoxTree({treeData, showSelectAll = false, ...props}) {
   const [checked, setChecked] = React.useState([]);
   const [expanded, setExpanded] = React.useState([]);
+  const leafValues = React.useMemo(() => getLeafValues(treeData), [treeData]);
+  const checkedLeafCount = leafValues.filter((v) => checked.includes(v)).length;
+  const allChecked = leafValues.length > 0 && checkedLeafCount === leafValues.length;
 
   React.useEffect(() => {
     if (props.getSelectedServers) {
@@ -52,6 +79,23 @@ export default function CheckBoxTree({treeData, ...props}) {
 
   return (
     <StyledDiv>
+      {showSelectAll &&
+        <FormControlLabel
+          className='CheckBoxTree-selectAll'
+          label={gettext('Select all')}
+          disabled={leafValues.length === 0}
+          control={
+            <Checkbox
+              checked={allChecked}
+              indeterminate={checkedLeafCount > 0 && !allChecked}
+              onChange={(e) => setChecked(e.target.checked ? leafValues : [])}
+              icon={<CheckBoxOutlineBlankIcon className='CheckBoxTree-unchecked'/>}
+              checkedIcon={<CheckBoxIcon className='CheckBoxTree-checked'/>}
+              indeterminateIcon={<IndeterminateCheckBoxIcon className='CheckBoxTree-checked'/>}
+            />
+          }
+        />
+      }
       <CheckboxTree
         nodes={treeData}
         checked={checked}
@@ -74,5 +118,6 @@ export default function CheckBoxTree({treeData, ...props}) {
 
 CheckBoxTree.propTypes = {
   treeData: PropTypes.array,
+  showSelectAll: PropTypes.bool,
   getSelectedServers: PropTypes.func
 };
