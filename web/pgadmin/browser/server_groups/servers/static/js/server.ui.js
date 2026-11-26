@@ -505,10 +505,20 @@ export default class ServerSchema extends BaseUISchema {
           if (params !== state.connection_params) {
             changes.connection_params = params;
           }
+          // A non-owner opts in to a token method for the endpoint this
+          // dialog shows; the server refuses it if the owner changed it.
+          if (obj.isShared(state)) {
+            changes.checked_endpoint = isTokenAuthMethod(state.auth_method) ?
+              state.endpoint_hash : undefined;
+          }
           if (!_.isEmpty(changes)) {
             return changes;
           }
         },
+      },{
+        // Sent only when a non-owner selects a token method (see above).
+        id: 'checked_endpoint', type: 'text', visible: false,
+        mode: ['edit'],
       },{
         id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
         group: gettext('Connection'), deps: ['auth_method'],

@@ -288,10 +288,14 @@ class ServerManager(object):
         # update() before the connection is registered chooses again.
         with self.settings_lock:
             generation = self.settings_generation
+        # What this call found out about the database, kept until it is
+        # known that no update() ran since; update() resets db_info.
+        rename_db = False
+        found_db = None
 
         if database is not None:
             if did is not None and did in self.db_info:
-                self.db_info[did]['datname'] = database
+                rename_db = True
         else:
             conn_str = CONN_STRING.format(conn_id)
             if did is None:
@@ -320,11 +324,10 @@ FROM
 WHERE db.oid = {0}""".format(did))
 
                         if status and len(res['rows']) > 0:
-                            for row in res['rows']:
-                                self.db_info[did] = row
-                                database = self.db_info[did]['datname']
+                            found_db = res['rows'][-1]
+                            database = found_db['datname']
 
-                        if did not in self.db_info:
+                        if found_db is None:
                             raise ObjectGone(gettext(
                                 "Could not find the specified database."
                             ))
@@ -361,6 +364,10 @@ WHERE db.oid = {0}""".format(did))
 
         with self.settings_lock:
             if self.settings_generation == generation:
+                if rename_db and did in self.db_info:
+                    self.db_info[did]['datname'] = database
+                if found_db is not None:
+                    self.db_info[did] = found_db
                 if conn is not None:
                     self.connections.setdefault(my_id, conn)
                 if my_id in self.connections:
@@ -558,45 +565,54 @@ WHERE db.oid = {0}""".format(did))
         if is_return:
             return return_value
 
+        # As in update(), a connection is taken from the map and marked
+        # superseded under the settings lock, so one that is being opened
+        # is not published once it is gone, and is released outside it.
         if my_id is not None:
-            if my_id in self.connections:
-                self.connections[my_id]._release()
-                del self.connections[my_id]
-                if did is not None:
-                    del self.db_info[did]
-
-                if len(self.connections) == 0:
-                    self.ver = None
-                    self.sversion = None
-                    self.server_type = None
-                    self.server_cls = None
-                    self.password = None
-
-                self.update_session()
-
-                return True
-            else:
+            with self.settings_lock:
+                conn = self.connections.pop(my_id, None)
+                if conn is not None:
+                    conn.superseded = True
+                    if did is not None:
+                        self.db_info.pop(did, None)
+                    if len(self.connections) == 0:
+                        self._forget_server_info()
+            if conn is None:
                 return False
 
-        for con_key in list(self.connections.keys()):
-            conn = self.connections[con_key]
-            # Cancel the ongoing transaction before closing the connection
-            # as it may hang forever
+            conn._release()
+            self.update_session()
+
+            return True
+
+        # Cancel the ongoing transactions before closing the connections
+        # as they may hang forever. cancel_transaction() finds its
+        # connection in the map, so this comes before they are taken out.
+        for conn in list(self.connections.values()):
             if conn.connected() and conn.conn_id is not None and \
                conn.conn_id.startswith('CONN:'):
                 conn.cancel_transaction(conn.conn_id[5:])
+
+        with self.settings_lock:
+            released, self.connections = self.connections, dict()
+            for conn in released.values():
+                conn.superseded = True
+            self._forget_server_info()
+
+        for conn in released.values():
             conn._release()
 
-        self.connections = dict()
+        self.update_session()
+
+        return True
+
+    def _forget_server_info(self):
+        """Forget what the released connections told about the server."""
         self.ver = None
         self.sversion = None
         self.server_type = None
         self.server_cls = None
         self.password = None
-
-        self.update_session()
-
-        return True
 
     def _update_password(self, passwd):
         self.password = passwd

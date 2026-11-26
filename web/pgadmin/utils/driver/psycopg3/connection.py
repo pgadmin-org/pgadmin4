@@ -430,6 +430,9 @@ class Connection(BaseConnection):
         # Set when the last attempt to open a connection failed because the
         # user has to sign in to pgAdmin again (see OAuthSignInRequired).
         self.sign_in_again = False
+        # Set when the last attempt failed because the SSH tunnel could not
+        # be created, as opposed to failing once the tunnel was up.
+        self.tunnel_auth_failed = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
         self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
@@ -560,11 +563,11 @@ class Connection(BaseConnection):
         built, so no update() can come between them.
         """
         manager = self.manager
-        checked = (manager.auth_method, manager.host,
+        checked = (manager.auth_method, manager.host, manager.port,
                    copy.deepcopy(manager.connection_params),
                    manager.settings_generation)
         credentials = connection_credentials(
-            checked[0], checked[2], password, checked[1])
+            checked[0], checked[3], password, checked[1])
         with ConnectionLocker(manager.kerberos_conn):
             with credentials.scope() as conn_password:
                 with manager.settings_lock:
@@ -577,10 +580,10 @@ class Connection(BaseConnection):
     def _settings_unchanged(self, checked):
         """
         Whether the manager's settings still match checked, the (method,
-        host, connection parameters, generation) a connection attempt
+        host, port, connection parameters, generation) a connection attempt
         started with.
         The caller holds the manager's settings lock. A token attempt
-        needs all three unchanged, as its token was checked against them;
+        needs all four unchanged, as its token was checked against them;
         any attempt needs the method unchanged, as its credential is that
         method's.
         """
@@ -589,8 +592,8 @@ class Connection(BaseConnection):
         # a token.
         if checked[0] in (None, '', AUTH_METHOD_PASSWORD):
             return manager.auth_method in (None, '', AUTH_METHOD_PASSWORD)
-        return (manager.auth_method, manager.host,
-                manager.connection_params) == checked[:3]
+        return (manager.auth_method, manager.host, manager.port,
+                manager.connection_params) == checked[:4]
 
     def _publish_unless_superseded(self, pg_conn, checked, publish,
                                    is_async=False):
@@ -608,7 +611,7 @@ class Connection(BaseConnection):
         """
         with self.manager.settings_lock:
             if not self.superseded and \
-                    self.manager.settings_generation == checked[3]:
+                    self.manager.settings_generation == checked[4]:
                 publish()
                 return None
         if is_async:
@@ -633,6 +636,7 @@ class Connection(BaseConnection):
 
     def connect(self, **kwargs):
         self.sign_in_again = False
+        self.tunnel_auth_failed = False
         if self.conn:
             if self.conn.closed:
                 self.conn = None
@@ -655,6 +659,7 @@ class Connection(BaseConnection):
         if manager.use_ssh_tunnel == 1 and not manager.tunnel_created:
             status, error = manager.create_ssh_tunnel(tunnel_password)
             if not status:
+                self.tunnel_auth_failed = True
                 return False, error
             tunnel_created_here = True
 

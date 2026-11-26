@@ -127,7 +127,8 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
         servers_utils.restore_server_fixture_on_cleanup(self)
 
     def _check_failure_response(
-            self, mode, needs_tunnel_password, raises_exception):
+            self, mode, needs_tunnel_password, raises_exception,
+            tunnel_failed):
         error_message = 'Test connection failure.'
         connection_params = {
             'oauth_client_id': 'postgres-cluster',
@@ -171,6 +172,9 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
 
         connection = manager.connection.return_value
         connection.connected.return_value = False
+        # Whether the attempt failed creating the SSH tunnel, or once the
+        # tunnel was up.
+        connection.tunnel_auth_failed = tunnel_failed
 
         if raises_exception:
             connection.connect.side_effect = OperationalError(
@@ -255,8 +259,12 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
         connection.connect.assert_called_once()
 
         use_pgadmin_oauth = mode in ('oauth_direct', 'oauth_exchange')
+        # A token method is prompted for the tunnel password only when the
+        # tunnel failed to authenticate.
+        tunnel_prompt = needs_tunnel_password and (
+            not use_pgadmin_oauth or tunnel_failed)
 
-        if use_pgadmin_oauth and not needs_tunnel_password:
+        if use_pgadmin_oauth and not tunnel_prompt:
             self.assertEqual(response.status_code, 400)
             self.assertEqual(
                 response.get_json()['errormsg'],
@@ -276,7 +284,7 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
                 (
                     401,
                     not use_pgadmin_oauth,
-                    needs_tunnel_password,
+                    tunnel_prompt,
                     error_message,
                 ),
             )
@@ -285,12 +293,15 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
         for mode in ('password', 'oauth_direct', 'oauth_exchange'):
             for needs_tunnel_password in (False, True):
                 for raises_exception in (False, True):
-                    with self.subTest(
-                            mode=mode,
-                            needs_tunnel_password=needs_tunnel_password,
-                            raises_exception=raises_exception):
-                        self._check_failure_response(
-                            mode,
-                            needs_tunnel_password,
-                            raises_exception,
-                        )
+                    for tunnel_failed in (False, True):
+                        with self.subTest(
+                                mode=mode,
+                                needs_tunnel_password=needs_tunnel_password,
+                                raises_exception=raises_exception,
+                                tunnel_failed=tunnel_failed):
+                            self._check_failure_response(
+                                mode,
+                                needs_tunnel_password,
+                                raises_exception,
+                                tunnel_failed,
+                            )

@@ -148,7 +148,8 @@ class Driver(BaseDriver):
         so the session-bound instance other code may be holding is never
         detached or modified. The SharedServer record is only read here,
         never created; until the user has one (it is created when they
-        first connect), the row itself is returned.
+        first connect), the overlay is that of the record they would get
+        (see ServerModule.new_shared_server).
         """
         if not (config.SERVER_MODE and server_data.shared and
                 server_data.user_id != current_user.id):
@@ -156,8 +157,6 @@ class Driver(BaseDriver):
 
         shared_server = SharedServer.query.filter_by(
             user_id=current_user.id, osid=server_data.id).first()
-        if shared_server is None:
-            return server_data
 
         # Imported here, as the servers module imports this driver.
         from pgadmin.browser.server_groups.servers import ServerModule
@@ -173,6 +172,13 @@ class Driver(BaseDriver):
             attr.key: copy.deepcopy(getattr(server_data, attr.key))
             for attr in sa_inspect(Server).column_attrs
         })
+        if shared_server is None:
+            # The record they will get, built from the copy so it shares
+            # no JSON column with the owner's row: never the owner's
+            # credentials, file paths or server authentication method.
+            # Their server group is the one the server is listed in.
+            shared_server = ServerModule.new_shared_server(
+                overlay, server_data.servergroup_id)
         return ServerModule.get_shared_server_properties(
             overlay, shared_server)
 

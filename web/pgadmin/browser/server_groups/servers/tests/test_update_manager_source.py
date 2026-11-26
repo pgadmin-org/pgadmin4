@@ -43,7 +43,7 @@ class UpdateManagerSourceTest(BaseTestGenerator):
     def runTest(self):
         server = SimpleNamespace(
             id=1, user_id=100, shared=True, servergroup_id=1,
-            name='Shared', host='db.example.com', role=None,
+            name='Shared', host='db.example.com', port=5432, role=None,
             username='owner', save_password=0, comment=None, tags=None,
             auth_method='entra',
             connection_params={'sslmode': 'verify-full'})

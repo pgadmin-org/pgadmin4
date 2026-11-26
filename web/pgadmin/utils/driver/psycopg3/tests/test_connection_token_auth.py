@@ -198,6 +198,13 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         self.assertIsNone(pg_oauth2._oauth_token.get())
         return status, message, target, seen, connection
 
+    def _assert_closed(self, pg):
+        """An async connection's close() is awaited, not just called."""
+        if self.operation == 'async_connect':
+            pg.close.assert_awaited_once_with()
+        else:
+            pg.close.assert_called_once_with()
+
     @staticmethod
     def _passwords(manager):
         return [c.args[2] for c in
@@ -340,6 +347,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         # never checked.
         changes = (
             ('host', 'elsewhere.example.com'),
+            ('port', 5433),
             ('connection_params', {'sslmode': 'verify-full',
                                    'hostaddr': '192.0.2.1'}),
             ('auth_method', 'password'),
@@ -417,7 +425,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
 
             self.assertFalse(status, case)
             self.assertIn('settings changed', message, case)
-            seen['pg'].close.assert_called_once_with()
+            self._assert_closed(seen['pg'])
             self.assertIsNone(connection.conn, case)
             self.assertFalse(connection.wasConnected, case)
             token_auth.unregister_token_auth_method(METHOD)
@@ -452,7 +460,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         self.assertEqual(manager.settings_generation, 1)
         self.assertFalse(status)
         self.assertIn('settings changed', message)
-        seen['pg'].close.assert_called_once_with()
+        self._assert_closed(seen['pg'])
         self.assertIsNone(connection.conn)
 
     def case_no_update_comes_between_the_check_and_the_build(self):

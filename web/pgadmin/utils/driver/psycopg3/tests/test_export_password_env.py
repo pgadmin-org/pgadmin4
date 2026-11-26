@@ -86,6 +86,10 @@ class TokenUtilityServicePasswordTestCase(BaseTestGenerator):
         ('A service in PGSYSCONFDIR that stores a password',
          dict(service='other', sysconf='[other]\npassword=p\n',
               refused=True)),
+        ('A service looked up in LDAP',
+         dict(service='other', refused=True,
+              sysconf='[other]\nldap://ldap.example.com/dc=example,dc=com'
+                      '?uniqueMember?one?(cn=other)\n')),
         ('No service', dict(service=None, sysconf=None, refused=False)),
     ]
 

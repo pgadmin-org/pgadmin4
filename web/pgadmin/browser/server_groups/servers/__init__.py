@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import hashlib
 import json
 from collections import OrderedDict
 import pgadmin.browser.server_groups as sg
@@ -598,66 +599,77 @@ class ServerModule(sg.ServerGroupPluginModule):
         :return: None
         """
 
-        shared_server = None
         try:
             db.session.rollback()
-            user = User.query.filter_by(id=data.user_id).first()
-
-            # Exclude per-user connection parameters from the owner's
-            # settings. Each user must configure their own file paths.
-            safe_conn_params = {}
-            if data.connection_params:
-                safe_conn_params = {
-                    k: v for k, v in
-                    data.connection_params.items()
-                    if k not in SENSITIVE_CONN_KEYS
-                }
-
-            shared_server = SharedServer(
-                osid=data.id,
-                user_id=current_user.id,
-                server_owner=user.username,
-                servergroup_id=gid,
-                name=data.name,
-                host=data.host,
-                port=data.port,
-                maintenance_db=data.maintenance_db,
-                username=data.shared_username,
-                save_password=0,
-                comment=None,
-                role=data.role,
-                bgcolor=data.bgcolor if data.bgcolor else None,
-                fgcolor=data.fgcolor if data.fgcolor else None,
-                service=data.service if data.service else None,
-                use_ssh_tunnel=data.use_ssh_tunnel,
-                tunnel_host=data.tunnel_host,
-                tunnel_port=data.tunnel_port
-                if data.tunnel_port else 22,
-                tunnel_username=None,
-                tunnel_authentication=0,
-                tunnel_identity_file=None,
-                tunnel_keep_alive=data.tunnel_keep_alive
-                if data.tunnel_keep_alive else 0,
-                tunnel_prompt_password=0,
-                shared=True,
-                connection_params=safe_conn_params,
-                prepare_threshold=data.prepare_threshold,
-                passexec_cmd=None,
-                passexec_name=None,
-                passexec_expiration=None,
-                kerberos_conn=False,
-                # A non-owner opts in to a token method themselves, so that
-                # their login token is not sent to a host they did not
-                # choose.
-                auth_method=AUTH_METHOD_PASSWORD,
-                tags=data.tags,
-                post_connection_sql=None
-            )
+            shared_server = ServerModule.new_shared_server(data, gid)
             db.session.add(shared_server)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
             raise e
+
+    @staticmethod
+    def new_shared_server(data, gid):
+        """
+        The SharedServer record a non-owner of the shared server data starts
+        with, not added to the session: the owner's settings without their
+        credentials, file paths or server authentication method.
+        :param data: The owner's Server row.
+        :param gid: The non-owner's server group.
+        :return: SharedServer (transient)
+        """
+        user = User.query.filter_by(id=data.user_id).first()
+
+        # Exclude per-user connection parameters from the owner's
+        # settings. Each user must configure their own file paths.
+        safe_conn_params = {}
+        if data.connection_params:
+            safe_conn_params = {
+                k: v for k, v in
+                data.connection_params.items()
+                if k not in SENSITIVE_CONN_KEYS
+            }
+
+        return SharedServer(
+            osid=data.id,
+            user_id=current_user.id,
+            server_owner=user.username,
+            servergroup_id=gid,
+            name=data.name,
+            host=data.host,
+            port=data.port,
+            maintenance_db=data.maintenance_db,
+            username=data.shared_username,
+            save_password=0,
+            comment=None,
+            role=data.role,
+            bgcolor=data.bgcolor if data.bgcolor else None,
+            fgcolor=data.fgcolor if data.fgcolor else None,
+            service=data.service if data.service else None,
+            use_ssh_tunnel=data.use_ssh_tunnel,
+            tunnel_host=data.tunnel_host,
+            tunnel_port=data.tunnel_port
+            if data.tunnel_port else 22,
+            tunnel_username=None,
+            tunnel_authentication=0,
+            tunnel_identity_file=None,
+            tunnel_keep_alive=data.tunnel_keep_alive
+            if data.tunnel_keep_alive else 0,
+            tunnel_prompt_password=0,
+            shared=True,
+            connection_params=safe_conn_params,
+            prepare_threshold=data.prepare_threshold,
+            passexec_cmd=None,
+            passexec_name=None,
+            passexec_expiration=None,
+            kerberos_conn=False,
+            # A non-owner opts in to a token method themselves, so that
+            # their login token is not sent to a host they did not
+            # choose.
+            auth_method=AUTH_METHOD_PASSWORD,
+            tags=data.tags,
+            post_connection_sql=None
+        )
 
     @staticmethod
     def get_shared_server(server, gid):
@@ -1031,6 +1043,10 @@ class ServerNode(PGChildNodeView):
                 server.user_id != current_user.id:
             sharedserver = ServerModule.get_shared_server(server, gid)
 
+        # The owner's endpoint before this update; compared with the one
+        # it commits (see _revoke_shared_token_auth()).
+        endpoint_before = self._endpoint_of(server)
+
         # Not all parameters can be modified, while the server is connected
         config_param_map = {
             'name': 'name',
@@ -1133,7 +1149,12 @@ class ServerNode(PGChildNodeView):
                 else sharedserver.connection_params)
             if 'auth_method' in data and \
                     is_token_auth_method(data['auth_method']):
-                checked_endpoint = self._endpoint_of(server)
+                checked_endpoint = endpoint_before
+                # The opt-in is for the endpoint the dialog showed; one the
+                # owner changed since is not one this user chose.
+                if data.get('checked_endpoint') != \
+                        self.endpoint_hash(checked_endpoint):
+                    return self._endpoint_changed_response()
         auth_method_err = self._check_update_auth_method_and_clear_password(
             data, sharedserver or server, server.host, effective_params)
         if auth_method_err:
@@ -1194,17 +1215,12 @@ class ServerNode(PGChildNodeView):
 
         try:
             if not _is_non_owner(server):
-                self._revoke_shared_token_auth(server, data)
+                self._revoke_shared_token_auth(server, endpoint_before)
             elif checked_endpoint is not None and \
                     not self._owner_endpoint_unchanged(
                         server, checked_endpoint):
                 db.session.rollback()
-                return make_json_response(
-                    success=0, status=409,
-                    errormsg=gettext(
-                        'The owner changed the server while it was being '
-                        'saved. Reload the server\'s properties and try '
-                        'again.'))
+                return self._endpoint_changed_response()
             db.session.commit()
         except Exception as e:
             current_app.logger.exception(e)
@@ -1252,8 +1268,12 @@ class ServerNode(PGChildNodeView):
             prompt_tunnel_password):
         """The response to a failed connect. A token method gets the error
         itself, not a database password prompt, unless the SSH tunnel
-        password is still needed. A saved password that could not be
+        failed to authenticate: a token error once the tunnel is up is not
+        a tunnel password problem. A saved password that could not be
         decrypted and was dropped is prompted for again."""
+        if use_pgadmin_oauth and \
+                getattr(conn, 'tunnel_auth_failed', False) is not True:
+            prompt_tunnel_password = False
         prompt_tunnel_password = (
             prompt_tunnel_password or
             self._saved_tunnel_password_discarded(conn))
@@ -1278,13 +1298,14 @@ class ServerNode(PGChildNodeView):
     ENDPOINT_FIELDS = ('host', 'port', 'connection_params')
 
     @classmethod
-    def _revoke_shared_token_auth(cls, server, data):
-        """When the owner of a shared server changes the endpoint, turn
-        every non-owner's token method back to password, in the same
-        commit as the change. A non-owner's token is sent only to an
-        endpoint they chose; they opt in again to send it to the new one."""
+    def _revoke_shared_token_auth(cls, server, endpoint_before):
+        """When the owner of a shared server changes the endpoint from
+        endpoint_before, turn every non-owner's token method back to
+        password, in the same commit as the change. A non-owner's token is
+        sent only to an endpoint they chose; they opt in again to send it
+        to the new one."""
         if not server.shared or \
-                not any(key in data for key in cls.ENDPOINT_FIELDS):
+                cls._endpoint_of(server) == endpoint_before:
             return
         # Write the endpoint first, so a non-owner's opt-in that reads it
         # (see _owner_endpoint_unchanged()) waits for this commit, and is
@@ -1301,6 +1322,22 @@ class ServerNode(PGChildNodeView):
         """The owner's ENDPOINT_FIELDS of a shared server's row."""
         return (server.host, server.port,
                 dict(server.connection_params or {}))
+
+    @staticmethod
+    def endpoint_hash(endpoint):
+        """An opaque digest of an _endpoint_of() value. The server dialog
+        of a non-owner sends it back with an opt-in to a token method, so
+        the opt-in is for the endpoint the dialog showed."""
+        return hashlib.sha256(json.dumps(
+            endpoint, sort_keys=True, default=str).encode()).hexdigest()
+
+    @staticmethod
+    def _endpoint_changed_response():
+        return make_json_response(
+            success=0, status=409,
+            errormsg=gettext(
+                'The owner changed the server while it was being edited. '
+                'Reload the server\'s properties and try again.'))
 
     @classmethod
     def _owner_endpoint_unchanged(cls, server, checked_endpoint):
@@ -1513,8 +1550,10 @@ class ServerNode(PGChildNodeView):
         display_connection_str = self.update_connection_string(manager, server)
 
         shared_server = None
+        endpoint_hash = None
         non_owner = bool(_is_non_owner(server))
         if non_owner:
+            endpoint_hash = self.endpoint_hash(self._endpoint_of(server))
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
@@ -1588,6 +1627,7 @@ class ServerNode(PGChildNodeView):
             'prepare_threshold': server.prepare_threshold,
             'tags': tags,
             'post_connection_sql': server.post_connection_sql,
+            'endpoint_hash': endpoint_hash,
         }
 
         return ajax_response(response)

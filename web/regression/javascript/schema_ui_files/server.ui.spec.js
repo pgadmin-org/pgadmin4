@@ -419,6 +419,22 @@ describe('ServerSchema', ()=>{
       expect(field(schema, 'kerberos_conn').disabled({id: 5, shared: true, auth_method: 'password'})).toBe(true);
     });
 
+    it('sends the endpoint shown with a non-owner\'s token opt-in', ()=>{
+      let schema = createSchemaObject();
+      current_user.id = 2;
+      schema.userId = 1;
+      let depChange = field(schema, 'auth_method').depChange;
+      let state = {id: 5, shared: true, endpoint_hash: 'abc'};
+      expect(depChange({...state, auth_method: 'oauth_direct'}))
+        .toEqual({checked_endpoint: 'abc'});
+      expect(depChange({...state, auth_method: 'password'}))
+        .toEqual({checked_endpoint: undefined});
+      // The owner sends none.
+      schema.userId = 2;
+      expect(depChange({...state, auth_method: 'oauth_direct'}))
+        .toBeUndefined();
+    });
+
     it('takes no database password for a token method', ()=>{
       let schema = createSchemaObject();
       expect(field(schema, 'password').disabled({auth_method: 'oauth_direct'})).toBe(true);

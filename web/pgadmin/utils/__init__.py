@@ -481,6 +481,10 @@ def _service_file_section(path, service):
             # As libpq matches it: the name and "]", whatever follows.
             if line[1:len(service) + 2] == service + ']':
                 section = {}
+        elif section is not None and line.startswith('ldap'):
+            # libpq looks the entry up in LDAP, which may return a password
+            # pgAdmin cannot check, so the section is taken to set one.
+            section['password'] = None
         elif section is not None and '=' in line:
             key, value = line.split('=', 1)
             section[key.strip()] = value.strip()

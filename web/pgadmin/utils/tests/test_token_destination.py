@@ -174,7 +174,8 @@ class ConnectedAuthMethodTestCase(_AppMixin, BaseTestGenerator):
 
 class RevokeSharedTokenAuthTestCase(_AppMixin, BaseTestGenerator):
     """An owner's change of endpoint turns non-owners' token methods back
-    to password; anything else leaves them alone."""
+    to password; anything else, including an endpoint sent again with the
+    same values, leaves them alone."""
 
     scenarios = [
         ('Host changed', dict(shared=True, data={'host': 'new'},
@@ -183,6 +184,10 @@ class RevokeSharedTokenAuthTestCase(_AppMixin, BaseTestGenerator):
                               revoked=True)),
         ('Connection parameters changed', dict(
             shared=True, data={'connection_params': {}}, revoked=True)),
+        ('Endpoint sent unchanged', dict(
+            shared=True, revoked=False,
+            data={'host': 'old', 'port': 5432,
+                  'connection_params': {'sslmode': 'verify-full'}})),
         ('Unrelated change', dict(shared=True, data={'comment': 'x'},
                                   revoked=False)),
         ('Not shared', dict(shared=False, data={'host': 'new'},
@@ -191,10 +196,15 @@ class RevokeSharedTokenAuthTestCase(_AppMixin, BaseTestGenerator):
 
     def runTest(self):
         from pgadmin.browser.server_groups import servers
-        server = MagicMock(id=7, shared=self.shared)
+        server = MagicMock(id=7, shared=self.shared, host='old', port=5432,
+                           connection_params={'sslmode': 'verify-full'})
+        endpoint_before = servers.ServerNode._endpoint_of(server)
+        for key, value in self.data.items():
+            setattr(server, key, value)
 
         with patch.object(servers, 'SharedServer') as shared_server:
-            servers.ServerNode._revoke_shared_token_auth(server, self.data)
+            servers.ServerNode._revoke_shared_token_auth(
+                server, endpoint_before)
 
         query = shared_server.query.filter.return_value
         if self.revoked:
