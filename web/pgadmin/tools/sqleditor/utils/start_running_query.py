@@ -21,6 +21,8 @@ from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
 from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE, \
     TX_STATUS_INERROR
 from pgadmin.tools.sqleditor.utils.is_begin_required import is_begin_required
+from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
+    get_display_bytea_as_hex
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
     update_session_grid_transaction
 from pgadmin.utils.ajax import make_json_response, internal_server_error
@@ -160,6 +162,10 @@ class StartRunningQuery:
 
         trans_obj.set_thread_native_id(None)
 
+        # Read the preference here, in the request, rather than in the
+        # query thread.
+        bytea_as_hex = get_display_bytea_as_hex()
+
         @copy_current_request_context
         def asyn_exec_query(conn, sql, trans_obj, is_rollback_req,
                             app):
@@ -172,7 +178,8 @@ class StartRunningQuery:
                         conn.execute_void(sql)
                     else:
                         _, _ = conn.execute_async(
-                            sql, server_cursor=trans_obj.server_cursor)
+                            sql, server_cursor=trans_obj.server_cursor,
+                            bytea_as_hex=bytea_as_hex)
                         # If the transaction aborted for some reason and
                         # Auto RollBack is True then issue a rollback
                         # to cleanup.

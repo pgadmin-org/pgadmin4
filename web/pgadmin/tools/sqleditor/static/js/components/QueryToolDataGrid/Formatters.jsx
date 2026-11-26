@@ -89,17 +89,26 @@ export function NumberFormatter({row, column}) {
 }
 NumberFormatter.propTypes = FormatterPropTypes;
 
+// The backend sends this in place of a bytea value unless the "Show binary
+// data as hex?" preference was on when the query ran, in which case it sends
+// PostgreSQL's text form, which can never equal it.
+const BINARY_PLACEHOLDER = 'binary data';
+
 export function BinaryFormatter({row, column, ...props}) {
   let value = row[column.key];
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
-  const downloadBinaryData = usePreferences().getPreferences('misc', 'enable_binary_data_download').value;
+  const preferences = usePreferences();
+  const downloadBinaryData = preferences.getPreferences('misc', 'enable_binary_data_download').value;
+  const maxColumnDataDisplayLength = preferences.getPreferences('sqleditor', 'max_column_data_display_length').value;
 
   const absoluteRowPos = (dataGridExtras?.startRowNum ?? 1) - 1 + props.rowIdx;
 
   return (
     <StyledNullAndDefaultFormatter value={value} column={column}>
-      <span className='Formatters-disabledCell'>[{value}]</span>&nbsp;&nbsp;
+      {value === BINARY_PLACEHOLDER ?
+        <span className='Formatters-disabledCell'>[{value}]</span> :
+        <>{getTextCellDisplayValue(value, maxColumnDataDisplayLength)}</>}&nbsp;&nbsp;
       {downloadBinaryData &&
         <PgIconButton size="xs" title={gettext('Download binary data')} icon={<GetAppRoundedIcon />}
           onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, absoluteRowPos, column.pos)}/>}

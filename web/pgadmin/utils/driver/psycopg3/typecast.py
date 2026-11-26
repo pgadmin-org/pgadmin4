@@ -182,20 +182,26 @@ def register_numeric_typecasters(_cursor):
                                      IntLoader)
 
 
-def register_binary_typecasters(connection):
+def register_binary_typecasters(connection, bytea_as_hex=False):
     # The new classes can be registered globally, on a connection, on a cursor
+    #
+    # By default bytea values are replaced by a 'binary data' placeholder so
+    # that potentially large values are never sent to the client. With
+    # bytea_as_hex they are returned as the text PostgreSQL sends for them
+    # instead, which is the hex form (\x...) as the session sets
+    # bytea_output to hex.
+    if bytea_as_hex:
+        connection.adapters.register_loader(17, ByteaHexLoader)
+        connection.adapters.register_loader(1001, TextLoaderpgAdmin)
+        connection.adapters.register_loader(17, ByteaHexBinaryLoader)
+    else:
+        connection.adapters.register_loader(17, ByteaLoader)
+        connection.adapters.register_loader(1001, ByteaLoader)
+        connection.adapters.register_loader(17, ByteaBinaryLoader)
 
-    connection.adapters.register_loader(17,
-                                        ByteaLoader)
-
-    connection.adapters.register_loader(1001,
-                                        ByteaLoader)
-
-    connection.adapters.register_loader(17,
-                                        ByteaBinaryLoader)
-
-    connection.adapters.register_loader(1001,
-                                        ByteaBinaryLoader)
+    # Results are fetched in text format, so a binary bytea[] is never seen
+    # in practice; keep the placeholder for it in both modes.
+    connection.adapters.register_loader(1001, ByteaBinaryLoader)
 
 
 def register_array_to_string_typecasters(connection=None):
@@ -253,6 +259,24 @@ class ByteaBinaryLoader(Loader):
 
     def load(self, data):
         return 'binary data' if data is not None else None
+
+
+class ByteaHexLoader(Loader):
+    # Returns the bytea text output from the server as a string. That
+    # output is plain ASCII in both the hex and escape formats.
+    def load(self, data):
+        if data is None:
+            return None
+        return bytes(data).decode('ascii')
+
+
+class ByteaHexBinaryLoader(Loader):
+    format = _pq_Format.BINARY
+
+    def load(self, data):
+        if data is None:
+            return None
+        return '\\x' + bytes(data).hex()
 
 
 class ByteaDataLoader(Loader):
