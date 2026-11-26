@@ -261,13 +261,36 @@ class ByteaBinaryLoader(Loader):
         return 'binary data' if data is not None else None
 
 
+def _unescape_bytea(data):
+    """Convert bytea output in PostgreSQL's escape format to bytes: '\\\\'
+    is a backslash, '\\nnn' an octal byte, and anything else is literal."""
+    out = bytearray()
+    i = 0
+    while i < len(data):
+        if data[i] == 0x5c:  # backslash
+            if data[i + 1] == 0x5c:
+                out.append(0x5c)
+                i += 2
+            else:
+                out.append(int(data[i + 1:i + 4], 8))
+                i += 4
+        else:
+            out.append(data[i])
+            i += 1
+    return bytes(out)
+
+
 class ByteaHexLoader(Loader):
-    # Returns the bytea text output from the server as a string. That
-    # output is plain ASCII in both the hex and escape formats.
+    # Returns bytea values as hex text (\x...). The session sets
+    # bytea_output to hex, but a query may change it to escape, so that
+    # format is converted.
     def load(self, data):
         if data is None:
             return None
-        return bytes(data).decode('ascii')
+        raw = bytes(data)
+        if raw.startswith(b'\\x'):
+            return raw.decode('ascii')
+        return '\\x' + _unescape_bytea(raw).hex()
 
 
 class ByteaHexBinaryLoader(Loader):

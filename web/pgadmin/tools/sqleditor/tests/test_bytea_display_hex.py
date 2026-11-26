@@ -31,6 +31,13 @@ SQL = (
 )
 
 
+# Just the bytea of all byte values, for the escape format case.
+SQL_BYTEA_ONLY = (
+    "SELECT decode(string_agg(lpad(to_hex(i), 2, '0'), '' ORDER BY i), "
+    "'hex') AS b FROM generate_series(0, 255) i"
+)
+
+
 class TestByteaDisplayHex(BaseTestGenerator):
     """Check the 'Show binary data as hex?' preference for bytea values
     in the Query Tool results."""
@@ -42,7 +49,13 @@ class TestByteaDisplayHex(BaseTestGenerator):
         ('bytea is shown as hex when the preference is on',
          dict(bytea_as_hex=True,
               expected=[ALL_BYTES_HEX, None, '{"\\\\x01","\\\\xff"}'])),
+        ('bytea is shown as hex when the query sets escape output',
+         dict(bytea_as_hex=True,
+              sql="SET bytea_output = 'escape'; " + SQL_BYTEA_ONLY,
+              expected=[ALL_BYTES_HEX])),
     ]
+
+    sql = SQL
 
     def setUp(self):
         database_info = parent_node_dict["database"][-1]
@@ -68,7 +81,7 @@ class TestByteaDisplayHex(BaseTestGenerator):
                    return_value=self.bytea_as_hex):
             response = self.tester.post(
                 '/sqleditor/query_tool/start/{0}'.format(self.trans_id),
-                data=json.dumps({"sql": SQL}), content_type='html/json')
+                data=json.dumps({"sql": self.sql}), content_type='html/json')
         self.assertEqual(response.status_code, 200)
 
         response = async_poll(
