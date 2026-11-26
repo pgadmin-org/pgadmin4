@@ -291,7 +291,8 @@ preferences for the graphs on the *Dashboard* tab:
   process modes samples displayed in graphs.
 
 * Use the *Session statistics refresh rate* field to specify the number of
-  seconds between session statistic samples displayed in graphs.
+  seconds between session statistic samples displayed in graphs, and between
+  updates of the *State* tab when its *Auto refresh* checkbox is selected.
 
 * Use the *Swap memory usage statistics refresh rate* field to specify the number of
   seconds between swap memory usage statistics samples displayed in graphs.

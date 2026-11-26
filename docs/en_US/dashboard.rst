@@ -39,6 +39,11 @@ presented in context-sensitive tables.  Use controls located above the table to:
 
 * Click the *Refresh* button to update the information displayed in each table.
 * Select *Active sessions only* checkbox to get the information about active sessions only from the list of all the sessions.
+* Select the *Auto refresh* checkbox to update the information displayed in each
+  table automatically, at the interval set by the *Session statistics refresh
+  rate* option in the *Dashboards* section of the *Preferences* dialog.
+  Automatic updates pause whilst another tab or panel is displayed, and stop if
+  the information cannot be retrieved from the server.
 * Enter a value in the *Search* box to restrict the table content to one or more
   sessions that satisfy the search criteria.  For example, you can enter a
   process ID to locate a specific session, or a session state (such as *idle*)
