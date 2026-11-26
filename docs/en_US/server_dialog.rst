@@ -407,6 +407,11 @@ Click on the *+* button to add a new tag. Some of the parameters are:
   * *Color* field to select the accent color of the tag.
 
 
+* When registering a new server, click the *Test Connection* button to check
+  that pgAdmin can connect with the details entered, before saving them. The
+  test uses the connection, SSL, SSH tunnel, parameter and password exec
+  settings from the dialog; it does not run the *Post Connection SQL*, and
+  nothing is saved or left connected afterwards.
 * Click the *Save* button to save your work.
 * Click the *Close* button to exit without saving your work.
 * Click the *Reset* button to return the values specified on the Server dialog

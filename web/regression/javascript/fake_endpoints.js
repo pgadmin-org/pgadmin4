@@ -12,6 +12,7 @@ module.exports = {
   'sqleditor.poll': '/sqleditor/query_tool/poll/<path:trans_id>',
   'sqleditor.query_tool_start': '/sqleditor/query_tool/start/<path:trans_id>',
   'backup.create_server_job':  '/backup/job/<int:sid>',
+  'NODE-server.test_connection': '/browser/server/test_connection/<int:gid>/',
   'backup.create_object_job':  '/backup/job/<int:sid>/object',
   'sqleditor.initialize_viewdata': '/initialize/sqleditor/<int:cmd_type>/<obj_type>/<int:sgid>/<int:sid>/<int:did>/<int:obj_id>',
   'sqleditor.initialize_sqleditor': '/initialize/sqleditor/<int:sgid>/<int:sid>',

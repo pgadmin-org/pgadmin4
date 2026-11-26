@@ -948,3 +948,17 @@ WHERE db.oid = {0}""".format(did))
         check_kerberos_conn_params_unchanged(conn_string, dsn_args)
 
         return conn_string
+
+
+class TemporaryServerManager(ServerManager):
+    """
+    A ServerManager for server details that have not been saved, such as
+    those entered in the server dialog before Save, used to check that a
+    connection can be made with them. It is not registered with the
+    driver and never written to the Flask session, so it is gone once the
+    request that built it is finished; the caller must release its
+    connection and stop any SSH tunnel it started.
+    """
+
+    def update_session(self):
+        pass

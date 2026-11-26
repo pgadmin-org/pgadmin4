@@ -37,7 +37,7 @@ from pgadmin.utils.passexec import build_passexec, \
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
-from .server_manager import ServerManager
+from .server_manager import ServerManager, TemporaryServerManager
 
 connection_restore_lock = Lock()
 
@@ -438,6 +438,16 @@ class Driver(BaseDriver):
             # another user's Kerberos credential cache meanwhile.
             with ConnectionLocker():
                 return psycopg.Connection.connect(**params)
+
+    @staticmethod
+    def temporary_connection_manager(server):
+        """
+        Return a manager for a Server object that has not been saved, for
+        testing whether a connection can be made with its details. Unlike
+        connection_manager(), the manager is not kept for the session; see
+        TemporaryServerManager.
+        """
+        return TemporaryServerManager(server)
 
     def release_connection(self, sid, database=None, conn_id=None):
         """

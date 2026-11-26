@@ -11,6 +11,9 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import pgAdmin from 'sources/pgadmin';
+import url_for from 'sources/url_for';
+import getApiInstance from 'sources/api_instance';
+import NetworkCheckIcon from '@mui/icons-material/NetworkCheck';
 import {default as supportedServers} from 'pgadmin.server.supported_servers';
 import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from 'sources/validators';
@@ -277,6 +280,53 @@ export default class ServerSchema extends BaseUISchema {
 
   isConnectedOrShared(state) {
     return this.isConnected(state) || this.isShared(state);
+  }
+
+  getFooterButtons(mode) {
+    if(mode !== 'create') {
+      return [];
+    }
+    return [{
+      id: 'test-connection', label: gettext('Test Connection'),
+      title: gettext('Check that a connection can be made with these details, without saving them.'),
+      icon: NetworkCheckIcon,
+      onClick: (schemaState)=>this.testConnection(schemaState),
+    }];
+  }
+
+  // Ask the server to connect with the details entered so far and close
+  // the connection again, then show the result. Nothing is saved.
+  testConnection(schemaState) {
+    const notifier = pgAdmin.Browser.notifier;
+    if(this.testingConnection) {
+      return Promise.resolve();
+    }
+    if(schemaState.errors?.name) {
+      notifier.error(gettext('Correct the errors in the dialog before testing the connection.'));
+      return Promise.resolve();
+    }
+
+    const data = schemaState.changes(true);
+    const finish = ()=>{
+      this.testingConnection = false;
+      schemaState.setMessage('');
+    };
+    this.testingConnection = true;
+    schemaState.setMessage(gettext('Testing connection...'));
+
+    return getApiInstance().post(
+      url_for('NODE-server.test_connection', {gid: data.gid}), data
+    ).then(({data: res})=>{
+      finish();
+      notifier.success(res.info);
+    }).catch((err)=>{
+      finish();
+      notifier.pgNotifier('error', err, gettext('Connection failed'), (msg)=>{
+        if(msg == 'CRYPTKEY_SET') {
+          this.testConnection(schemaState);
+        }
+      });
+    });
   }
 
   get baseFields() {
