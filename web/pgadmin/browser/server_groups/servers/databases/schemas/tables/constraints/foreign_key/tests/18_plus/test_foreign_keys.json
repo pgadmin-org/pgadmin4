@@ -36,6 +36,69 @@
     },
     {
       "type": "create",
+      "name": "Create Table with a Foreign Key and a Check Constraint that are not enforced",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_not_enforced_table",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer"
+          },
+          {
+            "name": "ref_id",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default",
+        "foreign_key": [
+          {
+            "name": "fk_not_enforced",
+            "condeferrable": false,
+            "condeferred": false,
+            "confmatchtype": false,
+            "convalidated": false,
+            "conenforced": false,
+            "columns": [
+              {
+                "local_column": "ref_id",
+                "references": "<test_first_table>",
+                "referenced": "id"
+              }
+            ],
+            "confupdtype": "a",
+            "confdeltype": "a",
+            "autoindex": false,
+            "coveringindex": ""
+          }
+        ],
+        "check_constraint": [
+          {
+            "name": "chk_not_enforced",
+            "consrc": "id > 0",
+            "connoinherit": false,
+            "convalidated": true,
+            "conenforced": false
+          }
+        ]
+      },
+      "expected_sql_file": "create_table_not_enforced.sql",
+      "preprocess_data": true,
+      "store_object_id": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Table with constraints that are not enforced",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_not_enforced_table"
+      }
+    },
+    {
+      "type": "create",
       "name": "Create Second Table for Foreign Key",
       "endpoint": "NODE-table.obj",
       "sql_endpoint": "NODE-table.sql_id",
@@ -396,69 +459,6 @@
       "endpoint": "NODE-table.delete_id",
       "data": {
         "name": "test_second_table"
-      }
-    },
-    {
-      "type": "create",
-      "name": "Create Table with a Foreign Key and a Check Constraint that are not enforced",
-      "endpoint": "NODE-table.obj",
-      "sql_endpoint": "NODE-table.sql_id",
-      "data": {
-        "name": "test_not_enforced_table",
-        "columns": [
-          {
-            "name": "id",
-            "cltype": "integer"
-          },
-          {
-            "name": "ref_id",
-            "cltype": "integer"
-          }
-        ],
-        "is_partitioned": false,
-        "schema": "testschema",
-        "spcname": "pg_default",
-        "foreign_key": [
-          {
-            "name": "fk_not_enforced",
-            "condeferrable": false,
-            "condeferred": false,
-            "confmatchtype": false,
-            "convalidated": false,
-            "conenforced": false,
-            "columns": [
-              {
-                "local_column": "ref_id",
-                "references": "<test_first_table>",
-                "referenced": "id"
-              }
-            ],
-            "confupdtype": "a",
-            "confdeltype": "a",
-            "autoindex": false,
-            "coveringindex": ""
-          }
-        ],
-        "check_constraint": [
-          {
-            "name": "chk_not_enforced",
-            "consrc": "id > 0",
-            "connoinherit": false,
-            "convalidated": true,
-            "conenforced": false
-          }
-        ]
-      },
-      "expected_sql_file": "create_table_not_enforced.sql",
-      "preprocess_data": true,
-      "store_object_id": true
-    },
-    {
-      "type": "delete",
-      "name": "Drop Table with constraints that are not enforced",
-      "endpoint": "NODE-table.delete_id",
-      "data": {
-        "name": "test_not_enforced_table"
       }
     }
   ]
