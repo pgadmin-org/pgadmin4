@@ -2,7 +2,7 @@
 {% if data and data.schema and data.name and data.template %}
 CREATE TEXT SEARCH DICTIONARY {{ conn|qtIdent(data.schema, data.name) }} (
     TEMPLATE = {{ data.template }}{% for variable in data.options %}{% if "option" in variable and variable.option != '' %},
-    {{ conn|qtIdent(variable.option) }} = {{ variable.value|qtLiteral(conn) }}{% endif %}{% endfor %}
+    {{ conn|qtIdent(variable.option) }} = {% if from_catalog and variable.numeric %}{{ variable.value }}{% else %}{{ variable.value|qtLiteral(conn) }}{% endif %}{% endif %}{% endfor %}
 
 );
 {# Description for FTS_DICTIONARY #}

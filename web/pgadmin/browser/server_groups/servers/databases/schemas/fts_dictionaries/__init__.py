@@ -112,7 +112,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
     * tokenize_options(self, option_value):
     -   This function will tokenize the string stored in database
         e.g. database store the value as below
-        key1=value1, key2=value2, key3=value3, ....
+        key1 = 'value1', "Key2" = 42, ....
         This function will extract key and value from above string
 
     * list()
@@ -236,24 +236,103 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return wrap
 
-    def tokenize_options(self, option_value):
+    def tokenize_options(self, option_value, keep_type=False):
         """
-        This function will tokenize the string stored in database
-        e.g. database store the value as below
-        key1=value1, key2=value2, key3=value3, ....
-        This function will extract key and value from above string
+        This function will tokenize the option string stored in
+        pg_ts_dict.dictinitoption, which PostgreSQL writes with
+        serialize_deflist() as
+
+            key1 = 'value1', "Key2" = 42, key3 = E'a\\\\b', ....
+
+        Option names are identifiers (double-quoted where needed) and
+        values are either bare numbers or string literals, so a plain
+        split on ',' and '=' breaks on quoted commas and leaves the
+        quoting in place. This mirrors deserialize_deflist() instead.
 
         Args:
-            option_value: key value option/value pair read from database
+            option_value: option string read from the catalog
+            keep_type: if True, mark values stored as bare numbers with
+                'numeric': True so they can be reproduced unquoted
         """
-        if option_value is not None:
-            option_str = option_value.split(',')
-            options = []
-            for fdw_option in option_str:
-                k, v = fdw_option.split('=', 1)
-                options.append({'option': k.strip(),
-                                'value': v.strip().strip("'")})
-            return options
+        if option_value is None:
+            return None
+
+        options = []
+        text = option_value
+        length = len(text)
+        pos = 0
+
+        def skip_space(i):
+            while i < length and text[i].isspace():
+                i += 1
+            return i
+
+        def read_quoted(i, quote, backslash_escapes=False):
+            # i points just past the opening quote
+            out = []
+            while i < length:
+                ch = text[i]
+                if backslash_escapes and ch == '\\' and i + 1 < length:
+                    out.append(text[i + 1])
+                    i += 2
+                elif ch == quote:
+                    if i + 1 < length and text[i + 1] == quote:
+                        out.append(quote)
+                        i += 2
+                    else:
+                        return ''.join(out), i + 1
+                else:
+                    out.append(ch)
+                    i += 1
+            return ''.join(out), i
+
+        while True:
+            pos = skip_space(pos)
+            if pos >= length:
+                break
+
+            # Option name
+            if text[pos] == '"':
+                key, pos = read_quoted(pos + 1, '"')
+            else:
+                start = pos
+                while pos < length and not text[pos].isspace() and \
+                        text[pos] != '=':
+                    pos += 1
+                key = text[start:pos]
+
+            pos = skip_space(pos)
+            if pos < length and text[pos] == '=':
+                pos += 1
+            pos = skip_space(pos)
+
+            # Option value
+            numeric = False
+            if pos + 1 < length and text[pos] in 'Ee' and \
+                    text[pos + 1] == "'":
+                value, pos = read_quoted(pos + 2, "'", True)
+            elif pos < length and text[pos] == "'":
+                value, pos = read_quoted(pos + 1, "'")
+            elif pos < length and text[pos] == '"':
+                value, pos = read_quoted(pos + 1, '"')
+            else:
+                start = pos
+                while pos < length and not text[pos].isspace() and \
+                        text[pos] != ',':
+                    pos += 1
+                value = text[start:pos]
+                numeric = True
+
+            option = {'option': key, 'value': value}
+            if keep_type and numeric:
+                option['numeric'] = True
+            options.append(option)
+
+            pos = skip_space(pos)
+            if pos < length and text[pos] == ',':
+                pos += 1
+
+        return options
 
     @check_precondition
     def list(self, gid, sid, did, scid):
@@ -845,7 +924,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if res['rows'][0]['options'] is not None:
             res['rows'][0]['options'] = self.tokenize_options(
-                res['rows'][0]['options']
+                res['rows'][0]['options'], keep_type=True
             )
         else:
             # Make it iterable
@@ -868,7 +947,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
                               data=res['rows'][0],
-                              conn=self.conn)
+                              conn=self.conn, from_catalog=True)
 
         sql_header = """-- Text Search Dictionary: {0}.{1}\n\n""".format(
             res['rows'][0]['schema'], res['rows'][0]['name'])
