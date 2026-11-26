@@ -23,7 +23,7 @@
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {"icon": "icon-column"}
       }
     },
     {
@@ -56,7 +56,7 @@
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {"icon": "icon-column-not-null"}
       }
     },
     {
@@ -685,7 +685,7 @@
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {"icon": "icon-column-not-null"}
       },
       "is_list": false
     },
@@ -753,7 +753,7 @@
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {"icon": "icon-column"}
       },
       "is_list": false
     },

@@ -76,6 +76,16 @@ def api_put(self):
                            follow_redirects=True)
 
 
+def assert_node_icon(self, response):
+    """
+    Asserts that the browser node in a create or update response carries
+    the icon expected by the scenario, if the scenario names one.
+    """
+    expected_icon = self.expected_data['test_result_data'].get('icon')
+    if expected_icon:
+        self.assertEqual(response.json['node']['icon'], expected_icon)
+
+
 def create_column(server, db_name, schema_name, table_name, col_name,
                   col_data_type='char'):
     """
