@@ -49,6 +49,7 @@ Click the *Options* tab to continue.
 Use the *Options* tab to set option properties for the publication:
 
 * Use the *With* section to determine which DML operations will be published by the new publication to the subscribers. Move the switch next to *INSERT*, *UPDATE*, *DELETE*, or *TRUNCATE* to *No* if you do not want to replicate any of these DML operations from Publication to Subscription. By default, all the switches are set to *Yes* allowing all the DML operations.
+* With PostgreSQL 18 forward, use the *Publish generated columns* field to specify whether the generated columns present in the tables associated with the publication should be replicated. Select *None* (the default) to replicate no generated columns, or *Stored* to replicate stored generated columns.
 
 
 .. note:: A published table must have a “replica identity” configured in order to be able to replicate UPDATE and DELETE operations. You can change with ALTER TABLE statement. For more information on replica identity see `Logical Replication Publication <https://www.postgresql.org/docs/15/logical-replication-publication.html>`_.
