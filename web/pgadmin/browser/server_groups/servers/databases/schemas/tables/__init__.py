@@ -1795,9 +1795,10 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     table_dependencies.extend(result)
 
         # Remove the same table from the dependency list
-        for item in table_dependencies:
-            if 'oid' in item and item['oid'] == tid:
-                table_dependencies.remove(item)
+        table_dependencies = [
+            item for item in table_dependencies
+            if item.get('oid') != tid
+        ]
 
         return table_dependencies
 

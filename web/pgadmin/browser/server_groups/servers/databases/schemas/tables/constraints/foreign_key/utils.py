@@ -399,6 +399,10 @@ def get_fkey_dependencies(conn, tid, template_path=None):
 
     for fk in result['rows']:
         ref_name = fk['refnsp'] + '.' + fk['reftab']
-        deps.append({'type': 'table', 'name': ref_name})
+        deps.append({
+            'type': 'table',
+            'name': ref_name,
+            'oid': fk['confrelid']
+        })
 
     return True, deps

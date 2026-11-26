@@ -59,7 +59,8 @@ export function computeDependLevels(rows) {
      for that edge, rather than recursing forever. */
   const oidToRow = new Map();
   rows.forEach((row) => {
-    if (!_.isUndefined(row.oid) && !_.isNull(row.oid)) {
+    if (row.status !== FILTER_NAME.TARGET_ONLY &&
+        !_.isUndefined(row.oid) && !_.isNull(row.oid)) {
       oidToRow.set(row.oid, row);
     }
   });

@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { computeDependLevels } from '../../../pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare';
+import { FILTER_NAME } from '../../../pgadmin/tools/schema_diff/static/js/SchemaDiffConstants';
 
 describe('computeDependLevels', () => {
 
@@ -66,5 +67,50 @@ describe('computeDependLevels', () => {
 
     expect(rowC.dependLevel).toBe(rowD.dependLevel + 1);
     expect(rowC.dependLevel).toBeGreaterThan(rowB.dependLevel + 1);
+  });
+
+  it('orders a child table after its referenced parent regardless of row order', () => {
+    const childRow = {
+      id: 1,
+      oid: 16400,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependencies: [{ type: 'table', name: 'fk_order_repro.z_parent', oid: 16390 }],
+    };
+    const parentRow = {
+      id: 2,
+      oid: 16390,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependencies: [],
+    };
+
+    computeDependLevels([childRow, parentRow]);
+
+    expect(parentRow.dependLevel).toBeGreaterThan(childRow.dependLevel);
+  });
+
+  it('does not let Target Only OIDs shadow Source Only dependency targets', () => {
+    const parentRow = {
+      id: 1,
+      oid: 16390,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependencies: [],
+    };
+    const childRow = {
+      id: 2,
+      oid: 16400,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependencies: [{ type: 'table', name: 'fk_order_repro.z_parent', oid: 16390 }],
+    };
+    const targetOnlyRow = {
+      id: 3,
+      oid: 16390,
+      status: FILTER_NAME.TARGET_ONLY,
+      dependencies: [],
+    };
+
+    computeDependLevels([childRow, parentRow, targetOnlyRow]);
+
+    expect(parentRow.dependLevel).toBeGreaterThan(childRow.dependLevel);
+    expect(targetOnlyRow.dependLevel).toBe(1);
   });
 });
