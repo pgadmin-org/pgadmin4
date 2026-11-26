@@ -24,8 +24,9 @@ from werkzeug.exceptions import InternalServerError
 from pgadmin.utils import get_complete_file_path, \
     connection_param_bool_to_int, is_valid_connection_param_key, \
     client_files_isolated, isolate_client_credential_files, \
-    check_connection_params_allowed
+    check_connection_params_allowed, service_sets_password
 from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
+from pgadmin.utils.pg_oauth2 import OAuthTokenError
 from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
 from pgadmin.utils.token_auth import get_token_auth_method, \
     utility_password
@@ -627,7 +628,18 @@ WHERE db.oid = {0}""".format(did))
             False and an error message if the password cannot be
             decrypted, otherwise None
         """
-        if get_token_auth_method(self.auth_method):
+        method = get_token_auth_method(self.auth_method)
+        if method:
+            # libpq takes the service's password over the token in env, so
+            # refuse before a token is requested.
+            if method.delivery.utility_password and \
+                    service_sets_password(self.service):
+                raise OAuthTokenError(gettext(
+                    'The service "{0}" sets a password, which the utility '
+                    'would use instead of the access token. Ask the pgAdmin '
+                    'administrator to remove the password from the service, '
+                    'or clear the service in the server\'s properties.'
+                ).format(self.service))
             token = utility_password(
                 self.auth_method, self.connection_params, self.host)
             if token:

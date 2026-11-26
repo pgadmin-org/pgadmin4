@@ -1123,11 +1123,17 @@ class ServerNode(PGChildNodeView):
         # sensitive ones (see get_shared_server_properties()), so check
         # those, not the non-sensitive keys their own row keeps.
         effective_params = None
+        # The owner's endpoint this check sees; a non-owner's opt-in to a
+        # token method is committed only while it is still the endpoint.
+        checked_endpoint = None
         if sharedserver is not None and _is_non_owner(server):
             effective_params = shared_connection_params(
                 server.connection_params,
                 data['connection_params'] if 'connection_params' in data
                 else sharedserver.connection_params)
+            if 'auth_method' in data and \
+                    is_token_auth_method(data['auth_method']):
+                checked_endpoint = self._endpoint_of(server)
         auth_method_err = self._check_update_auth_method_and_clear_password(
             data, sharedserver or server, server.host, effective_params)
         if auth_method_err:
@@ -1176,9 +1182,6 @@ class ServerNode(PGChildNodeView):
         idx = self._set_valid_attr_value(gid, data, config_param_map, server,
                                          sharedserver)
 
-        if not _is_non_owner(server):
-            self._revoke_shared_token_auth(server, data)
-
         if idx == 0:
             return make_json_response(
                 success=0,
@@ -1190,6 +1193,18 @@ class ServerNode(PGChildNodeView):
             flag_modified(sharedserver or server, 'tags')
 
         try:
+            if not _is_non_owner(server):
+                self._revoke_shared_token_auth(server, data)
+            elif checked_endpoint is not None and \
+                    not self._owner_endpoint_unchanged(
+                        server, checked_endpoint):
+                db.session.rollback()
+                return make_json_response(
+                    success=0, status=409,
+                    errormsg=gettext(
+                        'The owner changed the server while it was being '
+                        'saved. Reload the server\'s properties and try '
+                        'again.'))
             db.session.commit()
         except Exception as e:
             current_app.logger.exception(e)
@@ -1271,11 +1286,43 @@ class ServerNode(PGChildNodeView):
         if not server.shared or \
                 not any(key in data for key in cls.ENDPOINT_FIELDS):
             return
+        # Write the endpoint first, so a non-owner's opt-in that reads it
+        # (see _owner_endpoint_unchanged()) waits for this commit, and is
+        # refused, or commits first and is reset below.
+        db.session.flush()
         SharedServer.query.filter(
             SharedServer.osid == server.id,
             SharedServer.auth_method != AUTH_METHOD_PASSWORD,
         ).update({'auth_method': AUTH_METHOD_PASSWORD},
                  synchronize_session=False)
+
+    @staticmethod
+    def _endpoint_of(server):
+        """The owner's ENDPOINT_FIELDS of a shared server's row."""
+        return (server.host, server.port,
+                dict(server.connection_params or {}))
+
+    @classmethod
+    def _owner_endpoint_unchanged(cls, server, checked_endpoint):
+        """Whether the owner's endpoint is still checked_endpoint, such
+        that an owner's change of it either committed before, and is seen
+        here, or waits for this update's commit, and its revocation then
+        resets this update's token method.
+
+        The owner's row is locked before this update's own write, the
+        order the owner's update takes them in (see
+        _revoke_shared_token_auth()), so the two cannot deadlock on
+        PostgreSQL. It is read again once that write is flushed, as SQLite
+        holds no lock for a read made outside a write transaction."""
+        query = db.session.query(
+            Server.host, Server.port, Server.connection_params
+        ).filter(Server.id == server.id)
+        with db.session.no_autoflush:
+            query.with_for_update().first()
+        db.session.flush()
+        row = query.first()
+        return row is not None and \
+            cls._endpoint_of(row) == checked_endpoint
 
     @staticmethod
     def _check_update_auth_method_and_clear_password(data, current,

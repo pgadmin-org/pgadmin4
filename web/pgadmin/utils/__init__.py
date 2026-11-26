@@ -462,6 +462,57 @@ def check_service_allowed(service):
             'properties.').format(service))
 
 
+def _service_file_section(path, service):
+    """The keywords of the named section of a libpq service file, or None
+    when the file or the section does not exist."""
+    try:
+        with open(path, encoding='utf-8', errors='replace') as service_file:
+            lines = service_file.read().splitlines()
+    except OSError:
+        return None
+    section = None
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if line.startswith('['):
+            if section is not None:
+                return section
+            # As libpq matches it: the name and "]", whatever follows.
+            if line[1:len(service) + 2] == service + ']':
+                section = {}
+        elif section is not None and '=' in line:
+            key, value = line.split('=', 1)
+            section[key.strip()] = value.strip()
+    return section
+
+
+def service_sets_password(service):
+    """
+    Whether libpq would take a password from the named service's entry,
+    which it ranks above the PGPASSWORD of the environment. It reads the
+    entry from the user's service file (PGSERVICEFILE, else
+    .pg_service.conf in the home directory) and, only if that has none,
+    from pg_service.conf in PGSYSCONFDIR. A libpq without PGSYSCONFDIR
+    reads the directory it was built with, which only that libpq knows,
+    so that file is not checked. libpq's own syntax, not configparser's,
+    is followed.
+    """
+    if not service:
+        return False
+    user_file = os.environ.get('PGSERVICEFILE')
+    if not user_file:
+        home = os.path.join(os.environ.get('APPDATA', ''), 'postgresql') \
+            if os.name == 'nt' else os.path.expanduser('~')
+        user_file = os.path.join(home, '.pg_service.conf')
+    section = _service_file_section(user_file, service)
+    if section is None and os.environ.get('PGSYSCONFDIR'):
+        section = _service_file_section(
+            os.path.join(os.environ['PGSYSCONFDIR'], 'pg_service.conf'),
+            service)
+    return bool(section) and 'password' in section
+
+
 def check_connection_params_allowed(params):
     """
     Raise ServiceNotAllowed if a server's connection parameters, as a dict,

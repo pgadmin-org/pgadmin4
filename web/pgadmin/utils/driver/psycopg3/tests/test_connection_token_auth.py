@@ -46,6 +46,37 @@ class _Provider:
         return 'token-{0}'.format(len(self.calls))
 
 
+class TrackingLock:
+    """A lock that tells when another thread is waiting to acquire it, so a
+    test knows that thread reached the lock instead of guessing from how
+    long it ran."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._waiting = threading.Event()
+
+    def acquire(self):
+        if not self._lock.acquire(blocking=False):
+            self._waiting.set()
+            self._lock.acquire()
+
+    def release(self):
+        self._lock.release()
+
+    def locked(self):
+        return self._lock.locked()
+
+    def wait_for_waiter(self, timeout=10):
+        return self._waiting.wait(timeout)
+
+    def __enter__(self):
+        self.acquire()
+        return self
+
+    def __exit__(self, *exc):
+        self.release()
+
+
 class TokenAuthConnectionTest(BaseTestGenerator):
     """Every case runs for each operation that opens a connection."""
 
@@ -59,10 +90,13 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             'case_bearer_delivery_scopes_the_token_and_sends_no_password',
             'case_bearer_delivery_enforces_the_libpq_checks',
             'case_token_errors_reach_no_server',
+            'case_a_token_error_stops_only_a_tunnel_nothing_else_uses',
             'case_a_password_server_never_asks_for_a_token',
             'case_an_unregistered_method_is_refused',
             'case_the_token_is_obtained_before_the_kerberos_lock',
             'case_settings_changed_during_the_token_request_are_refused',
+            'case_a_method_changed_while_a_password_attempt_waits_is_refused',
+            'case_a_connection_opened_during_an_update_is_not_published',
             'case_no_update_comes_between_the_check_and_the_build',
         ) for operation in OPERATIONS
     ]
@@ -111,10 +145,14 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         pg = TestOAuthConnection._make_psycopg_connection()
         pg.info.backend_pid = 23456
 
-        seen = {}
+        if async_:
+            pg.close = AsyncMock()
+        seen = {'pg': pg}
 
         def record(*args, **kwargs):
             seen['oauth_token'] = pg_oauth2._oauth_token.get()
+            if getattr(self, 'on_open', None) is not None:
+                self.on_open()
             return pg
 
         async def arecord(*args, **kwargs):
@@ -261,9 +299,30 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         self.assertFalse(status)
         self.assertEqual(message, 'No login token.')
         target.assert_not_called()
-        # The SSH tunnel does not outlive a connect that failed on a token.
-        if self.operation in ('connect', 'async_connect'):
-            manager.stop_ssh_tunnel.assert_called_once_with()
+
+    def case_a_token_error_stops_only_a_tunnel_nothing_else_uses(self):
+        # The SSH tunnel this connect created does not outlive it, but one
+        # it reused stays up for the connections still using it.
+        if self.operation == 'reset':
+            return
+        error = pg_oauth2.OAuthTokenError('No login token.')
+        self._register(token_auth.PasswordDelivery(),
+                       _Provider(error=error))
+        for created, live, stopped in ((False, False, True),
+                                       (True, False, False),
+                                       (True, True, False),
+                                       (False, True, False)):
+            manager = self._manager()
+            manager.use_ssh_tunnel = 1
+            manager.tunnel_created = created
+            manager.create_ssh_tunnel.return_value = (True, None)
+            manager.has_live_connection.return_value = live
+
+            status, *_ = self._run(manager)
+
+            self.assertFalse(status)
+            self.assertEqual(manager.stop_ssh_tunnel.called, stopped,
+                             (created, live))
 
     def case_settings_changed_during_the_token_request_are_refused(self):
         # A manager.update() from another request while the token is being
@@ -294,14 +353,63 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             target.assert_not_called()
             manager.create_connection_string.assert_not_called()
 
+    def case_a_method_changed_while_a_password_attempt_waits_is_refused(self):
+        # An update() to a token method while a password attempt waits for
+        # the lock must not have the attempt's password sent where the
+        # token method's credential belongs.
+        self._register(token_auth.PasswordDelivery())
+        manager = self._manager(auth_method='password')
+
+        class Locker:
+            def __enter__(self):
+                manager.auth_method = METHOD
+                return self
+
+            def __exit__(self, *exc):
+                pass
+
+        status, message, target, *_ = self._run(manager, locker=Locker())
+
+        self.assertFalse(status)
+        self.assertIn('settings changed', message)
+        target.assert_not_called()
+        manager.create_connection_string.assert_not_called()
+        self.assertEqual(self.provider.calls, [])
+
+    def case_a_connection_opened_during_an_update_is_not_published(self):
+        # update() releases only the connections it finds connected, so a
+        # connection opened while it ran would stay open with superseded
+        # settings, never released.
+        for method in (METHOD, 'password'):
+            self._register(token_auth.PasswordDelivery())
+            manager = self._manager(auth_method=method)
+            manager.host = 'db.example.com'
+
+            def change(manager=manager):
+                manager.host = 'elsewhere.example.com'
+                manager.auth_method = METHOD if method == 'password' \
+                    else manager.auth_method
+            self.on_open = change
+
+            status, message, _, seen, connection = self._run(manager)
+
+            self.assertFalse(status, method)
+            self.assertIn('settings changed', message, method)
+            seen['pg'].close.assert_called_once_with()
+            self.assertIsNone(connection.conn, method)
+            self.assertFalse(connection.wasConnected, method)
+            token_auth.unregister_token_auth_method(METHOD)
+            self.registered.remove(METHOD)
+
     def case_no_update_comes_between_the_check_and_the_build(self):
         # A manager.update() that starts once the settings were compared
         # waits until the connection string is built, so the string names
-        # the host that was checked.
+        # the host that was checked; the connection it then superseded
+        # while it opened is not published.
         self._register(token_auth.PasswordDelivery())
         manager = self._manager()
         manager.host = 'db.example.com'
-        manager.settings_lock = threading.Lock()
+        manager.settings_lock = TrackingLock()
         built = []
         updates = []
 
@@ -312,20 +420,22 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         def connection_string(database, user, password):
             thread = threading.Thread(target=update)
             thread.start()
-            thread.join(0.2)
             updates.append(thread)
-            built.append((thread.is_alive(), manager.host))
+            # The update waits on the lock this build holds.
+            self.assertTrue(manager.settings_lock.wait_for_waiter())
+            built.append((manager.settings_lock.locked(), manager.host))
             return 'dbname=x'
 
         manager.create_connection_string.side_effect = connection_string
+        # The update completes while the connection opens.
+        self.on_open = lambda: updates[0].join()
 
         status, message, *_ = self._run(manager)
-        for thread in updates:
-            thread.join()
 
-        self.assertTrue(status, message)
         self.assertEqual(built, [(True, 'db.example.com')])
         self.assertEqual(manager.host, 'elsewhere.example.com')
+        self.assertFalse(status)
+        self.assertIn('settings changed', message)
 
     def case_a_password_server_never_asks_for_a_token(self):
         manager = self._manager(auth_method='password')
@@ -353,9 +463,14 @@ class TokenCancelTest(BaseTestGenerator):
     changed its endpoint, is released with a query running."""
 
     scenarios = [
-        ('cancel', dict(release=False, error=None)),
-        ('cancel failure', dict(release=False, error='cancel refused')),
-        ('release of a stale manager', dict(release=True, error=None)),
+        ('cancel',
+         dict(release=False, error=None, from_other_connection=False)),
+        ('cancel failure', dict(release=False, error='cancel refused',
+                                from_other_connection=False)),
+        ('cancel from another connection',
+         dict(release=False, error=None, from_other_connection=True)),
+        ('release of a stale manager',
+         dict(release=True, error=None, from_other_connection=False)),
     ]
 
     def setUp(self):
@@ -384,6 +499,7 @@ class TokenCancelTest(BaseTestGenerator):
         connection = TestOAuthConnection._make_connection(manager)
         connection.conn_id = 'CONN:query'
         connection._Connection__backend_pid = 12345
+        connection.execution_aborted = False
         connection._release = MagicMock()
         pg = TestOAuthConnection._make_psycopg_connection()
         if self.error:
@@ -401,9 +517,24 @@ class TokenCancelTest(BaseTestGenerator):
                 manager.release()
                 connection._release.assert_called_once_with()
             else:
-                status, message = connection.cancel_transaction('query')
+                # Cancelled from the same connection, or from another one,
+                # such as the maintenance connection, whose backend differs.
+                caller = connection
+                if self.from_other_connection:
+                    caller = TestOAuthConnection._make_connection(manager)
+                    caller._Connection__backend_pid = 999
+                    caller.conn = \
+                        TestOAuthConnection._make_psycopg_connection()
+                    caller.execute_void = MagicMock()
+                status, message = caller.cancel_transaction('query')
                 self.assertEqual(status, self.error is None)
                 self.assertEqual(message, self.error or '')
+                if self.from_other_connection:
+                    # The caller's connection, which may have to reconnect
+                    # with a token, runs no pg_cancel_backend().
+                    caller.execute_void.assert_not_called()
+                self.assertEqual(connection.execution_aborted,
+                                 self.error is None)
 
         pg.cancel.assert_called_once_with()
         self.assertEqual(self.provider.calls, [])
@@ -426,6 +557,7 @@ class UpdateTakesTheSettingsLockTest(BaseTestGenerator):
         from pgadmin.utils.driver.psycopg3 import server_manager
         manager = server_manager.ServerManager.__new__(
             server_manager.ServerManager)
+        manager.settings_lock = TrackingLock()
         manager.connections = {}
         server = Server(
             id=7, user_id=1, servergroup_id=1, name='s',
@@ -442,8 +574,8 @@ class UpdateTakesTheSettingsLockTest(BaseTestGenerator):
                 thread = threading.Thread(
                     target=manager.update, args=(server,))
                 thread.start()
-                thread.join(0.2)
-                self.assertTrue(thread.is_alive())
+                # update() waits on the lock, and has changed nothing.
+                self.assertTrue(manager.settings_lock.wait_for_waiter())
                 self.assertIsNone(getattr(manager, 'host', None))
             thread.join()
 

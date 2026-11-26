@@ -106,8 +106,10 @@ class EntraConnectionTest(TokenAuthConnectionTest):
         source = MagicMock()
         source.oauth2_config = {PROVIDER: self.provider_config}
         source.oauth2_clients = {PROVIDER: self.client}
-        with patch('pgadmin.authenticate.get_auth_sources',
-                   return_value=source), \
+        # Entra On-Behalf-Of needs server mode, whatever mode runs the tests.
+        with patch.object(pg_oauth2.config, 'SERVER_MODE', True), \
+                patch('pgadmin.authenticate.get_auth_sources',
+                      return_value=source), \
                 patch.object(pg_oauth2.requests, 'post',
                              return_value=self.idp_response) as post:
             self.post = post

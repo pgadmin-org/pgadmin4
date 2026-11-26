@@ -277,7 +277,8 @@ class TestOAuthConnection(
             AUTH_METHOD_OAUTH_DIRECT, None, None, ISSUER)
         psycopg_connect.assert_not_called()
         connection._initialize.assert_not_called()
-        manager.stop_ssh_tunnel.assert_called_once_with()
+        # No tunnel was created for this connect, so none is stopped.
+        manager.stop_ssh_tunnel.assert_not_called()
 
     def case_sync_connection_is_created_inside_token_context(self):
         """

@@ -94,8 +94,14 @@ class AutocompleteSignInAgainTestCase(BaseTestGenerator):
             get_driver.return_value.connection_manager.return_value = \
                 manager
             error, response, _, _ = sqleditor._init_sqleditor(
-                1, True, 1, 1, 1)
+                1, True, 1, 1, 1, conn_id='42')
 
         self.assertTrue(error)
         self.assertEqual(response.status_code, 428)
-        self.assertIn(b'"sign_in_again": true', response.data)
+        self.assertIs(response.get_json()['result']['sign_in_again'], True)
+        # No session is stored to release the connected first connection,
+        # or the autocomplete one, later, so they are released now.
+        first, autocomplete = manager.release.call_args_list
+        self.assertEqual(first.kwargs, {'conn_id': '42'})
+        self.assertEqual(list(autocomplete.kwargs), ['conn_id'])
+        self.assertNotEqual(autocomplete.kwargs['conn_id'], '42')

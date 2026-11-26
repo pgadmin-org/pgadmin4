@@ -65,6 +65,14 @@ if os.name == 'nt':
 _ = gettext
 
 
+def _settings_changed_message():
+    """The error for a connection whose server settings changed while it
+    was being opened."""
+    return gettext(
+        'The server settings changed while the connection was being '
+        'opened; please connect again.')
+
+
 def _json_default(value):
     """Fallback serialiser for values that json cannot encode natively
     (dates, Decimals, intervals, etc.)."""
@@ -536,7 +544,9 @@ class Connection(BaseConnection):
         a request to the identity provider. Holding the lock, it builds the
         connection string for database and user with the password to use,
         and returns open_(connection_string) while the credentials are in
-        scope. Raises OAuthTokenError when the token cannot be obtained.
+        scope, with the settings it checked, for
+        _publish_unless_superseded().
+        Raises OAuthTokenError when the token cannot be obtained.
 
         The token was checked against the manager's method, host and
         connection parameters as they were before the request, which may
@@ -554,19 +564,52 @@ class Connection(BaseConnection):
         with ConnectionLocker(manager.kerberos_conn):
             with credentials.scope() as conn_password:
                 with manager.settings_lock:
-                    # As in connection_credentials(), any method but
-                    # password carries a token.
-                    if checked[0] not in (
-                            None, '', AUTH_METHOD_PASSWORD) and (
-                            manager.auth_method, manager.host,
-                            manager.connection_params) != checked:
-                        raise OAuthTokenError(gettext(
-                            'The server settings changed while the '
-                            'connection was being opened; please connect '
-                            'again.'))
+                    if not self._settings_unchanged(checked):
+                        raise OAuthTokenError(_settings_changed_message())
                     connection_string = manager.create_connection_string(
                         database, user, conn_password)
-                return open_(connection_string)
+                return open_(connection_string), checked
+
+    def _settings_unchanged(self, checked):
+        """
+        Whether the manager's settings still match checked, the (method,
+        host, connection parameters) a connection attempt started with.
+        The caller holds the manager's settings lock. A token attempt
+        needs all three unchanged, as its token was checked against them;
+        any attempt needs the method unchanged, as its credential is that
+        method's.
+        """
+        manager = self.manager
+        # As in connection_credentials(), any method but password carries
+        # a token.
+        if checked[0] in (None, '', AUTH_METHOD_PASSWORD):
+            return manager.auth_method in (None, '', AUTH_METHOD_PASSWORD)
+        return (manager.auth_method, manager.host,
+                manager.connection_params) == checked
+
+    def _publish_unless_superseded(self, pg_conn, checked, publish,
+                                   is_async=False):
+        """
+        Call publish(), which makes pg_conn this connection's, while the
+        manager's settings are still the checked ones pg_conn was opened
+        with, and return None. When a manager.update() changed them while
+        it opened, close pg_conn (an AsyncConnection when is_async) instead
+        and return the message to report: such an update() released only
+        the connections it found published, so this one would stay open.
+        The check and publish() hold the settings lock, so an update()
+        that comes after them finds the connection published.
+        """
+        with self.manager.settings_lock:
+            if self._settings_unchanged(checked):
+                publish()
+                return None
+        if is_async:
+            async def _close():
+                await pg_conn.close()
+            asyncio.run(_close())
+        else:
+            pg_conn.close()
+        return _settings_changed_message()
 
     def _token_error_message(self, exc, action=''):
         """
@@ -600,10 +643,12 @@ class Connection(BaseConnection):
                                                        kwargs else ''
 
         # Check SSH Tunnel needs to be created
+        tunnel_created_here = False
         if manager.use_ssh_tunnel == 1 and not manager.tunnel_created:
             status, error = manager.create_ssh_tunnel(tunnel_password)
             if not status:
                 return False, error
+            tunnel_created_here = True
 
         # Check SSH Tunnel is alive or not.
         if manager.use_ssh_tunnel == 1:
@@ -705,10 +750,13 @@ class Connection(BaseConnection):
                 )
 
             try:
-                pg_conn = self._open_physical_connection(
+                pg_conn, checked = self._open_physical_connection(
                     password, database, user, open_connection)
             except OAuthTokenError as exc:
-                manager.stop_ssh_tunnel()
+                # No connection was attempted, so a tunnel other
+                # connections still use stays up while the user retries.
+                if tunnel_created_here and not manager.has_live_connection():
+                    manager.stop_ssh_tunnel()
                 return False, self._token_error_message(exc)
 
         except PermissionError as e:
@@ -745,8 +793,14 @@ class Connection(BaseConnection):
         pg_conn.add_notify_handler(self.check_notifies)
         pg_conn.add_notice_handler(self.get_notices)
 
-        self.conn = pg_conn
-        self.wasConnected = True
+        def publish():
+            self.conn = pg_conn
+            self.wasConnected = True
+
+        superseded = self._publish_unless_superseded(
+            pg_conn, checked, publish, bool(self.async_))
+        if superseded:
+            return False, superseded
         try:
             status, msg = self._initialize(conn_id, **kwargs)
         except Exception as e:
@@ -1980,7 +2034,7 @@ WHERE db.datname = current_database()""")
             return False, return_value
 
         try:
-            pg_conn = self._open_physical_connection(
+            pg_conn, checked = self._open_physical_connection(
                 password, self.db, manager.user,
                 lambda connection_string: psycopg.connect(
                     connection_string, cursor_factory=DictCursor))
@@ -2009,8 +2063,15 @@ Failed to reset the connection to the server due to following error:
             return False, msg
 
         pg_conn.notices = deque([], self.ASYNC_NOTICE_MAXLENGTH)
-        self.conn = pg_conn
-        self.__backend_pid = pg_conn.info.backend_pid
+
+        def publish():
+            self.conn = pg_conn
+            self.__backend_pid = pg_conn.info.backend_pid
+
+        superseded = self._publish_unless_superseded(
+            pg_conn, checked, publish)
+        if superseded:
+            return False, superseded
 
         return True, None
 
@@ -2196,10 +2257,10 @@ Failed to reset the connection to the server due to following error:
         # A token method cancels with libpq's cancel request, which carries
         # only the backend's cancel key: no token is requested or sent to
         # cancel a query, even by a manager whose settings are stale and
-        # being released (see Driver.connection_manager()).
-        if cancel_conn.__backend_pid == self.__backend_pid and \
-                self.manager.auth_method not in (
-                    None, '', AUTH_METHOD_PASSWORD):
+        # being released (see Driver.connection_manager()). This holds
+        # whichever connection cancels it: running pg_cancel_backend() on
+        # this one could reconnect it, which requests a token.
+        if self.manager.auth_method not in (None, '', AUTH_METHOD_PASSWORD):
             if cancel_conn.conn is None or cancel_conn.conn.closed:
                 return False, gettext(
                     "Not connected to the database server.")
@@ -2207,6 +2268,7 @@ Failed to reset the connection to the server due to following error:
                 cancel_conn.conn.cancel()
             except psycopg.Error as e:
                 return False, str(e)
+            cancel_conn.execution_aborted = True
             return True, ''
 
         # if backend pid is same then create a new connection
@@ -2240,7 +2302,7 @@ Failed to reset the connection to the server due to following error:
                     password = None
 
             try:
-                pg_conn = self._open_physical_connection(
+                pg_conn, _ = self._open_physical_connection(
                     password, self.db, self.manager.user,
                     lambda connection_string: psycopg.connect(
                         connection_string, cursor_factory=DictCursor))

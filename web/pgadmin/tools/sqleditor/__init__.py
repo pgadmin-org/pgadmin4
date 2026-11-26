@@ -715,6 +715,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                 # can need a new sign-in although the first did not.
                 if not status and conn_ac.sign_in_again is True:
                     current_app.logger.error(msg)
+                    # No session is stored for close_sqleditor_session()
+                    # to release these connections, so release them here.
+                    # By id alone: a did would drop the database's info,
+                    # which other connections use, and would release
+                    # nothing for a database opened by name.
+                    manager.release(conn_id=conn_id)
+                    manager.release(conn_id=conn_id_ac)
                     return True, sign_in_again_response(server, msg), '', ''
 
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
