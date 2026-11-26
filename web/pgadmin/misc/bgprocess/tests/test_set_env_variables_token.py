@@ -78,7 +78,10 @@ class TestSetEnvVariablesToken(BaseTestGenerator):
         manager.host = 'db.example.test'
         p.manager_obj = manager
         before = dict(os.environ)
-        with self.app.app_context():
+        # A request context, not just an app context: a refusal's message
+        # goes through gettext(), and pgAdmin's get_locale() reads the
+        # request.
+        with self.app.test_request_context():
             p.set_env_variables(None)
         self.assertEqual(dict(os.environ), before)
         return p
