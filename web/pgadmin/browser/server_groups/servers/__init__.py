@@ -8,6 +8,7 @@
 ##########################################################################
 
 import hashlib
+import hmac
 import json
 from collections import OrderedDict
 import pgadmin.browser.server_groups as sg
@@ -1327,9 +1328,13 @@ class ServerNode(PGChildNodeView):
     def endpoint_hash(endpoint):
         """An opaque digest of an _endpoint_of() value. The server dialog
         of a non-owner sends it back with an opt-in to a token method, so
-        the opt-in is for the endpoint the dialog showed."""
-        return hashlib.sha256(json.dumps(
-            endpoint, sort_keys=True, default=str).encode()).hexdigest()
+        the opt-in is for the endpoint the dialog showed. It is keyed with
+        the application's secret, so a non-owner cannot confirm a guess at
+        the owner's hidden connection parameters offline."""
+        return hmac.new(
+            str(current_app.config['SECRET_KEY']).encode(),
+            json.dumps(endpoint, sort_keys=True, default=str).encode(),
+            hashlib.sha256).hexdigest()
 
     @staticmethod
     def _endpoint_changed_response():

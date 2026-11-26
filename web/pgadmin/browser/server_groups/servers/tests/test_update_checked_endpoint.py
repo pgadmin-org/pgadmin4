@@ -12,6 +12,7 @@ endpoint their server dialog showed: the dialog sends back the endpoint
 hash the properties gave it, and an opt-in without it, or with one of an
 endpoint the owner changed since, is refused."""
 
+import hashlib
 import inspect
 import json
 import unittest
@@ -31,14 +32,12 @@ SHOWN = ('db.example.com', 5432, {'sslmode': 'verify-full'})
 class UpdateCheckedEndpointTest(BaseTestGenerator):
     scenarios = [
         ('Token opt-in for the endpoint shown', dict(
-            auth_method='oauth_direct',
-            checked=ServerNode.endpoint_hash(SHOWN), refused=False)),
+            auth_method='oauth_direct', checked=SHOWN, refused=False)),
         ('Token opt-in without the endpoint shown', dict(
             auth_method='oauth_direct', checked=None, refused=True)),
         ('Token opt-in for an endpoint the owner changed', dict(
             auth_method='oauth_direct',
-            checked=ServerNode.endpoint_hash(
-                ('old.example.com', 5432, {'sslmode': 'verify-full'})),
+            checked=('old.example.com', 5432, {'sslmode': 'verify-full'}),
             refused=True)),
         ('Back to password needs no endpoint', dict(
             auth_method='password', checked=None, refused=False)),
@@ -75,7 +74,9 @@ class UpdateCheckedEndpointTest(BaseTestGenerator):
 
         data = {'auth_method': self.auth_method}
         if self.checked is not None:
-            data['checked_endpoint'] = self.checked
+            with self.app.app_context():
+                data['checked_endpoint'] = ServerNode.endpoint_hash(
+                    self.checked)
 
         with self.app.test_request_context(
                 '/', method='PUT', data=json.dumps(data),
@@ -113,3 +114,31 @@ class UpdateCheckedEndpointTest(BaseTestGenerator):
             jsonify.assert_called_once()
             db.session.commit.assert_called_once_with()
             self.assertEqual(shared_server.auth_method, self.auth_method)
+
+
+class EndpointHashKeyedTest(BaseTestGenerator):
+    """The endpoint hash a non-owner receives is keyed with the
+    application's secret, so they cannot confirm a guess at the owner's
+    hidden connection parameters offline."""
+
+    scenarios = [('Keyed endpoint hash', dict())]
+
+    def setUp(self):
+        # No database is needed.
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        endpoint = ('db.example.com', 5432,
+                    {'sslmode': 'verify-full', 'sslkey': '/home/o/key'})
+
+        def digest(secret):
+            app = Flask(__name__)
+            app.config.update(SECRET_KEY=secret)
+            with app.app_context():
+                return ServerNode.endpoint_hash(endpoint)
+
+        unkeyed = hashlib.sha256(json.dumps(
+            endpoint, sort_keys=True, default=str).encode()).hexdigest()
+        self.assertEqual(digest('one'), digest('one'))
+        self.assertNotEqual(digest('one'), digest('two'))
+        self.assertNotEqual(digest('one'), unkeyed)
