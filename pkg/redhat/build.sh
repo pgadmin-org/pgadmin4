@@ -74,13 +74,14 @@ The core server package for pgAdmin. pgAdmin is the most popular and feature ric
 # older installation, keeping the user's config_local.py. This must run after
 # rpm has removed the previous version's files: deleting them beforehand (as
 # a pre-install script used to) makes rpm warn "remove failed: No such file or
-# directory" for every file dropped between versions.
+# directory" for every file dropped between versions. Paths are NUL-delimited
+# so that a name containing a newline cannot be split into another path.
 OWNED=\$(mktemp) || exit 0
 if rpm -ql %{name} > "\$OWNED" 2>/dev/null && [ -s "\$OWNED" ]; then
   find /usr/pgadmin4/venv /usr/pgadmin4/web -mindepth 1 -depth \\
-    ! -path /usr/pgadmin4/web/config_local.py 2>/dev/null | \\
-    grep -vxF -f "\$OWNED" | \\
-    while IFS= read -r f; do
+    ! -path /usr/pgadmin4/web/config_local.py -print0 2>/dev/null | \\
+    grep -zvxF -f "\$OWNED" | \\
+    while IFS= read -r -d '' f; do
       if [ -d "\$f" ] && [ ! -L "\$f" ]; then
         rmdir "\$f" 2>/dev/null
       else
