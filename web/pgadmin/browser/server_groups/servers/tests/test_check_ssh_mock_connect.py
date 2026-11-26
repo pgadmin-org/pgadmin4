@@ -170,7 +170,13 @@ class ServersOAuthSSHConnectTestCase(BaseTestGenerator):
         manager.auth_method = mode
         manager.tunnel_created = False
 
+        # No saved password was undecryptable and dropped: a MagicMock
+        # attribute would read as True and force the prompts on.
+        manager.saved_tunnel_password_discarded = False
+
         connection = manager.connection.return_value
+        connection.manager = manager
+        connection.saved_password_discarded = False
         connection.connected.return_value = False
         # Whether the attempt failed creating the SSH tunnel, or once the
         # tunnel was up.
