@@ -16,6 +16,7 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch
 
+import config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 
@@ -43,6 +44,9 @@ class SignInAgainResponseTestCase(BaseTestGenerator):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.server_id = None
+        # An entra server can only be saved in server mode.
+        if not config.SERVER_MODE:
+            self.skipTest('Server-mode rules need a server-mode run.')
 
     def _create_server(self):
         source = MagicMock()

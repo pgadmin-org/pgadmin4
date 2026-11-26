@@ -15,6 +15,7 @@ from unittest.mock import MagicMock, patch
 
 from flask import redirect
 
+import config
 from pgadmin.model import User
 from pgadmin.utils.route import BaseTestGenerator
 
@@ -25,6 +26,12 @@ def _source(client=None):
     source = MagicMock()
     source.oauth2_clients = {'entra': client} if client else {}
     return source
+
+
+def _skip_outside_server_mode(test):
+    # The /oauth2 routes are only registered in server mode.
+    if not config.SERVER_MODE:
+        test.skipTest('Server-mode rules need a server-mode run.')
 
 
 class RenewLoginTestCase(BaseTestGenerator):
@@ -40,6 +47,7 @@ class RenewLoginTestCase(BaseTestGenerator):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
+        _skip_outside_server_mode(self)
 
     def runTest(self):
         client = MagicMock()
@@ -84,6 +92,7 @@ class RenewedLoginCallbackTestCase(BaseTestGenerator):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
+        _skip_outside_server_mode(self)
 
     def runTest(self):
         user = User.query.first()
@@ -140,6 +149,7 @@ class RenewedLoginRaisesTestCase(BaseTestGenerator):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
+        _skip_outside_server_mode(self)
 
     def runTest(self):
         user = User.query.first()

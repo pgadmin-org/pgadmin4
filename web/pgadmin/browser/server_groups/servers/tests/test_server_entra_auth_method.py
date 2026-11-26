@@ -27,6 +27,14 @@ REQUIRE = {'name': 'sslmode', 'value': 'require', 'keyword': 'sslmode'}
 OBO = {'OAUTH2_ENTRA_OBO_ENABLED': True}
 
 
+def _skip_server_mode_scenario(test, server_mode):
+    """Skip a scenario that runs as server mode when the run is not in
+    server mode: patching config.SERVER_MODE on does not give a desktop-mode
+    app the crypt key and login state that server mode needs."""
+    if server_mode and not config.SERVER_MODE:
+        test.skipTest('Server-mode rules need a server-mode run.')
+
+
 class ServerEntraAuthMethodTestCase(BaseTestGenerator):
 
     scenarios = [
@@ -116,6 +124,7 @@ class ServerEntraAuthMethodTestCase(BaseTestGenerator):
         # server is needed.
         unittest.TestCase.setUp(self)
         self.server_id = None
+        _skip_server_mode_scenario(self, self.server_mode)
 
     def _login_as(self, provider, provider_config, server_mode):
         """The user's OAuth2 login, as the backend sees it."""
@@ -239,6 +248,7 @@ class EntraAvailableToTheDialogTestCase(BaseTestGenerator):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
+        _skip_server_mode_scenario(self, self.server_mode)
 
     def runTest(self):
         with self.tester.session_transaction() as sess:
@@ -272,6 +282,8 @@ class EntraSignInAgainOnCreateTestCase(BaseTestGenerator):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.server_id = None
+        # An entra server can only be saved in server mode.
+        _skip_server_mode_scenario(self, True)
 
     def runTest(self):
         sign_in_again = self.sign_in_again
