@@ -95,7 +95,8 @@ class RenewedLoginCallbackTestCase(BaseTestGenerator):
         _skip_outside_server_mode(self)
 
     def runTest(self):
-        user = User.query.first()
+        with self.app.app_context():
+            user = User.query.first()
         with self.tester.session_transaction() as sess:
             sess['oauth2_current_client'] = 'entra'
             offset = 1 if self.other_user else 0
@@ -152,7 +153,8 @@ class RenewedLoginRaisesTestCase(BaseTestGenerator):
         _skip_outside_server_mode(self)
 
     def runTest(self):
-        user = User.query.first()
+        with self.app.app_context():
+            user = User.query.first()
         with self.tester.session_transaction() as sess:
             sess['oauth2_current_client'] = 'entra'
             sess['oauth2_renew_user'] = user.id

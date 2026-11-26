@@ -202,7 +202,10 @@ class RevokeSharedTokenAuthTestCase(_AppMixin, BaseTestGenerator):
         for key, value in self.data.items():
             setattr(server, key, value)
 
-        with patch.object(servers, 'SharedServer') as shared_server:
+        # The bare app has no database: patch the session the endpoint is
+        # flushed through as well as the non-owners' rows.
+        with patch.object(servers, 'SharedServer') as shared_server, \
+                patch.object(servers, 'db'):
             servers.ServerNode._revoke_shared_token_auth(
                 server, endpoint_before)
 

@@ -252,7 +252,10 @@ class EntraConnectionTest(TokenAuthConnectionTest):
             'access_token': OBO_TOKEN})
         manager = self._manager()
 
-        with patch.object(connection_module, 'current_app') as app:
+        # An explicit new= keeps mock from inspecting the current_app
+        # proxy, which needs an application context.
+        with patch.object(connection_module, 'current_app',
+                          new=MagicMock()) as app:
             status, message, *_ = self._run(manager)
 
         self.assertFalse(status)
