@@ -78,8 +78,10 @@ class ServerTestConnectionTestCase(BaseTestGenerator):
         else:
             self.assertIn(self.message, result['errormsg'])
 
-        # The password is never echoed back.
-        self.assertNotIn(data['password'], response.data.decode('utf-8'))
+        # The password is never echoed back (an empty one cannot be checked).
+        if data['password']:
+            self.assertNotIn(data['password'],
+                             response.data.decode('utf-8'))
 
         # Nothing was saved, and no connection manager was kept in the
         # session.
