@@ -192,6 +192,11 @@ Data Editing Options
    |                      |     panel.                                                                                        |                |
    |                      |                                                                                                   |                |
    |                      |  *  Click *Copy with headers* to copy the highlighted content along with the header.              |                |
+   |                      |                                                                                                   |                |
+   |                      |  *  Click *Copy as Markdown* to copy the highlighted content as a GitHub-flavoured Markdown       |                |
+   |                      |     table. The header row is always included, NULL values are copied as empty cells, pipe         |                |
+   |                      |     characters and backslashes are escaped with a backslash, and line breaks within a value       |                |
+   |                      |     are replaced with ``<br>``.                                                                   |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Paste*              | Click the *Paste* icon to paste a previously copied row with or without serial/identity values:   | Option/Alt +   |
    |                      |                                                                                                   | Shift + P      |

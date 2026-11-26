@@ -93,6 +93,17 @@ describe('ResultSetToolbar Copy with all rows selected', () => {
     expect(eventBus.fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.COPY_DATA, undefined);
   });
 
+  it('fires the copy event for Markdown from the copy options menu', () => {
+    const { container, eventBus } = renderToolbar(false);
+    React.act(() => {
+      container.querySelector('button[name="menu-copyheader"]').click();
+    });
+    React.act(() => {
+      document.querySelector('[data-label="Copy as Markdown"]').click();
+    });
+    expect(eventBus.fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.COPY_DATA, true, 'markdown');
+  });
+
   it('disables Copy with a server cursor, which cannot fetch earlier rows', () => {
     const { container } = renderToolbar(true);
     expect(copyButton(container)).toBeDisabled();

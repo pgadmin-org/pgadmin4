@@ -55,6 +55,46 @@ export default class CopyData {
     localStorage.setItem('copied-rows', JSON.stringify(rows));
   }
 
+  /*
+   * Format rows as a GitHub-flavoured Markdown table. A table always needs a
+   * header row, so the column names are included whatever the "Copy with
+   * headers" setting is.
+   */
+  rowsToMarkdown(rows=[], columns=[]) {
+    if(columns.length === 0) {
+      return '';
+    }
+    const mdRow = (cells)=>'| ' + cells.join(' | ') + ' |';
+    return [
+      mdRow(columns.map((column)=>this.markdownCell(column.name))),
+      mdRow(columns.map(()=>'---')),
+      ...rows.map((row)=>mdRow(columns.map((column)=>this.markdownCell(row[column.key])))),
+    ].join('\n');
+  }
+
+  /*
+   * NULL becomes an empty cell, as it does for a plain copy. Backslashes are
+   * doubled and pipes escaped so that neither splits the cell or escapes the
+   * character after it, and line breaks become <br>, since a table row must
+   * fit on one line.
+   */
+  markdownCell(value) {
+    if(_.isNull(value) || _.isUndefined(value)) {
+      return '';
+    }
+    let str = _.isObject(value) ? JSONBigNumber.stringify(value) : value.toString();
+    return str.replace(/\\/g, '\\\\')
+      .replace(/\|/g, '\\|')
+      .replace(/\r\n|\r|\n/g, '<br>');
+  }
+
+  copyRowsToMarkdown(rows=[], columns=[]) {
+    clipboard.copyToClipboard(this.rowsToMarkdown(rows, columns));
+    /* Markdown cannot be pasted back as rows, so drop the previous copy's state */
+    localStorage.removeItem('copied-with-headers');
+    localStorage.removeItem('copied-rows');
+  }
+
   escape(iStr) {
     return (this.CSVOptions.quote_char == '"') ?
       iStr.replace(/\"/g, '""') : iStr.replace(/\'/g, '\'\'');

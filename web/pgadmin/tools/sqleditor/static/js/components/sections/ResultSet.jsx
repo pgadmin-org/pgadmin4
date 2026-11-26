@@ -1420,7 +1420,7 @@ export function ResultSet() {
     return [startColumnIdx, endColumnIdx, startRowIdx, endRowIdx];
   };
 
-  const copyDataFunc = (withHeaders=false)=>{
+  const copyDataFunc = (withHeaders=false, format='text')=>{
     const queryToolPref = queryToolCtx.preferences.sqleditor;
     let copyData = new CopyData({
       quoting: queryToolPref.results_grid_quoting,
@@ -1428,6 +1428,13 @@ export function ResultSet() {
       field_separator: queryToolPref.results_grid_field_separator,
       quote_single_cell: queryToolPref.results_grid_quote_single_cell,
     });
+    const copyRowsAs = (copyRows, copyCols)=>{
+      if(format == 'markdown') {
+        copyData.copyRowsToMarkdown(copyRows, copyCols);
+      } else {
+        copyData.copyRowsToCsv(copyRows, copyCols, withHeaders);
+      }
+    };
     let copyRows=[], copyCols=[];
     if(allRowsSelect == 'ALL' && !queryToolCtx.server_cursor) {
       /*
@@ -1439,7 +1446,7 @@ export function ResultSet() {
           return;
         }
         setSelectedRows(new Set(allRows.map(rowKeyGetter)));
-        copyData.copyRowsToCsv(allRows, columns, withHeaders);
+        copyRowsAs(allRows, columns);
       });
       return;
     } else if(selectedRows.size > 0) {
@@ -1462,7 +1469,7 @@ export function ResultSet() {
       copyRows = [{[selectedCell.current[1].key]: selectedCell.current[0][selectedCell.current[1].key]}];
     }
     if(copyRows.length > 0 && copyCols.length >0) {
-      copyData.copyRowsToCsv(copyRows, copyCols, withHeaders);
+      copyRowsAs(copyRows, copyCols);
     }
   };
 
