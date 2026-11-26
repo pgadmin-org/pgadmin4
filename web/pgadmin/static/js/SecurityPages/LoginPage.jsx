@@ -37,9 +37,10 @@ export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csr
               controlProps={{autoComplete: null}} />
             <InputText name="password" value={form.password} onChange={(v)=>onTextChange('password', v)} type="password" placeholder={gettext('Password')}
               controlProps={{autoComplete: null}} />
+            {forgotPassUrl &&
             <Box textAlign="right" marginTop="-10px">
               <a style={{color: 'inherit'}} href={forgotPassUrl}>{gettext('Forgotten your password?')}</a>
-            </Box>
+            </Box>}
             <InputSelectNonSearch name="language" options={langOptions} value={form.language} onChange={(v)=>onTextChange('language', v.target.value)} />
             <SecurityButton name="internal_button" value="Login" disabled={!(form.email && form.password)}>{gettext('Login')}</SecurityButton>
           </>

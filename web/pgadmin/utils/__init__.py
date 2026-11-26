@@ -166,6 +166,14 @@ if not fs_encoding or fs_encoding == 'ascii':
     fs_encoding = 'utf-8'
 
 
+def is_mail_enabled():
+    """
+    Return whether pgAdmin can send email. Setting MAIL_SERVER to an empty
+    string or None turns email off, and with it password recovery.
+    """
+    return bool(current_app.config.get('MAIL_SERVER'))
+
+
 def u_encode(_s, _encoding=sys_encoding):
     return _s
 

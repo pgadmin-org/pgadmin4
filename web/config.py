@@ -432,6 +432,9 @@ SESSION_DIGEST_METHOD = 'hashlib.sha256'
 # These settings are used when running in web server mode for confirming
 # and resetting passwords etc.
 # See: http://pythonhosted.org/Flask-Mail/ for more info
+# Set MAIL_SERVER to '' or None to turn email off. Password recovery needs
+# email, so the "Forgotten your password?" link is then hidden and the
+# password recovery pages are refused.
 MAIL_SERVER = 'localhost'
 MAIL_PORT = 25
 MAIL_USE_SSL = False

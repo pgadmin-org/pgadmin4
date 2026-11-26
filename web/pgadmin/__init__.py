@@ -42,7 +42,7 @@ from flask_wtf.csrf import CSRFError
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat, \
-    remove_inherited_libpq_credentials
+    remove_inherited_libpq_credentials, is_mail_enabled
 from pgadmin.utils.db_utils import normalize_database_uri
 from pgadmin.utils.locker import isolate_kerberos_credentials, \
     warn_if_no_auth_refusal
@@ -190,6 +190,13 @@ current_blueprint = LocalProxy(_find_blueprint)
 # refuse_flask_security_forms() in create_app().
 FLASK_SECURITY_FORM_ENDPOINTS = (
     'security.login', 'security.verify', 'security.change_password',
+    'security.forgot_password', 'security.reset_password'
+)
+
+# Password recovery views, which are not found when email is turned off: see
+# refuse_password_recovery() in create_app().
+PASSWORD_RECOVERY_ENDPOINTS = (
+    'browser.forgot_password', 'browser.reset_password',
     'security.forgot_password', 'security.reset_password'
 )
 
@@ -953,6 +960,17 @@ def create_app(app_name=None):
             return Response(status=405,
                             headers={'Allow': 'GET, HEAD, OPTIONS'})
 
+    @app.before_request
+    def refuse_password_recovery():
+        """
+        Password recovery emails a reset link, so with email turned off
+        (an empty MAIL_SERVER) its pages are not found, and the login page
+        does not link to them.
+        """
+        if request.endpoint in PASSWORD_RECOVERY_ENDPOINTS and \
+                not is_mail_enabled():
+            return Response(status=404)
+
     ##########################################################################
     # Handle the desktop login
     ##########################################################################
@@ -1087,6 +1105,7 @@ def create_app(app_name=None):
             # Per-request Content-Security-Policy nonce, for use on inline
             # <script>/<style> tags when a nonce based CSP is configured.
             'csp_nonce': SecurityHeaders.get_nonce(),
+            'mail_enabled': is_mail_enabled(),
         }
 
     @app.errorhandler(Exception)
