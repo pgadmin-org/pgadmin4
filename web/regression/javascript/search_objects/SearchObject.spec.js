@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -71,6 +71,15 @@ describe('SearchObjects', ()=>{
         'show_node': true,
         'other_info': null,
         'catalog_level': 'N'
+      },
+      {
+        'name': 'plp, "odd"\nname',
+        'type': 'extension',
+        'type_label': 'Extensions',
+        'path': ':extension.13320:/plp, "odd"\nname',
+        'show_node': true,
+        'other_info': null,
+        'catalog_level': 'N'
       }
     ]});
 
@@ -120,6 +129,39 @@ describe('SearchObjects', ()=>{
       await ctrlMount();
       await user.type(ctrl.container.querySelector('input'), 'plp{Enter}');
       expect(ctrl.container.querySelectorAll('[data-test="react-data-grid"]').length).toBe(1);
+    });
+
+    it('copy_results_as_csv', async ()=>{
+      /* Just enough node types for the result paths to be translated */
+      const origNodes = pgAdmin.Browser.Nodes;
+      pgAdmin.Browser.Nodes = {
+        'coll-database': {type: 'coll-database', label: 'Databases'},
+        'coll-extension': {type: 'coll-extension', label: 'Extensions'},
+        'coll-function': {type: 'coll-function', label: 'Functions'},
+        'coll-language': {type: 'coll-language', label: 'Languages'},
+        'catalog': {type: 'catalog'},
+      };
+      try {
+        /* userEvent.setup() installs its own clipboard stub on navigator */
+        const writeText = jest.spyOn(navigator.clipboard, 'writeText');
+        await ctrlMount();
+        const copyBtn = ()=>ctrl.container.querySelector('button[data-test="copy-results"]');
+        expect(copyBtn()).toBeDisabled();
+        await user.type(ctrl.container.querySelector('input'), 'plp{Enter}');
+        await waitFor(()=>expect(copyBtn()).toBeEnabled());
+        await user.click(copyBtn());
+        expect(writeText).toHaveBeenCalledWith([
+          '"Object name","Type","Object path"',
+          '"plpgsql","Extensions","Extensions/plpgsql"',
+          '"plpgsql_call_handler","Functions","PostgreSQL Catalog (pg_catalog)/Functions/plpgsql_call_handler"',
+          '"plpgsql_inline_handler(internal)","Functions","PostgreSQL Catalog (pg_catalog)/Functions/plpgsql_inline_handler"',
+          '"plpgsql_validator(oid)","Functions","PostgreSQL Catalog (pg_catalog)/Functions/plpgsql_validator"',
+          '"plpgsql","Languages","Languages/plpgsql"',
+          '"plp, ""odd""\nname","Extensions","Extensions/plp, ""odd""\nname"',
+        ].join('\n'));
+      } finally {
+        pgAdmin.Browser.Nodes = origNodes;
+      }
     });
   });
 });
