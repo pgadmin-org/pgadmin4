@@ -18,7 +18,9 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request,\
     internal_server_error
 from pgadmin.utils.preferences import Preferences
-from pgadmin.tools.search_objects.utils import SearchObjectsHelper
+from pgadmin.tools.search_objects.utils import SearchObjectsHelper, \
+    ALL_NODE_TYPES, get_node_blueprint, get_node_type_label
+from pgadmin.utils.constants import PREF_LABEL_OPTIONS
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'search_objects'
@@ -47,6 +49,34 @@ class SearchObjectsModule(PgAdminModule):
         browser_preference = Preferences.module('browser')
         self.pref_show_system_objects =\
             browser_preference.preference('show_system_objects')
+
+        # Offer every type the dialog can search for. The dialog itself
+        # falls back to all types when the connected server does not
+        # support the chosen one (EDB Advanced Server only types, say).
+        type_options = []
+        for node_type in ALL_NODE_TYPES:
+            blueprint = get_node_blueprint(node_type)
+            if blueprint is not None:
+                type_options.append({
+                    'label': get_node_type_label(node_type, blueprint),
+                    'value': node_type
+                })
+        type_options.sort(key=lambda opt: opt['label'].lower())
+
+        self.preference.register(
+            'options', 'default_object_type',
+            gettext('Default object type'), 'options', 'all',
+            category_label=PREF_LABEL_OPTIONS,
+            options=[{'label': gettext('All types'), 'value': 'all'}] +
+            type_options,
+            control_props={'allowClear': False},
+            help_str=gettext(
+                'The object type selected in the object type drop-down when '
+                'the Search Objects dialog is opened. If the database server '
+                'does not support the chosen type, All types is selected '
+                'instead.'
+            )
+        )
 
 
 # Create blueprint for BackupModule class

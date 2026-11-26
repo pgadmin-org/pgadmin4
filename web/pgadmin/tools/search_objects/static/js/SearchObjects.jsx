@@ -16,6 +16,7 @@ import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import Loader from 'sources/components/Loader';
+import usePreferences from '../../../../preferences/static/js/store';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import { PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import { FormFooterMessage, InputSelect, InputText, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
@@ -278,7 +279,9 @@ function getComparator(sortColumn) {
   };
 }
 export default function SearchObjects({nodeData}) {
-  const [type, setType] = React.useState('all');
+  const [type, setType] = React.useState(()=>(
+    usePreferences.getState().getPreferencesForModule('search_objects').default_object_type || 'all'
+  ));
   const [loaderText, setLoaderText] = useState('');
   const [search, setSearch] = useState('');
   const [footerText, setFooterText] = useState('0 matches found.');
@@ -384,6 +387,11 @@ export default function SearchObjects({nodeData}) {
             typesRes.forEach((element) => {
               typeOpt.push({label:gettext(element[1]), value:element[0]});
             });
+            /* The default type from the preferences may not be supported
+             * by this server, so fall back to all types. */
+            if(!typeOpt.some((opt)=>opt.value === type)) {
+              setType('all');
+            }
 
             resolve(typeOpt);
           })
