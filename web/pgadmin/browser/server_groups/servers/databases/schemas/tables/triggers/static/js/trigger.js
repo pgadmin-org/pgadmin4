@@ -210,15 +210,24 @@ define('pgadmin.node.trigger', [
 
               // As in Search Objects, stop tree state restoration from
               // fighting the selection whilst the path is expanded.
-              t.suppressEventsForPath = '/browser/' + idPath.join('/');
+              // The value is normally cleared when the function's node is
+              // added, which does not happen if it is already loaded.
+              const suppressPath = '/browser/' + idPath.join('/');
+              const clearSuppression = ()=>{
+                if (t.suppressEventsForPath === suppressPath) {
+                  t.suppressEventsForPath = null;
+                }
+              };
+              t.suppressEventsForPath = suppressPath;
               return t.findNodeWithToggle(idPath)
                 .then((treeItem)=>{
                   setTimeout(()=>{
-                    t.select(treeItem, true, 'center');
+                    Promise.resolve(t.select(treeItem, true, 'center'))
+                      .finally(clearSuppression);
                   }, 100);
                 })
                 .catch(()=>{
-                  t.suppressEventsForPath = null;
+                  clearSuppression();
                   pgAdmin.Browser.notifier.warning(gettext(
                     'Unable to locate the trigger function in the Object Explorer.'
                   ));

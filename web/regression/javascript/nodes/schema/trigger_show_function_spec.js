@@ -64,7 +64,7 @@ describe('trigger node Go to Trigger Function', () => {
         database: {id: 'database_3', _id: 3},
       })),
       findNodeWithToggle: jest.fn(() => Promise.resolve(funcItem)),
-      select: jest.fn(),
+      select: jest.fn(() => Promise.resolve()),
     };
     pgBrowser.tree = tree;
     pgBrowser.notifier.warning.mockClear();
@@ -80,6 +80,7 @@ describe('trigger node Go to Trigger Function', () => {
     node.callbacks.show_trigger_function.call(node);
     await flushPromises();
     jest.runAllTimers();
+    await flushPromises();
   };
 
   it.each([
@@ -99,6 +100,19 @@ describe('trigger node Go to Trigger Function', () => {
     ]);
     expect(tree.select).toHaveBeenCalledWith(funcItem, true, 'center');
     expect(pgBrowser.notifier.warning).not.toHaveBeenCalled();
+  });
+
+  it('stops suppressing tree events when the function was already loaded', async () => {
+    mockGet.mockResolvedValue({data: {data: [
+      {_type: 'trigger_function', _id: 100, _pid: 50, schema_is_catalog: false},
+    ]}});
+
+    // No added or opened event clears the value when the path is already
+    // expanded, so the callback must do it after selecting the function.
+    await showFunction();
+
+    expect(tree.select).toHaveBeenCalled();
+    expect(tree.suppressEventsForPath).toBeNull();
   });
 
   it('warns when the function is not shown in the tree', async () => {
