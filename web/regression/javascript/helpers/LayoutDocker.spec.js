@@ -417,6 +417,20 @@ describe('LayoutDocker sequential close', () => {
     expect(closingCalls(docker, 't3')).toHaveLength(1);
   });
 
+  it('re-asks the batch head when the user closes it again without retain', async () => {
+    panel.activeId = 't1';
+    docker.closeAll('t1');
+    await flushPaint();
+
+    expect(closingCalls(docker, 't4')).toHaveLength(1);
+
+    docker.close('t4');
+    await flushPaint();
+
+    expect(closingCalls(docker, 't4')).toHaveLength(2);
+    expect(tabIds()).toEqual(['t1', 't2', 't3', 't4']);
+  });
+
   it('focuses an inactive tab before asking it to close on its own', async () => {
     panel.activeId = 't1';
     docker.close('t4');

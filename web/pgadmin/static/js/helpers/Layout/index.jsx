@@ -182,8 +182,14 @@ export class LayoutDocker {
     if(panelData.internal?.manualClose && !force) {
       // One tab from the open batch is already the one being asked.
       // Any other close is a single tab: show its dialog, but do not
-      // take over the batch.
-      this._askToClose(panelId, this._closeBatch?.head === panelId);
+      // take over the batch. A user close of the batch head must be
+      // able to re-prompt: asked only guards the batch's own scheduled
+      // fire, otherwise a missed cancel path bricks the tab's X.
+      const inBatch = this._closeBatch?.head === panelId;
+      if(inBatch) {
+        this._closeBatch.asked = null;
+      }
+      this._askToClose(panelId, inBatch);
     } else {
       // When the active tab is closed, rc-dock selects the tab to its right,
       // or the first tab if there is none. Match browser behaviour instead,
