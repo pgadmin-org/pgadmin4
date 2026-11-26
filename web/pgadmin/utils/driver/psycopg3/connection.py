@@ -544,8 +544,8 @@ class Connection(BaseConnection):
         a request to the identity provider. Holding the lock, it builds the
         connection string for database and user with the password to use,
         and returns open_(connection_string) while the credentials are in
-        scope, with the settings it checked, for
-        _publish_unless_superseded().
+        scope, with the settings it checked and the manager's settings
+        generation, for _publish_unless_superseded().
         Raises OAuthTokenError when the token cannot be obtained.
 
         The token was checked against the manager's method, host and
@@ -558,7 +558,8 @@ class Connection(BaseConnection):
         """
         manager = self.manager
         checked = (manager.auth_method, manager.host,
-                   copy.deepcopy(manager.connection_params))
+                   copy.deepcopy(manager.connection_params),
+                   manager.settings_generation)
         credentials = connection_credentials(
             checked[0], checked[2], password, checked[1])
         with ConnectionLocker(manager.kerberos_conn):
@@ -573,7 +574,8 @@ class Connection(BaseConnection):
     def _settings_unchanged(self, checked):
         """
         Whether the manager's settings still match checked, the (method,
-        host, connection parameters) a connection attempt started with.
+        host, connection parameters, generation) a connection attempt
+        started with.
         The caller holds the manager's settings lock. A token attempt
         needs all three unchanged, as its token was checked against them;
         any attempt needs the method unchanged, as its credential is that
@@ -585,22 +587,23 @@ class Connection(BaseConnection):
         if checked[0] in (None, '', AUTH_METHOD_PASSWORD):
             return manager.auth_method in (None, '', AUTH_METHOD_PASSWORD)
         return (manager.auth_method, manager.host,
-                manager.connection_params) == checked
+                manager.connection_params) == checked[:3]
 
     def _publish_unless_superseded(self, pg_conn, checked, publish,
                                    is_async=False):
         """
-        Call publish(), which makes pg_conn this connection's, while the
-        manager's settings are still the checked ones pg_conn was opened
-        with, and return None. When a manager.update() changed them while
-        it opened, close pg_conn (an AsyncConnection when is_async) instead
-        and return the message to report: such an update() released only
-        the connections it found published, so this one would stay open.
+        Call publish(), which makes pg_conn this connection's, while no
+        manager.update() has run since checked, the settings pg_conn was
+        opened with, and return None. When one ran while it opened, close
+        pg_conn (an AsyncConnection when is_async) instead and return the
+        message to report: any update(), whatever it changed, released
+        only the connections it found published, so this one would stay
+        open.
         The check and publish() hold the settings lock, so an update()
         that comes after them finds the connection published.
         """
         with self.manager.settings_lock:
-            if self._settings_unchanged(checked):
+            if self.manager.settings_generation == checked[3]:
                 publish()
                 return None
         if is_async:

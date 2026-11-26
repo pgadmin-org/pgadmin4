@@ -66,15 +66,27 @@ options=-c search_path=app
 class TokenUtilityServicePasswordTestCase(BaseTestGenerator):
     """libpq takes a service's password over the PGPASSWORD a utility gets
     its token in, so a token method's utility is refused a service that
-    stores one, before any token is requested."""
+    stores one, before any token is requested. Without PGSYSCONFDIR, libpq
+    reads a service missing from the user's file from the directory it
+    was built with, which cannot be checked, so that service is refused
+    as well."""
 
     scenarios = [
         ('A service that stores a password',
-         dict(service='stored', refused=True)),
+         dict(service='stored', sysconf=None, refused=True)),
         ('A service without a password',
-         dict(service='plain', refused=False)),
-        ('A service not in the file', dict(service='other', refused=False)),
-        ('No service', dict(service=None, refused=False)),
+         dict(service='plain', sysconf=None, refused=False)),
+        ('A service in no file without PGSYSCONFDIR',
+         dict(service='other', sysconf=None, refused=True)),
+        ('A service in no file with PGSYSCONFDIR',
+         dict(service='other', sysconf='[plain]\n', refused=False)),
+        ('A service in PGSYSCONFDIR without a password',
+         dict(service='other', sysconf='[other]\nhost=h\n',
+              refused=False)),
+        ('A service in PGSYSCONFDIR that stores a password',
+         dict(service='other', sysconf='[other]\npassword=p\n',
+              refused=True)),
+        ('No service', dict(service=None, sysconf=None, refused=False)),
     ]
 
     def setUp(self):
@@ -91,20 +103,27 @@ class TokenUtilityServicePasswordTestCase(BaseTestGenerator):
 
         env = {}
         with tempfile.TemporaryDirectory() as directory:
-            path = os.path.join(directory, 'pg_service.conf')
+            path = os.path.join(directory, 'user_service.conf')
             with open(path, 'w') as service_file:
                 service_file.write(SERVICE_FILE)
+            environ = {'PGSERVICEFILE': path}
+            if self.sysconf is not None:
+                with open(os.path.join(directory, 'pg_service.conf'),
+                          'w') as service_file:
+                    service_file.write(self.sysconf)
+                environ['PGSYSCONFDIR'] = directory
             # A utility is started from a request, which the refusal's
             # message is translated for.
             with self.app.test_request_context(), \
-                    patch.dict(os.environ, {'PGSERVICEFILE': path}), \
+                    patch.dict(os.environ, environ), \
                     patch.object(server_manager, 'utility_password',
                                  return_value='the-token') as token:
-                os.environ.pop('PGSYSCONFDIR', None)
+                if self.sysconf is None:
+                    os.environ.pop('PGSYSCONFDIR', None)
                 if self.refused:
                     with self.assertRaises(OAuthTokenError) as raised:
                         manager.export_password_env(env, 'PGPASSWORD')
-                    self.assertIn('stored', str(raised.exception))
+                    self.assertIn(self.service, str(raised.exception))
                 else:
                     manager.export_password_env(env, 'PGPASSWORD')
 

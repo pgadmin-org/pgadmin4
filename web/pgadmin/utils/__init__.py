@@ -489,14 +489,14 @@ def _service_file_section(path, service):
 
 def service_sets_password(service):
     """
-    Whether libpq would take a password from the named service's entry,
+    Whether libpq could take a password from the named service's entry,
     which it ranks above the PGPASSWORD of the environment. It reads the
     entry from the user's service file (PGSERVICEFILE, else
     .pg_service.conf in the home directory) and, only if that has none,
     from pg_service.conf in PGSYSCONFDIR. A libpq without PGSYSCONFDIR
     reads the directory it was built with, which only that libpq knows,
-    so that file is not checked. libpq's own syntax, not configparser's,
-    is followed.
+    so an entry in neither file is taken to set one. libpq's own syntax,
+    not configparser's, is followed.
     """
     if not service:
         return False
@@ -506,7 +506,9 @@ def service_sets_password(service):
             if os.name == 'nt' else os.path.expanduser('~')
         user_file = os.path.join(home, '.pg_service.conf')
     section = _service_file_section(user_file, service)
-    if section is None and os.environ.get('PGSYSCONFDIR'):
+    if section is None:
+        if not os.environ.get('PGSYSCONFDIR'):
+            return True
         section = _service_file_section(
             os.path.join(os.environ['PGSYSCONFDIR'], 'pg_service.conf'),
             service)

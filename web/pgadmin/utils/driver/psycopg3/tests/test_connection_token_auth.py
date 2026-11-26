@@ -129,6 +129,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         manager.auth_method = auth_method
         manager.connection_params = {'sslmode': 'verify-full', 'x': '1'}
         manager.password = None
+        manager.settings_generation = 0
         return manager
 
     def _run(self, manager, locker=None):
@@ -377,27 +378,39 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         self.assertEqual(self.provider.calls, [])
 
     def case_a_connection_opened_during_an_update_is_not_published(self):
-        # update() releases only the connections it finds connected, so a
-        # connection opened while it ran would stay open with superseded
-        # settings, never released.
-        for method in (METHOD, 'password'):
+        # Any update() releases only the connections it finds connected
+        # and forgets the rest, whatever it changed, so a connection
+        # opened while it ran would stay open, never released.
+        changes = (
+            (METHOD, 'host', 'elsewhere.example.com'),
+            (METHOD, 'port', 5433),
+            (METHOD, None, None),
+            ('password', 'host', 'elsewhere.example.com'),
+            ('password', 'port', 5433),
+            ('password', 'auth_method', METHOD),
+            ('password', None, None),
+        )
+        for method, attr, value in changes:
+            case = (method, attr)
             self._register(token_auth.PasswordDelivery())
             manager = self._manager(auth_method=method)
             manager.host = 'db.example.com'
+            manager.port = 5432
 
-            def change(manager=manager):
-                manager.host = 'elsewhere.example.com'
-                manager.auth_method = METHOD if method == 'password' \
-                    else manager.auth_method
-            self.on_open = change
+            def update(manager=manager, attr=attr, value=value):
+                with manager.settings_lock:
+                    manager.settings_generation += 1
+                    if attr:
+                        setattr(manager, attr, value)
+            self.on_open = update
 
             status, message, _, seen, connection = self._run(manager)
 
-            self.assertFalse(status, method)
-            self.assertIn('settings changed', message, method)
+            self.assertFalse(status, case)
+            self.assertIn('settings changed', message, case)
             seen['pg'].close.assert_called_once_with()
-            self.assertIsNone(connection.conn, method)
-            self.assertFalse(connection.wasConnected, method)
+            self.assertIsNone(connection.conn, case)
+            self.assertFalse(connection.wasConnected, case)
             token_auth.unregister_token_auth_method(METHOD)
             self.registered.remove(METHOD)
 
@@ -415,6 +428,7 @@ class TokenAuthConnectionTest(BaseTestGenerator):
 
         def update():
             with manager.settings_lock:
+                manager.settings_generation += 1
                 manager.host = 'elsewhere.example.com'
 
         def connection_string(database, user, password):
@@ -577,9 +591,11 @@ class UpdateTakesTheSettingsLockTest(BaseTestGenerator):
                 # update() waits on the lock, and has changed nothing.
                 self.assertTrue(manager.settings_lock.wait_for_waiter())
                 self.assertIsNone(getattr(manager, 'host', None))
+                self.assertEqual(manager.settings_generation, 0)
             thread.join()
 
         self.assertEqual(manager.host, 'new.example.com')
+        self.assertEqual(manager.settings_generation, 1)
 
 
 class TokenAuthRegistryTest(BaseTestGenerator):

@@ -80,6 +80,10 @@ class ServerManager(object):
         # without __init__() has it as well. Nothing else is locked while
         # it is held.
         manager.settings_lock = threading.Lock()
+        # Counts the update() calls, each of which releases every
+        # connection it finds published, so a connection opened while one
+        # ran is not published (see Connection._publish_unless_superseded).
+        manager.settings_generation = 0
         return manager
 
     def __init__(self, server):
@@ -100,6 +104,7 @@ class ServerManager(object):
         assert (isinstance(server, Server))
 
         with self.settings_lock:
+            self.settings_generation += 1
             self.ver = None
             self.sversion = None
             self.server_type = None
@@ -635,10 +640,13 @@ WHERE db.oid = {0}""".format(did))
             if method.delivery.utility_password and \
                     service_sets_password(self.service):
                 raise OAuthTokenError(gettext(
-                    'The service "{0}" sets a password, which the utility '
-                    'would use instead of the access token. Ask the pgAdmin '
-                    'administrator to remove the password from the service, '
-                    'or clear the service in the server\'s properties.'
+                    'The service "{0}" sets a password, or is not in a '
+                    'service file pgAdmin can check, and the utility would '
+                    'use its password instead of the access token. Ask the '
+                    'pgAdmin administrator to remove the password from the '
+                    'service, or to set PGSYSCONFDIR to the directory of '
+                    'its service file, or clear the service in the '
+                    'server\'s properties.'
                 ).format(self.service))
             token = utility_password(
                 self.auth_method, self.connection_params, self.host)
