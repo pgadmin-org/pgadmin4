@@ -284,6 +284,10 @@ class ServerManager(object):
         async_ = kwargs.get('async_', None)
         use_binary_placeholder = kwargs.get('use_binary_placeholder', False)
         array_to_string = kwargs.get('array_to_string', False)
+        # The database is chosen from the settings of this generation; an
+        # update() before the connection is registered chooses again.
+        with self.settings_lock:
+            generation = self.settings_generation
 
         if database is not None:
             if did is not None and did in self.db_info:
@@ -342,21 +346,28 @@ WHERE db.oid = {0}""".format(did))
 
         self.pinged = datetime.datetime.now()
 
-        if my_id in self.connections:
-            return self.connections[my_id]
-        else:
+        conn = None
+        if my_id not in self.connections:
             if async_ is None:
                 async_ = 1 if conn_id is not None else 0
             else:
                 async_ = 1 if async_ is True else 0
-            self.connections[my_id] = Connection(
+            conn = Connection(
                 self, my_id, database, auto_reconnect=auto_reconnect,
                 async_=async_,
                 use_binary_placeholder=use_binary_placeholder,
                 array_to_string=array_to_string
             )
 
-            return self.connections[my_id]
+        with self.settings_lock:
+            if self.settings_generation == generation:
+                if conn is not None:
+                    self.connections.setdefault(my_id, conn)
+                if my_id in self.connections:
+                    return self.connections[my_id]
+        # An update() ran since the database was chosen, or the connection
+        # found was released since; choose again.
+        return self.connection(**kwargs)
 
     @staticmethod
     def _get_password_to_conn(data, masterpass_processed):

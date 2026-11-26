@@ -16,6 +16,7 @@ implementation. Cancelling a query asks for no token at all."""
 import threading
 import unittest
 from contextlib import ExitStack
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from flask import Flask
@@ -636,6 +637,59 @@ class UpdateTakesTheSettingsLockTest(BaseTestGenerator):
 
         self.assertEqual(manager.host, 'new.example.com')
         self.assertEqual(manager.settings_generation, 1)
+
+
+class ConnectionRegisteredDuringAnUpdateTest(BaseTestGenerator):
+    """A connection ServerManager.connection() registers while an update()
+    runs is for the database of the settings that update() made, not of
+    the ones it replaced."""
+
+    scenarios = [('connection during update', dict())]
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        from pgadmin.model import Server
+        from pgadmin.utils.driver.psycopg3 import server_manager
+        manager = server_manager.ServerManager.__new__(
+            server_manager.ServerManager)
+        manager.connections = {}
+        manager.db = 'old_db'
+        manager.db_info = {}
+        manager.use_ssh_tunnel = 0
+        server = Server(
+            id=7, user_id=1, servergroup_id=1, name='s',
+            host='db.example.com', port=5432, maintenance_db='new_db',
+            username='u', shared=False, auth_method=METHOD,
+            connection_params={'sslmode': 'verify-full'})
+        update_ran = threading.Event()
+
+        def crypt_key():
+            # connection() has chosen the database; an update() runs
+            # before it registers the connection.
+            if not update_ran.is_set():
+                update_ran.set()
+                manager.update(server)
+            return True, 'key'
+
+        def fake_connection(mgr, conn_id, db, **kwargs):
+            return SimpleNamespace(conn_id=conn_id, db=db, _release=None)
+
+        with patch.object(server_manager.ServerManager,
+                          'create_connection_string'), \
+                patch.object(server_manager.ServerManager,
+                             'update_session'), \
+                patch.object(server_manager, 'build_passexec'), \
+                patch.object(server_manager, 'get_crypt_key',
+                             side_effect=crypt_key), \
+                patch.object(server_manager, 'Connection',
+                             side_effect=fake_connection):
+            conn = manager.connection()
+
+        self.assertEqual(manager.settings_generation, 1)
+        self.assertEqual(conn.db, 'new_db')
+        self.assertEqual(manager.connections, {'DB:new_db': conn})
 
 
 class TokenAuthRegistryTest(BaseTestGenerator):
