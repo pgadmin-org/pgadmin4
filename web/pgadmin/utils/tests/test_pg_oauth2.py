@@ -1168,7 +1168,8 @@ class TestExchangeOAuthAccessToken(
 
         with self.app.test_request_context('/'):
             result = pg_oauth2.get_postgres_oauth_token(
-                AUTH_METHOD_OAUTH_EXCHANGE, 'postgres-cluster', 'openid', ISSUER,
+                AUTH_METHOD_OAUTH_EXCHANGE, 'postgres-cluster', 'openid',
+                ISSUER,
             )
 
         self.assertEqual(result, 'exchanged-access-token')
@@ -1211,7 +1212,8 @@ class TestExchangeOAuthAccessToken(
             with self.assertRaisesRegex(
                     pg_oauth2.OAuthTokenExchangeError, message):
                 pg_oauth2.get_postgres_oauth_token(
-                    AUTH_METHOD_OAUTH_EXCHANGE, 'postgres-cluster', 'openid', ISSUER,
+                    AUTH_METHOD_OAUTH_EXCHANGE, 'postgres-cluster', 'openid',
+                    ISSUER,
                 )
 
         get_token.assert_not_called()
@@ -1723,7 +1725,8 @@ class TestGetPostgresOAuthToken(
 
     @patch('pgadmin.utils.pg_oauth2._get_pgadmin_oauth_token')
     @patch('pgadmin.utils.pg_oauth2._exchange_oauth_access_token')
-    def case_a_method_without_a_token_provider_raises_error(self, exchange, get_token):
+    def case_a_method_without_a_token_provider_raises_error(
+            self, exchange, get_token):
         with self.assertRaisesRegex(
                 pg_oauth2.OAuthTokenError,
                 'does not use an OAuth token'):
