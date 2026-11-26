@@ -47,7 +47,8 @@ they must be modified at the parent level.
 Click the *Add* icon (+) to specify the names of columns and their datatypes in
 the *Columns* table:
 
-* Use the *Name* field to add a descriptive name for the column.
+* Use the *Name* field to add a descriptive name for the column. Leading and
+  trailing whitespace is removed from a name you type when you leave the field.
 * Use the drop-down listbox in the *Data type* field to select a data type for
   the column. This can include array specifiers. For more information on the
   data types supported by PostgreSQL, refer to Chapter 8 of the core

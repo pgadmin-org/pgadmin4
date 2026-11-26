@@ -438,6 +438,9 @@ export function InputText({ref, cid, helpid, readonly, disabled, value, onChange
   if (_.isNull(finalValue) || _.isUndefined(finalValue)) finalValue = '';
 
   const [val, setVal] = useState(finalValue);
+  // Set once the user edits the value, so that merely focusing and leaving
+  // the field does not trim a value that came from the server.
+  const editedRef = useRef(false);
 
   useEffect(() => setVal(finalValue), [finalValue]);
   const onChangeFinal = (e) => {
@@ -452,8 +455,25 @@ export function InputText({ref, cid, helpid, readonly, disabled, value, onChange
     if (controlProps?.formatter) {
       changeVal = controlProps.formatter.toRaw(changeVal);
     }
+    editedRef.current = true;
     setVal(changeVal);
     onChange?.(changeVal);
+  };
+
+  // Trim leading and trailing whitespace when the user leaves the field,
+  // rather than on every keystroke, so that spaces inside the value can
+  // still be typed.
+  const {trimOnBlur, ...inputControlProps} = controlProps ?? {};
+  const onBlurFinal = (e) => {
+    if (trimOnBlur && editedRef.current && typeof(val) === 'string') {
+      const trimmed = val.trim();
+      if (trimmed !== val) {
+        setVal(trimmed);
+        onChange?.(trimmed);
+      }
+    }
+    editedRef.current = false;
+    controlProps?.onBlur?.(e);
   };
 
   const filteredProps = _.pickBy(props, (_v, key)=>(
@@ -490,10 +510,8 @@ export function InputText({ref, cid, helpid, readonly, disabled, value, onChange
       {
         ...(controlProps?.onFocus && { onFocus: controlProps.onFocus })
       }
-      {
-        ...(controlProps?.onBlur && { onBlur: controlProps.onBlur })
-      }
-      {...controlProps}
+      {...inputControlProps}
+      onBlur={onBlurFinal}
       {...filteredProps}
       {...(['numeric', 'int'].indexOf(type) > -1 ? { type: 'tel' } : { type: type })}
     />
