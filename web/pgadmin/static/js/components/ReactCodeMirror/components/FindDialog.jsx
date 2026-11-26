@@ -30,6 +30,8 @@ import {
   findPrevious,
   replaceNext,
   replaceAll,
+  getSearchQuery,
+  searchPanelOpen,
 } from '@codemirror/search';
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -118,10 +120,17 @@ export default function FindDialog({editor, show, replace, onClose}) {
     }
   };
 
-  const onEscape = (e)=>{
+  const onKeyDown = (e)=>{
     if (e.key === 'Escape') {
       e.preventDefault();
       clearAndClose();
+    } else if (e.key === 'F3') {
+      e.preventDefault();
+      if(e.shiftKey) {
+        onFindPrev();
+      } else {
+        onFindNext();
+      }
     }
   };
 
@@ -146,7 +155,7 @@ export default function FindDialog({editor, show, replace, onClose}) {
   }
 
   return (
-    <StyledBox style={{visibility: show ? 'visible' : 'hidden'}} tabIndex="0" onKeyDown={onEscape}>
+    <StyledBox style={{visibility: show ? 'visible' : 'hidden'}} tabIndex="0" onKeyDown={onKeyDown}>
       <InputText value={findVal}
         inputRef={(ele)=>{findInputRef.current = ele;}}
         onChange={(value)=>setFindVal(value)}
@@ -185,6 +194,28 @@ export default function FindDialog({editor, show, replace, onClose}) {
   );
 }
 
+
+// F3 and Shift+F3 move to the next and previous match, as they do in most
+// other editors (#7129). They only step through matches whilst the Find
+// dialog is open with something to search for; otherwise they call openFind
+// so that the dialog opens as it does for the Find shortcut. The dialog's own
+// inputs handle F3 in onKeyDown, as key presses there never reach the editor.
+export function findMatchKeyBinding(openFind) {
+  const step = (findFn) => (view) => {
+    if(searchPanelOpen(view.state) && getSearchQuery(view.state).valid) {
+      findFn(view);
+    } else {
+      openFind();
+    }
+    return true;
+  };
+  return {
+    key: 'F3',
+    preventDefault: true,
+    run: step(findNext),
+    shift: step(findPrevious),
+  };
+}
 
 export const CodeMirrorInstanceType = PropTypes.shape({
   getValue: PropTypes.func,

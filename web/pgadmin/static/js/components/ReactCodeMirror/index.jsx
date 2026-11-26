@@ -22,7 +22,7 @@ import { useDelayedCaller } from '../../custom_hooks';
 
 import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
-import FindDialog from './components/FindDialog';
+import FindDialog, { findMatchKeyBinding } from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
 import usePreferences from '../../../../preferences/static/js/store';
 import { parseKeyEventValue, parseShortcutValue } from '../../utils';
@@ -141,6 +141,12 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
         return false;
       }
     },
+    findMatchKeyBinding(() => {
+      setTimeout(()=>{
+        // Keep the dialog in replace mode if it is already showing.
+        setShowFind(prevVal => [true, prevVal[0] && prevVal[1], !prevVal[2]]);
+      }, 0);
+    }),
     ...customKeyMap
   ], [customKeyMap]);
 
