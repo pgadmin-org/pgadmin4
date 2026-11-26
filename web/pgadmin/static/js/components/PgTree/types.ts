@@ -34,6 +34,11 @@ export interface IFileTreeXHandle extends IFileTreeHandle {
     newFolder(dir: Directory)
     toggleDirectory(path: string)
     toggleDirectory(dir: Directory)
+    /**
+     * Closes the directory and every expanded directory beneath it
+     */
+    collapseAll(path: string): Promise<void>
+    collapseAll(dir: Directory): Promise<void>
 
     first(file: FileEntry): FileEntry | Directory
     first(dir: Directory): FileEntry | Directory

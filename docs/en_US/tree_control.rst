@@ -18,6 +18,11 @@ view:
 * Use the plus sign (+) to the left of a node to expand a segment of the tree
   control.
 * Click the minus sign (-) to the left of a node to close that node.
+* Choose *Collapse* from the context menu, or press *Shift + Left Arrow* with
+  the tree control focused, to close a node together with every node beneath
+  it. On a node that is not expanded (a table in a long *Tables* list, for
+  example) this closes its parent instead, and selects it, so there is no need
+  to scroll back up the tree first.
 
 You can also **drag and drop** certain objects to the Query Tool which
 can save time in typing long object names. Text containing the object name will be
@@ -39,6 +44,8 @@ following selections (options appear in alphabetical order):
 | *Backup Globals...*       | Click to open the :ref:`Backup Globals... <backup_globals_dialog>` dialog to backup cluster objects.                      |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Backup Server...*        | Click to open the :ref:`Backup Server... <backup_server_dialog>` dialog to backup a server.                               |
++---------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| *Collapse*                | Click to close the selected node and every node beneath it, or its parent if the selected node is not expanded.           |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Connect Server...*       | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.            |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+

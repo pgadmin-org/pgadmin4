@@ -46,6 +46,10 @@ define([
           applies: ['object', 'context'], callback: 'refresh',
           priority: 2, label: gettext('Refresh'),
           shortcut_preference: ['browser', 'sub_menu_refresh'],
+        }, {
+          name: 'collapse', node: this.type, module: this,
+          applies: ['context'], callback: 'collapse',
+          priority: 3, label: gettext('Collapse'),
         }]);
 
         // show query tool only in context menu of supported nodes.

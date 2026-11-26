@@ -23,6 +23,7 @@ import { FileTreeItem } from '../FileTreeItem';
 import { Notificar, DisposablesComposite } from 'notificar';
 import { IFileTreeXHandle, IFileTreeXProps, FileTreeXEvent, IFileTreeXTriggerEvents } from '../types';
 import { KeyboardHotkeys } from '../services/keyboardHotkeys';
+import { collapseBranch } from '../services/collapse';
 import { TreeModelX } from '../TreeModelX';
 import {AutoSizer} from 'react-virtualized-auto-sizer';
 
@@ -126,6 +127,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
       setPseudoActiveFile: this.setPseudoActiveFile,
       toggleDirectory: this.toggleDirectory,
       closeDir: this.closeDir,
+      collapseAll: this.collapseAll,
       newFile: async (dirOrPath: Directory | string) => this.supervisePrompt(await handle.promptNewFile(dirOrPath as string)),
       newFolder: async (dirOrPath: Directory | string) => this.supervisePrompt(await handle.promptNewDirectory(dirOrPath as string)),
       onBlur: (callback) => this.events.add(FileTreeXEvent.OnBlur, callback),
@@ -501,6 +503,18 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
         this.events.dispatch(FileTreeXEvent.onTreeEvents, window.event, 'closed', dir);
 
       }
+    }
+  };
+
+  // Closes the directory and every expanded directory beneath it, going
+  // through closeDir so that each one raises the 'closed' tree event.
+  private readonly collapseAll = async (pathOrDir: string | Directory) => {
+    const dir = typeof pathOrDir === 'string'
+      ? await this.fileTreeHandle.getFileHandle(pathOrDir)
+      : pathOrDir;
+
+    if (dir?.type === FileType.Directory) {
+      await collapseBranch(dir as Directory, this.closeDir);
     }
   };
 
