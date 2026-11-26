@@ -9,6 +9,7 @@
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { EditorView } from '@codemirror/view';
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
@@ -30,6 +31,19 @@ class MinimalSchema extends BaseUISchema {
         mode: ['properties', 'edit', 'create'], disabled: false, visible: true,
       },
     ];
+  }
+}
+
+class SQLFieldSchema extends BaseUISchema {
+  constructor() {
+    super({sqlfield: 'a = 1'});
+  }
+
+  get baseFields() {
+    return [{
+      id: 'sqlfield', label: 'SQL', type: 'sql', group: null,
+      mode: ['create'],
+    }];
   }
 }
 
@@ -187,5 +201,31 @@ describe('SchemaDialogView keyboard handling', () => {
 
     await act(async () => { resolveSave(); });
     await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+  });
+
+  // With focus in a SQL editor, CodeMirror's own Mod-Enter binding
+  // (insertBlankLine) used to add a newline before the dialog's handler
+  // saved, so the newline was saved along with the rest of the value.
+  it('does not add a newline to a SQL field on Ctrl/Cmd+Enter', async () => {
+    const onClose = jest.fn();
+    const onSave = jest.fn(() => Promise.resolve());
+    const ctrl = await renderDialog(onClose, onSave, new SQLFieldSchema());
+    const editor = EditorView.findFromDOM(
+      ctrl.container.querySelector('.cm-editor')
+    );
+    editor.dispatch({selection: {anchor: editor.state.doc.length}});
+
+    await act(async () => {
+      // jsdom does not report a Mac platform, so Mod is Ctrl here.
+      fireEvent.keyDown(editor.contentDOM, {
+        key: 'Enter', code: 'Enter', keyCode: 13, ctrlKey: true,
+      });
+    });
+
+    expect(editor.state.doc.toString()).toBe('a = 1');
+    expect(onSave).toHaveBeenCalledWith(
+      true, expect.objectContaining({sqlfield: 'a = 1'})
+    );
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 });
