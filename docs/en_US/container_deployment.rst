@@ -214,9 +214,11 @@ workers.
 
 Set the maximum size of an HTTP request header field in bytes. This may need
 to be increased if pgAdmin is placed behind an authenticating proxy that
-sends large headers, such as a bearer token carrying a large JWT. Setting it
-to 0 (zero) allows headers of unlimited size, however this poses a potential
-denial of service hazard.
+sends large headers, such as a bearer token carrying a large JWT. Use a
+positive value large enough for the biggest header expected rather than 0
+(zero): Gunicorn treats 0 as unlimited for each field, but still caps the
+total size of the headers at roughly 8KB per allowed field. Very large values
+pose a potential denial of service hazard.
 
 **GUNICORN_LIMIT_REQUEST_FIELDS**
 
