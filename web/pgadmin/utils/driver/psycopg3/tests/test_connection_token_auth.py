@@ -100,6 +100,9 @@ class TokenAuthConnectionTest(BaseTestGenerator):
             'case_a_connection_opened_during_an_update_is_not_published',
             'case_a_connection_opened_while_update_releases_is_not_published',
             'case_no_update_comes_between_the_check_and_the_build',
+            'case_a_connection_opened_while_release_removes_it_is_not_'
+            'published',
+            'case_a_failed_tunnel_is_flagged_and_the_flag_reset',
         ) for operation in OPERATIONS
     ]
 
@@ -462,6 +465,75 @@ class TokenAuthConnectionTest(BaseTestGenerator):
         self.assertIn('settings changed', message)
         self._assert_closed(seen['pg'])
         self.assertIsNone(connection.conn)
+
+    def case_a_connection_opened_while_release_removes_it_is_not_published(
+            self):
+        # release() of the one connection, or of the whole server, while
+        # it opens takes it from the map and marks it superseded, so it is
+        # closed rather than published outside the map.
+        from functools import partial
+        from pgadmin.utils.driver.psycopg3 import server_manager
+        real = server_manager.ServerManager
+        for kwargs in ({'database': 'postgres'}, {}):
+            self._register(token_auth.PasswordDelivery())
+            manager = self._manager()
+            manager.settings_lock = threading.Lock()
+            manager.db_info = {}
+            for name in ('_check_db_info', '_forget_server_info'):
+                setattr(manager, name, partial(getattr(real, name), manager))
+            holder = {}
+
+            def start(connection, go, manager=manager):
+                manager.connections = {connection.conn_id: connection}
+                connection._release = MagicMock()
+                holder['connection'] = connection
+                go()
+
+            def release(manager=manager, kwargs=kwargs):
+                self.assertTrue(real.release(manager, **kwargs))
+            self.on_open = release
+
+            status, message, _, seen, connection = self._run(
+                manager, start=start)
+
+            self.assertFalse(status, kwargs)
+            self.assertIn('settings changed', message, kwargs)
+            self._assert_closed(seen['pg'])
+            self.assertIsNone(connection.conn, kwargs)
+            self.assertTrue(connection.superseded, kwargs)
+            self.assertEqual(manager.connections, {}, kwargs)
+            connection._release.assert_called_once_with()
+            token_auth.unregister_token_auth_method(METHOD)
+            self.registered.remove(METHOD)
+
+    def case_a_failed_tunnel_is_flagged_and_the_flag_reset(self):
+        # The flag tells a tunnel that failed to authenticate from a
+        # failure once the tunnel was up, and is reset by each attempt.
+        if self.operation == 'reset':
+            return
+        self._register(token_auth.PasswordDelivery())
+        manager = self._manager()
+        manager.use_ssh_tunnel = 1
+        manager.tunnel_created = False
+        flags = []
+
+        def start(connection, go):
+            manager.create_ssh_tunnel.return_value = (False, 'refused')
+            go()
+            flags.append(connection.tunnel_auth_failed)
+            manager.create_ssh_tunnel.return_value = (True, None)
+            go()
+            flags.append(connection.tunnel_auth_failed)
+
+        status, message, target, seen, connection = self._run(
+            manager, start=start)
+
+        self.assertFalse(status)
+        self.assertEqual(message, 'refused')
+        self.assertEqual(flags, [True, False])
+        # Only the second attempt reached the server.
+        target.assert_called_once()
+        self.assertIs(connection.conn, seen['pg'])
 
     def case_no_update_comes_between_the_check_and_the_build(self):
         # A manager.update() that starts once the settings were compared
