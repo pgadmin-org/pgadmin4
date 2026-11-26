@@ -118,12 +118,13 @@ describe('SearchObjects', ()=>{
     });
 
     describe('default object type preference', ()=>{
-      /* Its own server and database, so the types reply can differ */
-      const prefNodeData = {server: {'_id': 11}, database: {'_id': 124}};
-
+      /* Its own servers and databases, so the types replies can differ */
       beforeAll(()=>{
         networkMock.onGet('/search_objects/types/11/124').reply(200, {data: {cast: 'Casts', function: 'Functions'}});
         networkMock.onGet('/search_objects/search/11/124').reply(200, {data: []});
+        /* A server whose types never arrive */
+        networkMock.onGet('/search_objects/types/12/125').reply(()=>new Promise(()=>{/* never settles */}));
+        networkMock.onGet('/search_objects/search/12/125').reply(200, {data: []});
       });
 
       let prefSpy;
@@ -132,7 +133,7 @@ describe('SearchObjects', ()=>{
         prefSpy?.mockRestore();
       });
 
-      const searchWithPref = async (defaultType)=>{
+      const searchWithPref = async (defaultType, sid=11, did=124)=>{
         prefSpy = jest.spyOn(usePreferences.getState(), 'getPreferencesForModule').mockReturnValue(
           defaultType ? {default_object_type: defaultType} : {}
         );
@@ -140,14 +141,14 @@ describe('SearchObjects', ()=>{
         await act(async ()=>{
           ctrl = render(
             <Theme>
-              <SearchObjects nodeData={prefNodeData}/>
+              <SearchObjects nodeData={{server: {'_id': sid}, database: {'_id': did}}}/>
             </Theme>
           );
         });
         await user.type(ctrl.container.querySelector('input'), 'plp{Enter}');
         /* The footer loses its full stop once the search has returned */
         await ctrl.findByText('0 matches found');
-        return networkMock.history.get.find((r)=>r.url == '/search_objects/search/11/124').params.type;
+        return networkMock.history.get.find((r)=>r.url == `/search_objects/search/${sid}/${did}`).params.type;
       };
 
       it.each([
@@ -156,6 +157,10 @@ describe('SearchObjects', ()=>{
         ['is not supported by the server', 'synonym', 'all'],
       ])('searches the right type when the preference %s', async (_desc, pref, expected)=>{
         expect(await searchWithPref(pref)).toBe(expected);
+      });
+
+      it('searches all types until the server has confirmed the type', async ()=>{
+        expect(await searchWithPref('function', 12, 125)).toBe('all');
       });
     });
 
