@@ -1521,7 +1521,7 @@ export function ResultSet() {
     return ()=>{
       eventBus.deregisterListener(QUERY_TOOL_EVENTS.COPY_DATA, copyDataFunc);
     };
-  }, [selectedRows, selectedColumns, columns, rows, allRowsSelect, queryData]);
+  }, [selectedRows, selectedColumns, columns, rows, allRowsSelect, queryData, queryToolCtx]);
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
