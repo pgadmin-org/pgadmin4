@@ -10,6 +10,7 @@ import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../../s
 import TriggerSchema from './trigger.ui';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../../static/js/api_instance';
+import checkNodeVisibility from '../../../../../../../../../static/js/check_node_visibility';
 
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for',
@@ -89,6 +90,11 @@ define('pgadmin.node.trigger', [
           category: 'drop', priority: 3, label: gettext('Disable'),
           enable : 'canCreate_with_trigger_disable',
         },{
+          name: 'show_trigger_function', node: 'trigger', module: this,
+          applies: ['object', 'context'], callback: 'show_trigger_function',
+          priority: 4, label: gettext('Go to Trigger Function'),
+          enable: 'canShowTriggerFunction',
+        },{
           name: 'create_trigger_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Trigger...'),
@@ -160,6 +166,76 @@ define('pgadmin.node.trigger', [
               t.refresh(i);
             });
         },
+        /*
+         * Select the trigger's function in its own place in the tree (under
+         * its schema's Trigger Functions collection), so that its properties
+         * and code are shown.
+         */
+        show_trigger_function: function(args) {
+          let input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          const treeInfo = t.getTreeNodeHierarchy(i);
+          const notFound = gettext(
+            'The trigger function could not be found in the Object Explorer. Built-in trigger functions are not shown there.'
+          );
+
+          // The trigger's only child node is its trigger function, which
+          // carries the function and schema OIDs.
+          return getApiInstance().get(obj.generate_url(i, 'children', d, true))
+            .then(({data: res})=>{
+              const func = res.data?.[0];
+              if (!func) {
+                pgAdmin.Browser.notifier.warning(notFound);
+                return;
+              }
+
+              const schemaType = func.schema_is_catalog ? 'catalog' : 'schema';
+              const idPath = [
+                treeInfo.server_group.id,
+                treeInfo.server.id,
+                'coll-database_' + treeInfo.server._id,
+                treeInfo.database.id,
+                'coll-' + schemaType + '_' + treeInfo.database._id,
+                schemaType + '_' + func._pid,
+                'coll-trigger_function_' + func._pid,
+                'trigger_function_' + func._id,
+              ];
+
+              // As in Search Objects, stop tree state restoration from
+              // fighting the selection whilst the path is expanded.
+              t.suppressEventsForPath = '/browser/' + idPath.join('/');
+              return t.findNodeWithToggle(idPath)
+                .then((treeItem)=>{
+                  setTimeout(()=>{
+                    t.select(treeItem, true, 'center');
+                  }, 100);
+                })
+                .catch(()=>{
+                  t.suppressEventsForPath = null;
+                  pgAdmin.Browser.notifier.warning(gettext(
+                    'Unable to locate the trigger function in the Object Explorer.'
+                  ));
+                });
+            })
+            .catch((error)=>{
+              if (error?.response?.status == 410) {
+                pgAdmin.Browser.notifier.warning(notFound);
+              } else {
+                pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+              }
+            });
+        },
+      },
+      // There is nowhere to go if trigger functions are hidden in the tree.
+      canShowTriggerFunction: function() {
+        return checkNodeVisibility('trigger_function');
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,

@@ -218,6 +218,17 @@
       }
     },
     {
+      "name": "Get the trigger function node under a trigger",
+      "url": "/browser/trigger/children/",
+      "is_positive_test": true,
+      "check_trigger_function_child": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
       "name": "Get a trigger Node dependency",
       "url": "/browser/trigger/dependency/",
       "is_positive_test": true,

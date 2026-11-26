@@ -104,3 +104,11 @@ The example demonstrates creating a trigger named *emp_trigger*.
 * Click the *Save* button to save work.
 * Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
+
+To view the function that a trigger executes, right-click the trigger in the
+*pgAdmin* tree control and select *Go to Trigger Function*. The tree control
+expands to show the function under the *Trigger Functions* node of its own
+schema, which may differ from the table's schema, and selects it so that its
+properties and code are displayed on the *Properties* and *SQL* tabs. Built-in
+trigger functions are not shown in the tree control, so cannot be selected in
+this way.

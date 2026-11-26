@@ -1,5 +1,7 @@
+{% import 'catalog/pg/macros/catalogs.sql' as CATALOGS %}
 SELECT p.oid AS tfuncoid, p.proname AS tfunction,
-    p.pronamespace AS tfuncschoid, n.nspname AS tfuncschema, l.lanname
+    p.pronamespace AS tfuncschoid, n.nspname AS tfuncschema, l.lanname,
+    {{ CATALOGS.LIST('n') }} AS tfuncschiscatalog
 FROM pg_catalog.pg_trigger t
     LEFT OUTER JOIN pg_catalog.pg_proc p ON p.oid=t.tgfoid
 	LEFT OUTER JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
