@@ -36,6 +36,11 @@ maintenance:
      VACUUM should not wait for any conflicting locks to be released when
      beginning work on a relation. This option is available from v12 onwards.
 
+   * Move the *ONLY* switch to the *Yes* position to specify that VACUUM should
+     process only the selected table, and not its inheritance children or
+     partitions. This option is shown only when a table is selected, and is
+     available from v18 onwards.
+
    * Move the *TRUNCATE* switch to the *Yes* position to specify that VACUUM
      should attempt to truncate off any empty pages at the end of the table and
      allow the disk space for the truncated pages to be returned to the operating
@@ -81,6 +86,11 @@ maintenance:
    * Move the *SKIP LOCKED* switch to the *Yes* position to specify that
      ANALYZE should not wait for any conflicting locks to be released when
      beginning work on a relation. This option is available from v12 onwards.
+
+   * Move the *ONLY* switch to the *Yes* position to specify that ANALYZE
+     should process only the selected table, and not its inheritance children
+     or partitions. This option is shown only when a table is selected, and is
+     available from v18 onwards.
 
    * Use the *BUFFER USAGE LIMIT* field to specify the Buffer Access Strategy
      ring buffer size for ANALYZE. This size is used to calculate the number of
