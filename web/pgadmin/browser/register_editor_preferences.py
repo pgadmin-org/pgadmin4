@@ -249,6 +249,17 @@ def register_editor_preferences(self):
     )
 
     self.editor_preference.register(
+        'sql_formatting', 'preserve_layout',
+        gettext("Preserve layout?"), 'boolean', False,
+        category_label=PREF_LABEL_SQL_FORMATTING,
+        help_str=gettext(
+            'If set to True, formatting SQL only changes the case of '
+            'keywords, identifiers, functions and data types, and leaves '
+            'line breaks, indentation and spacing as they are.'
+        )
+    )
+
+    self.editor_preference.register(
         'sql_formatting', 'keyword_case',
         gettext("Keyword case"), 'radioModern', 'upper',
         options=[{'label': UPPER_CASE_STR, 'value': 'upper'},

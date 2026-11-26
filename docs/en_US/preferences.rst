@@ -417,7 +417,11 @@ Use the fields on the *Options* panel to manage editor preferences.
     :align: center
 
 Use the fields on the *SQL formatting* panel to specify your preferences for
-reformatting of SQL.
+reformatting of SQL. By default, formatting rewrites the layout of the SQL: it
+places each clause and each item of a list on its own line, and indents nested
+expressions, as well as changing the case of words. There is no option to keep
+short clauses on a single line. The contents of dollar-quoted strings, such as
+function bodies, are left as they are.
 
 * Use the *Data type case* option to specify whether to change data types
   into upper, lower, or preserve case.
@@ -426,7 +430,7 @@ reformatting of SQL.
 * Use the *Function case* option to specify whether to change function
   names into upper, lower, or preserve case.
 * Use the *Identifier case* option to specify whether to change identifiers
-  (object names) into upper, lower, or capitalized case.
+  (object names) into upper, lower, or preserve case.
 * Use the *Keyword case* option to specify whether to change keywords into
   upper, lower, or preserve case.
 * Use *Lines between queries* to specify how many empty lines to leave
@@ -435,6 +439,12 @@ reformatting of SQL.
   after logical operators (AND, OR, XOR).
 * Use *New line before semicolon?* to specify whether to place query
   separator (;) on a separate line.
+* When the *Preserve layout?* switch is set to *True*, formatting only changes
+  the case of keywords, identifiers, functions and data types, and leaves the
+  line breaks and indentation of the SQL as they are. The *Expression width*,
+  *Lines between queries*, *Logical operator new line*, *New line before
+  semicolon?* and *Spaces around operators?* options have no effect on
+  formatting whilst it is set.
 * Use the *Spaces around operators?* option to specify whether or not to include
   spaces on either side of operators.
 * Use the *Tab size* option to specify the number of spaces per tab or indent.
