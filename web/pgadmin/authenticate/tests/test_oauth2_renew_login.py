@@ -178,3 +178,51 @@ class RenewedLoginRaisesTestCase(BaseTestGenerator):
             self.assertEqual(sess['pass_enc_key'], 'key-of-the-first-login')
             # A second outstanding callback finds no provider context.
             self.assertNotIn('oauth2_current_client', sess)
+
+
+class RenewedAsAnotherUserTestCase(BaseTestGenerator):
+    """A renewal the provider answers with another identity leaves nothing
+    of that identity in the session once it is logged out."""
+
+    scenarios = [
+        ('Renewed as another user', dict()),
+    ]
+
+    IDENTITY_KEYS = ('oauth2_token', 'pass_enc_key', 'oauth2_provider',
+                     'oauth2_server_group_claims')
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        _skip_outside_server_mode(self)
+
+    def runTest(self):
+        with self.app.app_context():
+            user = User.query.first()
+        with self.tester.session_transaction() as sess:
+            sess['oauth2_current_client'] = 'entra'
+            sess['oauth2_renew_user'] = user.id + 1
+            sess['pass_enc_key'] = 'key-of-the-first-login'
+
+        def login():
+            # What a login as the provider's identity stores.
+            from flask import session
+            session['oauth2_token'] = {'access_token': 'other-token'}
+            session['pass_enc_key'] = 'other-token'
+            session['oauth2_provider'] = 'entra'
+            session['oauth2_server_group_claims'] = ['other-group']
+            return True, ''
+
+        manager = MagicMock()
+        manager.login.side_effect = login
+        with patch('pgadmin.authenticate.get_auth_sources',
+                   return_value=_source()), \
+                patch('pgadmin.authenticate.AuthSourceManager',
+                      return_value=manager):
+            response = self.tester.get('/oauth2/authorize')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(
+            response.headers['Location'].endswith('/oauth2/renewed'))
+        with self.tester.session_transaction() as sess:
+            for key in self.IDENTITY_KEYS:
+                self.assertNotIn(key, sess)

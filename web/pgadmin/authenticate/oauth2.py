@@ -217,9 +217,12 @@ def init_app(app):
                     session['pass_enc_key'] = pass_enc_key
                 return redirect(url_for(OAUTH2_RENEWED))
             return redirect(get_safe_post_login_redirect())
-        # get_user_profile() may already have stored the provider's logout
-        # URL before the login failed; don't leave it for a later logout.
-        session.pop('oauth2_logout_url', None)
+        # get_user_profile() and login() may already have stored the
+        # provider's identity, such as another user's on a renewal; don't
+        # leave it in the session after the logout.
+        for key in ('oauth2_logout_url', 'oauth2_token', 'pass_enc_key',
+                    'oauth2_provider', 'oauth2_server_group_claims'):
+            session.pop(key, None)
         logout_user()
         flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
@@ -270,7 +273,8 @@ def init_app(app):
     @pgCSRFProtect.exempt
     def oauth_logout():
         logout_url = None
-        id_token = session['oauth2_token'].get('id_token')
+        # A failed login leaves no token.
+        id_token = session.get('oauth2_token', {}).get('id_token')
         if 'oauth2_logout_url' in session:
             logout_url = session['oauth2_logout_url']
 
