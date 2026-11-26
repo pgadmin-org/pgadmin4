@@ -124,7 +124,7 @@ export default function FindDialog({editor, show, replace, onClose}) {
     if (e.key === 'Escape') {
       e.preventDefault();
       clearAndClose();
-    } else if (e.key === 'F3') {
+    } else if (e.key === 'F3' && !e.ctrlKey && !e.altKey && !e.metaKey) {
       e.preventDefault();
       if(e.shiftKey) {
         onFindPrev();

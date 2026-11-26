@@ -166,6 +166,19 @@ describe('CodeMirror', ()=>{
       expect(CMSearch[fn == 'findNext' ? 'findPrevious' : 'findNext']).not.toHaveBeenCalled();
     });
 
+    it.each(['ctrlKey', 'altKey', 'metaKey'])('F3 with %s is left alone', (modifier)=>{
+      ctrlMount({});
+      CMSearch.findNext.mockClear();
+      CMSearch.findPrevious.mockClear();
+
+      fireEvent.keyDown(ctrl.container.querySelector('input'), {
+        key: 'F3', [modifier]: true,
+      });
+
+      expect(CMSearch.findNext).not.toHaveBeenCalled();
+      expect(CMSearch.findPrevious).not.toHaveBeenCalled();
+    });
+
     it('replace', async ()=>{
       ctrlMount({replace: true});
       CMSearch.SearchQuery.mockClear();

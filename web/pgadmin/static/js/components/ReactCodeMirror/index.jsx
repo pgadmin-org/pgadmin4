@@ -141,13 +141,14 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
         return false;
       }
     },
+    ...customKeyMap,
+    // After customKeyMap so that a tool shortcut assigned to F3 wins.
     findMatchKeyBinding(() => {
       setTimeout(()=>{
         // Keep the dialog in replace mode if it is already showing.
         setShowFind(prevVal => [true, prevVal[0] && prevVal[1], !prevVal[2]]);
       }, 0);
     }),
-    ...customKeyMap
   ], [customKeyMap]);
 
   const closeFind = () => {
