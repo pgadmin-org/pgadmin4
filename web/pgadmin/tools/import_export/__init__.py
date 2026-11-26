@@ -562,7 +562,11 @@ def create_import_export_job(sid):
         data.pop('reject_limit', None)
     else:
         if isinstance(val, str) and val.isascii() and val.isdigit():
-            val = int(val)
+            # Bound the length before int(), which refuses very long
+            # strings with a ValueError; leading zeros do not count.
+            digits = val.lstrip('0') or '0'
+            if len(digits) <= len(str(_MAX_REJECT_LIMIT)):
+                val = int(digits)
         if isinstance(val, bool) or not isinstance(val, int) or \
                 not 0 < val <= _MAX_REJECT_LIMIT:
             return bad_request(

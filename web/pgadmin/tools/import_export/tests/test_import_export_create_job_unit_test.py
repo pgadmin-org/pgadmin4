@@ -406,6 +406,34 @@ class IECreateJobInjectionTest(BaseTestGenerator):
              url=import_export_url,
              expected_status_code=400,
          )),
+        ('Reject invalid reject_limit value: too many digits',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_export_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_export',
+                 username='postgres'
+             ),
+             params=dict(
+                 filename='test_import_inject.csv',
+                 format='csv',
+                 is_import=True,
+                 database='postgres',
+                 schema='public',
+                 table='test_table',
+                 on_error='ignore',
+                 reject_limit='9' * 5000,
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[],
+             ),
+             url=import_export_url,
+             expected_status_code=400,
+         )),
     ]
 
     def setUp(self):
