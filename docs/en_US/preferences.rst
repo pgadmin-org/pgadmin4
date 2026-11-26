@@ -766,6 +766,10 @@ preferences for copied data.
 * Use *Data result rows per page* to specify the number of records to fetch in
   one batch. Changing this value will override DATA_RESULT_ROWS_PER_PAGE setting
   from config file.
+* Use the *Font size* field to specify the font size used for the cells and
+  column headers of the results grid; the row heights scale to match. The value
+  is a multiple of the default size, so 1 keeps the default, 1.2 increases it
+  by 20 percent and 0.8 reduces it by 20 percent.
 * Use the *Max column data display length* to specify the maximum number of
   characters to be visible in the data output cell. If the data is larger 
   than this value, it will be truncated.
