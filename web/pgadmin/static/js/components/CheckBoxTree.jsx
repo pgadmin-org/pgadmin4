@@ -68,7 +68,8 @@ export default function CheckBoxTree({treeData, showSelectAll = false, ...props}
   const [checked, setChecked] = React.useState([]);
   const [expanded, setExpanded] = React.useState([]);
   const leafValues = React.useMemo(() => getLeafValues(treeData), [treeData]);
-  const checkedLeafCount = leafValues.filter((v) => checked.includes(v)).length;
+  const checkedSet = new Set(checked);
+  const checkedLeafCount = leafValues.filter((v) => checkedSet.has(v)).length;
   const allChecked = leafValues.length > 0 && checkedLeafCount === leafValues.length;
 
   React.useEffect(() => {
