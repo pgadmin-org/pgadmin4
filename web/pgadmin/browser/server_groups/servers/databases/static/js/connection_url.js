@@ -11,13 +11,17 @@
 // secret, which the URL must never carry. The rest name a file on the
 // machine pgAdmin runs on (in server mode, one inside the user's storage
 // directory), which would mean nothing to a client elsewhere. host, port,
-// user and dbname already appear in the authority and path of the URL.
+// user and service are handled separately (see effectiveParam), and the
+// database is always the one the URL is copied for.
 const EXCLUDED_PARAMS = new Set([
   'password', 'sslpassword', 'oauth_client_secret',
   'passfile', 'sslcert', 'sslkey', 'sslrootcert', 'sslcrl', 'sslcrldir',
   'sslkeylogfile', 'servicefile',
-  'host', 'port', 'user', 'dbname',
+  'host', 'port', 'user', 'dbname', 'service',
 ]);
+
+// libpq's boolean parameters, which pgAdmin's driver converts to 0 or 1.
+const BOOLEAN_PARAMS = new Set(['sslcompression', 'sslsni']);
 
 // pgAdmin stores these values for every new server, but they are libpq's own
 // defaults, so adding them to the URL would change nothing.
@@ -41,13 +45,35 @@ function formatHost(host) {
   return encodeURIComponent(host);
 }
 
-function formatParamValue(value) {
-  // libpq takes 0 or 1 for its boolean parameters, which the server dialog
-  // stores as true or false.
-  if (typeof value === 'boolean') {
-    return value ? '1' : '0';
+// libpq takes 0 or 1 for its boolean parameters. The server dialog stores
+// them as true or false, but an imported server may hold a string such as
+// 'true' or 'off', so they are converted as connection_param_bool_to_int()
+// in pgadmin/utils/__init__.py does for the driver.
+function formatBooleanParam(value) {
+  if (typeof value === 'string') {
+    return ['', '0', 'false', 'f', 'no', 'n', 'off']
+      .includes(value.trim().toLowerCase()) ? '0' : '1';
+  }
+  return value ? '1' : '0';
+}
+
+function formatParamValue(name, value) {
+  if (BOOLEAN_PARAMS.has(name) || typeof value === 'boolean') {
+    return formatBooleanParam(value);
   }
   return String(value);
+}
+
+// pgAdmin's driver applies the stored connection parameters after the
+// server's own host, port, username and service, so a parameter of the same
+// name is the value actually used. Returns that value, or the server's own.
+function effectiveParam(server, name, serverValue) {
+  const param = (server?.connection_params ?? []).find((p)=>p?.name === name);
+  const value = param?.value;
+  if (value === null || value === undefined || value === '') {
+    return serverValue;
+  }
+  return value;
 }
 
 /*
@@ -56,8 +82,10 @@ function formatParamValue(value) {
  *
  *   postgresql://user@host:port/dbname?param=value&...
  *
- * Every component is percent-encoded. The password is never included. The
- * host and port are the ones configured for the server, so for a server
+ * Every component is percent-encoded. The password is never included. A
+ * host, port, user or service connection parameter takes the place of the
+ * server's own value, as it does when pgAdmin connects. The host and port
+ * are the ones configured for the server, so for a server
  * reached through an SSH tunnel they are the database server's address as
  * seen from the tunnel host, not the local end of the tunnel. A service and
  * any stored connection parameters that libpq accepts in a URI are added as
@@ -70,22 +98,26 @@ function formatParamValue(value) {
 export function buildConnectionURL(server, dbname) {
   let url = 'postgresql://';
 
-  if (server?.username) {
-    url += encodeURIComponent(server.username) + '@';
+  const username = effectiveParam(server, 'user', server?.username);
+  const host = String(effectiveParam(server, 'host', server?.host) ?? '').trim();
+  const port = effectiveParam(server, 'port', server?.port);
+  const service = effectiveParam(server, 'service', server?.service);
+
+  if (username) {
+    url += encodeURIComponent(username) + '@';
   }
 
-  const host = (server?.host ?? '').trim();
   if (host) {
     // libpq accepts a comma-separated list of hosts; a single port applies to
-    // each of them, so it is repeated after every host in the URI.
-    const port = server.port ? ':' + server.port : '';
+    // each of them, so it is repeated after every host in the URI. An empty
+    // entry is kept, as libpq uses its default (local) connection for it.
+    const portSuffix = port ? ':' + port : '';
     url += host.split(',')
       .map((h)=>h.trim())
-      .filter((h)=>h)
-      .map((h)=>formatHost(h) + port)
+      .map((h)=>(h ? formatHost(h) : '') + portSuffix)
       .join(',');
-  } else if (server?.port) {
-    url += ':' + server.port;
+  } else if (port) {
+    url += ':' + port;
   }
 
   url += '/';
@@ -96,11 +128,11 @@ export function buildConnectionURL(server, dbname) {
   const query = [];
   const addParam = (name, value)=>{
     query.push(encodeURIComponent(name) + '=' +
-      encodeURIComponent(formatParamValue(value)));
+      encodeURIComponent(formatParamValue(name, value)));
   };
 
-  if (server?.service) {
-    addParam('service', server.service);
+  if (service) {
+    addParam('service', service);
   }
 
   for (const param of server?.connection_params ?? []) {
@@ -112,14 +144,12 @@ export function buildConnectionURL(server, dbname) {
         !(name === 'sslrootcert' && value === 'system'))) {
       continue;
     }
-    // The server's own service, added above, is the one pgAdmin uses.
-    if (name === 'service' && server.service) {
+    // An empty boolean is still passed on by the driver, as 0.
+    if (value === null || value === undefined ||
+        (value === '' && !BOOLEAN_PARAMS.has(name))) {
       continue;
     }
-    if (value === null || value === undefined || value === '') {
-      continue;
-    }
-    if (LIBPQ_DEFAULTS[name] === formatParamValue(value)) {
+    if (LIBPQ_DEFAULTS[name] === formatParamValue(name, value)) {
       continue;
     }
     addParam(name, value);

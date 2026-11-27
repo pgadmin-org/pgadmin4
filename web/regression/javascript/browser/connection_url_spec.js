@@ -32,6 +32,10 @@ describe('buildConnectionURL', () => {
       'd', 'postgresql://u@%2Fvar%2Frun%2Fpostgresql:5432/d'],
     ['several hosts', {host: 'one.example.com, two.example.com', port: 5432, username: 'u'},
       'd', 'postgresql://u@one.example.com:5432,two.example.com:5432/d'],
+    ['an empty entry in the host list', {host: 'primary,', port: 5432, username: 'u'},
+      'd', 'postgresql://u@primary:5432,:5432/d'],
+    ['an empty entry in the host list and no port', {host: ',primary'},
+      'd', 'postgresql://,primary/d'],
     ['a service and no host', {service: 'my service', username: 'u'},
       'd', 'postgresql://u@/d?service=my%20service'],
     ['a service and no host or user', {service: 'svc'},
@@ -62,6 +66,14 @@ describe('buildConnectionURL', () => {
     );
   });
 
+  it.each([
+    ['true', '1'], ['On', '1'], ['1', '1'], ['yes', '1'],
+    ['false', '0'], ['off', '0'], ['0', '0'], ['', '0'],
+  ])('converts a stored sslsni of %j to %s, as the driver does', (value, expected) => {
+    const server = {host: 'h', connection_params: [param('sslsni', value)]};
+    expect(buildConnectionURL(server, 'd')).toBe('postgresql://h/d?sslsni=' + expected);
+  });
+
   it('leaves out libpq defaults, empty values, secrets and local file paths', () => {
     const server = {
       host: 'db.example.com', port: 5432, username: 'u',
@@ -81,9 +93,6 @@ describe('buildConnectionURL', () => {
         param('sslcrldir', '/home/u/crl'),
         param('sslkeylogfile', '/home/u/keys.log'),
         param('servicefile', '/home/u/.pg_service.conf'),
-        param('host', 'other.example.com'),
-        param('port', 5433),
-        param('user', 'other'),
         param('dbname', 'other'),
       ],
     };
@@ -92,15 +101,26 @@ describe('buildConnectionURL', () => {
     expect(url).not.toContain('should-not-appear');
   });
 
-  it('prefers the server service over a service connection parameter', () => {
-    const withServerService = {
-      host: 'h', service: 'a', connection_params: [param('service', 'b')],
+  it('uses host, port, user and service connection parameters over the server\'s own', () => {
+    const server = {
+      host: 'display.example.com', port: 5432, username: 'u', service: 'a',
+      connection_params: [
+        param('host', 'actual.example.com'), param('port', 5433),
+        param('user', 'other'), param('service', 'b'),
+      ],
     };
-    const withParamOnly = {
-      host: 'h', connection_params: [param('service', 'b')],
-    };
-    expect(buildConnectionURL(withServerService, 'd')).toBe('postgresql://h/d?service=a');
-    expect(buildConnectionURL(withParamOnly, 'd')).toBe('postgresql://h/d?service=b');
+    expect(buildConnectionURL(server, 'd')).toBe(
+      'postgresql://other@actual.example.com:5433/d?service=b');
+  });
+
+  it.each([
+    ['only the server service', {host: 'h', service: 'a'}, 'postgresql://h/d?service=a'],
+    ['only a service connection parameter',
+      {host: 'h', connection_params: [param('service', 'b')]}, 'postgresql://h/d?service=b'],
+    ['an empty service connection parameter',
+      {host: 'h', service: 'a', connection_params: [param('service', '')]}, 'postgresql://h/d?service=a'],
+  ])('builds the service for %s', (_desc, server, expected) => {
+    expect(buildConnectionURL(server, 'd')).toBe(expected);
   });
 
   it('uses the configured host and port for a server behind an SSH tunnel', () => {

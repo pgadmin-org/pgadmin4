@@ -95,6 +95,10 @@ example ``?sslmode=require&connect_timeout=10``), except for:
   *Client certificate key* or *Root certificate* (unless it is ``system``),
   since the path refers to the machine pgAdmin runs on.
 
+A *host*, *port*, *user* or *service* connection parameter, which a server
+imported from a file may have, takes the place of the server's own value in
+the URL, as it does when pgAdmin connects.
+
 For a server connected through an SSH tunnel, the URL uses the host and port
 configured for the server, not the local end of the tunnel that pgAdmin
 creates, so it works only from a machine that can reach the database server

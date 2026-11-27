@@ -15,7 +15,7 @@ import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 import { AllPermissionTypes } from '../../../../../static/js/constants';
-import { copyToClipboard } from '../../../../../../static/js/clipboard';
+import { copyPromisedTextToClipboard } from '../../../../../../static/js/clipboard';
 import { buildConnectionURL } from './connection_url';
 
 define('pgadmin.node.database', [
@@ -315,10 +315,12 @@ define('pgadmin.node.database', [
               i, 'obj', treeData['server'], true
             );
 
-          getApiInstance().get(url)
-            .then(({data: server})=>copyToClipboard(
-              buildConnectionURL(server, d.label)
-            ))
+          // The clipboard write starts here, within the click, as Safari
+          // requires, and is given the URL once the properties arrive.
+          copyPromisedTextToClipboard(
+            getApiInstance().get(url)
+              .then(({data: server})=>buildConnectionURL(server, d.label))
+          )
             .then((copied)=>{
               if (copied) {
                 pgAdmin.Browser.notifier.success(
