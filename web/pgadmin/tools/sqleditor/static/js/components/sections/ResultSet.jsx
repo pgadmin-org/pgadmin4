@@ -726,8 +726,9 @@ export class ResultSetUtils {
     let copiedRowsObjects = [];
     if(fromClipboard) {
       try {
-        /* If the raw row objects are available, use to them identify null values */
-        copiedRowsObjects = JSON.parse(localStorage.getItem('copied-rows'));
+        /* If the raw row objects are available, use to them identify null values.
+         * There are none before the first copy or after a Markdown copy. */
+        copiedRowsObjects = JSON.parse(localStorage.getItem('copied-rows')) ?? [];
       } catch {/* Suppress the error */}
     }
     for(const [recIdx, rec] of result?.entries()??[]) {
