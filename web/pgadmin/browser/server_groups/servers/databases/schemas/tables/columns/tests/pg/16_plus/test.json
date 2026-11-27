@@ -966,6 +966,80 @@
       "data": {
         "name": "col_1111_$%{}[]()&*^!@\"'`\\/#"
       }
+    },
+    {
+      "type": "create",
+      "name": "Create Column for a NOT VALID NOT NULL constraint",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "col_nn_nv",
+        "cltype": "integer",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": "",
+        "attprecision": "",
+        "attoptions": [],
+        "seclabels": []
+      },
+      "expected_sql_file": "create_column_nn_not_valid.sql",
+      "expected_msql_file": "create_column_nn_not_valid.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column with a NOT VALID NOT NULL constraint",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "pre_scenario_sql": "ALTER TABLE testschema.\"table_3_$%{}[]()&*^!@\"\"'`\\/#\" ADD CONSTRAINT nn_col_nv NOT NULL col_nn_nv NOT VALID;",
+      "data": {
+        "description": "Comment for alter"
+      },
+      "expected_sql_file": "alter_column_nn_not_valid.sql",
+      "expected_msql_file": "alter_column_nn_not_valid.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column to validate a NOT VALID NOT NULL constraint, as Schema Diff does",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "attnotnull": true,
+        "notnull_notvalid_conname": null,
+        "notnull_notvalid_condef": null
+      },
+      "expected_sql_file": "alter_column_nn_validated.sql",
+      "expected_msql_file": "alter_column_nn_validated.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column to a NOT VALID NOT NULL constraint, as Schema Diff does",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "notnull_notvalid_conname": "nn_col_nv",
+        "notnull_notvalid_condef": "NOT NULL col_nn_nv NOT VALID"
+      },
+      "expected_sql_file": "alter_column_nn_not_valid.sql",
+      "expected_msql_file": "alter_column_nn_to_not_valid.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with a NOT VALID NOT NULL constraint",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "col_nn_nv"
+      }
     }
   ]
 }
