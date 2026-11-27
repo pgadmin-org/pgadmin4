@@ -26,14 +26,18 @@ jest.mock('../../../pgadmin/tools/sqleditor/static/js/components/QueryToolCompon
 });
 
 // Like the real editor, render the focusable query text followed by a closed
-// dialog that stays in the DOM with visibility hidden.
+// dialog that stays in the DOM with visibility hidden, and that, like the find
+// and go to line dialogs, handles Escape with preventDefault() alone.
 jest.mock('../../../pgadmin/static/js/components/ReactCodeMirror', () => {
   const React = require('react');
   return {
     __esModule: true,
     default: ({ value }) => React.createElement(React.Fragment, null,
       React.createElement('div', { tabIndex: 0, 'data-test': 'query-text' }, value),
-      React.createElement('div', { tabIndex: 0, style: { visibility: 'hidden' } }),
+      React.createElement('div', {
+        tabIndex: 0, style: { visibility: 'hidden' }, 'data-test': 'editor-dialog',
+        onKeyDown: (e) => { if(e.key === 'Escape') e.preventDefault(); },
+      }),
     ),
   };
 });
@@ -146,6 +150,18 @@ describe('ResultSetToolbar SQL query popup', () => {
     expect(getPopup()).toBeNull();
     expect(document.activeElement).toBe(sqlBtn);
     expect(sqlBtn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('stays open when Escape closes a dialog of the editor inside it', async () => {
+    const user = userEvent.setup();
+    const { container } = renderToolbar();
+    const sqlBtn = container.querySelector('#sql-query');
+    act(() => { sqlBtn.focus(); });
+    await user.keyboard('{Enter}');
+
+    fireEvent.keyDown(getPopup().querySelector('[data-test="editor-dialog"]'), {key: 'Escape'});
+    expect(getPopup()).not.toBeNull();
+    expect(sqlBtn).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('closes on a click outside it, and the SQL button still toggles it', async () => {

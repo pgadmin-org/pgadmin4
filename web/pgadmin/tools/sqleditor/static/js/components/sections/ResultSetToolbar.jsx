@@ -111,6 +111,11 @@ function ShowDataOutputQueryPopup({query, anchorRef, onClose}) {
       e.stopPropagation();
     } else if(e.key == 'Escape') {
       e.stopPropagation();
+      /* The editor's find and go to line dialogs close themselves on Escape
+         and mark it handled without stopping it, so leave the popup open. */
+      if(e.defaultPrevented) {
+        return;
+      }
       onClose();
       anchorRef.current?.focus();
     }
