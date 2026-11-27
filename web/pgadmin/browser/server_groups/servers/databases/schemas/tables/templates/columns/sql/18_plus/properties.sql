@@ -1,8 +1,9 @@
 {# PostgreSQL 18 records NOT NULL constraints in pg_constraint, and one added
    as NOT VALID still sets attnotnull. Return the name and definition of such
    a constraint, when it is local to the table, so the SQL can recreate it
-   with ALTER TABLE ... ADD CONSTRAINT rather than an inline NOT NULL. Apart
-   from this, keep this file in step with default/properties.sql. #}
+   with ALTER TABLE ... ADD CONSTRAINT rather than an inline NOT NULL, and
+   whether there is one for the column dialog's "Don't validate?" switch.
+   Apart from this, keep this file in step with default/properties.sql. #}
 WITH INH_TABLES AS
     (SELECT
      at.attname AS name, ph.inhparent AS inheritedid, ph.inhseqno,
@@ -53,7 +54,8 @@ SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, a
 	seq.*,
 	pg_catalog.format_type(seq.seqtypid, NULL) AS seqtypname,
 	nn.conname AS notnull_notvalid_conname,
-	pg_catalog.pg_get_constraintdef(nn.oid) AS notnull_notvalid_condef
+	pg_catalog.pg_get_constraintdef(nn.oid) AS notnull_notvalid_condef,
+	(nn.oid IS NOT NULL) AS notnull_notvalid
 FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
   LEFT OUTER JOIN pg_catalog.pg_attrdef def ON adrelid=att.attrelid AND adnum=att.attnum

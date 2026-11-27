@@ -253,6 +253,63 @@ describe('ColumnSchema', ()=>{
     });
   });
 
+  describe('notnull_notvalid', ()=>{
+    const getField = (schema)=>_.find(schema.fields, (f)=>f.id=='notnull_notvalid');
+    const pg18Table = ()=>({server: {version: 180000}, schema: {}, table: {}});
+
+    it.each([
+      ['an existing table on PostgreSQL 18', pg18Table(), null, false, true],
+      ['an existing table on PostgreSQL 17', {server: {version: 170000}, schema: {}, table: {}}, null, false, false],
+      ['the Create Table dialog', {server: {version: 180000}, schema: {}}, {isNew: ()=>true}, false, false],
+      ['a table being created under a table node', pg18Table(), {isNew: ()=>true}, false, false],
+      ['the Edit Table dialog', pg18Table(), {isNew: ()=>false}, false, true],
+      ['the ERD tool', undefined, null, true, false],
+    ])('is offered for %s', (_desc, nodeInfo, top, inErd, expected)=>{
+      let schema = createSchemaObj();
+      schema.nodeInfo = nodeInfo;
+      schema.top = top;
+      schema.inErd = inErd;
+      expect(schema.canNotNullBeNotValid()).toBe(expected);
+      expect(getField(schema).visible()).toBe(expected);
+    });
+
+    it('is cleared when Not NULL is turned off or the column is an identity', ()=>{
+      let depChange = getField(createSchemaObj()).depChange;
+      expect(depChange({attnotnull: false, notnull_notvalid: true})).toEqual({notnull_notvalid: false});
+      expect(depChange({attnotnull: true, colconstype: 'i', notnull_notvalid: true})).toEqual({notnull_notvalid: false});
+      expect(depChange({attnotnull: true, colconstype: 'n', notnull_notvalid: true})).toBeUndefined();
+    });
+
+    it.each([
+      ['a new column without Not NULL', {}, {attnotnull: false}, true],
+      ['a new column with Not NULL', {}, {attnotnull: true}, false],
+      ['a new identity column', {}, {attnotnull: true, colconstype: 'i'}, true],
+      ['an existing column getting Not NULL', {attnum: 1, attnotnull: false}, {attnum: 1, attnotnull: true}, false],
+      ['an existing validated Not NULL', {attnum: 1, attnotnull: true, notnull_notvalid: false}, {attnum: 1, attnotnull: true}, true],
+      ['an existing NOT VALID Not NULL', {attnum: 1, attnotnull: true, notnull_notvalid: true}, {attnum: 1, attnotnull: true, notnull_notvalid: false}, false],
+    ])('readonly in the column dialog for %s', (_desc, origData, state, expected)=>{
+      let schema = createSchemaObj();
+      schema.nodeInfo = pg18Table();
+      initializeSchemaWithData(schema, origData);
+      expect(getField(schema).readonly(state)).toBe(expected);
+    });
+
+    it('readonly in the table dialog follows the row as it was loaded', ()=>{
+      let schema = createSchemaObj();
+      schema.nodeInfo = pg18Table();
+      schema.top = {
+        isNew: ()=>false,
+        origData: {columns: [
+          {cid: 'nn1', attnum: 1, attnotnull: true, notnull_notvalid: false},
+          {cid: 'nn2', attnum: 2, attnotnull: true, notnull_notvalid: true},
+        ]},
+      };
+      let readonly = getField(schema).readonly;
+      expect(readonly({cid: 'nn1', attnum: 1, attnotnull: true})).toBe(true);
+      expect(readonly({cid: 'nn2', attnum: 2, attnotnull: true, notnull_notvalid: false})).toBe(false);
+    });
+  });
+
   it('validate', ()=>{
     let state = {};
     let setError = jest.fn();

@@ -85,9 +85,19 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ADD CONSTRAINT {{conn|qtIdent(data.notnull_notvalid_conname)}} {{data.notnull_notvalid_condef}};
 
 {% endif %}
+{###  The column dialog's "Don't validate?" switch (PostgreSQL 18+). PostgreSQL does not accept NOT VALID on SET NOT NULL, so add an unnamed constraint and let PostgreSQL name it as SET NOT NULL would. ###}
+{% elif data.attnotnull and not o_data.attnotnull and data.notnull_notvalid %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    ADD NOT NULL {% if data.name %}{{conn|qtIdent(data.name)}}{% else %}{{conn|qtIdent(o_data.name)}}{% endif %} NOT VALID;
+
 {% elif ('attnotnull' in data and data.attnotnull != o_data.attnotnull) or (notvalid_changed and data.attnotnull) %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} {% if data.attnotnull %}SET{% else %}DROP{% endif %} NOT NULL;
+
+{###  Turning the switch off validates the existing NOT VALID constraint ###}
+{% elif 'notnull_notvalid' in data and not data.notnull_notvalid and o_data.notnull_notvalid and o_data.notnull_notvalid_conname %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    VALIDATE CONSTRAINT {{conn|qtIdent(o_data.notnull_notvalid_conname)}};
 
 {% endif %}
 {###  Only options that differ from the column as it stands: Schema Diff passes every option of a changed column, and a needless RESTART would rewind the identity sequence (#10422) ###}

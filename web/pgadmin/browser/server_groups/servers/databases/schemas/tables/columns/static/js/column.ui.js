@@ -51,6 +51,7 @@ export default class ColumnSchema extends BaseUISchema {
       inheritedfrom: undefined,
       attstattarget:undefined,
       attnotnull: false,
+      notnull_notvalid: false,
       attlen: null,
       attprecision: null,
       attidentity: 'a',
@@ -195,6 +196,30 @@ export default class ColumnSchema extends BaseUISchema {
       let allowed = edit_types || [];
       return _.filter(options, (o)=>allowed.indexOf(o.value) > -1);
     };
+  }
+
+  // A NOT VALID NOT NULL constraint (PostgreSQL 18+) is offered for a column
+  // of an existing table, whether the column is new or not. A new table is
+  // empty, so there is nothing to gain from skipping validation there.
+  canNotNullBeNotValid() {
+    if (this.inErd || !(this.getServerVersion() >= 180000)) {
+      return false;
+    }
+    if (this.top?.isNew()) {
+      return false;
+    }
+    return Boolean(this.nodeInfo && 'table' in this.nodeInfo);
+  }
+
+  // The column as it was loaded, whether this is the column dialog or a row
+  // of the table dialog's column grid.
+  getOrigData(state) {
+    if (this.top) {
+      return _.find(
+        this.top.origData['columns'], (r) => r.cid == state.cid
+      ) || {};
+    }
+    return this.origData || {};
   }
 
   get baseFields() {
@@ -555,6 +580,30 @@ export default class ColumnSchema extends BaseUISchema {
           return {attnotnull: true};
         }
       }
+    },{
+      id: 'notnull_notvalid', label: gettext('Don\'t validate?'),
+      type: 'switch', group: gettext('Constraints'),
+      mode: ['properties', 'create', 'edit'], min_version: 180000,
+      deps: ['attnotnull', 'colconstype'],
+      visible: () => obj.canNotNullBeNotValid(),
+      depChange: (state) => {
+        if (!state.attnotnull || state.colconstype == 'i') {
+          return {notnull_notvalid: false};
+        }
+      },
+      readonly: (state) => {
+        if (obj.inSchemaWithColumnCheck(state) || !state.attnotnull
+          || state.colconstype == 'i') {
+          return true;
+        }
+        if (obj.isNew(state)) {
+          return false;
+        }
+        // A validated NOT NULL constraint cannot be made NOT VALID, but a
+        // NOT VALID one can be validated, and one can be added.
+        let origData = obj.getOrigData(state);
+        return Boolean(origData.attnotnull) && !origData.notnull_notvalid;
+      },
     }, {
       id: 'colconstype',
       label: gettext('Type'),
