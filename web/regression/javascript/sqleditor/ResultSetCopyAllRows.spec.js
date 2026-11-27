@@ -93,6 +93,17 @@ describe('ResultSetToolbar Copy with all rows selected', () => {
     expect(eventBus.fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.COPY_DATA, undefined);
   });
 
+  it('fires the copy event for Markdown from the copy options menu', () => {
+    const { container, eventBus } = renderToolbar(false);
+    React.act(() => {
+      container.querySelector('button[name="menu-copyheader"]').click();
+    });
+    React.act(() => {
+      document.querySelector('[data-label="Copy as Markdown"]').click();
+    });
+    expect(eventBus.fireEvent).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.COPY_DATA, true, 'markdown');
+  });
+
   it('disables Copy with a server cursor, which cannot fetch earlier rows', () => {
     const { container } = renderToolbar(true);
     expect(copyButton(container)).toBeDisabled();
@@ -126,5 +137,22 @@ describe('ResultSetUtils.getWindowRows', () => {
     rsu.executionCount++;
     respond({ data: { data: { status: 'Success', result: [[1]] } } });
     await expect(pending).resolves.toBeNull();
+  });
+});
+
+// A Markdown copy leaves no row objects behind, as there are none before the
+// first copy, so pasting from the clipboard must not depend on them.
+describe('ResultSetUtils.processRows from the clipboard', () => {
+  const columns = [{ key: 'id', pos: 0, cell: 'number' }, { key: 'note', pos: 1, cell: 'string' }];
+
+  afterEach(() => localStorage.removeItem('copied-rows'));
+
+  it('pastes rows when no copied row objects are stored', () => {
+    localStorage.removeItem('copied-rows');
+    const rsu = new ResultSetUtils({}, {}, 1, true);
+    const rows = rsu.processRows([['1', 'one'], ['2', '']], columns, { fromClipboard: true });
+    expect(rows.map(({ id, note }) => ({ id, note }))).toEqual([
+      { id: '1', note: 'one' }, { id: '2', note: '' },
+    ]);
   });
 });

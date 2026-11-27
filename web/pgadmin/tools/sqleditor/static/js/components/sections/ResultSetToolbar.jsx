@@ -389,6 +389,9 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
   const copyData = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.COPY_DATA, checkedMenuItems['copy_with_headers']);
   };
+  const copyDataAsMarkdown = ()=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.COPY_DATA, true, 'markdown');
+  };
   const addRow = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, [[]], {isNewRow: true});
   }, []);
@@ -495,6 +498,8 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
     },
   ], queryToolCtx.mainContainerRef);
 
+  const copyDisabled = Boolean(buttonsDisabled['copy-rows']||(allRowsSelect=='ALL' && queryToolCtx.server_cursor));
+
   const clearSelection = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.CLEAR_ROWS_SELECTED);
   };
@@ -507,7 +512,7 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
             <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
               shortcut={queryToolPref.btn_add_row} disabled={!canInsert} onClick={addRow} />
             <PgIconButton title={gettext('Copy')} icon={<FileCopyRoundedIcon />}
-              shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']||(allRowsSelect=='ALL' && queryToolCtx.server_cursor)} onClick={copyData} />
+              shortcut={FIXED_PREF.copy} disabled={copyDisabled} onClick={copyData} />
             <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
               name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
             <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}
@@ -577,6 +582,7 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
         label={gettext('Copy Options Menu')}
       >
         <PgMenuItem hasCheck value="copy_with_headers" checked={checkedMenuItems['copy_with_headers']} onClick={checkMenuClick}>{gettext('Copy with headers')}</PgMenuItem>
+        <PgMenuItem disabled={copyDisabled} onClick={copyDataAsMarkdown}>{gettext('Copy as Markdown')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={pasetMenuRef}

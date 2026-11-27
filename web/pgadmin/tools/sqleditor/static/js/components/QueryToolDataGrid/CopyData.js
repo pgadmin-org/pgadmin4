@@ -55,6 +55,50 @@ export default class CopyData {
     localStorage.setItem('copied-rows', JSON.stringify(rows));
   }
 
+  /*
+   * Format rows as a GitHub-flavoured Markdown table. A table always needs a
+   * header row, so the column names are included whatever the "Copy with
+   * headers" setting is.
+   */
+  rowsToMarkdown(rows=[], columns=[]) {
+    if(columns.length === 0) {
+      return '';
+    }
+    const mdRow = (cells)=>'| ' + cells.join(' | ') + ' |';
+    return [
+      mdRow(columns.map((column)=>this.markdownCell(column.name))),
+      mdRow(columns.map(()=>'---')),
+      ...rows.map((row)=>mdRow(columns.map((column)=>this.markdownCell(row[column.key])))),
+    ].join('\n');
+  }
+
+  /*
+   * NULL becomes an empty cell, as it does for a plain copy. Backslashes are
+   * doubled and pipes escaped so that neither splits the cell or escapes the
+   * character after it. GFM renders inline markup inside a cell, so the
+   * characters that would start HTML, an entity, a link, code, emphasis or
+   * strikethrough get a backslash escape too, and the value renders as
+   * written. An underscore inside a word cannot start emphasis, so it is left
+   * alone to keep names such as user_id readable. Line breaks become <br>,
+   * added last so it is not escaped, since a table row must fit on one line.
+   */
+  markdownCell(value) {
+    if(_.isNull(value) || _.isUndefined(value)) {
+      return '';
+    }
+    let str = _.isObject(value) ? JSONBigNumber.stringify(value) : value.toString();
+    return str.replace(/[\\|`*~[\]<&]/g, '\\$&')
+      .replace(/(?<![\p{L}\p{N}])_|_(?![\p{L}\p{N}])/gu, '\\_')
+      .replace(/\r\n|\r|\n/g, '<br>');
+  }
+
+  copyRowsToMarkdown(rows=[], columns=[]) {
+    /* Markdown cannot be pasted back as rows, so leave Paste nothing to insert */
+    clipboard.copyToClipboard(this.rowsToMarkdown(rows, columns), {cache: false});
+    localStorage.removeItem('copied-with-headers');
+    localStorage.removeItem('copied-rows');
+  }
+
   escape(iStr) {
     return (this.CSVOptions.quote_char == '"') ?
       iStr.replace(/\"/g, '""') : iStr.replace(/\'/g, '\'\'');
@@ -97,6 +141,10 @@ export default class CopyData {
 
   getCopiedRows() {
     let copiedText = clipboard.getFromClipboard();
+    /* Nothing to paste before the first copy or after a Markdown copy */
+    if(copiedText === null) {
+      return [];
+    }
     let copiedRows = CSVToArray(copiedText, this.CSVOptions.field_separator, this.CSVOptions.quote_char);
 
     if(localStorage.getItem('copied-with-headers') == 'true') {
