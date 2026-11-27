@@ -1040,6 +1040,66 @@
       "data": {
         "name": "col_nn_nv"
       }
+    },
+    {
+      "type": "create",
+      "name": "Create Column with Not NULL that is not validated",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "col_nv_ui",
+        "cltype": "integer",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "notnull_notvalid": true,
+        "attlen": "",
+        "attprecision": "",
+        "attoptions": [],
+        "seclabels": []
+      },
+      "expected_sql_file": "create_column_nn_dont_validate.sql",
+      "expected_msql_file": "create_column_nn_dont_validate.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column to validate its NOT VALID Not NULL",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "notnull_notvalid": false
+      },
+      "expected_sql_file": "alter_column_nn_validate.sql",
+      "expected_msql_file": "alter_column_nn_validate.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Column to add Not NULL that is not validated",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "pre_scenario_sql": "ALTER TABLE testschema.\"table_3_$%{}[]()&*^!@\"\"'`\\/#\" ALTER COLUMN col_nv_ui DROP NOT NULL;",
+      "data": {
+        "attnotnull": true,
+        "notnull_notvalid": true
+      },
+      "expected_sql_file": "create_column_nn_dont_validate.sql",
+      "expected_msql_file": "alter_column_nn_dont_validate.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with Not NULL that is not validated",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "col_nv_ui"
+      }
     }
   ]
 }
