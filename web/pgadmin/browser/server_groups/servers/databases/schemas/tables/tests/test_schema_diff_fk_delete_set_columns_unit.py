@@ -11,7 +11,8 @@
 ON DELETE SET NULL or SET DEFAULT action (#10815).
 
 The foreign key update template cannot change the action, so a foreign key
-whose column list differs must be dropped and recreated.
+whose column list differs must be dropped and recreated. The same applies to
+a foreign key whose PERIOD (PostgreSQL 18 temporal foreign key) differs.
 """
 
 import copy
@@ -29,7 +30,7 @@ def _foreign_key(**overrides):
         confdelsetcols=['author_id'], confmatchtype=False, conkey=[1, 2],
         confkey=[1, 2], confrelid=16390, fknsp='app', fktab='posts',
         refnspoid=16385, refnsp='app', reftab='tenants', comment=None,
-        convalidated=True, conislocal=True,
+        convalidated=True, conislocal=True, conperiod=False,
         columns=[{'local_column': 'tenant_id', 'references': 16390,
                   'referenced': 'id'},
                  {'local_column': 'author_id', 'references': 16390,
@@ -45,18 +46,19 @@ class TestSchemaDiffFkDeleteSetColumnsUnit(BaseTestGenerator):
 
     scenarios = [
         ('A foreign key whose SET NULL column list differs is recreated',
-         dict(target_cols=None, recreated=True)),
+         dict(target=dict(confdelsetcols=None), recreated=True)),
         ('A foreign key whose SET NULL column list changes is recreated',
-         dict(target_cols=['tenant_id'], recreated=True)),
+         dict(target=dict(confdelsetcols=['tenant_id']), recreated=True)),
         ('A foreign key with the same SET NULL column list is unchanged',
-         dict(target_cols=['author_id'], recreated=False)),
+         dict(target=dict(), recreated=False)),
+        ('A foreign key whose PERIOD differs is recreated',
+         dict(target=dict(conperiod=True), recreated=True)),
     ]
 
     def runTest(self):
         source = {'schema': 'app', 'foreign_key': [_foreign_key()]}
         target = {'schema': 'app', 'foreign_key': [
-            _foreign_key(oid=17420, confrelid=17390,
-                         confdelsetcols=self.target_cols)]}
+            _foreign_key(oid=17420, confrelid=17390, **self.target)]}
 
         diff = SchemaDiffTableCompare.table_constraint_comp(
             copy.deepcopy(source), copy.deepcopy(target))['foreign_key']

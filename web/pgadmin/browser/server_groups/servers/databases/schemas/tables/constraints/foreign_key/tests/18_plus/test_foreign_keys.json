@@ -99,6 +99,133 @@
     },
     {
       "type": "create",
+      "name": "Create Referenced Table with a WITHOUT OVERLAPS Primary Key",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_period_ref_table",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "int4range"
+          },
+          {
+            "name": "valid_at",
+            "cltype": "daterange"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default"
+      },
+      "post_scenario_sql": "ALTER TABLE testschema.test_period_ref_table ADD CONSTRAINT test_period_ref_table_pkey PRIMARY KEY (id, valid_at WITHOUT OVERLAPS);",
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Table with a Foreign Key using PERIOD",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "test_period_table",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "int4range"
+          },
+          {
+            "name": "valid_at",
+            "cltype": "daterange"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default",
+        "foreign_key": [
+          {
+            "name": "fk_period_table",
+            "condeferrable": false,
+            "condeferred": false,
+            "confmatchtype": false,
+            "convalidated": true,
+            "conperiod": true,
+            "columns": [
+              {
+                "local_column": "id",
+                "references": "<test_period_ref_table>",
+                "referenced": "id"
+              },
+              {
+                "local_column": "valid_at",
+                "references": "<test_period_ref_table>",
+                "referenced": "valid_at"
+              }
+            ],
+            "confupdtype": "a",
+            "confdeltype": "a",
+            "autoindex": false,
+            "coveringindex": ""
+          }
+        ]
+      },
+      "expected_sql_file": "create_table_period.sql",
+      "expected_msql_file": "create_table_period_msql.sql",
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint using PERIOD",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_period",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": true,
+        "conperiod": true,
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<test_period_ref_table>",
+            "referenced": "id"
+          },
+          {
+            "local_column": "valid_at",
+            "references": "<test_period_ref_table>",
+            "referenced": "valid_at"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_period.sql",
+      "expected_msql_file": "create_foreign_key_period_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Foreign Key using PERIOD",
+      "endpoint": "NODE-foreign_key.delete_id",
+      "data": {
+        "name": "FKey_period"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Table with a Foreign Key using PERIOD",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_period_table"
+      },
+      "post_scenario_sql": "DROP TABLE testschema.test_period_ref_table;"
+    },
+    {
+      "type": "create",
       "name": "Create Second Table for Foreign Key",
       "endpoint": "NODE-table.obj",
       "sql_endpoint": "NODE-table.sql_id",

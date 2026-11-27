@@ -23,6 +23,7 @@ SELECT ct.oid,
       description as comment,
       convalidated,
       conenforced,
+      conperiod,
       conislocal
 FROM pg_catalog.pg_constraint ct
 JOIN pg_catalog.pg_class cl ON cl.oid=conrelid
