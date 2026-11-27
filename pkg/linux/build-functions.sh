@@ -213,9 +213,9 @@ _build_runtime() {
     # Get a fresh copy of electron.
 
     ELECTRON_ARCH="x64"
-    if [ "$(uname -m)" == "arm64" ]; then
-      ELECTRON_ARCH="arm64"
-    fi
+    case "$(uname -m)" in
+        aarch64|arm64) ELECTRON_ARCH="arm64" ;;
+    esac
 
     # Resolve the electron version from runtime/yarn.lock, NOT from the npm
     # registry and NOT from the range in runtime/package.json. The registry's
