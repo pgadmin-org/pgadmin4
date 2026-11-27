@@ -27,12 +27,44 @@ import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
 
-const StyledPgReactDataGrid = styled(PgReactDataGrid)(({stripedRows, theme})=>({
+/* The results grid's sizes at the default font size. */
+const BASE_FONT_SIZE = 12;
+const BASE_HEADER_LINE_HEIGHT = 16;
+const BASE_ROW_HEIGHT = 25;
+const BASE_HEADER_ROW_HEIGHT = 40;
+/* The column header's vertical padding (3px each side), its 1px bottom
+ * border and a pixel to spare, none of which scale with the font.
+ */
+const HEADER_FIXED_HEIGHT = 8;
+
+/* Scale the grid's font size, header line height and row heights by the
+ * results grid font size preference, a multiple of the default size. An
+ * empty or invalid value keeps the default sizes.
+ */
+export function getGridSizes(fontScale) {
+  let scale = Math.round(parseFloat(fontScale) * 100) / 100;
+  if(!(scale > 0)) {
+    scale = 1;
+  }
+  const headerLineHeight = BASE_HEADER_LINE_HEIGHT * scale;
+  return {
+    fontSize: BASE_FONT_SIZE * scale,
+    headerLineHeight: headerLineHeight,
+    rowHeight: Math.round(BASE_ROW_HEIGHT * scale),
+    /* The header shows two lines (column name and type), which must still
+     * fit when the font is made smaller than the default.
+     */
+    headerRowHeight: Math.max(Math.round(BASE_HEADER_ROW_HEIGHT * scale),
+      Math.ceil(2 * headerLineHeight + HEADER_FIXED_HEIGHT)),
+  };
+}
+
+const StyledPgReactDataGrid = styled(PgReactDataGrid)(({stripedRows, headerLineHeight, theme})=>({
   '& .QueryTool-columnHeader': {
     padding: '3px 6px',
     height: '100%',
     display: 'flex',
-    lineHeight: '16px',
+    lineHeight: `${headerLineHeight ?? BASE_HEADER_LINE_HEIGHT}px`,
     alignItems: 'center',
     fontWeight: 'normal',
     '& .QueryTool-columnName': {
@@ -256,13 +288,13 @@ function cellClassGetter(col, isSelected, dataChangeStore, rowKeyGetter){
   };
 }
 
-function initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength) {
+function initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength, fontSize) {
   let retColumns = [
     ...columns,
   ];
   const canvas = document.createElement('canvas');
   const canvasContext = canvas.getContext('2d');
-  canvasContext.font = '12px Roboto';
+  canvasContext.font = `${fontSize}px Roboto`;
 
   for(const col of retColumns) {
     col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy, maxColumnDataDisplayLength);
@@ -388,8 +420,10 @@ function getColumnWidth(column, rows, canvasContext, columnWidthBy, maxColumnDat
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
-  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, startRowNum, maxColumnDataDisplayLength, ...props}) {
+  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, startRowNum, maxColumnDataDisplayLength,
+  fontScale, ...props}) {
   const [readyColumns, setReadyColumns] = useState([]);
+  const gridSizes = useMemo(()=>getGridSizes(fontScale), [fontScale]);
   const [lastSelectedColumn, setLastSelectedColumn] = useState(null);
   const eventBus = useContext(QueryToolEventsContext);
   const onColumnSelected = (columnIdx, isSelected, isShiftClick)=>{
@@ -452,9 +486,9 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   };
 
   useEffect(()=>{
-    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength);
+    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength, gridSizes.fontSize);
     setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
-  }, [columns]);
+  }, [columns, gridSizes.fontSize]);
 
   useEffect(()=>{
     setReadyColumns((prevCols)=>{
@@ -468,8 +502,10 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         id="datagrid"
         columns={readyColumns}
         rows={rows}
-        headerRowHeight={40}
-        rowHeight={25}
+        style={{fontSize: `${gridSizes.fontSize}px`}}
+        headerLineHeight={gridSizes.headerLineHeight}
+        headerRowHeight={gridSizes.headerRowHeight}
+        rowHeight={gridSizes.rowHeight}
         mincolumnWidthBy={50}
         enableCellSelect={true}
         onColumnResize={handleColumnResize}
@@ -518,4 +554,5 @@ QueryToolDataGrid.propTypes = {
   columnWidthBy: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   startRowNum: PropTypes.number,
   maxColumnDataDisplayLength: PropTypes.number,
+  fontScale: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

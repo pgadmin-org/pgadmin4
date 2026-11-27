@@ -448,6 +448,22 @@ def register_query_tool_preferences(self):
                          'file.')
     )
 
+    self.results_grid_font_size = self.preference.register(
+        'Results_grid', 'results_grid_font_size',
+        gettext("Font size"), 'numeric', 1,
+        min_val=0.1,
+        max_val=10,
+        category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext(
+            'The font size to use for the cells and column headers of the '
+            'results grid; row heights scale with it. The value specified '
+            'is a multiple of the default size, in which 1 is the default. '
+            'For example, to increase the font size by 20 percent use a '
+            'value of 1.2, or to reduce by 20 percent, use a value of 0.8. '
+            'Minimum 0.1, maximum 10.'
+        )
+    )
+
     self.stripped_rows = self.preference.register(
         'Results_grid', 'striped_rows',
         gettext("Striped rows?"), 'boolean',
