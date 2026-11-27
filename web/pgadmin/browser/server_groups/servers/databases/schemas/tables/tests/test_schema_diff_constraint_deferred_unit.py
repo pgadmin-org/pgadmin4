@@ -22,6 +22,9 @@ constraint of the same kind that the source lacks.
 
 PostgreSQL 18 likewise cannot change whether an existing check constraint is
 enforced, so a check constraint whose enforced state differs is recreated.
+
+Nor can it add or remove WITHOUT OVERLAPS on an existing primary key or
+unique constraint, so one whose conperiod differs is recreated.
 """
 
 import copy
@@ -74,6 +77,13 @@ class TestSchemaDiffConstraintDeferredUnit(BaseTestGenerator):
               target_value=False, recreated=True,
               target_only=_constraint(oid=17460, name='orders_code_key',
                                       columns=[{'column': 'code'}]))),
+        ('A primary key whose WITHOUT OVERLAPS state differs is recreated',
+         dict(constraint_type='primary_key', key='conperiod',
+              source_value=True, target_value=False, recreated=True)),
+        ('A unique constraint whose WITHOUT OVERLAPS state differs is '
+         'recreated',
+         dict(constraint_type='unique_constraint', key='conperiod',
+              source_value=False, target_value=True, recreated=True)),
         ('A check constraint whose enforced state differs is recreated',
          dict(constraint_type='check_constraint', key='conenforced',
               source_value=False, target_value=True, recreated=True)),

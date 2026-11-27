@@ -131,6 +131,14 @@ Use the fields in the *Definition* tab to define the primary key constraint:
 * If enabled, move the *Deferred?* switch to the *Yes* position to specify the
   timing of the constraint is deferred to the end of the statement. The default
   is *No*.
+* Move the *Without overlaps?* switch to the *Yes* position to create a
+  temporal primary key with *WITHOUT OVERLAPS* applied to the last column in the
+  *Columns* field; that column must be a range or multirange type, and rows
+  then conflict only when their other columns are equal and their ranges
+  overlap. At least one other column is required, and the constraint uses a
+  GiST index, so columns of scalar types such as *integer* need the
+  *btree_gist* extension. The switch can only be set when the constraint is
+  created. This option is available on PostgreSQL 18 and later.
 
 .. image:: images/table_foreign_key.png
     :alt: Table dialog foreign key constrain
@@ -313,6 +321,14 @@ Use the fields in the *Definition* tab to define the unique constraint:
 * If enabled, move the *Deferred?* switch to the *Yes* position to specify the
   timing of the constraint is deferred to the end of the statement. The default
   is *No*.
+* Move the *Without overlaps?* switch to the *Yes* position to create a
+  temporal unique constraint with *WITHOUT OVERLAPS* applied to the last
+  column in the *Columns* field; that column must be a range or multirange
+  type, and rows then conflict only when their other columns are equal and
+  their ranges overlap. At least one other column is required, and the
+  constraint uses a GiST index, so columns of scalar types such as *integer*
+  need the *btree_gist* extension. The switch can only be set when the
+  constraint is created. This option is available on PostgreSQL 18 and later.
 
 .. image:: images/table_exclude.png
     :alt: Table dialog exclude constraint

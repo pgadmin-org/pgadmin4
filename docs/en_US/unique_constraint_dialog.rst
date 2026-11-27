@@ -53,6 +53,14 @@ Use the fields in the *Definition* tab to define the unique constraint:
   is *No*.
 * Move the *NULLs not distinct?* switch to the *Yes* position to treat null values as not distinct. The default is
   *No*. This option is available only on PostgreSQL 15 and above.
+* Move the *Without overlaps?* switch to the *Yes* position to create a
+  temporal unique constraint with *WITHOUT OVERLAPS* applied to the last
+  column in the *Columns* field; that column must be a range or multirange
+  type, and rows then conflict only when their other columns are equal and
+  their ranges overlap. At least one other column is required, and the
+  constraint uses a GiST index, so columns of scalar types such as *integer*
+  need the *btree_gist* extension. The switch can only be set when the
+  constraint is created. This option is available on PostgreSQL 18 and later.
 
 Click the *SQL* tab to continue.
 

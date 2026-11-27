@@ -97,6 +97,9 @@ describe('UniqueConstraintSchema', ()=>{
     expect(getFieldDepChange(schemaObj, 'condeferred')(state)).toEqual({
       condeferred: false,
     });
+    expect(getFieldDepChange(schemaObj, 'conperiod')(state)).toEqual({
+      conperiod: false,
+    });
 
     state.index = undefined;
     state.condeferrable = true;
@@ -105,6 +108,7 @@ describe('UniqueConstraintSchema', ()=>{
     expect(getFieldDepChange(schemaObj, 'fillfactor')(state)).toEqual({});
     expect(getFieldDepChange(schemaObj, 'condeferrable')(state)).toEqual({});
     expect(getFieldDepChange(schemaObj, 'condeferred')(state)).toEqual({});
+    expect(getFieldDepChange(schemaObj, 'conperiod')(state)).toEqual({});
 
     schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], null, {

@@ -130,6 +130,10 @@ ALLOWLIST = [
     # rendering one of these templates; never derived from request input.
     # ------------------------------------------------------------------
     (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
+      'templates/index_constraint/sql/18_plus/properties.sql',
+      "'{{constraint_type}}'"), 1,
+     "Single-char pg_constraint.contype code, hardcoded by handler."),
+    (('pgadmin/browser/server_groups/servers/databases/schemas/tables/'
       'templates/index_constraint/sql/15_plus/properties.sql',
       "'{{constraint_type}}'"), 1,
      "Single-char pg_constraint.contype code, hardcoded by handler."),

@@ -26,6 +26,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
       fillfactor: undefined,
       condeferrable: undefined,
       condeferred: undefined,
+      conperiod: undefined,
       columns: [],
       include: [],
       columns_updated_at: 0,
@@ -252,6 +253,25 @@ export default class PrimaryKeySchema extends BaseUISchema {
           return {condeferred: false};
         }
       }
+    },{
+      id: 'conperiod', label: gettext('Without overlaps?'),
+      type: 'switch', group: gettext('Definition'), deps: ['index'],
+      helpMessage: gettext('Apply WITHOUT OVERLAPS to the last column, which must be a range or multirange type.'),
+      readonly: function(state) {
+        return obj.isReadOnly(state);
+      },
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+      depChange: (state)=>{
+        if(_.isUndefined(state.index) || state.index == '') {
+          return {};
+        } else {
+          return {conperiod: false};
+        }
+      },
+      min_version: 180000
     }];
   }
 
