@@ -273,6 +273,18 @@ export default function SchemaDialogView({
             }
             <Box marginLeft='auto'>
               {
+                // A schema can add buttons of its own for the dialog's
+                // mode, each given the schema state when clicked.
+                schema.getFooterButtons?.(viewHelperProps.mode)?.map((btn)=>(
+                  <DefaultButton key={btn.id} data-test={btn.id}
+                    onClick={()=>btn.onClick(schemaState)}
+                    startIcon={btn.icon ? <btn.icon /> : undefined}
+                    title={btn.title} className='Dialog-buttonMargin'>
+                    {btn.label}
+                  </DefaultButton>
+                ))
+              }
+              {
                 Boolean(customCloseBtnName) &&
                   <DefaultButton data-test='Close' onClick={props.onClose}
                     startIcon={<CloseIcon />} className='Dialog-buttonMargin'>

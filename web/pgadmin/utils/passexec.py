@@ -375,8 +375,19 @@ def server_passexec_details(server):
     (see ServerModule.get_shared_server_properties), so it is looked up
     again by id: the owner's group is the one an OAuth2 server group
     claim is checked against, and only the owner can rename it or move
-    the server out of it. Any value that cannot be found is None."""
+    the server out of it. Any value that cannot be found is None.
+
+    A server that has not been saved, as when the server dialog tests a
+    connection, has no row yet, so its owner and group are the ones it
+    would be saved with."""
     from pgadmin.model import db, Server, ServerGroup, User
+    if server.id is None:
+        user = db.session.query(User.username, User.auth_source).filter(
+            User.id == server.user_id).first()
+        group = db.session.query(ServerGroup.name).filter(
+            ServerGroup.id == server.servergroup_id).first()
+        return (user[0] if user else None, user[1] if user else None,
+                group[0] if group else None)
     row = db.session.query(
         User.username, User.auth_source, ServerGroup.name
     ).select_from(Server).outerjoin(

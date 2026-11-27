@@ -131,6 +131,40 @@ def check_service_data(data):
     return None
 
 
+def prepare_connection_params(data):
+    """Return (connection_params, errormsg) for the connection_params of a
+    create payload, in the dict shape they are stored in, after checking
+    them as creating a server does. errormsg is None if they are valid."""
+    # convert_connection_parameter() is bidirectional: list->dict for
+    # save (frontend shape), dict->list for display (DB shape). Here
+    # we want the storage shape (dict). If the input is already a
+    # dict (e.g. from internal callers / tests that mimic stored
+    # form), keep it as-is; otherwise assume frontend list shape and
+    # convert.
+    raw_params = data.get('connection_params', [])
+    if isinstance(raw_params, dict):
+        connection_params = raw_params
+    else:
+        connection_params = convert_connection_parameter(raw_params)
+
+    # Refuse a key that is not an exact libpq keyword: make_conninfo()
+    # quotes values but not keys, so a key carrying its own
+    # "keyword=value" pairs would reach libpq as extra connection
+    # directions.
+    invalid_key = get_invalid_connection_param_key(connection_params)
+    if invalid_key is not None:
+        return None, gettext(
+            'Invalid connection parameter: {0}').format(invalid_key)
+
+    if 'hostaddr' in connection_params and \
+            not is_valid_ipaddress(connection_params['hostaddr']):
+        return None, gettext('Not a valid Host address')
+
+    # To check ssl configuration
+    _, connection_params = check_ssl_fields(connection_params)
+    return connection_params, None
+
+
 def prepare_passexec_data(data, is_non_owner):
     """Validate and normalise the password exec fields of a create or
     update payload. Returns (data, errormsg); data is a plain dict copy,
@@ -570,7 +604,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         ServerType.register_preferences()
 
     def get_exposed_url_endpoints(self):
-        return ['NODE-server.connect_id']
+        return ['NODE-server.connect_id', 'NODE-server.test_connection']
 
     @staticmethod
     def create_shared_server(data, gid):
@@ -718,6 +752,7 @@ class ServerNode(PGChildNodeView):
         'check_pgpass': [{'get': 'check_pgpass'}],
         'clear_saved_password': [{'put': 'clear_saved_password'}],
         'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}],
+        'test_connection': [{}, {'post': 'test_connection'}],
     })
 
     def update_connection_parameter(self, data, server, sharedserver=None):
@@ -1473,41 +1508,11 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        # convert_connection_parameter() is bidirectional: list->dict for
-        # save (frontend shape), dict->list for display (DB shape). Here
-        # we want the storage shape (dict). If the input is already a
-        # dict (e.g. from internal callers / tests that mimic stored
-        # form), keep it as-is; otherwise assume frontend list shape and
-        # convert.
-        raw_params = data.get('connection_params', [])
-        if isinstance(raw_params, dict):
-            connection_params = raw_params
-        else:
-            connection_params = convert_connection_parameter(raw_params)
-
-        # Refuse a key that is not an exact libpq keyword: make_conninfo()
-        # quotes values but not keys, so a key carrying its own
-        # "keyword=value" pairs would reach libpq as extra connection
-        # directions.
-        invalid_key = get_invalid_connection_param_key(connection_params)
-        if invalid_key is not None:
+        connection_params, params_err = prepare_connection_params(data)
+        if params_err:
             return make_json_response(
-                success=0,
-                status=400,
-                errormsg=gettext(
-                    'Invalid connection parameter: {0}').format(invalid_key)
-            )
+                success=0, status=400, errormsg=params_err)
 
-        if 'hostaddr' in connection_params and \
-                not is_valid_ipaddress(connection_params['hostaddr']):
-            return make_json_response(
-                success=0,
-                status=400,
-                errormsg=gettext('Not a valid Host address')
-            )
-
-        # To check ssl configuration
-        _, connection_params = check_ssl_fields(connection_params)
         # set the connection params again in the data
         if 'connection_params' in data:
             data['connection_params'] = connection_params
@@ -1666,6 +1671,127 @@ class ServerNode(PGChildNodeView):
                 success=0,
                 errormsg=str(e)
             )
+
+    @permissions_required(AllPermissionTypes.object_register_server)
+    @pga_login_required
+    def test_connection(self, gid):
+        """
+        Check that a connection can be made with the details entered in the
+        server dialog, before they are saved. The checks a create applies
+        are applied here too. The connection is made the way connecting a
+        saved server makes it, through a manager that is not kept (see
+        TemporaryServerManager), and is closed again straight away, so
+        nothing is saved. The post connection SQL is not run, as it may
+        change data.
+        """
+        data = request.form if request.form else json.loads(
+            request.data
+        )
+        data = dict(data)
+        for item in data:
+            if data[item] == '':
+                data[item] = None
+
+        # The server is never shared, so sharing does not apply.
+        data.pop('shared', None)
+        data.pop('shared_username', None)
+
+        data, passexec_err = prepare_passexec_data(data, False)
+        if passexec_err:
+            return make_json_response(
+                success=0, status=400, errormsg=passexec_err)
+
+        service_err = check_service_data(data)
+        if service_err:
+            return forbidden(errmsg=service_err)
+
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            raise CryptKeyMissing
+
+        gid = data.get('gid', gid)
+        if get_server_group(gid, hide_shared=True) is None:
+            return bad_request(gettext('Server group not found.'))
+
+        if not data.get('db'):
+            return make_json_response(
+                status=410, success=0,
+                errormsg=gettext(
+                    "Could not find the required parameter ({})."
+                ).format('db'))
+
+        connection_params, params_err = prepare_connection_params(data)
+        if params_err:
+            return make_json_response(
+                success=0, status=400, errormsg=params_err)
+
+        server = Server(
+            user_id=current_user.id,
+            servergroup_id=gid,
+            name=data.get('name'),
+            host=data.get('host', None),
+            port=data.get('port'),
+            maintenance_db=data.get('db', None),
+            username=data.get('username'),
+            role=data.get('role', None),
+            service=data.get('service', None),
+            use_ssh_tunnel=1 if data.get('use_ssh_tunnel', False) else 0,
+            tunnel_host=data.get('tunnel_host', None),
+            tunnel_port=data.get('tunnel_port', 22),
+            tunnel_username=data.get('tunnel_username', None),
+            tunnel_authentication=1 if data.get('tunnel_authentication',
+                                                False) else 0,
+            tunnel_identity_file=data.get('tunnel_identity_file', None),
+            tunnel_prompt_password=1 if data.get('tunnel_prompt_password',
+                                                 True) else 0,
+            tunnel_keep_alive=data.get('tunnel_keep_alive', 0),
+            passexec_cmd=data.get('passexec_cmd', None),
+            passexec_name=data.get('passexec_name', None),
+            passexec_expiration=data.get('passexec_expiration', None),
+            kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
+            connection_params=connection_params,
+            prepare_threshold=data.get('prepare_threshold', None),
+        )
+
+        password = None
+        if data.get('password'):
+            password = encrypt(data['password'], crypt_key)
+        tunnel_password = ''
+        if data.get('tunnel_password'):
+            tunnel_password = encrypt(data['tunnel_password'], crypt_key)
+
+        manager = get_driver(
+            PG_DEFAULT_DRIVER).temporary_connection_manager(server)
+        conn = manager.connection()
+        try:
+            status, errmsg = conn.connect(
+                password=password,
+                tunnel_password=tunnel_password,
+                server_types=ServerType.types()
+            )
+        except CryptKeyMissing:
+            raise
+        except Exception as e:
+            current_app.logger.exception(e)
+            status, errmsg = False, str(e)
+        finally:
+            conn._release()
+            manager.stop_ssh_tunnel()
+
+        if not status:
+            return make_json_response(
+                status=401,
+                success=0,
+                errormsg=gettext(
+                    "Unable to connect to server:\n\n{}"
+                ).format(errmsg)
+            )
+
+        return make_json_response(
+            success=1,
+            info=gettext('Connection successful.'),
+            data={'version': manager.ver}
+        )
 
     @pga_login_required
     def sql(self, gid, sid):
