@@ -80,9 +80,11 @@ class ServerTestConnectionTestCase(BaseTestGenerator):
             data=json.dumps(data), content_type='html/json')
 
         # The password is never echoed back (an empty one cannot be checked).
+        # A fixed message keeps the password out of any failure output.
         if data['password']:
-            self.assertNotIn(data['password'],
-                             response.data.decode('utf-8'))
+            self.assertFalse(
+                data['password'] in response.data.decode('utf-8'),
+                'The password was echoed back in the response.')
 
         if self.skip_if_accepted and response.status_code == 200:
             self.skipTest('The server accepted a bad password, so it does '
