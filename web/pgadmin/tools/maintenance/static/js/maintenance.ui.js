@@ -31,7 +31,7 @@ export class VacuumSchema extends BaseUISchema {
   }
   isApplicableForOnly(state) {
     return (state?.op == 'VACUUM' || state?.op == 'ANALYZE') &&
-      Boolean(this.top?.nodeInfo?.table);
+      Boolean(this.top?.nodeInfo?.table) && !this.top?.nodeInfo?.partition;
   }
 
   get baseFields() {
@@ -119,7 +119,8 @@ export class VacuumSchema extends BaseUISchema {
       min_version: 120000,
     }, {
       // ONLY skips the inheritance children or partitions of the selected
-      // table, so it is meaningless unless a table is the target.
+      // table, so it is meaningless unless a table is the target. It is
+      // hidden for a partition, as the command would then name its parent.
       id: 'only',
       deps: ['op'],
       type: 'switch',

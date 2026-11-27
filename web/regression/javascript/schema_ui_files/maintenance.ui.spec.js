@@ -66,6 +66,10 @@ describe('MaintenanceSchema', ()=>{
         schema: {label: 'public'}, mview: {label: 'mv'},
         server: {version: 180000},
       }],
+      ['a partition', {
+        schema: {label: 'public'}, table: {label: 'parent'},
+        partition: {label: 'part'}, server: {version: 180000},
+      }],
     ])('is cleared for %s', (_desc, nodeInfo)=>{
       let field = getOnlyField(nodeInfo);
       let state = {op: 'VACUUM', only: true};
