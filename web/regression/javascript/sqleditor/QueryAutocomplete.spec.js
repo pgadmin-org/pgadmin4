@@ -46,16 +46,18 @@ import {
 
 // A stand-in for the CodeMirror CompletionContext: it only has the parts that
 // the completion source uses.
-function fakeContext({explicit = false, doc = 'SEL'} = {}) {
+function fakeContext({explicit = false, doc = 'SEL', head, wordFrom} = {}) {
   const listeners = {};
+  const cursor = head ?? doc.length;
+  const from = wordFrom ?? 0;
   return {
     explicit,
     state: {
       doc: {toString: () => doc},
       sliceDoc: (from, to) => doc.slice(from, to),
-      selection: {main: {head: doc.length}},
+      selection: {main: {head: cursor}},
     },
-    matchBefore: () => ({from: 0}),
+    matchBefore: () => ({from, text: doc.slice(from, cursor)}),
     addEventListener: jest.fn((type, cb) => { listeners[type] = cb; }),
     abort: () => listeners.abort?.(),
   };
@@ -136,6 +138,43 @@ describe('Query autocomplete source', () => {
     const ctx = fakeContext({explicit: true});
     setup(apiReturning({}))(ctx, jest.fn());
     expect(ctx.addEventListener).toHaveBeenCalledWith('abort', expect.any(Function));
+  });
+
+  it('reuses the result when the cursor is at the end of the document', async () => {
+    const api = apiReturning({demo_table: {object_type: 'table'}});
+    const doc = 'SELECT dem';
+    const wordFrom = doc.indexOf('dem');
+    const head = doc.length;
+
+    const res = await setup(api)(fakeContext({doc, head, wordFrom}), jest.fn());
+    expect(api.post).toHaveBeenCalledTimes(1);
+    expect(res.validFor('dem', wordFrom)).toBe(true);
+    expect(res.validFor('demo', wordFrom)).toBe(true);
+  });
+
+  it('reuses the result when there is text after the cursor', async () => {
+    // Reproduce #10819: "SELECT  FROM demo_table;" with the cursor after
+    // "SELECT " and "dem" typed, so trailing SQL follows the word.
+    const api = apiReturning({demo_table: {object_type: 'table'}});
+    const doc = 'SELECT dem FROM demo_table;';
+    const wordFrom = doc.indexOf('dem');
+    const head = wordFrom + 'dem'.length;
+
+    const res = await setup(api)(fakeContext({doc, head, wordFrom}), jest.fn());
+    expect(api.post).toHaveBeenCalledTimes(1);
+    expect(res.validFor('dem', wordFrom)).toBe(true);
+    // Later keystrokes that extend the original word should keep the result.
+    expect(res.validFor('demo', wordFrom)).toBe(true);
+  });
+
+  it('does not reuse the result when the typed text no longer extends the original word', async () => {
+    const api = apiReturning({demo_table: {object_type: 'table'}});
+    const doc = 'SELECT dem FROM demo_table;';
+    const wordFrom = doc.indexOf('dem');
+    const head = wordFrom + 'dem'.length;
+
+    const res = await setup(api)(fakeContext({doc, head, wordFrom}), jest.fn());
+    expect(res.validFor('oth', wordFrom)).toBe(false);
   });
 });
 
