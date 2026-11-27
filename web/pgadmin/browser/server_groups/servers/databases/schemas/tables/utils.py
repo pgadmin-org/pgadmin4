@@ -1481,14 +1481,34 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 data.get('notnull_notvalid_condef') !=
                 old_data.get('notnull_notvalid_condef'))
 
+    @staticmethod
+    def _drops_pk_column_notnull(data, old_data):
+        """
+        Report whether a changed column's NOT NULL is dropped whilst the
+        column is in the table's primary key, which PostgreSQL refuses
+        until the primary key has been dropped.
+
+        :param data: New column properties
+        :param old_data: Column properties as they stand
+        :return: True when the NOT NULL has to be dropped after the
+                 constraint changes
+        """
+        indkey = old_data.get('indkey')
+        return data.get('attnotnull') is False and \
+            bool(old_data.get('attnotnull')) and indkey is not None and \
+            str(old_data.get('attnum')) in str(indkey).split(' ') and \
+            not BaseTableView._notvalid_notnull_changed(data, old_data)
+
     def _check_for_column_update(self, columns, data, column_sql, tid,
-                                 notvalid_notnull=None):
+                                 notvalid_notnull=None, pk_notnull=None):
         """
         Add the SQL for changed columns.
 
         NOT VALID NOT NULL constraints are left out of it, and each column
         that needs one is appended to notvalid_notnull as a (new, old) pair
         of properties, for get_sql() to add after the constraint changes.
+        Likewise a primary key column's DROP NOT NULL is left out, and the
+        column appended to pk_notnull.
         """
         # Here we will be needing previous properties of column
         # so that we can compare & update it
@@ -1531,9 +1551,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 # Sql for alter column
                 if c.get('inheritedfrom', None) is None and \
                         c.get('inheritedfromtable', None) is None:
+                    col_data = c
+                    if pk_notnull is not None and \
+                            self._drops_pk_column_notnull(c, old_col_data):
+                        pk_notnull.append((c, old_col_data))
+                        col_data = {k: v for k, v in c.items()
+                                    if k != 'attnotnull'}
+
                     column_sql += render_template("/".join(
                         [self.column_template_path, self._UPDATE_SQL]),
-                        data=c, o_data=old_col_data, conn=self.conn,
+                        data=col_data, o_data=old_col_data, conn=self.conn,
                         defer_notvalid_notnull=notvalid_notnull is not None
                     ).strip('\n') + self.double_newline
 
@@ -1724,8 +1751,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             sql = sql.strip('\n') + self.double_newline
 
             # Changed columns' NOT VALID NOT NULL constraints, added after
-            # the constraint changes below
+            # the constraint changes below, and primary key columns whose
+            # NOT NULL is dropped after them
             notvalid_notnull = []
+            pk_notnull = []
 
             # Parse/Format columns & create sql
             if 'columns' in data:
@@ -1742,7 +1771,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
                 # If column(s) is/are changed
                 column_sql = self._check_for_column_update(
-                    columns, data, column_sql, tid, notvalid_notnull)
+                    columns, data, column_sql, tid, notvalid_notnull,
+                    pk_notnull)
 
                 # If column(s) is/are added
                 column_sql = self._check_for_column_add(columns, data,
@@ -1766,6 +1796,16 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             sql = self._check_for_constraints(index_constraint_sql, data, did,
                                               tid, sql)
+
+            # The primary key has gone by now, so the NOT NULL can go too
+            for c, old_col_data in pk_notnull:
+                sql += '\n\n' + render_template("/".join(
+                    [self.column_template_path, self._UPDATE_SQL]),
+                    data={'schema': c['schema'], 'table': c['table'],
+                          'attnotnull': False},
+                    o_data=dict(old_col_data,
+                                name=c.get('name') or old_col_data['name']),
+                    conn=self.conn).strip('\n')
 
             if notvalid_notnull:
                 sql += '\n' + render_template("/".join(
