@@ -85,6 +85,16 @@ class ColumnGetNodesTestCase(BaseTestGenerator):
 
             # Assert response
             utils.assert_status_code(self, response)
+
+            # NOT NULL columns get their own icon in the browser tree; the
+            # table's "id" column is NOT NULL and the added column is not.
+            nodes = response.json['data']
+            if not self.is_list:
+                nodes = [nodes]
+            icons = {node['label']: node['icon'] for node in nodes}
+            self.assertEqual(icons[self.column_name], 'icon-column')
+            if self.is_list:
+                self.assertEqual(icons['id'], 'icon-column-not-null')
         else:
             if 'column_id' in self.data:
                 self.column_id = self.data['column_id']

@@ -46,16 +46,31 @@ const FormatterPropTypes = {
   row: PropTypes.object,
   column: PropTypes.object,
 };
+
+// Work out the text shown in a cell. This only affects the display: the row
+// data that is copied, edited and saved is never changed.
+export function getTextCellDisplayValue(value, maxColumnDataDisplayLength) {
+  if(_.isNull(value) || _.isUndefined(value)) {
+    return value;
+  }
+  value = value.toString();
+  // If the length of the value is very large then we do not render the entire value and truncate it.
+  if (value.length > maxColumnDataDisplayLength) {
+    return `${value.substring(0, maxColumnDataDisplayLength).replace(/\n/g,' ')}...`;
+  }
+  // The cell is one line high, so anything after a line break would be
+  // hidden without any sign that it is there. Show the first line followed
+  // by an ellipsis instead, as is done for text that is too wide.
+  const lineBreak = value.search(/[\r\n]/);
+  if (lineBreak !== -1) {
+    return `${value.substring(0, lineBreak)}\u2026`;
+  }
+  return value;
+}
+
 export function TextFormatter({row, column}) {
   const maxColumnDataDisplayLength = usePreferences().getPreferences('sqleditor', 'max_column_data_display_length').value;
-  let value = row[column.key];
-  if(!_.isNull(value) && !_.isUndefined(value)) {
-    value = value.toString();
-    // If the length of the value is very large then we do not render the entire value and truncate it.
-    if (value.length > maxColumnDataDisplayLength) {
-      value = `${value.substring(0, maxColumnDataDisplayLength).replace(/\n/g,' ')}...`;
-    }
-  }
+  const value = getTextCellDisplayValue(row[column.key], maxColumnDataDisplayLength);
   return (
     <NullAndDefaultFormatter value={value} column={column}>
       <>{value}</>

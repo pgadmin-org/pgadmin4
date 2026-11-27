@@ -353,7 +353,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                                    'condeferred',
                                                    'columns',
                                                    'indnullsnotdistinct'],
-                             'check_constraint': ['consrc'],
+                             # PostgreSQL 18 cannot alter whether a check
+                             # constraint is enforced.
+                             'check_constraint': ['consrc', 'conenforced'],
                              'exclude_constraint': ['amname',
                                                     'indconstraint',
                                                     'columns'],

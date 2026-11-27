@@ -16,6 +16,7 @@ import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import Loader from 'sources/components/Loader';
+import usePreferences from '../../../../preferences/static/js/store';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import { PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import { FormFooterMessage, InputSelect, InputText, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
@@ -278,7 +279,11 @@ function getComparator(sortColumn) {
   };
 }
 export default function SearchObjects({nodeData}) {
-  const [type, setType] = React.useState('all');
+  const [type, setType] = React.useState(()=>(
+    usePreferences.getState().getPreferencesForModule('search_objects').default_object_type || 'all'
+  ));
+  /* Types the server has confirmed it supports, filled in once loaded */
+  const supportedTypes = React.useRef(['all']);
   const [loaderText, setLoaderText] = useState('');
   const [search, setSearch] = useState('');
   const [footerText, setFooterText] = useState('0 matches found.');
@@ -336,8 +341,10 @@ export default function SearchObjects({nodeData}) {
     setLoaderText(gettext('Searching....'));
     setErrorMsg('');
 
-    let searchType = type;
-    if(type === 'constraints') {
+    /* Until the server confirms the type (the default from the preferences
+     * may not be supported), search all types. */
+    let searchType = supportedTypes.current.includes(type) ? type : 'all';
+    if(searchType === 'constraints') {
       searchType = ['constraints', 'check_constraint', 'foreign_key', 'primary_key', 'unique_constraint', 'exclusion_constraint'];
     }
 
@@ -384,6 +391,12 @@ export default function SearchObjects({nodeData}) {
             typesRes.forEach((element) => {
               typeOpt.push({label:gettext(element[1]), value:element[0]});
             });
+            supportedTypes.current = typeOpt.map((opt)=>opt.value);
+            /* The default type from the preferences may not be supported
+             * by this server, so fall back to all types. */
+            if(!supportedTypes.current.includes(type)) {
+              setType('all');
+            }
 
             resolve(typeOpt);
           })

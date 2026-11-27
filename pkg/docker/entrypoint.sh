@@ -347,8 +347,18 @@ else
     BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-80}"
 fi
 
+# Request header limits are passed only when set, leaving Gunicorn's own
+# defaults (and anything given in GUNICORN_CMD_ARGS) in effect otherwise.
+GUNICORN_OPTIONAL_ARGS=()
+if [[ -n $GUNICORN_LIMIT_REQUEST_FIELDS ]]; then
+    GUNICORN_OPTIONAL_ARGS+=(--limit-request-fields "$GUNICORN_LIMIT_REQUEST_FIELDS")
+fi
+if [[ -n $GUNICORN_LIMIT_REQUEST_FIELD_SIZE ]]; then
+    GUNICORN_OPTIONAL_ARGS+=(--limit-request-field_size "$GUNICORN_LIMIT_REQUEST_FIELD_SIZE")
+fi
+
 if [[ -n $PGADMIN_ENABLE_TLS ]]; then
-    exec $SU_EXEC "$PYTHON_BIN" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "$TIMEOUT" --bind "$BIND_ADDRESS" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC "$PYTHON_BIN" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" "${GUNICORN_OPTIONAL_ARGS[@]}" --timeout "$TIMEOUT" --bind "$BIND_ADDRESS" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
 else
-    exec $SU_EXEC "$PYTHON_BIN" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "$TIMEOUT" --bind "$BIND_ADDRESS" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC "$PYTHON_BIN" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" "${GUNICORN_OPTIONAL_ARGS[@]}" --timeout "$TIMEOUT" --bind "$BIND_ADDRESS" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
 fi

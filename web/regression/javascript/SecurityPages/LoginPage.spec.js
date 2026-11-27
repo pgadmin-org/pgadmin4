@@ -43,6 +43,29 @@ describe('LoginPage', ()=>{
     expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/login/url');
     expect(ctrl.container.querySelector('input[name="email"]')).not.toBeNull();
     expect(ctrl.container.querySelector('input[name="password"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('a[href="/forgot/url"]')).not.toBeNull();
+  });
+
+  it('internal without password recovery', ()=>{
+    const ctrl = ctrlMount({
+      userLanguage: 'en',
+      langOptions: [{
+        label: 'English',
+        value: 'en',
+      }],
+      forgotPassUrl: null,
+      csrfToken: 'some-token',
+      loginUrl: '/login/url',
+      authSources: ['internal'],
+      authSourcesEnum: {
+        OAUTH2: 'oauth2',
+        KERBEROS: 'kerberos'
+      },
+      oauth2Config: [],
+      loginBanner: ''
+    });
+    expect(ctrl.container.querySelector('input[name="password"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('a')).toBeNull();
   });
 
   it('oauth2', ()=>{

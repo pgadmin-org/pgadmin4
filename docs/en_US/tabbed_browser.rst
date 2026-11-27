@@ -120,6 +120,12 @@ some of the statistics that are available:
    | *Size*                     | displays the size (in megabytes) of the selected database.                                                 |
    +----------------------------+------------------------------------------------------------------------------------------------------------+
 
+When a server is selected, the *Statistics* tab lists the sessions connected to
+it and any streaming replication connections. If the connected role can
+execute *pg_ls_waldir()* (superusers and members of *pg_monitor* can by
+default), a *WAL directory* row also shows the total size of the server's
+write-ahead log directory and the number of files in it.
+
 .. image:: images/main_dependencies.png
     :alt: Dependencies panel
     :align: center

@@ -9,6 +9,9 @@
 
 
 import _ from 'lodash';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { screen, waitFor } from '@testing-library/react';
 import pgAdmin from 'sources/pgadmin';
 import current_user from 'pgadmin.user_management.current_user';
 import ServerSchema, { passexecForServerCopy, sharingForServerCopy, starfleetConnectionParams } from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
@@ -262,6 +265,74 @@ describe('ServerSchema', ()=>{
       let d = {name: 'x', shared: false, shared_username: 'someone'};
       sharingForServerCopy(d, {is_admin: false});
       expect(d).toEqual({name: 'x', shared: false, shared_username: 'someone'});
+    });
+  });
+
+  describe('Test Connection', ()=>{
+    const url = '/browser/server/test_connection/1/';
+    let networkMock, origNotifier;
+
+    const createSchema = ()=>new ServerSchema([{label: 'Servers', value: 1}], 0, {
+      gid: 1, name: 'test', host: 'localhost', username: 'postgres',
+    });
+
+    beforeEach(()=>{
+      networkMock = new MockAdapter(axios);
+      origNotifier = pgAdmin.Browser.notifier;
+      pgAdmin.Browser.notifier = {
+        success: jest.fn(), error: jest.fn(), pgNotifier: jest.fn(),
+      };
+    });
+
+    afterEach(()=>{
+      networkMock.restore();
+      pgAdmin.Browser.notifier = origNotifier;
+    });
+
+    it('is only offered when creating a server', ()=>{
+      const schema = createSchema();
+      expect(schema.getFooterButtons('create').map((b)=>b.id)).toEqual(['test-connection']);
+      expect(schema.getFooterButtons('edit')).toEqual([]);
+      expect(schema.getFooterButtons('properties')).toEqual([]);
+    });
+
+    it('posts the dialog data and shows the result', async ()=>{
+      networkMock.onPost(url).reply(200, {success: 1, info: 'Connection successful.'});
+      const {user} = await getCreateView(createSchema());
+
+      await user.click(screen.getByRole('button', {name: 'Test Connection'}));
+
+      await waitFor(()=>{
+        expect(pgAdmin.Browser.notifier.success).toHaveBeenCalledWith('Connection successful.');
+      });
+      expect(networkMock.history.post.length).toBe(1);
+      const sent = JSON.parse(networkMock.history.post[0].data);
+      expect(sent.host).toBe('localhost');
+      expect(sent.username).toBe('postgres');
+      expect(sent.gid).toBe(1);
+    });
+
+    it('does not test a connection whilst the dialog has an error', async ()=>{
+      const schema = new ServerSchema([{label: 'Servers', value: 1}], 0, {gid: 1});
+      const {user} = await getCreateView(schema);
+
+      await user.click(screen.getByRole('button', {name: 'Test Connection'}));
+
+      expect(pgAdmin.Browser.notifier.error).toHaveBeenCalled();
+      expect(networkMock.history.post.length).toBe(0);
+    });
+
+    it('reports a failed connection', async ()=>{
+      networkMock.onPost(url).reply(401, {success: 0, errormsg: 'Unable to connect to server'});
+      const {user} = await getCreateView(createSchema());
+
+      await user.click(screen.getByRole('button', {name: 'Test Connection'}));
+
+      await waitFor(()=>{
+        expect(pgAdmin.Browser.notifier.pgNotifier).toHaveBeenCalled();
+      });
+      expect(pgAdmin.Browser.notifier.pgNotifier.mock.calls[0][0]).toBe('error');
+      expect(pgAdmin.Browser.notifier.success).not.toHaveBeenCalled();
     });
   });
 });

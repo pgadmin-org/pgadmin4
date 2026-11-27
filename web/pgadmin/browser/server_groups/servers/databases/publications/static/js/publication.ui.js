@@ -37,6 +37,18 @@ export class DefaultWithSchema extends BaseUISchema {
       id: 'publish_via_partition_root', label: gettext('Publish via root?'),
       type: 'switch', group: gettext('With'),
       min_version: 130000,
+    },{
+      id: 'publish_generated_columns', label: gettext('Publish generated columns'),
+      type: 'select', group: gettext('With'),
+      mode: ['create','edit', 'properties'],
+      options: [
+        {label: gettext('None'), value: 'none'},
+        {label: gettext('Stored'), value: 'stored'},
+      ],
+      controlProps: { allowClear: false },
+      min_version: 180000,
+      helpMessage: gettext('Specifies whether the stored generated columns present in the tables associated with the publication should be replicated.'),
+      helpMessageMode: ['edit', 'create'],
     },
     ];
   }
@@ -171,6 +183,7 @@ export default class PublicationSchema extends BaseUISchema {
       evnt_truncate:true,
       only_table: undefined,
       publish_via_partition_root: false,
+      publish_generated_columns: 'none',
       ...initValues,
     });
 

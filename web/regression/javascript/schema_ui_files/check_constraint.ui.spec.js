@@ -86,6 +86,23 @@ describe('CheckConstraintSchema', ()=>{
     schemaObj.top = null;
   });
 
+  it('a check constraint that is not enforced is not validated', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='convalidated');
+
+    expect(field.depChange({conenforced: false, convalidated: false})).toEqual({
+      convalidated: true,
+    });
+    expect(field.depChange({conenforced: true})).toBeUndefined();
+    expect(field.readonly({conenforced: false})).toBe(true);
+  });
+
+  it('the enforced switch is read-only for an existing check constraint', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='conenforced');
+
+    expect(field.readonly.call(schemaObj, {})).toBe(false);
+    expect(field.readonly.call(schemaObj, {oid: 1234})).toBe(true);
+  });
+
   it('validate', ()=>{
     expect(schemaObj.validate()).toBe(false);
   });

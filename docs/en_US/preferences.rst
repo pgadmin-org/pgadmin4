@@ -291,7 +291,8 @@ preferences for the graphs on the *Dashboard* tab:
   process modes samples displayed in graphs.
 
 * Use the *Session statistics refresh rate* field to specify the number of
-  seconds between session statistic samples displayed in graphs.
+  seconds between session statistic samples displayed in graphs, and between
+  updates of the *State* tab when its *Auto refresh* checkbox is selected.
 
 * Use the *Swap memory usage statistics refresh rate* field to specify the number of
   seconds between swap memory usage statistics samples displayed in graphs.
@@ -417,7 +418,11 @@ Use the fields on the *Options* panel to manage editor preferences.
     :align: center
 
 Use the fields on the *SQL formatting* panel to specify your preferences for
-reformatting of SQL.
+reformatting of SQL. By default, formatting rewrites the layout of the SQL: it
+places each clause and each item of a list on its own line, and indents nested
+expressions, as well as changing the case of words. There is no option to keep
+short clauses on a single line. The contents of dollar-quoted strings, such as
+function bodies, are left as they are.
 
 * Use the *Data type case* option to specify whether to change data types
   into upper, lower, or preserve case.
@@ -426,7 +431,7 @@ reformatting of SQL.
 * Use the *Function case* option to specify whether to change function
   names into upper, lower, or preserve case.
 * Use the *Identifier case* option to specify whether to change identifiers
-  (object names) into upper, lower, or capitalized case.
+  (object names) into upper, lower, or preserve case.
 * Use the *Keyword case* option to specify whether to change keywords into
   upper, lower, or preserve case.
 * Use *Lines between queries* to specify how many empty lines to leave
@@ -435,6 +440,12 @@ reformatting of SQL.
   after logical operators (AND, OR, XOR).
 * Use *New line before semicolon?* to specify whether to place query
   separator (;) on a separate line.
+* When the *Preserve layout?* switch is set to *True*, formatting only changes
+  the case of keywords, identifiers, functions and data types, and leaves the
+  line breaks and indentation of the SQL as they are. The *Expression width*,
+  *Lines between queries*, *Logical operator new line*, *New line before
+  semicolon?* and *Spaces around operators?* options have no effect on
+  formatting whilst it is set.
 * Use the *Spaces around operators?* option to specify whether or not to include
   spaces on either side of operators.
 * Use the *Tab size* option to specify the number of spaces per tab or indent.
@@ -766,6 +777,10 @@ preferences for copied data.
 * Use *Data result rows per page* to specify the number of records to fetch in
   one batch. Changing this value will override DATA_RESULT_ROWS_PER_PAGE setting
   from config file.
+* Use the *Font size* field to specify the font size used for the cells and
+  column headers of the results grid; the row heights scale to match. The value
+  is a multiple of the default size, so 1 keeps the default, 1.2 increases it
+  by 20 percent and 0.8 reduces it by 20 percent.
 * Use the *Max column data display length* to specify the maximum number of
   characters to be visible in the data output cell. If the data is larger 
   than this value, it will be truncated.
@@ -778,6 +793,10 @@ preferences for copied data.
   character for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields
   require quoting; select *All*, *None*, or *Strings*.
+* When the *Quote single cell copies?* switch is set to true, copying a single
+  cell quotes the value according to the *Result copy quoting* and *Result copy
+  quote character* settings, in the same way as copying multiple cells. When
+  set to false (the default), a single cell is copied without quotes.
 * When the *Copy with headers?* switch is set to true, the column headers are
   included by default when copying data from the results grid. This can still
   be toggled per-copy from the results grid copy options menu.
@@ -809,6 +828,18 @@ Use the *Ignore Tablespace* switch to ignores the tablespace while comparing the
 
 Use the *Ignore Whitespace* switch to ignores the whitespace while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
+
+
+The Search objects Node
+***********************
+
+Expand the *Search objects* node to specify your preferences for the
+:ref:`Search Objects <search_objects>` dialog.
+
+Use the *Default object type* drop-down listbox to choose the object type that
+is selected when the dialog is opened; the default is *All types*. If the
+database server does not support the chosen type, *All types* is selected
+instead.
 
 
 The Storage Node

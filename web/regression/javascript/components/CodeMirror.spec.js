@@ -12,7 +12,7 @@ import { withTheme } from '../fake_theme';
 
 import pgWindow from 'sources/window';
 import CodeMirror from 'sources/components/ReactCodeMirror';
-import FindDialog from 'sources/components/ReactCodeMirror/components/FindDialog';
+import FindDialog, { findMatchKeyBinding } from 'sources/components/ReactCodeMirror/components/FindDialog';
 import CustomEditorView from 'sources/components/ReactCodeMirror/CustomEditorView';
 import fakePgAdmin from '../fake_pgadmin';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -29,6 +29,10 @@ jest.mock('@codemirror/search', () => ({
   openSearchPanel: jest.fn(),
   closeSearchPanel: jest.fn(),
   replaceNext: jest.fn(),
+  findNext: jest.fn(),
+  findPrevious: jest.fn(),
+  searchPanelOpen: jest.fn(),
+  getSearchQuery: jest.fn(),
 }));
 
 describe('CodeMirror', ()=>{
@@ -146,6 +150,35 @@ describe('CodeMirror', ()=>{
       fireEvent.click(btn);
     });
 
+    it.each([
+      [false, 'findNext'],
+      [true, 'findPrevious'],
+    ])('F3 with shift %s calls %s', (shiftKey, fn)=>{
+      ctrlMount({});
+      CMSearch.findNext.mockClear();
+      CMSearch.findPrevious.mockClear();
+
+      fireEvent.keyDown(ctrl.container.querySelector('input'), {
+        key: 'F3', shiftKey,
+      });
+
+      expect(CMSearch[fn]).toHaveBeenCalledWith(editor);
+      expect(CMSearch[fn == 'findNext' ? 'findPrevious' : 'findNext']).not.toHaveBeenCalled();
+    });
+
+    it.each(['ctrlKey', 'altKey', 'metaKey'])('F3 with %s is left alone', (modifier)=>{
+      ctrlMount({});
+      CMSearch.findNext.mockClear();
+      CMSearch.findPrevious.mockClear();
+
+      fireEvent.keyDown(ctrl.container.querySelector('input'), {
+        key: 'F3', [modifier]: true,
+      });
+
+      expect(CMSearch.findNext).not.toHaveBeenCalled();
+      expect(CMSearch.findPrevious).not.toHaveBeenCalled();
+    });
+
     it('replace', async ()=>{
       ctrlMount({replace: true});
       CMSearch.SearchQuery.mockClear();
@@ -166,6 +199,49 @@ describe('CodeMirror', ()=>{
       }));
 
       expect(CMSearch.replaceNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('findMatchKeyBinding', ()=>{
+    const view = {state: {}};
+    let openFind, binding;
+
+    beforeEach(()=>{
+      openFind = jest.fn();
+      binding = findMatchKeyBinding(openFind);
+      CMSearch.findNext.mockClear();
+      CMSearch.findPrevious.mockClear();
+    });
+
+    it('is bound to F3 and Shift+F3', ()=>{
+      expect(binding.key).toBe('F3');
+      expect(binding.preventDefault).toBe(true);
+    });
+
+    it.each([
+      ['run', 'findNext'],
+      ['shift', 'findPrevious'],
+    ])('%s steps with %s when the dialog has a query', (cmd, fn)=>{
+      CMSearch.searchPanelOpen.mockReturnValue(true);
+      CMSearch.getSearchQuery.mockReturnValue({valid: true});
+
+      expect(binding[cmd](view)).toBe(true);
+      expect(CMSearch[fn]).toHaveBeenCalledWith(view);
+      expect(openFind).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['closed', false, true],
+      ['open with no query', true, false],
+    ])('opens the dialog when it is %s', (_desc, open, valid)=>{
+      CMSearch.searchPanelOpen.mockReturnValue(open);
+      CMSearch.getSearchQuery.mockReturnValue({valid});
+
+      expect(binding.run(view)).toBe(true);
+      expect(binding.shift(view)).toBe(true);
+      expect(openFind).toHaveBeenCalledTimes(2);
+      expect(CMSearch.findNext).not.toHaveBeenCalled();
+      expect(CMSearch.findPrevious).not.toHaveBeenCalled();
     });
   });
 });

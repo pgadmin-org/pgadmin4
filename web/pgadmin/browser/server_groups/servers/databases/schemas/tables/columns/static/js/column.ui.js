@@ -204,7 +204,7 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'name', label: gettext('Name'), cell: 'text',
       type: 'text', readonly: obj.inSchemaWithColumnCheck,
       editable: this.editableCheckForTable, noEmpty: true,
-      width: 115,
+      width: 115, controlProps: { trimOnBlur: true },
     },{
       // Need to show this field only when creating new table
       // [in SubNode control]

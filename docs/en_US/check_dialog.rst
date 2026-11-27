@@ -39,6 +39,12 @@ Use the fields in the *Definition* tab to define the check constraint:
 * Move the *Don't validate?* switch to the *No* position to skip validation of
   existing data; the constraint may not hold for all rows in the table. The
   default is *Yes*.
+* Move the *Enforced?* switch to the *No* position to create the check
+  constraint as *NOT ENFORCED*; PostgreSQL records the constraint but does not
+  check it against new or existing rows, and it is never validated. The
+  default is *Yes*. PostgreSQL cannot change whether an existing check
+  constraint is enforced, so the switch can only be set when the constraint
+  is created. This option is available on PostgreSQL 18 and later.
 
 Click the *SQL* tab to continue.
 

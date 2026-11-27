@@ -52,6 +52,11 @@ to launch a password recovery utility.
 If you have forgotten the email associated with your account, please contact
 your administrator.
 
+Password recovery sends an email, so it is available only when pgAdmin has a
+mail server to use. If the administrator has turned email off by setting
+``MAIL_SERVER`` to an empty string or ``None``, the *Forgotten your password?*
+link is not shown; ask your administrator to set a new password instead.
+
 Password recovery works only for accounts using the ``INTERNAL``
 authentication source, which are the only accounts whose password pgAdmin
 holds. Recovery looks up the email address you enter and acts on the ``INTERNAL``

@@ -44,6 +44,14 @@ Use the fields in the *General* tab to specify import and export preferences:
   used in Import only when ON_ERROR option is set to ignore. This option is
   available from PG/EPAS version 17 and above.
 
+* Use the *Reject Limit* field to specify the maximum number of errors
+  tolerated whilst converting a column's input value into its data type. If
+  the input causes more errors than this, the import fails, even though
+  *On Error* is set to ignore. Leave it empty to skip every row with an error.
+  The value must be a positive integer. This option is used in Import only
+  when *On Error* is set to ignore, and is available from PG/EPAS version 18
+  and above.
+
 .. image:: images/import_export_options.png
     :alt: Import Export data dialog options tab
     :align: center

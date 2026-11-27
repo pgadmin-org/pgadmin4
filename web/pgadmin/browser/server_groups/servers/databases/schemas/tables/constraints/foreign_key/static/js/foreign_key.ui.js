@@ -157,6 +157,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       condeferred: undefined,
       confmatchtype: false,
       convalidated: undefined,
+      conenforced: true,
       columns: undefined,
       confupdtype: 'a',
       confdeltype: 'a',
@@ -192,6 +193,16 @@ export default class ForeignKeySchema extends BaseUISchema {
       return !_.isUndefined(state.oid);
     }
     return !this.isNew(state);
+  }
+
+  getOrigData(state) {
+    if(this.inTable && this.top) {
+      return _.find(
+        this.top.origData['foreign_key'],
+        (r) => r.cid == state.cid
+      ) || {};
+    }
+    return this.origData || {};
   }
 
   get baseFields() {
@@ -242,22 +253,37 @@ export default class ForeignKeySchema extends BaseUISchema {
         {label: 'SIMPLE', value: false},
       ], readonly: obj.isReadonly,
     },{
+      id: 'conenforced', label: gettext('Enforced?'),
+      type: 'switch', group: gettext('Definition'), min_version: 180000,
+    },{
       id: 'convalidated', label: gettext('Validated?'),
       type: 'switch', group: gettext('Definition'),
+      deps: ['conenforced'],
       readonly: (state)=>{
+        // A NOT ENFORCED foreign key cannot be validated.
+        if(state.conenforced === false) {
+          return true;
+        }
         if(!obj.isNew(state)) {
-          let origData = {};
-          if(obj.inTable && obj.top) {
-            origData = _.find(
-              obj.top.origData['foreign_key'],
-              (r) => r.cid == state.cid
-            );
-          } else {
-            origData = obj.origData;
-          }
-          return origData.convalidated;
+          let origData = obj.getOrigData(state);
+          // Enforcing an existing foreign key also validates it.
+          return origData.convalidated || origData.conenforced === false;
         }
         return false;
+      },
+      depChange: (state)=>{
+        if(state.conenforced === false) {
+          return {convalidated: false};
+        }
+        if(!obj.isNew(state)) {
+          let origData = obj.getOrigData(state);
+          // Switching enforcement back restores the original validation,
+          // and enforcing a foreign key that was not enforced validates it.
+          return {
+            convalidated: origData.conenforced === false ?
+              true : origData.convalidated,
+          };
+        }
       },
     },{
       id: 'autoindex', label: gettext('Auto FK index?'),

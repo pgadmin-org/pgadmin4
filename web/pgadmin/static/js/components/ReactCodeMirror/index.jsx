@@ -13,7 +13,6 @@ import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
 import { startCompletion } from '@codemirror/autocomplete';
-import { format } from 'sql-formatter';
 
 import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
@@ -22,10 +21,11 @@ import { useDelayedCaller } from '../../custom_hooks';
 
 import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
-import FindDialog from './components/FindDialog';
+import FindDialog, { findMatchKeyBinding } from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
 import usePreferences from '../../../../preferences/static/js/store';
 import { parseKeyEventValue, parseShortcutValue } from '../../utils';
+import formatSQLText from './formatSQL';
 
 const Root = styled('div')(() => ({
   position: 'relative',
@@ -73,29 +73,11 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
 
   const formatSQL = (view)=>{
     let selection = true, sql = view.getSelection();
-    /* New library does not support capitalize casing
-      so if a user has set capitalize casing we will
-      use preserve casing which is default for the library.
-    */
-    let formatPrefs = {
-      language: 'postgresql',
-      keywordCase: editorPrefs.keyword_case === 'capitalize' ? 'preserve' : editorPrefs.keyword_case,
-      identifierCase: editorPrefs.identifier_case === 'capitalize' ? 'preserve' : editorPrefs.identifier_case,
-      dataTypeCase: editorPrefs.data_type_case,
-      functionCase: editorPrefs.function_case,
-      logicalOperatorNewline: editorPrefs.logical_operator_new_line,
-      expressionWidth: editorPrefs.expression_width,
-      linesBetweenQueries: editorPrefs.lines_between_queries,
-      tabWidth: editorPrefs.tab_size,
-      useTabs: !editorPrefs.use_spaces,
-      denseOperators: !editorPrefs.spaces_around_operators,
-      newlineBeforeSemicolon: editorPrefs.new_line_before_semicolon
-    };
     if(sql == '') {
       sql = view.getValue();
       selection = false;
     }
-    let formattedSql = format(sql,formatPrefs);
+    let formattedSql = formatSQLText(sql, editorPrefs);
     if(selection) {
       view.replaceSelection(formattedSql);
     } else {
@@ -141,7 +123,14 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
         return false;
       }
     },
-    ...customKeyMap
+    ...customKeyMap,
+    // After customKeyMap so that a tool shortcut assigned to F3 wins.
+    findMatchKeyBinding(() => {
+      setTimeout(()=>{
+        // Keep the dialog in replace mode if it is already showing.
+        setShowFind(prevVal => [true, prevVal[0] && prevVal[1], !prevVal[2]]);
+      }, 0);
+    }),
   ], [customKeyMap]);
 
   const closeFind = () => {

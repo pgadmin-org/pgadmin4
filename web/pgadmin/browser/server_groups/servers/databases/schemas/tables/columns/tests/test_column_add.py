@@ -84,6 +84,7 @@ class ColumnAddTestCase(BaseTestGenerator):
 
             # Assert response
             utils.assert_status_code(self, response)
+            columns_utils.assert_node_icon(self, response)
 
             # Verify in backend
             self.assertIsNotNone(columns_utils.verify_column

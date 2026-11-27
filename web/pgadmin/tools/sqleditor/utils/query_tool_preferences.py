@@ -377,9 +377,11 @@ def register_query_tool_preferences(self):
 
     self.results_grid_quote_char = self.preference.register(
         'Results_grid', 'results_grid_quote_char',
-        gettext("Result copy quote character. Not applied when copying "
-                "a single cell."), 'options', '"',
+        gettext("Result copy quote character"), 'options', '"',
         category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('The quote character used when copying data. It is '
+                         'not applied when copying a single cell unless '
+                         'Quote single cell copies? is set to True.'),
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],
         control_props={
@@ -400,6 +402,17 @@ def register_query_tool_preferences(self):
             'allowClear': False,
             'tags': False
         }
+    )
+
+    self.results_grid_quote_single_cell = self.preference.register(
+        'Results_grid', 'results_grid_quote_single_cell',
+        gettext("Quote single cell copies?"), 'boolean',
+        False, category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('If set to True, copying a single cell quotes the '
+                         'value according to the Result copy quoting and '
+                         'Result copy quote character settings, as when '
+                         'copying multiple cells. If set to False, a single '
+                         'cell is copied without quotes.')
     )
 
     self.copy_column_headers = self.preference.register(
@@ -446,6 +459,22 @@ def register_query_tool_preferences(self):
                          'batch. Changing this value will override the '
                          'DATA_RESULT_ROWS_PER_PAGE setting from the config '
                          'file.')
+    )
+
+    self.results_grid_font_size = self.preference.register(
+        'Results_grid', 'results_grid_font_size',
+        gettext("Font size"), 'numeric', 1,
+        min_val=0.1,
+        max_val=10,
+        category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext(
+            'The font size to use for the cells and column headers of the '
+            'results grid; row heights scale with it. The value specified '
+            'is a multiple of the default size, in which 1 is the default. '
+            'For example, to increase the font size by 20 percent use a '
+            'value of 1.2, or to reduce by 20 percent, use a value of 0.8. '
+            'Minimum 0.1, maximum 10.'
+        )
     )
 
     self.stripped_rows = self.preference.register(

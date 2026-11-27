@@ -121,6 +121,16 @@ class TriggersGetTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code,
                          self.expected_data["status_code"])
 
+        if hasattr(self, "check_trigger_function_child"):
+            # The client uses this node to locate the trigger function
+            # in the tree, so it must identify the function and its schema.
+            children = response.json['data']
+            self.assertEqual(len(children), 1)
+            self.assertEqual(children[0]['_type'], 'trigger_function')
+            self.assertEqual(children[0]['_id'], self.function_info[0])
+            self.assertEqual(children[0]['_pid'], self.schema_id)
+            self.assertFalse(children[0]['schema_is_catalog'])
+
     def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

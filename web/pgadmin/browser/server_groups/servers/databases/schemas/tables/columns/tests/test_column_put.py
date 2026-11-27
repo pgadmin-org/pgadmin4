@@ -104,6 +104,7 @@ class ColumnPutTestCase(BaseTestGenerator):
 
             # Assert response
             utils.assert_status_code(self, response)
+            columns_utils.assert_node_icon(self, response)
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],

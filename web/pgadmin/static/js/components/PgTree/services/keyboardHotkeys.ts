@@ -1,6 +1,7 @@
 import { Notificar } from 'notificar';
 import { FileEntry, Directory, FileType } from 'react-aspen';
 import { FileTreeXEvent, IFileTreeXHandle } from '../types';
+import { collapseTarget } from './collapse';
 
 export class KeyboardHotkeys {
   private readonly hotkeyActions = {
@@ -8,6 +9,7 @@ export class KeyboardHotkeys {
     'ArrowDown': () => this.jumpToNextItem(),
     'ArrowRight': () => this.expandOrJumpToFirstChild(),
     'ArrowLeft': () => this.collapseOrJumpToFirstParent(),
+    'Shift+ArrowLeft': () => this.collapseAllOrParent(),
     'Space': () => this.toggleDirectoryExpand(),
     'Enter': () => this.selectFileOrToggleDirState(),
     'Home': () => this.jumpToFirstItem(),
@@ -26,6 +28,11 @@ export class KeyboardHotkeys {
 
     if((ev.nativeEvent.ctrlKey || ev.nativeEvent.metaKey) && ev.nativeEvent.key !== 'Control') {
       code = `Ctrl+${code}`;
+    }
+    // Shift is only significant where a Shift binding exists, so Shift with
+    // any other key still behaves as the key on its own.
+    if (ev.nativeEvent.shiftKey && `Shift+${code}` in this.hotkeyActions) {
+      code = `Shift+${code}`;
     }
     if (code in this.hotkeyActions) {
       ev.preventDefault();
@@ -100,6 +107,18 @@ export class KeyboardHotkeys {
         return this.fileTreeX.closeDirectory(currentPseudoActive as Directory);
       }
       this.fileTreeX.setActiveFile(currentPseudoActive.parent, true);
+    }
+  }
+
+  // Collapses the active node and everything beneath it, or, when it is not
+  // an expanded directory, its parent, which then becomes the active node.
+  private async collapseAllOrParent(): Promise<void> {
+    const current = this.fileTreeX.getActiveFile();
+    const target = collapseTarget(current, this.fileTreeX.getModel().root);
+    if (!target) { return; }
+    await this.fileTreeX.collapseAll(target);
+    if (target !== current) {
+      this.fileTreeX.setActiveFile(target, true);
     }
   }
 

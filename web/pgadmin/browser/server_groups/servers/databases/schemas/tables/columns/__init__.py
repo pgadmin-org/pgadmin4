@@ -96,6 +96,22 @@ class ColumnsModule(CollectionNodeModule):
         return False
 
     @property
+    def csssnippets(self):
+        """
+        Returns a snippet of css to include in the page, adding the icon
+        used for NOT NULL columns.
+        """
+        snippets = super().csssnippets
+        snippets.append(
+            render_template(
+                self._NODE_CSS,
+                node_type=self.node_type,
+                file_name='column-not-null',
+            )
+        )
+        return snippets
+
+    @property
     def module_use_template_javascript(self):
         """
         Returns whether Jinja2 template is used for generating the javascript
@@ -265,6 +281,33 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             status=200
         )
 
+    @staticmethod
+    def _get_column_icon(row):
+        """
+        Returns the icon class for a column node row from nodes.sql, so that
+        NOT NULL columns can be told apart in the browser tree.
+        """
+        return 'icon-column-not-null' if row.get('not_null') \
+            else 'icon-column'
+
+    def _get_node_icon(self, tid, clid):
+        """
+        Returns the icon class for the given column, as it currently is in
+        the database. Falls back to the plain column icon if the column
+        cannot be read, since the change it reflects has already been made.
+        """
+        SQL = render_template(
+            "/".join([self.template_path, self._NODES_SQL]),
+            tid=tid,
+            clid=clid,
+            show_sys_objects=self.blueprint.show_system_objects,
+            conn=self.conn
+        )
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status or len(rset['rows']) == 0:
+            return 'icon-column'
+        return self._get_column_icon(rset['rows'][0])
+
     @check_precondition
     def nodes(self, gid, sid, did, scid, tid, clid=None):
         """
@@ -303,7 +346,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon="icon-column",
+                    icon=self._get_column_icon(row),
                     datatype=row['datatype'],  # We need datatype somewhere in,
                     description=row['description'],
                     displaytypname=row['displaytypname'],
@@ -317,7 +360,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon="icon-column",
+                    icon=self._get_column_icon(row),
                     datatype=row['datatype'],  # We need datatype somewhere in
                     description=row['description'],
                     displaytypname=row['displaytypname'],
@@ -451,7 +494,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 clid,
                 tid,
                 data['name'],
-                icon="icon-column"
+                icon=self._get_node_icon(tid, clid)
             )
         )
 
@@ -570,7 +613,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 clid,
                 tid,
                 name,
-                icon="icon-%s" % self.node_type,
+                icon=self._get_node_icon(tid, clid),
                 **other_node_info
             )
         )

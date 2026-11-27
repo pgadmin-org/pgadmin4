@@ -16,7 +16,7 @@
 {% set page_props = {
     'userLanguage': user_language,
     'langOptions': ns.langOptions,
-    'forgotPassUrl': url_for('browser.forgot_password'),
+    'forgotPassUrl': url_for('browser.forgot_password') if mail_enabled else None,
     'loginUrl': url_for('authenticate.login'),
     'csrfToken': csrf_token(),
     'authSources': config.AUTHENTICATION_SOURCES,

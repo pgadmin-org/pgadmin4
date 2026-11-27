@@ -48,6 +48,11 @@ export default class ImportExportSchema extends BaseUISchema {
     return (state?.format != 'csv');
   }
 
+  isRejectLimitDisabled(state) {
+    return (state?.format == 'binary' || !state?.is_import ||
+      state?.on_error != 'ignore');
+  }
+
   get baseFields() {
     let obj = this;
     return [
@@ -160,6 +165,23 @@ export default class ImportExportSchema extends BaseUISchema {
         },
         visible: !obj.isQueryExport,
         helpMessage: gettext('Specify the amount of messages emitted by a COPY command: default or verbose. If verbose is specified, additional messages are emitted during processing. This is currently used in COPY FROM command when ON_ERROR option is set to ignore.')
+      },
+      {
+        id: 'reject_limit',
+        label: gettext('Reject Limit'),
+        group: gettext('General'),
+        type: 'int',
+        min: 1,
+        min_version: 180000,
+        deps: ['on_error', 'format', 'is_import'],
+        depChange: (state) => {
+          if (obj.isRejectLimitDisabled(state)) {
+            return { reject_limit: null };
+          }
+        },
+        disabled: (state) => obj.isRejectLimitDisabled(state),
+        visible: !obj.isQueryExport,
+        helpMessage: gettext('Specifies the maximum number of errors tolerated while converting a column\'s input value to its data type. If the input causes more errors than this, the import fails. Leave empty to skip every row with an error. This option is allowed only for import, and only when On Error is set to ignore.')
       },
       {
         id: 'header',
