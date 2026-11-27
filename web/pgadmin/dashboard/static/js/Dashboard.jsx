@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { useEffect, useMemo, useState, Fragment } from 'react';
+import { useEffect, useMemo, useRef, useState, Fragment } from 'react';
 import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -42,6 +42,7 @@ import CodeMirror from '../../../static/js/components/ReactCodeMirror';
 import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
 import DownloadUtils from '../../../static/js/DownloadUtils';
 import RefreshButton from './components/RefreshButtons';
+import { useInterval } from '../../../static/js/custom_hooks';
 
 function parseData(data) {
   let res = [];
@@ -251,25 +252,64 @@ CustomRefresh.propTypes = {
 };
 
 
-function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
+export function getActivityUrl(sid, did) {
+  let url = url_for('dashboard.activity');
+  if (did) url += sid + '/' + did;
+  else url += '/' + sid;
+  return url;
+}
+
+/* Returns the polling delay in milliseconds for the sessions auto refresh,
+ * or -1 (which disables useInterval) when it should not run. */
+export function getSessionsAutoRefreshDelay({
+  autoRefresh, onStateTab, pageVisible, serverConnected, did, dbConnected,
+  refreshRate,
+}) {
+  if (!autoRefresh || !onStateTab || !pageVisible || !serverConnected) {
+    return -1;
+  }
+  if (did && !dbConnected) return -1;
+  if (!(refreshRate > 0)) return -1;
+  return refreshRate * 1000;
+}
+
+export function ActiveOnlyHeader({
+  activeOnly, setActiveOnly, autoRefresh, setAutoRefresh,
+}) {
   return (
-    <InputCheckbox
-      label={gettext('Active sessions only')}
-      labelPlacement="end"
-      className='Dashboard-searchInput'
-      onChange={(e) => {
-        setActiveOnly(e.target.checked);
-      }}
-      value={activeOnly}
-      controlProps={{
-        label: gettext('Active sessions only'),
-      }}
-    />
+    <Box display="flex" flexDirection="row">
+      <InputCheckbox
+        label={gettext('Active sessions only')}
+        labelPlacement="end"
+        className='Dashboard-searchInput'
+        onChange={(e) => {
+          setActiveOnly(e.target.checked);
+        }}
+        value={activeOnly}
+        controlProps={{
+          label: gettext('Active sessions only'),
+        }}
+      />
+      <InputCheckbox
+        label={gettext('Auto refresh')}
+        labelPlacement="end"
+        className='Dashboard-searchInput'
+        onChange={(e) => {
+          setAutoRefresh(e.target.checked);
+        }}
+        value={autoRefresh}
+        controlProps={{
+          label: gettext('Auto refresh'),
+        }}
+      />
+    </Box>
   );
 }
 ActiveOnlyHeader.propTypes = {
   activeOnly: PropTypes.bool,
   setActiveOnly: PropTypes.func,
+  autoRefresh: PropTypes.bool,
+  setAutoRefresh: PropTypes.func,
 };
 
 function Dashboard({
@@ -294,6 +334,12 @@ function Dashboard({
   const [mainTabVal, setMainTabVal] = useState(activeTab);
   const [refresh, setRefresh] = useState(false);
   const [activeOnly, setActiveOnly] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  /* Every activity request, manual or automatic, takes the next id and
+   * counts as pending until it settles. Only the latest request may update
+   * the State tab, and a poll never starts while any request is pending. */
+  const activityRequests = useRef({latest: 0, pending: 0});
+  const currentActivityUrl = useRef(null);
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
   const [ldid, setLdid] = useState(0);
 
@@ -840,10 +886,7 @@ function Dashboard({
       if (did && !dbConnected) return;
 
       if (mainTabVal === 1) {
-        url = url_for('dashboard.activity');
-        if (did) url += sid + '/' + did;
-        else url += '/' + sid;
-
+        url = getActivityUrl(sid, did);
       } else if (mainTabVal === 2) {
         url = url_for('dashboard.config', {'sid': sid});
       } else if (mainTabVal === 3) {
@@ -862,11 +905,20 @@ function Dashboard({
         setSsMsg(gettext('Loading logs...'));
         setDashData([]);
         if (mainTabVal == 1 || mainTabVal == 2 || mainTabVal == 3) {
+          let activityReqId = null;
+          if (mainTabVal == 1) {
+            activityRequests.current.pending++;
+            activityReqId = ++activityRequests.current.latest;
+          }
           api({
             url: url,
             type: 'GET',
           })
             .then((res) => {
+              if (activityReqId !== null &&
+                activityReqId !== activityRequests.current.latest) {
+                return;
+              }
               if (res?.data?.['logs_disabled']) {
                 setSsMsg(gettext('Please enable logging to view the server logs, or check if the log file is in place.'));
               } else {
@@ -880,6 +932,9 @@ function Dashboard({
               );
               // show failed message.
               setMsg(gettext('Failed to retrieve data from the server.'));
+            })
+            .finally(() => {
+              if (activityReqId !== null) activityRequests.current.pending--;
             });
         }
         else if (mainTabVal == 4) {
@@ -913,6 +968,52 @@ function Dashboard({
       setMsg(message);
     }
   }, [nodeData, treeNodeInfo, prefStore, refresh, mainTabVal, logCol, logFormat]);
+
+  currentActivityUrl.current = (mainTabVal === 1 && sid) ?
+    getActivityUrl(sid, did) : null;
+
+  /* Auto refresh of the State tab. Unlike the manual refresh, the current
+   * rows stay in place until the new data arrives, so the table does not
+   * flash empty or lose its scroll position on every poll. */
+  useInterval(() => {
+    const url = currentActivityUrl.current;
+    if (!url || activityRequests.current.pending > 0) return;
+    activityRequests.current.pending++;
+    const reqId = ++activityRequests.current.latest;
+    /* Ignore the outcome if a newer activity request has started, or the
+     * user has moved to another node or tab. */
+    const isCurrent = () => (
+      reqId === activityRequests.current.latest &&
+      currentActivityUrl.current === url
+    );
+    api({
+      url: url,
+      type: 'GET',
+    })
+      .then((res) => {
+        if (isCurrent()) setDashData(parseData(res.data));
+      })
+      .catch((error) => {
+        if (!isCurrent()) return;
+        // Stop polling rather than raising the same alert on every tick.
+        setAutoRefresh(false);
+        pgAdmin.Browser.notifier.alertText(
+          gettext('Failed to retrieve data from the server.'),
+          _.isUndefined(error.response) ? error.message : error.response.data.errormsg
+        );
+      })
+      .finally(() => {
+        activityRequests.current.pending--;
+      });
+  }, getSessionsAutoRefreshDelay({
+    autoRefresh: autoRefresh,
+    onStateTab: mainTabVal === 1,
+    pageVisible: props.isActive,
+    serverConnected: serverConnected,
+    did: did,
+    dbConnected: dbConnected,
+    refreshRate: preferences?.session_stats_refresh,
+  }));
 
   const filteredDashData = useMemo(()=>{
     if (mainTabVal == 1 && activeOnly && dashData.length > 0) {
@@ -1068,7 +1169,7 @@ function Dashboard({
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
-                        customHeader={<ActiveOnlyHeader activeOnly={activeOnly} setActiveOnly={setActiveOnly} refresh={refresh} setRefresh={setRefresh}/>}
+                        customHeader={<ActiveOnlyHeader activeOnly={activeOnly} setActiveOnly={setActiveOnly} autoRefresh={autoRefresh} setAutoRefresh={setAutoRefresh}/>}
                         columns={activityColumns}
                         data={(dashData?.[0] && filteredDashData) || []}
                         schema={activeQSchemaObj}
