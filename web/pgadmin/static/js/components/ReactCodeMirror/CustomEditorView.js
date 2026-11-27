@@ -405,10 +405,13 @@ export default class CustomEditorView extends EditorView {
     }
   }
 
-  registerAutocomplete(completionFunc) {
+  // options are passed to CodeMirror's autocompletion(), e.g.
+  // activateOnTypingDelay to debounce requests while the user is typing.
+  registerAutocomplete(completionFunc, options={}) {
     this.dispatch({
       effects: autoCompleteCompartment.reconfigure(
         autocompletion({
+          ...options,
           override: [(context) => {
             this.loadingDiv?.remove();
             this.loadingDiv = getAutocompLoading(this.coordsAtPos(context.pos), this.dom);

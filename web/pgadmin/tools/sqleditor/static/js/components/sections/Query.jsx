@@ -27,16 +27,35 @@ import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 import { FileManagerUtils } from '../../../../../../misc/file_manager/static/js/components/FileManager';
 
 
-async function registerAutocomplete(editor, api, transId) {
+// Wait this long after the last keystroke before asking the server for
+// suggestions, so that fast typing does not flood it with catalog queries.
+// The delay is applied by CodeMirror (activateOnTypingDelay), which restarts
+// it on every keystroke but skips it for an explicit Ctrl+Space, including
+// one pressed while a typing delay is still pending.
+export const AUTOCOMPLETE_DEBOUNCE_MS = 300;
+
+export async function registerAutocomplete(editor, api, transId) {
   editor.registerAutocomplete((context, onAvailable)=>{
     return new Promise((resolve, reject)=>{
       const url = url_for('sqleditor.autocomplete', {
         'trans_id': transId,
       });
-      const word = context.matchBefore(/\w*/);
+      const word = context.matchBefore(/[\w$]*/);
       const fullSql = context.state.doc.toString();
       const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
-      api.post(url, JSON.stringify([fullSql, sqlTillCur]))
+      const controller = new AbortController();
+
+      // CodeMirror aborts the query when the completion is reset (Escape,
+      // the cursor moves away, the list is closed). Cancel the request in the
+      // browser. The server still runs it to the end. Typing does not abort
+      // it: CodeMirror keeps the running query and reuses its result through
+      // validFor, so a slow server is not sent a new request on every pause.
+      context.addEventListener('abort', () => {
+        controller.abort();
+        resolve(null);
+      });
+
+      api.post(url, JSON.stringify([fullSql, sqlTillCur]), {signal: controller.signal})
         .then((res) => {
           onAvailable();
           resolve({
@@ -44,17 +63,25 @@ async function registerAutocomplete(editor, api, transId) {
             options: Object.keys(res.data.data.result).map((key)=>({
               label: key, type: res.data.data.result[key].object_type
             })),
+            // Reuse these suggestions only while the user is still typing the
+            // same identifier. A separator such as "." starts a new context
+            // (public. needs the tables, not the names starting with p), so
+            // CodeMirror then asks the server again.
             validFor: (text, from)=>{
-              return text.startsWith(fullSql.slice(from));
+              return /^[\w$]*$/.test(text) && text.startsWith(word.text);
             }
           });
         })
         .catch((err) => {
           onAvailable();
+          if(controller.signal.aborted) {
+            resolve(null);
+            return;
+          }
           reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
         });
     });
-  });
+  }, {activateOnTypingDelay: AUTOCOMPLETE_DEBOUNCE_MS});
 }
 
 export default function Query({onTextSelect, setQtStatePartial}) {
