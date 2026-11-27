@@ -30,7 +30,8 @@ import {QUERY_TOOL_EVENTS, RESULT_DOWNLOAD_FORMATS, DEFAULT_RESULT_DOWNLOAD_FORM
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
-import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
+import { useDelayedCaller, useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
+import { copyToClipboard } from '../../../../../../static/js/clipboard';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import PropTypes from 'prop-types';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -71,6 +72,12 @@ const StyledEditor = styled('div')(({theme})=>({
     border: 0,
     outline: 0,
     resize: 'both',
+  },
+  '& .DataOutputQuery-copyButton': {
+    position: 'absolute',
+    zIndex: 99,
+    right: '4px',
+    top: '4px',
   }
 }));
 
@@ -81,11 +88,29 @@ function ShowDataOutputQueryPopup({query}) {
     }
   }
 
+  const [isCopied, setIsCopied] = useState(false);
+  const revertCopied = useDelayedCaller(()=>{
+    setIsCopied(false);
+  });
+
   return (
     <Portal container={document.body}>
       <StyledEditor ref={(ele)=>{
         setEditorPosition(document.getElementById('sql-query'), ele, '.MuiBox-root', 29);
       }} onKeyDown={suppressEnterKey}>
+        {/* The popup closes when the SQL button loses focus, so keep the
+            focus there whilst the copy button is clicked. */}
+        <PgIconButton size="small" className='DataOutputQuery-copyButton'
+          icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
+          title={isCopied ? gettext('Copied!') : gettext('Copy SQL')}
+          onMouseDown={(e)=>e.preventDefault()}
+          onClick={async ()=>{
+            if(await copyToClipboard(query || '')) {
+              setIsCopied(true);
+              revertCopied(1500);
+            }
+          }}
+        />
         <CodeMirror
           value={query || ''}
           className={'textarea'}

@@ -219,7 +219,8 @@ Data Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Graph Visualiser     | Use the Graph Visualiser button to generate graphs of the query results.                          |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | SQL                  | Use the SQL button to check the current query that gave the data.                                 |                |
+   | SQL                  | Use the SQL button to check the current query that gave the data. Click the *Copy SQL* icon in    |                |
+   |                      | the top right corner of the popup to copy the query to the clipboard.                             |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 
