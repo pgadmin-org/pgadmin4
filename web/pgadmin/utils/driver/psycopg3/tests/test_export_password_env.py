@@ -12,6 +12,7 @@ environment built for it, and never left in pgAdmin's own environment,
 which every user's requests share and every child process inherits."""
 
 import os
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -48,3 +49,90 @@ class ExportPasswordEnvTestCase(BaseTestGenerator):
 
         self.assertEqual(env, {'PGA_TEST_PASSWORD': PASSWORD})
         self.assertEqual(dict(os.environ), before)
+
+
+SERVICE_FILE = """\
+# Services the administrator allows.
+[stored] # comments may follow the name
+host=db.example.com
+password=stale-shared-password
+
+[plain]
+dbname=postgres
+options=-c search_path=app
+"""
+
+
+class TokenUtilityServicePasswordTestCase(BaseTestGenerator):
+    """libpq takes a service's password over the PGPASSWORD a utility gets
+    its token in, so a token method's utility is refused a service that
+    stores one, before any token is requested. Without PGSYSCONFDIR, libpq
+    reads a service missing from the user's file from the directory it
+    was built with, which cannot be checked, so that service is refused
+    as well."""
+
+    scenarios = [
+        ('A service that stores a password',
+         dict(service='stored', sysconf=None, refused=True)),
+        ('A service without a password',
+         dict(service='plain', sysconf=None, refused=False)),
+        ('A service in no file without PGSYSCONFDIR',
+         dict(service='other', sysconf=None, refused=True)),
+        ('A service in no file with PGSYSCONFDIR',
+         dict(service='other', sysconf='[plain]\n', refused=False)),
+        ('A service in PGSYSCONFDIR without a password',
+         dict(service='other', sysconf='[other]\nhost=h\n',
+              refused=False)),
+        ('A service in PGSYSCONFDIR that stores a password',
+         dict(service='other', sysconf='[other]\npassword=p\n',
+              refused=True)),
+        ('A service looked up in LDAP',
+         dict(service='other', refused=True,
+              sysconf='[other]\nldap://ldap.example.com/dc=example,dc=com'
+                      '?uniqueMember?one?(cn=other)\n')),
+        ('No service', dict(service=None, sysconf=None, refused=False)),
+    ]
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+
+    def runTest(self):
+        from pgadmin.utils.pg_oauth2 import OAuthTokenError
+        manager = server_manager.ServerManager.__new__(
+            server_manager.ServerManager)
+        manager.auth_method = 'entra'
+        manager.connection_params = {'sslmode': 'verify-full'}
+        manager.host = 'db.example.com'
+        manager.service = self.service
+
+        env = {}
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, 'user_service.conf')
+            with open(path, 'w') as service_file:
+                service_file.write(SERVICE_FILE)
+            environ = {'PGSERVICEFILE': path}
+            if self.sysconf is not None:
+                with open(os.path.join(directory, 'pg_service.conf'),
+                          'w') as service_file:
+                    service_file.write(self.sysconf)
+                environ['PGSYSCONFDIR'] = directory
+            # A utility is started from a request, which the refusal's
+            # message is translated for.
+            with self.app.test_request_context(), \
+                    patch.dict(os.environ, environ), \
+                    patch.object(server_manager, 'utility_password',
+                                 return_value='the-token') as token:
+                if self.sysconf is None:
+                    os.environ.pop('PGSYSCONFDIR', None)
+                if self.refused:
+                    with self.assertRaises(OAuthTokenError) as raised:
+                        manager.export_password_env(env, 'PGPASSWORD')
+                    self.assertIn(self.service, str(raised.exception))
+                else:
+                    manager.export_password_env(env, 'PGPASSWORD')
+
+        if self.refused:
+            token.assert_not_called()
+            self.assertEqual(env, {})
+        else:
+            self.assertEqual(env, {'PGPASSWORD': 'the-token'})

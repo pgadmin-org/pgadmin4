@@ -506,3 +506,308 @@ For providers that don't support OIDC discovery, configure all endpoints manuall
     }]
 
 In this mode, user identity is retrieved only from the userinfo endpoint.
+
+.. _oauth2_postgresql:
+
+Using a pgAdmin OAuth token with PostgreSQL
+-------------------------------------------
+
+Users signed in to pgAdmin through an OIDC provider can choose the
+*OAuth: pgAdmin login token* (``oauth_direct``) or *OAuth: token exchange*
+(``oauth_exchange``) authentication method for a server, to supply an access
+token for PostgreSQL OAuth authentication. This uses an OAuth access token, not an OIDC ID token.
+
+Prerequisites
+~~~~~~~~~~~~~
+
+* Configure OIDC login for pgAdmin as described on this page and sign in
+  through that OIDC provider.
+* Configure PostgreSQL OAuth authentication, including a token validator,
+  the expected issuer and scopes, and authorization for the database role.
+* Use PostgreSQL 18 or later. The libpq loaded by pgAdmin must be version
+  18.x, with a supported Psycopg implementation as described below.
+
+Configure the connection
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the *Connection* tab of the Server dialog, set *Authentication method* to
+*OAuth: pgAdmin login token* or *OAuth: token exchange*.
+
+.. note::
+
+   For shared servers, each user must explicitly choose an OAuth
+   authentication method in their own server settings.
+   The owner's selection is not inherited; the default is *Password*.
+   When the owner changes the host, port or connection parameters of a
+   shared server, every other user's method is set back to *Password*,
+   so that their token is not sent to an endpoint they did not choose.
+
+Both OAuth methods require ``oauth_client_id`` and
+``oauth_issuer``. The issuer must match the PostgreSQL OAuth configuration
+and the issuer used for the pgAdmin login token.
+
+For example:
+
+.. code-block:: text
+
+   Authentication method = OAuth: token exchange
+   oauth_client_id = postgres-cluster-01
+   oauth_issuer = https://identity.example.com/realms/postgres
+
+Replace the example values with those configured for your deployment. Set
+the *Username* field to the database role authorized by the server's OAuth
+configuration.
+
+Use a trusted database endpoint. pgAdmin refuses to save, import or connect
+an OAuth server unless its ``sslmode`` connection parameter is
+``verify-full`` and its host is a TCP host name or address, not a Unix-domain
+socket, so the token is only sent to a server whose certificate and host name
+are verified. Use ``sslrootcert`` to name a trusted root certificate.
+Database TLS settings are separate from those for the OIDC provider's HTTPS
+endpoints.
+
+Direct method
+~~~~~~~~~~~~~
+
+With the *OAuth: pgAdmin login token* method, pgAdmin forwards the access token from the current user's
+login session to PostgreSQL. The database validator must accept its issuer,
+audience and scopes and authorize the requested database role. The audience
+depends on the OIDC provider's configuration; it is not necessarily the
+pgAdmin OAuth client identifier.
+
+.. warning::
+
+   The database server receives the login access token, which its operator
+   may be able to reuse wherever that token is accepted. Use direct mode
+   only with trusted servers and a policy explicitly permitting this reuse.
+   Prefer exchange mode when the OIDC provider can issue a token restricted
+   to the target database.
+
+Exchange method
+~~~~~~~~~~~~~~~
+
+With the *OAuth: token exchange* method, pgAdmin exchanges the login access token and supplies
+the resulting token to PostgreSQL. If exchange fails, the connection attempt
+fails; pgAdmin does not fall back to direct mode.
+
+The token endpoint belongs to the OIDC provider used for pgAdmin login.
+``OAUTH2_TOKEN_URL`` takes precedence over the ``token_endpoint`` in the
+OIDC provider's discovery metadata. HTTPS is required and token endpoint
+redirects are not followed.
+
+.. list-table:: Token exchange request
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Parameter
+     - Value
+   * - ``grant_type``
+     - ``urn:ietf:params:oauth:grant-type:token-exchange``
+   * - ``audience``
+     - The server connection's ``oauth_client_id``.
+   * - ``subject_token``
+     - The pgAdmin login access token, refreshed when required and possible.
+   * - ``subject_token_type``
+     - ``urn:ietf:params:oauth:token-type:access_token``
+   * - ``scope``
+     - The server connection's ``oauth_scope``, when non-empty.
+       Otherwise omitted; the OIDC provider determines the scopes.
+
+Token exchange uses the scopes explicitly configured in the server
+connection's ``oauth_scope`` parameter. If it is unset or blank, pgAdmin
+omits ``scope`` from the exchange request and the OIDC provider determines
+the scopes. Exchange occurs before connecting to PostgreSQL, so it cannot
+use scopes advertised by the database server. Configure ``oauth_scope``
+when the OIDC provider's defaults do not meet the database's requirements.
+
+pgAdmin authenticates the exchange request using its registered login
+OIDC client's credentials. This integration supports
+``client_secret_basic`` and ``client_secret_post``. A client secret is
+required; unauthenticated exchange is not supported.
+
+.. important::
+
+   The OIDC provider must authorize pgAdmin's login client to exchange
+   tokens for the requested audience and issue the intended permissions.
+   The PostgreSQL validator must enforce that audience and those
+   permissions.
+
+The OIDC provider must return a non-empty ``access_token`` with a
+``token_type`` of ``Bearer``. Exchanged tokens are not cached or stored in the
+pgAdmin login session. Each connection attempt using this mode performs a
+new exchange.
+
+TLS verification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Both direct and exchange modes require TLS certificate verification for
+the login OIDC provider. Enable ``OAUTH2_SSL_CERT_VERIFICATION`` in
+the ``OAUTH2_CONFIG``.
+
+For a private certificate authority, configure a trusted CA bundle for the
+OAuth client. The exchange request reuses the login OAuth client's
+verification setting, including a configured CA-bundle path.
+
+Supported client implementations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These requirements apply to the libpq loaded in the pgAdmin process:
+
+.. list-table:: Psycopg implementation requirements
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Implementation
+     - Requirements
+   * - ``python``
+     - Reuses Psycopg's libpq handle. Requires a discoverable libpq 18.x
+       installation compatible with pgAdmin's Python runtime.
+   * - ``c``
+     - Linux only. Requires libpq 18.x and an unambiguous loaded libpq
+       candidate. Missing or ambiguous candidates are rejected.
+   * - ``binary``
+     - Not supported by this integration, even with bundled libpq 18.x.
+
+To select the Python implementation, set ``PSYCOPG_IMPL=python`` in the
+pgAdmin process environment and restart the backend. This affects all
+connections in that process. It is not a connection parameter or a
+``PGADMIN_CONFIG_`` setting and does not install or upgrade libpq.
+
+Windows and macOS require the Python implementation and a compatible,
+discoverable libpq 18.x installation. The installed pgAdmin package must
+support that configuration. In containers, configure the environment and
+libraries inside the container.
+
+Token refresh and reconnects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When expiration information is available, pgAdmin attempts to refresh the
+login access token if it has expired or will expire within 30 seconds. A
+successful refresh updates the login session. If the refresh token is
+unavailable or refreshing fails, sign in again before retrying the connection.
+
+Token retrieval, refresh and exchange require an authenticated pgAdmin
+request. Reconnects made through such requests are supported. Independent
+background connection attempts without the user's request context are not;
+initiate reconnection through pgAdmin. Existing database connections do not
+require a new token exchange for each query.
+
+Automatic token refresh is not supported by this integration when the
+login OIDC provider uses
+``OAUTH2_CLIENT_AUTH_METHOD="workload_identity"``. Direct mode can use
+the login access token until it expires or enters the 30-second refresh
+window. Sign in to pgAdmin again before retrying the connection.
+Exchange mode requires client-secret authentication and does not support
+workload-identity clients.
+
+.. _oauth2_entra:
+
+Using Microsoft Entra ID with Azure Database for PostgreSQL
+-----------------------------------------------------------
+
+In server mode, users who log in to pgAdmin through Microsoft Entra ID can
+connect to Azure Database for PostgreSQL with the *Microsoft Entra ID*
+(``entra``) authentication method, without running the Azure CLI or pasting
+a token as a password. pgAdmin asks Microsoft Entra ID for a database token
+On-Behalf-Of the user, using the user's pgAdmin login, as described in
+Microsoft's
+`On-Behalf-Of flow <https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow>`_.
+The user signs in only once. There is no device code, no browser sign-in of
+its own, no token cache and no keyring, so it works in Docker and on headless
+servers. It is not available in desktop mode, or to users who log in in
+another way.
+
+Each connection gets a new token, which is sent to the server in place of a
+password and is never stored. The method needs any PostgreSQL and libpq
+version that Azure Database for PostgreSQL supports.
+
+Requirements
+~~~~~~~~~~~~
+
+The On-Behalf-Of grant exchanges an access token that was issued *to
+pgAdmin's own app registration*. Microsoft rejects an assertion whose audience
+is another application, such as Microsoft Graph, so the pgAdmin login must
+request an access token for pgAdmin itself. In the Microsoft Entra admin
+center, configure the app registration that pgAdmin uses to log in:
+
+* Under *Expose an API*, set the *Application ID URI* (for example
+  ``api://<client-id>``) and add a scope, for example ``access_as_user``,
+  that users can consent to.
+* Under *API permissions*, add the delegated permission *user_impersonation*
+  of *Azure Database for PostgreSQL* (the resource
+  ``https://ossrdbms-aad.database.windows.net``), and grant consent: either
+  administrator consent for the tenant, or let users consent when they log in.
+  Without consent, or when a Conditional Access policy such as multi-factor
+  authentication applies to the database, the connect dialog offers *Sign in
+  again*.
+* Under *Certificates & secrets*, create a client secret. pgAdmin
+  authenticates the grant with the client ID and secret of the login client
+  (``client_secret_basic`` or ``client_secret_post``), so a login that uses
+  workload identity (``OAUTH2_CLIENT_AUTH_METHOD="workload_identity"``) cannot
+  use this method.
+
+In the database, enable Microsoft Entra authentication and create the
+database role for the user, group or service principal, as described in the
+Azure documentation.
+
+Configuration
+~~~~~~~~~~~~~
+
+Configure the Microsoft Entra ID login as in the examples above. Include
+pgAdmin's own API scope in ``OAUTH2_SCOPE``, use the ``v2.0`` metadata URL of
+your tenant so that the token endpoint is the tenant's, and set
+``OAUTH2_ENTRA_OBO_ENABLED`` to ``True`` in that provider's entry:
+
+.. code-block:: python
+
+    OAUTH2_CONFIG = [{
+        'OAUTH2_NAME': 'microsoft',
+        'OAUTH2_DISPLAY_NAME': 'Microsoft',
+        'OAUTH2_CLIENT_ID': '<application (client) ID>',
+        'OAUTH2_CLIENT_SECRET': '<client secret>',
+        'OAUTH2_SERVER_METADATA_URL':
+            'https://login.microsoftonline.com/<tenant>/v2.0/.well-known/openid-configuration',
+        'OAUTH2_SCOPE': 'openid email profile api://<application (client) ID>/access_as_user',
+        'OAUTH2_ENTRA_OBO_ENABLED': True
+    }]
+
+``OAUTH2_ENTRA_OBO_ENABLED`` is a key of one ``OAUTH2_CONFIG`` entry and
+defaults to ``False``. *Microsoft Entra ID* is offered in the server dialog,
+and accepted by the servers API, only in server mode and only while the user's
+current login provider has it set.
+
+In the server dialog, choose *Microsoft Entra ID*, set the *Username* to the
+user name of the database role, and set the ``sslmode`` connection parameter
+to ``verify-full``. Use ``sslrootcert`` to name the certificate authority that
+signed the server's certificate, or ``system`` to use the trusted store of the
+system pgAdmin runs on. pgAdmin refuses to save, import or connect an
+``entra`` server without ``verify-full``, and does not restrict the host
+name, so a private endpoint with custom DNS works. The host must be a TCP
+host name or address, set on the server itself rather than left to a
+service: libpq uses no SSL over a Unix-domain socket. Backup, restore,
+maintenance and import/export keep ``verify-full`` even when a service file
+entry names another ``sslmode``.
+
+Security considerations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* pgAdmin holds the client secret of the app registration, and with the
+  consent above can obtain a database token for any user who is logged in,
+  for as long as that login lasts. Protect the secret and the pgAdmin
+  session store accordingly, and limit who can log in to pgAdmin.
+* The token is the password of the connection, which is why the server's
+  identity must be verified. Never use it with a server whose certificate
+  you do not verify.
+* Tokens are not written to the logs or to error messages, and are not
+  saved: no database password is stored for an ``entra`` server, and
+  switching a server to the method clears the saved one.
+* Each non-owner of a shared server chooses their own authentication
+  method, which defaults to *Password*, so no user's login is used for a
+  server host they did not choose. It is set back to *Password* when the
+  owner changes the server's host, port or connection parameters.
+* Backup, restore, maintenance, import/export and the PSQL tool get their
+  own new token for each process.
+* When the identity provider answers ``interaction_required`` or
+  ``invalid_grant``, or the login has expired, the connect dialog offers
+  *Sign in again*, which renews the pgAdmin login through the same provider
+  and retries the connection.

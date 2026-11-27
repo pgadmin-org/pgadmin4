@@ -118,6 +118,37 @@ class TestManagerIsStaleChecksEachIdentityField(
                 "expected stale manager when %s changes" % field)
 
 
+class TestStaleChecksCompareAuthMethod(
+        _PureUnitTestSetupMixin, BaseTestGenerator):
+    """When the owner of a shared server changes its endpoint, each
+    non-owner's token method is turned back to password while the
+    endpoint fields the other checks compare may stay the same. A cached
+    manager or saved state carrying the token method is then stale, so
+    it does not go on requesting the user's token. A missing method
+    means password, so state saved before it was persisted still
+    restores for a password server."""
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        revoked = make_server_data(auth_method='password')
+
+        self.assertTrue(Driver._manager_is_stale(
+            make_manager(auth_method='entra'), revoked))
+        self.assertTrue(Driver._saved_state_is_stale(
+            make_saved_state(auth_method='entra'), revoked))
+
+        self.assertFalse(Driver._manager_is_stale(
+            make_manager(auth_method='password'), revoked))
+        self.assertFalse(Driver._manager_is_stale(
+            make_manager(auth_method='password'),
+            make_server_data(auth_method=None)))
+        self.assertFalse(Driver._saved_state_is_stale(
+            make_saved_state(), revoked))
+        self.assertTrue(Driver._saved_state_is_stale(
+            make_saved_state(), make_server_data(auth_method='entra')))
+
+
 class TestSavedStateIsStaleMatchesUnchanged(
         _PureUnitTestSetupMixin, BaseTestGenerator):
     """Serialized session state whose identity fields still match the
@@ -299,27 +330,66 @@ class TestManagerSourceUsesSharedServerOverlay(
 
 class TestManagerSourceOwnerUsesServerRow(
         _PureUnitTestSetupMixin, BaseTestGenerator):
-    """The owner of a shared server, anyone in desktop mode, and a
-    non-owner with no SharedServer record yet all get the Server row
-    itself."""
+    """The owner of a shared server and anyone in desktop mode get the
+    Server row itself. A non-owner with no SharedServer record yet gets
+    the overlay of the record they would get: never the owner's token
+    method, credentials or client file paths."""
 
     scenarios = [('default', dict())]
 
     def runTest(self):
-        server_data = make_shared_server_row()
+        from pgadmin.browser.server_groups import servers as servers_module
+        owner_params = {
+            'sslmode': 'verify-full',
+            'sslcert': '/home/owner/cert.pem',
+            'sslkey': '/home/owner/key.pem',
+            'passfile': '/home/owner/.pgpass',
+        }
+        server_data = make_shared_server_row(
+            auth_method='oauth_direct', password=b'owner-secret',
+            save_password=1, tunnel_password=b'owner-tunnel',
+            tunnel_username='owner-ssh',
+            tunnel_identity_file='/home/owner/id_rsa',
+            shared_username='shared-user',
+            connection_params=dict(owner_params), tags=[{'text': 't'}])
         module = 'pgadmin.utils.driver.psycopg3'
 
-        for server_mode, user_id, shared_row in (
-                (True, 1, None), (False, 2, None), (True, 2, None)):
+        for server_mode, user_id in ((True, 1), (False, 2), (True, 2)):
             shared_model = MagicMock()
             shared_model.query.filter_by.return_value.first.return_value \
-                = shared_row
+                = None
+            user_model = MagicMock()
+            user_model.query.filter_by.return_value.first.return_value = \
+                SimpleNamespace(username='owner')
             with patch(module + '.config.SERVER_MODE', server_mode), \
                     patch(module + '.current_user',
                           SimpleNamespace(id=user_id)), \
+                    patch.object(servers_module, 'current_user',
+                                 SimpleNamespace(id=user_id)), \
+                    patch.object(servers_module, 'User', user_model), \
                     patch(module + '.SharedServer', shared_model):
-                self.assertIs(
-                    Driver._manager_source(server_data), server_data)
+                source = Driver._manager_source(server_data)
+            if not (server_mode and user_id == 2):
+                self.assertIs(source, server_data)
+                continue
+
+            self.assertIsNot(source, server_data)
+            self.assertTrue(sa_inspect(source).transient)
+            self.assertEqual(source.host, server_data.host)
+            self.assertEqual(source.auth_method, 'password')
+            self.assertEqual(source.username, 'shared-user')
+            self.assertIsNone(source.password)
+            self.assertFalse(source.save_password)
+            self.assertIsNone(source.tunnel_password)
+            self.assertIsNone(source.tunnel_username)
+            self.assertIsNone(source.tunnel_identity_file)
+            self.assertEqual(source.connection_params,
+                             {'sslmode': 'verify-full'})
+            self.assertIsNot(source.tags, server_data.tags)
+            # The owner's row is unchanged.
+            self.assertEqual(server_data.auth_method, 'oauth_direct')
+            self.assertEqual(server_data.connection_params, owner_params)
+            self.assertEqual(server_data.password, b'owner-secret')
 
 
 class TestManagerSourceDoesNotShareOwnerJsonColumns(

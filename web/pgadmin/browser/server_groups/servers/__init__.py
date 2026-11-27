@@ -7,6 +7,8 @@
 #
 ##########################################################################
 
+import hashlib
+import hmac
 import json
 from collections import OrderedDict
 import pgadmin.browser.server_groups as sg
@@ -33,7 +35,11 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.passexec import normalise_passexec_name, \
     passexec_name_for_api, PASSEXEC_INHERIT
 from pgadmin.utils.master_password import get_crypt_key
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
+    check_auth_method, check_entra_available, check_token_ssl, \
+    check_kerberos_exclusive, is_token_auth_method
 from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
+from pgadmin.utils.token_auth import sign_in_again_response
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
     (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
@@ -73,6 +79,23 @@ def _is_non_owner(server):
     """True if the server is shared and the current user is not
     the owner.  Centralises the check used in 15+ places."""
     return server.shared and server.user_id != current_user.id
+
+
+def shared_connection_params(owner_params, own_params):
+    """The connection parameters a non-owner of a shared server connects
+    with: the owner's, but each user's own SENSITIVE_CONN_KEYS, never the
+    owner's file paths. Returns a new dict."""
+    # A copy: owner_params may be a MutableDict still attached to the
+    # owner's session-bound row, and mutating it in place would mark that
+    # row dirty for the next commit.
+    params = dict(owner_params or {})
+    own_params = own_params or {}
+    for key in SENSITIVE_CONN_KEYS:
+        if key in own_params:
+            params[key] = own_params[key]
+        else:
+            params.pop(key, None)
+    return params
 
 
 def prepare_sharing_data(data, server=None):
@@ -202,6 +225,11 @@ def is_using_passfile(server, manager):
         passfile and
         server.connection_params['passfile'] == passfile
     )
+
+
+def bad_auth_method_response(errmsg):
+    """The response to a server authentication method that is refused."""
+    return make_json_response(success=0, status=400, errormsg=errmsg)
 
 
 def has_any(data, keys):
@@ -343,23 +371,11 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.tunnel_identity_file = sharedserver.tunnel_identity_file
         server.tunnel_prompt_password = sharedserver.tunnel_prompt_password
 
-        # Override per-user connection_params keys.  Use the
-        # SharedServer value whenever it is present, regardless of
-        # whether the owner's Server has the same key. Work on a copy:
-        # the dict may be a MutableDict still attached to the owner's
-        # session-bound row, and mutating it in place would mark that
-        # row dirty for the next commit.
-        s_conn = dict(getattr(server, 'connection_params', None) or {})
-        ss_conn = getattr(sharedserver, 'connection_params',
-                          None) or {}
-        for key in SENSITIVE_CONN_KEYS:
-            if key in ss_conn:
-                s_conn[key] = ss_conn[key]
-            elif key in s_conn:
-                # Owner has this key but non-owner doesn't —
-                # remove it so the owner's path doesn't leak.
-                del s_conn[key]
-        server.connection_params = s_conn
+        # Apply each user's own connection parameters. For these keys,
+        # never inherit the owner's file paths.
+        server.connection_params = shared_connection_params(
+            getattr(server, 'connection_params', None),
+            getattr(sharedserver, 'connection_params', None))
 
         server.servergroup_id = sharedserver.servergroup_id
         server.username = sharedserver.username
@@ -367,6 +383,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.password = sharedserver.password
         server.prepare_threshold = sharedserver.prepare_threshold
         server.kerberos_conn = sharedserver.kerberos_conn
+        # Each non-owner has their own server authentication method; the
+        # owner's is never inherited.
+        server.auth_method = sharedserver.auth_method
         # A SharedServer row created before tags were copied across has
         # NULL tags, which is not the same thing as a user who has
         # cleared every tag they had: the latter leaves an empty list.
@@ -581,63 +600,77 @@ class ServerModule(sg.ServerGroupPluginModule):
         :return: None
         """
 
-        shared_server = None
         try:
             db.session.rollback()
-            user = User.query.filter_by(id=data.user_id).first()
-
-            # Strip owner's sensitive file paths from
-            # connection_params — each user should configure
-            # their own SSL/passfile paths.
-            safe_conn_params = {}
-            if data.connection_params:
-                safe_conn_params = {
-                    k: v for k, v in
-                    data.connection_params.items()
-                    if k not in SENSITIVE_CONN_KEYS
-                }
-
-            shared_server = SharedServer(
-                osid=data.id,
-                user_id=current_user.id,
-                server_owner=user.username,
-                servergroup_id=gid,
-                name=data.name,
-                host=data.host,
-                port=data.port,
-                maintenance_db=data.maintenance_db,
-                username=data.shared_username,
-                save_password=0,
-                comment=None,
-                role=data.role,
-                bgcolor=data.bgcolor if data.bgcolor else None,
-                fgcolor=data.fgcolor if data.fgcolor else None,
-                service=data.service if data.service else None,
-                use_ssh_tunnel=data.use_ssh_tunnel,
-                tunnel_host=data.tunnel_host,
-                tunnel_port=data.tunnel_port
-                if data.tunnel_port else 22,
-                tunnel_username=None,
-                tunnel_authentication=0,
-                tunnel_identity_file=None,
-                tunnel_keep_alive=data.tunnel_keep_alive
-                if data.tunnel_keep_alive else 0,
-                tunnel_prompt_password=0,
-                shared=True,
-                connection_params=safe_conn_params,
-                prepare_threshold=data.prepare_threshold,
-                passexec_cmd=None,
-                passexec_name=None,
-                passexec_expiration=None,
-                kerberos_conn=False,
-                tags=data.tags,
-                post_connection_sql=None
-            )
+            shared_server = ServerModule.new_shared_server(data, gid)
             db.session.add(shared_server)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
             raise e
+
+    @staticmethod
+    def new_shared_server(data, gid):
+        """
+        The SharedServer record a non-owner of the shared server data starts
+        with, not added to the session: the owner's settings without their
+        credentials, file paths or server authentication method.
+        :param data: The owner's Server row.
+        :param gid: The non-owner's server group.
+        :return: SharedServer (transient)
+        """
+        user = User.query.filter_by(id=data.user_id).first()
+
+        # Exclude per-user connection parameters from the owner's
+        # settings. Each user must configure their own file paths.
+        safe_conn_params = {}
+        if data.connection_params:
+            safe_conn_params = {
+                k: v for k, v in
+                data.connection_params.items()
+                if k not in SENSITIVE_CONN_KEYS
+            }
+
+        return SharedServer(
+            osid=data.id,
+            user_id=current_user.id,
+            server_owner=user.username,
+            servergroup_id=gid,
+            name=data.name,
+            host=data.host,
+            port=data.port,
+            maintenance_db=data.maintenance_db,
+            username=data.shared_username,
+            save_password=0,
+            comment=None,
+            role=data.role,
+            bgcolor=data.bgcolor if data.bgcolor else None,
+            fgcolor=data.fgcolor if data.fgcolor else None,
+            service=data.service if data.service else None,
+            use_ssh_tunnel=data.use_ssh_tunnel,
+            tunnel_host=data.tunnel_host,
+            tunnel_port=data.tunnel_port
+            if data.tunnel_port else 22,
+            tunnel_username=None,
+            tunnel_authentication=0,
+            tunnel_identity_file=None,
+            tunnel_keep_alive=data.tunnel_keep_alive
+            if data.tunnel_keep_alive else 0,
+            tunnel_prompt_password=0,
+            shared=True,
+            connection_params=safe_conn_params,
+            prepare_threshold=data.prepare_threshold,
+            passexec_cmd=None,
+            passexec_name=None,
+            passexec_expiration=None,
+            kerberos_conn=False,
+            # A non-owner opts in to a token method themselves, so that
+            # their login token is not sent to a host they did not
+            # choose.
+            auth_method=AUTH_METHOD_PASSWORD,
+            tags=data.tags,
+            post_connection_sql=None
+        )
 
     @staticmethod
     def get_shared_server(server, gid):
@@ -1011,6 +1044,10 @@ class ServerNode(PGChildNodeView):
                 server.user_id != current_user.id:
             sharedserver = ServerModule.get_shared_server(server, gid)
 
+        # The owner's endpoint before this update; compared with the one
+        # it commits (see _revoke_shared_token_auth()).
+        endpoint_before = self._endpoint_of(server)
+
         # Not all parameters can be modified, while the server is connected
         config_param_map = {
             'name': 'name',
@@ -1042,6 +1079,7 @@ class ServerNode(PGChildNodeView):
             'shared': 'shared',
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
+            'auth_method': 'auth_method',
             'connection_params': 'connection_params',
             'prepare_threshold': 'prepare_threshold',
             'tags': 'tags',
@@ -1055,7 +1093,8 @@ class ServerNode(PGChildNodeView):
             'username': gettext('Username'),
             'comment': gettext('Comments'),
             'role': gettext('Role'),
-            'service': gettext('Service')
+            'service': gettext('Service'),
+            'auth_method': gettext('Authentication method')
         }
 
         data = request.form if request.form else json.loads(
@@ -1076,11 +1115,51 @@ class ServerNode(PGChildNodeView):
         if service_err:
             return forbidden(errmsg=service_err)
 
+        if 'auth_method' in data:
+            auth_method_err = check_auth_method(data['auth_method'])
+            if auth_method_err:
+                return bad_auth_method_response(auth_method_err)
+
+        # Kerberos and a token method are exclusive, whichever of the two
+        # this update changes.
+        if 'auth_method' in data or 'kerberos_conn' in data:
+            current = sharedserver or server
+            auth_method_err = check_kerberos_exclusive(
+                data.get('auth_method', current.auth_method),
+                data.get('kerberos_conn', current.kerberos_conn))
+            if auth_method_err:
+                return bad_auth_method_response(auth_method_err)
+
         if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
+
+        # A non-owner connects with the owner's parameters but their own
+        # sensitive ones (see get_shared_server_properties()), so check
+        # those, not the non-sensitive keys their own row keeps.
+        effective_params = None
+        # The owner's endpoint this check sees; a non-owner's opt-in to a
+        # token method is committed only while it is still the endpoint.
+        checked_endpoint = None
+        if sharedserver is not None and _is_non_owner(server):
+            effective_params = shared_connection_params(
+                server.connection_params,
+                data['connection_params'] if 'connection_params' in data
+                else sharedserver.connection_params)
+            if 'auth_method' in data and \
+                    is_token_auth_method(data['auth_method']):
+                checked_endpoint = endpoint_before
+                # The opt-in is for the endpoint the dialog showed; one the
+                # owner changed since is not one this user chose.
+                if data.get('checked_endpoint') != \
+                        self.endpoint_hash(checked_endpoint):
+                    return self._endpoint_changed_response()
+        auth_method_err = self._check_update_auth_method_and_clear_password(
+            data, sharedserver or server, server.host, effective_params)
+        if auth_method_err:
+            return bad_auth_method_response(auth_method_err)
 
         # Refuse a key that is not an exact libpq keyword (see create()).
         # The merged parameters live in data['connection_params'] once
@@ -1136,6 +1215,13 @@ class ServerNode(PGChildNodeView):
             flag_modified(sharedserver or server, 'tags')
 
         try:
+            if not _is_non_owner(server):
+                self._revoke_shared_token_auth(server, endpoint_before)
+            elif checked_endpoint is not None and \
+                    not self._owner_endpoint_unchanged(
+                        server, checked_endpoint):
+                db.session.rollback()
+                return self._endpoint_changed_response()
             db.session.commit()
         except Exception as e:
             current_app.logger.exception(e)
@@ -1147,8 +1233,12 @@ class ServerNode(PGChildNodeView):
         # When server is connected, we don't require to update the connection
         # manager. Because - we don't allow to change any of the parameters,
         # which will affect the connections.
+        # A non-owner's manager is built from their SharedServer overlay,
+        # not the owner's row, or it would take the owner's server
+        # authentication method and connection parameters.
         if not conn.connected():
-            manager.update(server)
+            manager.update(
+                get_driver(PG_DEFAULT_DRIVER)._manager_source(server))
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -1173,6 +1263,151 @@ class ServerNode(PGChildNodeView):
                 tags=(sharedserver or server).tags
             )
         )
+
+    def _connect_failed_response(
+            self, server, conn, errmsg, use_pgadmin_oauth,
+            prompt_tunnel_password):
+        """The response to a failed connect. A token method gets the error
+        itself, not a database password prompt, unless the SSH tunnel
+        failed to authenticate: a token error once the tunnel is up is not
+        a tunnel password problem. A saved password that could not be
+        decrypted and was dropped is prompted for again."""
+        if use_pgadmin_oauth and \
+                getattr(conn, 'tunnel_auth_failed', False) is not True:
+            prompt_tunnel_password = False
+        prompt_tunnel_password = (
+            prompt_tunnel_password or
+            self._saved_tunnel_password_discarded(conn))
+
+        if use_pgadmin_oauth and not (
+                server.use_ssh_tunnel and prompt_tunnel_password):
+            return make_json_response(
+                status=400, success=0, errormsg=errmsg)
+
+        return self.get_response_for_password(
+            server,
+            401,
+            not use_pgadmin_oauth and (
+                not server.save_password or
+                self._saved_password_discarded(conn)),
+            prompt_tunnel_password,
+            errmsg,
+        )
+
+    # The owner's settings that decide which endpoint a non-owner of a
+    # shared server connects to, and so where their token is sent.
+    ENDPOINT_FIELDS = ('host', 'port', 'connection_params')
+
+    @classmethod
+    def _revoke_shared_token_auth(cls, server, endpoint_before):
+        """When the owner of a shared server changes the endpoint from
+        endpoint_before, turn every non-owner's token method back to
+        password, in the same commit as the change. A non-owner's token is
+        sent only to an endpoint they chose; they opt in again to send it
+        to the new one."""
+        if not server.shared or \
+                cls._endpoint_of(server) == endpoint_before:
+            return
+        # Write the endpoint first, so a non-owner's opt-in that reads it
+        # (see _owner_endpoint_unchanged()) waits for this commit, and is
+        # refused, or commits first and is reset below.
+        db.session.flush()
+        SharedServer.query.filter(
+            SharedServer.osid == server.id,
+            SharedServer.auth_method != AUTH_METHOD_PASSWORD,
+        ).update({'auth_method': AUTH_METHOD_PASSWORD},
+                 synchronize_session=False)
+
+    @staticmethod
+    def _endpoint_of(server):
+        """The owner's ENDPOINT_FIELDS of a shared server's row."""
+        return (server.host, server.port,
+                dict(server.connection_params or {}))
+
+    @staticmethod
+    def endpoint_hash(endpoint):
+        """An opaque digest of an _endpoint_of() value. The server dialog
+        of a non-owner sends it back with an opt-in to a token method, so
+        the opt-in is for the endpoint the dialog showed. It is keyed with
+        the application's secret, so a non-owner cannot confirm a guess at
+        the owner's hidden connection parameters offline."""
+        return hmac.new(
+            str(current_app.config['SECRET_KEY']).encode(),
+            json.dumps(endpoint, sort_keys=True, default=str).encode(),
+            hashlib.sha256).hexdigest()
+
+    @staticmethod
+    def _endpoint_changed_response():
+        return make_json_response(
+            success=0, status=409,
+            errormsg=gettext(
+                'The owner changed the server while it was being edited. '
+                'Reload the server\'s properties and try again.'))
+
+    @classmethod
+    def _owner_endpoint_unchanged(cls, server, checked_endpoint):
+        """Whether the owner's endpoint is still checked_endpoint, such
+        that an owner's change of it either committed before, and is seen
+        here, or waits for this update's commit, and its revocation then
+        resets this update's token method.
+
+        The owner's row is locked before this update's own write, the
+        order the owner's update takes them in (see
+        _revoke_shared_token_auth()), so the two cannot deadlock on
+        PostgreSQL. It is read again once that write is flushed, as SQLite
+        holds no lock for a read made outside a write transaction."""
+        query = db.session.query(
+            Server.host, Server.port, Server.connection_params
+        ).filter(Server.id == server.id)
+        with db.session.no_autoflush:
+            query.with_for_update().first()
+        db.session.flush()
+        row = query.first()
+        return row is not None and \
+            cls._endpoint_of(row) == checked_endpoint
+
+    @staticmethod
+    def _check_update_auth_method_and_clear_password(data, current,
+                                                     server_host=None,
+                                                     effective_params=None):
+        """Check an update against the server authentication method it
+        results in, and clear the saved password when it is a token method.
+        Return an error message, or None.
+
+        A token method is checked when this update selects it, and its
+        destination and sslmode whenever this update changes any of them;
+        an unrelated edit of a token server is never refused. server_host
+        is the host before this update: a non-owner's comes from the
+        owner's server, as do the effective_params they connect with,
+        when given. No database password is kept for a token method:
+        the access token is the credential."""
+        auth_method = data.get('auth_method', current.auth_method)
+        if not is_token_auth_method(auth_method):
+            return None
+
+        if 'auth_method' in data:
+            err = check_entra_available(auth_method)
+            if err:
+                return err
+        if any(key in data for key in (
+                'auth_method', 'connection_params', 'host')):
+            # The merged parameters, once update_connection_parameter()
+            # has applied the deltas.
+            if effective_params is None:
+                effective_params = data['connection_params'] \
+                    if 'connection_params' in data \
+                    else current.connection_params
+            err = check_token_ssl(
+                auth_method, effective_params,
+                data.get('host', server_host))
+            if err:
+                return err
+
+        if any(key in data for key in (
+                'auth_method', 'password', 'save_password')):
+            data['password'] = None
+            data['save_password'] = 0
+        return None
 
     @staticmethod
     def _update_server_details(server, sharedserver,
@@ -1212,7 +1447,7 @@ class ServerNode(PGChildNodeView):
                         arg in _owner_only_fields:
                     continue
                 value = data[arg]
-                if arg == 'password':
+                if arg == 'password' and data[arg] is not None:
                     value = encrypt(data[arg], crypt_key)
                 # sqlite3 do not have boolean type so we need to
                 # convert it manually to integer.
@@ -1237,7 +1472,7 @@ class ServerNode(PGChildNodeView):
 
         if connected:
             for arg in (
-                    'db', 'role', 'service'
+                    'db', 'role', 'service', 'auth_method'
             ):
                 if arg in data:
                     return forbidden(
@@ -1320,8 +1555,10 @@ class ServerNode(PGChildNodeView):
         display_connection_str = self.update_connection_string(manager, server)
 
         shared_server = None
+        endpoint_hash = None
         non_owner = bool(_is_non_owner(server))
         if non_owner:
+            endpoint_hash = self.endpoint_hash(self._endpoint_of(server))
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
@@ -1386,6 +1623,7 @@ class ServerNode(PGChildNodeView):
             'tunnel_authentication': tunnel_authentication,
             'tunnel_keep_alive': tunnel_keep_alive,
             'kerberos_conn': bool(server.kerberos_conn),
+            'auth_method': server.auth_method or AUTH_METHOD_PASSWORD,
             'gss_authenticated': manager.gss_authenticated,
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
@@ -1394,6 +1632,7 @@ class ServerNode(PGChildNodeView):
             'prepare_threshold': server.prepare_threshold,
             'tags': tags,
             'post_connection_sql': server.post_connection_sql,
+            'endpoint_hash': endpoint_hash,
         }
 
         return ajax_response(response)
@@ -1450,6 +1689,15 @@ class ServerNode(PGChildNodeView):
         if service_err:
             return forbidden(errmsg=service_err)
 
+        # A missing or blank method means password.
+        auth_method = data.get('auth_method') or AUTH_METHOD_PASSWORD
+        auth_method_err = check_auth_method(auth_method) or \
+            check_kerberos_exclusive(
+                auth_method, data.get('kerberos_conn', False))
+        if auth_method_err:
+            return bad_auth_method_response(auth_method_err)
+        token_auth = is_token_auth_method(auth_method)
+
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1498,6 +1746,11 @@ class ServerNode(PGChildNodeView):
                     'Invalid connection parameter: {0}').format(invalid_key)
             )
 
+        auth_method_err = check_entra_available(auth_method) or \
+            check_token_ssl(auth_method, connection_params, data.get('host'))
+        if auth_method_err:
+            return bad_auth_method_response(auth_method_err)
+
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):
             return make_json_response(
@@ -1529,8 +1782,10 @@ class ServerNode(PGChildNodeView):
                 port=data.get('port'),
                 maintenance_db=data.get('db', None),
                 username=data.get('username'),
+                # The access token is the credential of a token method, so no
+                # password is saved for it.
                 save_password=1 if data.get('save_password', False) and
-                config.ALLOW_SAVE_PASSWORD else 0,
+                config.ALLOW_SAVE_PASSWORD and not token_auth else 0,
                 comment=data.get('comment', None),
                 role=data.get('role', None),
                 db_res=db_restriction,
@@ -1554,6 +1809,7 @@ class ServerNode(PGChildNodeView):
                 passexec_name=data.get('passexec_name', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
+                auth_method=auth_method,
                 connection_params=connection_params,
                 prepare_threshold=data.get('prepare_threshold', None),
                 tags=data.get('tags', None),
@@ -1566,6 +1822,9 @@ class ServerNode(PGChildNodeView):
             manager = None
             replication_type = None
             tunnel_password_saved = False
+            # The server is kept, and the browser connects it to offer
+            # "Sign in again".
+            sign_in_again = False
 
             if 'connect_now' in data and data['connect_now']:
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
@@ -1578,7 +1837,10 @@ class ServerNode(PGChildNodeView):
                 password = None
                 passfile = None
                 tunnel_password = ''
-                if 'password' in data and data["password"] != '' and \
+                if token_auth:
+                    # The access token is the credential, not a password.
+                    pass
+                elif 'password' in data and data["password"] != '' and \
                         data["password"] is not None:
                     # login with password
                     have_password = True
@@ -1599,7 +1861,8 @@ class ServerNode(PGChildNodeView):
                     tunnel_password=tunnel_password,
                     server_types=ServerType.types()
                 )
-                if not status:
+                sign_in_again = not status and conn.sign_in_again is True
+                if not status and conn.sign_in_again is not True:
                     db.session.delete(server)
                     db.session.commit()
                     return make_json_response(
@@ -1609,7 +1872,7 @@ class ServerNode(PGChildNodeView):
                             "Unable to connect to server:\n\n{}"
                         ).format(errmsg)
                     )
-                else:
+                elif status:
                     if 'save_password' in data and data['save_password'] and \
                             have_password and config.ALLOW_SAVE_PASSWORD:
                         setattr(server, 'password', password)
@@ -1651,7 +1914,8 @@ class ServerNode(PGChildNodeView):
                     is_password_saved=bool(server.save_password),
                     is_tunnel_password_saved=tunnel_password_saved,
                     user_id=server.user_id,
-                    tags=data.get('tags', None)
+                    tags=data.get('tags', None),
+                    sign_in_again=sign_in_again
                 )
             )
 
@@ -1861,6 +2125,8 @@ class ServerNode(PGChildNodeView):
             manager.update(server)
         conn = manager.connection()
 
+        use_pgadmin_oauth = is_token_auth_method(manager.auth_method)
+
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1889,8 +2155,13 @@ class ServerNode(PGChildNodeView):
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
-        if 'password' not in data and (server.kerberos_conn is False or
-                                       server.kerberos_conn is None):
+
+        if use_pgadmin_oauth:
+            # The pgAdmin OAuth bearer token is the database credential.
+            password = None
+            save_password = False
+        elif 'password' not in data and (server.kerberos_conn is False or
+                                         server.kerberos_conn is None):
 
             passfile_param = None
             if hasattr(server, 'connection_params') and \
@@ -1957,13 +2228,9 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
-            return self.get_response_for_password(
-                server, 401,
-                not server.save_password or self._saved_password_discarded(
-                    conn),
-                prompt_tunnel_password or
-                self._saved_tunnel_password_discarded(conn),
-                getattr(e, 'message', str(e)))
+            return self._connect_failed_response(
+                server, conn, getattr(e, 'message', str(e)),
+                use_pgadmin_oauth, prompt_tunnel_password)
 
         if not status:
             current_app.logger.error(
@@ -1973,13 +2240,12 @@ class ServerNode(PGChildNodeView):
             if errmsg.find('Ticket expired') != -1:
                 return internal_server_error(errmsg)
 
-            return self.get_response_for_password(
-                server, 401,
-                not server.save_password or self._saved_password_discarded(
-                    conn),
-                prompt_tunnel_password or
-                self._saved_tunnel_password_discarded(conn),
-                errmsg)
+            if conn.sign_in_again is True:
+                return sign_in_again_response(server, errmsg)
+
+            return self._connect_failed_response(
+                server, conn, errmsg, use_pgadmin_oauth,
+                prompt_tunnel_password)
         else:
             # allow_save_password is false when the encryption key only
             # lasts for this session, so a password saved now couldn't be

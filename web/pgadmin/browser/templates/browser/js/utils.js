@@ -72,6 +72,10 @@ define('pgadmin.browser.utils',
   /* Named server-mode password exec commands */
   pgAdmin['server_passexec_commands'] = {{ server_passexec_commands|tojson }};
 
+  // Whether the server authentication method entra may be offered: server
+  // mode, and the login provider has On-Behalf-Of enabled.
+  pgAdmin['entra_obo_available'] = {{ entra_obo_available|tojson }};
+
   /* LLM/AI features enabled */
   pgAdmin['llm_enabled'] = '{{llm_enabled}}' == 'True';
 

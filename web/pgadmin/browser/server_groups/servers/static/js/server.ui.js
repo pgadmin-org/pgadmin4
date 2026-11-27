@@ -68,6 +68,60 @@ export function sharingForServerCopy(d, user) {
   return d;
 }
 
+export const AUTH_METHOD_PASSWORD = 'password';
+export const AUTH_METHOD_OAUTH_DIRECT = 'oauth_direct';
+export const AUTH_METHOD_OAUTH_EXCHANGE = 'oauth_exchange';
+export const AUTH_METHOD_ENTRA = 'entra';
+
+// Every method other than password authenticates with an access token.
+export function isTokenAuthMethod(authMethod) {
+  return Boolean(authMethod) && authMethod !== AUTH_METHOD_PASSWORD;
+}
+
+// The OAuth parameters only apply to the methods that send an OAuth token.
+const OAUTH_METHOD_PARAMS = [
+  'oauth_issuer', 'oauth_client_id', 'oauth_client_secret', 'oauth_scope',
+];
+
+export function isOAuthAuthMethod(authMethod) {
+  return [AUTH_METHOD_OAUTH_DIRECT, AUTH_METHOD_OAUTH_EXCHANGE]
+    .includes(authMethod);
+}
+
+// The connection parameters the server dialog offers for a server
+// authentication method: the OAuth ones only for an OAuth method.
+export function getConnectionParametersForAuthMethod(authMethod) {
+  return getConnectionParameters().filter(
+    (param)=>isOAuthAuthMethod(authMethod) ||
+      !OAUTH_METHOD_PARAMS.includes(param.value)
+  );
+}
+
+// The saved connection parameter rows that apply to a server authentication
+// method: the OAuth ones only for an OAuth method. Returns the same array
+// when nothing is dropped.
+export function connectionParamsForAuthMethod(params, authMethod) {
+  if (isOAuthAuthMethod(authMethod) || !Array.isArray(params)) {
+    return params;
+  }
+  const kept = params.filter((p)=>!OAUTH_METHOD_PARAMS.includes(p.name));
+  return kept.length == params.length ? params : kept;
+}
+
+// Entra is listed only when the backend reports it available: server mode,
+// and the current login provider has On-Behalf-Of enabled.
+export function getAuthMethodOptions() {
+  const options = [
+    {label: gettext('Password'), value: AUTH_METHOD_PASSWORD},
+    {label: gettext('OAuth: pgAdmin login token'), value: AUTH_METHOD_OAUTH_DIRECT},
+    {label: gettext('OAuth: token exchange'), value: AUTH_METHOD_OAUTH_EXCHANGE},
+  ];
+  if (pgAdmin.entra_obo_available) {
+    options.push({label: gettext('Microsoft Entra ID'), value: AUTH_METHOD_ENTRA});
+  }
+  return options;
+}
+
 export function getConnectionParameters() {
   let conParams = [{
     'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
@@ -231,6 +285,7 @@ export default class ServerSchema extends BaseUISchema {
       connect_now: true,
       password: undefined,
       save_password: false,
+      auth_method: AUTH_METHOD_PASSWORD,
       db_res: undefined,
       db_res_type: 'databases',
       passexec: undefined,
@@ -258,12 +313,22 @@ export default class ServerSchema extends BaseUISchema {
 
     this.serverGroupOptions = serverGroupOptions;
     this.paramSchema = new VariableSchema(getConnectionParameters(), null, null, ['name', 'keyword', 'value']);
+    // The variable types above cover every parameter, so a saved OAuth
+    // parameter keeps its value editor; the names offered for a new row
+    // follow the selected server authentication method.
+    this.authMethod = AUTH_METHOD_PASSWORD;
+    this.paramSchema.vnameOptions = ()=>getConnectionParametersForAuthMethod(this.authMethod);
     this.tagsSchema = new TagsSchema();
     this.userId = userId;
     _.bindAll(this, 'isShared');
   }
 
   initialise(state) {
+    this.authMethod = state.auth_method || AUTH_METHOD_PASSWORD;
+    // Saved OAuth parameters of a server that does not use them are neither
+    // shown nor sent.
+    state.connection_params = connectionParamsForAuthMethod(
+      state.connection_params, this.authMethod);
     this.paramSchema.setAllReadOnly(this.isConnected(state));
   }
 
@@ -422,8 +487,44 @@ export default class ServerSchema extends BaseUISchema {
           }
         }
       },{
+        id: 'auth_method', label: gettext('Authentication method'), type: 'select',
+        group: gettext('Connection'), mode: ['properties', 'edit', 'create'],
+        options: getAuthMethodOptions(), controlProps: {allowClear: false},
+        readonly: obj.isConnected,
+        helpMessage: gettext('How pgAdmin authenticates to the server. The OAuth methods use your pgAdmin OAuth2 login; the OAuth methods other than Microsoft Entra ID need PostgreSQL 18 or later.'),
+        depChange: (state)=>{
+          obj.authMethod = state.auth_method;
+          const changes = {};
+          // Kerberos cannot be combined with a token method.
+          if (isTokenAuthMethod(state.auth_method) && state.kerberos_conn) {
+            changes.kerberos_conn = false;
+          }
+          // The OAuth parameters only apply to the OAuth methods.
+          const params = connectionParamsForAuthMethod(
+            state.connection_params, state.auth_method);
+          if (params !== state.connection_params) {
+            changes.connection_params = params;
+          }
+          // A non-owner opts in to a token method for the endpoint this
+          // dialog shows; the server refuses it if the owner changed it.
+          if (obj.isShared(state)) {
+            changes.checked_endpoint = isTokenAuthMethod(state.auth_method) ?
+              state.endpoint_hash : undefined;
+          }
+          if (!_.isEmpty(changes)) {
+            return changes;
+          }
+        },
+      },{
+        // Sent only when a non-owner selects a token method (see above).
+        id: 'checked_endpoint', type: 'text', visible: false,
+        mode: ['edit'],
+      },{
         id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
-        group: gettext('Connection'), disabled: obj.isShared,
+        group: gettext('Connection'), deps: ['auth_method'],
+        disabled: function(state) {
+          return obj.isShared(state) || isTokenAuthMethod(state.auth_method);
+        },
       },{
         id: 'gss_authenticated', label: gettext('GSS authenticated?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
@@ -434,7 +535,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
         mode: ['create', 'edit'],
-        deps: ['kerberos_conn', 'save_password'],
+        deps: ['kerberos_conn', 'save_password', 'auth_method'],
         controlProps: {
           maxLength: null,
           autoComplete: 'new-password'
@@ -444,17 +545,20 @@ export default class ServerSchema extends BaseUISchema {
             return false;
           return state.connected || !state.save_password;
         },
-        disabled: function(state) {return state.kerberos_conn;},
+        disabled: function(state) {
+          return state.kerberos_conn || isTokenAuthMethod(state.auth_method);
+        },
         helpMessage: gettext('In edit mode the password field is enabled only if Save Password is set to true.')
       },{
         id: 'save_password', label: gettext('Save password?'),
         type: 'switch', group: gettext('Connection'), mode: ['create', 'edit'],
-        deps: ['kerberos_conn'],
+        deps: ['kerberos_conn', 'auth_method'],
         readonly: function(state) {
           return state.connected;
         },
         disabled: function(state) {
-          return !current_user.allow_save_password || state.kerberos_conn;
+          return !current_user.allow_save_password || state.kerberos_conn ||
+            isTokenAuthMethod(state.auth_method);
         },
       },{
         id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
@@ -771,6 +875,16 @@ export default class ServerSchema extends BaseUISchema {
         setError('tunnel_keep_alive', null);
       }
     }
+
+    // A token is only sent to a server whose identity is verified.
+    if (isTokenAuthMethod(state.auth_method)) {
+      const sslmode = _.find(state.connection_params, (p)=>p.name == 'sslmode');
+      if (sslmode?.value !== 'verify-full') {
+        setError('auth_method', gettext('This authentication method requires the connection parameter SSL mode to be verify-full.'));
+        return true;
+      }
+    }
+    setError('auth_method', null);
     return false;
   }
 }

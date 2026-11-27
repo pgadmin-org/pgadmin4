@@ -197,6 +197,116 @@ icon that is located to the right of each of the following fields.
     files such as a root certificate or CRL, never a private key or a
     *.pgpass* file.
 
+Use the *Authentication method* field on the *Connection* tab to choose how
+pgAdmin authenticates to the server. Every method other than *Password* uses
+an access token from your pgAdmin OAuth2 login, so you need no separate
+database credential and no second sign-in. pgAdmin gets a new token for each
+new connection to the server and never stores it.
+
+.. list-table:: Authentication methods
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Value
+     - Behaviour
+   * - Password
+     - Authenticate with a password, a password file or a service, as
+       configured for the server. This is the default. Kerberos is a
+       separate setting on the *Connection* tab.
+   * - OAuth: pgAdmin login token (``oauth_direct``)
+     - Supply the OAuth access token obtained when the user signed in to
+       pgAdmin directly to PostgreSQL.
+   * - OAuth: token exchange (``oauth_exchange``)
+     - Exchange the user's pgAdmin login access token at the OIDC provider's
+       token endpoint and supply the returned token to PostgreSQL. Use this
+       mode when the OIDC provider is configured to issue a token restricted
+       to the target database.
+   * - Microsoft Entra ID (``entra``)
+     - Connect to Azure Database for PostgreSQL. pgAdmin asks Microsoft Entra
+       ID for a token for the database On-Behalf-Of your pgAdmin login, and
+       sends it to the server in place of a password. It works with any
+       PostgreSQL version and libpq. It is listed only in server mode, when you
+       logged in through an OAuth2 provider that an administrator enabled it
+       for; see :ref:`oauth2_entra`.
+
+The two OAuth methods supply the token when PostgreSQL requests OAuth
+authentication, and need PostgreSQL 18 or later and libpq 18 in pgAdmin.
+
+The OAuth parameters are offered in the *Parameters* tab only while one of the
+OAuth methods is selected. For both OAuth methods, add the following
+parameters:
+
+* ``oauth_issuer``: the expected OAuth issuer for the PostgreSQL connection.
+  Use the issuer configured for the database and the corresponding pgAdmin
+  login OIDC provider.
+* ``oauth_client_id``: the OAuth client identifier configured for the database
+  connection. With *OAuth: token exchange*, pgAdmin sends this value as the requested
+  ``audience`` and authenticates using the pgAdmin login OIDC client's
+  credentials.
+
+For *OAuth: token exchange*, optionally set ``oauth_scope`` to a space-separated
+list of scopes to request. If unset or blank, the OIDC provider determines
+the scopes. The exchange occurs before connecting to PostgreSQL and cannot
+use scopes advertised by the database server.
+
+The user must sign in to pgAdmin using the configured OIDC provider.
+The PostgreSQL server must be configured to validate the token and authorize
+the requested database role. These parameters do not configure OAuth
+authentication on the PostgreSQL server.
+
+.. warning::
+
+   *OAuth: pgAdmin login token* sends the access token obtained during
+   pgAdmin login to
+   the PostgreSQL server. The server operator may be able to reuse that token
+   at other services that accept it. Use this mode only with trusted database
+   servers and a deliberately compatible token audience and scope policy.
+   Prefer *OAuth: token exchange* with a database-specific token where
+   supported.
+
+For every token method, set the ``sslmode`` connection parameter to
+``verify-full``. pgAdmin refuses to save the server, to import it or to
+connect without that setting: the token is only sent to a server whose
+certificate and host name are verified. The host name itself is not
+restricted, so a private endpoint with its own DNS name works, but it must be
+a TCP host name or address, not a Unix-domain socket, over which libpq uses
+no SSL.
+
+For *Microsoft Entra ID*, set the *Username* to your Microsoft Entra ID
+user name, or to the name of the Entra group or service principal that the
+database role belongs to.
+
+A token method cannot be combined with Kerberos authentication: the
+*Kerberos authentication?* switch is disabled while a token method is
+selected, and the servers API and a servers.json import refuse the
+combination. No database password is used or saved for a token method, and
+switching a server to one clears the password it had saved.
+For a shared server, each non-owner chooses their own authentication method,
+which defaults to *Password*; the owner's choice is not inherited, so your
+login token is never sent to a host you did not choose.
+
+If Microsoft Entra ID or another identity provider needs you to sign in again
+(for example for multi-factor authentication, a Conditional Access policy or
+consent, or because your login has expired), the dialog that connects the
+server, in the Object Explorer or the Query Tool, shows *Sign in again*
+instead of asking for a password. It renews your pgAdmin login in a pop-up
+through the same OAuth2 provider, and then connects the server. Allow pop-ups
+for pgAdmin if your browser blocks it.
+
+Backup, restore, maintenance, import/export and the PSQL tool connect with
+the server's ``sslmode`` and ``sslrootcert``. For *Microsoft Entra ID*, they
+also get a new token as the password of that process alone. The two OAuth
+methods cannot supply a token to a separate process, so these tools cannot
+connect to such a server.
+
+.. note::
+
+   The two OAuth methods, ``oauth_direct`` and ``oauth_exchange``, require
+   the libpq loaded by pgAdmin to be version 18.x, independently of the
+   PostgreSQL server version; ``entra`` does not. Supported Psycopg
+   implementations, OIDC provider requirements, TLS settings and reconnect
+   limitations are described in :ref:`oauth2_postgresql`.
+
 Click the *SSH Tunnel* tab to continue.
 
 .. image:: images/server_ssh_tunnel.png

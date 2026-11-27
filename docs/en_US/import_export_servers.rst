@@ -147,6 +147,17 @@ imported, but without a password exec command, and a warning naming the server
 is printed. ``PasswordExecExpiration`` is imported only together with a valid
 command name.
 
+``AuthMethod`` is the server authentication method: ``password``,
+``oauth_direct``, ``oauth_exchange`` or ``entra``. A file without ``AuthMethod`` is
+imported as ``password``, so files exported by earlier versions keep working.
+An unknown value is an error and nothing is imported. Kerberos cannot be
+combined with a token method: ``KerberosAuthentication`` must not be true for a
+server whose ``AuthMethod`` is not ``password``, and such a file is also
+refused. A server whose ``AuthMethod`` is a token method must have
+``"sslmode": "verify-full"`` in its ``ConnectionParameters`` and a TCP
+``Host``, not a Unix-domain socket, or the file is refused. Whether the importing user may use ``entra`` is checked when they
+connect.
+
 The following example shows both a minimally defined and a fully defined server:
 
 .. code-block:: python
@@ -189,6 +200,7 @@ The following example shows both a minimally defined and a fully defined server:
                 "TunnelKeepAlive": 30,
                 "PasswordExecCommand": "echo 'test'",
                 "PasswordExecExpiration": 100,
+                "AuthMethod": "password",
                 "KerberosAuthentication": true,
                 "ConnectionParameters": {
                     "sslmode": "prefer",

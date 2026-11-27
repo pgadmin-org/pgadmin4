@@ -38,6 +38,7 @@ from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
 from .server_manager import ServerManager
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
 
 connection_restore_lock = Lock()
 
@@ -147,7 +148,8 @@ class Driver(BaseDriver):
         so the session-bound instance other code may be holding is never
         detached or modified. The SharedServer record is only read here,
         never created; until the user has one (it is created when they
-        first connect), the row itself is returned.
+        first connect), the overlay is that of the record they would get
+        (see ServerModule.new_shared_server).
         """
         if not (config.SERVER_MODE and server_data.shared and
                 server_data.user_id != current_user.id):
@@ -155,8 +157,6 @@ class Driver(BaseDriver):
 
         shared_server = SharedServer.query.filter_by(
             user_id=current_user.id, osid=server_data.id).first()
-        if shared_server is None:
-            return server_data
 
         # Imported here, as the servers module imports this driver.
         from pgadmin.browser.server_groups.servers import ServerModule
@@ -172,6 +172,13 @@ class Driver(BaseDriver):
             attr.key: copy.deepcopy(getattr(server_data, attr.key))
             for attr in sa_inspect(Server).column_attrs
         })
+        if shared_server is None:
+            # The record they will get, built from the copy so it shares
+            # no JSON column with the owner's row: never the owner's
+            # credentials, file paths or server authentication method.
+            # Their server group is the one the server is listed in.
+            shared_server = ServerModule.new_shared_server(
+                overlay, server_data.servergroup_id)
         return ServerModule.get_shared_server_properties(
             overlay, shared_server)
 
@@ -186,6 +193,22 @@ class Driver(BaseDriver):
         """
         return server_data.tunnel_host if config.SUPPORT_SSH_TUNNEL \
             else None
+
+    @staticmethod
+    def _effective_auth_method(auth_method):
+        """
+        The server authentication method a ServerManager built with this
+        value would carry: a missing one means password, as it does in
+        ServerManager.update(). State saved before the method was
+        persisted has none, and is read as password.
+
+        The method is compared by _manager_is_stale and
+        _saved_state_is_stale because it changes without the endpoint
+        changing: when the owner of a shared server changes its endpoint,
+        every non-owner's token method is turned back to password, and a
+        cached manager must not go on requesting their token.
+        """
+        return auth_method or AUTH_METHOD_PASSWORD
 
     @staticmethod
     def _saved_state_is_stale(saved, server_data, pga_user=None):
@@ -214,7 +237,10 @@ class Driver(BaseDriver):
             saved.get('user') != server_data.username or
             saved.get('service') != server_data.service or
             saved.get('tunnel_host') !=
-            Driver._effective_tunnel_host(server_data)
+            Driver._effective_tunnel_host(server_data) or
+            Driver._effective_auth_method(saved.get('auth_method')) !=
+            Driver._effective_auth_method(
+                getattr(server_data, 'auth_method', None))
         )
 
     @staticmethod
@@ -238,7 +264,12 @@ class Driver(BaseDriver):
             manager.db != server_data.maintenance_db or
             manager.user != server_data.username or
             manager.service != server_data.service or
-            manager.tunnel_host != Driver._effective_tunnel_host(server_data)
+            manager.tunnel_host !=
+            Driver._effective_tunnel_host(server_data) or
+            Driver._effective_auth_method(
+                getattr(manager, 'auth_method', None)) !=
+            Driver._effective_auth_method(
+                getattr(server_data, 'auth_method', None))
         )
 
     def connection_manager(self, sid=None):

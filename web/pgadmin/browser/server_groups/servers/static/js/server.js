@@ -300,6 +300,11 @@ define('pgadmin.node.server', [
 
           if(data.was_connected) {
             fetch_connection_status(this, data, pgBrowser.tree, item);
+          } else if(data.sign_in_again) {
+            // Created with "Connect now", but the login must be renewed
+            // first: connecting offers "Sign in again".
+            delete data.sign_in_again;
+            connect_to_server(this, data, pgBrowser.tree, item, false);
           }
           return true;
         },

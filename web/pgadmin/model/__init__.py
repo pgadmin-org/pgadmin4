@@ -34,7 +34,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 53
+SCHEMA_VERSION = 54
 
 ##########################################################################
 #
@@ -351,6 +351,9 @@ class Server(db.Model, UserScopedMixin):
     shared = db.Column(db.Boolean(), nullable=False)
     shared_username = db.Column(db.String(64), nullable=True)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
+    auth_method = db.Column(
+        db.String(32), nullable=False, default='password',
+        server_default='password')
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
     prepare_threshold = db.Column(db.Integer(), nullable=True)
@@ -606,6 +609,9 @@ class SharedServer(db.Model, UserScopedMixin):
     kerberos_conn = db.Column(
         db.Boolean(), nullable=False, default=False
     )
+    auth_method = db.Column(
+        db.String(32), nullable=False, default='password',
+        server_default='password')
     tags = db.Column(types.JSON)
     post_connection_sql = db.Column(db.String(), nullable=True)
 

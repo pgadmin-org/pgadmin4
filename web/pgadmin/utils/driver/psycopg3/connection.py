@@ -13,6 +13,7 @@ It is a wrapper around the actual psycopg3 driver, and connection
 object.
 """
 
+import copy
 import os
 import re
 import secrets
@@ -48,6 +49,10 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.pg_oauth2 import OAuthSignInRequired, OAuthTokenError
+from pgadmin.utils.token_auth import connection_credentials
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, \
+    is_token_auth_method
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -58,6 +63,14 @@ if os.name == 'nt':
     )
 
 _ = gettext
+
+
+def _settings_changed_message():
+    """The error for a connection whose server settings changed while it
+    was being opened."""
+    return gettext(
+        'The server settings changed while the connection was being '
+        'opened; please connect again.')
 
 
 def _json_default(value):
@@ -380,6 +393,9 @@ class Connection(BaseConnection):
     CURSOR_NOT_FOUND = \
         gettext("Cursor could not be found for the async connection.")
     ARGS_STR = "{0}#{1}"
+    # Set by manager.update() when it takes this connection out of the
+    # manager's map; such a connection is never published again.
+    superseded = False
 
     def __init__(self, manager, conn_id, db, **kwargs):
         assert (manager is not None)
@@ -414,6 +430,12 @@ class Connection(BaseConnection):
         self.reconnecting = False
         # Set when the saved password could not be decrypted and was dropped
         self.saved_password_discarded = False
+        # Set when the last attempt to open a connection failed because the
+        # user has to sign in to pgAdmin again (see OAuthSignInRequired).
+        self.sign_in_again = False
+        # Set when the last attempt failed because the SSH tunnel could not
+        # be created, as opposed to failing once the tunnel was up.
+        self.tunnel_auth_failed = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
         self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
@@ -521,7 +543,103 @@ class Connection(BaseConnection):
                 return False, '', None, True
         return False, '', password, False
 
+    def _open_physical_connection(self, password, database, user, open_):
+        """
+        Open one physical connection with the credentials of the server's
+        authentication method.
+
+        The credentials come from the token authentication registry and
+        are obtained before the Kerberos lock is taken, as a token may need
+        a request to the identity provider. Holding the lock, it builds the
+        connection string for database and user with the password to use,
+        and returns open_(connection_string) while the credentials are in
+        scope, with the settings it checked and the manager's settings
+        generation, for _publish_unless_superseded().
+        Raises OAuthTokenError when the token cannot be obtained.
+
+        The token was checked against the manager's method, host and
+        connection parameters as they were before the request, which may
+        take a while. Should a manager.update() have changed them in
+        between, the connection is refused rather than send the token to
+        a destination that was not checked. The manager's settings lock
+        is held from that comparison until the connection string is
+        built, so no update() can come between them.
+        """
+        manager = self.manager
+        checked = (manager.auth_method, manager.host, manager.port,
+                   copy.deepcopy(manager.connection_params),
+                   manager.settings_generation)
+        credentials = connection_credentials(
+            checked[0], checked[3], password, checked[1])
+        with ConnectionLocker(manager.kerberos_conn):
+            with credentials.scope() as conn_password:
+                with manager.settings_lock:
+                    if not self._settings_unchanged(checked):
+                        raise OAuthTokenError(_settings_changed_message())
+                    connection_string = manager.create_connection_string(
+                        database, user, conn_password)
+                return open_(connection_string), checked
+
+    def _settings_unchanged(self, checked):
+        """
+        Whether the manager's settings still match checked, the (method,
+        host, port, connection parameters, generation) a connection attempt
+        started with.
+        The caller holds the manager's settings lock. A token attempt
+        needs all four unchanged, as its token was checked against them;
+        any attempt needs the method unchanged, as its credential is that
+        method's.
+        """
+        manager = self.manager
+        # As in connection_credentials(), any method but password carries
+        # a token.
+        if checked[0] in (None, '', AUTH_METHOD_PASSWORD):
+            return manager.auth_method in (None, '', AUTH_METHOD_PASSWORD)
+        return (manager.auth_method, manager.host, manager.port,
+                manager.connection_params) == checked[:4]
+
+    def _publish_unless_superseded(self, pg_conn, checked, publish,
+                                   is_async=False):
+        """
+        Call publish(), which makes pg_conn this connection's, while no
+        manager.update() has run since checked, the settings pg_conn was
+        opened with, nor superseded this connection, and return None.
+        When one ran while it opened, or superseded it, close
+        pg_conn (an AsyncConnection when is_async) instead and return the
+        message to report: any update(), whatever it changed, released
+        only the connections it found published, so this one would stay
+        open.
+        The check and publish() hold the settings lock, so an update()
+        that comes after them finds the connection published.
+        """
+        with self.manager.settings_lock:
+            if not self.superseded and \
+                    self.manager.settings_generation == checked[4]:
+                publish()
+                return None
+        if is_async:
+            async def _close():
+                await pg_conn.close()
+            asyncio.run(_close())
+        else:
+            pg_conn.close()
+        return _settings_changed_message()
+
+    def _token_error_message(self, exc, action=''):
+        """
+        Record that a token error needs a new sign-in, if it does, log it
+        (without any token) and return the message to report. action,
+        when given, follows "Token authentication failed" in the log.
+        """
+        self.sign_in_again = isinstance(exc, OAuthSignInRequired)
+        current_app.logger.warning(
+            "Token authentication failed%s for server %s: %s",
+            action, self.manager.sid, exc)
+        return str(exc)
+
     def connect(self, **kwargs):
+        self.sign_in_again = False
+        self.tunnel_auth_failed = False
         if self.conn:
             if self.conn.closed:
                 self.conn = None
@@ -540,10 +658,13 @@ class Connection(BaseConnection):
                                                        kwargs else ''
 
         # Check SSH Tunnel needs to be created
+        tunnel_created_here = False
         if manager.use_ssh_tunnel == 1 and not manager.tunnel_created:
             status, error = manager.create_ssh_tunnel(tunnel_password)
             if not status:
+                self.tunnel_auth_failed = True
                 return False, error
+            tunnel_created_here = True
 
         # Check SSH Tunnel is alive or not.
         if manager.use_ssh_tunnel == 1:
@@ -576,8 +697,10 @@ class Connection(BaseConnection):
         # If no password credential is found then connect request might come
         # from Query tool, ViewData grid, debugger, etc. In that case, fall
         # back to using the password returned from manager.passexec.
+        # A token method takes no password, so its command is not run.
         passfile = manager.get_connection_param_value('passfile')
-        if not password and not encpass and manager.passexec:
+        if not password and not encpass and manager.passexec and \
+                not is_token_auth_method(manager.auth_method):
             if not passfile:
                 password = manager.passexec.get()
             else:
@@ -618,11 +741,7 @@ class Connection(BaseConnection):
                 if ssl_key_file_permission > 600:
                     os.chmod(ssl_key, 0o600)
 
-            with ConnectionLocker(manager.kerberos_conn):
-                # Create the connection string
-                connection_string = manager.create_connection_string(
-                    database, user, password)
-
+            def open_connection(connection_string):
                 if self.async_:
                     autocommit = True
                     if 'auto_commit' in kwargs:
@@ -635,13 +754,26 @@ class Connection(BaseConnection):
                             autocommit=autocommit,
                             prepare_threshold=manager.prepare_threshold
                         )
-                    pg_conn = asyncio.run(connectdbserver())
-                    pg_conn.server_cursor_factory = AsyncDictServerCursor
-                else:
-                    pg_conn = psycopg.Connection.connect(
-                        connection_string,
-                        cursor_factory=DictCursor,
-                        prepare_threshold=manager.prepare_threshold)
+
+                    async_conn = asyncio.run(connectdbserver())
+                    async_conn.server_cursor_factory = AsyncDictServerCursor
+                    return async_conn
+
+                return psycopg.Connection.connect(
+                    connection_string,
+                    cursor_factory=DictCursor,
+                    prepare_threshold=manager.prepare_threshold,
+                )
+
+            try:
+                pg_conn, checked = self._open_physical_connection(
+                    password, database, user, open_connection)
+            except OAuthTokenError as exc:
+                # No connection was attempted, so a tunnel other
+                # connections still use stays up while the user retries.
+                if tunnel_created_here and not manager.has_live_connection():
+                    manager.stop_ssh_tunnel()
+                return False, self._token_error_message(exc)
 
         except PermissionError as e:
             # A connection file path that escapes the user's storage
@@ -677,8 +809,14 @@ class Connection(BaseConnection):
         pg_conn.add_notify_handler(self.check_notifies)
         pg_conn.add_notice_handler(self.get_notices)
 
-        self.conn = pg_conn
-        self.wasConnected = True
+        def publish():
+            self.conn = pg_conn
+            self.wasConnected = True
+
+        superseded = self._publish_unless_superseded(
+            pg_conn, checked, publish, bool(self.async_))
+        if superseded:
+            return False, superseded
         try:
             status, msg = self._initialize(conn_id, **kwargs)
         except Exception as e:
@@ -1926,15 +2064,15 @@ WHERE db.datname = current_database()""")
             return False, return_value
 
         try:
-            with ConnectionLocker(manager.kerberos_conn):
-                # Create the connection string
-                connection_string = manager.create_connection_string(
-                    self.db, manager.user, password)
-
-                pg_conn = psycopg.connect(connection_string,
-                                          cursor_factory=DictCursor)
+            pg_conn, checked = self._open_physical_connection(
+                password, self.db, manager.user,
+                lambda connection_string: psycopg.connect(
+                    connection_string, cursor_factory=DictCursor))
         except PermissionError as e:
             return False, str(e)
+        except OAuthTokenError as exc:
+            return False, self._token_error_message(
+                exc, ' while resetting the connection')
         except psycopg.Error as e:
             if hasattr(e, 'pgerror'):
                 msg = e.pgerror
@@ -1955,8 +2093,15 @@ Failed to reset the connection to the server due to following error:
             return False, msg
 
         pg_conn.notices = deque([], self.ASYNC_NOTICE_MAXLENGTH)
-        self.conn = pg_conn
-        self.__backend_pid = pg_conn.info.backend_pid
+
+        def publish():
+            self.conn = pg_conn
+            self.__backend_pid = pg_conn.info.backend_pid
+
+        superseded = self._publish_unless_superseded(
+            pg_conn, checked, publish)
+        if superseded:
+            return False, superseded
 
         return True, None
 
@@ -2139,6 +2284,23 @@ Failed to reset the connection to the server due to following error:
         status = True
         msg = ''
 
+        # A token method cancels with libpq's cancel request, which carries
+        # only the backend's cancel key: no token is requested or sent to
+        # cancel a query, even by a manager whose settings are stale and
+        # being released (see Driver.connection_manager()). This holds
+        # whichever connection cancels it: running pg_cancel_backend() on
+        # this one could reconnect it, which requests a token.
+        if self.manager.auth_method not in (None, '', AUTH_METHOD_PASSWORD):
+            if cancel_conn.conn is None or cancel_conn.conn.closed:
+                return False, gettext(
+                    "Not connected to the database server.")
+            try:
+                cancel_conn.conn.cancel()
+            except psycopg.Error as e:
+                return False, str(e)
+            cancel_conn.execution_aborted = True
+            return True, ''
+
         # if backend pid is same then create a new connection
         # to cancel the query and release it.
         if cancel_conn.__backend_pid == self.__backend_pid:
@@ -2170,12 +2332,10 @@ Failed to reset the connection to the server due to following error:
                     password = None
 
             try:
-                with ConnectionLocker(self.manager.kerberos_conn):
-                    connection_string = self.manager.create_connection_string(
-                        self.db, self.manager.user, password)
-
-                    pg_conn = psycopg.connect(connection_string,
-                                              cursor_factory=DictCursor)
+                pg_conn, _ = self._open_physical_connection(
+                    password, self.db, self.manager.user,
+                    lambda connection_string: psycopg.connect(
+                        connection_string, cursor_factory=DictCursor))
 
                 # Get the cursor and run the query
                 cur = pg_conn.cursor()
@@ -2187,6 +2347,10 @@ Failed to reset the connection to the server due to following error:
             except PermissionError as e:
                 status = False
                 msg = str(e)
+            except OAuthTokenError as exc:
+                status = False
+                msg = self._token_error_message(
+                    exc, ' while cancelling the query')
             except psycopg.Error as e:
                 status = False
                 if hasattr(e, 'pgerror'):

@@ -12,6 +12,7 @@ Implementation of ServerManager
 """
 import datetime
 import os
+import threading
 import config
 import logging
 import warnings
@@ -23,8 +24,12 @@ from werkzeug.exceptions import InternalServerError
 from pgadmin.utils import get_complete_file_path, \
     connection_param_bool_to_int, is_valid_connection_param_key, \
     client_files_isolated, isolate_client_credential_files, \
-    check_connection_params_allowed
+    check_connection_params_allowed, service_sets_password
 from pgadmin.utils.crypto import decrypt, DECRYPT_ERRORS
+from pgadmin.utils.pg_oauth2 import OAuthTokenError
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD
+from pgadmin.utils.token_auth import get_token_auth_method, \
+    utility_password
 from pgadmin.utils.master_password import process_masterpass_disabled
 from pgadmin.utils.locker import KerberosNotAllowed, \
     apply_kerberos_conn_params, check_kerberos_conn_params_unchanged
@@ -62,7 +67,25 @@ class ServerManager(object):
     This class contains the information about the given server.
     And, acts as connection manager for that particular session.
     """
+    # How the server is authenticated; ServerManager.update() sets it.
+    auth_method = AUTH_METHOD_PASSWORD
     _INFORMATION_MSG = gettext("Information is not available.")
+
+    def __new__(cls, *args, **kwargs):
+        manager = super().__new__(cls)
+        # Held by update() while it changes the settings, and by a token
+        # connection while it checks them and builds its connection
+        # string, so the string names the destination that was checked.
+        # It is made here, not in __init__(), so that a manager made
+        # without __init__() has it as well. Nothing else is locked while
+        # it is held.
+        manager.settings_lock = threading.Lock()
+        # Counts the update() calls, each of which releases every
+        # connection it finds published and marks every connection of its
+        # map superseded, so a connection opened while one ran is not
+        # published (see Connection._publish_unless_superseded).
+        manager.settings_generation = 0
+        return manager
 
     def __init__(self, server):
         self.connections = dict()
@@ -81,78 +104,85 @@ class ServerManager(object):
         assert (server is not None)
         assert (isinstance(server, Server))
 
-        self.ver = None
-        self.sversion = None
-        self.server_type = None
-        self.server_cls = None
-        self.password = None
-        self.tunnel_password = None
-        self.saved_tunnel_password_discarded = False
-        self.saved_password_discarded = False
-
-        self.sid = server.id
-        self.host = server.host
-        self.port = server.port
-        self.db = server.maintenance_db
-        self.shared = server.shared
-        self.did = None
-        self.user = server.username
-        self.password = server.password
-        self.role = server.role
-        self.pinged = datetime.datetime.now()
-        self.db_info = dict()
-        self.server_types = None
-        self.db_res = server.db_res
-        self.db_res_type = server.db_res_type
-        self.name = server.name
-        self.passexec = build_passexec(server)
-        self.service = server.service
-
-        if config.SUPPORT_SSH_TUNNEL:
-            self.use_ssh_tunnel = server.use_ssh_tunnel
-            self.tunnel_host = server.tunnel_host
-            self.tunnel_port = \
-                22 if server.tunnel_port is None else server.tunnel_port
-            self.tunnel_username = server.tunnel_username
-            self.tunnel_authentication = 0 \
-                if server.tunnel_authentication is None \
-                else server.tunnel_authentication
-            self.tunnel_identity_file = server.tunnel_identity_file
-            self.tunnel_prompt_password = server.tunnel_prompt_password
-            self.tunnel_password = server.tunnel_password
-            self.tunnel_keep_alive = server.tunnel_keep_alive
-        else:
-            self.use_ssh_tunnel = 0
-            self.tunnel_host = None
-            self.tunnel_port = 22
-            self.tunnel_username = None
-            self.tunnel_authentication = None
-            self.tunnel_identity_file = None
-            self.tunnel_prompt_password = 0
+        with self.settings_lock:
+            self.settings_generation += 1
+            self.ver = None
+            self.sversion = None
+            self.server_type = None
+            self.server_cls = None
+            self.password = None
             self.tunnel_password = None
-            self.tunnel_keep_alive = 0
+            self.saved_tunnel_password_discarded = False
+            self.saved_password_discarded = False
 
-        self.kerberos_conn = server.kerberos_conn
-        self.gss_authenticated = False
-        self.gss_encrypted = False
-        self.connection_params = server.connection_params
-        try:
-            self.create_connection_string(self.db, self.user)
-        except PermissionError:
-            # A file path that escapes the user's storage directory, or a
-            # connection parameter whose key is not a libpq keyword, is
-            # reported when a connection is attempted; it must not stop the
-            # server being listed, or edited to correct the value.
-            pass
-        self.prepare_threshold = server.prepare_threshold
-        self.post_connection_sql = server.post_connection_sql
+            self.sid = server.id
+            self.host = server.host
+            self.port = server.port
+            self.db = server.maintenance_db
+            self.shared = server.shared
+            self.did = None
+            self.user = server.username
+            self.password = server.password
+            self.role = server.role
+            self.pinged = datetime.datetime.now()
+            self.db_info = dict()
+            self.server_types = None
+            self.db_res = server.db_res
+            self.db_res_type = server.db_res_type
+            self.name = server.name
+            self.passexec = build_passexec(server)
+            self.service = server.service
 
-        for con in self.connections:
-            self.connections[con]._release()
+            if config.SUPPORT_SSH_TUNNEL:
+                self.use_ssh_tunnel = server.use_ssh_tunnel
+                self.tunnel_host = server.tunnel_host
+                self.tunnel_port = \
+                    22 if server.tunnel_port is None else server.tunnel_port
+                self.tunnel_username = server.tunnel_username
+                self.tunnel_authentication = 0 \
+                    if server.tunnel_authentication is None \
+                    else server.tunnel_authentication
+                self.tunnel_identity_file = server.tunnel_identity_file
+                self.tunnel_prompt_password = server.tunnel_prompt_password
+                self.tunnel_password = server.tunnel_password
+                self.tunnel_keep_alive = server.tunnel_keep_alive
+            else:
+                self.use_ssh_tunnel = 0
+                self.tunnel_host = None
+                self.tunnel_port = 22
+                self.tunnel_username = None
+                self.tunnel_authentication = None
+                self.tunnel_identity_file = None
+                self.tunnel_prompt_password = 0
+                self.tunnel_password = None
+                self.tunnel_keep_alive = 0
+
+            self.kerberos_conn = server.kerberos_conn
+            self.auth_method = server.auth_method or AUTH_METHOD_PASSWORD
+            self.gss_authenticated = False
+            self.gss_encrypted = False
+            self.connection_params = server.connection_params
+            try:
+                self.create_connection_string(self.db, self.user)
+            except PermissionError:
+                # A file path that escapes the user's storage directory, or a
+                # connection parameter whose key is not a libpq keyword, is
+                # reported when a connection is attempted; it must not stop the
+                # server being listed, or edited to correct the value.
+                pass
+            self.prepare_threshold = server.prepare_threshold
+            self.post_connection_sql = server.post_connection_sql
+            # Taken from the map while the lock is held, so a connection
+            # registered or opened while they are released is either in
+            # the new map or superseded, never published outside it.
+            released, self.connections = self.connections, dict()
+            for con in released.values():
+                con.superseded = True
+
+        for con in released.values():
+            con._release()
 
         self.update_session()
-
-        self.connections = dict()
 
     def _set_password(self, res):
         """
@@ -191,6 +221,7 @@ class ServerManager(object):
         res['user'] = self.user
         res['service'] = self.service
         res['tunnel_host'] = self.tunnel_host
+        res['auth_method'] = self.auth_method
         res['pga_user'] = self.pga_user
 
         self._set_password(res)
@@ -253,10 +284,18 @@ class ServerManager(object):
         async_ = kwargs.get('async_', None)
         use_binary_placeholder = kwargs.get('use_binary_placeholder', False)
         array_to_string = kwargs.get('array_to_string', False)
+        # The database is chosen from the settings of this generation; an
+        # update() before the connection is registered chooses again.
+        with self.settings_lock:
+            generation = self.settings_generation
+        # What this call found out about the database, kept until it is
+        # known that no update() ran since; update() resets db_info.
+        rename_db = False
+        found_db = None
 
         if database is not None:
             if did is not None and did in self.db_info:
-                self.db_info[did]['datname'] = database
+                rename_db = True
         else:
             conn_str = CONN_STRING.format(conn_id)
             if did is None:
@@ -285,11 +324,10 @@ FROM
 WHERE db.oid = {0}""".format(did))
 
                         if status and len(res['rows']) > 0:
-                            for row in res['rows']:
-                                self.db_info[did] = row
-                                database = self.db_info[did]['datname']
+                            found_db = res['rows'][-1]
+                            database = found_db['datname']
 
-                        if did not in self.db_info:
+                        if found_db is None:
                             raise ObjectGone(gettext(
                                 "Could not find the specified database."
                             ))
@@ -311,21 +349,32 @@ WHERE db.oid = {0}""".format(did))
 
         self.pinged = datetime.datetime.now()
 
-        if my_id in self.connections:
-            return self.connections[my_id]
-        else:
+        conn = None
+        if my_id not in self.connections:
             if async_ is None:
                 async_ = 1 if conn_id is not None else 0
             else:
                 async_ = 1 if async_ is True else 0
-            self.connections[my_id] = Connection(
+            conn = Connection(
                 self, my_id, database, auto_reconnect=auto_reconnect,
                 async_=async_,
                 use_binary_placeholder=use_binary_placeholder,
                 array_to_string=array_to_string
             )
 
-            return self.connections[my_id]
+        with self.settings_lock:
+            if self.settings_generation == generation:
+                if rename_db and did in self.db_info:
+                    self.db_info[did]['datname'] = database
+                if found_db is not None:
+                    self.db_info[did] = found_db
+                if conn is not None:
+                    self.connections.setdefault(my_id, conn)
+                if my_id in self.connections:
+                    return self.connections[my_id]
+        # An update() ran since the database was chosen, or the connection
+        # found was released since; choose again.
+        return self.connection(**kwargs)
 
     @staticmethod
     def _get_password_to_conn(data, masterpass_processed):
@@ -516,45 +565,54 @@ WHERE db.oid = {0}""".format(did))
         if is_return:
             return return_value
 
+        # As in update(), a connection is taken from the map and marked
+        # superseded under the settings lock, so one that is being opened
+        # is not published once it is gone, and is released outside it.
         if my_id is not None:
-            if my_id in self.connections:
-                self.connections[my_id]._release()
-                del self.connections[my_id]
-                if did is not None:
-                    del self.db_info[did]
-
-                if len(self.connections) == 0:
-                    self.ver = None
-                    self.sversion = None
-                    self.server_type = None
-                    self.server_cls = None
-                    self.password = None
-
-                self.update_session()
-
-                return True
-            else:
+            with self.settings_lock:
+                conn = self.connections.pop(my_id, None)
+                if conn is not None:
+                    conn.superseded = True
+                    if did is not None:
+                        self.db_info.pop(did, None)
+                    if len(self.connections) == 0:
+                        self._forget_server_info()
+            if conn is None:
                 return False
 
-        for con_key in list(self.connections.keys()):
-            conn = self.connections[con_key]
-            # Cancel the ongoing transaction before closing the connection
-            # as it may hang forever
+            conn._release()
+            self.update_session()
+
+            return True
+
+        # Cancel the ongoing transactions before closing the connections
+        # as they may hang forever. cancel_transaction() finds its
+        # connection in the map, so this comes before they are taken out.
+        for conn in list(self.connections.values()):
             if conn.connected() and conn.conn_id is not None and \
                conn.conn_id.startswith('CONN:'):
                 conn.cancel_transaction(conn.conn_id[5:])
+
+        with self.settings_lock:
+            released, self.connections = self.connections, dict()
+            for conn in released.values():
+                conn.superseded = True
+            self._forget_server_info()
+
+        for conn in released.values():
             conn._release()
 
-        self.connections = dict()
+        self.update_session()
+
+        return True
+
+    def _forget_server_info(self):
+        """Forget what the released connections told about the server."""
         self.ver = None
         self.sversion = None
         self.server_type = None
         self.server_cls = None
         self.password = None
-
-        self.update_session()
-
-        return True
 
     def _update_password(self, passwd):
         self.password = passwd
@@ -598,10 +656,36 @@ WHERE db.oid = {0}""".format(did))
         utilities and psql sessions, and read by libpq for their
         connections.
 
+        A server with a token method has no password: a utility gets a new
+        token, when the method delivers it as the password (see
+        utility_password()). That needs the user's pgAdmin login, so it
+        raises OAuthTokenError when the token cannot be obtained.
+
         Returns:
             False and an error message if the password cannot be
             decrypted, otherwise None
         """
+        method = get_token_auth_method(self.auth_method)
+        if method:
+            # libpq takes the service's password over the token in env, so
+            # refuse before a token is requested.
+            if method.delivery.utility_password and \
+                    service_sets_password(self.service):
+                raise OAuthTokenError(gettext(
+                    'The service "{0}" sets a password, or is not in a '
+                    'service file pgAdmin can check, and the utility would '
+                    'use its password instead of the access token. Ask the '
+                    'pgAdmin administrator to remove the password from the '
+                    'service, or to set PGSYSCONFDIR to the directory of '
+                    'its service file, or clear the service in the '
+                    'server\'s properties.'
+                ).format(self.service))
+            token = utility_password(
+                self.auth_method, self.connection_params, self.host)
+            if token:
+                env[str(name)] = token
+            return None
+
         if self.password:
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
@@ -858,6 +942,12 @@ WHERE db.oid = {0}""".format(did))
 
                 # If key is hostaddr and ssh tunnel is in use don't overwrite.
                 if key == 'hostaddr' and self.use_ssh_tunnel:
+                    continue
+
+                # A token method has no database password: a stored one
+                # must not replace the token it delivers as the password.
+                if key == 'password' and \
+                        get_token_auth_method(self.auth_method):
                     continue
 
                 # Convert boolean connection parameters to integer for

@@ -36,6 +36,8 @@ from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
+from pgadmin.utils.auth_method import AUTH_METHOD_PASSWORD, AUTH_METHODS, \
+    check_token_ssl, check_kerberos_exclusive, is_valid_auth_method
 
 ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
@@ -458,6 +460,63 @@ def check_service_allowed(service):
             'administrator to add it to that setting in the pgAdmin '
             'configuration, or clear the service in the server\'s '
             'properties.').format(service))
+
+
+def _service_file_section(path, service):
+    """The keywords of the named section of a libpq service file, or None
+    when the file or the section does not exist."""
+    try:
+        with open(path, encoding='utf-8', errors='replace') as service_file:
+            lines = service_file.read().splitlines()
+    except OSError:
+        return None
+    section = None
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if line.startswith('['):
+            if section is not None:
+                return section
+            # As libpq matches it: the name and "]", whatever follows.
+            if line[1:len(service) + 2] == service + ']':
+                section = {}
+        elif section is not None and line.startswith('ldap'):
+            # libpq looks the entry up in LDAP, which may return a password
+            # pgAdmin cannot check, so the section is taken to set one.
+            section['password'] = None
+        elif section is not None and '=' in line:
+            key, value = line.split('=', 1)
+            section[key.strip()] = value.strip()
+    return section
+
+
+def service_sets_password(service):
+    """
+    Whether libpq could take a password from the named service's entry,
+    which it ranks above the PGPASSWORD of the environment. It reads the
+    entry from the user's service file (PGSERVICEFILE, else
+    .pg_service.conf in the home directory) and, only if that has none,
+    from pg_service.conf in PGSYSCONFDIR. A libpq without PGSYSCONFDIR
+    reads the directory it was built with, which only that libpq knows,
+    so an entry in neither file is taken to set one. libpq's own syntax,
+    not configparser's, is followed.
+    """
+    if not service:
+        return False
+    user_file = os.environ.get('PGSERVICEFILE')
+    if not user_file:
+        home = os.path.join(os.environ.get('APPDATA', ''), 'postgresql') \
+            if os.name == 'nt' else os.path.expanduser('~')
+        user_file = os.path.join(home, '.pg_service.conf')
+    section = _service_file_section(user_file, service)
+    if section is None:
+        if not os.environ.get('PGSYSCONFDIR'):
+            return True
+        section = _service_file_section(
+            os.path.join(os.environ['PGSYSCONFDIR'], 'pg_service.conf'),
+            service)
+    return bool(section) and 'password' in section
 
 
 def check_connection_params_allowed(params):
@@ -1128,6 +1187,8 @@ def dump_database_servers(output_file, selected_servers,
                       server.tunnel_keep_alive)
             add_value(attr_dict, "KerberosAuthentication",
                       server.kerberos_conn),
+            add_value(attr_dict, "AuthMethod",
+                      server.auth_method or AUTH_METHOD_PASSWORD)
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
             add_value(attr_dict, "Tags", server.tags)
@@ -1196,6 +1257,23 @@ def dump_database_servers(output_file, selected_servers,
     print(msg)
 
     return True, msg
+
+
+def _imported_connection_params(obj):
+    """The connection parameters of an imported server, as it is loaded:
+    its ConnectionParameters, or those of the format before them."""
+    if 'ConnectionParameters' in obj:
+        return obj.get("ConnectionParameters", None)
+    conn_param = dict()
+    for item in ['HostAddr', 'SSLMode', 'PassFile', 'SSLCert',
+                 'SSLKey', 'SSLRootCert', 'SSLCrl', 'Timeout',
+                 'SSLCompression']:
+        if item in obj:
+            key = item.lower()
+            if item == 'Timeout':
+                key = 'connect_timeout'
+            conn_param[key] = obj.get(item)
+    return conn_param
 
 
 def validate_json_data(data, is_admin):
@@ -1279,9 +1357,25 @@ def validate_json_data(data, is_admin):
             return gettext("'Host' or 'Service' attribute not "
                            "found for server '%s'" % server)
 
-        conn_params = obj.get("ConnectionParameters", None)
+        # A missing AuthMethod means password; an unknown one is an error,
+        # rather than silently importing as a password server.
+        auth_method = obj.get("AuthMethod", AUTH_METHOD_PASSWORD)
+        if not is_valid_auth_method(auth_method):
+            return gettext(
+                "Invalid AuthMethod '%s' for server '%s'. It must be one "
+                "of: %s." % (auth_method, server, ', '.join(AUTH_METHODS)))
+        errmsg = check_kerberos_exclusive(
+            auth_method, obj.get("KerberosAuthentication", None))
+        if errmsg:
+            return gettext("Server '%s': %s") % (server, errmsg)
+
+        # The parameters as loaded, so a legacy SSLMode is checked too.
+        conn_params = _imported_connection_params(obj)
         conn_params = dict(conn_params) \
             if isinstance(conn_params, dict) else {}
+        errmsg = check_token_ssl(auth_method, conn_params, obj.get("Host"))
+        if errmsg:
+            return gettext("Server '%s': %s") % (server, errmsg)
         if is_service_attrib_available:
             conn_params['service'] = obj["Service"]
         try:
@@ -1501,23 +1595,7 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.db_res_type = obj.get("DBRestrictionType", None)
 
-            if 'ConnectionParameters' in obj:
-                new_server.connection_params = \
-                    obj.get("ConnectionParameters", None)
-            else:
-                # JSON file format is old before introduction of the
-                # connection parameters.
-                conn_param = dict()
-                for item in ['HostAddr', 'SSLMode', 'PassFile', 'SSLCert',
-                             'SSLKey', 'SSLRootCert', 'SSLCrl', 'Timeout',
-                             'SSLCompression']:
-                    if item in obj:
-                        key = item.lower()
-                        if item == 'Timeout':
-                            key = 'connect_timeout'
-                        conn_param[key] = obj.get(item)
-
-                new_server.connection_params = conn_param
+            new_server.connection_params = _imported_connection_params(obj)
 
             # Refuse a key that is not an exact libpq keyword:
             # make_conninfo() quotes values but not keys, so a key carrying
@@ -1565,6 +1643,9 @@ def load_database_servers(input_file, selected_servers,
                 shared_username if new_server.shared else None
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
+
+            new_server.auth_method = obj.get(
+                "AuthMethod", AUTH_METHOD_PASSWORD)
 
             new_server.tags = obj.get("Tags", None)
 
@@ -1850,6 +1931,12 @@ def utility_conninfo(database, connection_params):
     :return: A connection string such as "dbname='my db' passfile='...'".
     """
     params = {} if database is None else {'dbname': database}
+    # A verify-full the server asks for always wins over a service entry,
+    # which outranks the PGSSLMODE the environment carries. The entra
+    # method requires it, so its token never reaches a server whose
+    # identity is not verified.
+    if (connection_params or {}).get('sslmode') == 'verify-full':
+        params['sslmode'] = 'verify-full'
     if client_files_isolated():
         try:
             env = connection_params_to_env(connection_params)
