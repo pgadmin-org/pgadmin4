@@ -20,8 +20,13 @@ CACHE {{data.seqcache|int}} {% endif %}
 {% if data.seqincrement or data.seqcycle or data.seqincrement or data.seqstart or data.seqmin or data.seqmax or data.seqcache %}){% endif %}
 {% endif %}{% endif %}{% if data.colconstype == 'g' and data.genexpr and data.genexpr != '' %} GENERATED ALWAYS AS ({{data.genexpr}}) STORED{% endif %};
 
-{###  NOT VALID NOT NULL constraint (PostgreSQL 18+), left out of ADD COLUMN ###}
+{###  NOT VALID NOT NULL constraint (PostgreSQL 18+), left out of ADD COLUMN. A SERIAL column is added NOT NULL, so that constraint is dropped first. ###}
 {% if data.notnull_notvalid_conname %}
+{% if data.cltype in ('serial', 'smallserial', 'bigserial') %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    ALTER COLUMN {{conn|qtIdent(data.name)}} DROP NOT NULL;
+
+{% endif %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ADD CONSTRAINT {{conn|qtIdent(data.notnull_notvalid_conname)}} {{data.notnull_notvalid_condef}};
 

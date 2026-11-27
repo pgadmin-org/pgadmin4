@@ -132,9 +132,15 @@ WITH (
 TABLESPACE {{ conn|qtIdent(data.spcname) }};
 {% endif %}
 {### NOT VALID NOT NULL constraints (PostgreSQL 18+), which the column ###}
-{### definitions above leave out ###}
+{### definitions above leave out. A SERIAL column is created NOT NULL, ###}
+{### so that constraint is dropped first. ###}
 {% if data.columns and data.columns|length > 0 %}
 {% for c in data.columns if c.notnull_notvalid_conname %}
+{% if c.cltype in ('serial', 'smallserial', 'bigserial') %}
+
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    ALTER COLUMN {{conn|qtIdent(c.name)}} DROP NOT NULL;
+{% endif %}
 
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     ADD CONSTRAINT {{conn|qtIdent(c.notnull_notvalid_conname)}} {{c.notnull_notvalid_condef}};

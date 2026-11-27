@@ -45,6 +45,11 @@ CREATE TABLE {0}.nv_to_valid (a integer);
 ALTER TABLE {0}.nv_to_valid ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
 
 CREATE TABLE {0}.valid_to_nv (a integer NOT NULL);
+
+CREATE TABLE {0}.nv_serial_source_only (a serial);
+ALTER TABLE {0}.nv_serial_source_only ALTER COLUMN a DROP NOT NULL;
+ALTER TABLE {0}.nv_serial_source_only
+    ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
 """
 
 TARGET_DDL = """
@@ -198,6 +203,10 @@ class SchemaDiffNotValidNotNullTestCase(BaseSocketTestGenerator):
             'nv_to_valid': ('Different',
                             'ADD CONSTRAINT nn_a NOT NULL a NOT VALID'),
             'valid_to_nv': ('Different', 'SET NOT NULL'),
+            # A SERIAL column is created NOT NULL, which has to be dropped
+            # before the NOT VALID constraint can be added.
+            'nv_serial_source_only': (
+                'Source Only', 'ADD CONSTRAINT nn_a NOT NULL a NOT VALID'),
         }
         for title, (status, statement) in expected.items():
             compared = self.find_object(response_data, title)
