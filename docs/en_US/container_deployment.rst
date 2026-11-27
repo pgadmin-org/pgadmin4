@@ -198,6 +198,39 @@ container is started as root.
 Specify an output file in which to store the Gunicorn access logs, instead of
 sending them to stdout.
 
+**GUNICORN_CMD_ARGS**
+
+*Default: <null>*
+
+This variable is read by Gunicorn itself, and can be used to pass any of the
+`Gunicorn settings <https://docs.gunicorn.org/en/stable/settings.html>`_ that
+pgAdmin does not offer a variable for, for example
+``GUNICORN_CMD_ARGS="--keep-alive 5"``. Options that the container passes
+to Gunicorn on its command line take precedence over those given here, so
+use the dedicated variables to change the request line limit, the number of
+threads, the access log file, the timeout or the listen address. pgAdmin
+must be run with a single Gunicorn worker, so do not change the number of
+workers.
+
+**GUNICORN_LIMIT_REQUEST_FIELD_SIZE**
+
+*Default: <null>* (Gunicorn's default of 8190)
+
+Set the maximum size of an HTTP request header field in bytes. This may need
+to be increased if pgAdmin is placed behind an authenticating proxy that
+sends large headers, such as a bearer token carrying a large JWT. Use a
+positive value large enough for the biggest header expected rather than 0
+(zero): Gunicorn treats 0 as unlimited for each field, but still caps the
+total size of the headers at roughly 8KB per allowed field. Very large values
+pose a potential denial of service hazard.
+
+**GUNICORN_LIMIT_REQUEST_FIELDS**
+
+*Default: <null>* (Gunicorn's default of 100)
+
+Set the maximum number of header fields in an HTTP request, which may not be
+larger than 32768.
+
 **GUNICORN_LIMIT_REQUEST_LINE**
 
 *Default: 8190*
