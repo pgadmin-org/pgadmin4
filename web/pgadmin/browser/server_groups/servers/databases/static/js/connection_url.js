@@ -108,13 +108,18 @@ export function buildConnectionURL(server, dbname) {
   }
 
   if (host) {
-    // libpq accepts a comma-separated list of hosts; a single port applies to
-    // each of them, so it is repeated after every host in the URI. An empty
-    // entry is kept, as libpq uses its default (local) connection for it.
-    const portSuffix = port ? ':' + port : '';
+    // libpq accepts a comma-separated list of hosts, and of ports. A single
+    // port applies to every host, so it is repeated after each one in the
+    // URI; otherwise each port goes with the host in the same position. An
+    // empty entry in either list is kept, as libpq uses its default (local)
+    // connection or port for it.
+    const ports = String(port ?? '').split(',').map((p)=>p.trim());
     url += host.split(',')
       .map((h)=>h.trim())
-      .map((h)=>(h ? formatHost(h) : '') + portSuffix)
+      .map((h, i)=>{
+        const hostPort = ports.length === 1 ? ports[0] : ports[i];
+        return (h ? formatHost(h) : '') + (hostPort ? ':' + hostPort : '');
+      })
       .join(',');
   } else if (port) {
     url += ':' + port;
