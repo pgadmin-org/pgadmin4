@@ -346,7 +346,12 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 row['oid'], trigger_function_schema_oid,
                 gettext(func_name),
                 icon="icon-trigger_function", funcowner=row['funcowner'],
-                language=row['lanname'], inode=False)
+                language=row['lanname'], inode=False,
+                # Lets the client build the trigger function's own path in
+                # the tree, which sits under Catalogs rather than Schemas
+                # when the function lives in a catalog such as pgagent.
+                schema_is_catalog=bool(
+                    rset['rows'][0]['tfuncschiscatalog']))
             )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
