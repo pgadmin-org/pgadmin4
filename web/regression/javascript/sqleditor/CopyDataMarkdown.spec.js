@@ -61,7 +61,8 @@ describe('CopyData Markdown table', () => {
     localStorage.setItem('copied-rows', '[]');
     localStorage.setItem('copied-with-headers', 'true');
     copyData.copyRowsToMarkdown([{ id: 1, note: null }], columns);
-    expect(clipboard.copyToClipboard).toHaveBeenCalledWith('| id | note |\n| --- | --- |\n| 1 |  |');
+    expect(clipboard.copyToClipboard).toHaveBeenCalledWith(
+      '| id | note |\n| --- | --- |\n| 1 |  |', {cache: false});
     expect(localStorage.getItem('copied-rows')).toBeNull();
     expect(localStorage.getItem('copied-with-headers')).toBeNull();
   });

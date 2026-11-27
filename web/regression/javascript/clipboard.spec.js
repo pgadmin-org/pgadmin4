@@ -44,6 +44,13 @@ describe('copyToClipboard', () => {
     expect(getFromClipboard()).toBe('SELECT 1');
   });
 
+  it('clears the cache instead when asked not to cache', async () => {
+    localStorage.setItem('clipboard', 'a\tb');
+    await expect(copyToClipboard('| a |', {cache: false})).resolves.toBe(true);
+    expect(writeText).toHaveBeenCalledWith('| a |');
+    expect(getFromClipboard()).toBeNull();
+  });
+
   it('reports failure when the clipboard write is rejected', async () => {
     writeText.mockRejectedValue(new Error('denied'));
     await expect(copyToClipboard('SELECT 1')).resolves.toBe(false);

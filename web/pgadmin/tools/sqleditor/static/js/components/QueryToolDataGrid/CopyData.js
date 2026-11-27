@@ -89,8 +89,8 @@ export default class CopyData {
   }
 
   copyRowsToMarkdown(rows=[], columns=[]) {
-    clipboard.copyToClipboard(this.rowsToMarkdown(rows, columns));
-    /* Markdown cannot be pasted back as rows, so drop the previous copy's state */
+    /* Markdown cannot be pasted back as rows, so leave Paste nothing to insert */
+    clipboard.copyToClipboard(this.rowsToMarkdown(rows, columns), {cache: false});
     localStorage.removeItem('copied-with-headers');
     localStorage.removeItem('copied-rows');
   }
