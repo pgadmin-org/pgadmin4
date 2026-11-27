@@ -49,6 +49,13 @@ describe('CopyData Markdown table', () => {
     ['CRLF as one <br>', 'a\r\nb', 'a<br>b'],
     ['CR as <br>', 'a\rb', 'a<br>b'],
     ['JSON as its text', { k: 'v|w' }, '{"k":"v\\|w"}'],
+    ['HTML as literal text', '<b>x</b> &amp;', '\\<b>x\\</b> \\&amp;'],
+    ['emphasis, code and strikethrough as literal text',
+      '*a* `b` ~c~', '\\*a\\* \\`b\\` \\~c\\~'],
+    ['a link as literal text', '[a](b)', '\\[a\\](b)'],
+    ['an underscore that could start emphasis escaped', '_a_ b_', '\\_a\\_ b\\_'],
+    ['an underscore inside a word as it is', 'user_id', 'user_id'],
+    ['an escaped line break as <br>, not \\<br>', '<a>\n', '\\<a><br>'],
   ])('renders %s', (_desc, value, expected) => {
     expect(copyData.markdownCell(value)).toBe(expected);
   });
@@ -65,5 +72,10 @@ describe('CopyData Markdown table', () => {
       '| id | note |\n| --- | --- |\n| 1 |  |', {cache: false});
     expect(localStorage.getItem('copied-rows')).toBeNull();
     expect(localStorage.getItem('copied-with-headers')).toBeNull();
+  });
+
+  it('pastes nothing when nothing has been copied', () => {
+    clipboard.getFromClipboard.mockReturnValue(null);
+    expect(copyData.getCopiedRows()).toEqual([]);
   });
 });
