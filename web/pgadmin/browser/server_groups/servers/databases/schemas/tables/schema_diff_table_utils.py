@@ -363,7 +363,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                              'confupdtype', 'confdeltype',
                                              'confdelsetcols',
                                              'confmatchtype', 'convalidated',
-                                             'conislocal', 'refnsp', 'reftab']
+                                             'conperiod', 'conislocal',
+                                             'refnsp', 'reftab']
                              }
 
         for constraint in ['primary_key', 'unique_constraint',

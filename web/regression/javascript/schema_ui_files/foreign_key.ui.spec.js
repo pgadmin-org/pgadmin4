@@ -256,6 +256,16 @@ describe('ForeignKeySchema', ()=>{
     expect(field.readonly({oid: 1234, conenforced: true})).toBe(true);
   });
 
+  it('a foreign key using PERIOD only allows NO ACTION', ()=>{
+    for(const id of ['confupdtype', 'confdeltype']) {
+      let field = _.find(schemaObj.fields, (f)=>f.id==id);
+      expect(field.depChange({conperiod: true})).toEqual({[id]: 'a'});
+      expect(field.depChange({conperiod: false})).toBeUndefined();
+      expect(field.readonly({conperiod: true})).toBe(true);
+      expect(field.readonly({conperiod: false})).toBeFalsy();
+    }
+  });
+
   it('table column addition is a no-op for a removed foreign key', ()=>{
     schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(undefined, ['columns'], null, {
@@ -285,6 +295,13 @@ describe('ForeignKeySchema', ()=>{
     expect(setError).toHaveBeenCalledWith('coveringindex', 'Please specify covering index name.');
 
     state.coveringindex = 'asdas';
+    expect(schemaObj.validate(state, setError)).toBe(false);
+
+    state.conperiod = true;
+    expect(schemaObj.validate(state, setError)).toBe(true);
+    expect(setError).toHaveBeenCalledWith('columns', 'A foreign key using PERIOD needs at least two columns.');
+
+    state.columns = ['id', 'valid_at'];
     expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });

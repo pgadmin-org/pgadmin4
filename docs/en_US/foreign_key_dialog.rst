@@ -47,6 +47,14 @@ Use the fields in the *Definition* tab to define the foreign key constraint:
       if any column is null, the row is not required to have a match in the
       referenced table.
 
+* Move the *Period?* switch to the *Yes* position to create a temporal foreign
+  key, which compares the last column pair on the *Columns* tab using
+  *PERIOD*: each referencing row's range must be covered by the ranges of the
+  matching referenced rows. The referenced columns must be a primary key or
+  unique constraint using *WITHOUT OVERLAPS*, the foreign key needs at least
+  two columns, and the *On update* and *On delete* actions are fixed at
+  *NO ACTION*. The default is *No*. This option is available on PostgreSQL 18
+  and later.
 * Move the *Enforced?* switch to the *No* position to create the foreign key
   as *NOT ENFORCED*; PostgreSQL records the constraint but does not check it
   against the table content. A foreign key that is not enforced cannot be

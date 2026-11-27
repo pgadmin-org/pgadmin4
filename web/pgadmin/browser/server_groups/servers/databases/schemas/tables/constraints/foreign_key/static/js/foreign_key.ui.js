@@ -158,6 +158,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       confmatchtype: false,
       convalidated: undefined,
       conenforced: true,
+      conperiod: false,
       columns: undefined,
       confupdtype: 'a',
       confdeltype: 'a',
@@ -252,6 +253,12 @@ export default class ForeignKeySchema extends BaseUISchema {
         {label: 'FULL', value: true},
         {label: 'SIMPLE', value: false},
       ], readonly: obj.isReadonly,
+    },{
+      id: 'conperiod', label: gettext('Period?'),
+      type: 'switch', group: gettext('Definition'), min_version: 180000,
+      readonly: obj.isReadonly,
+      helpMessage: gettext('Make this a temporal foreign key: the last column pair is compared with PERIOD, and the referenced key must use WITHOUT OVERLAPS.'),
+      helpMessageMode: ['edit', 'create'],
     },{
       id: 'conenforced', label: gettext('Enforced?'),
       type: 'switch', group: gettext('Definition'), min_version: 180000,
@@ -416,6 +423,13 @@ export default class ForeignKeySchema extends BaseUISchema {
     },{
       id: 'confupdtype', label: gettext('On update'),
       type:'select', group: gettext('Action'), mode: ['edit','create'],
+      deps: ['conperiod'],
+      // A foreign key using PERIOD only supports NO ACTION.
+      depChange: (state)=>{
+        if(state.conperiod) {
+          return {confupdtype: 'a'};
+        }
+      },
       controlProps:{allowClear: false},
       options: [
         {label: 'NO ACTION', value: 'a'},
@@ -423,23 +437,35 @@ export default class ForeignKeySchema extends BaseUISchema {
         {label: 'CASCADE', value: 'c'},
         {label: 'SET NULL', value: 'n'},
         {label: 'SET DEFAULT', value: 'd'},
-      ], readonly: obj.isReadonly,
+      ], readonly: (state)=>obj.isReadonly(state) || state.conperiod,
     },{
       id: 'confdeltype', label: gettext('On delete'),
       type:'select', group: gettext('Action'), mode: ['edit','create'],
+      deps: ['conperiod'],
+      // A foreign key using PERIOD only supports NO ACTION.
+      depChange: (state)=>{
+        if(state.conperiod) {
+          return {confdeltype: 'a'};
+        }
+      },
       options: [
         {label: 'NO ACTION', value: 'a'},
         {label: 'RESTRICT', value: 'r'},
         {label: 'CASCADE', value: 'c'},
         {label: 'SET NULL', value: 'n'},
         {label: 'SET DEFAULT', value: 'd'},
-      ], readonly: obj.isReadonly,
+      ], readonly: (state)=>obj.isReadonly(state) || state.conperiod,
     }];
   }
 
   validate(state, setError) {
     if ((_.isUndefined(state.columns) || _.isNull(state.columns) || state.columns.length < 1)) {
       setError('columns', gettext('Please specify columns for Foreign key.'));
+      return true;
+    }
+
+    if (state.conperiod && state.columns.length < 2) {
+      setError('columns', gettext('A foreign key using PERIOD needs at least two columns.'));
       return true;
     }
 
