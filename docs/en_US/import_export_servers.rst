@@ -36,6 +36,9 @@ Click the *Next* button to continue, or the *X* button to close the wizard.
 
 * Select the Server Groups/ Servers to be imported/exported.
 
+* Use the *Select all* checkbox above the tree to select or deselect all of the
+  Server Groups/Servers at once.
+
 Click the *Next* button to continue, or the *X* button to close the wizard.
 
 .. image:: images/import_export_servers_step3.png
