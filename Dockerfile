@@ -125,6 +125,7 @@ FROM postgres:15-alpine AS pg15-builder
 FROM postgres:16-alpine AS pg16-builder
 FROM postgres:17-alpine AS pg17-builder
 FROM postgres:18-alpine AS pg18-builder
+FROM postgres:19-alpine AS pg19-builder
 
 FROM alpine:latest AS tool-builder
 
@@ -158,6 +159,11 @@ COPY --from=pg18-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-18/
 COPY --from=pg18-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-18/
 COPY --from=pg18-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-18/
 COPY --from=pg18-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-18/
+
+COPY --from=pg19-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-19/
+COPY --from=pg19-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-19/
+COPY --from=pg19-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-19/
+COPY --from=pg19-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-19/
 
 #########################################################################
 # Assemble everything into the final container.

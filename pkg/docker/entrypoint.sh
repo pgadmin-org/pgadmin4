@@ -159,7 +159,8 @@ CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 LOG_FILE = '/dev/null'
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {
-        'pg': '/usr/local/pgsql-18',
+        'pg': '/usr/local/pgsql-19',
+        'pg-19': '/usr/local/pgsql-19',
         'pg-18': '/usr/local/pgsql-18',
         'pg-17': '/usr/local/pgsql-17',
         'pg-16': '/usr/local/pgsql-16',
