@@ -4,9 +4,12 @@ import pgAdmin from 'sources/pgadmin';
  * Resolves to whether the text reached the system clipboard. The text is also
  * cached in localStorage, which is what the Query Tool grid's Paste reads.
  * Pass cache: false for text that cannot be pasted back as rows, which clears
- * the cache instead so that Paste does not insert it.
+ * the cache instead so that Paste does not insert it. The cache is updated
+ * before the system clipboard write starts, so that a Paste whilst the write
+ * is pending never reads the previous copy's text.
  */
 export async function copyToClipboard(text, {cache=true}={}) {
+  cacheClipboardText(text, cache);
   let copied = true;
   try {
     await navigator.clipboard.writeText(text);
@@ -15,7 +18,6 @@ export async function copyToClipboard(text, {cache=true}={}) {
     pgAdmin.Browser.notifier.error('Does not have clipboard access');
     copied = false;
   }
-  cacheClipboardText(text);
   return copied;
 }
 
@@ -49,7 +51,7 @@ export async function copyPromisedTextToClipboard(textPromise) {
   return copied;
 }
 
-function cacheClipboardText(text) {
+function cacheClipboardText(text, cache=true) {
   try {
     if(cache) {
       localStorage.setItem('clipboard', text);

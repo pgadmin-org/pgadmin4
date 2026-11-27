@@ -51,6 +51,16 @@ describe('copyToClipboard', () => {
     expect(getFromClipboard()).toBeNull();
   });
 
+  it('clears the cache before the clipboard write settles', async () => {
+    let settle;
+    writeText.mockReturnValue(new Promise((resolve) => { settle = resolve; }));
+    localStorage.setItem('clipboard', 'a\tb');
+    const copied = copyToClipboard('| a |', {cache: false});
+    expect(getFromClipboard()).toBeNull();
+    settle();
+    await expect(copied).resolves.toBe(true);
+  });
+
   it('reports failure when the clipboard write is rejected', async () => {
     writeText.mockRejectedValue(new Error('denied'));
     await expect(copyToClipboard('SELECT 1')).resolves.toBe(false);
