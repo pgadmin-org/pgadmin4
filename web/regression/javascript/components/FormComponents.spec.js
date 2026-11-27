@@ -95,6 +95,39 @@ describe('FormComponents', ()=>{
     it('accessibility', ()=>{
       onAccessibility();
     });
+
+    it.each([
+      [true, '  my col  ', 'my col', ['  my col  ', 'my col']],
+      [true, 'my col', 'my col', ['my col']],
+      [false, '  my col  ', '  my col  ', ['  my col  ']],
+    ])('trimOnBlur=%s, typed %p, blurred to %p',
+      (trimOnBlur, typed, expected, expectedCalls)=>{
+        const onChange = jest.fn();
+        ctrlRerender({
+          value: '',
+          onChange: onChange,
+          controlProps: {trimOnBlur: trimOnBlur},
+        });
+        const input = screen.getByTestId('input-text');
+        fireEvent.change(input, {target: {value: typed}});
+        fireEvent.blur(input);
+        expect(input.value).toBe(expected);
+        expect(onChange.mock.calls.map((c)=>c[0])).toEqual(expectedCalls);
+      });
+
+    it('trimOnBlur does not trim a value the user has not edited', ()=>{
+      const onChange = jest.fn();
+      ctrlRerender({
+        value: ' existing ',
+        onChange: onChange,
+        controlProps: {trimOnBlur: true},
+      });
+      const input = screen.getByTestId('input-text');
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+      expect(input.value).toBe(' existing ');
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe('FormInputFileSelect', ()=>{

@@ -224,6 +224,11 @@ describe('ColumnSchema', ()=>{
     ]);
   });
 
+  it('name - trims leading and trailing whitespace on blur', ()=>{
+    let nameField = _.find(schemaObj.fields, (f)=>f.id === 'name');
+    expect(nameField.controlProps?.trimOnBlur).toBe(true);
+  });
+
   it('editableCheckForTable', ()=>{
     let state = {};
     schemaObj.nodeInfo = {};
