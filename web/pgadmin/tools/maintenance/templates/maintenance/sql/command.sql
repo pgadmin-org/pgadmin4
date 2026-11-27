@@ -15,10 +15,10 @@
 {% if data.buffer_usage_limit %}{{ maintenance_options.append('BUFFER_USAGE_LIMIT "' + data.buffer_usage_limit + '"') or "" }}{% endif %}
 {% if data.reindex_tablespace %}{{ maintenance_options.append('TABLESPACE ' + conn|qtIdent(data.reindex_tablespace)) or "" }}{% endif %}
 {% if data.op == "VACUUM" %}
-VACUUM{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if data.schema %} {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.table) }}{% endif %};
+VACUUM{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if data.schema %} {% if data.only and data.table %}ONLY {% endif %}{{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.table) }}{% endif %};
 {% endif %}
 {% if data.op == "ANALYZE" %}
-ANALYZE{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if data.schema %} {{ conn|qtIdent(data.schema, data.table) }}{% endif %};
+ANALYZE{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if data.schema %} {% if data.only and data.table %}ONLY {% endif %}{{ conn|qtIdent(data.schema, data.table) }}{% endif %};
 {% endif %}
 {% if data.op == "REINDEX" %}
 {% if index_name %}

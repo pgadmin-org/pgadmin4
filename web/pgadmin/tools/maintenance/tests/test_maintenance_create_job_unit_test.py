@@ -487,6 +487,71 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              message='ANALYZE BUFFER_USAGE_LIMIT is not supported by '
                      'EPAS/PG server less than 16.0'
          )),
+        ('When maintaining object with VACUUM ONLY on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 only=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE) ONLY my_schema.my_table;\n'],
+             server_min_version=180000,
+             message='VACUUM ONLY is not supported by EPAS/PG server '
+                     'less than 18.0'
+         )),
+        ('When maintaining object with ANALYZE ONLY on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='ANALYZE',
+                 schema='my_schema',
+                 table='my_table',
+                 only=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE) ONLY '
+                                'my_schema.my_table;\n'],
+             server_min_version=180000,
+             message='ANALYZE ONLY is not supported by EPAS/PG server '
+                     'less than 18.0'
+         )),
+        ('When maintaining database with ONLY, it is ignored',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 only=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE);\n'],
+         )),
         ('When maintenance the object with the REINDEX SYSTEM',
          dict(
              class_params=dict(

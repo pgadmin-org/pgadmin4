@@ -29,6 +29,10 @@ export class VacuumSchema extends BaseUISchema {
   isApplicableForReindex(state) {
     return state?.op ? state.op == 'REINDEX' : false;
   }
+  isApplicableForOnly(state) {
+    return (state?.op == 'VACUUM' || state?.op == 'ANALYZE') &&
+      Boolean(this.top?.nodeInfo?.table) && !this.top?.nodeInfo?.partition;
+  }
 
   get baseFields() {
     let obj = this;
@@ -113,6 +117,26 @@ export class VacuumSchema extends BaseUISchema {
         return false;
       },
       min_version: 120000,
+    }, {
+      // ONLY skips the inheritance children or partitions of the selected
+      // table, so it is meaningless unless a table is the target. It is
+      // hidden for a partition, as the command would then name its parent.
+      id: 'only',
+      deps: ['op'],
+      type: 'switch',
+      label: gettext('ONLY'),
+      inlineGroup: 'operations',
+      visible: function(state) {
+        return obj.isApplicableForOnly(state);
+      },
+      disabled: function(state) {
+        if (!obj.isApplicableForOnly(state)) {
+          state.only = false;
+          return true;
+        }
+        return false;
+      },
+      min_version: 180000,
     }, {
       id: 'vacuum_truncate',
       deps: ['op', 'vacuum_full'],
