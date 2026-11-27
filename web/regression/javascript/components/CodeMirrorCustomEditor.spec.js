@@ -355,6 +355,32 @@ describe('CodeMirrorCustomEditorView', ()=>{
       'select 1;\nselect 2;\nselect 1;\nselect 2;\nselect 3;');
   });
 
+  // Outside a dialog, Mod-Enter keeps CodeMirror's default insertBlankLine,
+  // which the Query Tool relies on unless a shortcut of its own claims the
+  // key. Inside a dialog it saves instead, so must not edit the text (#7167).
+  it('Mod-Enter inserts a blank line outside a dialog',()=>{
+    cmRerender({value: 'select 1;'});
+    editor.dispatch({selection: {anchor: 9}});
+    runScopeHandlers(editor, new KeyboardEvent('keydown', {
+      key: 'Enter', code: 'Enter', keyCode: 13, ctrlKey: true,
+    }), 'editor');
+    expect(editor.state.doc.toString()).toEqual('select 1;\n');
+  });
+
+  it('Mod-Enter leaves the text alone inside a dialog',()=>{
+    cmInstance.rerender(
+      <div data-save-on-mod-enter>
+        <ThemedCM value={'select 1;'} currEditor={(obj) => { editor = obj; }} />
+      </div>
+    );
+    editor.dispatch({selection: {anchor: 9}});
+    const handled = runScopeHandlers(editor, new KeyboardEvent('keydown', {
+      key: 'Enter', code: 'Enter', keyCode: 13, ctrlKey: true,
+    }), 'editor');
+    expect(handled).toBe(true);
+    expect(editor.state.doc.toString()).toEqual('select 1;');
+  });
+
   describe('replaceSelection', ()=>{
     it('keeps the replaced selection selected', ()=>{
       cmRerender({value: 'select 1;'});

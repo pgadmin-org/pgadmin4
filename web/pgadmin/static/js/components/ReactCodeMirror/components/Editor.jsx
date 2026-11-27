@@ -334,7 +334,17 @@ export default function Editor({
     if (!checkIsMounted()) return;
     const keys = keymap.of([
       // Filtering out the default keymaps so that it uses the custom keymaps.
-      customKeyMap??[], ...completionKeymap.filter(k => k.key != 'Ctrl-Space'),
+      customKeyMap??[],
+      // In a dialog, Ctrl/Cmd+Enter saves and closes it (issue #7167), so
+      // claim the key there to stop defaultKeymap's Mod-Enter
+      // (insertBlankLine) adding a newline that then gets saved. The keydown
+      // still bubbles up to the dialog's handler. Elsewhere, such as the
+      // Query Tool, this returns false and Mod-Enter behaves as before.
+      {
+        key: 'Mod-Enter',
+        run: (view) => Boolean(view.dom.closest('[data-save-on-mod-enter]')),
+      },
+      ...completionKeymap.filter(k => k.key != 'Ctrl-Space'),
       defaultKeymap.filter(k => k.key != 'Mod-/'), closeBracketsKeymap, historyKeymap,
       foldKeymap
     ].flat());
