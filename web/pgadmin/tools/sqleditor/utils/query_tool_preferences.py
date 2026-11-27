@@ -20,6 +20,13 @@ from config import DATA_RESULT_ROWS_PER_PAGE
 GEOMETRY_VIEWER_CRS_CHOICES = ('EPSG:3857', 'EPSG:4326', 'EPSG:3395')
 
 
+def get_display_bytea_as_hex():
+    """Return the current user's 'Show binary data as hex?' preference."""
+    from pgadmin.utils.preferences import Preferences
+    return bool(Preferences.module('sqleditor').preference(
+        'display_bytea_as_hex').get())
+
+
 def resolve_geometry_viewer_provider_defaults():
     """Resolve config.DEFAULT_GEOMETRY_VIEWER_PROVIDER into safe defaults
     for the geometry_viewer preferences.
@@ -491,6 +498,19 @@ def register_query_tool_preferences(self):
         200, category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext('Maximum number of characters to display in a '
                          'data cell.')
+    )
+
+    self.display_bytea_as_hex = self.preference.register(
+        'Results_grid', 'display_bytea_as_hex',
+        gettext("Show binary data as hex?"), 'boolean',
+        False, category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('If set to True, bytea values are shown in the '
+                         'results grid in PostgreSQL\'s hex format (\\x...) '
+                         'rather than as [binary data]. The values are '
+                         'fetched in full, so this may be slow for large '
+                         'binary values. Binary data still cannot be '
+                         'edited in the results grid. Takes effect the '
+                         'next time a query is run.')
     )
 
     self.display_connection_status = self.preference.register(

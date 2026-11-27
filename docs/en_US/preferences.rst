@@ -802,6 +802,14 @@ preferences for copied data.
   be toggled per-copy from the results grid copy options menu.
 * When the *Striped rows?* switch is set to true, the result grid will display
   rows with alternating background colors.
+* When the *Show binary data as hex?* switch is set to true, *bytea* values
+  are shown in PostgreSQL's hex format (for example, ``\x0aff``) instead of
+  *[binary data]*, and copying a cell or saving the results to a file gives
+  the hex text. The value is truncated in the cell according to *Max column
+  data display length*, but it is always fetched in full, so this may be slow
+  for large binary values.
+  Binary data still cannot be edited in the results grid. The setting applies
+  the next time a query is run. Default is set to *False*.
 
 .. image:: images/preferences_sql_keyboard_shortcuts.png
     :alt: Preferences sql keyboard shortcuts section

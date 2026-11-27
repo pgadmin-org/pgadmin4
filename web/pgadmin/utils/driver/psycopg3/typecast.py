@@ -182,20 +182,26 @@ def register_numeric_typecasters(_cursor):
                                      IntLoader)
 
 
-def register_binary_typecasters(connection):
+def register_binary_typecasters(connection, bytea_as_hex=False):
     # The new classes can be registered globally, on a connection, on a cursor
+    #
+    # By default bytea values are replaced by a 'binary data' placeholder so
+    # that potentially large values are never sent to the client. With
+    # bytea_as_hex they are returned as the text PostgreSQL sends for them
+    # instead, which is the hex form (\x...) as the session sets
+    # bytea_output to hex.
+    if bytea_as_hex:
+        connection.adapters.register_loader(17, ByteaHexLoader)
+        connection.adapters.register_loader(1001, TextLoaderpgAdmin)
+        connection.adapters.register_loader(17, ByteaHexBinaryLoader)
+    else:
+        connection.adapters.register_loader(17, ByteaLoader)
+        connection.adapters.register_loader(1001, ByteaLoader)
+        connection.adapters.register_loader(17, ByteaBinaryLoader)
 
-    connection.adapters.register_loader(17,
-                                        ByteaLoader)
-
-    connection.adapters.register_loader(1001,
-                                        ByteaLoader)
-
-    connection.adapters.register_loader(17,
-                                        ByteaBinaryLoader)
-
-    connection.adapters.register_loader(1001,
-                                        ByteaBinaryLoader)
+    # Results are fetched in text format, so a binary bytea[] is never seen
+    # in practice; keep the placeholder for it in both modes.
+    connection.adapters.register_loader(1001, ByteaBinaryLoader)
 
 
 def register_array_to_string_typecasters(connection=None):
@@ -253,6 +259,47 @@ class ByteaBinaryLoader(Loader):
 
     def load(self, data):
         return 'binary data' if data is not None else None
+
+
+def _unescape_bytea(data):
+    """Convert bytea output in PostgreSQL's escape format to bytes: '\\\\'
+    is a backslash, '\\nnn' an octal byte, and anything else is literal."""
+    out = bytearray()
+    i = 0
+    while i < len(data):
+        if data[i] == 0x5c:  # backslash
+            if data[i + 1] == 0x5c:
+                out.append(0x5c)
+                i += 2
+            else:
+                out.append(int(data[i + 1:i + 4], 8))
+                i += 4
+        else:
+            out.append(data[i])
+            i += 1
+    return bytes(out)
+
+
+class ByteaHexLoader(Loader):
+    # Returns bytea values as hex text (\x...). The session sets
+    # bytea_output to hex, but a query may change it to escape, so that
+    # format is converted.
+    def load(self, data):
+        if data is None:
+            return None
+        raw = bytes(data)
+        if raw.startswith(b'\\x'):
+            return raw.decode('ascii')
+        return '\\x' + _unescape_bytea(raw).hex()
+
+
+class ByteaHexBinaryLoader(Loader):
+    format = _pq_Format.BINARY
+
+    def load(self, data):
+        if data is None:
+            return None
+        return '\\x' + bytes(data).hex()
 
 
 class ByteaDataLoader(Loader):

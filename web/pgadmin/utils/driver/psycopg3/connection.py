@@ -402,6 +402,7 @@ class Connection(BaseConnection):
         self.__transaction_control_cursor = None
         self.__async_query_id = None
         self.__async_query_error = None
+        self.__async_bytea_as_hex = False
         self.__backend_pid = None
         self.execution_aborted = False
         self.row_count = 0
@@ -1401,7 +1402,7 @@ WHERE db.datname = current_database()""")
                 print("EXception==", str(e))
 
     def execute_async(self, query, params=None, formatted_exception_msg=True,
-                      server_cursor=False):
+                      server_cursor=False, bytea_as_hex=False):
         """
         This function executes the given query asynchronously and returns
         result.
@@ -1411,6 +1412,9 @@ WHERE db.datname = current_database()""")
             params: extra parameters to the function
             formatted_exception_msg: if True then function return the
             formatted exception message
+            server_cursor: if True then use a server side cursor
+            bytea_as_hex: if True, and the connection uses the binary
+            placeholder, return bytea values as hex text instead
         """
         self.__async_cursor = None
         self.__async_query_error = None
@@ -1420,6 +1424,14 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
+
+        if self.use_binary_placeholder:
+            # Apply the bytea display mode to this cursor, which may predate
+            # the call, and to the connection, so that rows read back later
+            # on it (e.g. after saving changes) are shown the same way.
+            register_binary_typecasters(self.conn, bytea_as_hex)
+            register_binary_typecasters(cur, bytea_as_hex)
+            self.__async_bytea_as_hex = bytea_as_hex
         query_id = str(secrets.choice(range(1, 9999999)))
 
         encoding = self.python_encoding
@@ -2109,6 +2121,11 @@ Failed to reset the connection to the server due to following error:
         return self.row_count
 
     @property
+    def async_bytea_as_hex(self):
+        """Whether the last async query returned bytea values as hex."""
+        return self.__async_bytea_as_hex
+
+    @property
     def total_rows(self):
         if self.__async_cursor is None:
             return 0
@@ -2490,4 +2507,4 @@ Failed to reset the connection to the server due to following error:
         finally:
             # Always restore the original typecasters
             # (works on connection or cursor)
-            register_binary_typecasters(cur)
+            register_binary_typecasters(cur, self.__async_bytea_as_hex)

@@ -57,7 +57,7 @@ from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
-    register_query_tool_preferences
+    register_query_tool_preferences, get_display_bytea_as_hex
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.tools.sqleditor.utils.macros import get_macros, \
@@ -1105,7 +1105,8 @@ def start_view_data(trans_id):
         # Execute sql asynchronously
         status, result = conn.execute_async(
             sql,
-            server_cursor=trans_obj.server_cursor)
+            server_cursor=trans_obj.server_cursor,
+            bytea_as_hex=get_display_bytea_as_hex())
 
     else:
         status = False
@@ -2282,8 +2283,11 @@ def start_query_download_tool(trans_id):
             if trans_obj.server_cursor:
                 sync_conn.release_async_cursor()
                 sync_conn.execute_void("BEGIN;")
-            # Re-execute the query to ensure the latest data is included
-            sync_conn.execute_async(sql, server_cursor=trans_obj.server_cursor)
+            # Re-execute the query to ensure the latest data is included,
+            # showing bytea the way it was when the query was run.
+            sync_conn.execute_async(
+                sql, server_cursor=trans_obj.server_cursor,
+                bytea_as_hex=sync_conn.async_bytea_as_hex)
         # This returns generator of records.
         status, gen, conn_obj = \
             sync_conn.execute_on_server_as_csv(
