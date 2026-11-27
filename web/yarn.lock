@@ -5544,13 +5544,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hammerjs@npm:^2.0.45":
-  version: 2.0.46
-  resolution: "@types/hammerjs@npm:2.0.46"
-  checksum: 10c0/f3c1cb20dc2f0523f7b8c76065078544d50d8ae9b0edc1f62fed657210ed814266ff2dfa835d2c157a075991001eec3b64c88bf92e3e6e895c0db78d05711d06
-  languageName: node
-  linkType: hard
-
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.1, @types/istanbul-lib-coverage@npm:^2.0.6":
   version: 2.0.6
   resolution: "@types/istanbul-lib-coverage@npm:2.0.6"
@@ -7275,15 +7268,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chartjs-plugin-zoom@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "chartjs-plugin-zoom@npm:2.2.0"
-  dependencies:
-    "@types/hammerjs": "npm:^2.0.45"
-    hammerjs: "npm:^2.0.8"
+"chartjs-plugin-zoom@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "chartjs-plugin-zoom@npm:3.0.2"
   peerDependencies:
     chart.js: ">=3.2.0"
-  checksum: 10c0/15817e912dcc0c62e66121d10c7f1af04cd788c8c831b9ed8f822e2835501b8816143e10b5b4f286a9afddc91492c3d7104b49e7226a3fb682b94412f9ee4087
+  checksum: 10c0/3c6cd2ec159848a9136582e63c020dba8ecf3a85c3917bc2ded85001d553e7f6b363cbde5ca2e9e264b5083ee46c230ee8c35d0320092d9ef34dd416789b339e
   languageName: node
   linkType: hard
 
@@ -9179,13 +9169,6 @@ __metadata:
   dependencies:
     lodash: "npm:^4.17.15"
   checksum: 10c0/41c525e4d91a6d8b4e8da1883bf4e85689a547e908557ccc53f64db9141bdfb351b9162a79f13cae81c5b3a410027f59e4fc1edc1ea442234ec08e629859b188
-  languageName: node
-  linkType: hard
-
-"hammerjs@npm:^2.0.8":
-  version: 2.0.8
-  resolution: "hammerjs@npm:2.0.8"
-  checksum: 10c0/5c95e5774b5ea49492cb3fa8f1949aea67048a0b84af33acb555e7139abfcf3c83aca2b83e0c5008755bc230166df7b5e469d1e3eb6746c48f215f3672609fed
   languageName: node
   linkType: hard
 
@@ -13294,7 +13277,7 @@ __metadata:
     babel-loader: "npm:^10.1.1"
     buffer: "npm:^6.0.3"
     chart.js: "npm:^4.6.2"
-    chartjs-plugin-zoom: "npm:^2.2.0"
+    chartjs-plugin-zoom: "npm:^3.0.2"
     codemirror: "npm:^6.65.7"
     convert-units: "npm:^2.3.4"
     copy-webpack-plugin: "npm:^14.0.0"
