@@ -119,12 +119,12 @@ RUN rm -rf /pgadmin4/docs/en_US/_build/html/_static/*.png
 # Create additional builders to get all of the PostgreSQL utilities
 #########################################################################
 
-FROM postgres:13-alpine AS pg13-builder
-FROM postgres:14-alpine AS pg14-builder
-FROM postgres:15-alpine AS pg15-builder
-FROM postgres:16-alpine AS pg16-builder
-FROM postgres:17-alpine AS pg17-builder
-FROM postgres:18-alpine AS pg18-builder
+FROM postgres:19-alpine AS pg13-builder
+FROM postgres:19-alpine AS pg14-builder
+FROM postgres:19-alpine AS pg15-builder
+FROM postgres:19-alpine AS pg16-builder
+FROM postgres:19-alpine AS pg17-builder
+FROM postgres:19-alpine AS pg18-builder
 
 FROM alpine:latest AS tool-builder
 
