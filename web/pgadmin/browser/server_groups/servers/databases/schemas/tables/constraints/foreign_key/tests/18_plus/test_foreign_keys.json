@@ -446,6 +446,95 @@
       }
     },
     {
+      "type": "create",
+      "name": "Create Partitioned Table for Foreign Key",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_partitioned_table",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer"
+          },
+          {
+            "name": "ref_id",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": true,
+        "partition_type": "range",
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "id"
+          }
+        ],
+        "partitions": [
+          {
+            "is_attach": false,
+            "partition_name": "test_partition_1",
+            "values_from": "0",
+            "values_to": "1000",
+            "is_sub_partitioned": false,
+            "sub_partition_type": "range",
+            "sub_partition_keys": []
+          }
+        ],
+        "schema": "testschema",
+        "primary_key": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Key Constraint that is not valid on a partitioned table",
+      "endpoint": "NODE-foreign_key.obj",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql",
+      "data": {
+        "name": "FKey_partitioned",
+        "condeferrable": false,
+        "condeferred": false,
+        "confmatchtype": false,
+        "convalidated": false,
+        "columns": [
+          {
+            "local_column": "ref_id",
+            "references": "<test_first_table>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false,
+        "coveringindex": ""
+      },
+      "expected_sql_file": "create_foreign_key_partitioned_not_valid.sql",
+      "expected_msql_file": "create_foreign_key_partitioned_not_valid_msql.sql",
+      "preprocess_data": true
+    },
+    {
+      "type": "alter",
+      "name": "Validate Foreign Key Constraint on a partitioned table",
+      "endpoint": "NODE-foreign_key.obj_id",
+      "sql_endpoint": "NODE-foreign_key.sql_id",
+      "msql_endpoint": "NODE-foreign_key.msql_id",
+      "data": {
+        "convalidated": true
+      },
+      "expected_sql_file": "alter_foreign_key_partitioned_validate.sql",
+      "expected_msql_file": "alter_foreign_key_partitioned_validate_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Partitioned Table",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_partitioned_table"
+      }
+    },
+    {
       "type": "delete",
       "name": "Drop First Table",
       "endpoint": "NODE-table.delete_id",
