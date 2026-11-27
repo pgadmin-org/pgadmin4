@@ -120,17 +120,25 @@ class TestByteaDisplayHex(BaseTestGenerator):
 
 class TestByteaDownloadHex(TestByteaDisplayHex):
     """Check that results downloaded after the grid has saved changes,
-    which re-runs the query, still show bytea as hex when the preference
-    is on."""
+    which re-runs the query, show bytea the way the query did when it was
+    run, even if the preference has changed since."""
 
     scenarios = [
         ('bytea is downloaded as hex after the query is re-run',
-         dict(bytea_as_hex=True, sql=SQL_BYTEA_ONLY)),
+         dict(bytea_as_hex=True, download_pref=True)),
+        ('bytea stays hex if the preference is turned off before download',
+         dict(bytea_as_hex=True, download_pref=False)),
+        ('bytea stays a placeholder if the preference is turned on '
+         'before download',
+         dict(bytea_as_hex=False, download_pref=True)),
     ]
+
+    sql = SQL_BYTEA_ONLY
 
     def runTest(self):
         with patch('pgadmin.tools.sqleditor.utils.start_running_query'
-                   '.get_display_bytea_as_hex', return_value=True):
+                   '.get_display_bytea_as_hex',
+                   return_value=self.bytea_as_hex):
             response = self.tester.post(
                 '/sqleditor/query_tool/start/{0}'.format(self.trans_id),
                 data=json.dumps({"sql": self.sql}), content_type='html/json')
@@ -143,12 +151,12 @@ class TestByteaDownloadHex(TestByteaDisplayHex):
         # query_commited is what the grid sends once a save has succeeded,
         # and makes the download run the query again.
         with patch('pgadmin.tools.sqleditor.get_display_bytea_as_hex',
-                   return_value=True):
+                   return_value=self.download_pref):
             response = self.tester.post(
                 '/sqleditor/query_tool/download/{0}'.format(self.trans_id),
                 data={"query": self.sql, "filename": "test.csv",
                       "query_commited": True})
             body = response.data.decode('utf-8')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(ALL_BYTES_HEX, body)
-        self.assertNotIn('binary data', body)
+        expected = ALL_BYTES_HEX if self.bytea_as_hex else 'binary data'
+        self.assertEqual(body.splitlines(), ['"b"', '"{0}"'.format(expected)])

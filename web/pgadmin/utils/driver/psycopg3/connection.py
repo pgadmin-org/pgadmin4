@@ -2121,6 +2121,11 @@ Failed to reset the connection to the server due to following error:
         return self.row_count
 
     @property
+    def async_bytea_as_hex(self):
+        """Whether the last async query returned bytea values as hex."""
+        return self.__async_bytea_as_hex
+
+    @property
     def total_rows(self):
         if self.__async_cursor is None:
             return 0
