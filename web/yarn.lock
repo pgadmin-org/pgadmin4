@@ -4281,19 +4281,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^7.3.11":
-  version: 7.3.11
-  resolution: "@mui/icons-material@npm:7.3.11"
+"@mui/icons-material@npm:^9.6.0":
+  version: 9.6.0
+  resolution: "@mui/icons-material@npm:9.6.0"
   dependencies:
-    "@babel/runtime": "npm:^7.28.6"
+    "@babel/runtime": "npm:^7.29.7 || ^8.0.5"
   peerDependencies:
-    "@mui/material": ^7.3.11
+    "@mui/material": ^9.6.0
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/eb3ac873e9dcb40273909ef44b669a751dc5cee893088422ff373796c2cfe59c1338263b5a59d5a453d37b00c4ec494dbb836b275d778d20ea335f6d029b4742
+  checksum: 10c0/8f7b435faceb3b38c8a4539953bb4d584b551fe9341f9fcafa5b287c8fdd7ca4f3084e4f281aba5ab0eb1a0ea754066b49f2cf02183bbf259c654a517403928a
   languageName: node
   linkType: hard
 
@@ -13265,7 +13265,7 @@ __metadata:
     "@eslint/js": "npm:^10.0.1"
     "@fluentui/keyboard-key": "npm:^0.4.23"
     "@fortawesome/fontawesome-free": "npm:7.3.1"
-    "@mui/icons-material": "npm:^7.3.11"
+    "@mui/icons-material": "npm:^9.6.0"
     "@mui/material": "npm:^7.3.11"
     "@mui/x-date-pickers": "npm:^9.18.0"
     "@nozbe/microfuzz": "npm:^1.0.0"
