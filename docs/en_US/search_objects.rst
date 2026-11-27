@@ -35,3 +35,8 @@ is selected then only those types will be fetch from the database.
 An object type will not be visible in the dropdown if the database server
 does not support it or if it is not enabled from the
 :ref:`preferences <preferences>`.
+
+The dialog opens with *All types* selected unless a different *Default object
+type* is chosen in the *Search objects* section of the
+:ref:`preferences <preferences>`. If the database server does not support the
+chosen type, *All types* is selected instead.

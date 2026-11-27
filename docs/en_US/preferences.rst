@@ -821,6 +821,18 @@ Use the *Ignore Whitespace* switch to ignores the whitespace while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
 
 
+The Search objects Node
+***********************
+
+Expand the *Search objects* node to specify your preferences for the
+:ref:`Search Objects <search_objects>` dialog.
+
+Use the *Default object type* drop-down listbox to choose the object type that
+is selected when the dialog is opened; the default is *All types*. If the
+database server does not support the chosen type, *All types* is selected
+instead.
+
+
 The Storage Node
 ****************
 

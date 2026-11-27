@@ -17,6 +17,7 @@ import Theme from '../../../pgadmin/static/js/Theme';
 import { TreeNode } from '../../../pgadmin/static/js/tree/tree_nodes';
 import SearchObjects from '../../../pgadmin/tools/search_objects/static/js/SearchObjects';
 import { TreeFake } from '../tree/tree_fake';
+import usePreferences from '../../../pgadmin/preferences/static/js/store';
 
 const nodeData = {server: {'_id' : 10}, database: {'_id': 123}};
 
@@ -114,6 +115,53 @@ describe('SearchObjects', ()=>{
       await user.type(ctrl.container.querySelector('input'), 'plp');
       await user.click(ctrl.container.querySelector('button[data-test="search"]'), 'plp');
       expect(ctrl.container.querySelectorAll('[data-test="react-data-grid"]').length).toBe(1);
+    });
+
+    describe('default object type preference', ()=>{
+      /* Its own servers and databases, so the types replies can differ */
+      beforeAll(()=>{
+        networkMock.onGet('/search_objects/types/11/124').reply(200, {data: {cast: 'Casts', function: 'Functions'}});
+        networkMock.onGet('/search_objects/search/11/124').reply(200, {data: []});
+        /* A server whose types never arrive */
+        networkMock.onGet('/search_objects/types/12/125').reply(()=>new Promise(()=>{/* never settles */}));
+        networkMock.onGet('/search_objects/search/12/125').reply(200, {data: []});
+      });
+
+      let prefSpy;
+
+      afterEach(()=>{
+        prefSpy?.mockRestore();
+      });
+
+      const searchWithPref = async (defaultType, sid=11, did=124)=>{
+        prefSpy = jest.spyOn(usePreferences.getState(), 'getPreferencesForModule').mockReturnValue(
+          defaultType ? {default_object_type: defaultType} : {}
+        );
+        networkMock.resetHistory();
+        await act(async ()=>{
+          ctrl = render(
+            <Theme>
+              <SearchObjects nodeData={{server: {'_id': sid}, database: {'_id': did}}}/>
+            </Theme>
+          );
+        });
+        await user.type(ctrl.container.querySelector('input'), 'plp{Enter}');
+        /* The footer loses its full stop once the search has returned */
+        await ctrl.findByText('0 matches found');
+        return networkMock.history.get.find((r)=>r.url == `/search_objects/search/${sid}/${did}`).params.type;
+      };
+
+      it.each([
+        ['is not set', undefined, 'all'],
+        ['is supported by the server', 'function', 'function'],
+        ['is not supported by the server', 'synonym', 'all'],
+      ])('searches the right type when the preference %s', async (_desc, pref, expected)=>{
+        expect(await searchWithPref(pref)).toBe(expected);
+      });
+
+      it('searches all types until the server has confirmed the type', async ()=>{
+        expect(await searchWithPref('function', 12, 125)).toBe('all');
+      });
     });
 
     it('search_on_enter', async ()=>{

@@ -24,6 +24,31 @@ def get_node_blueprint(node_type):
     return blueprint
 
 
+def get_node_type_label(node_type, blueprint):
+    """
+    Return the label shown for a node type in the object type drop-down.
+    """
+    if node_type in ['edbfunc', 'edbproc']:
+        return gettext('Package {0}').format(blueprint.collection_label)
+    return blueprint.collection_label
+
+
+ALL_NODE_TYPES = [
+    'cast', 'fts_dictionary', 'check_constraint',
+    'exclusion_constraint', 'foreign_key',
+    'primary_key', 'unique_constraint', 'constraints', 'trigger',
+    'table', 'compound_trigger', 'rule', 'column', 'partition',
+    'index', 'type', 'domain', 'domain_constraints', 'schema',
+    'synonym', 'sequence', 'edbvar', 'edbfunc', 'edbproc', 'package',
+    'foreign_table', 'fts_parser', 'function', 'procedure',
+    'trigger_function', 'fts_template', 'collation', 'view', 'mview',
+    'fts_configuration', 'extension', 'language',
+    'event_trigger', 'foreign_server', 'user_mapping',
+    'foreign_data_wrapper', 'row_security_policy',
+    'publication', 'subscription', 'aggregate', 'operator'
+]
+
+
 class SearchObjectsHelper:
     def __init__(self, sid, did, show_system_objects=False, node_types=None):
         self.sid = sid
@@ -33,20 +58,8 @@ class SearchObjectsHelper:
             PG_DEFAULT_DRIVER
         ).connection_manager(sid)
 
-        self._all_node_types = [
-            'cast', 'fts_dictionary', 'check_constraint',
-            'exclusion_constraint', 'foreign_key',
-            'primary_key', 'unique_constraint', 'constraints', 'trigger',
-            'table', 'compound_trigger', 'rule', 'column', 'partition',
-            'index', 'type', 'domain', 'domain_constraints', 'schema',
-            'synonym', 'sequence', 'edbvar', 'edbfunc', 'edbproc', 'package',
-            'foreign_table', 'fts_parser', 'function', 'procedure',
-            'trigger_function', 'fts_template', 'collation', 'view', 'mview',
-            'fts_configuration', 'extension', 'language',
-            'event_trigger', 'foreign_server', 'user_mapping',
-            'foreign_data_wrapper', 'row_security_policy',
-            'publication', 'subscription', 'aggregate', 'operator'
-        ] if node_types is None else node_types
+        self._all_node_types = ALL_NODE_TYPES \
+            if node_types is None else node_types
 
     @property
     def all_node_types(self):
@@ -75,12 +88,8 @@ class SearchObjectsHelper:
 
             if blueprint.backend_supported(self.manager, is_catalog=False,
                                            did=self.did) or skip_check:
-                if node_type in ['edbfunc', 'edbproc']:
-                    return_types[node_type] =\
-                        gettext('Package {0}').format(
-                            blueprint.collection_label)
-                else:
-                    return_types[node_type] = blueprint.collection_label
+                return_types[node_type] = get_node_type_label(node_type,
+                                                              blueprint)
 
         return return_types
 
