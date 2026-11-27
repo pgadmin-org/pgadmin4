@@ -265,6 +265,8 @@ def _save_import_export_settings(settings):
 _VALID_FORMATS = frozenset({'csv', 'text', 'binary'})
 _VALID_ON_ERROR = frozenset({'stop', 'ignore'})
 _VALID_LOG_VERBOSITY = frozenset({'default', 'verbose'})
+# REJECT_LIMIT takes a positive bigint.
+_MAX_REJECT_LIMIT = 9223372036854775807
 
 
 def _copy_filename_literal(filename):
@@ -429,7 +431,8 @@ def update_data_for_import_export(data):
     This function will update the data. Remove unwanted keys based on
     import/export type
     """
-    keys_not_required_with_query = ['on_error', 'log_verbosity', 'freeze',
+    keys_not_required_with_query = ['on_error', 'log_verbosity',
+                                    'reject_limit', 'freeze',
                                     'default_string']
     if data.get('is_query_export') is True:
         for k in keys_not_required_with_query:
@@ -550,6 +553,26 @@ def create_import_export_job(sid):
                 errormsg=_('Invalid log_verbosity value.')
             )
         data['log_verbosity'] = val.lower()
+
+    # REJECT_LIMIT is interpolated raw as well, so accept only a positive
+    # integer (sent as a number, or as a string of digits). An empty value
+    # means no limit, so the option is left out.
+    val = data.get('reject_limit')
+    if val is None or val == '':
+        data.pop('reject_limit', None)
+    else:
+        if isinstance(val, str) and val.isascii() and val.isdigit():
+            # Bound the length before int(), which refuses very long
+            # strings with a ValueError; leading zeros do not count.
+            digits = val.lstrip('0') or '0'
+            if len(digits) <= len(str(_MAX_REJECT_LIMIT)):
+                val = int(digits)
+        if isinstance(val, bool) or not isinstance(val, int) or \
+                not 0 < val <= _MAX_REJECT_LIMIT:
+            return bad_request(
+                errormsg=_('Reject limit must be a positive integer.')
+            )
+        data['reject_limit'] = val
 
     # A schema, table or column name is interpolated into psql's \copy
     # command via qtIdent(), which does not escape a backslash; reject one

@@ -229,6 +229,7 @@ class ImportJobTest(BaseTestGenerator):
                  escape="'",
                  on_error='stop',
                  log_verbosity='verbose',
+                 reject_limit=5,
                  columns=[],
                  not_null_columns=[],
                  null_columns=[],
@@ -243,7 +244,54 @@ class ImportJobTest(BaseTestGenerator):
                                     'FORMAT csv', 'DELIMITER \'|\'',
                                     'QUOTE \'\'\'\''],
                  not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS', 'ON_ERROR',
-                                        'LOG_VERBOSITY'],
+                                        'LOG_VERBOSITY', 'REJECT_LIMIT'],
+                 expected_exit_code=[0, None]
+             ),
+             export_options=dict(
+                 params=dict(
+                     filename='test_import_export',
+                     format='csv',
+                     is_import=False,
+                     delimiter="|",
+                     quote="'",
+                     escape="'",
+                     columns=[],
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
+                 ),
+                 url=import_export_url,
+                 expected_params=dict(
+                     expected_cmd_opts=['--command', 'copy', 'TO'],
+                     not_expected_cmd_opts=[],
+                     expected_exit_code=[0, None]
+                 )
+             )
+         )),
+        ('When importing a table with csv, on_error and reject_limit',
+         dict(
+             params=dict(
+                 filename='test_import_export',
+                 format='csv',
+                 is_import=True,
+                 delimiter="|",
+                 quote="'",
+                 escape="'",
+                 on_error='ignore',
+                 reject_limit='5',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
+             ),
+             server_min_version=180000,
+             skip_msg="REJECT_LIMIT supported by PG/EPAS 18 and above.",
+             url=import_export_url,
+             expected_params=dict(
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT csv', 'ON_ERROR ignore',
+                                    'REJECT_LIMIT 5'],
+                 not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS'],
                  expected_exit_code=[0, None]
              ),
              export_options=dict(
