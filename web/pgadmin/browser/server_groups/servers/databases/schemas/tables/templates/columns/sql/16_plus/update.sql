@@ -73,7 +73,9 @@ DROP SEQUENCE IF EXISTS {{data.serial_seq_drop}};
 {###  Alter column not null value ###}
 {###  On PostgreSQL 18 Schema Diff also passes the source column's NOT VALID NOT NULL constraint, if it has one (see 18_plus/properties.sql). SET NOT NULL validates such a constraint in the target. ###}
 {% set notvalid_changed = 'notnull_notvalid_condef' in data and (data.notnull_notvalid_conname != o_data.notnull_notvalid_conname or data.notnull_notvalid_condef != o_data.notnull_notvalid_condef) %}
+{###  The table's update SQL passes defer_notvalid_notnull and emits these statements itself, after its constraint changes, through notvalid_notnull.sql. ###}
 {% if notvalid_changed and data.notnull_notvalid_conname %}
+{% if not defer_notvalid_notnull %}
 {% if o_data.attnotnull %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} DROP NOT NULL;
@@ -82,6 +84,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ADD CONSTRAINT {{conn|qtIdent(data.notnull_notvalid_conname)}} {{data.notnull_notvalid_condef}};
 
+{% endif %}
 {% elif ('attnotnull' in data and data.attnotnull != o_data.attnotnull) or (notvalid_changed and data.attnotnull) %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} {% if data.attnotnull %}SET{% else %}DROP{% endif %} NOT NULL;

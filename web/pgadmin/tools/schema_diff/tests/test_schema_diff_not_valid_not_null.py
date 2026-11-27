@@ -50,6 +50,13 @@ CREATE TABLE {0}.nv_serial_source_only (a serial);
 ALTER TABLE {0}.nv_serial_source_only ALTER COLUMN a DROP NOT NULL;
 ALTER TABLE {0}.nv_serial_source_only
     ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
+
+CREATE TABLE {0}.nv_to_pk (a integer);
+ALTER TABLE {0}.nv_to_pk ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
+
+CREATE TABLE {0}.nv_swapped (a integer, b integer);
+ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
+ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_b NOT NULL b NOT VALID;
 """
 
 TARGET_DDL = """
@@ -67,6 +74,13 @@ ALTER TABLE {0}.nv_to_valid ADD CONSTRAINT nn_a NOT NULL a;
 
 CREATE TABLE {0}.valid_to_nv (a integer);
 ALTER TABLE {0}.valid_to_nv ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
+
+CREATE TABLE {0}.nv_to_pk (a integer PRIMARY KEY);
+
+CREATE TABLE {0}.nv_swapped (a integer, b integer);
+INSERT INTO {0}.nv_swapped VALUES (NULL, NULL);
+ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_a NOT NULL b NOT VALID;
+ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_b NOT NULL a NOT VALID;
 """
 
 
@@ -207,6 +221,14 @@ class SchemaDiffNotValidNotNullTestCase(BaseSocketTestGenerator):
             # before the NOT VALID constraint can be added.
             'nv_serial_source_only': (
                 'Source Only', 'ADD CONSTRAINT nn_a NOT NULL a NOT VALID'),
+            # The column is in the target's primary key, so its NOT NULL
+            # can only be dropped once the primary key has gone.
+            'nv_to_pk': ('Different',
+                         'ADD CONSTRAINT nn_a NOT NULL a NOT VALID'),
+            # Each name is still held by the other column until that
+            # column's constraint has been dropped.
+            'nv_swapped': ('Different',
+                           'ADD CONSTRAINT nn_a NOT NULL a NOT VALID'),
         }
         for title, (status, statement) in expected.items():
             compared = self.find_object(response_data, title)
