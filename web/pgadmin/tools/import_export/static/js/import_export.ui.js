@@ -79,6 +79,7 @@ export default class ImportExportSchema extends BaseUISchema {
             type: 'file',
             controlProps: {
               dialogType: state.is_import && !state?.is_query_export ? 'select_file' : 'create_file',
+              dialogPurpose: 'import_export_data',
               supportedTypes: ['csv', 'text','bin', '*'],
               dialogTitle: 'Select file',
             }

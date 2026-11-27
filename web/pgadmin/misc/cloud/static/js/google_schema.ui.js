@@ -41,6 +41,7 @@ class GoogleCredSchema extends BaseUISchema{
         helpMessage: gettext('Select a client secrets file containing the client ID, client secret, and other OAuth 2.0 parameters for Google authentication. See <a href="https://support.google.com/cloud/answer/15549257?hl=en">Manage OAuth Clients</a> in the Google Cloud documentation for how to create one.'),
         controlProps: {
           dialogType: 'select_file',
+          dialogPurpose: 'cloud_credentials',
           supportedTypes: ['json'],
           dialogTitle: 'Select file',
         },

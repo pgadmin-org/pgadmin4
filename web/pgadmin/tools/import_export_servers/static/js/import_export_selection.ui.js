@@ -42,6 +42,7 @@ export default class ImportExportSelectionSchema extends BaseUISchema {
             type: 'file',
             controlProps: {
               dialogType: 'create_file',
+              dialogPurpose: 'import_export_servers',
               supportedTypes: ['json'],
               dialogTitle: 'Create file',
             },
@@ -51,6 +52,7 @@ export default class ImportExportSelectionSchema extends BaseUISchema {
           type: 'file',
           controlProps: {
             dialogType: 'select_file',
+            dialogPurpose: 'import_export_servers',
             supportedTypes: ['json'],
             dialogTitle: 'Select file',
           },

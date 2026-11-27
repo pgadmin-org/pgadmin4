@@ -544,6 +544,7 @@ export function InputFileSelect({ controlProps, onChange, disabled, readonly, is
       dialog_type: controlProps.dialogType || 'select_file',
       dialog_title: controlProps.dialogTitle || '',
       btn_primary: controlProps.btnPrimary || '',
+      purpose: controlProps.dialogPurpose,
     };
     showFileManager(params, (fileName, dir)=>{
       if (dir && dir != MY_STORAGE){

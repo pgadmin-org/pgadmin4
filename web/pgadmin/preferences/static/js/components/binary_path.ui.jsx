@@ -56,6 +56,7 @@ export default class BinaryPathSchema extends BaseUISchema {
         },
         controlProps: {
           dialogType: 'select_folder',
+          dialogPurpose: 'binary_path',
           supportedTypes: ['*', 'sql', 'backup'],
           dialogTitle: gettext('Select folder'),
           placeholder: pgAdmin.server_mode == 'False' ? gettext('Select binary path...') : gettext('Enter binary path...')

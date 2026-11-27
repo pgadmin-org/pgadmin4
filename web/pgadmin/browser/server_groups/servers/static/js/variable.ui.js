@@ -140,6 +140,7 @@ export default class VariableSchema extends BaseUISchema {
         cell: 'file',
         controlProps: {
           dialogType: 'select_file',
+          dialogPurpose: 'certificates',
           supportedTypes: ['*'],
           placeholder: this.getPlaceHolderMsg(variable)
         }

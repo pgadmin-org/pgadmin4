@@ -95,14 +95,16 @@ export default class FileManagerModule {
         {name: `${v.toUpperCase()} File .${v}`, extensions:[v]}
     ));
 
+    // The purpose lets the desktop runtime remember the last used folder
+    // separately for each kind of dialog (e.g. backups vs ERD diagrams).
     if(params.dialog_type == 'create_file') {
-      res = await window.electronUI.showSaveDialog(options);
+      res = await window.electronUI.showSaveDialog(options, params.purpose);
     } else {
       options['properties'] = ['openFile'];
       if(params.dialog_type == 'select_folder') {
         options['properties'] = ['openDirectory'];
       }
-      res = await window.electronUI.showOpenDialog(options);
+      res = await window.electronUI.showOpenDialog(options, params.purpose);
     }
 
     if(res.canceled) {
