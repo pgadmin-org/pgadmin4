@@ -47,6 +47,14 @@ Use the fields in the *Definition* tab to define the foreign key constraint:
       if any column is null, the row is not required to have a match in the
       referenced table.
 
+* Move the *Enforced?* switch to the *No* position to create the foreign key
+  as *NOT ENFORCED*; PostgreSQL records the constraint but does not check it
+  against the table content. A foreign key that is not enforced cannot be
+  validated, so the *Validated* switch is disabled whilst *Enforced?* is
+  *No*. Moving the switch back to *Yes* on an existing foreign key enforces
+  it and validates the existing rows, which fails if any of them violate the
+  constraint. The default is *Yes*. This option is available on PostgreSQL 18
+  and later.
 * Move the *Validated* switch to the *Yes* position to instruct the server to
   validate the existing table content (against a foreign key or check
   constraint) when you save modifications to this dialog.

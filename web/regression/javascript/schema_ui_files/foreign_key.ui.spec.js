@@ -222,6 +222,40 @@ describe('ForeignKeySchema', ()=>{
     });
   });
 
+  it('a foreign key that is not enforced cannot be validated', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='convalidated');
+
+    expect(field.depChange({conenforced: false, convalidated: true})).toEqual({
+      convalidated: false,
+    });
+    expect(field.depChange({conenforced: true})).toBeUndefined();
+    expect(field.readonly({conenforced: false})).toBe(true);
+    expect(field.readonly({conenforced: true})).toBe(false);
+  });
+
+  it('enforcing an existing foreign key again restores its validation', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='convalidated');
+
+    schemaObj.state = {initData: {oid: 1234, conenforced: true, convalidated: true}};
+    expect(field.depChange({oid: 1234, conenforced: true, convalidated: false}))
+      .toEqual({convalidated: true});
+    expect(field.readonly({oid: 1234, conenforced: true})).toBe(true);
+
+    schemaObj.state = {initData: {oid: 1234, conenforced: true, convalidated: false}};
+    expect(field.depChange({oid: 1234, conenforced: true, convalidated: false}))
+      .toEqual({convalidated: false});
+    expect(field.readonly({oid: 1234, conenforced: true})).toBe(false);
+  });
+
+  it('enforcing a foreign key that was not enforced validates it', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='convalidated');
+
+    schemaObj.state = {initData: {oid: 1234, conenforced: false, convalidated: false}};
+    expect(field.depChange({oid: 1234, conenforced: true, convalidated: false}))
+      .toEqual({convalidated: true});
+    expect(field.readonly({oid: 1234, conenforced: true})).toBe(true);
+  });
+
   it('table column addition is a no-op for a removed foreign key', ()=>{
     schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(undefined, ['columns'], null, {

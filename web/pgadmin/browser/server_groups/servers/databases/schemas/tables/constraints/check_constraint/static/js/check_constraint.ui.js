@@ -19,6 +19,7 @@ export default class CheckConstraintSchema extends BaseUISchema {
       consrc: undefined,
       connoinherit: undefined,
       convalidated: true,
+      conenforced: true,
     });
   }
 
@@ -83,9 +84,25 @@ export default class CheckConstraintSchema extends BaseUISchema {
       },
       readonly: obj.isReadonly,
     },{
+      // PostgreSQL 18 cannot change whether an existing check constraint
+      // is enforced, so the switch is only editable for a new one.
+      id: 'conenforced', label: gettext('Enforced?'), type: 'switch', cell: 'switch',
+      group: gettext('Definition'), mode: ['properties', 'create', 'edit'],
+      min_version: 180000, readonly: obj.isReadonly,
+    },{
       id: 'convalidated', label: gettext('Don\'t validate?'), type: 'switch', cell: 'switch',
       group: gettext('Definition'), min_version: 90200,
+      deps: ['conenforced'],
+      depChange: (state)=>{
+        // A NOT ENFORCED check constraint is never validated.
+        if(state.conenforced === false) {
+          return {convalidated: true};
+        }
+      },
       readonly: (state)=>{
+        if(state.conenforced === false) {
+          return true;
+        }
         // If we are in table edit mode then
         if(obj.inTable && obj.top && !obj.top.isNew()) {
           return !(_.isUndefined(state.oid) || state.convalidated);
