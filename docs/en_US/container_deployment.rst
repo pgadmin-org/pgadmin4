@@ -100,6 +100,10 @@ options below.
 This option is useful if you're running in an environment that prevents the use
 of sudo to start Postfix, or if you wish to use an external mail server.
 
+If pgAdmin has no mail server to use, set *PGADMIN_CONFIG_MAIL_SERVER* to
+``None`` to turn email off. pgAdmin then hides the *Forgotten your password?*
+link on the login page and refuses the password recovery pages.
+
 **PGADMIN_ENABLE_TLS**
 
 *Default: <null>*
