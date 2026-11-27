@@ -68,11 +68,29 @@ Requires:	${PYTHON_BINARY}, libpq5, krb5-libs
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 
-%pre
-rm -rf /usr/pgadmin4/venv
-if [ -d /usr/pgadmin4/web ]; then
-  cd /usr/pgadmin4/web && rm -rf \$(ls -A -I config_local.py)
+%posttrans
+# Remove anything under venv/ and web/ that this package does not own, such
+# as __pycache__ directories created at runtime or files left behind by an
+# older installation, keeping the user's config_local.py. This must run after
+# rpm has removed the previous version's files: deleting them beforehand (as
+# a pre-install script used to) makes rpm warn "remove failed: No such file or
+# directory" for every file dropped between versions. Paths are NUL-delimited
+# so that a name containing a newline cannot be split into another path.
+OWNED=\$(mktemp) || exit 0
+if rpm -ql %{name} > "\$OWNED" 2>/dev/null && [ -s "\$OWNED" ]; then
+  find /usr/pgadmin4/venv /usr/pgadmin4/web -mindepth 1 -depth \\
+    ! -path /usr/pgadmin4/web/config_local.py -print0 2>/dev/null | \\
+    grep -zvxF -f "\$OWNED" | \\
+    while IFS= read -r -d '' f; do
+      if [ -d "\$f" ] && [ ! -L "\$f" ]; then
+        rmdir "\$f" 2>/dev/null
+      else
+        rm -f "\$f"
+      fi
+    done
 fi
+rm -f "\$OWNED"
+exit 0
 
 %build
 
