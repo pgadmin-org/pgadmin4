@@ -131,6 +131,15 @@ define('pgadmin.browser.node', [
         label: gettext('Refresh...'),
         shortcut_preference: ['browser', 'sub_menu_refresh'],
         enable: true,
+      }, {
+        name: 'collapse',
+        node: self.type,
+        module: self,
+        applies: ['context'],
+        callback: 'collapse',
+        priority: 3,
+        label: gettext('Collapse'),
+        enable: true,
       }]);
 
       if (self.canEdit) {
@@ -820,6 +829,20 @@ define('pgadmin.browser.node', [
               self.callbacks.selected.apply(self, [_item, data, pgBrowser]);
             },
           });
+      },
+      // Collapses the node and everything beneath it or, when the node is not
+      // expanded, its parent, which is then selected and scrolled into view.
+      collapse: async function(_data, _item) {
+        const t = pgBrowser.tree,
+          item = _item || t.selected();
+
+        if (!item)
+          return;
+
+        const target = await t.collapse(item);
+        if (target && target !== item) {
+          await t.select(target, true);
+        }
       },
       opened: function(item) {
         let tree = pgBrowser.tree,

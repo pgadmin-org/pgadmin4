@@ -12,6 +12,7 @@ import pgAdmin from 'sources/pgadmin';
 
 import { FileType } from 'react-aspen';
 import { TreeNode } from './tree_nodes';
+import { collapseTarget } from '../components/PgTree/services/collapse';
 
 function manageTreeEvents(event, eventName, item) {
   let d = item ? item._metadata.data : [];
@@ -173,6 +174,16 @@ export class Tree {
 
   async close(item) {
     await this.tree.closeDir(item);
+  }
+
+  // Collapses the item and everything beneath it or, when the item is not an
+  // expanded node, its parent. Returns the node that was collapsed, or null
+  // when there was nothing to collapse.
+  async collapse(item) {
+    const target = collapseTarget(item, this.tree.getModel().root);
+    if (!target) { return null; }
+    await this.tree.collapseAll(target);
+    return target;
   }
 
   async toggle(item) {
