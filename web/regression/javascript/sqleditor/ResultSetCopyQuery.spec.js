@@ -25,10 +25,18 @@ jest.mock('../../../pgadmin/tools/sqleditor/static/js/components/QueryToolCompon
   };
 });
 
-jest.mock('../../../pgadmin/static/js/components/ReactCodeMirror', () => ({
-  __esModule: true,
-  default: ({ value }) => value,
-}));
+// Like the real editor, render the focusable query text followed by a closed
+// dialog that stays in the DOM with visibility hidden.
+jest.mock('../../../pgadmin/static/js/components/ReactCodeMirror', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ value }) => React.createElement(React.Fragment, null,
+      React.createElement('div', { tabIndex: 0, 'data-test': 'query-text' }, value),
+      React.createElement('div', { tabIndex: 0, style: { visibility: 'hidden' } }),
+    ),
+  };
+});
 
 jest.mock('../../../pgadmin/static/js/components/JsonEditor', () => ({
   __esModule: true,
@@ -112,14 +120,17 @@ describe('ResultSetToolbar SQL query popup', () => {
     expect(sqlBtn).toHaveAttribute('aria-expanded', 'true');
     expect(popup.contains(document.activeElement)).toBe(true);
 
+    const queryText = popup.querySelector('[data-test="query-text"]');
     await user.tab();
     expect(document.activeElement).toBe(getCopyBtn());
     await user.tab();
-    expect(getPopup()).not.toBeNull();
-    expect(popup.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).toBe(queryText);
+    // Tab wraps past the hidden dialog in both directions.
+    await user.tab();
+    expect(document.activeElement).toBe(getCopyBtn());
     await user.tab({shift: true});
+    expect(document.activeElement).toBe(queryText);
     expect(getPopup()).not.toBeNull();
-    expect(popup.contains(document.activeElement)).toBe(true);
   });
 
   it('closes on Escape and returns the focus to the SQL button', async () => {

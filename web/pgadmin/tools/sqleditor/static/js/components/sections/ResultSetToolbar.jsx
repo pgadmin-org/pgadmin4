@@ -82,6 +82,29 @@ const StyledEditor = styled('div')(({theme})=>({
   }
 }));
 
+const TABBABLE_SELECTOR = 'input, select, textarea, a[href], button, [tabindex], [contenteditable]:not([contenteditable="false"])';
+
+/* MUI's default for the focus trap does not skip hidden elements, and the
+   editor keeps its closed find and go to line dialogs in the DOM with
+   visibility hidden, so the trap would try to wrap the focus onto them. */
+function getVisibleTabbable(root) {
+  const tabIndexOf = (node)=>(
+    (!node.hasAttribute('tabindex') && node.contentEditable === 'true') ? 0 : node.tabIndex
+  );
+  return Array.from(root.querySelectorAll(TABBABLE_SELECTOR))
+    .filter((node)=>tabIndexOf(node) >= 0 && !node.disabled
+      && window.getComputedStyle(node).visibility != 'hidden')
+    .map((node, i)=>({node, i, tabIndex: tabIndexOf(node)}))
+    .sort((a, b)=>{
+      // Positive tab indexes come first, in order, then the rest in DOM order.
+      if(a.tabIndex == b.tabIndex) return a.i - b.i;
+      if(a.tabIndex == 0) return 1;
+      if(b.tabIndex == 0) return -1;
+      return a.tabIndex - b.tabIndex;
+    })
+    .map((a)=>a.node);
+}
+
 function ShowDataOutputQueryPopup({query, anchorRef, onClose}) {
   function onKeyDown(e) {
     if(e.keyCode == 13) {
@@ -111,7 +134,7 @@ function ShowDataOutputQueryPopup({query, anchorRef, onClose}) {
         }
       }}>
         <div>
-          <FocusTrap open disableEnforceFocus disableRestoreFocus>
+          <FocusTrap open disableEnforceFocus disableRestoreFocus getTabbable={getVisibleTabbable}>
             <StyledEditor ref={(ele)=>{
               setEditorPosition(anchorRef.current, ele, '.MuiBox-root', 29);
             }} onKeyDown={onKeyDown} tabIndex={-1} role="dialog"
