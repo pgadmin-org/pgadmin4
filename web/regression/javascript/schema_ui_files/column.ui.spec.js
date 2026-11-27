@@ -310,6 +310,59 @@ describe('ColumnSchema', ()=>{
     });
   });
 
+  describe('notnull_noinherit', ()=>{
+    const getField = (schema)=>_.find(schema.fields, (f)=>f.id=='notnull_noinherit');
+    const pg18Table = ()=>({server: {version: 180000}, schema: {}, table: {}});
+
+    it.each([
+      ['an existing table on PostgreSQL 18', pg18Table(), null, false, true],
+      ['an existing table on PostgreSQL 17', {server: {version: 170000}, schema: {}, table: {}}, null, false, false],
+      ['a partitioned table', {server: {version: 180000}, schema: {}, table: {is_partitioned: true}}, null, false, false],
+      ['a partition that is itself partitioned', {server: {version: 180000}, schema: {}, table: {}, partition: {is_partitioned: true}}, null, false, false],
+      ['a foreign table', {server: {version: 180000}, schema: {}, foreign_table: {}}, null, false, false],
+      ['the Create Table dialog', {server: {version: 180000}, schema: {}}, {sessData: {is_partitioned: false}}, false, true],
+      ['the Create Table dialog for a partitioned table', {server: {version: 180000}, schema: {}}, {sessData: {is_partitioned: true}}, false, false],
+      ['the ERD tool', undefined, null, true, false],
+    ])('is offered for %s', (_desc, nodeInfo, top, inErd, expected)=>{
+      let schema = createSchemaObj();
+      schema.nodeInfo = nodeInfo;
+      schema.top = top;
+      schema.inErd = inErd;
+      expect(schema.canNotNullBeNoInherit()).toBe(expected);
+      expect(getField(schema).visible()).toBe(expected);
+    });
+
+    it('is cleared when Not NULL is turned off or a new column rejects it', ()=>{
+      let schema = createSchemaObj();
+      schema.nodeInfo = pg18Table();
+      initializeSchemaWithData(schema, {});
+      let depChange = getField(schema).depChange;
+      expect(depChange({attnotnull: false, notnull_noinherit: true})).toEqual({notnull_noinherit: false});
+      expect(depChange({attnotnull: true, colconstype: 'i', notnull_noinherit: true})).toEqual({notnull_noinherit: false});
+      expect(depChange({attnotnull: true, cltype: 'serial', notnull_noinherit: true})).toEqual({notnull_noinherit: false});
+      expect(depChange({attnotnull: true, is_primary_key: true, notnull_noinherit: true})).toEqual({notnull_noinherit: false});
+      expect(depChange({attnotnull: true, cltype: 'integer', notnull_noinherit: true})).toBeUndefined();
+      // An existing SERIAL column's constraint can be altered.
+      expect(depChange({attnum: 1, attnotnull: true, cltype: 'serial', notnull_noinherit: true})).toBeUndefined();
+    });
+
+    it.each([
+      ['a new column without Not NULL', {}, {attnotnull: false}, true],
+      ['a new column with Not NULL', {}, {attnotnull: true, cltype: 'integer'}, false],
+      ['a new identity column', {}, {attnotnull: true, colconstype: 'i'}, true],
+      ['a new SERIAL column', {}, {attnotnull: true, cltype: 'bigserial'}, true],
+      ['a new primary key column', {}, {attnotnull: true, is_primary_key: true}, true],
+      ['an existing Not NULL', {attnum: 1, attnotnull: true}, {attnum: 1, attnotnull: true}, false],
+      ['an existing SERIAL column', {attnum: 1, attnotnull: true, cltype: 'serial'}, {attnum: 1, attnotnull: true, cltype: 'serial'}, false],
+      ['an inherited Not NULL', {attnum: 1, attnotnull: true, notnull_inherited: true}, {attnum: 1, attnotnull: true}, true],
+    ])('readonly in the column dialog for %s', (_desc, origData, state, expected)=>{
+      let schema = createSchemaObj();
+      schema.nodeInfo = pg18Table();
+      initializeSchemaWithData(schema, origData);
+      expect(getField(schema).readonly(state)).toBe(expected);
+    });
+  });
+
   it('validate', ()=>{
     let state = {};
     let setError = jest.fn();

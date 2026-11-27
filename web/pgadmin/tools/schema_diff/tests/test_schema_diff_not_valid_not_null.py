@@ -7,13 +7,15 @@
 #
 ##########################################################################
 
-"""Schema Diff tests for NOT VALID NOT NULL constraints (#10882).
+"""Schema Diff tests for NOT VALID and NO INHERIT NOT NULL constraints.
 
 On PostgreSQL 18 a NOT NULL constraint added as NOT VALID still sets
 attnotnull, so it must not be turned into an inline NOT NULL, which would
-validate it (failing outright on a column that holds NULLs). The SQL that
-Schema Diff generates has to recreate the constraint as NOT VALID, and
-applying it has to leave the two tables identical.
+validate it (failing outright on a column that holds NULLs) (#10882). A NOT
+NULL constraint can also be NO INHERIT, which is changed in place with ALTER
+CONSTRAINT ... [NO] INHERIT (#9055). The SQL that Schema Diff generates has
+to recreate both properties, and applying it has to leave the two tables
+identical.
 """
 
 import json
@@ -57,6 +59,28 @@ ALTER TABLE {0}.nv_to_pk ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
 CREATE TABLE {0}.nv_swapped (a integer, b integer);
 ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
 ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_b NOT NULL b NOT VALID;
+
+CREATE TABLE {0}.ni_identical (a integer NOT NULL NO INHERIT);
+
+CREATE TABLE {0}.ni_to_inherit (a integer NOT NULL);
+
+CREATE TABLE {0}.inherit_to_ni (a integer NOT NULL NO INHERIT);
+
+CREATE TABLE {0}.ni_to_none (a integer NOT NULL NO INHERIT);
+
+CREATE TABLE {0}.valid_to_nv_ni (a integer NOT NULL);
+
+CREATE TABLE {0}.nv_ni_to_nv (a integer);
+ALTER TABLE {0}.nv_ni_to_nv
+    ADD CONSTRAINT nn_a NOT NULL a NO INHERIT NOT VALID;
+
+CREATE TABLE {0}.ni_serial_source_only (a serial);
+ALTER TABLE {0}.ni_serial_source_only
+    ALTER CONSTRAINT ni_serial_source_only_a_not_null NO INHERIT;
+
+CREATE TABLE {0}.ni_pk_source_only (a integer PRIMARY KEY);
+ALTER TABLE {0}.ni_pk_source_only
+    ALTER CONSTRAINT ni_pk_source_only_a_not_null NO INHERIT;
 """
 
 TARGET_DDL = """
@@ -81,13 +105,31 @@ CREATE TABLE {0}.nv_swapped (a integer, b integer);
 INSERT INTO {0}.nv_swapped VALUES (NULL, NULL);
 ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_a NOT NULL b NOT VALID;
 ALTER TABLE {0}.nv_swapped ADD CONSTRAINT nn_b NOT NULL a NOT VALID;
+
+CREATE TABLE {0}.ni_identical (a integer NOT NULL NO INHERIT);
+
+CREATE TABLE {0}.ni_to_inherit (a integer NOT NULL NO INHERIT);
+
+CREATE TABLE {0}.inherit_to_ni (a integer NOT NULL);
+
+CREATE TABLE {0}.ni_to_none (a integer);
+
+CREATE TABLE {0}.valid_to_nv_ni (a integer);
+ALTER TABLE {0}.valid_to_nv_ni
+    ADD CONSTRAINT nn_a NOT NULL a NO INHERIT NOT VALID;
+
+CREATE TABLE {0}.nv_ni_to_nv (a integer);
+INSERT INTO {0}.nv_ni_to_nv VALUES (NULL);
+ALTER TABLE {0}.nv_ni_to_nv ADD CONSTRAINT nn_a NOT NULL a NOT VALID;
 """
 
 
 class SchemaDiffNotValidNotNullTestCase(BaseSocketTestGenerator):
-    """ This class will test Schema Diff against NOT VALID NOT NULLs. """
+    """ This class tests Schema Diff against NOT VALID and NO INHERIT NOT
+    NULLs. """
     scenarios = [
-        ('Schema diff comparison of NOT VALID NOT NULL constraints', dict())
+        ('Schema diff comparison of NOT VALID and NO INHERIT NOT NULL '
+         'constraints', dict())
     ]
     SOCKET_NAMESPACE = '/schema_diff'
 
@@ -202,9 +244,10 @@ class SchemaDiffNotValidNotNullTestCase(BaseSocketTestGenerator):
 
         response_data = self.compare()
 
-        self.assertEqual(
-            self.find_object(response_data, 'nv_identical')['status'],
-            'Identical')
+        for title in ('nv_identical', 'ni_identical'):
+            self.assertEqual(
+                self.find_object(response_data, title)['status'],
+                'Identical', title)
 
         # Each difference is applied to the target. A NOT VALID constraint
         # recreated as an inline or validated NOT NULL fails against the
@@ -229,6 +272,29 @@ class SchemaDiffNotValidNotNullTestCase(BaseSocketTestGenerator):
             # column's constraint has been dropped.
             'nv_swapped': ('Different',
                            'ADD CONSTRAINT nn_a NOT NULL a NOT VALID'),
+            # A difference only in NO INHERIT alters the constraint in
+            # place rather than dropping and adding it again.
+            'ni_to_inherit': ('Different',
+                              'ALTER CONSTRAINT ni_to_inherit_a_not_null '
+                              'INHERIT'),
+            'inherit_to_ni': ('Different',
+                              'ALTER CONSTRAINT inherit_to_ni_a_not_null '
+                              'NO INHERIT'),
+            # SET NOT NULL cannot add a NO INHERIT constraint.
+            'ni_to_none': ('Different', 'ADD NOT NULL a NO INHERIT'),
+            # SET NOT NULL fails on a NO INHERIT constraint, so it is
+            # validated, then made inherited.
+            'valid_to_nv_ni': ('Different', 'VALIDATE CONSTRAINT nn_a'),
+            'nv_ni_to_nv': ('Different', 'ALTER CONSTRAINT nn_a NO INHERIT'),
+            # A SERIAL or primary key column rejects an inline NO INHERIT,
+            # so its named constraint is altered after the table is made.
+            'ni_serial_source_only': (
+                'Source Only',
+                'ALTER CONSTRAINT ni_serial_source_only_a_not_null '
+                'NO INHERIT'),
+            'ni_pk_source_only': (
+                'Source Only',
+                'ALTER CONSTRAINT ni_pk_source_only_a_not_null NO INHERIT'),
         }
         for title, (status, statement) in expected.items():
             compared = self.find_object(response_data, title)

@@ -68,6 +68,14 @@ Use the fields in the *Constraints* tab to specify constraints for the column.
   constraint is not valid to validate the constraint. A NOT NULL constraint
   that has already been validated cannot be made *NOT VALID*. The default is
   *No*.
+* On PostgreSQL 18 and later, move the *No inherit?* switch to the *Yes*
+  position to make the NOT NULL constraint *NO INHERIT*, so that it does not
+  apply to tables that inherit from this one. Changing the switch on an existing
+  NOT NULL constraint alters it with *ALTER CONSTRAINT ... [NO] INHERIT*. The
+  switch is not available on a partitioned table, on a NOT NULL constraint
+  inherited from a parent table, or when creating a SERIAL, identity or primary
+  key column, for which PostgreSQL does not accept *NO INHERIT*. The default is
+  *No*.
 * Use the *Type* field to specify the column type (NONE/IDENTITY/GENERATED).
   The default is *NONE*.
 

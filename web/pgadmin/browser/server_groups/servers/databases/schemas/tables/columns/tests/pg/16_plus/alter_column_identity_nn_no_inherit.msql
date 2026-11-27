@@ -1,0 +1,2 @@
+COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#".col_id_ni
+    IS 'Comment for alter';
