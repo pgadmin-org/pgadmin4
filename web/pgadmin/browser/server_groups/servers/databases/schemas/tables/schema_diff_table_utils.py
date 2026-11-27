@@ -47,6 +47,13 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     # and the SQL for converting a column to SERIAL needs this one.
     serial_keys_to_ignore = ['serial_defval']
 
+    # 'notnull_conname' (the name of a column's NOT NULL constraint) and
+    # 'notnull_inherited' serve the column dialog, and the SQL for a
+    # constraint that cannot be made NO INHERIT inline. Whether the
+    # constraint is NO INHERIT is compared through 'notnull_noinherit'.
+    # They stay in the column for the SQL, as serial_keys_to_ignore do.
+    notnull_keys_to_ignore = ['notnull_conname', 'notnull_inherited']
+
     # 'conkey' and 'confkey' are attribute numbers, which differ between
     # databases whenever a column has been dropped from one of the tables,
     # even though the columns they name are the same. The columns are
@@ -64,7 +71,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     index_keys_to_ignore = ['indrelid', 'indclass']
 
     keys_to_ignore = table_keys_to_ignore + column_keys_to_ignore + \
-        serial_keys_to_ignore + constraint_keys_to_ignore + \
+        serial_keys_to_ignore + notnull_keys_to_ignore + \
+        constraint_keys_to_ignore + \
         trigger_keys_to_ignore + index_keys_to_ignore
 
     def compare(self, **kwargs):
@@ -191,11 +199,13 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     def _compared_column(column):
         """
         Return the properties of a column that decide whether it differs,
-        leaving out serial_keys_to_ignore. Those stay in the column itself
-        for generating the SQL.
+        leaving out serial_keys_to_ignore and notnull_keys_to_ignore. Those
+        stay in the column itself for generating the SQL.
         """
+        ignored = SchemaDiffTableCompare.serial_keys_to_ignore + \
+            SchemaDiffTableCompare.notnull_keys_to_ignore
         return {key: value for key, value in column.items()
-                if key not in SchemaDiffTableCompare.serial_keys_to_ignore}
+                if key not in ignored}
 
     @staticmethod
     def compare_target_cols(source, target_cols, added, updated):

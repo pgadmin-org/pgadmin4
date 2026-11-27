@@ -60,6 +60,22 @@ Use the fields in the *Constraints* tab to specify constraints for the column.
 * Use the *Default Value* field to specify a default data value.
 * Move the *Not Null* switch to the *Yes* position to specify the column may not
   contain null values. The default is *No*.
+* On PostgreSQL 18 and later, move the *Don't validate?* switch to the *Yes*
+  position to add the NOT NULL constraint as *NOT VALID*, so that it applies to
+  new and updated rows without checking the rows already in the table. The
+  switch is available for a column of an existing table, but not when creating
+  a table. Move it back to the *No* position on a column whose NOT NULL
+  constraint is not valid to validate the constraint. A NOT NULL constraint
+  that has already been validated cannot be made *NOT VALID*. The default is
+  *No*.
+* On PostgreSQL 18 and later, move the *No inherit?* switch to the *Yes*
+  position to make the NOT NULL constraint *NO INHERIT*, so that it does not
+  apply to tables that inherit from this one. Changing the switch on an existing
+  NOT NULL constraint alters it with *ALTER CONSTRAINT ... [NO] INHERIT*. The
+  switch is not available on a partitioned table, on a NOT NULL constraint
+  inherited from a parent table, or when creating a SERIAL, identity or primary
+  key column, for which PostgreSQL does not accept *NO INHERIT*. The default is
+  *No*.
 * Use the *Type* field to specify the column type (NONE/IDENTITY/GENERATED).
   The default is *NONE*.
 

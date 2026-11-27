@@ -72,7 +72,10 @@ DROP SEQUENCE IF EXISTS {{data.serial_seq_drop}};
 {% endif %}
 {###  Alter column not null value ###}
 {###  On PostgreSQL 18 Schema Diff also passes the source column's NOT VALID NOT NULL constraint, if it has one (see 18_plus/properties.sql). SET NOT NULL validates such a constraint in the target. ###}
-{% set notvalid_changed = 'notnull_notvalid_condef' in data and (data.notnull_notvalid_conname != o_data.notnull_notvalid_conname or data.notnull_notvalid_condef != o_data.notnull_notvalid_condef) %}
+{###  A difference only in NO INHERIT is made with ALTER CONSTRAINT below rather than by recreating the constraint. Keep in step with _notvalid_notnull_changed() in tables/utils.py. ###}
+{% set notvalid_changed = 'notnull_notvalid_condef' in data and (data.notnull_notvalid_conname != o_data.notnull_notvalid_conname or (data.notnull_notvalid_condef or '')|replace(' NO INHERIT NOT VALID', ' NOT VALID') != (o_data.notnull_notvalid_condef or '')|replace(' NO INHERIT NOT VALID', ' NOT VALID')) %}
+{###  Whether the column's NOT NULL constraint is to be NO INHERIT (PostgreSQL 18+), from the column dialog's "No inherit?" switch or Schema Diff ###}
+{% set noinherit = data.notnull_noinherit if 'notnull_noinherit' in data else o_data.notnull_noinherit %}
 {###  The table's update SQL passes defer_notvalid_notnull and emits these statements itself, after its constraint changes, through notvalid_notnull.sql. ###}
 {% if notvalid_changed and data.notnull_notvalid_conname %}
 {% if not defer_notvalid_notnull %}
@@ -85,9 +88,35 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ADD CONSTRAINT {{conn|qtIdent(data.notnull_notvalid_conname)}} {{data.notnull_notvalid_condef}};
 
 {% endif %}
+{###  The column dialog's "Don't validate?" switch (PostgreSQL 18+). PostgreSQL does not accept NOT VALID on SET NOT NULL, so add an unnamed constraint and let PostgreSQL name it as SET NOT NULL would. ###}
+{% elif data.attnotnull and not o_data.attnotnull and data.notnull_notvalid %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    ADD NOT NULL {% if data.name %}{{conn|qtIdent(data.name)}}{% else %}{{conn|qtIdent(o_data.name)}}{% endif %}{% if noinherit %} NO INHERIT{% endif %} NOT VALID;
+
+{###  SET NOT NULL has no NO INHERIT option, and fails on a column whose NOT NULL constraint is NO INHERIT, so ADD NOT NULL and VALIDATE CONSTRAINT are used for those. ###}
+{% elif 'attnotnull' in data and data.attnotnull and not o_data.attnotnull and noinherit %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    ADD NOT NULL {% if data.name %}{{conn|qtIdent(data.name)}}{% else %}{{conn|qtIdent(o_data.name)}}{% endif %} NO INHERIT;
+
+{% elif notvalid_changed and data.attnotnull and o_data.attnotnull and o_data.notnull_noinherit and o_data.notnull_notvalid_conname %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    VALIDATE CONSTRAINT {{conn|qtIdent(o_data.notnull_notvalid_conname)}};
+
 {% elif ('attnotnull' in data and data.attnotnull != o_data.attnotnull) or (notvalid_changed and data.attnotnull) %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} {% if data.attnotnull %}SET{% else %}DROP{% endif %} NOT NULL;
+
+{###  Turning the switch off validates the existing NOT VALID constraint ###}
+{% elif 'notnull_notvalid' in data and not data.notnull_notvalid and o_data.notnull_notvalid and o_data.notnull_notvalid_conname %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    VALIDATE CONSTRAINT {{conn|qtIdent(o_data.notnull_notvalid_conname)}};
+
+{% endif %}
+{###  Change whether the column's existing NOT NULL constraint is inherited (PostgreSQL 18+), unless it was recreated above ###}
+{% set attnotnull = data.attnotnull if 'attnotnull' in data else o_data.attnotnull %}
+{% if 'notnull_noinherit' in data and attnotnull and o_data.attnotnull and o_data.notnull_conname and (noinherit or false) != (o_data.notnull_noinherit or false) and not (notvalid_changed and data.notnull_notvalid_conname) %}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
+    ALTER CONSTRAINT {{conn|qtIdent(o_data.notnull_conname)}} {% if noinherit %}NO {% endif %}INHERIT;
 
 {% endif %}
 {###  Only options that differ from the column as it stands: Schema Diff passes every option of a changed column, and a needless RESTART would rewind the identity sequence (#10422) ###}

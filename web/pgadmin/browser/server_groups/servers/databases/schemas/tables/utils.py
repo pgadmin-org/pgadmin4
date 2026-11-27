@@ -1470,16 +1470,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         (PostgreSQL 18+) has to be added, which only Schema Diff asks for.
         Keep in step with the test in columns/sql/16_plus/update.sql.
 
+        A difference only in NO INHERIT is left to ALTER CONSTRAINT, which
+        the column update SQL emits, so it is ignored here.
+
         :param data: New column properties
         :param old_data: Column properties as they stand
         :return: True when the constraint has to be added
         """
+        def condef(props):
+            return (props.get('notnull_notvalid_condef') or '').replace(
+                ' NO INHERIT NOT VALID', ' NOT VALID')
+
         return 'notnull_notvalid_condef' in data and \
             bool(data.get('notnull_notvalid_conname')) and (
                 data.get('notnull_notvalid_conname') !=
                 old_data.get('notnull_notvalid_conname') or
-                data.get('notnull_notvalid_condef') !=
-                old_data.get('notnull_notvalid_condef'))
+                condef(data) != condef(old_data))
 
     def _check_for_column_update(self, columns, data, column_sql, tid,
                                  notvalid_notnull=None):

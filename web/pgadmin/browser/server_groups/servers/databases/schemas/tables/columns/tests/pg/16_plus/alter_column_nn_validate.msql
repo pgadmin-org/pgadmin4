@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    VALIDATE CONSTRAINT "table_3_$%{}[]()&*^!@""'`\/#_col_nv_ui_not_null";
