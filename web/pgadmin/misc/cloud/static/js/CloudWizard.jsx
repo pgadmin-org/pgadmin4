@@ -22,7 +22,7 @@ import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudSte
 import { AWSIcon, AzureIcon, GoogleCloudIcon, StarfleetIcon } from '../../../../static/js/components/ExternalIcon';
 import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClusternameAvailbility, validateAzureStep2, validateAzureStep3} from './azure';
 import { GoogleCredentials, GoogleInstanceDetails, GoogleDatabaseDetails, validateGoogleStep2, validateGoogleStep3 } from './google';
-import { StarfleetCredentials, StarfleetInstanceDetails, StarfleetDatabaseDetails, validateStarfleetStep1, validateStarfleetStep2, validateStarfleetStep3 } from './starfleet';
+import { StarfleetCredentials, StarfleetInstanceDetails, StarfleetDatabaseDetails, validateStarfleetStep1, validateStarfleetStep2, validateStarfleetStep3, verifyStarfleetCredentials, starfleetSecret } from './starfleet';
 import EventBus from '../../../../static/js/helpers/EventBus';
 import { CLOUD_PROVIDERS, CLOUD_PROVIDERS_LABELS } from './cloud_constants';
 import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
@@ -128,7 +128,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
       post_data = {
         gid: nodeInfo.server_group._id,
         cloud: cloudProvider,
-        secret: starfleetCredData,
+        secret: starfleetSecret(starfleetCredData),
         instance_details: starfleetInstanceData,
         db_details: starfleetDatabaseData
       };
@@ -259,12 +259,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           });
       } else if(activeStep == 1 && cloudProvider == CLOUD_PROVIDERS.STARFLEET) {
         setErrMsg([MESSAGE_TYPE.INFO, gettext('Validating credentials...')]);
-        let _url = url_for('starfleet.verify_credentials');
-        const post_data = {
-          cloud: cloudSelection,
-          secret: starfleetCredData,
-        };
-        axiosApi.post(_url, post_data)
+        verifyStarfleetCredentials(starfleetCredData)
           .then((res) => {
             if(!res.data.success) {
               const msg = res.data.errormsg || res.data.info;

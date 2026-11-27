@@ -15,7 +15,7 @@ import time
 from providers._abstract import AbsProvider
 from utils.io import debug, error, output
 from utils.starfleet_api import StarfleetClient, StarfleetError, \
-    DEFAULT_API_URL
+    Auth0Client, DEFAULT_API_URL
 
 POLL_INTERVAL = 5
 POLL_TIMEOUT = 1800
@@ -35,13 +35,28 @@ class StarfleetProvider(AbsProvider):
         self._client_secret = os.environ.get('STARFLEET_CLIENT_SECRET')
         self._api_url = os.environ.get('STARFLEET_API_URL',
                                        DEFAULT_API_URL)
+        # A user sign-in, used when no API client credentials are given.
+        self._token = os.environ.get('STARFLEET_ACCESS_TOKEN')
+        try:
+            self._expires_at = float(
+                os.environ.get('STARFLEET_TOKEN_EXPIRES_AT'))
+        except (TypeError, ValueError):
+            self._expires_at = None
+        self._tenant_id = os.environ.get('STARFLEET_TENANT_ID') or None
+        self._refresh_token = os.environ.get('STARFLEET_REFRESH_TOKEN')
+        self._auth0_domain = os.environ.get('STARFLEET_AUTH0_DOMAIN')
+        self._auth0_client_id = os.environ.get('STARFLEET_AUTH0_CLIENT_ID')
 
     def init_args(self, parsers):
         """ Create the command line parser for this provider """
         self.parser = parsers.add_parser(
             'starfleet', help='pgEdge Starfleet',
             epilog='Credentials are read from the STARFLEET_CLIENT_ID and '
-                   'STARFLEET_CLIENT_SECRET environment variables.')
+                   'STARFLEET_CLIENT_SECRET environment variables or, for a '
+                   'user sign-in, from STARFLEET_ACCESS_TOKEN, '
+                   'STARFLEET_TOKEN_EXPIRES_AT, STARFLEET_TENANT_ID and '
+                   'optionally STARFLEET_REFRESH_TOKEN, '
+                   'STARFLEET_AUTH0_DOMAIN and STARFLEET_AUTH0_CLIENT_ID.')
         parsers = self.parser.add_subparsers(help='Starfleet commands',
                                              dest='command')
         p = parsers.add_parser('create-instance',
@@ -56,9 +71,40 @@ class StarfleetProvider(AbsProvider):
         p.add_argument('--role', choices=list(USER_TYPES), default='admin',
                        help='role to connect as')
 
+    def _auth0(self):
+        if self._refresh_token and self._auth0_domain and \
+                self._auth0_client_id:
+            return Auth0Client(self._auth0_domain, self._auth0_client_id)
+        return None
+
+    def _refresh(self):
+        """Renew a user sign-in's token, keeping the rotated refresh
+        token for the next renewal and for revoking at the end."""
+        tokens = self._auth0().refresh(self._refresh_token)
+        if tokens['refresh_token']:
+            self._refresh_token = tokens['refresh_token']
+        return tokens['access_token'], tokens['expires_in']
+
     def _client(self):
-        return StarfleetClient(self._api_url, self._client_id,
-                               self._client_secret)
+        if self._client_id and self._client_secret:
+            return StarfleetClient(self._api_url, self._client_id,
+                                   self._client_secret)
+        return StarfleetClient(
+            self._api_url, token=self._token, expires_at=self._expires_at,
+            tenant_id=self._tenant_id,
+            refresh=self._refresh if self._auth0() else None)
+
+    def _revoke_refresh_token(self):
+        """Nothing else holds this refresh token, so end it with the
+        job rather than leave it live."""
+        auth0 = self._auth0()
+        if auth0 is None:
+            return
+        try:
+            auth0.revoke(self._refresh_token)
+        except StarfleetError as e:
+            debug('Could not revoke the pgEdge Starfleet refresh token: '
+                  '{}'.format(e))
 
     @staticmethod
     def _create_body(args):
@@ -117,6 +163,12 @@ class StarfleetProvider(AbsProvider):
 
     def cmd_create_instance(self, args):
         """ Create a database and wait for it to become available """
+        try:
+            self._create_instance(args)
+        finally:
+            self._revoke_refresh_token()
+
+    def _create_instance(self, args):
         params = {'user_type': USER_TYPES[args.role]}
 
         try:

@@ -18,14 +18,30 @@ Once you launch the tool, select the pgEdge Starfleet option and click on the
     :alt: pgEdge Starfleet credentials
     :align: center
 
-In the Credentials step, enter the *Auth ID* and *Auth secret* of a Starfleet
-API client. pgAdmin checks them with Starfleet when you click *Next*.
+In the Credentials step, use the *Authenticate with* field to choose how pgAdmin
+signs in to pgEdge Starfleet.
 
-.. note:: Create the API client in the pgEdge Starfleet console, under
+* Choose *Sign in with pgEdge* to sign in with your pgEdge account, and click
+  the *Sign in* button. pgAdmin shows a code and a link to the pgEdge sign-in
+  page. Open the link in a web browser on any device, sign in, and check that
+  the page shows the same code before you confirm it. pgAdmin notices when the
+  sign-in is complete; this can take a few seconds. If your account belongs to
+  more than one Starfleet tenant, use the *Tenant* field to select the one to
+  create the database in.
+
+* Choose *API client credentials* to enter the *Auth ID* and *Auth secret* of a
+  Starfleet API client instead. pgAdmin checks them with Starfleet when you
+  click *Next*.
+
+.. note:: Create an API client in the pgEdge Starfleet console, under
  *Settings > API Clients*. The Auth secret is shown only when the client is
  created, so keep a copy of it. See the
  `pgEdge Starfleet documentation <https://docs.pgedge.com/pgedge-starfleet/>`_
  for details.
+
+.. note:: Only confirm a sign-in code that you requested yourself in pgAdmin.
+ Confirming a code that someone else sent you would give them access to your
+ pgEdge account.
 
 .. image:: images/cloud_starfleet_instance.png
     :alt: pgEdge Starfleet instance specification
@@ -100,3 +116,6 @@ lose it, reset it from the pgEdge Starfleet console.
 .. note:: pgAdmin contacts the Starfleet API at the address given by the
  *STARFLEET_API_URL* configuration setting, which defaults to
  *https://api.pgedge.com*. The address must use HTTPS.
+ *Sign in with pgEdge* is offered only when the *STARFLEET_AUTH0_APPS*
+ configuration setting has an entry for that address, giving the pgEdge sign-in
+ service to use.
