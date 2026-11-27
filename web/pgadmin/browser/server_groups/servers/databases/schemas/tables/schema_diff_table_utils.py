@@ -347,12 +347,14 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         non_editable_keys = {'primary_key': ['col_count',
                                              'condeferrable',
                                              'condeferred',
-                                             'columns'],
+                                             'columns',
+                                             'conperiod'],
                              'unique_constraint': ['col_count',
                                                    'condeferrable',
                                                    'condeferred',
                                                    'columns',
-                                                   'indnullsnotdistinct'],
+                                                   'indnullsnotdistinct',
+                                                   'conperiod'],
                              # PostgreSQL 18 cannot alter whether a check
                              # constraint is enforced.
                              'check_constraint': ['consrc', 'conenforced'],

@@ -7,7 +7,7 @@
 {% if data.columns|length > 0 %}
 
     {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}PRIMARY KEY ({% for c in data.columns%}
-{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %}){% if data.include|length > 0 %}
+{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% if loop.last and data.conperiod %} WITHOUT OVERLAPS{% endif %}{% endfor %}){% if data.include|length > 0 %}
 
         INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
 {% if data.fillfactor %}
@@ -26,7 +26,7 @@
 {% if data.columns|length > 0 %}{% if loop.index !=1 %},{% endif %}
 
     {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}UNIQUE {% if data.indnullsnotdistinct %}NULLS NOT DISTINCT {% endif %}({% for c in data.columns%}
-{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %}){% if data.include|length > 0 %}
+{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% if loop.last and data.conperiod %} WITHOUT OVERLAPS{% endif %}{% endfor %}){% if data.include|length > 0 %}
 
         INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
 {% if data.fillfactor %}
