@@ -116,3 +116,39 @@ class TestByteaDisplayHex(BaseTestGenerator):
             '/sqleditor/close/{0}'.format(self.trans_id))
         self.assertEqual(response.status_code, 200)
         database_utils.disconnect_database(self, self.server_id, self.db_id)
+
+
+class TestByteaDownloadHex(TestByteaDisplayHex):
+    """Check that results downloaded after the grid has saved changes,
+    which re-runs the query, still show bytea as hex when the preference
+    is on."""
+
+    scenarios = [
+        ('bytea is downloaded as hex after the query is re-run',
+         dict(bytea_as_hex=True, sql=SQL_BYTEA_ONLY)),
+    ]
+
+    def runTest(self):
+        with patch('pgadmin.tools.sqleditor.utils.start_running_query'
+                   '.get_display_bytea_as_hex', return_value=True):
+            response = self.tester.post(
+                '/sqleditor/query_tool/start/{0}'.format(self.trans_id),
+                data=json.dumps({"sql": self.sql}), content_type='html/json')
+        self.assertEqual(response.status_code, 200)
+        response = async_poll(
+            tester=self.tester,
+            poll_url='/sqleditor/poll/{0}'.format(self.trans_id))
+        self.assertEqual(response.status_code, 200)
+
+        # query_commited is what the grid sends once a save has succeeded,
+        # and makes the download run the query again.
+        with patch('pgadmin.tools.sqleditor.get_display_bytea_as_hex',
+                   return_value=True):
+            response = self.tester.post(
+                '/sqleditor/query_tool/download/{0}'.format(self.trans_id),
+                data={"query": self.sql, "filename": "test.csv",
+                      "query_commited": True})
+            body = response.data.decode('utf-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(ALL_BYTES_HEX, body)
+        self.assertNotIn('binary data', body)

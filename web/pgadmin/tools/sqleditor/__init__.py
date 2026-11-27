@@ -2284,7 +2284,9 @@ def start_query_download_tool(trans_id):
                 sync_conn.release_async_cursor()
                 sync_conn.execute_void("BEGIN;")
             # Re-execute the query to ensure the latest data is included
-            sync_conn.execute_async(sql, server_cursor=trans_obj.server_cursor)
+            sync_conn.execute_async(
+                sql, server_cursor=trans_obj.server_cursor,
+                bytea_as_hex=get_display_bytea_as_hex())
         # This returns generator of records.
         status, gen, conn_obj = \
             sync_conn.execute_on_server_as_csv(
