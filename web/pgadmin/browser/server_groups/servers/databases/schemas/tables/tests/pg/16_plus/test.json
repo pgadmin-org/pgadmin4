@@ -2599,6 +2599,82 @@
       "data": {
         "name": "table_with_serial_cols"
       }
+    },
+    {
+      "type": "create",
+      "name": "Create Table for NOT VALID NOT NULL constraints",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "table_nn_not_valid",
+        "relowner": "<OWNER>",
+        "relacl": [],
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [],
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col_a",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col_b",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": []
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_nn_not_valid.sql",
+      "expected_msql_file": "create_table_nn_not_valid_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table with NOT VALID NOT NULL constraints",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "pre_scenario_sql": "ALTER TABLE public.table_nn_not_valid ADD CONSTRAINT nn_col_a NOT NULL col_a NOT VALID; ALTER TABLE public.table_nn_not_valid ADD CONSTRAINT nn_col_b NOT NULL col_b NO INHERIT NOT VALID;",
+      "data": {
+        "description": "NOT VALID NOT NULL constraints"
+      },
+      "expected_sql_file": "alter_table_nn_not_valid.sql",
+      "expected_msql_file": "alter_table_nn_not_valid_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with NOT VALID NOT NULL constraints",
+      "endpoint": "NODE-table.obj_id",
+      "precondition_sql": "SELECT CASE WHEN current_setting('server_version_num')::int >= 180000 THEN 1 ELSE 0 END",
+      "data": {
+        "name": "table_nn_not_valid"
+      }
     }
   ]
 }

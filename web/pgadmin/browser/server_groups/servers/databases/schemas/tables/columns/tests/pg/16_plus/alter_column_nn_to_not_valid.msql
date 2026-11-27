@@ -1,0 +1,5 @@
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN col_nn_nv DROP NOT NULL;
+
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ADD CONSTRAINT nn_col_nv NOT NULL col_nn_nv NOT VALID;

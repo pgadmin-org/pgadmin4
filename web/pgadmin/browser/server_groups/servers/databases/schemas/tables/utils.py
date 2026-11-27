@@ -1463,7 +1463,33 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     'seqcache', 'seqcycle', 'seqtypname'):
             data.pop(key, None)
 
-    def _check_for_column_update(self, columns, data, column_sql, tid):
+    @staticmethod
+    def _notvalid_notnull_changed(data, old_data):
+        """
+        Report whether a changed column's NOT VALID NOT NULL constraint
+        (PostgreSQL 18+) has to be added, which only Schema Diff asks for.
+        Keep in step with the test in columns/sql/16_plus/update.sql.
+
+        :param data: New column properties
+        :param old_data: Column properties as they stand
+        :return: True when the constraint has to be added
+        """
+        return 'notnull_notvalid_condef' in data and \
+            bool(data.get('notnull_notvalid_conname')) and (
+                data.get('notnull_notvalid_conname') !=
+                old_data.get('notnull_notvalid_conname') or
+                data.get('notnull_notvalid_condef') !=
+                old_data.get('notnull_notvalid_condef'))
+
+    def _check_for_column_update(self, columns, data, column_sql, tid,
+                                 notvalid_notnull=None):
+        """
+        Add the SQL for changed columns.
+
+        NOT VALID NOT NULL constraints are left out of it, and each column
+        that needs one is appended to notvalid_notnull as a (new, old) pair
+        of properties, for get_sql() to add after the constraint changes.
+        """
         # Here we will be needing previous properties of column
         # so that we can compare & update it
         if 'changed' in columns:
@@ -1507,8 +1533,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                         c.get('inheritedfromtable', None) is None:
                     column_sql += render_template("/".join(
                         [self.column_template_path, self._UPDATE_SQL]),
-                        data=c, o_data=old_col_data, conn=self.conn
+                        data=c, o_data=old_col_data, conn=self.conn,
+                        defer_notvalid_notnull=notvalid_notnull is not None
                     ).strip('\n') + self.double_newline
+
+                    if notvalid_notnull is not None and \
+                            self._notvalid_notnull_changed(c, old_col_data):
+                        notvalid_notnull.append((c, old_col_data))
         return column_sql
 
     def _check_for_column_add(self, columns, data, column_sql):
@@ -1692,6 +1723,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             # Removes training new lines
             sql = sql.strip('\n') + self.double_newline
 
+            # Changed columns' NOT VALID NOT NULL constraints, added after
+            # the constraint changes below
+            notvalid_notnull = []
+
             # Parse/Format columns & create sql
             if 'columns' in data:
                 # Parse the data coming from client
@@ -1706,8 +1741,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     self._get_removed_parent_ids(scid, data))
 
                 # If column(s) is/are changed
-                column_sql = self._check_for_column_update(columns, data,
-                                                           column_sql, tid)
+                column_sql = self._check_for_column_update(
+                    columns, data, column_sql, tid, notvalid_notnull)
 
                 # If column(s) is/are added
                 column_sql = self._check_for_column_add(columns, data,
@@ -1731,6 +1766,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             sql = self._check_for_constraints(index_constraint_sql, data, did,
                                               tid, sql)
+
+            if notvalid_notnull:
+                sql += '\n' + render_template("/".join(
+                    [self.column_template_path, 'notvalid_notnull.sql']),
+                    columns=notvalid_notnull, conn=self.conn)
         else:
             error, _ = BaseTableView._check_for_create_sql(data)
             if error:
