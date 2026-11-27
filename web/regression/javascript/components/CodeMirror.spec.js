@@ -17,6 +17,9 @@ import CustomEditorView from 'sources/components/ReactCodeMirror/CustomEditorVie
 import fakePgAdmin from '../fake_pgadmin';
 import { render, screen, fireEvent } from '@testing-library/react';
 import * as CMSearch from '@codemirror/search';
+import { EditorView, keymap, runScopeHandlers } from '@codemirror/view';
+import { EditorState } from '@codemirror/state';
+import { tabKeyBinding } from 'sources/components/ReactCodeMirror/components/Editor';
 
 jest.mock('sources/components/ReactCodeMirror/CustomEditorView');
 jest.mock('@codemirror/search', () => ({
@@ -243,5 +246,32 @@ describe('CodeMirror', ()=>{
       expect(CMSearch.findNext).not.toHaveBeenCalled();
       expect(CMSearch.findPrevious).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('CodeMirror Tab key binding', ()=>{
+  const pressTab = (readOnly, shiftKey)=>{
+    const view = new EditorView({state: EditorState.create({
+      doc: '  select 1',
+      extensions: [keymap.of([tabKeyBinding]), EditorState.readOnly.of(readOnly)],
+    })});
+    const handled = runScopeHandlers(view, new KeyboardEvent('keydown', {key: 'Tab', shiftKey}), 'editor');
+    const doc = view.state.doc.toString();
+    view.destroy();
+    return {handled, doc};
+  };
+
+  it.each([
+    ['Tab', false, '    select 1'],
+    ['Shift+Tab', true, 'select 1'],
+  ])('%s indents and is consumed in an editable editor', (_key, shiftKey, doc)=>{
+    expect(pressTab(false, shiftKey)).toEqual({handled: true, doc});
+  });
+
+  it.each([
+    ['Tab', false],
+    ['Shift+Tab', true],
+  ])('%s is left to the browser in a read-only editor', (_key, shiftKey)=>{
+    expect(pressTab(true, shiftKey)).toEqual({handled: false, doc: '  select 1'});
   });
 });

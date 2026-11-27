@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 // The SQL button on the Data Output toolbar shows the query that produced the
-// result set in a popup that closes when the button loses focus, so the
-// popup's copy button must copy the query without taking the focus.
+// result set in a popup. The popup takes the focus when it opens, keeps Tab
+// inside it, and closes on Escape or a click outside it.
 
 jest.mock('sources/url_for', () => ({
   __esModule: true,
@@ -25,10 +25,22 @@ jest.mock('../../../pgadmin/tools/sqleditor/static/js/components/QueryToolCompon
   };
 });
 
-jest.mock('../../../pgadmin/static/js/components/ReactCodeMirror', () => ({
-  __esModule: true,
-  default: ({ value }) => value,
-}));
+// Like the real editor, render the focusable query text followed by a closed
+// dialog that stays in the DOM with visibility hidden, and that, like the find
+// and go to line dialogs, handles Escape with preventDefault() alone.
+jest.mock('../../../pgadmin/static/js/components/ReactCodeMirror', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ value }) => React.createElement(React.Fragment, null,
+      React.createElement('div', { tabIndex: 0, 'data-test': 'query-text' }, value),
+      React.createElement('div', {
+        tabIndex: 0, style: { visibility: 'hidden' }, 'data-test': 'editor-dialog',
+        onKeyDown: (e) => { if(e.key === 'Escape') e.preventDefault(); },
+      }),
+    ),
+  };
+});
 
 jest.mock('../../../pgadmin/static/js/components/JsonEditor', () => ({
   __esModule: true,
@@ -40,6 +52,7 @@ jest.mock('../../../pgadmin/static/js/clipboard', () => ({
 }));
 
 import { render, fireEvent, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Theme from 'sources/Theme';
 import { copyToClipboard } from '../../../pgadmin/static/js/clipboard';
 import { QueryToolContext, QueryToolEventsContext } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx';
@@ -70,17 +83,19 @@ describe('ResultSetToolbar SQL query popup', () => {
     );
   };
 
+  const getPopup = () => document.body.querySelector('[role="dialog"]');
+  const getCopyBtn = () => document.body.querySelector('button[data-label="Copy SQL"]');
+
   const openPopup = () => {
     const { container } = renderToolbar();
     fireEvent.click(container.querySelector('#sql-query'));
     return document.body.querySelector('button[data-label="Copy SQL"]');
   };
 
-  it('copies the query without moving the focus off the SQL button', async () => {
+  it('copies the query and keeps the popup open', async () => {
     copyToClipboard.mockResolvedValue(true);
     const copyBtn = openPopup();
     expect(copyBtn).not.toBeNull();
-    expect(fireEvent.mouseDown(copyBtn)).toBe(false);
     await act(async () => { fireEvent.click(copyBtn); });
 
     expect(copyToClipboard).toHaveBeenCalledWith(query);
@@ -95,5 +110,86 @@ describe('ResultSetToolbar SQL query popup', () => {
 
     expect(document.body.querySelector('button[data-label="Copy SQL"]')).not.toBeNull();
     expect(document.body.querySelector('button[data-label="Copied!"]')).toBeNull();
+  });
+
+  it('moves the focus into the popup when opened from the keyboard and keeps Tab inside it', async () => {
+    const user = userEvent.setup();
+    const { container } = renderToolbar();
+    const sqlBtn = container.querySelector('#sql-query');
+    act(() => { sqlBtn.focus(); });
+    await user.keyboard('{Enter}');
+
+    const popup = getPopup();
+    expect(popup).not.toBeNull();
+    expect(sqlBtn).toHaveAttribute('aria-expanded', 'true');
+    expect(popup.contains(document.activeElement)).toBe(true);
+
+    const queryText = popup.querySelector('[data-test="query-text"]');
+    await user.tab();
+    expect(document.activeElement).toBe(getCopyBtn());
+    await user.tab();
+    expect(document.activeElement).toBe(queryText);
+    // Tab wraps past the hidden dialog in both directions.
+    await user.tab();
+    expect(document.activeElement).toBe(getCopyBtn());
+    await user.tab({shift: true});
+    expect(document.activeElement).toBe(queryText);
+    expect(getPopup()).not.toBeNull();
+  });
+
+  it('closes on Escape and returns the focus to the SQL button', async () => {
+    const user = userEvent.setup();
+    const { container } = renderToolbar();
+    const sqlBtn = container.querySelector('#sql-query');
+    act(() => { sqlBtn.focus(); });
+    await user.keyboard('{Enter}');
+    await user.tab();
+    expect(document.activeElement).toBe(getCopyBtn());
+
+    await user.keyboard('{Escape}');
+    expect(getPopup()).toBeNull();
+    expect(document.activeElement).toBe(sqlBtn);
+    expect(sqlBtn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('stays open when Escape closes a dialog of the editor inside it', async () => {
+    const user = userEvent.setup();
+    const { container } = renderToolbar();
+    const sqlBtn = container.querySelector('#sql-query');
+    act(() => { sqlBtn.focus(); });
+    await user.keyboard('{Enter}');
+
+    fireEvent.keyDown(getPopup().querySelector('[data-test="editor-dialog"]'), {key: 'Escape'});
+    expect(getPopup()).not.toBeNull();
+    expect(sqlBtn).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('closes on a click outside it, and the SQL button still toggles it', async () => {
+    const user = userEvent.setup();
+    const { container } = renderToolbar();
+    const sqlBtn = container.querySelector('#sql-query');
+
+    await user.click(sqlBtn);
+    expect(getPopup()).not.toBeNull();
+    await user.click(getPopup());
+    expect(getPopup()).not.toBeNull();
+    // A click on an area that cannot take the focus returns it to the button.
+    await user.click(document.body);
+    expect(getPopup()).toBeNull();
+    expect(document.activeElement).toBe(sqlBtn);
+
+    // A click on another control leaves the focus on that control.
+    const otherBtn = Array.from(container.querySelectorAll('button'))
+      .find((btn)=>btn !== sqlBtn && !btn.disabled);
+    await user.click(sqlBtn);
+    expect(getPopup()).not.toBeNull();
+    await user.click(otherBtn);
+    expect(getPopup()).toBeNull();
+    expect(document.activeElement).toBe(otherBtn);
+
+    await user.click(sqlBtn);
+    expect(getPopup()).not.toBeNull();
+    await user.click(sqlBtn);
+    expect(getPopup()).toBeNull();
   });
 });

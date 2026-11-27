@@ -151,6 +151,21 @@ function insertTabWithUnit({ state, dispatch }) {
   return true;
 }
 
+/* Tab and Shift+Tab indent in an editable editor and are always consumed
+   there. A read-only editor leaves them to the browser, so the keyboard can
+   move the focus out of it. */
+export const tabKeyBinding = {
+  key: 'Tab',
+  run: (view)=>!view.state.readOnly && insertTabWithUnit(view),
+  shift: (view)=>{
+    if(view.state.readOnly) {
+      return false;
+    }
+    indentLess(view);
+    return true;
+  },
+};
+
 /* React wrapper for CodeMirror */
 const defaultExtensions = [
   highlightSpecialChars(),
@@ -167,12 +182,7 @@ const defaultExtensions = [
   keymap.of([{
     key: 'Tab',
     run: acceptCompletion,
-  },{
-    key: 'Tab',
-    preventDefault: true,
-    run: insertTabWithUnit,
-    shift: indentLess,
-  },{
+  }, tabKeyBinding, {
     key: 'Backspace',
     preventDefault: true,
     run: deleteCharBackwardStrict,

@@ -6,9 +6,9 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, {useContext, useCallback, useEffect, useState} from 'react';
+import React, {useContext, useCallback, useEffect, useRef, useState} from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Portal } from '@mui/material';
+import { Box, ClickAwayListener, Portal, Unstable_TrapFocus as FocusTrap } from '@mui/material';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PlaylistAddRoundedIcon from '@mui/icons-material/PlaylistAddRounded';
@@ -68,6 +68,7 @@ const StyledEditor = styled('div')(({theme})=>({
   maxWidth:'50%',
   overflow:'auto',
   maxHeight:'35%',
+  outline: 0,
   '& .textarea': {
     border: 0,
     outline: 0,
@@ -81,47 +82,102 @@ const StyledEditor = styled('div')(({theme})=>({
   }
 }));
 
-function ShowDataOutputQueryPopup({query}) {
-  function suppressEnterKey(e) {
+const TABBABLE_SELECTOR = 'input, select, textarea, a[href], button, [tabindex], [contenteditable]:not([contenteditable="false"])';
+
+/* MUI's default for the focus trap does not skip hidden elements, and the
+   editor keeps its closed find and go to line dialogs in the DOM with
+   visibility hidden, so the trap would try to wrap the focus onto them. */
+function getVisibleTabbable(root) {
+  const tabIndexOf = (node)=>(
+    (!node.hasAttribute('tabindex') && node.contentEditable === 'true') ? 0 : node.tabIndex
+  );
+  return Array.from(root.querySelectorAll(TABBABLE_SELECTOR))
+    .filter((node)=>tabIndexOf(node) >= 0 && !node.disabled
+      && window.getComputedStyle(node).visibility != 'hidden')
+    .map((node, i)=>({node, i, tabIndex: tabIndexOf(node)}))
+    .sort((a, b)=>{
+      // Positive tab indexes come first, in order, then the rest in DOM order.
+      if(a.tabIndex == b.tabIndex) return a.i - b.i;
+      if(a.tabIndex == 0) return 1;
+      if(b.tabIndex == 0) return -1;
+      return a.tabIndex - b.tabIndex;
+    })
+    .map((a)=>a.node);
+}
+
+function ShowDataOutputQueryPopup({query, anchorRef, onClose}) {
+  function onKeyDown(e) {
     if(e.keyCode == 13) {
       e.stopPropagation();
+    } else if(e.key == 'Escape') {
+      e.stopPropagation();
+      /* The editor's find and go to line dialogs close themselves on Escape
+         and mark it handled without stopping it, so leave the popup open. */
+      if(e.defaultPrevented) {
+        return;
+      }
+      onClose();
+      anchorRef.current?.focus();
     }
   }
 
+  const popupRef = useRef(null);
   const [isCopied, setIsCopied] = useState(false);
   const revertCopied = useDelayedCaller(()=>{
     setIsCopied(false);
   });
 
+  /* The focus trap moves the focus into the popup when it opens and keeps
+     Tab and Shift+Tab inside it. It does not enforce the focus, so a mouse
+     click elsewhere still focuses whatever was clicked, and the click-away
+     listener then closes the popup. A click on something that cannot take
+     the focus leaves it on the body, so the focus goes back to the SQL
+     button instead. */
   return (
     <Portal container={document.body}>
-      <StyledEditor ref={(ele)=>{
-        setEditorPosition(document.getElementById('sql-query'), ele, '.MuiBox-root', 29);
-      }} onKeyDown={suppressEnterKey}>
-        {/* The popup closes when the SQL button loses focus, so keep the
-            focus there whilst the copy button is clicked. */}
-        <PgIconButton size="small" className='DataOutputQuery-copyButton'
-          icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
-          title={isCopied ? gettext('Copied!') : gettext('Copy SQL')}
-          onMouseDown={(e)=>e.preventDefault()}
-          onClick={async ()=>{
-            if(await copyToClipboard(query || '')) {
-              setIsCopied(true);
-              revertCopied(1500);
-            }
-          }}
-        />
-        <CodeMirror
-          value={query || ''}
-          className={'textarea'}
-          readonly={true}
-        />
-      </StyledEditor>
+      <ClickAwayListener onClickAway={(e)=>{
+        // The SQL button toggles the popup itself.
+        if(!anchorRef.current?.contains(e.target)) {
+          const active = document.activeElement;
+          onClose();
+          if(!active || active == document.body || popupRef.current?.contains(active)) {
+            anchorRef.current?.focus();
+          }
+        }
+      }}>
+        <div>
+          <FocusTrap open disableEnforceFocus disableRestoreFocus getTabbable={getVisibleTabbable}>
+            <StyledEditor ref={(ele)=>{
+              popupRef.current = ele;
+              setEditorPosition(anchorRef.current, ele, '.MuiBox-root', 29);
+            }} onKeyDown={onKeyDown} tabIndex={-1} role="dialog"
+            aria-label={gettext('SQL query of data')}>
+              <PgIconButton size="small" className='DataOutputQuery-copyButton'
+                icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
+                title={isCopied ? gettext('Copied!') : gettext('Copy SQL')}
+                onClick={async ()=>{
+                  if(await copyToClipboard(query || '')) {
+                    setIsCopied(true);
+                    revertCopied(1500);
+                  }
+                }}
+              />
+              <CodeMirror
+                value={query || ''}
+                className={'textarea'}
+                readonly={true}
+              />
+            </StyledEditor>
+          </FocusTrap>
+        </div>
+      </ClickAwayListener>
     </Portal>
   );
 }
 ShowDataOutputQueryPopup.propTypes = {
   query: PropTypes.string,
+  anchorRef: PropTypes.object,
+  onClose: PropTypes.func,
 };
 
 
@@ -296,6 +352,7 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const [dataOutputQueryBtn,setDataOutputQueryBtn] = useState(false);
+  const dataOutputQueryBtnRef = useRef(null);
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save-data': true,
     'delete-rows': true,
@@ -480,9 +537,11 @@ export function ResultSetToolbar({query, canEdit, canInsert, totalRowCount, pagi
           <>
             <PgButtonGroup size="small">
               <PgIconButton title={gettext('SQL query of data')} icon={<SQLQueryIcon />}
-                onClick={()=>{setDataOutputQueryBtn(prev=>!prev);}} onBlur={()=>{setDataOutputQueryBtn(false);}} disabled={!query} id='sql-query'/>
+                ref={dataOutputQueryBtnRef} aria-haspopup="dialog" aria-expanded={dataOutputQueryBtn}
+                onClick={()=>{setDataOutputQueryBtn(prev=>!prev);}} disabled={!query} id='sql-query'/>
             </PgButtonGroup>
-            { dataOutputQueryBtn && <ShowDataOutputQueryPopup query={query} />}
+            { dataOutputQueryBtn && <ShowDataOutputQueryPopup query={query} anchorRef={dataOutputQueryBtnRef}
+              onClose={()=>setDataOutputQueryBtn(false)} />}
           </>
           }
           {
