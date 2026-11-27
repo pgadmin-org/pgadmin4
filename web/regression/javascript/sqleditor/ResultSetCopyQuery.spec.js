@@ -173,8 +173,19 @@ describe('ResultSetToolbar SQL query popup', () => {
     expect(getPopup()).not.toBeNull();
     await user.click(getPopup());
     expect(getPopup()).not.toBeNull();
+    // A click on an area that cannot take the focus returns it to the button.
     await user.click(document.body);
     expect(getPopup()).toBeNull();
+    expect(document.activeElement).toBe(sqlBtn);
+
+    // A click on another control leaves the focus on that control.
+    const otherBtn = Array.from(container.querySelectorAll('button'))
+      .find((btn)=>btn !== sqlBtn && !btn.disabled);
+    await user.click(sqlBtn);
+    expect(getPopup()).not.toBeNull();
+    await user.click(otherBtn);
+    expect(getPopup()).toBeNull();
+    expect(document.activeElement).toBe(otherBtn);
 
     await user.click(sqlBtn);
     expect(getPopup()).not.toBeNull();

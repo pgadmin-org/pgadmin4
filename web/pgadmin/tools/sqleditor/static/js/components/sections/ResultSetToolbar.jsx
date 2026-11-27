@@ -121,6 +121,7 @@ function ShowDataOutputQueryPopup({query, anchorRef, onClose}) {
     }
   }
 
+  const popupRef = useRef(null);
   const [isCopied, setIsCopied] = useState(false);
   const revertCopied = useDelayedCaller(()=>{
     setIsCopied(false);
@@ -129,18 +130,25 @@ function ShowDataOutputQueryPopup({query, anchorRef, onClose}) {
   /* The focus trap moves the focus into the popup when it opens and keeps
      Tab and Shift+Tab inside it. It does not enforce the focus, so a mouse
      click elsewhere still focuses whatever was clicked, and the click-away
-     listener then closes the popup. */
+     listener then closes the popup. A click on something that cannot take
+     the focus leaves it on the body, so the focus goes back to the SQL
+     button instead. */
   return (
     <Portal container={document.body}>
       <ClickAwayListener onClickAway={(e)=>{
         // The SQL button toggles the popup itself.
         if(!anchorRef.current?.contains(e.target)) {
+          const active = document.activeElement;
           onClose();
+          if(!active || active == document.body || popupRef.current?.contains(active)) {
+            anchorRef.current?.focus();
+          }
         }
       }}>
         <div>
           <FocusTrap open disableEnforceFocus disableRestoreFocus getTabbable={getVisibleTabbable}>
             <StyledEditor ref={(ele)=>{
+              popupRef.current = ele;
               setEditorPosition(anchorRef.current, ele, '.MuiBox-root', 29);
             }} onKeyDown={onKeyDown} tabIndex={-1} role="dialog"
             aria-label={gettext('SQL query of data')}>
