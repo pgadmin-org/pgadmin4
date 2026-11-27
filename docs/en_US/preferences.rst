@@ -793,6 +793,10 @@ preferences for copied data.
   character for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields
   require quoting; select *All*, *None*, or *Strings*.
+* When the *Quote single cell copies?* switch is set to true, copying a single
+  cell quotes the value according to the *Result copy quoting* and *Result copy
+  quote character* settings, in the same way as copying multiple cells. When
+  set to false (the default), a single cell is copied without quotes.
 * When the *Copy with headers?* switch is set to true, the column headers are
   included by default when copying data from the results grid. This can still
   be toggled per-copy from the results grid copy options menu.
