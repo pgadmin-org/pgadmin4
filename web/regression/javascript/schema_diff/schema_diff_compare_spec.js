@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { computeDependLevels } from '../../../pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare';
+import { computeDependLevels, populateGridDependencyRowIds } from '../../../pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare';
 import { FILTER_NAME } from '../../../pgadmin/tools/schema_diff/static/js/SchemaDiffConstants';
 
 describe('computeDependLevels', () => {
@@ -112,5 +112,81 @@ describe('computeDependLevels', () => {
 
     expect(parentRow.dependLevel).toBeGreaterThan(childRow.dependLevel);
     expect(targetOnlyRow.dependLevel).toBe(1);
+  });
+});
+
+describe('populateGridDependencyRowIds', () => {
+  it('links child rows to matching Source Only and Different parent rows by OID', () => {
+    const parentRow = {
+      id: 10,
+      oid: 16390,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependenciesOid: [],
+      dependencieRowIds: [],
+    };
+    const domainRow = {
+      id: 11,
+      oid: 16391,
+      status: FILTER_NAME.DIFFERENT,
+      dependenciesOid: [],
+      dependencieRowIds: [],
+    };
+    const childRow = {
+      id: 12,
+      oid: 16400,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependenciesOid: [16390, 16391],
+      dependencieRowIds: [],
+    };
+    const collections = [
+      {
+        metadata: { dependencies: [] },
+        children: [parentRow, childRow],
+      },
+      {
+        metadata: { dependencies: [] },
+        children: [domainRow],
+      },
+    ];
+
+    populateGridDependencyRowIds(collections);
+
+    expect(childRow.dependencieRowIds).toEqual(['10', '11']);
+    expect(collections[0].metadata.dependencies).toEqual(['10', '11']);
+  });
+
+  it('excludes Target Only rows when linking grid dependencies by OID', () => {
+    const parentRow = {
+      id: 10,
+      oid: 16390,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependenciesOid: [],
+      dependencieRowIds: [],
+    };
+    const targetOnlyRow = {
+      id: 99,
+      oid: 16390,
+      status: FILTER_NAME.TARGET_ONLY,
+      dependenciesOid: [],
+      dependencieRowIds: [],
+    };
+    const childRow = {
+      id: 12,
+      oid: 16400,
+      status: FILTER_NAME.SOURCE_ONLY,
+      dependenciesOid: [16390],
+      dependencieRowIds: [],
+    };
+    const collections = [
+      {
+        metadata: { dependencies: [] },
+        children: [targetOnlyRow, parentRow, childRow],
+      },
+    ];
+
+    populateGridDependencyRowIds(collections);
+
+    expect(childRow.dependencieRowIds).toEqual(['10']);
+    expect(collections[0].metadata.dependencies).toEqual(['10']);
   });
 });

@@ -44,6 +44,31 @@ function generateFinalScript(script_array, scriptHeader, script_body) {
   return `${scriptHeader} BEGIN; \n ${script_body} END;`;
 }
 
+function isSourceOidRow(row) {
+  return row.status !== FILTER_NAME.TARGET_ONLY &&
+    !_.isUndefined(row.oid) && !_.isNull(row.oid);
+}
+
+export function populateGridDependencyRowIds(collections) {
+  /* Link each row's dependenciesOid to matching source-side row IDs so
+     selecting a dependent row in the grid selects its parents without
+     pulling in Target Only rows that happen to share an OID. */
+  collections.forEach((collection) => {
+    collection.children.forEach((ch) => {
+      if (ch.dependenciesOid?.length > 0) {
+        collections.forEach((el) => {
+          el.children.forEach((data) => {
+            if (isSourceOidRow(data) && ch.dependenciesOid.includes(data.oid)) {
+              ch.dependencieRowIds.push(`${data.id}`);
+            }
+          });
+        });
+      }
+      collection.metadata.dependencies.push(...ch.dependencieRowIds);
+    });
+  });
+}
+
 export function computeDependLevels(rows) {
   /* Assign each row a dependLevel such that anything another row depends
      on always ends up with a strictly higher level than that row, so that
@@ -59,8 +84,7 @@ export function computeDependLevels(rows) {
      for that edge, rather than recursing forever. */
   const oidToRow = new Map();
   rows.forEach((row) => {
-    if (row.status !== FILTER_NAME.TARGET_ONLY &&
-        !_.isUndefined(row.oid) && !_.isNull(row.oid)) {
+    if (isSourceOidRow(row)) {
       oidToRow.set(row.oid, row);
     }
   });
@@ -633,25 +657,14 @@ export function SchemaDiffCompare({ params }) {
           dependencies: [],
         };
         child.children.map((ch) => {
-          if (ch.dependenciesOid.length > 0) {
-            tempData[keyItem]['children'].map((el) => {
-              el.children.map((data) => {
-                if (ch.dependenciesOid.includes(data.oid)) {
-                  ch.dependencieRowIds.push(`${data.id}`);
-                }
-              });
-
-            });
-          }
           ch['metadata'] = {
             parentId: child.id,
             rootId: tempData[keyItem].id,
             children: child.children.map(({ id }) => `${id}`),
-
           };
-          child['metadata']['dependencies'].push(...ch.dependencieRowIds);
         });
       });
+      populateGridDependencyRowIds(tempData[keyItem]['children']);
       temp.push(tempData[keyItem]);
     }
 
