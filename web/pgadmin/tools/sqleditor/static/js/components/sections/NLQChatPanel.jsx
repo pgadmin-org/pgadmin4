@@ -23,6 +23,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import { format as formatSQL } from 'sql-formatter';
+import { getFormatOptions } from '../../../../../../static/js/components/ReactCodeMirror/formatSQL';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import gettext from 'sources/gettext';
@@ -599,21 +600,9 @@ export function NLQChatPanel() {
   const formatSqlWithPrefs = useCallback((sql) => {
     if (!sql) return sql;
     try {
-      const formatPrefs = {
-        language: 'postgresql',
-        keywordCase: editorPrefs.keyword_case === 'capitalize' ? 'preserve' : editorPrefs.keyword_case,
-        identifierCase: editorPrefs.identifier_case === 'capitalize' ? 'preserve' : editorPrefs.identifier_case,
-        dataTypeCase: editorPrefs.data_type_case,
-        functionCase: editorPrefs.function_case,
-        logicalOperatorNewline: editorPrefs.logical_operator_new_line,
-        expressionWidth: editorPrefs.expression_width,
-        linesBetweenQueries: editorPrefs.lines_between_queries,
-        tabWidth: editorPrefs.tab_size,
-        useTabs: !editorPrefs.use_spaces,
-        denseOperators: !editorPrefs.spaces_around_operators,
-        newlineBeforeSemicolon: editorPrefs.new_line_before_semicolon
-      };
-      return formatSQL(sql, formatPrefs);
+      // Always lay out generated SQL fully, whatever the editor's
+      // preserve layout preference, as it usually arrives on one line.
+      return formatSQL(sql, getFormatOptions(editorPrefs));
     } catch {
       // If formatting fails, return original SQL
       return sql;
