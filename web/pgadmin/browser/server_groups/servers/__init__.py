@@ -1807,10 +1807,24 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
 
         if conn.connected():
+            # pg_ls_waldir() needs superuser or pg_monitor, and the
+            # permission is checked before any WHERE clause is evaluated,
+            # so decide whether to include the WAL row up front.
+            status, can_read_wal_dir = conn.execute_scalar(
+                render_template(
+                    "/servers/sql/#{0}#/wal_dir_privilege.sql".format(
+                        manager.version)
+                )
+            )
+
+            if not status:
+                return internal_server_error(errormsg=can_read_wal_dir)
+
             status, res = conn.execute_dict(
                 render_template(
                     "/servers/sql/#{0}#/stats.sql".format(manager.version),
-                    conn=conn, _=gettext
+                    conn=conn, _=gettext,
+                    can_read_wal_dir=can_read_wal_dir
                 )
             )
 
