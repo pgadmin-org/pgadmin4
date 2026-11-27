@@ -10,7 +10,11 @@ export async function copyToClipboard(text) {
     pgAdmin.Browser.notifier.error('Does not have clipboard access');
     copied = false;
   }
-  localStorage.setItem('clipboard', text);
+  try {
+    localStorage.setItem('clipboard', text);
+  } catch {
+    /* The cache is best effort, e.g. storage may be full or disabled */
+  }
   return copied;
 }
 
