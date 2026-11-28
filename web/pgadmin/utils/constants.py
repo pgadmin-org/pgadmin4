@@ -99,6 +99,9 @@ BINARY_PATHS = {
          "isDefault": False},
         {"version": "180000", "next_major_version": "190000",
          "serverType": gettext("EDB Advanced Server 18"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "190000", "next_major_version": "200000",
+         "serverType": gettext("EDB Advanced Server 19"), "binaryPath": None,
          "isDefault": False}
     ],
     "pg_bin_paths": [
@@ -119,6 +122,9 @@ BINARY_PATHS = {
          "isDefault": False},
         {"version": "180000", "next_major_version": "190000",
          "serverType": gettext("PostgreSQL 18"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "190000", "next_major_version": "200000",
+         "serverType": gettext("PostgreSQL 19"), "binaryPath": None,
          "isDefault": False}
     ]
 }

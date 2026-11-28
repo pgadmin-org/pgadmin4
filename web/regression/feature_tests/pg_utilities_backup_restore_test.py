@@ -283,7 +283,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         default_binary_path = self.server['default_binary_paths']
         if default_binary_path is not None:
             def get_server_version_string():
-                server_version = {180000: '18', 170000: '17', 160000: '16',
+                server_version = {190000: '19', 180000: '18', 170000: '17', 160000: '16',
                                   150000: '15', 140000: '14', 130000: '13'}
                 for k, v in server_version.items():
                     if k <= self.server_information['server_version']:
