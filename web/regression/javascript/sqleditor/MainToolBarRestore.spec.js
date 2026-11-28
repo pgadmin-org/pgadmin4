@@ -38,7 +38,7 @@ import {
 import {
   QueryToolContext, QueryToolConnectionContext, QueryToolEventsContext,
 } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx';
-import { QUERY_TOOL_EVENTS } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolConstants';
+import { CONNECTION_STATUS, QUERY_TOOL_EVENTS } from '../../../pgadmin/tools/sqleditor/static/js/components/QueryToolConstants';
 
 const sqleditorPrefs = {
   auto_commit: true,
@@ -85,11 +85,11 @@ describe('MainToolBar toolbar options restore', () => {
   let eventBus, queryToolCtx;
   const ThemedMainToolBar = withTheme(MainToolBar);
 
-  const renderToolBar = (connected, isQueryTool=true) => {
+  const renderToolBar = (connected, isQueryTool=true, connectionStatus=null) => {
     const containerRef = React.createRef();
     const ui = (conn) => (
       <QueryToolContext.Provider value={queryToolCtx}>
-        <QueryToolConnectionContext.Provider value={{connected: conn, obtainingConn: false, connectionStatus: null}}>
+        <QueryToolConnectionContext.Provider value={{connected: conn, obtainingConn: false, connectionStatus}}>
           <QueryToolEventsContext.Provider value={eventBus}>
             <div ref={containerRef}>
               <ThemedMainToolBar containerRef={containerRef} onFilterClick={()=>{/* noop */}}
@@ -350,6 +350,53 @@ describe('MainToolBar toolbar options restore', () => {
       }));
     });
     expect(queryToolCtx.api.post).not.toHaveBeenCalled();
+  });
+
+  it('releases the tab when commit or rollback fails and still closes after a later success', async () => {
+    queryToolCtx.preferences.sqleditor.prompt_commit_transaction = true;
+    queryToolCtx.keepTabInCloseBatch = jest.fn();
+    let dialogContent;
+    queryToolCtx.modal.showModal = jest.fn((_title, content) => {
+      dialogContent = content;
+    });
+    const fired = jest.spyOn(eventBus, 'fireEvent');
+    renderToolBar(true, true, CONNECTION_STATUS.TRANSACTION_STATUS_INTRANS);
+
+    const Prompt = withTheme(function Prompt() {
+      return dialogContent(()=>{});
+    });
+    let dialog;
+    const choose = async (testId) => {
+      dialog?.unmount();
+      fired.mockClear();
+      queryToolCtx.keepTabInCloseBatch.mockClear();
+      act(() => {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
+      });
+      await waitFor(() => expect(queryToolCtx.modal.showModal).toHaveBeenCalled());
+      dialog = render(<Prompt />);
+      await act(async () => {
+        fireDomEvent.click(dialog.container.querySelector(`[data-test="${testId}"]`));
+      });
+      queryToolCtx.modal.showModal.mockClear();
+    };
+
+    await choose('commit');
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
+    });
+    await waitFor(() => expect(queryToolCtx.keepTabInCloseBatch).toHaveBeenCalledTimes(1));
+    expect(fired).not.toHaveBeenCalledWith(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
+
+    await choose('rollback');
+    act(() => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END, true);
+    });
+    await waitFor(() => {
+      expect(fired).toHaveBeenCalledWith(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
+    });
+    expect(queryToolCtx.keepTabInCloseBatch).not.toHaveBeenCalled();
+    fired.mockRestore();
   });
 });
 

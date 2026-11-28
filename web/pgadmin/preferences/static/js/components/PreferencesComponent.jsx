@@ -203,14 +203,21 @@ export default function PreferencesComponent({panelId}) {
       if(panelId != id) return;
 
       if(Object.keys(prefChangedData.current).length > 0) {
+        // Yes closes the dialog, which also runs the cancel callback.
+        let proceeded = false;
         pgAdmin.Browser.notifier.confirm(
           gettext('Warning'),
           gettext('Changes will be lost. Are you sure you want to close the preferences?'),
           function() {
+            proceeded = true;
             layoutDocker.close(panelId, true);
             return true;
           },
-          null
+          function() {
+            if(!proceeded) {
+              layoutDocker.retainTabInCloseQueue(panelId);
+            }
+          }
         );
         return false; // Prevent closing
       }

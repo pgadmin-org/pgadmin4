@@ -402,6 +402,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, (success)=>{
       if(success) {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
+      } else {
+        queryToolCtx.keepTabInCloseBatch();
       }
     }, true);
   };
@@ -417,7 +419,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
               eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
             }}
           />
-        ), {id: modalId});
+        ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
         return;
       } else {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
@@ -444,7 +446,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onCommitClick();
         }}
       />
-    ), {id: modalId});
+    ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
   };
   useEffect(()=>{
     if(isInTxn()) {

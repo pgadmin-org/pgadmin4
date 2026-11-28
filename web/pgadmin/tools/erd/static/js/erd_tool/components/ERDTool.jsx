@@ -453,7 +453,10 @@ export default class ERDTool extends React.Component {
             bodyObj.onSaveDiagram(false, true);
           }}
         />
-      ), {id: 'id-erd-close-confirmation'});
+      ), {
+        id: 'id-erd-close-confirmation',
+        onClose: ()=>this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId),
+      });
       return false;
     } else {
       this.forceClose();
@@ -753,7 +756,18 @@ export default class ERDTool extends React.Component {
         'btn_primary': 'Save',
         'purpose': 'erd',
       };
-      this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
+      let fileSelected = false;
+      this.props.pgAdmin.Tools.FileManager.show(params, (fileName)=>{
+        fileSelected = true;
+        this.saveFile(fileName);
+      }, ()=>{
+        if(fileSelected) return;
+        this.closeOnSave = false;
+        this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
+      }, this.context);
+    } else if (closeOnSave) {
+      this.closeOnSave = false;
+      this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
     }
   }
 
@@ -778,6 +792,10 @@ export default class ERDTool extends React.Component {
     }).catch((err)=>{
       this.setLoading(null);
       this.handleAxiosCatch(err);
+      if(this.closeOnSave) {
+        this.closeOnSave = false;
+        this.props.panelDocker.retainTabInCloseQueue?.(this.props.panelId);
+      }
     });
   }
 

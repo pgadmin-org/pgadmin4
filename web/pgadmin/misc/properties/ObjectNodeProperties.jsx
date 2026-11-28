@@ -179,17 +179,24 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   /* A warning before closing the dialog with unsaved changes, based on preference */
   const warnBeforeChangesLost = (id)=>{
     if(panelId != id) {
-      warnBeforeChangesLost();
+      return;
     }
     if (warnOnCloseFlag && confirmOnCloseReset) {
       if(isDirty.current) {
+        // Yes closes the dialog, which also runs the cancel callback.
+        let proceeded = false;
         pgAdmin.Browser.notifier.confirm(
           gettext('Warning'),
           gettext('Changes will be lost. Are you sure you want to close the dialog?'),
           function() {
+            proceeded = true;
             onClose(true);
           },
-          null
+          function() {
+            if(!proceeded) {
+              layoutDocker.retainTabInCloseQueue(panelId);
+            }
+          }
         );
       } else {
         onClose(true);

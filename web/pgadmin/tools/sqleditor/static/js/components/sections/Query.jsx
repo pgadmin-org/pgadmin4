@@ -330,15 +330,29 @@ export default function Query({onTextSelect, setQtStatePartial}) {
             eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
           }}
           onSave={()=>{
-            eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, (_f, success)=>{
+            // The file dialog reports cancel twice (button, then dialog close).
+            let closeAttemptDone = false;
+            const unregisterDone = eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, (_f, success)=>{
+              closeAttemptDone = true;
               if(success) {
                 eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
+              } else {
+                queryToolCtx.keepTabInCloseBatch();
               }
             }, true);
-            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE);
+            // Cancelling Save As must end this close attempt. Leaving the
+            // listener in place would close the tab on a later save.
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, false, ()=>{
+              if(closeAttemptDone) {
+                return;
+              }
+              closeAttemptDone = true;
+              unregisterDone();
+              queryToolCtx.keepTabInCloseBatch();
+            });
           }}
         />
-      ), {id:modalId});
+      ), {id: modalId, onClose: ()=>queryToolCtx.keepTabInCloseBatch()});
     };
 
     const createKeyObjectFromShortcut = (pref)=>{

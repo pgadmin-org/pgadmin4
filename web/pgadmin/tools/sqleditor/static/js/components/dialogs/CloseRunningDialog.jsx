@@ -18,7 +18,7 @@ export default function CloseRunningDialog({closeModal, text, onYes}) {
         }} >{gettext('No')}</DefaultButton>
         <PrimaryButton data-test="yes" startIcon={<CheckRoundedIcon />} onClick={()=>{
           onYes?.();
-          closeModal();
+          closeModal(undefined, 'proceed');
         }} >{gettext('Yes')}</PrimaryButton>
       </ModalFooter>
     </ModalContent>

@@ -94,6 +94,21 @@ function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
   }
 }
 
+// Choosing a file closes the dialog, and that close is reported as a cancel.
+// Only a real cancel should keep the tab in the close batch.
+export function showSaveFileDialog(show, fileParams, modal, onFile, onCancel) {
+  let fileSelected = false;
+  show(fileParams, (fileName)=>{
+    fileSelected = true;
+    onFile(fileName);
+  }, ()=>{
+    if(fileSelected) {
+      return;
+    }
+    onCancel?.();
+  }, modal);
+}
+
 const FIXED_PREF = {
   indent: {
     'control': false,
@@ -710,7 +725,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           }, null, modal);
         }
       }],
-      [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false)=>{
+      [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false, onCancel)=>{
         if(!isSaveAs && qtState.current_file) {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, qtState.current_file);
         } else {
@@ -721,9 +736,18 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             'btn_primary': 'Save',
             'purpose': 'query_tool',
           };
-          pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
-          }, null, modal);
+          showSaveFileDialog(
+            (...args)=>pgAdmin.Tools.FileManager.show(...args),
+            fileParams,
+            modal,
+            (fileName)=>{
+              eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
+            },
+            ()=>{
+              onCancel?.();
+              qtPanelDocker.retainTabInCloseQueue?.(qtPanelId);
+            },
+          );
         }
       }],
       [QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileDone],
@@ -1025,10 +1049,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
   }, []);
 
+  const keepTabInCloseBatch = useCallback(()=>{
+    qtPanelDocker.retainTabInCloseQueue?.(qtPanelId);
+  }, [qtPanelDocker, qtPanelId]);
+
   const queryToolContextValue = React.useMemo(()=>({
     docker: docker.current,
     api: api,
     modal: modal,
+    keepTabInCloseBatch: keepTabInCloseBatch,
     params: qtState.params,
     server_cursor: qtState.server_cursor,
     preferences: qtState.preferences,
@@ -1087,7 +1116,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     updateServerCursor: (state) => {
       setQtStatePartial(state);
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor, docker.current]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor, docker.current, keepTabInCloseBatch]);
 
 
   const queryToolConnContextValue = React.useMemo(()=>({
