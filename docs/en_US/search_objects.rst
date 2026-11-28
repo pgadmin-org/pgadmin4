@@ -28,6 +28,14 @@ have not enabled those object types in the :ref:`preferences <preferences>`,
 so you can't double click on it. You can click on the ellipsis appended to
 the function and procedure names to see their arguments.
 
+Click the *Copy results as CSV* button, to the right of the match count
+below the grid, to copy the results to the clipboard as CSV, in the order
+currently shown, with a header row of column names. Every value is enclosed
+in double quotes, so names and paths containing commas, quotes or line breaks
+are kept intact. The arguments of functions and procedures are always
+included in the copied object names, whether or not they have been expanded
+in the grid.
+
 
 You can filter based on a particular object type by selecting one from the
 object type dropdown. If the search button is hit when one of the object type

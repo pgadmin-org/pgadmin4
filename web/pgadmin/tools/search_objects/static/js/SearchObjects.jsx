@@ -12,6 +12,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -21,6 +22,7 @@ import getApiInstance, { parseApiError } from '../../../../static/js/api_instanc
 import { PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import { FormFooterMessage, InputSelect, InputText, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import PgReactDataGrid from '../../../../static/js/components/PgReactDataGrid';
+import CopyData from 'tools/sqleditor/static/js/components/QueryToolDataGrid/CopyData';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display:'flex',
@@ -267,6 +269,23 @@ const translateSearchObjectsPath = (nodeData, path, catalog_level)=> {
   return [new_path, id_path];
 };
 
+/* Copy the results, in the order shown, to the clipboard as CSV with the
+ * grid's column headers. Function arguments are included whenever the
+ * object has them, so overloaded functions can be told apart.
+ */
+const copyResultsAsCsv = (rows)=> {
+  const csvRows = rows.map((row)=>({
+    name: row.other_info ? `${row.name}(${_.unescape(row.other_info)})` : row.name,
+    type: row.type_label,
+    path: row.path,
+  }));
+  new CopyData({
+    field_separator: ',',
+    quote_char: '"',
+    quoting: 'all',
+  }).copyRowsToCsv(csvRows, columns, true);
+};
+
 // This function is used to sort the column.
 function getComparator(sortColumn) {
   const key = sortColumn?.columnKey;
@@ -444,6 +463,9 @@ export default function SearchObjects({nodeData}) {
       </Box>
       <Box className='SearchObjects-footer1'>
         <Box>{footerText}</Box>
+        <PgIconButton data-test="copy-results" onClick={()=>copyResultsAsCsv(sortedItems)}
+          icon={<ContentCopyIcon />} title={gettext('Copy results as CSV')}
+          disabled={sortedItems.length == 0} />
       </Box>
       <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errorMsg} closable onClose={()=>setErrorMsg('')}  />
       <Box className='SearchObjects-footer'>
